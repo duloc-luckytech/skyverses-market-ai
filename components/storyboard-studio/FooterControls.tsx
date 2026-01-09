@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  MonitorPlay, ImageIcon, Mic, X, Check, Loader2, Zap 
+  MonitorPlay, ImageIcon, X, Check, Loader2, Zap 
 } from 'lucide-react';
 
 interface FooterControlsProps {
@@ -14,74 +14,60 @@ interface FooterControlsProps {
 }
 
 export const FooterControls: React.FC<FooterControlsProps> = ({ 
-  scenesCount, isProcessing, canCreate, onSynthesize, onReset 
+  scenesCount, isProcessing, canCreate, onSynthesize, onReset
 }) => {
   return (
-    <div className="h-24 border-t border-white/5 bg-[#08080a] flex items-center justify-between px-10 shrink-0 z-[170]">
-       <div className="flex items-center gap-12">
-          <div className="space-y-1">
-             <p className="text-[9px] font-black uppercase text-gray-500 tracking-widest italic">MÔ HÌNH AI KỊCH BẢN</p>
-             <select className="bg-transparent border-none text-xs font-black uppercase text-brand-blue tracking-widest outline-none cursor-pointer hover:text-white transition-colors">
-                <option>Gemini 3.0 Flash</option>
-                <option>Gemini 3.0 Pro</option>
-             </select>
-          </div>
-          <div className="h-8 w-px bg-white/5"></div>
-          <div className="flex gap-4">
-             <button className="px-4 py-2 border border-white/10 rounded-lg text-[9px] font-black uppercase text-gray-400 flex items-center gap-2 hover:bg-brand-blue/10 hover:text-brand-blue transition-all"><MonitorPlay size={14}/> Nano Banana Pro</button>
-             <button className="px-4 py-2 border border-purple-500/30 bg-purple-500/5 rounded-lg text-[9px] font-black uppercase text-purple-500 flex items-center gap-2 shadow-lg"><MonitorPlay size={14}/> VEO 3.1 - HOT</button>
-          </div>
-       </div>
-
-       <div className="flex items-center gap-6">
+    <div className="h-20 lg:h-24 border-t border-white/5 bg-[#08080a] flex items-center justify-center px-4 lg:px-10 shrink-0 z-[170]">
+       <div className="flex items-center gap-4 w-full max-w-4xl justify-center">
           <AnimatePresence mode="wait">
              {scenesCount > 0 ? (
                 <motion.div 
                   key="action-bar"
-                  initial={{ opacity: 0, scale: 0.95 }} 
-                  animate={{ opacity: 1, scale: 1 }} 
-                  exit={{ opacity: 0, scale: 0.95 }} 
-                  className="flex items-center gap-2 bg-[#1c1c1f]/80 backdrop-blur-xl px-4 py-3 border border-white/5 rounded-2xl shadow-2xl"
+                  initial={{ opacity: 0, y: 20 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  exit={{ opacity: 0, y: 20 }} 
+                  className="flex items-center gap-2 bg-[#1c1c1f] px-3 lg:px-4 py-2.5 lg:py-3 border border-brand-blue/30 rounded-2xl shadow-2xl w-full sm:w-auto"
                 >
-                   <div className="flex items-center gap-2 px-3 border-r border-white/10 mr-2">
-                      <div className="w-5 h-5 rounded-full border-2 border-brand-blue flex items-center justify-center text-brand-blue shadow-[0_0_10px_rgba(0,144,255,0.3)]">
-                         <Check size={12} strokeWidth={4} />
+                   <div className="flex items-center gap-2 px-2 lg:px-4 border-r border-white/10 mr-1 lg:mr-2">
+                      <div className="w-4 h-4 lg:w-5 h-5 rounded-full bg-brand-blue flex items-center justify-center text-white shadow-[0_0_100px_rgba(0,144,255,0.3)]">
+                         <Check size={10} strokeWidth={4} />
                       </div>
-                      <span className="text-xs font-black text-white">{scenesCount}</span>
+                      <span className="text-[10px] lg:text-xs font-black text-white whitespace-nowrap">{scenesCount} <span className="hidden sm:inline">cảnh</span></span>
                    </div>
 
-                   <div className="flex items-center gap-2">
-                      <button className="bg-[#0090ff] text-white px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all">
-                         <ImageIcon size={14}/> Generate Images
+                   <div className="flex items-center gap-1.5 lg:gap-2">
+                      <button className="bg-[#0090ff] text-white px-3 lg:px-6 py-2 lg:py-3 text-[9px] lg:text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center gap-1.5 lg:gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap">
+                         <ImageIcon size={12}/><span className="hidden sm:inline">Tạo hình</span>
                       </button>
-                      <button className="bg-[#9333ea] text-white px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center gap-2 shadow-lg shadow-purple-500/20 hover:scale-105 active:scale-95 transition-all">
-                         <MonitorPlay size={14}/> Generate Videos
-                      </button>
-                      <button className="bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30 px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center gap-2 hover:bg-[#10b981] hover:text-white active:scale-95 transition-all">
-                         <Mic size={14}/> Tạo Audio VO
+                      <button className="bg-[#9333ea] text-white px-3 lg:px-6 py-2 lg:py-3 text-[9px] lg:text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center gap-1.5 lg:gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap">
+                         <MonitorPlay size={12}/><span className="hidden sm:inline">Tạo video</span>
                       </button>
                    </div>
 
-                   <div className="h-6 w-px bg-white/10 mx-2"></div>
+                   <div className="h-6 w-px bg-white/10 mx-1 lg:mx-2"></div>
                    
-                   <button onClick={onReset} className="p-2 text-gray-500 hover:text-red-500 transition-colors">
-                      <X size={20}/>
+                   <button onClick={onReset} className="p-1.5 lg:p-2 text-gray-500 hover:text-red-500 transition-colors">
+                      <X size={18}/>
                    </button>
                 </motion.div>
              ) : (
-                <motion.button 
-                  key="create-btn"
-                  initial={{ opacity: 0 }} 
-                  animate={{ opacity: 1 }} 
-                  exit={{ opacity: 0 }}
-                  onClick={onSynthesize}
-                  disabled={isProcessing || !canCreate}
-                  className="px-16 py-6 bg-brand-blue text-white rounded-xl text-xs font-black uppercase tracking-[0.4em] shadow-[0_15px_40px_rgba(0,144,255,0.3)] flex items-center justify-center gap-4 hover:brightness-110 active:scale-95 transition-all group relative overflow-hidden"
+                <motion.div 
+                  key="create-bar"
+                  initial={{ opacity: 0, scale: 0.95 }} 
+                  animate={{ opacity: 1, scale: 1 }} 
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="w-full sm:w-auto flex items-center bg-[#1c1c1f] p-1.5 border border-white/5 rounded-2xl shadow-2xl"
                 >
-                   <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                   {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <Zap size={18} fill="currentColor" />}
-                   Tạo kịch bản
-                </motion.button>
+                  <button 
+                    onClick={onSynthesize}
+                    disabled={isProcessing || !canCreate}
+                    className="px-10 lg:px-16 py-4 lg:py-4 bg-brand-blue text-white rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] lg:tracking-[0.4em] flex items-center justify-center gap-3 lg:gap-4 hover:brightness-110 active:scale-[0.98] transition-all group relative overflow-hidden disabled:opacity-30 disabled:grayscale"
+                  >
+                     <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                     {isProcessing ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} fill="currentColor" />}
+                     Tạo kịch bản
+                  </button>
+                </motion.div>
              )}
           </AnimatePresence>
        </div>

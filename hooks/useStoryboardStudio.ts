@@ -512,7 +512,7 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
   return {
     activeTab, setActiveTab, script, setScript, scriptRefImage, setScriptRefImage, scriptRefAudio, setScriptRefAudio,
     totalDuration, setTotalDuration, sceneDuration, setSceneDuration, voiceOverEnabled, setVoiceOverEnabled,
-    scenes, setScenes, updateScene, selectedSceneIds, toggleSceneSelection, selectAllScenes,
+    scenes, setScenes, updateScene, selectedSceneIds, setSelectedSceneIds, toggleSceneSelection, selectAllScenes,
     isProcessing, isEnhancing, showProgressModal, closeProgressModal, terminalLogs, settings, setSettings, handleCreateStoryboard,
     handleSaveAndGenerate,
     handleLoadSample, handleLoadSuggestion, handleReGenerateAsset,

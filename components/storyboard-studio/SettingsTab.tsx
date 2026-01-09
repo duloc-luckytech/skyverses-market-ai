@@ -39,7 +39,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
 }) => {
   const renderConfigRef = useRef<HTMLDivElement>(null);
   const inputBg = "bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-brand-blue/30 outline-none transition-all text-slate-900 dark:text-white";
-  const labelStyle = "text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 mb-2 block";
+  const labelStyle = "text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 mb-2 block leading-none";
 
   // Auto-scroll logic when landing on this tab from a "Configure" action
   useEffect(() => {
@@ -62,23 +62,22 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
       exit={{ opacity: 0, x: -20 }}
       className="flex-grow flex flex-col p-6 lg:p-12 overflow-y-auto no-scrollbar bg-white dark:bg-[#050506] transition-colors duration-500"
     >
-      <div className="max-w-6xl mx-auto w-full space-y-12 pb-40">
+      <div className="max-w-6xl mx-auto w-full space-y-8 lg:space-y-12 pb-48 lg:pb-40">
         
         {/* TIÊU ĐỀ CHÍNH */}
-        <header className="space-y-2 border-l-4 border-brand-blue pl-6">
-          <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">THIẾT LẬP HỆ THỐNG</h2>
-          <p className="text-gray-500 text-xs font-bold uppercase tracking-widest italic">Cấu hình tham số sản xuất và logic AI</p>
+        <header className="space-y-2 border-l-4 border-brand-blue pl-4 lg:pl-6">
+          <h2 className="text-2xl lg:text-4xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">THIẾT LẬP</h2>
+          <p className="text-gray-500 text-[10px] lg:text-xs font-bold uppercase tracking-widest italic leading-none">Cấu hình tham số sản xuất</p>
         </header>
 
-        {/* 1. THÔNG SỐ SÁNG TẠO - Đóng khung Group */}
-        <section className="p-8 bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/5 rounded-[2rem] space-y-8 shadow-sm transition-all">
-          <div className="flex items-center gap-3 mb-4">
-            <Sparkles size={18} className="text-brand-blue" />
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] italic text-slate-800 dark:text-white">THÔNG SỐ SÁNG TẠO</h3>
+        {/* 1. THÔNG SỐ SÁNG TẠO */}
+        <section className="p-6 lg:p-8 bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/5 rounded-[1.5rem] lg:rounded-[2rem] space-y-6 lg:space-y-8 shadow-sm transition-all">
+          <div className="flex items-center gap-3 mb-2">
+            <Sparkles size={16} className="text-brand-blue" />
+            <h3 className="text-[12px] lg:text-sm font-black uppercase tracking-[0.2em] italic text-slate-800 dark:text-white">THÔNG SỐ SÁNG TẠO</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Format */}
             <div className="space-y-1">
               <label className={labelStyle}>Loại hình / Format</label>
               <div className="relative">
@@ -93,7 +92,6 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               </div>
             </div>
 
-            {/* Style */}
             <div className="space-y-1">
               <label className={labelStyle}>Phong cách / Style</label>
               <div className="relative">
@@ -108,7 +106,6 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               </div>
             </div>
 
-            {/* Culture */}
             <div className="space-y-1">
               <label className={labelStyle}>Quốc gia / Văn hóa</label>
               <input 
@@ -121,49 +118,45 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-black/5 dark:border-white/5">
-            {/* Background */}
             <div className="space-y-1">
               <label className={labelStyle}><Layout size={12} className="inline mr-1" /> Bối cảnh / Background</label>
               <textarea 
                 value={settings.background}
                 onChange={(e) => handleChange('background', e.target.value)}
                 className={`${inputBg} w-full h-24 resize-none`} 
-                placeholder="VD: Rain-slicked alleyways reflecting neon holograms..." 
+                placeholder="VD: Rain-slicked alleyways..." 
               />
             </div>
 
-            {/* Camera Style */}
             <div className="space-y-1">
               <label className={labelStyle}><Camera size={12} className="inline mr-1" /> Camera & Cinematic</label>
               <textarea 
                 value={settings.cinematic}
                 onChange={(e) => handleChange('cinematic', e.target.value)}
                 className={`${inputBg} w-full h-24 resize-none`} 
-                placeholder="VD: Low-angle tracking shots, shallow depth of field..." 
+                placeholder="VD: Low-angle tracking shots..." 
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* BGM */}
             <div className="space-y-1">
-              <label className={labelStyle}><Music size={12} className="inline mr-1" /> Âm nhạc nền (BGM)</label>
+              <label className={labelStyle}><Music size={12} className="inline mr-1" /> Âm nhạc (BGM)</label>
               <input 
                 value={settings.bgm}
                 onChange={(e) => handleChange('bgm', e.target.value)}
                 className={`${inputBg} w-full`} 
-                placeholder="VD: Lo-fi hip hop beats..." 
+                placeholder="VD: Lo-fi beats..." 
               />
             </div>
 
-            {/* Voice Over */}
             <div className="space-y-1">
-              <label className={labelStyle}><Mic size={12} className="inline mr-1" /> Lời bình / Voice Over</label>
+              <label className={labelStyle}><Mic size={12} className="inline mr-1" /> Lời bình (VO)</label>
               <input 
                 value={settings.voiceOver}
                 onChange={(e) => handleChange('voiceOver', e.target.value)}
                 className={`${inputBg} w-full`} 
-                placeholder="VD: First-person internal monologue..." 
+                placeholder="VD: Deep, resonant male voice..." 
               />
             </div>
           </div>
@@ -177,7 +170,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
           />
         </div>
 
-        {/* 3. CÀI ĐẶT NÂNG CAO & HÀNH ĐỘNG */}
+        {/* 3. CÀI ĐẶT NÂNG CAO */}
         <AdvancedSettings 
           isProcessing={isProcessing}
           onSaveAndGenerate={onSaveAndGenerate}
