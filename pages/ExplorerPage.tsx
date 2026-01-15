@@ -5,13 +5,28 @@ import {
   Maximize2, Activity, Loader2, SearchX, RefreshCw, 
   Sparkles, Leaf, ArrowRightLeft, Boxes, Check, 
   Video, ImageIcon, Zap, X, Info, Settings2,
-  AlertCircle, CheckCircle2, Box, Cpu, Terminal
+  AlertCircle, CheckCircle2, Box, Cpu, Terminal,
+  Eye, Heart
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { explorerApi } from '../apis/explorer';
 import ExplorerDetailModal, { ExplorerItem } from '../components/ExplorerDetailModal';
 import { FilterHub } from '../components/explorer/FilterHub';
+
+// --- HELPER FOR CONSISTENT FAKE STATS ---
+const getFakeStats = (seedId: string) => {
+  const hash = seedId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const views = (hash * 13) % 950 + 50;
+  const likes = (hash * 7) % Math.floor(views * 0.8) + 12;
+  
+  const formatNum = (num: number) => num > 999 ? (num / 1000).toFixed(1) + 'k' : num.toString();
+  
+  return {
+    views: formatNum(views),
+    likes: formatNum(likes)
+  };
+};
 
 // --- SKELETON COMPONENTS ---
 
@@ -58,6 +73,7 @@ const ThreeDAssetCard: React.FC<{
   const { t } = useLanguage();
   const [sliderPos, setSliderPos] = useState(50);
   const formattedModelKey = (item.modelKey || item.model || 'Native').replace(/_/g, ' ');
+  const stats = useMemo(() => getFakeStats(item._id || item.id || item.title), [item]);
 
   return (
     <motion.div 
@@ -91,11 +107,17 @@ const ThreeDAssetCard: React.FC<{
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10 opacity-100 pointer-events-none" />
 
         <div className="absolute bottom-3 left-3 md:bottom-6 md:left-6 z-20 pr-4 space-y-1.5 pointer-events-none w-full">
-            {item.prompt && (
-              <p className="text-[10px] text-white/50 font-medium italic line-clamp-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0 mb-1 pr-10">
-                "{item.prompt}"
-              </p>
-            )}
+            <div className="flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0 mb-1">
+              {item.prompt && (
+                <p className="text-[10px] text-white/50 font-medium italic line-clamp-2 pr-10">
+                  "{item.prompt}"
+                </p>
+              )}
+              <div className="flex items-center gap-3 text-[8px] font-bold text-white/30 uppercase tracking-widest">
+                <span className="flex items-center gap-1"><Eye size={10} /> {stats.views}</span>
+                <span className="flex items-center gap-1"><Heart size={10} /> {stats.likes}</span>
+              </div>
+            </div>
             <div className="flex items-center gap-2">
                <span className="text-[8px] font-black text-brand-blue uppercase tracking-widest">{formattedModelKey}</span>
                <div className="w-1 h-1 rounded-full bg-white/20"></div>
@@ -141,7 +163,6 @@ const ExplorerPage = () => {
         } else {
           setItems(prev => [...prev, ...res.data]);
         }
-        // Kiểm tra xem còn dữ liệu không dựa trên meta pagination (nếu có) hoặc chiều dài mảng
         if (res.data.length < 20) {
           setHasMore(false);
         } else {
@@ -166,7 +187,6 @@ const ExplorerPage = () => {
     setSelectedIds([]);
   }, [activeFilter]);
 
-  // Logic Infinite Scroll bằng Intersection Observer
   const lastItemRef = useCallback((node: HTMLDivElement | null) => {
     if (isLoading || isFetchingMore) return;
     if (observer.current) observer.current.disconnect();
@@ -239,9 +259,8 @@ const ExplorerPage = () => {
                     {items.map((item, idx) => {
                       const isSelected = selectedIds.includes(item._id || item.id);
                       const formattedModelKey = (item.modelKey || item.model || 'Native').replace(/_/g, ' ');
-                      
-                      // Check if it's the last item to attach the observer
                       const isLastItem = items.length === idx + 1;
+                      const stats = getFakeStats(item._id || item.id || item.title);
 
                       if (item.type === 'game_asset_3d') {
                         return (
@@ -277,11 +296,17 @@ const ExplorerPage = () => {
                             <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-transparent z-10 opacity-100" />
 
                             <div className="absolute bottom-3 left-3 md:bottom-6 md:left-6 z-20 pr-4 space-y-1 pointer-events-none w-full">
-                                {item.prompt && (
-                                  <p className="text-[9px] md:text-[10px] text-white/50 font-medium italic line-clamp-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0 mb-1 pr-10">
-                                    "{item.prompt}"
-                                  </p>
-                                )}
+                                <div className="flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0 mb-1">
+                                  {item.prompt && (
+                                    <p className="text-[9px] md:text-[10px] text-white/50 font-medium italic line-clamp-2 pr-10">
+                                      "{item.prompt}"
+                                    </p>
+                                  )}
+                                  <div className="flex items-center gap-3 text-[8px] font-bold text-white/30 uppercase tracking-widest">
+                                    <span className="flex items-center gap-1"><Eye size={10} /> {stats.views}</span>
+                                    <span className="flex items-center gap-1"><Heart size={10} /> {stats.likes}</span>
+                                  </div>
+                                </div>
                                 <div className="flex items-center gap-2">
                                    <span className="text-[8px] font-black text-brand-blue uppercase tracking-widest">{formattedModelKey}</span>
                                    <div className="w-1 h-1 rounded-full bg-white/20"></div>
@@ -296,7 +321,6 @@ const ExplorerPage = () => {
                 </AnimatePresence>
               </div>
               
-              {/* Fetch more loader */}
               {isFetchingMore && (
                 <div className="flex justify-center py-12">
                    <div className="flex flex-col items-center gap-4">

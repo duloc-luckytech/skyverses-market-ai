@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Activity, FileText, ImageIcon, UserCircle, 
   Film, Gamepad2, Terminal as TerminalIcon, Box,
-  ChevronDown, Filter, LucideProps
+  ChevronDown, Filter, LucideProps, Video
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -19,7 +20,8 @@ export const FilterHub: React.FC<FilterHubProps> = ({ activeFilter, setActiveFil
 
   const filterOptions = [
     { id: 'all', label: t('explorer.type.all'), icon: <Activity size={14} /> },
-    { id: 'text_video', label: t('explorer.type.text_video'), icon: <FileText size={14} /> },
+    { id: 'image', label: 'Image', icon: <ImageIcon size={14} /> },
+    { id: 'video', label: 'Video', icon: <Video size={14} /> },
     { id: 'image_video', label: t('explorer.type.image_video'), icon: <ImageIcon size={14} /> },
     { id: 'character', label: t('explorer.type.character'), icon: <UserCircle size={14} /> },
     { id: 'cinematic', label: t('explorer.type.cinematic'), icon: <Film size={14} /> },
