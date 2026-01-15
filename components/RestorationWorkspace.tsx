@@ -7,6 +7,8 @@ import { RestorationViewport } from './restoration/RestorationViewport';
 import { RestorationControls } from './restoration/RestorationControls';
 import ProductImageWorkspace from './ProductImageWorkspace';
 import UpscaleWorkspace from './UpscaleWorkspace';
+import ResourceAuthModal from './common/ResourceAuthModal';
+import { ResourceControl } from './fashion-studio/ResourceControl';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
@@ -20,7 +22,10 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
     handleUpload,
     handleApplyTemplate,
     runRestoration,
-    credits
+    credits,
+    usagePreference,
+    setUsagePreference,
+    hasPersonalKey
   } = useRestoration();
 
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -29,7 +34,10 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   const [isUpscaleOpen, setIsUpscaleOpen] = useState(false);
   const [upscaleImageUrl, setUpscaleImageUrl] = useState<string | null>(null);
 
+  const [showResourceModal, setShowResourceModal] = useState(false);
+
   const activeJob = jobs.find(j => j.id === activeJobId);
+  const RESTORE_COST = 100;
 
   const handleDownload = (url: string) => {
     const link = document.createElement('a');
@@ -78,6 +86,18 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         )}
       </AnimatePresence>
 
+      <ResourceAuthModal 
+        isOpen={showResourceModal} 
+        onClose={() => setShowResourceModal(false)} 
+        onConfirm={(pref) => {
+          setUsagePreference(pref);
+          localStorage.setItem('skyverses_usage_preference', pref);
+          setShowResourceModal(false);
+        }} 
+        hasPersonalKey={hasPersonalKey} 
+        totalCost={RESTORE_COST} 
+      />
+
       <header className="h-16 md:h-20 px-4 md:px-8 flex items-center justify-between shrink-0 z-[120] bg-white dark:bg-[#0b0c10] border-b border-slate-100 dark:border-white/5 transition-colors">
         <div className="flex items-center gap-4">
            <div className="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center text-emerald-600">
@@ -89,17 +109,20 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         </div>
 
         <div className="flex items-center gap-4 lg:gap-8">
-           <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full">
-              <Coins size={12} className="text-yellow-500" />
-              <span className="text-[10px] font-black">{(credits || 0).toLocaleString()} CR</span>
-           </div>
+           <ResourceControl 
+              usagePreference={usagePreference}
+              credits={credits}
+              actionCost={RESTORE_COST}
+              onSettingsClick={() => setShowResourceModal(true)}
+           />
+
            <button 
              onClick={runRestoration}
              disabled={!canRun}
              className={`px-8 py-2.5 rounded-full font-black uppercase text-[10px] tracking-widest transition-all shadow-xl ${canRun ? 'bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer' : 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/20 cursor-not-allowed grayscale'}`}
            >
               {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} fill="currentColor" />}
-              <span className="ml-2">Phục chế ngay (100)</span>
+              <span className="ml-2">Phục chế ngay ({RESTORE_COST})</span>
            </button>
            <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
               <X size={24} />

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { uploadToGCS } from '../services/storage';
 import { GoogleGenAI } from "@google/genai";
@@ -75,6 +75,26 @@ export const useRestoration = () => {
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedPresetId, setSelectedPresetId] = useState(RESTORATION_PRESETS[0].id);
+  
+  const [usagePreference, setUsagePreference] = useState<'credits' | 'key'>(() => {
+    const saved = localStorage.getItem('skyverses_usage_preference');
+    return (saved as any) || 'credits';
+  });
+  const [hasPersonalKey, setHasPersonalKey] = useState(false);
+  const [personalKey, setPersonalKey] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const vault = localStorage.getItem('skyverses_model_vault');
+    if (vault) {
+      try {
+        const keys = JSON.parse(vault);
+        if (keys.gemini && keys.gemini.trim() !== '') {
+          setHasPersonalKey(true);
+          setPersonalKey(keys.gemini);
+        }
+      } catch (e) {}
+    }
+  }, []);
 
   const handleUpload = async (file: File) => {
     const tempId = Date.now().toString();
@@ -122,13 +142,19 @@ export const useRestoration = () => {
 
     if (!currentJob || (currentJob.status !== 'Khởi tạo' && currentJob.status !== 'ERROR') || isProcessing) return;
     if (!isAuthenticated) { login(); return; }
-    if (credits < RESTORE_COST) { alert("Không đủ hạn ngạch credits."); return; }
+
+    if (usagePreference === 'credits') {
+      if (credits < RESTORE_COST) { alert("Không đủ hạn ngạch credits."); return; }
+    } else if (!personalKey) {
+      alert("Vui lòng thiết lập API Key cá nhân trong Cài đặt.");
+      return;
+    }
 
     setIsProcessing(true);
     setJobs(prev => prev.map(j => j.id === activeJobId ? { ...j, status: 'PROCESSING' } : j));
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey: usagePreference === 'key' ? personalKey : process.env.API_KEY });
       const selectedPreset = RESTORATION_PRESETS.find(p => p.id === selectedPresetId);
       
       const response = await ai.models.generateContent({
@@ -163,7 +189,7 @@ export const useRestoration = () => {
       }
 
       if (restoredUrl) {
-        useCredits(RESTORE_COST);
+        if (usagePreference === 'credits') useCredits(RESTORE_COST);
         setJobs(prev => prev.map(j => j.id === activeJobId ? { 
           ...j, 
           status: 'DONE', 
@@ -191,6 +217,9 @@ export const useRestoration = () => {
     handleApplyTemplate,
     runRestoration,
     deleteJob,
-    credits
+    credits,
+    usagePreference,
+    setUsagePreference,
+    hasPersonalKey
   };
 };
