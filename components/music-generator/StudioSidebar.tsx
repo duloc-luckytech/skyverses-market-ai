@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Music, Sparkles, Maximize2, Zap, Loader2, ChevronLeft, Globe, Cpu, ChevronDown, Wand2, Star, ChevronUp } from 'lucide-react';
+import { Music, Maximize2, Zap, Loader2, ChevronLeft, Globe, Cpu, ChevronDown, ChevronUp } from 'lucide-react';
 import { PricingModel } from '../../apis/pricing';
 import { ResourceControl } from '../fashion-studio/ResourceControl';
 
@@ -33,49 +33,10 @@ interface StudioSidebarProps {
   setIsMobileExpanded: (val: boolean) => void;
 }
 
-const MUSIC_TEMPLATES = [
-  {
-    id: 'lofi',
-    label: 'Lo-fi Chill',
-    name: 'Midnight Study Session',
-    desc: 'Lofi, chill, nostalgic, smooth piano, vinyl crackle, 80bpm',
-    lyrics: '[Instrumental Chill Beats with subtle atmospheric raining sounds]'
-  },
-  {
-    id: 'cyber',
-    label: 'Cyberpunk',
-    name: 'Neon District Chase',
-    desc: 'Synthwave, aggressive, cinematic, heavy bass, dark electronic, 120bpm',
-    lyrics: 'Neon lights reflecting in the rain / Digital blood running through my veins'
-  },
-  {
-    id: 'pop',
-    label: 'Modern Pop',
-    name: 'Summer Love Story',
-    desc: 'Upbeat, catchy, acoustic guitar, female vocals, summer vibes, 105bpm',
-    lyrics: 'Walking down the coastline / Everything is just fine'
-  },
-  {
-    id: 'epic',
-    label: 'Epic Cinema',
-    name: 'Empire Rises',
-    desc: 'Orchestral, epic, powerful, dramatic strings, cinematic percussion',
-    lyrics: '[Grand orchestral choir and powerful horns intensify]'
-  }
-];
-
 export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
   const labelStyle = "text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-3 block px-1";
   const inputBg = "bg-slate-50 dark:bg-[#161b22] border border-slate-200 dark:border-transparent focus:border-brand-blue/30 rounded-xl transition-all outline-none text-slate-900 dark:text-white text-sm shadow-inner";
   const selectStyle = "w-full bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-white/5 p-2.5 rounded-lg text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-900 dark:text-white shadow-inner";
-
-  const applyTemplate = (t: typeof MUSIC_TEMPLATES[0]) => {
-    props.setSongName(t.name);
-    props.setDescription(t.desc);
-    props.setLyrics(t.lyrics);
-    if (t.id === 'lofi' || t.id === 'epic') props.setIsInstrumental(true);
-    else props.setIsInstrumental(false);
-  };
 
   const isInputValid = props.songName.trim().length >= 5 && props.description.trim().length > 0 && (props.isInstrumental || props.lyrics.trim().length > 0);
 
@@ -109,35 +70,11 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
           <Music size={20} className="text-brand-blue" />
           <h2 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white italic leading-none">Music Studio</h2>
         </div>
-        <div className="ml-auto">
-          <div className="w-10 h-10 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner">
-             <Sparkles size={20} />
-          </div>
-        </div>
       </div>
 
       {/* Content: Main Input Section - Hidden on mobile if not expanded */}
       <div className={`flex-grow overflow-y-auto no-scrollbar p-6 space-y-8 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         
-        {/* TEMPLATES SELECTOR */}
-        <section className="space-y-4">
-           <label className={labelStyle}>Mẫu kịch bản nhanh</label>
-           <div className="grid grid-cols-2 gap-2">
-              {MUSIC_TEMPLATES.map(t => (
-                <button 
-                  key={t.id}
-                  onClick={() => applyTemplate(t)}
-                  className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-xl hover:border-brand-blue transition-all group text-left"
-                >
-                   <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-all">
-                      <Star size={14} />
-                   </div>
-                   <span className="text-[10px] font-black uppercase tracking-tight text-slate-600 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{t.label}</span>
-                </button>
-              ))}
-           </div>
-        </section>
-
         <div className="space-y-3">
           <label className={labelStyle}>Tên bài hát (Tối thiểu 5 ký tự)</label>
           <input 
@@ -152,7 +89,7 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
             <label className={labelStyle}>Phong cách & Mô tả</label>
             <button onClick={() => props.onExpand('desc')} className="text-[10px] font-black text-brand-blue uppercase flex items-center gap-1 hover:underline">
               <Maximize2 size={12} /> Mở rộng
-            </button>
+            </label>
           </div>
           <textarea 
             value={props.description} onChange={(e) => props.setDescription(e.target.value)}
@@ -166,7 +103,7 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
             <label className={labelStyle}>Lời bài hát</label>
             <button onClick={() => props.onExpand('lyrics')} className="text-[10px] font-black text-brand-blue uppercase flex items-center gap-1 hover:underline">
               <Maximize2 size={12} /> Mở rộng
-            </button>
+            </label>
           </div>
           <textarea 
             value={props.lyrics} onChange={(e) => props.setLyrics(e.target.value)}
@@ -190,7 +127,7 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
       </div>
 
       {/* Infrastructure & Action - Hidden on mobile if not expanded */}
-      <div className={`p-6 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 space-y-6 shrink-0 backdrop-blur-md ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+      <div className={`p-6 border-t border-black/5 dark:border-white/10 bg-slate-50 dark:bg-black/40 space-y-6 shrink-0 backdrop-blur-md ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         {/* Resource Selection Row */}
         <div className="flex items-center justify-between gap-4">
            <ResourceControl 
@@ -240,7 +177,7 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
         <button 
           onClick={props.onGenerate}
           disabled={props.isGenerating || !isInputValid}
-          className="w-full py-5 bg-gradient-to-r from-brand-blue to-[#8a3ffc] text-white rounded-xl text-xs font-black uppercase tracking-[0.4em] shadow-xl hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-4 group disabled:opacity-30 relative overflow-hidden"
+          className="w-full py-5 bg-gradient-to-r from-brand-blue to-[#8a3ffc] text-white rounded-xl text-xs font-black uppercase text-xs tracking-[0.4em] shadow-xl hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-4 group disabled:opacity-30 relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
           {props.isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={18} fill="currentColor" />}
