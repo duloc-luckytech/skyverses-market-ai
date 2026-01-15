@@ -39,7 +39,6 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
   const { t } = useLanguage();
   const [isFocused, setIsFocused] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [catSearch, setCatSearch] = useState('');
   const [directiveIndex, setDirectiveIndex] = useState(0);
   const modalRef = useRef<HTMLDivElement>(null);
   
@@ -109,26 +108,14 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
   }, [secondary, activeCategory]);
 
   const filteredCategories = useMemo(() => {
-    const activeCats = categories.filter(c => c.status === 'active');
-    if (!catSearch.trim()) return activeCats;
-    
-    const searchLow = catSearch.toLowerCase();
-    return activeCats.filter(c => 
-      c.name.toLowerCase().includes(searchLow) || 
-      c.code.toLowerCase().includes(searchLow) ||
-      c.subCategories.some(s => 
-        s.name.toLowerCase().includes(searchLow) || 
-        s.services.some(svc => svc.toLowerCase().includes(searchLow))
-      )
-    );
-  }, [categories, catSearch]);
+    return categories.filter(c => c.status === 'active');
+  }, [categories]);
 
   const handleSelectNode = (pCode: string, sCode: string = 'ALL', serviceQuery: string = '') => {
     setPrimary(pCode);
     setSecondary(sCode);
     if (serviceQuery) setQuery(serviceQuery);
     setIsModalOpen(false);
-    setCatSearch('');
   };
 
   const handleClearFilters = (e: React.MouseEvent) => {
@@ -219,22 +206,12 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
               className="absolute top-full left-0 right-0 mt-4 z-[200] bg-white dark:bg-[#0c0c0e] border border-black/10 dark:border-white/10 rounded-[2.5rem] shadow-3xl overflow-hidden flex flex-col max-h-[85vh] transition-colors"
             >
               <div className="p-6 md:p-8 border-b border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/20">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between">
                    <div className="flex items-center gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-pulse"></div>
                       <h3 className="text-xs font-black uppercase tracking-[0.4em] italic text-gray-500">TRUNG TÂM GIẢI PHÁP SÁNG TẠO</h3>
                    </div>
                    <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-400 hover:text-red-500 transition-colors"><X size={20}/></button>
-                </div>
-                <div className="relative group">
-                  <Hash className="absolute left-5 top-1/2 -translate-y-1/2 text-brand-blue/40" size={18} />
-                  <input 
-                    autoFocus
-                    value={catSearch}
-                    onChange={(e) => setCatSearch(e.target.value)}
-                    placeholder="Tìm theo lĩnh vực hoặc nhu cầu (VD: Video sản phẩm, Branding)..."
-                    className="w-full bg-white dark:bg-black border border-black/5 dark:border-white/10 rounded-[1.2rem] py-5 pl-14 pr-6 text-sm font-bold outline-none focus:border-brand-blue/30 transition-all shadow-inner placeholder:text-gray-300 dark:placeholder:text-gray-800"
-                  />
                 </div>
               </div>
 
