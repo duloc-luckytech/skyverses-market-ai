@@ -95,6 +95,7 @@ const App: React.FC = () => {
                       <Route path="/cms-admin-pro" element={<AdminCmsProPage />} />
                       <Route path="/referral" element={<ReferralPage />} />
                       
+                      <Route path="/product/ai-music-generator" element={<MusicGenerator />} />
                       <Route path="/product/ai-image-restorer" element={<AIImageRestoration />} />
                       <Route path="/product/storyboard-studio" element={<StoryboardStudioPage />} />
                       <Route path="/product/ai-stylist" element={<AIStylistPage />} />

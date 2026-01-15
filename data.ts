@@ -44,6 +44,41 @@ export const STORYBOARD_SAMPLES = [
 
 export const SOLUTIONS: Solution[] = [
   {
+    id: 'MUSIC-GEN-PRO',
+    slug: 'ai-music-generator',
+    name: { 
+      en: 'AI Music Generator Pro', 
+      vi: 'Kiến tạo Nhạc AI Pro', 
+      ko: 'AI 음악 생성기 프로', 
+      ja: 'AI音楽生成プロ' 
+    },
+    category: { en: 'Audio Production', vi: 'Sản xuất Âm thanh', ko: '오디오 제작', ja: 'オーディオ制作' },
+    description: { 
+      en: 'Professional neural music workstation to generate broadcast-quality tracks from text descriptions.', 
+      vi: 'Trạm làm việc nhạc thần kinh chuyên nghiệp để tạo ra các bản nhạc chất lượng phát sóng từ mô tả văn bản.', 
+      ko: '텍스트 설명을 통해 방송 품질의 트랙을 생성하는 전문 신경망 음악 워크스테이션.', 
+      ja: 'テキストの説明から放送品質のトラックを生成するプロフェッショナルなニューラル音楽ワークステーション。' 
+    },
+    problems: ['Expensive licensing costs', 'Copyright strike risks', 'Slow composition cycles', 'Stock music genericness'],
+    industries: ['Content Creation', 'Film Production', 'Advertising', 'Game Development'],
+    imageUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'text',
+    tags: ['Music AI', '48kHz', 'Royalty-Free', 'Composer'],
+    features: [
+      { en: 'Multi-genre Neural Synthesis', vi: 'Tổng hợp thần kinh đa thể loại', ko: '다중 장르 신경 합성', ja: 'マルチジャンル・ニューラル合成' },
+      { en: 'Professional BPM & Key Control', vi: 'Kiểm soát BPM & Key chuyên nghiệp', ko: '전문 BPM 및 키 제어', ja: 'プロフェッショナルBPM＆キー制御' },
+      { en: 'Full Commercial Usage Rights', vi: 'Quyền sử dụng thương mại đầy đủ', ko: '전체 상업적 사용 권한', ja: '完全な商業利用権' }
+    ],
+    complexity: 'Advanced',
+    priceReference: '150 CR / generation',
+    isActive: true,
+    priceCredits: 150,
+    neuralStack: [
+      { name: 'Acoustic Core v3', version: 'v3.2', capability: { en: 'Melodic Synthesis', vi: 'Tổng hợp giai điệu', ko: '멜로디 합성', ja: 'メロディ合成' } },
+      { name: 'Rhythm Engine', version: 'v1.5', capability: { en: 'Temporal Precision', vi: 'Độ chính xác thời gian', ko: '시간적 정밀도', ja: '時間的精度' } }
+    ]
+  },
+  {
     id: 'IMAGE-RESTORER',
     slug: 'ai-image-restorer',
     name: { 
@@ -67,7 +102,7 @@ export const SOLUTIONS: Solution[] = [
     features: [
       { en: 'Neural Detail Reconstruction', vi: 'Tái tạo chi tiết thần kinh', ko: '신경망 세부 재구성', ja: 'ニューラル詳細再構築' },
       { en: 'AI Scratch & Noise Removal', vi: 'Xóa vết xước & nhiễu AI', ko: 'AI 스크래치 및 노이즈 제거', ja: 'AIスクラッチとノイズ除去' },
-      { en: 'Intelligent Face Enhancement', vi: 'Nâng cấp khuôn mặt thông minh', ko: '지능형 얼굴 향상', ja: '知能的な顔向上' }
+      { en: 'Intelligent Face Enhancement', vi: 'Nâng cấp khuôn mặt thông minh', ko: '지능형 얼굴 향상', ja: '지능형 얼굴 향상' }
     ],
     complexity: 'Advanced',
     priceReference: '100 CR / restore',
@@ -102,7 +137,7 @@ export const SOLUTIONS: Solution[] = [
     features: [
       { en: 'Automated Scene Decomposition', vi: 'Tự động phân rã kịch bản', ko: '자동 장면 분해', ja: '自動シーン分解' },
       { en: 'Cinematic Staging Control', vi: 'Kiểm soát dàn dựng điện ảnh', ko: '시네마틱 연출 제어', ja: '映画的な演出制御' },
-      { en: 'Multi-Modal Asset Sync', vi: 'Đồng bộ tài sản đa phương thức', ko: '멀티모달 자산 동기화', ja: 'マルチモーダルアセット同期' }
+      { en: 'Multi-Modal Asset Sync', vi: 'Đồng bộ tài sản đa phương thức', ko: '멀티모달 자산 동기화', ja: '멀티모달 자산 동기화' }
     ],
     complexity: 'Enterprise',
     priceReference: '500 CR / project',
@@ -112,135 +147,6 @@ export const SOLUTIONS: Solution[] = [
       { name: 'Narrative Engine v5', version: 'v5.2', capability: { en: 'Semantic Analysis', vi: 'Phân tích ngữ nghĩa', ko: '의미 분석', ja: '意味分析' } },
       { name: 'Visual Orchestrator', version: 'v3.1', capability: { en: 'Frame Consistency', vi: 'Nhất quán khung hình', ko: '프레임 일관성', ja: 'フレームの一貫性' } }
     ]
-  },
-  {
-    id: 'PRECISION-SPATIAL-ARCHITECT',
-    slug: '3d-spatial-architect',
-    name: { 
-      en: 'Precision Spatial Architect', 
-      vi: 'Kiến trúc sư Không gian Chính xác', 
-      ko: '정밀 공간 아키텍트', 
-      ja: '精密空間建築家' 
-    },
-    category: { en: '3D Synthesis', vi: 'Tổng hợp 3D', ko: '3D 합성', ja: '3D合成' },
-    description: { 
-      en: 'CAD-grade 3D mesh synthesis for architectural visualization and structural design.', 
-      vi: 'Tổng hợp lưới 3D cấp độ CAD cho phối cảnh kiến trúc và thiết kế kết cấu.', 
-      ko: '건축 시각화 및 구조 설계를 위한 CAD 등급 3D 메쉬 합성.', 
-      ja: '建築可視化および構造設計のためのCADグレードの3Dメッシュ合成。' 
-    },
-    problems: ['Manual 3D modeling bottleneck', 'Inconsistent scale', 'Poor topology for rendering', 'High licensing costs'],
-    industries: ['Architecture', 'Interior Design', 'Real Estate', 'Urban Planning'],
-    imageUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1600',
-    demoType: 'automation',
-    tags: ['CAD AI', 'BIM Ready', 'Structural', '8K Textures'],
-    features: [
-      { en: 'BIM-Compatible Topology', vi: 'Lưới đa giác tương thích BIM', ko: 'BIM 호환 토폴로지', ja: 'BIM互換トポロジー' },
-      { en: 'Ray-Traced Ambient Lighting', vi: 'Ánh sáng môi trường Ray-Traced', ko: '레이 트레이싱 앰비언트 라이팅', ja: 'レイトレーシング環境照明' },
-      { en: 'Auto-Calculated Scale Norms', vi: 'Tự động tính toán tỷ lệ chuẩn', ko: '자동 계산 스케일 노름', ja: '自動計算スケールノルム' }
-    ],
-    complexity: 'Enterprise',
-    priceReference: '250 CR / creation',
-    isActive: true,
-    priceCredits: 250,
-    neuralStack: [
-      { name: 'Spatial Engine v2', version: 'v2.1', capability: { en: 'Geometric Precision', vi: 'Độ chính xác hình học', ko: '기하학적 정밀도', ja: '幾 thực học적 정밀도' } },
-      { name: 'Texture Mapper Pro', version: 'v1.4', capability: { en: 'PBR Synthesis', vi: 'Tổng hợp PBR', ko: 'PBR 합성', ja: 'PBR合成' } }
-    ]
-  },
-  {
-    id: 'CHAR-SYNC-AI',
-    slug: 'character-sync-ai',
-    name: { 
-      en: 'Character Sync AI', 
-      vi: 'Character Sync AI', 
-      ko: '캐릭터 싱크 AI', 
-      ja: 'キャラクター同期AI' 
-    },
-    category: { en: 'Continuity AI', vi: 'Đồng bộ AI', ko: '연속성 AI', ja: '継続性AI' },
-    description: { 
-      en: 'Professional character identity locking system. Sync characters from images to video and long-form stories.', 
-      vi: 'Hệ thống khóa định danh nhân vật chuyên nghiệp. Đồng bộ nhân vật từ hình ảnh sang video và truyện dài tập.', 
-      ko: '전문 캐릭터 아이덴티티 잠금 시스템. 이미지에서 비디오 및 장편 스토리로 캐릭터를 동기화합니다.', 
-      ja: 'プロフェッショナルなキャラクター識別ロックシステム。画像からビデオ、長編ストーリーまでキャラクターを同期。' 
-    },
-    problems: ['Randomized faces', 'Inconsistent outfits', 'No cross-prompt memory', 'Hard to manage hero casts'],
-    industries: ['Comics', 'Game Studios', 'Film Production', 'Advertising'],
-    imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1600',
-    demoType: 'automation',
-    tags: ['Identity Lock', 'VEO 3.1', 'Storytelling', 'Enterprise'],
-    features: [
-      { en: 'Visual DNA Anchoring', vi: 'Neo định danh thị giác', ko: 'Visual DNA', ja: 'Visual DNA' },
-      { en: 'Multi-Character Narrative Binding', vi: 'Liên kết kịch bản đa nhân vật', ko: 'Narrative Binding', ja: 'Narrative Binding' },
-      { en: 'Zero-Drift Temporal Consistency', vi: 'Nhất quán thời gian không sai lệch', ko: 'Zero-Drift', ja: 'Zero-Drift' }
-    ],
-    complexity: 'Enterprise',
-    priceReference: '50 CR / sequence',
-    isActive: true,
-    priceCredits: 50,
-    neuralStack: [
-      { name: 'Identity Engine v4', version: 'v4.2', capability: { en: 'Symmetry Locking', vi: 'Khóa đối xứng', ko: 'Symmetry', ja: 'Symmetry' } },
-      { name: 'Context Memory v2', version: 'v2.0', capability: { en: 'Project-wide Persistence', vi: 'Duy trì toàn dự án', ko: 'Persistence', ja: 'Persistence' } }
-    ]
-  },
-  {
-    id: 'PRODUCT-IMAGE',
-    slug: 'product-image',
-    name: { 
-      en: 'Product Image Editor', 
-      vi: 'Trình biên tập ảnh sản phẩm', 
-      ko: '제품 이미지 에디터', 
-      ja: '製品画像エディタ' 
-    },
-    category: { en: 'Image AI', vi: 'Ảnh AI', ko: '이미지 AI', ja: '画像AI' },
-    description: { 
-      en: 'Advanced AI-powered image editing and synthesis for e-commerce and professional design.', 
-      vi: 'Chỉnh sửa và tổng hợp hình ảnh bằng AI tiên tiến cho thương mại điện tử và thiết kế chuyên nghiệp.', 
-      ko: '전자 상거래 및 전문 디자인을 위한 고급 AI 기반 이미지 편집 및 합성.', 
-      ja: '電子商取引およびプロフェッショナルなデザインのための、高度なAIを活用した画像編集 và 合成。' 
-    },
-    problems: ['Expensive photoshoots', 'Hard to edit backgrounds', 'Consistency issues'],
-    industries: ['E-commerce', 'Marketing', 'Photography'],
-    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1600',
-    demoType: 'image',
-    tags: ['In-painting', 'Background Removal', 'Upscaling'],
-    features: [
-      { en: 'AI In-painting', vi: 'Vẽ bù bằng AI', ko: 'AI 인페인팅', ja: 'AIインペインティング' },
-      { en: 'Smart Background Swap', vi: 'Thay nền thông minh', ko: '스마트 배경 교체', ja: 'スマート背景交換' }
-    ],
-    complexity: 'Advanced',
-    priceReference: '150 CR / edit',
-    isActive: true,
-    priceCredits: 150
-  },
-  {
-    id: 'FASHION-CENTER-AI',
-    slug: 'fashion-center-ai',
-    name: { 
-      en: 'Fashion Studio AI', 
-      vi: 'Fashion Studio AI', 
-      ko: '패션 스튜디오 AI', 
-      ja: 'ファッションスタジオAI' 
-    },
-    category: { en: 'Image AI', vi: 'Ảnh AI', ko: '이미지 AI', ja: '画像AI' },
-    description: { 
-      en: 'Generate high-end fashion visuals with consistent models and virtual try-on.', 
-      vi: 'Tạo hình ảnh thời trang cao cấp với người mẫu nhất quán và thử đồ ảo.', 
-      ko: '일관된 모델과 가상 착용을 통해 하이엔드 패션 비주얼을 생성합니다.', 
-      ja: '一貫したモデルとバーチャル試着により、ハイエンドなファッションビジュアルを生成します。' 
-    },
-    problems: ['Model casting costs', 'Seasonal update lag'],
-    industries: ['Fashion', 'Retail', 'Advertising'],
-    imageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1600',
-    demoType: 'image',
-    tags: ['Virtual Try-on', 'Model Generation'],
-    features: [
-      { en: 'Neural Try-on', vi: 'Thử đồ thần kinh', ko: '뉴럴 트라이온', ja: 'ニューラル試着' }
-    ],
-    complexity: 'Advanced',
-    priceReference: '150 CR / gen',
-    isActive: true,
-    priceCredits: 150
   }
 ];
 
