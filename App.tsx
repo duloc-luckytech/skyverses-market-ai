@@ -28,6 +28,7 @@ import FavoritesPage from './pages/FavoritesPage';
 import CMSAdminPage from './pages/CMSAdminPage';
 import AdminCmsProPage from './pages/AdminCmsProPage';
 import ReferralPage from './pages/ReferralPage';
+import PolicyPage from './pages/PolicyPage';
 
 // Product Page Imports
 import AIImageGenerator from './pages/images/AIImageGenerator';
@@ -94,6 +95,7 @@ const App: React.FC = () => {
                       <Route path="/cms-admin" element={<CMSAdminPage />} />
                       <Route path="/cms-admin-pro" element={<AdminCmsProPage />} />
                       <Route path="/referral" element={<ReferralPage />} />
+                      <Route path="/policy" element={<PolicyPage />} />
                       
                       <Route path="/product/ai-music-generator" element={<MusicGenerator />} />
                       <Route path="/product/ai-image-restorer" element={<AIImageRestoration />} />
