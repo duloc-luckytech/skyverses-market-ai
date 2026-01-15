@@ -58,7 +58,6 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
     setIsUpscaleOpen(true);
   };
 
-  // Nút Phục chế chỉ enabled khi có job đang active và trạng thái là Khởi tạo hoặc Lỗi
   const canRun = activeJob && (activeJob.status === 'Khởi tạo' || activeJob.status === 'ERROR') && !isProcessing;
 
   return (
@@ -98,13 +97,14 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         totalCost={RESTORE_COST} 
       />
 
-      <header className="h-16 md:h-20 px-4 md:px-8 flex items-center justify-between shrink-0 z-[120] bg-white dark:bg-[#0b0c10] border-b border-slate-100 dark:border-white/5 transition-colors">
+      <header className="h-16 md:h-20 px-4 md:px-8 flex items-center justify-between shrink-0 z-[120] bg-white dark:bg-[#0d0e12] border-b border-slate-200 dark:border-white/5 transition-colors shadow-sm">
         <div className="flex items-center gap-4">
-           <div className="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center text-emerald-600">
+           <div className="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center text-emerald-600 shadow-inner">
               <RefreshCw size={20} />
            </div>
            <div className="flex flex-col">
-              <h2 className="text-sm md:text-base font-black uppercase italic tracking-tight">Phục chế ảnh cũ</h2>
+              <h2 className="text-sm md:text-base font-black uppercase italic tracking-tighter leading-none">Restoration Hub</h2>
+              <p className="text-[8px] md:text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest mt-1">Image History Repair Node</p>
            </div>
         </div>
 
@@ -119,13 +119,20 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
            <button 
              onClick={runRestoration}
              disabled={!canRun}
-             className={`px-8 py-2.5 rounded-full font-black uppercase text-[10px] tracking-widest transition-all shadow-xl ${canRun ? 'bg-emerald-600 text-white hover:scale-105 active:scale-95 cursor-pointer' : 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/20 cursor-not-allowed grayscale'}`}
+             className={`px-4 md:px-8 py-2 md:py-3 rounded-full font-black uppercase text-[9px] md:text-[10px] tracking-[0.2em] transition-all shadow-xl flex items-center justify-center gap-2 md:gap-3 ${
+               canRun 
+               ? 'bg-emerald-600 text-white hover:scale-105 active:scale-95 shadow-emerald-600/20' 
+               : 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/20 cursor-not-allowed grayscale'
+             }`}
            >
-              {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} fill="currentColor" />}
-              <span className="ml-2">Phục chế ngay ({RESTORE_COST})</span>
+              {isProcessing ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} fill="currentColor" />}
+              <span>Phục chế <span className="hidden sm:inline">ngay</span> ({RESTORE_COST} CR)</span>
            </button>
-           <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
-              <X size={24} />
+           
+           <div className="w-px h-8 bg-black/5 dark:bg-white/5 hidden md:block"></div>
+           
+           <button onClick={onClose} className="p-1 md:p-2 text-slate-400 hover:text-red-500 transition-colors bg-slate-50 dark:bg-white/5 rounded-full">
+              <X size={20} className="md:w-6 md:h-6" />
            </button>
         </div>
       </header>
@@ -160,6 +167,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           width: 0;
         }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </div>
   );
