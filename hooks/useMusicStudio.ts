@@ -1,7 +1,8 @@
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { generateDemoAudio } from '../services/gemini';
+import { pricingApi, PricingModel } from '../apis/pricing';
 
 export interface MusicResult {
   id: string;
@@ -12,14 +13,24 @@ export interface MusicResult {
 }
 
 export const useMusicStudio = () => {
-  const { credits, useCredits, isAuthenticated, login } = useAuth();
+  const { credits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
   
   // Input states
   const [songName, setSongName] = useState('');
   const [description, setDescription] = useState('');
   const [lyrics, setLyrics] = useState('');
   const [isInstrumental, setIsInstrumental] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('V-Sky 2.5');
+  
+  // Infrastructure States
+  const [selectedEngine, setSelectedEngine] = useState('gommo');
+  const [availableModels, setAvailableModels] = useState<PricingModel[]>([]);
+  const [selectedModelObj, setSelectedModelObj] = useState<PricingModel | null>(null);
+
+  // Resource Preference
+  const [usagePreference] = useState<'credits' | 'key'>(() => {
+    const saved = localStorage.getItem('skyverses_usage_preference');
+    return (saved as any) || 'credits';
+  });
   
   // UI states
   const [activeTab, setActiveTab] = useState<'current' | 'library'>('current');
@@ -34,6 +45,29 @@ export const useMusicStudio = () => {
   // Audio Refs
   const audioCtxRef = useRef<AudioContext | null>(null);
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
+
+  // Fetch Pricing for Audio
+  useEffect(() => {
+    const fetchPricing = async () => {
+      try {
+        const res = await pricingApi.getPricing({ tool: 'audio', engine: selectedEngine });
+        if (res.success && res.data.length > 0) {
+          setAvailableModels(res.data);
+          setSelectedModelObj(res.data[0]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch audio pricing:", error);
+      }
+    };
+    fetchPricing();
+  }, [selectedEngine]);
+
+  const currentUnitCost = useMemo(() => {
+    if (!selectedModelObj || !selectedModelObj.pricing) return 2500;
+    const resMatrix = selectedModelObj.pricing['standard'] || Object.values(selectedModelObj.pricing)[0];
+    if (!resMatrix) return 2500;
+    return Object.values(resMatrix)[0] as number || 2500;
+  }, [selectedModelObj]);
 
   const stopPlayback = useCallback(() => {
     if (sourceNodeRef.current) {
@@ -73,6 +107,11 @@ export const useMusicStudio = () => {
     if (!description.trim() || isGenerating) return;
     if (!isAuthenticated) { login(); return; }
     
+    if (usagePreference === 'credits' && credits < currentUnitCost) {
+      alert("Hạn ngạch không đủ. Vui lòng nạp thêm Credits.");
+      return;
+    }
+
     setIsGenerating(true);
     stopPlayback();
     
@@ -81,7 +120,9 @@ export const useMusicStudio = () => {
       const buffer = await generateDemoAudio(prompt, 'Kore'); 
       
       if (buffer) {
-        useCredits(2500);
+        if (usagePreference === 'credits') {
+          useCredits(currentUnitCost);
+        }
         const newSong: MusicResult = { 
           id: Date.now().toString(), 
           name: songName || 'Untitled Track', 
@@ -92,6 +133,7 @@ export const useMusicStudio = () => {
         setResults(prev => [newSong, ...prev]);
         setActiveTab('current');
         playBuffer(buffer, newSong.id);
+        refreshUserInfo();
       }
     } catch (error) {
       console.error("Music Generation Error:", error);
@@ -105,7 +147,11 @@ export const useMusicStudio = () => {
     description, setDescription,
     lyrics, setLyrics,
     isInstrumental, setIsInstrumental,
-    selectedModel, setSelectedModel,
+    selectedEngine, setSelectedEngine,
+    availableModels, selectedModelObj, setSelectedModelObj,
+    currentUnitCost,
+    usagePreference,
+    credits,
     activeTab, setActiveTab,
     isGenerating,
     expanding, setExpanding,

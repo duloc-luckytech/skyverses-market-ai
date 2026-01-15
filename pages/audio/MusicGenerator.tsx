@@ -1,19 +1,35 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
   ChevronLeft, Play, Music, Sparkles, Activity, ShieldCheck, 
-  SlidersHorizontal, Layers, Trash2, ListMusic, Loader2
+  SlidersHorizontal, Layers, Trash2, ListMusic, Loader2, Zap
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useMusicStudio } from '../../hooks/useMusicStudio';
 import { StudioSidebar } from '../../components/music-generator/StudioSidebar';
 import { MusicResultCard } from '../../components/music-generator/MusicResultCard';
 import { ExpandModal } from '../../components/music-generator/ExpandModal';
+import ResourceAuthModal from '../../components/common/ResourceAuthModal';
 
 const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const s = useMusicStudio();
+  const [showResourceModal, setShowResourceModal] = useState(false);
+  const [hasPersonalKey, setHasPersonalKey] = useState(false);
+
+  // Check for personal key in vault
+  useEffect(() => {
+    const vault = localStorage.getItem('skyverses_model_vault');
+    if (vault) {
+      try {
+        const keys = JSON.parse(vault);
+        if (keys.gemini && keys.gemini.trim() !== '') {
+          setHasPersonalKey(true);
+        }
+      } catch (e) {}
+    }
+  }, []);
 
   return (
     <motion.div 
@@ -26,18 +42,29 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         description={s.description} setDescription={s.setDescription}
         lyrics={s.lyrics} setLyrics={s.setLyrics}
         isInstrumental={s.isInstrumental} setIsInstrumental={s.setIsInstrumental}
-        selectedModel={s.selectedModel}
+        
+        selectedEngine={s.selectedEngine}
+        setSelectedEngine={s.setSelectedEngine}
+        availableModels={s.availableModels}
+        selectedModelObj={s.selectedModelObj}
+        setSelectedModelObj={s.setSelectedModelObj}
+        currentUnitCost={s.currentUnitCost}
+        usagePreference={s.usagePreference as 'credits' | 'key'}
+        credits={s.credits}
+        setShowResourceModal={setShowResourceModal}
+
         isGenerating={s.isGenerating}
         onExpand={s.setExpanding}
         onGenerate={s.handleGenerate}
       />
 
-      <main className="flex-grow flex flex-col bg-[#0b0c10] relative transition-all min-w-0">
-        <header className="h-16 lg:h-20 flex items-center justify-between px-8 border-b border-white/5 shrink-0 z-50 bg-[#0b0c10]/80 backdrop-blur-xl transition-colors">
+      <main className="flex-grow flex flex-col bg-[#0b0c10] relative transition-all min-w-0 border-l border-white/5">
+        <header className="h-16 lg:h-20 flex items-center justify-between px-8 border-b border-white/5 shrink-0 z-50 bg-[#0b0c10]/80 backdrop-blur-xl">
           <div className="flex bg-[#161b22] p-1 rounded-xl shadow-inner border border-white/5">
             <button onClick={() => s.setActiveTab('current')} className={`px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'current' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}>Phiên hiện tại</button>
             <button onClick={() => s.setActiveTab('library')} className={`px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'library' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}>Thư viện</button>
           </div>
+          
           <div className="flex items-center gap-6">
             <button className="text-[11px] font-black uppercase text-red-500 hover:brightness-125 flex items-center gap-2 transition-all">
               <Trash2 size={14} /> Xóa phiên
@@ -72,8 +99,8 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                   <ListMusic size={64} strokeWidth={1} />
                 </div>
                 <div className="space-y-2">
-                  <p className="text-2xl font-black uppercase tracking-[0.5em] italic">No music found.</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest">Start a new session to synthesize high-fidelity tracks</p>
+                  <p className="text-2xl font-black uppercase tracking-[0.5em] italic text-white">No music found.</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Start a new session to synthesize high-fidelity tracks</p>
                 </div>
               </motion.div>
             )}
@@ -114,6 +141,17 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           />
         )}
       </AnimatePresence>
+
+      <ResourceAuthModal 
+        isOpen={showResourceModal}
+        onClose={() => setShowResourceModal(false)}
+        onConfirm={(pref) => {
+          localStorage.setItem('skyverses_usage_preference', pref);
+          window.location.reload(); // Reload to sync with hook state
+        }}
+        hasPersonalKey={hasPersonalKey}
+        totalCost={s.currentUnitCost}
+      />
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
