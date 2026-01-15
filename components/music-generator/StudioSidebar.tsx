@@ -36,6 +36,9 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
   const inputBg = "bg-[#161b22] border border-transparent focus:border-brand-blue/30 rounded-xl transition-all outline-none text-white text-sm shadow-inner";
   const selectStyle = "w-full bg-[#0d1117] border border-white/5 p-2.5 rounded-lg text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-white shadow-inner";
 
+  // Check if inputs are sufficient for enabling the button
+  const isInputValid = props.songName.trim().length >= 5 && props.description.trim().length > 0 && (props.isInstrumental || props.lyrics.trim().length > 0);
+
   return (
     <aside className="w-full lg:w-[400px] border-r border-white/5 flex flex-col shrink-0 bg-[#0d1117] transition-all z-20 shadow-2xl">
       {/* Header */}
@@ -57,7 +60,7 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
       {/* Content: Main Input Section */}
       <div className="flex-grow overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-3">
-          <label className={labelStyle}>Tên bài hát</label>
+          <label className={labelStyle}>Tên bài hát (Tối thiểu 5 ký tự)</label>
           <input 
             value={props.songName} onChange={(e) => props.setSongName(e.target.value)}
             placeholder="Nhập tên bài hát..."
@@ -88,7 +91,7 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
           </div>
           <textarea 
             value={props.lyrics} onChange={(e) => props.setLyrics(e.target.value)}
-            placeholder="Verse 1..."
+            placeholder="Nhập lời bài hát tại đây..."
             className={`${inputBg} w-full h-32 p-4 resize-none leading-relaxed`}
           />
         </div>
@@ -157,12 +160,12 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
 
         <button 
           onClick={props.onGenerate}
-          disabled={props.isGenerating || !props.description.trim()}
-          className="w-full py-5 bg-gradient-to-r from-brand-blue to-[#8a3ffc] text-white rounded-xl text-xs font-black uppercase tracking-[0.4em] shadow-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 group disabled:opacity-30 relative overflow-hidden"
+          disabled={props.isGenerating || !isInputValid}
+          className="w-full py-5 bg-gradient-to-r from-brand-blue to-[#8a3ffc] text-white rounded-xl text-xs font-black uppercase tracking-[0.4em] shadow-xl hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-4 group disabled:opacity-30 relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
           {props.isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={18} fill="currentColor" />}
-          KHỞI CHẠY STUDIO
+          TẠO NHẠC
         </button>
       </div>
     </aside>

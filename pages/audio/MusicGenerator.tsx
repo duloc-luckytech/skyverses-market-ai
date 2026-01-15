@@ -12,6 +12,7 @@ import { StudioSidebar } from '../../components/music-generator/StudioSidebar';
 import { MusicResultCard } from '../../components/music-generator/MusicResultCard';
 import { ExpandModal } from '../../components/music-generator/ExpandModal';
 import ResourceAuthModal from '../../components/common/ResourceAuthModal';
+import { ResourceControl } from '../../components/fashion-studio/ResourceControl';
 
 const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const s = useMusicStudio();
@@ -66,6 +67,13 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           </div>
           
           <div className="flex items-center gap-6">
+            <ResourceControl 
+              usagePreference={s.usagePreference as any}
+              credits={s.credits}
+              actionCost={s.currentUnitCost}
+              onSettingsClick={() => setShowResourceModal(true)}
+            />
+            <div className="h-8 w-px bg-white/5"></div>
             <button className="text-[11px] font-black uppercase text-red-500 hover:brightness-125 flex items-center gap-2 transition-all">
               <Trash2 size={14} /> Xóa phiên
             </button>
@@ -87,9 +95,14 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                     name={song.name}
                     desc={song.desc}
                     timestamp={song.timestamp}
+                    status={song.status}
                     isActive={s.activeAudioId === song.id}
                     isPlaying={s.isPlaying}
-                    onPlay={() => s.playBuffer(song.buffer, song.id)}
+                    onPlay={() => {
+                      if (song.status === 'done') {
+                        s.playBuffer(song.url || song.buffer!, song.id);
+                      }
+                    }}
                   />
                 ))}
               </motion.div>
