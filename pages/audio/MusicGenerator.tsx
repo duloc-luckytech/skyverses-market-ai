@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+// Added X icon to imports
 import { 
   ChevronLeft, Play, Music, Sparkles, Activity, ShieldCheck, 
-  SlidersHorizontal, Layers, Trash2, ListMusic, Loader2, Zap
+  SlidersHorizontal, Layers, Trash2, ListMusic, Loader2, Zap, Download, X
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useMusicStudio } from '../../hooks/useMusicStudio';
@@ -19,7 +19,6 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   const [showResourceModal, setShowResourceModal] = useState(false);
   const [hasPersonalKey, setHasPersonalKey] = useState(false);
 
-  // Check for personal key in vault
   useEffect(() => {
     const vault = localStorage.getItem('skyverses_model_vault');
     if (vault) {
@@ -35,7 +34,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   return (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[600] flex flex-col lg:flex-row bg-[#0b0c10] overflow-hidden"
+      className="fixed inset-0 z-[600] flex flex-col lg:flex-row bg-[#f4f7f9] dark:bg-[#0b0c10] overflow-hidden transition-colors duration-500"
     >
       <StudioSidebar 
         onClose={onClose}
@@ -43,7 +42,6 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         description={s.description} setDescription={s.setDescription}
         lyrics={s.lyrics} setLyrics={s.setLyrics}
         isInstrumental={s.isInstrumental} setIsInstrumental={s.setIsInstrumental}
-        
         selectedEngine={s.selectedEngine}
         setSelectedEngine={s.setSelectedEngine}
         availableModels={s.availableModels}
@@ -53,29 +51,39 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         usagePreference={s.usagePreference as 'credits' | 'key'}
         credits={s.credits}
         setShowResourceModal={setShowResourceModal}
-
         isGenerating={s.isGenerating}
         onExpand={s.setExpanding}
         onGenerate={s.handleGenerate}
       />
 
-      <main className="flex-grow flex flex-col bg-[#0b0c10] relative transition-all min-w-0 border-l border-white/5">
-        <header className="h-16 lg:h-20 flex items-center justify-between px-8 border-b border-white/5 shrink-0 z-50 bg-[#0b0c10]/80 backdrop-blur-xl">
-          <div className="flex bg-[#161b22] p-1 rounded-xl shadow-inner border border-white/5">
-            <button onClick={() => s.setActiveTab('current')} className={`px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'current' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}>Phiên hiện tại</button>
-            <button onClick={() => s.setActiveTab('library')} className={`px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'library' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}>Thư viện</button>
+      <main className="flex-grow flex flex-col bg-white dark:bg-[#0b0c10] relative transition-all min-w-0 border-l border-black/5 dark:border-white/5">
+        <header className="h-16 lg:h-20 flex items-center justify-between px-8 border-b border-black/5 dark:border-white/5 shrink-0 z-50 bg-white/80 dark:bg-[#0b0c10]/80 backdrop-blur-xl">
+          <div className="flex bg-slate-100 dark:bg-[#161b22] p-1 rounded-xl shadow-inner border border-black/5 dark:border-white/5">
+            <button onClick={() => s.setActiveTab('current')} className={`px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'current' ? 'bg-white dark:bg-[#2a2a2e] text-slate-900 dark:text-white shadow-xl' : 'text-gray-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}>Phiên hiện tại</button>
+            <button onClick={() => s.setActiveTab('library')} className={`px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'library' ? 'bg-white dark:bg-[#2a2a2e] text-slate-900 dark:text-white shadow-xl' : 'text-gray-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}>Thư viện</button>
           </div>
           
           <div className="flex items-center gap-6">
-            <ResourceControl 
-              usagePreference={s.usagePreference as any}
-              credits={s.credits}
-              actionCost={s.currentUnitCost}
-              onSettingsClick={() => setShowResourceModal(true)}
-            />
-            <div className="h-8 w-px bg-white/5"></div>
-            <button className="text-[11px] font-black uppercase text-red-500 hover:brightness-125 flex items-center gap-2 transition-all">
-              <Trash2 size={14} /> Xóa phiên
+            <div className="flex items-center gap-2 bg-slate-100 dark:bg-black/40 px-4 py-2 rounded-full border border-black/5 dark:border-white/5">
+               <span className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-widest">Tự động tải</span>
+               <button 
+                 onClick={() => s.setAutoDownload(!s.autoDownload)}
+                 className={`w-10 h-5 rounded-full relative transition-colors ${s.autoDownload ? 'bg-brand-blue' : 'bg-gray-300 dark:bg-gray-700'}`}
+               >
+                 <motion.div animate={{ x: s.autoDownload ? 22 : 2 }} className="absolute top-1 left-0 w-3 h-3 bg-white rounded-full shadow-lg" />
+               </button>
+            </div>
+            
+            <button 
+              onClick={s.handleDownloadAll}
+              className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 px-5 py-2 rounded-full border border-black/5 dark:border-white/5 text-[10px] font-black uppercase tracking-widest transition-all text-slate-600 dark:text-gray-300 shadow-sm"
+            >
+              <Download size={14} /> Tải tất cả
+            </button>
+
+            <div className="h-8 w-px bg-black/5 dark:bg-white/5"></div>
+            <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+              <X size={24} />
             </button>
           </div>
         </header>
@@ -103,17 +111,20 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                         s.playBuffer(song.url || song.buffer!, song.id);
                       }
                     }}
+                    onDelete={() => s.handleDelete(song.id)}
+                    onDownload={() => song.url && s.downloadFile(song.url, song.name)}
+                    onRecreate={() => s.handleGenerate({ name: song.name, desc: song.desc, id: song.id })}
                   />
                 ))}
               </motion.div>
             ) : (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-8 opacity-20">
-                <div className="w-32 h-32 bg-white/5 rounded-[2.5rem] border border-white/10 flex items-center justify-center mx-auto shadow-inner">
-                  <ListMusic size={64} strokeWidth={1} />
+                <div className="w-32 h-32 bg-slate-200 dark:bg-white/5 rounded-[2.5rem] border border-black/5 dark:border-white/10 flex items-center justify-center mx-auto shadow-inner">
+                  <ListMusic size={64} strokeWidth={1} className="text-slate-800 dark:text-white" />
                 </div>
                 <div className="space-y-2">
-                  <p className="text-2xl font-black uppercase tracking-[0.5em] italic text-white">No music found.</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Start a new session to synthesize high-fidelity tracks</p>
+                  <p className="text-2xl font-black uppercase tracking-[0.5em] italic text-slate-800 dark:text-white">No music found.</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400">Start a new session to synthesize high-fidelity tracks</p>
                 </div>
               </motion.div>
             )}
@@ -122,14 +133,14 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
         <AnimatePresence>
           {s.isGenerating && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#0b0c10]/90 backdrop-blur-md flex flex-col items-center justify-center z-[200]">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-white/90 dark:bg-[#0b0c10]/90 backdrop-blur-md flex flex-col items-center justify-center z-[200]">
               <div className="relative mb-10">
                 <Loader2 size={100} className="text-brand-blue animate-spin" strokeWidth={1} />
                 <Music size={32} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/50 animate-pulse" />
               </div>
               <div className="text-center space-y-4">
                 <p className="text-2xl font-black uppercase tracking-[0.8em] text-brand-blue animate-pulse italic">MANIFESTING AUDIO...</p>
-                <div className="h-1 w-64 bg-white/10 rounded-full overflow-hidden mx-auto">
+                <div className="h-1 w-64 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden mx-auto">
                   <motion.div initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ repeat: Infinity, duration: 2 }} className="h-full bg-brand-blue shadow-[0_0_15px_#0090ff]" />
                 </div>
               </div>
@@ -160,17 +171,11 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         onClose={() => setShowResourceModal(false)}
         onConfirm={(pref) => {
           localStorage.setItem('skyverses_usage_preference', pref);
-          window.location.reload(); // Reload to sync with hook state
+          window.location.reload();
         }}
         hasPersonalKey={hasPersonalKey}
         totalCost={s.currentUnitCost}
       />
-
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .animate-spin-slow { animation: spin 8s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
     </motion.div>
   );
 };
@@ -281,7 +286,6 @@ const MusicGenerator: React.FC = () => {
         </section>
       </div>
 
-      {/* STUDIO OVERLAY */}
       <AnimatePresence>
         {isStudioOpen && <MusicStudioWorkspace onClose={() => setIsStudioOpen(false)} />}
       </AnimatePresence>

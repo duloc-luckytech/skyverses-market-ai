@@ -32,23 +32,23 @@ interface StudioSidebarProps {
 }
 
 export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
-  const labelStyle = "text-[10px] font-black uppercase text-gray-500 dark:text-gray-400 tracking-widest mb-3 block px-1";
-  const inputBg = "bg-[#161b22] border border-transparent focus:border-brand-blue/30 rounded-xl transition-all outline-none text-white text-sm shadow-inner";
-  const selectStyle = "w-full bg-[#0d1117] border border-white/5 p-2.5 rounded-lg text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-white shadow-inner";
+  const labelStyle = "text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-3 block px-1";
+  const inputBg = "bg-slate-50 dark:bg-[#161b22] border border-slate-200 dark:border-transparent focus:border-brand-blue/30 rounded-xl transition-all outline-none text-slate-900 dark:text-white text-sm shadow-inner";
+  const selectStyle = "w-full bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-white/5 p-2.5 rounded-lg text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-900 dark:text-white shadow-inner";
 
   // Check if inputs are sufficient for enabling the button
   const isInputValid = props.songName.trim().length >= 5 && props.description.trim().length > 0 && (props.isInstrumental || props.lyrics.trim().length > 0);
 
   return (
-    <aside className="w-full lg:w-[400px] border-r border-white/5 flex flex-col shrink-0 bg-[#0d1117] transition-all z-20 shadow-2xl">
+    <aside className="w-full lg:w-[400px] border-r border-black/5 dark:border-white/5 flex flex-col shrink-0 bg-white dark:bg-[#0d1117] transition-all z-20 shadow-2xl">
       {/* Header */}
-      <div className="h-16 lg:h-20 flex items-center px-6 border-b border-white/5 shrink-0">
-        <button onClick={props.onClose} className="p-2 -ml-2 text-gray-500 hover:text-white transition-colors mr-2">
+      <div className="h-16 lg:h-20 flex items-center px-6 border-b border-black/5 dark:border-white/5 shrink-0">
+        <button onClick={props.onClose} className="p-2 -ml-2 text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors mr-2">
           <ChevronLeft size={24} />
         </button>
         <div className="flex items-center gap-3">
           <Music size={20} className="text-brand-blue" />
-          <h2 className="text-sm font-black uppercase tracking-widest text-white italic">Music Studio</h2>
+          <h2 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white italic leading-none">Music Studio</h2>
         </div>
         <div className="ml-auto">
           <div className="w-10 h-10 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner">
@@ -96,11 +96,11 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
           />
         </div>
 
-        <div className="flex items-center justify-between py-4 px-1 border-t border-white/5">
-          <span className="text-xs font-black uppercase text-gray-300 tracking-wider italic">Nhạc không lời</span>
+        <div className="flex items-center justify-between py-4 px-1 border-t border-black/5 dark:border-white/5">
+          <span className="text-xs font-black uppercase text-slate-600 dark:text-gray-300 tracking-wider italic">Nhạc không lời</span>
           <button 
             onClick={() => props.setIsInstrumental(!props.isInstrumental)}
-            className={`w-12 h-6 rounded-full relative transition-colors ${props.isInstrumental ? 'bg-brand-blue' : 'bg-gray-700'}`}
+            className={`w-12 h-6 rounded-full relative transition-colors ${props.isInstrumental ? 'bg-brand-blue' : 'bg-slate-200 dark:bg-gray-700'}`}
           >
             <motion.div 
               animate={{ x: props.isInstrumental ? 26 : 2 }}
@@ -110,8 +110,8 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
         </div>
       </div>
 
-      {/* Infrastructure & Action: Moved to Bottom */}
-      <div className="p-6 border-t border-white/5 bg-black/40 space-y-6 shrink-0 backdrop-blur-md">
+      {/* Infrastructure & Action */}
+      <div className="p-6 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 space-y-6 shrink-0 backdrop-blur-md">
         {/* Resource Selection Row */}
         <div className="flex items-center justify-between gap-4">
            <ResourceControl 
@@ -128,10 +128,10 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
                    <select 
                      value={props.selectedEngine}
                      onChange={(e) => props.setSelectedEngine(e.target.value)}
-                     className="bg-transparent border-none p-0 text-[9px] font-black uppercase text-gray-400 outline-none cursor-pointer hover:text-white"
+                     className="bg-transparent border-none p-0 text-[9px] font-black uppercase text-slate-500 dark:text-gray-400 outline-none cursor-pointer hover:text-slate-900 dark:hover:text-white"
                    >
-                     <option value="gommo" className="bg-[#0d1117]">Gommo</option>
-                     <option value="fxlab" className="bg-[#0d1117]">FxLab</option>
+                     <option value="gommo" className="bg-white dark:bg-[#0d1117] text-slate-900 dark:text-white">Gommo</option>
+                     <option value="fxlab" className="bg-white dark:bg-[#0d1117] text-slate-900 dark:text-white">FxLab</option>
                    </select>
                 </div>
               </div>
@@ -147,7 +147,7 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
                 >
                   {props.availableModels.length > 0 ? (
                     props.availableModels.map(m => (
-                      <option key={m._id} value={m._id} className="bg-[#0d1117]">{m.name}</option>
+                      <option key={m._id} value={m._id} className="bg-white dark:bg-[#0d1117] text-slate-900 dark:text-white">{m.name}</option>
                     ))
                   ) : (
                     <option disabled>Loading Engine...</option>

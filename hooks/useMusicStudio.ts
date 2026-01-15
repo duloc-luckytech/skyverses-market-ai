@@ -13,6 +13,7 @@ export interface MusicResult {
   buffer?: AudioBuffer;
   url?: string;
   status: 'processing' | 'done' | 'error';
+  cost: number;
 }
 
 export const useMusicStudio = () => {
@@ -41,6 +42,7 @@ export const useMusicStudio = () => {
   const [expanding, setExpanding] = useState<'desc' | 'lyrics' | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeAudioId, setActiveAudioId] = useState<string | null>(null);
+  const [autoDownload, setAutoDownload] = useState(false);
   
   // Data states
   const [results, setResults] = useState<MusicResult[]>([]);
@@ -54,7 +56,6 @@ export const useMusicStudio = () => {
   useEffect(() => {
     const fetchPricing = async () => {
       try {
-        // Updated tool parameter to 'music' as requested
         const res = await pricingApi.getPricing({ tool: 'music', engine: selectedEngine });
         if (res.success && res.data.length > 0) {
           setAvailableModels(res.data);
@@ -87,45 +88,14 @@ export const useMusicStudio = () => {
     setActiveAudioId(null);
   }, []);
 
-  const playBuffer = useCallback((bufferOrUrl: AudioBuffer | string, id: string) => {
-    if (activeAudioId === id && isPlaying) {
-      stopPlayback();
-      return;
-    }
-    
-    stopPlayback();
-
-    if (typeof bufferOrUrl === 'string') {
-      if (!audioObjRef.current) {
-        audioObjRef.current = new Audio();
-      }
-      audioObjRef.current.src = bufferOrUrl;
-      audioObjRef.current.onended = () => {
-        setIsPlaying(false);
-        setActiveAudioId(null);
-      };
-      audioObjRef.current.play();
-      setIsPlaying(true);
-      setActiveAudioId(id);
-    } else {
-      if (!audioCtxRef.current) {
-        const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-        audioCtxRef.current = new AudioContextClass();
-      }
-      
-      const source = audioCtxRef.current!.createBufferSource();
-      source.buffer = bufferOrUrl;
-      source.connect(audioCtxRef.current!.destination);
-      source.onended = () => {
-        setIsPlaying(false);
-        setActiveAudioId(null);
-      };
-      source.start(0);
-      sourceNodeRef.current = source;
-      setIsPlaying(true);
-      setActiveAudioId(id);
-    }
-  }, [activeAudioId, isPlaying, stopPlayback]);
+  const downloadFile = useCallback((url: string, name: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${name.replace(/\s+/g, '_')}.mp3`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, []);
 
   const pollMusicJobStatus = async (jobId: string, resultId: string, cost: number) => {
     try {
@@ -134,9 +104,14 @@ export const useMusicStudio = () => {
       const jobStatus = response.data?.status?.toLowerCase();
 
       if (jobStatus === 'done' && response.data.result?.audioUrl) {
-        // Lấy audioUrl từ result theo format JSON mới
         const audioUrl = response.data.result.audioUrl;
-        setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: audioUrl, status: 'done' } : r));
+        setResults(prev => prev.map(r => {
+          if (r.id === resultId) {
+            if (autoDownload) downloadFile(audioUrl, r.name);
+            return { ...r, url: audioUrl, status: 'done' };
+          }
+          return r;
+        }));
         refreshUserInfo();
       } else if (jobStatus === 'failed' || jobStatus === 'error' || (!isSuccess && jobStatus !== 'pending' && jobStatus !== 'processing')) {
         if (usagePreference === 'credits') addCredits(cost);
@@ -150,18 +125,13 @@ export const useMusicStudio = () => {
     }
   };
 
-  const handleGenerate = async () => {
-    // New Validation Logic
-    if (songName.trim().length < 5) {
+  const handleGenerate = async (overrides?: Partial<MusicResult>) => {
+    const name = overrides?.name || songName;
+    const desc = overrides?.desc || description;
+    const lyr = overrides?.id ? (results.find(r => r.id === overrides.id)?.desc || '') : lyrics;
+
+    if (name.trim().length < 5) {
       alert("Tên bài hát phải có tối thiểu 5 ký tự.");
-      return;
-    }
-    if (!description.trim()) {
-      alert("Vui lòng nhập phong cách âm nhạc.");
-      return;
-    }
-    if (!lyrics.trim() && !isInstrumental) {
-      alert("Vui lòng nhập lời bài hát hoặc chọn chế độ nhạc không lời.");
       return;
     }
     
@@ -179,10 +149,11 @@ export const useMusicStudio = () => {
     const resultId = `music-${Date.now()}`;
     const newSong: MusicResult = { 
       id: resultId, 
-      name: songName, 
-      desc: description,
+      name: name, 
+      desc: desc,
       timestamp: new Date().toLocaleTimeString(),
-      status: 'processing'
+      status: 'processing',
+      cost: currentUnitCost
     };
     setResults(prev => [newSong, ...prev]);
 
@@ -201,9 +172,9 @@ export const useMusicStudio = () => {
             model: selectedModelObj?.modelKey || "suno_v3"
           },
           enginePayload: {
-            name: songName,
-            prompt: lyrics || 'Một bản nhạc hay',
-            styles: description,
+            name: name,
+            prompt: lyr || 'Một bản nhạc hay',
+            styles: desc,
             privacy: "PRIVATE",
             translateToEn: true,
             projectId: "default"
@@ -218,11 +189,9 @@ export const useMusicStudio = () => {
           setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
         }
       } else {
-        const prompt = `Create a high-fidelity track. Title: ${songName}. Style: ${description}. Lyrics: ${lyrics}. Instrumental: ${isInstrumental}`;
-        const buffer = await generateDemoAudio(prompt, 'Kore'); 
+        const buffer = await generateDemoAudio(`Style: ${desc}. Name: ${name}`, 'Kore'); 
         if (buffer) {
           setResults(prev => prev.map(r => r.id === resultId ? { ...r, buffer, status: 'done' } : r));
-          playBuffer(buffer, resultId);
         }
       }
     } catch (error) {
@@ -232,6 +201,35 @@ export const useMusicStudio = () => {
       setIsGenerating(false);
     }
   };
+
+  const playBuffer = useCallback((bufferOrUrl: AudioBuffer | string, id: string) => {
+    if (activeAudioId === id && isPlaying) {
+      stopPlayback();
+      return;
+    }
+    stopPlayback();
+    if (typeof bufferOrUrl === 'string') {
+      if (!audioObjRef.current) audioObjRef.current = new Audio();
+      audioObjRef.current.src = bufferOrUrl;
+      audioObjRef.current.onended = () => { setIsPlaying(false); setActiveAudioId(null); };
+      audioObjRef.current.play();
+      setIsPlaying(true);
+      setActiveAudioId(id);
+    } else {
+      if (!audioCtxRef.current) {
+        const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
+        audioCtxRef.current = new AudioContextClass();
+      }
+      const source = audioCtxRef.current!.createBufferSource();
+      source.buffer = bufferOrUrl;
+      source.connect(audioCtxRef.current!.destination);
+      source.onended = () => { setIsPlaying(false); setActiveAudioId(null); };
+      source.start(0);
+      sourceNodeRef.current = source;
+      setIsPlaying(true);
+      setActiveAudioId(id);
+    }
+  }, [activeAudioId, isPlaying, stopPlayback]);
 
   return {
     songName, setSongName,
@@ -250,6 +248,14 @@ export const useMusicStudio = () => {
     results, setResults,
     handleGenerate,
     playBuffer,
-    stopPlayback
+    stopPlayback,
+    autoDownload, setAutoDownload,
+    downloadFile,
+    handleDelete: (id: string) => setResults(prev => prev.filter(r => r.id !== id)),
+    handleDownloadAll: () => {
+      results.forEach(r => {
+        if (r.status === 'done' && r.url) downloadFile(r.url, r.name);
+      });
+    }
   };
 };
