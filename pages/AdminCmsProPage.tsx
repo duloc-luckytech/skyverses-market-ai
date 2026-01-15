@@ -12,7 +12,7 @@ import {
   ListPlus, Crown, Star, Flame, LayoutTemplate,
   PlusCircle, Layout, AlignLeft, Globe, List, Code2, Layers,
   CheckCircle2, AlertTriangle, ToggleLeft, ToggleRight,
-  Sparkles, Compass, Search, RefreshCw, Bot
+  Sparkles, Compass, Search, RefreshCw, Bot, Filter
 } from 'lucide-react';
 import { marketApi } from '../apis/market';
 import { pricingApi, PricingModel, PricingFilters, CreatePricingRequest } from '../apis/pricing';
@@ -33,8 +33,9 @@ import { UsersTab } from '../components/admin-pro/UsersTab';
 import { LogsTab } from '../components/admin-pro/LogsTab';
 import { ExplorerTab } from '../components/admin-pro/ExplorerTab';
 import { AIModelsTab } from '../components/admin-pro/AIModelsTab';
+import { MarketFiltersTab } from '../components/admin-pro/MarketFiltersTab';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS';
 
 const AdminCmsProPage = () => {
   const { user } = useAuth();
@@ -62,6 +63,21 @@ const AdminCmsProPage = () => {
   const [isAiModelDrawerOpen, setIsAiModelDrawerOpen] = useState(false);
   const [editingAiModelId, setEditingAiModelId] = useState<string | null>(null);
 
+  // Fix: Added missing state variables for form payloads
+  const [packPayload, setPackPayload] = useState<CreditPackageRequest>({
+    code: '', name: '', description: '', credits: 1000, bonusPercent: 0, bonusCredits: 0,
+    price: 0, originalPrice: 0, currency: 'VND', billingCycle: 'monthly', billedMonths: 1,
+    discountPercent: 0, popular: false, highlight: false, badge: '', ctaText: 'Nâng cấp ngay',
+    ribbon: { text: '', color: '#FFE135', icon: '🔥' },
+    features: [], unlimitedModels: [],
+    theme: { gradientFrom: '#0f172a', gradientTo: '#020617', accentColor: '#0090ff', buttonStyle: 'solid' },
+    active: true, sortOrder: 0
+  });
+
+  const [aiModelPayload, setAiModelPayload] = useState<AIModelRequest>({
+    key: '', name: '', logoUrl: '', route: '', description: '', provider: '', category: 'text', order: 0, status: 'active'
+  });
+
   const [isSaving, setIsSaving] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [expandedPricingIds, setExpandedPricingIds] = useState<string[]>([]);
@@ -77,20 +93,6 @@ const AdminCmsProPage = () => {
 
   const [pricingFilters, setPricingFilters] = useState<PricingFilters>({
     engine: '', modelKey: '', version: '', tool: ''
-  });
-
-  const [packPayload, setPackPayload] = useState<CreditPackageRequest>({
-    code: '', name: '', description: '', credits: 1000, bonusPercent: 0, bonusCredits: 0,
-    price: 0, originalPrice: 0, currency: 'VND', billingCycle: 'monthly', billedMonths: 1,
-    discountPercent: 0, popular: false, highlight: false, badge: '', ctaText: 'Nâng cấp ngay',
-    ribbon: { text: '', color: '#FFE135', icon: '🔥' },
-    features: [], unlimitedModels: [],
-    theme: { gradientFrom: '#0f172a', gradientTo: '#020617', accentColor: '#0090ff', buttonStyle: 'solid' },
-    active: true, sortOrder: 0
-  });
-
-  const [aiModelPayload, setAiModelPayload] = useState<AIModelRequest>({
-    key: '', name: '', logoUrl: '', route: '', description: '', provider: '', category: 'text', order: 0, status: 'active'
   });
 
   const fetchData = async () => {
@@ -449,6 +451,7 @@ const AdminCmsProPage = () => {
     { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart size={20} /> },
     { id: 'CLOUD', label: 'Market Cloud', icon: <Cloud size={20} /> },
     { id: 'LOCAL', label: 'Market Local', icon: <HardDrive size={20} /> },
+    { id: 'MARKET_FILTERS', label: 'Market Filters', icon: <Filter size={20} /> },
     { id: 'EXPLORER', label: 'Thư viện Explorer', icon: <Compass size={20} /> },
     { id: 'AI_MODELS', label: 'List AI Models', icon: <Bot size={20} /> },
     { id: 'PRICING', label: 'Bảng giá (Model)', icon: <DollarSign size={20} /> },
@@ -501,7 +504,7 @@ const AdminCmsProPage = () => {
            </div>
            
            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto items-center">
-              {activeTab !== 'USERS' && activeTab !== 'DASHBOARD' && activeTab !== 'LOGS' && (
+              {activeTab !== 'USERS' && activeTab !== 'DASHBOARD' && activeTab !== 'LOGS' && activeTab !== 'MARKET_FILTERS' && (
                 <button onClick={handleAddNew} className="w-full sm:w-auto bg-brand-blue text-white px-10 py-5 rounded-xl shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-4 text-xs font-black uppercase tracking-widest whitespace-nowrap">
                    <Plus size={18} /> 
                    {activeTab === 'CREDIT_PACKS' ? 'Tạo gói nạp' : activeTab === 'PRICING' ? 'Tạo bảng giá' : activeTab === 'AI_MODELS' ? 'Thêm Model AI' : 'Đăng ký Node mới'}
@@ -514,6 +517,7 @@ const AdminCmsProPage = () => {
            <AnimatePresence mode="wait">
              {activeTab === 'DASHBOARD' && <DashboardTab key="dashboard" />}
              {activeTab === 'EXPLORER' && <ExplorerTab key="explorer" />}
+             {activeTab === 'MARKET_FILTERS' && <MarketFiltersTab key="market_filters" />}
              {activeTab === 'CREDIT_PACKS' && (
                <CreditPacksTab 
                  key="packs"
@@ -654,7 +658,7 @@ const AdminCmsProPage = () => {
       {/* --- DRAWERS --- */}
       <AnimatePresence>
         {editedItem && (
-          <div className="fixed inset-0 z-[1000] flex justify-end">
+          <div className="fixed inset-0 z-[1100] flex justify-end">
              <motion.div 
                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -1106,47 +1110,50 @@ const AdminCmsProPage = () => {
         )}
       </AnimatePresence>
 
-      {/* --- AI MODEL DRAWER --- */}
+      {/* --- AI MODEL CONFIG DRAWER --- */}
       <AnimatePresence>
         {isAiModelDrawerOpen && (
           <div className="fixed inset-0 z-[1100] flex justify-end">
-             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsAiModelDrawerOpen(false)} />
-             <motion.div 
-               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} 
-               className="relative w-full max-w-xl bg-white dark:bg-[#0c0c0e] h-full shadow-3xl flex flex-col border-l border-black/10 dark:border-white/10"
-             >
-                <div className="p-8 border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40">
-                   <div className="flex items-center gap-4">
-                      <Bot className="text-brand-blue" size={24} />
-                      <h3 className="text-xl font-black uppercase tracking-tight italic">{editingAiModelId ? 'Edit AI Model' : 'Register AI Model'}</h3>
-                   </div>
-                   <button onClick={() => setIsAiModelDrawerOpen(false)} className="p-2 text-gray-400 hover:text-red-500 transition-colors"><X size={24}/></button>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsAiModelDrawerOpen(false)} />
+            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="relative w-full max-w-2xl bg-white dark:bg-[#0c0c0e] h-full shadow-3xl flex flex-col border-l border-black/10 dark:border-white/10 text-slate-900 dark:text-white">
+              <div className="p-8 border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40">
+                <div className="flex items-center gap-4">
+                  <Bot className="text-brand-blue" size={24} />
+                  <h3 className="text-xl font-black uppercase tracking-tight italic">
+                    {editingAiModelId ? 'Update Model Registry' : 'Register New AI Model'}
+                  </h3>
                 </div>
+                <button onClick={() => setIsAiModelDrawerOpen(false)} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                  <X size={24} />
+                </button>
+              </div>
 
-                <div className="flex-grow overflow-y-auto p-8 space-y-6 no-scrollbar">
-                   <EditInput label="Unique Key" value={aiModelPayload.key} onChange={v => setAiModelPayload({...aiModelPayload, key: v})} placeholder="claude-3-5-sonnet" />
-                   <EditInput label="Display Name" value={aiModelPayload.name} onChange={v => setAiModelPayload({...aiModelPayload, name: v})} placeholder="Claude 3.5 Sonnet" />
-                   <EditInput label="Logo URL" value={aiModelPayload.logoUrl} onChange={v => setAiModelPayload({...aiModelPayload, logoUrl: v})} placeholder="/logos/claude.svg" />
-                   <EditInput label="Internal Route" value={aiModelPayload.route} onChange={v => setAiModelPayload({...aiModelPayload, route: v})} placeholder="/models/claude-3-5-sonnet" />
-                   <EditInput label="Provider" value={aiModelPayload.provider} onChange={v => setAiModelPayload({...aiModelPayload, provider: v})} placeholder="Anthropic" />
-                   <EditSelect label="Category" value={aiModelPayload.category || 'text'} options={['text', 'image', 'video', 'multimodal']} onChange={v => setAiModelPayload({...aiModelPayload, category: v})} />
-                   <EditInput label="Order Weight" type="number" value={aiModelPayload.order?.toString() || '0'} onChange={v => setAiModelPayload({...aiModelPayload, order: parseInt(v) || 0})} />
-                   <EditSelect label="Status" value={aiModelPayload.status || 'active'} options={['active', 'inactive', 'draft']} onChange={v => setAiModelPayload({...aiModelPayload, status: v as any})} />
-                   <EditTextArea label="Description" value={aiModelPayload.description || ''} onChange={v => setAiModelPayload({...aiModelPayload, description: v})} />
-                </div>
+              <div className="flex-grow overflow-y-auto p-8 space-y-8 no-scrollbar">
+                 <div className="grid grid-cols-2 gap-6">
+                    <EditInput label="MODEL KEY (Unique)" value={aiModelPayload.key} onChange={v => setAiModelPayload({...aiModelPayload, key: v})} placeholder="google_gemini_3" />
+                    <EditInput label="DISPLAY NAME" value={aiModelPayload.name} onChange={v => setAiModelPayload({...aiModelPayload, name: v})} placeholder="Gemini 3 Pro" />
+                 </div>
+                 <div className="grid grid-cols-2 gap-6">
+                    <EditInput label="PROVIDER" value={aiModelPayload.provider || ''} onChange={v => setAiModelPayload({...aiModelPayload, provider: v})} placeholder="Google, OpenAI" />
+                    <EditInput label="ROUTE/PROTOCOL" value={aiModelPayload.route} onChange={v => setAiModelPayload({...aiModelPayload, route: v})} placeholder="/v1/chat/completions" />
+                 </div>
+                 <EditInput label="LOGO URL" value={aiModelPayload.logoUrl} onChange={v => setAiModelPayload({...aiModelPayload, logoUrl: v})} />
+                 <EditTextArea label="DESCRIPTION" value={aiModelPayload.description || ''} onChange={v => setAiModelPayload({...aiModelPayload, description: v})} />
+                 <div className="grid grid-cols-2 gap-6">
+                    <EditSelect label="CATEGORY" value={aiModelPayload.category || 'text'} options={['text', 'image', 'video', 'audio']} onChange={v => setAiModelPayload({...aiModelPayload, category: v as any})} />
+                    <EditInput label="SORT ORDER" type="number" value={aiModelPayload.order?.toString() || '0'} onChange={v => setAiModelPayload({...aiModelPayload, order: parseInt(v) || 0})} />
+                 </div>
+                 <EditSelect label="STATUS" value={aiModelPayload.status || 'active'} options={['active', 'inactive', 'draft']} onChange={v => setAiModelPayload({...aiModelPayload, status: v as any})} />
+              </div>
 
-                <div className="p-8 border-t border-black/5 dark:border-white/10 bg-slate-50 dark:bg-black/40 flex gap-4 shrink-0">
-                   <button onClick={() => setIsAiModelDrawerOpen(false)} className="flex-grow py-4 border border-black/10 dark:border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black/5">Cancel</button>
-                   <button 
-                     onClick={handleSaveAiModel}
-                     disabled={isSaving}
-                     className="flex-grow py-4 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
-                   >
-                      {isSaving ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
-                      Save Changes
-                   </button>
-                </div>
-             </motion.div>
+              <div className="p-8 border-t border-black/5 dark:border-white/10 bg-slate-50 dark:bg-black/40 flex gap-4 shrink-0">
+                <button onClick={() => setIsAiModelDrawerOpen(false)} className="flex-grow py-4 border border-black/10 dark:border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-all">Hủy bỏ</button>
+                <button onClick={handleSaveAiModel} disabled={isSaving} className="flex-grow py-4 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all disabled:opacity-50">
+                  {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Check size={16} />} 
+                  {editingAiModelId ? 'Update Registry' : 'Publish Model'}
+                </button>
+              </div>
+            </motion.div>
           </div>
         )}
       </AnimatePresence>

@@ -1,40 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ChevronRight } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
-import { useNavigate } from 'react-router-dom';
 
-/* =========================
-   FIXED CONFIG FROM ARCHITECT
-========================= */
-const FILTER_CONFIG: Record<string, string[]> = {
-  ALL: [
-    "Game Development", "Art Production", "UI / UX Design", 
-    "AI Video", "AI Image", "Automation", "Case Studies",
-  ],
-  GAMES: [
-    "Game Prototyping", "Full Game Production", "Game Art", 
-    "UI / UX for Games", "Live Ops Support",
-  ],
-  "ART & DESIGN": [
-    "Concept Art", "Illustration", "UI / UX Design", 
-    "Branding & Visual Identity", "Cinematic Assets",
-  ],
-  "AI TOOLS": [
-    "AI Video", "AI Image", "AI Audio", 
-    "AI Automation", "Custom AI Tools",
-  ],
-  "CASE STUDIES": [
-    "Games", "Art & Design", "AI Tools", "Enterprise Projects",
-  ],
-};
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Sparkles, X, Loader2, Search, Zap, Command, Box, 
+  Cpu, Gamepad2, Palette, Globe, Target, Wand2,
+  Briefcase, Activity, ChevronRight, Tags, BarChart3,
+  Hash
+} from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { API_BASE_URL, getHeaders } from '../apis/config';
+
+interface ISubCategory {
+  code: string;
+  name: string;
+  services: string[];
+}
+
+interface ICategory {
+  _id: string;
+  code: string;
+  name: string;
+  subCategories: ISubCategory[];
+  status: string;
+}
 
 interface MarketSearchTerminalProps {
   query: string;
   setQuery: (val: string) => void;
-  primary: string;
+  primary: string; 
   setPrimary: (val: string) => void;
-  secondary: string;
+  secondary: string; 
   setSecondary: (val: string) => void;
 }
 
@@ -42,99 +37,152 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
   query, setQuery, primary, setPrimary, secondary, setSecondary
 }) => {
   const { t } = useLanguage();
-  const navigate = useNavigate();
   const [isFocused, setIsFocused] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [catSearch, setCatSearch] = useState('');
   const [directiveIndex, setDirectiveIndex] = useState(0);
+  const modalRef = useRef<HTMLDivElement>(null);
+  
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filterLabels: Record<string, string> = {
-    ALL: t('market.filter.all'),
-    GAMES: t('market.filter.games'),
-    "ART & DESIGN": t('market.filter.design'),
-    "AI TOOLS": t('market.filter.tools'),
-    "CASE STUDIES": t('market.filter.cases'),
-  };
-
-  const searchPlaceholders: Record<string, string> = {
-    ALL: t('market.placeholder.all'),
-    GAMES: t('market.placeholder.games'),
-    "ART & DESIGN": t('market.placeholder.design'),
-    "AI TOOLS": t('market.placeholder.tools'),
-    "CASE STUDIES": t('market.placeholder.cases'),
-  };
-
-  const directives = [
-    t('market.search.directive.1'),
-    t('market.search.directive.2'),
-    t('market.search.directive.3'),
-    t('market.search.directive.4'),
-    t('market.search.directive.5'),
-    t('market.search.directive.6'),
+  // Content Focused Directives for Creators & Businesses
+  const marketDirectives = [
+    "Tìm kiếm công cụ tạo video quảng cáo...",
+    "Giải pháp hình ảnh AI cho thương hiệu",
+    "Tự động hóa sản xuất nội dung mạng xã hội",
+    "Khám phá các mẫu nhân vật AI đồng nhất",
+    "Phục chế và nâng cấp chất lượng tư liệu",
+    "Hệ thống thiết kế kịch bản thông minh"
   ];
 
   useEffect(() => {
-    if (primary !== 'ALL') return;
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/category`, {
+          headers: getHeaders()
+        });
+        const result = await response.json();
+        if (result.success) {
+          setCategories(result.data);
+        }
+      } catch (err) {
+        console.error("Failed to load market categories:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (query || isFocused || isModalOpen) return;
     const interval = setInterval(() => {
-      setDirectiveIndex((prev) => (prev + 1) % directives.length);
+      setDirectiveIndex((prev) => (prev + 1) % marketDirectives.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, [primary, directives.length]);
+  }, [query, isFocused, isModalOpen, marketDirectives.length]);
 
-  const handlePrimaryChange = (key: string) => {
-    setPrimary(key);
-    setSecondary('ALL');
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setIsModalOpen(false);
+      }
+    };
+    if (isModalOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isModalOpen]);
+
+  const activeCategory = useMemo(() => {
+    return categories.find(c => c.code === primary) || null;
+  }, [primary, categories]);
+
+  const activeSubCategory = useMemo(() => {
+    if (!activeCategory || secondary === 'ALL') return null;
+    return activeCategory.subCategories.find(s => s.code === secondary) || null;
+  }, [secondary, activeCategory]);
+
+  const filteredCategories = useMemo(() => {
+    const activeCats = categories.filter(c => c.status === 'active');
+    if (!catSearch.trim()) return activeCats;
+    
+    const searchLow = catSearch.toLowerCase();
+    return activeCats.filter(c => 
+      c.name.toLowerCase().includes(searchLow) || 
+      c.code.toLowerCase().includes(searchLow) ||
+      c.subCategories.some(s => 
+        s.name.toLowerCase().includes(searchLow) || 
+        s.services.some(svc => svc.toLowerCase().includes(searchLow))
+      )
+    );
+  }, [categories, catSearch]);
+
+  const handleSelectNode = (pCode: string, sCode: string = 'ALL', serviceQuery: string = '') => {
+    setPrimary(pCode);
+    setSecondary(sCode);
+    if (serviceQuery) setQuery(serviceQuery);
+    setIsModalOpen(false);
+    setCatSearch('');
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      const command = query.trim().toLowerCase();
-      if (command === 'terminal:admin') {
-        setQuery(''); 
-        navigate('/cms-admin');
-      } else if (command === 'terminal:admin2') {
-        setQuery('');
-        navigate('/cms-admin-pro');
-      }
+  const handleClearFilters = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPrimary('ALL');
+    setSecondary('ALL');
+    setQuery('');
+  };
+
+  const getIconForCategory = (code: string) => {
+    switch (code) {
+      case 'AI_TOOLS': return <Cpu size={20} />;
+      case 'GAMES': return <Gamepad2 size={20} />;
+      case 'ART_DESIGN': return <Palette size={20} />;
+      case 'WORLD': return <Globe size={20} />;
+      case 'CASE_STUDIES': return <BarChart3 size={20} />;
+      default: return <Briefcase size={20} />;
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-4 md:space-y-10 md:mb-16 px-2 md:px-0">
-      
-      {/* Search Input Bar với hiệu ứng viền chạy và phát sáng */}
-      <div className="relative group p-[2px] rounded-full overflow-hidden transition-all duration-500">
-        
-        {/* Lớp nền tạo hiệu ứng viền chạy (Running Border) */}
-        <div className={`absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_150deg,#0090ff_180deg,transparent_210deg,transparent_360deg)] animate-[spin_4s_linear_infinite] transition-opacity duration-500 ${isFocused ? 'opacity-100' : 'opacity-20 group-hover:opacity-100'}`}></div>
+    <div className="max-w-5xl mx-auto md:mb-16 px-2 md:px-0 relative">
+      <div className="relative group p-[1px] rounded-[2rem] md:rounded-full overflow-visible transition-all duration-500">
+        <div className={`absolute inset-[-10px] bg-brand-blue/10 blur-3xl rounded-full transition-opacity duration-500 ${isFocused || isModalOpen ? 'opacity-100' : 'opacity-0'}`}></div>
 
-        {/* Thân chính của ô Search */}
-        <div className={`relative flex items-center bg-white dark:bg-[#0a0a0c] transition-all duration-500 rounded-full overflow-hidden h-12 md:h-20 ${
-          isFocused 
-            ? 'shadow-[0_0_30px_rgba(0,144,255,0.25)]' 
-            : 'shadow-xl'
-        }`}>
-          {/* Sparkles Icon in Blue Circle - Match with User Image */}
-          <div className="pl-4 md:pl-6 shrink-0 z-10">
-            <div className={`w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500 ${
-              isFocused || query 
-                ? 'bg-brand-blue text-white shadow-[0_0_15px_rgba(0,144,255,0.5)] scale-105' 
-                : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-600'
-            }`}>
-              <Sparkles size={16} fill={(isFocused || query) ? "currentColor" : "none"} className="md:w-6 md:h-6" />
-            </div>
+        <div 
+          onClick={() => setIsModalOpen(true)}
+          className={`relative flex items-center bg-white dark:bg-[#0a0a0c] transition-all duration-500 rounded-[1.8rem] md:rounded-full overflow-hidden h-14 md:h-16 border ${
+            isFocused || isModalOpen ? 'border-brand-blue shadow-2xl shadow-brand-blue/20' : 'border-black/5 dark:border-white/5 shadow-xl'
+          }`}
+        >
+          <div className="pl-6 shrink-0 z-10">
+            <Search size={18} className={isFocused || isModalOpen || query || primary !== 'ALL' ? 'text-brand-blue' : 'text-slate-400'} />
           </div>
           
-          <div className="relative flex-grow h-full flex items-center">
+          <div className="flex-grow h-full flex items-center px-4 gap-3 overflow-hidden relative">
             <AnimatePresence mode="wait">
-              {!query && !isFocused && (
+              {!query && !isFocused && primary === 'ALL' && (
                 <motion.div
-                  key={primary === 'ALL' ? directiveIndex : primary}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 10 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="absolute left-3 md:left-5 pointer-events-none text-base md:text-lg font-bold text-slate-500 dark:text-slate-400 tracking-tight whitespace-nowrap overflow-hidden text-ellipsis max-w-[80vw]"
+                  key={directiveIndex}
+                  initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
+                  className="absolute left-1 pointer-events-none text-sm md:text-base font-bold text-slate-400 dark:text-gray-600 tracking-tight whitespace-nowrap"
                 >
-                  {primary === 'ALL' ? directives[directiveIndex] : (searchPlaceholders[primary] || searchPlaceholders.ALL)}
+                  {marketDirectives[directiveIndex]}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {primary !== 'ALL' && activeCategory && (
+                <motion.div 
+                  initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-brand-blue text-white rounded-full shrink-0 shadow-lg shadow-brand-blue/20 z-20"
+                >
+                  <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
+                    {activeCategory.name} {activeSubCategory ? `› ${activeSubCategory.name}` : ''}
+                  </span>
+                  <button onClick={handleClearFilters} className="hover:bg-white/20 rounded-full p-0.5 transition-colors">
+                    <X size={12} />
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -145,64 +193,125 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="w-full bg-transparent border-none text-base md:text-lg font-bold text-black dark:text-white focus:outline-none tracking-tight px-3 md:px-5 z-10"
+              className="w-full bg-transparent border-none text-sm md:text-base font-bold text-black dark:text-white focus:outline-none tracking-tight px-1 z-10"
+              placeholder=""
             />
           </div>
-        </div>
-      </div>
 
-      <div className="space-y-4 md:space-y-6 overflow-hidden">
-        {/* Primary Filter Tabs */}
-        <div className="flex overflow-x-auto no-scrollbar md:flex-wrap md:justify-center items-center gap-2 md:gap-3 pb-1 md:pb-0 px-2 md:px-0 scroll-smooth">
-          {Object.keys(FILTER_CONFIG).map((key) => (
-            <button
-              key={key}
-              onClick={() => handlePrimaryChange(key)}
-              className={`px-4 md:px-8 py-1.5 md:py-3 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border-2 whitespace-nowrap shrink-0 ${
-                primary === key
-                  ? "bg-brand-blue border-brand-blue text-white shadow-lg shadow-brand-blue/20"
-                  : "bg-white dark:bg-black/40 border-black/5 dark:border-white/5 text-slate-500 hover:border-black/20 dark:hover:border-white/20"
-              }`}
-            >
-              {filterLabels[key] || key}
-            </button>
-          ))}
+          <div className="pr-6 hidden sm:flex items-center gap-3">
+             <div className="flex items-center gap-1.5 px-3 py-1 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full text-[9px] text-gray-400 font-bold uppercase italic transition-colors">
+                <Command size={10} /> <span>K</span>
+             </div>
+          </div>
         </div>
 
-        {/* Secondary Filter List */}
-        <AnimatePresence mode="wait">
-          {primary !== 'ALL' && (
+        <AnimatePresence>
+          {isModalOpen && (
             <motion.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="flex overflow-x-auto no-scrollbar md:flex-wrap md:justify-center items-center gap-x-4 md:gap-x-6 gap-y-2 md:gap-y-4 pt-3 md:pt-4 border-t border-black/5 dark:border-white/5 pb-2 md:pb-0 px-4 md:px-0 scroll-smooth"
+              ref={modalRef}
+              initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.98 }}
+              className="absolute top-full left-0 right-0 mt-4 z-[200] bg-white dark:bg-[#0c0c0e] border border-black/10 dark:border-white/10 rounded-[2.5rem] shadow-3xl overflow-hidden flex flex-col max-h-[85vh] transition-colors"
             >
-              <button 
-                onClick={() => setSecondary('ALL')}
-                className={`text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] transition-colors whitespace-nowrap shrink-0 ${secondary === 'ALL' ? 'text-brand-blue' : 'text-slate-500 hover:text-black dark:hover:text-white'}`}
-              >
-                {t('market.filter.secondary_all').replace('{0}', filterLabels[primary] || primary)}
-              </button>
-              {FILTER_CONFIG[primary].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => setSecondary(item)}
-                  className={`text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 group whitespace-nowrap shrink-0 ${
-                    secondary === item 
-                      ? "text-brand-blue" 
-                      : "text-slate-500 hover:text-black dark:hover:text-white"
-                  }`}
-                >
-                  <div className={`w-1 h-1 rounded-full transition-all ${secondary === item ? 'bg-brand-blue scale-150 shadow-[0_0_5px_#0090ff]' : 'bg-slate-300 dark:bg-gray-800'}`}></div>
-                  {item}
-                </button>
-              ))}
+              <div className="p-6 md:p-8 border-b border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/20">
+                <div className="flex items-center justify-between mb-6">
+                   <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-pulse"></div>
+                      <h3 className="text-xs font-black uppercase tracking-[0.4em] italic text-gray-500">TRUNG TÂM GIẢI PHÁP SÁNG TẠO</h3>
+                   </div>
+                   <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-400 hover:text-red-500 transition-colors"><X size={20}/></button>
+                </div>
+                <div className="relative group">
+                  <Hash className="absolute left-5 top-1/2 -translate-y-1/2 text-brand-blue/40" size={18} />
+                  <input 
+                    autoFocus
+                    value={catSearch}
+                    onChange={(e) => setCatSearch(e.target.value)}
+                    placeholder="Tìm theo lĩnh vực hoặc nhu cầu (VD: Video sản phẩm, Branding)..."
+                    className="w-full bg-white dark:bg-black border border-black/5 dark:border-white/10 rounded-[1.2rem] py-5 pl-14 pr-6 text-sm font-bold outline-none focus:border-brand-blue/30 transition-all shadow-inner placeholder:text-gray-300 dark:placeholder:text-gray-800"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-grow overflow-y-auto no-scrollbar p-6 md:p-8">
+                {loading ? (
+                  <div className="py-20 flex flex-col items-center justify-center gap-4 opacity-40">
+                    <Loader2 size={32} className="animate-spin text-brand-blue" />
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 italic">Đang tải danh mục...</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* ALL CATEGORIES CARD - CLEAN & MINIMALIST */}
+                    <div 
+                      onClick={() => handleSelectNode('ALL')}
+                      className={`flex flex-col p-6 rounded-[2rem] border-2 transition-all cursor-pointer group ${primary === 'ALL' ? 'border-brand-blue bg-brand-blue/5 shadow-xl' : 'border-transparent bg-slate-50 dark:bg-white/[0.03] hover:border-slate-200 dark:hover:border-white/10'}`}
+                    >
+                       <div className="flex items-center gap-4">
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${primary === 'ALL' ? 'bg-brand-blue text-white shadow-lg' : 'bg-white dark:bg-black text-slate-400 group-hover:text-brand-blue'}`}>
+                             <Sparkles size={24} />
+                          </div>
+                          <div className="space-y-0.5">
+                             <h4 className="text-sm font-black uppercase italic tracking-tighter">Tất cả giải pháp</h4>
+                             <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest italic">Hệ sinh thái Skyverses</p>
+                          </div>
+                       </div>
+                    </div>
+
+                    {/* DYNAMIC CATEGORY CARDS */}
+                    {filteredCategories.map((cat) => (
+                      <div 
+                        key={cat._id}
+                        className={`flex flex-col p-6 rounded-[2rem] border-2 transition-all group/card ${primary === cat.code ? 'border-brand-blue bg-brand-blue/5 shadow-xl' : 'border-transparent bg-slate-50 dark:bg-white/[0.03] hover:border-slate-200 dark:hover:border-white/10'}`}
+                      >
+                         <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-4 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleSelectNode(cat.code); }}>
+                               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${primary === cat.code ? 'bg-brand-blue text-white shadow-lg' : 'bg-white dark:bg-black text-slate-400 group-hover:text-brand-blue'}`}>
+                                  {getIconForCategory(cat.code)}
+                               </div>
+                               <div className="space-y-0.5">
+                                  <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">{cat.name}</h4>
+                                  <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest italic">Công cụ Flagship</p>
+                               </div>
+                            </div>
+                            <button onClick={(e) => { e.stopPropagation(); handleSelectNode(cat.code); }} className="p-2 text-gray-300 hover:text-brand-blue transition-colors">
+                               <ChevronRight size={18} />
+                            </button>
+                         </div>
+
+                         {/* ALL SERVICES AS TAGS - PROFESSIONAL STYLE */}
+                         <div className="flex flex-wrap gap-1.5">
+                            {cat.subCategories.flatMap(sub => sub.services).slice(0, 12).map((service, idx) => (
+                               <button 
+                                 key={`${service}-${idx}`}
+                                 onClick={(e) => { 
+                                   e.stopPropagation(); 
+                                   handleSelectNode(cat.code, 'ALL', service); 
+                                 }}
+                                 className="px-2.5 py-1 bg-black/5 dark:bg-white/5 border border-transparent hover:border-brand-blue/30 rounded text-[7.5px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-all"
+                               >
+                                  {service}
+                               </button>
+                            ))}
+                            {cat.subCategories.reduce((acc, curr) => acc + curr.services.length, 0) > 12 && (
+                               <div className="px-2 py-1 text-[7.5px] font-black uppercase tracking-widest text-gray-300">
+                                  + Xem thêm
+                               </div>
+                            )}
+                         </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <div className="p-8 border-t border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/60 flex items-center justify-center gap-3 shrink-0">
+                 <Activity size={14} className="text-brand-blue" />
+                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 italic">HỆ THỐNG SẴN SÀNG KHỞI TẠO NỘI DUNG</p>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
