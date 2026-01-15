@@ -59,7 +59,13 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/category`, {
+        // Xử lý query: thay thế tất cả dấu + thành khoảng trắng
+        const cleanQuery = query.replace(/\+/g, ' ').trim();
+        const queryParams = new URLSearchParams();
+        if (cleanQuery) queryParams.append('q', cleanQuery);
+        if (primary && primary !== 'ALL') queryParams.append('category', primary);
+        
+        const response = await fetch(`${API_BASE_URL}/category?${queryParams.toString()}`, {
           headers: getHeaders()
         });
         const result = await response.json();
@@ -73,7 +79,7 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
       }
     };
     fetchCategories();
-  }, []);
+  }, [query, primary]);
 
   useEffect(() => {
     if (query || isFocused || isModalOpen) return;

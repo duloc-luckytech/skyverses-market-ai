@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Menu, X, Moon, Sun, ChevronRight, Languages, LogOut, 
   User, Settings, CheckCircle2, 
@@ -61,9 +61,11 @@ const DropdownLink = ({
 
 interface HeaderProps {
   onOpenLibrary: () => void;
+  // Các props truyền từ Layout để xử lý việc reset search khi bấm logo
+  resetSearch?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onOpenLibrary }) => {
+const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showDesktopLang, setShowDesktopLang] = useState(false);
@@ -73,6 +75,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary }) => {
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   
   const location = useLocation();
+  const navigate = useNavigate();
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const { user, logout, isAuthenticated, credits, claimWelcomeCredits, refreshUserInfo } = useAuth();
@@ -94,6 +97,13 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (resetSearch) resetSearch();
+    navigate('/');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleClaim = async () => {
     setIsClaiming(true);
@@ -141,7 +151,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary }) => {
         <div className="max-w-[1600px] mx-auto px-6 lg:px-12 h-full">
           <div className="flex justify-between items-center h-full gap-4">
             
-            <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
+            <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2.5 shrink-0 group">
               <img src={logoUrl} alt="Logo" className="w-7 h-7 md:w-9 md:h-9 object-contain" />
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
@@ -261,7 +271,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary }) => {
                       className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-black/5 dark:border-white/10 object-cover" 
                       alt="Avatar" 
                     />
-                    <ChevronDown size={14} className={`hidden md:block text-slate-400 dark:text-gray-500 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={14} className="hidden md:block text-slate-400 dark:text-gray-500 transition-transform ${showUserMenu ? 'rotate-180' : ''}" />
                   </button>
                   <AnimatePresence>
                     {showUserMenu && (

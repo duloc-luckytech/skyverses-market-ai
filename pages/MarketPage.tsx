@@ -90,6 +90,18 @@ const MarketPage = () => {
     }
   }, [isAuthenticated, loginWithEmail, navigate]);
 
+  // Cần phối hợp với Layout để reset search khi nhấn logo Header
+  useEffect(() => {
+    const handleResetSearch = () => {
+      setQuery("");
+      setPrimary("ALL");
+      setSecondary("ALL");
+    };
+    // Đăng ký event thủ công để Header (nằm ngoài Page) có thể gọi
+    window.addEventListener('resetMarketSearch', handleResetSearch);
+    return () => window.removeEventListener('resetMarketSearch', handleResetSearch);
+  }, []);
+
   useEffect(() => {
     const loadFeatured = async () => {
       try {
@@ -108,9 +120,11 @@ const MarketPage = () => {
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
-        // Backend now supports status and more flexible filtering
+        // Loại bỏ dấu + và giữ nguyên khoảng trắng cho query chuẩn B2B
+        const cleanQuery = query.replace(/\+/g, '');
+        
         const res = await marketApi.getSolutions({
-          q: query,
+          q: cleanQuery,
           category: primary !== 'ALL' ? primary : undefined,
           lang: lang
         });

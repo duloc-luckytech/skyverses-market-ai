@@ -17,9 +17,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     setIsLibraryOpen(false); // Đóng thư viện để tập trung vào việc chỉnh sửa
   };
 
+  const handleResetSearch = () => {
+    // Phát ra event để MarketPage lắng nghe và reset
+    window.dispatchEvent(new CustomEvent('resetMarketSearch'));
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
-      <Header onOpenLibrary={() => setIsLibraryOpen(true)} />
+      <Header onOpenLibrary={() => setIsLibraryOpen(true)} resetSearch={handleResetSearch} />
       <main className="flex-grow">
         {children}
       </main>
