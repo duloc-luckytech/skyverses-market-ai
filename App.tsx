@@ -56,6 +56,7 @@ import SpatialArchitectPage from './pages/SpatialArchitectPage';
 import ProductCharacterSync from './pages/ProductCharacterSync';
 import AIStylistPage from './pages/images/AIStylistPage';
 import StoryboardStudioPage from './pages/videos/StoryboardStudioPage';
+import AIImageRestoration from './pages/images/AIImageRestoration';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -94,6 +95,7 @@ const App: React.FC = () => {
                       <Route path="/cms-admin-pro" element={<AdminCmsProPage />} />
                       <Route path="/referral" element={<ReferralPage />} />
                       
+                      <Route path="/product/ai-image-restorer" element={<AIImageRestoration />} />
                       <Route path="/product/storyboard-studio" element={<StoryboardStudioPage />} />
                       <Route path="/product/ai-stylist" element={<AIStylistPage />} />
                       <Route path="/product/character-sync-ai" element={<ProductCharacterSync />} />

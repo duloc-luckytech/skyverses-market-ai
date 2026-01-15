@@ -14,10 +14,6 @@ export const LOGIN_SLIDER_IMAGES = [
   "https://d8j0ntlcm91z4.cloudfront.net/user_32VMvlSstxcIMk6hBmtAY4gHyan/3513ba7e-5084-4ca4-b6af-4d6c59239ee5_min.webp"
 ];
 
-/**
- * Kho kịch bản mẫu cho Storyboard Studio
- * Chủ đề: Anime (DBZ, Naruto, One Piece), Marvel, Avatar
- */
 export const STORYBOARD_SAMPLES = [
   {
     id: 's-dbz',
@@ -47,6 +43,41 @@ export const STORYBOARD_SAMPLES = [
 ];
 
 export const SOLUTIONS: Solution[] = [
+  {
+    id: 'IMAGE-RESTORER',
+    slug: 'ai-image-restorer',
+    name: { 
+      en: 'AI Image Restorer Pro', 
+      vi: 'Phục chế ảnh AI Pro', 
+      ko: 'AI 이미지 복원 프로', 
+      ja: 'AI画像復元プロ' 
+    },
+    category: { en: 'Image Restoration', vi: 'Phục chế hình ảnh', ko: '이미지 복원', ja: '画像復元' },
+    description: { 
+      en: 'Professional neural engine to restore old, blurred, or damaged photos to 4K crystalline quality.', 
+      vi: 'Công cụ thần kinh chuyên nghiệp để phục chế ảnh cũ, mờ hoặc bị hỏng lên chất lượng 4K sắc nét.', 
+      ko: '오래되거나 흐릿하거나 손상된 사진을 4K 품질로 복원하는 전문 신경 엔진.', 
+      ja: '古くなった、ぼやけた、または損傷した写真を4K品質に復元するプロフェッショナルなニューラルエンジン。' 
+    },
+    problems: ['Low resolution archives', 'Motion blur', 'Scratched old photos', 'Digital noise'],
+    industries: ['Photography', 'Heritage & History', 'Personal Archiving', 'Media & Press'],
+    imageUrl: 'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'image',
+    tags: ['Restoration', 'De-noise', '4K Upscale', 'Face Fix'],
+    features: [
+      { en: 'Neural Detail Reconstruction', vi: 'Tái tạo chi tiết thần kinh', ko: '신경망 세부 재구성', ja: 'ニューラル詳細再構築' },
+      { en: 'AI Scratch & Noise Removal', vi: 'Xóa vết xước & nhiễu AI', ko: 'AI 스크래치 및 노이즈 제거', ja: 'AIスクラッチとノイズ除去' },
+      { en: 'Intelligent Face Enhancement', vi: 'Nâng cấp khuôn mặt thông minh', ko: '지능형 얼굴 향상', ja: '知能的な顔向上' }
+    ],
+    complexity: 'Advanced',
+    priceReference: '100 CR / restore',
+    isActive: true,
+    priceCredits: 100,
+    neuralStack: [
+      { name: 'Vision Core v7', version: 'v7.4', capability: { en: 'Detail Synthesis', vi: 'Tổng hợp chi tiết', ko: '세부 합성', ja: '詳細合成' } },
+      { name: 'Lattice Restorer', version: 'v2.1', capability: { en: 'Artifact Removal', vi: 'Loại bỏ nhiễu hạt', ko: '아티팩트 제거', ja: 'アーティファクト除去' } }
+    ]
+  },
   {
     id: 'STORYBOARD-STUDIO',
     slug: 'storyboard-studio',
