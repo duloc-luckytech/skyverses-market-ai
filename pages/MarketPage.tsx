@@ -76,6 +76,7 @@ const MarketPage = () => {
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [featuredSolutions, setFeaturedSolutions] = useState<Solution[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const [primary, setPrimary] = useState("ALL");
   const [secondary, setSecondary] = useState("ALL");
   const [query, setQuery] = useState("");
@@ -93,34 +94,46 @@ const MarketPage = () => {
     }
   }, [isAuthenticated, loginWithEmail, navigate]);
 
-  // Load data from API
+  // Load Initial Featured Data
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
+    const loadFeatured = async () => {
       try {
-        const [solutionsRes, featuredRes] = await Promise.all([
-          marketApi.getSolutions(),
-          marketApi.getRandomFeatured()
-        ]);
-        
-        if (solutionsRes) {
-          const sData = solutionsRes.data || (Array.isArray(solutionsRes) ? solutionsRes : []);
-          setSolutions(sData);
-        }
-        
-        if (featuredRes) {
-          const fData = featuredRes.data || (Array.isArray(featuredRes) ? featuredRes : []);
-          if (fData.length > 0) {
-            setFeaturedSolutions(fData);
-          }
+        const featuredRes = await marketApi.getRandomFeatured();
+        if (featuredRes && (featuredRes.data || Array.isArray(featuredRes))) {
+          setFeaturedSolutions(featuredRes.data || featuredRes);
         }
       } catch (error) {
-        console.error("Market Load Error:", error);
+        console.error("Market Featured Error:", error);
       }
-      setLoading(false);
     };
-    loadData();
+    loadFeatured();
   }, []);
+
+  // Server-side Search & Filter Logic with Debounce
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await marketApi.getSolutions({
+          q: query,
+          category: primary !== 'ALL' ? primary : undefined,
+          lang: lang // Pass the current language to the server for localized searching
+        });
+        
+        if (res && (res.data || Array.isArray(res))) {
+          const sData = res.data || res;
+          setSolutions(sData);
+        }
+      } catch (error) {
+        console.error("Market Search Error:", error);
+      } finally {
+        setLoading(false);
+        setIsSearching(false);
+      }
+    }, query ? 500 : 0);
+
+    return () => clearTimeout(timer);
+  }, [query, primary, lang]); // Re-fetch when language changes
 
   // Auto transition featured
   useEffect(() => {
@@ -176,22 +189,7 @@ const MarketPage = () => {
   const filteredSolutions = useMemo(() => {
     return solutions.filter(sol => {
       if (sol.isActive === false) return false;
-
-      const searchLower = query.toLowerCase();
-      const nameMatch = sol.name[lang]?.toLowerCase().includes(searchLower);
-      const tagMatch = sol.tags?.some(t => t.toLowerCase().includes(searchLower));
-      const translatorMatch = sol.description[lang]?.toLowerCase().includes(searchLower);
-      const matchesSearch = !query || nameMatch || tagMatch || translatorMatch;
       
-      let matchesPrimary = true;
-      if (primary !== 'ALL') {
-         const catEn = sol.category.en.toUpperCase();
-         if (primary === 'GAMES') matchesPrimary = catEn.includes('VIDEO') || catEn.includes('GAME') || sol.tags?.some(t => t.toUpperCase().includes('GAME'));
-         if (primary === 'ART & DESIGN') matchesPrimary = catEn.includes('IMAGE') || catEn.includes('ART');
-         if (primary === 'AI TOOLS') matchesPrimary = catEn.includes('INFRASTRUCTURE') || catEn.includes('AUDIO') || catEn.includes('AI');
-         if (primary === 'CASE STUDIES') matchesPrimary = sol.complexity === 'Enterprise';
-      }
-
       let matchesSecondary = true;
       if (secondary !== 'ALL') {
         const secLower = secondary.toLowerCase();
@@ -200,9 +198,9 @@ const MarketPage = () => {
                            sol.name.en.toLowerCase().includes(secLower);
       }
       
-      return matchesSearch && matchesPrimary && matchesSecondary;
+      return matchesSecondary;
     });
-  }, [solutions, query, primary, secondary, lang]);
+  }, [solutions, secondary]);
 
   const logoUrl = "https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268";
 
@@ -371,7 +369,7 @@ const MarketPage = () => {
 
         {/* --- GRID OF CARDS --- */}
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8 relative z-10 md:border-t border-black/5 dark:border-white/5 pt-8">
-          {loading ? (
+          {(loading || isSearching) ? (
              <>
                {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <CardSkeleton key={i} />)}
              </>
@@ -473,7 +471,7 @@ const MarketPage = () => {
                           onClick={(e) => toggleLike(e, targetId)}
                           className={`flex items-center gap-1 md:gap-1.5 transition-all active:scale-110 ${isLiked ? 'text-red-500 opacity-100' : 'opacity-40 group-hover:opacity-80 text-gray-500'}`}
                         >
-                           <Heart size={12} fill={isLiked ? "currentColor" : "none"} className="md:w-3.5 md:h-3.5" />
+                           <Heart size={12} fill="currentColor" className="md:w-3.5 md:h-3.5" />
                            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest">{isLiked ? (parseInt(stats.likes) + 1).toString() : stats.likes}</span>
                         </button>
                      </div>

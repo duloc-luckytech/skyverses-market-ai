@@ -84,8 +84,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               <RefreshCw size={20} />
            </div>
            <div className="flex flex-col">
-              <h2 className="text-sm font-black uppercase italic tracking-tight">Restoration Studio</h2>
-              <p className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-500">Industrial_Core_v7</p>
+              <h2 className="text-sm md:text-base font-black uppercase italic tracking-tight">Phục chế ảnh cũ</h2>
            </div>
         </div>
 

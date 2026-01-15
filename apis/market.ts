@@ -1,15 +1,22 @@
 
 import { API_BASE_URL, getHeaders } from './config';
-import { Solution } from '../types';
+import { Solution, Language } from '../types';
 
 export const marketApi = {
   /**
-   * Fetch all market solutions
-   * GET /market
+   * Fetch all market solutions with search, filter and language support
+   * GET /market?q=...&category=...&lang=...
    */
-  getSolutions: async (): Promise<{ success: boolean; data: Solution[] }> => {
+  getSolutions: async (params?: { q?: string; category?: string; lang?: Language }): Promise<{ success: boolean; data: Solution[] }> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/market`, {
+      const queryParams = new URLSearchParams();
+      if (params?.q) queryParams.append('q', params.q);
+      if (params?.category && params.category !== 'ALL') queryParams.append('category', params.category);
+      if (params?.lang) queryParams.append('lang', params.lang);
+
+      const url = `${API_BASE_URL}/market${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      
+      const response = await fetch(url, {
         method: 'GET',
         headers: getHeaders(),
       });
