@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Music, Disc, Play, Pause, Download, Trash2, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { Music, Disc, Play, Pause, Download, Trash2, Loader2, AlertCircle, RefreshCw, Sparkles } from 'lucide-react';
 
 interface MusicResultCardProps {
   id: string;
@@ -23,7 +23,11 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
   const isDone = status === 'done';
 
   return (
-    <div className={`bg-white dark:bg-[#161b22] border border-black/5 dark:border-white/5 rounded-3xl p-6 space-y-6 hover:border-brand-blue/40 transition-all group shadow-xl relative overflow-hidden ${status === 'error' ? 'opacity-60' : ''}`}>
+    <div className={`bg-white dark:bg-[#161b22] border-2 rounded-3xl p-6 space-y-6 transition-all duration-500 group shadow-xl relative overflow-hidden ${
+      isDone ? 'border-brand-blue/20 dark:border-brand-blue/30' : 'border-black/5 dark:border-white/5'
+    } ${status === 'error' ? 'opacity-60' : ''}`}>
+      
+      {/* Background Decorative Icon */}
       <div className="absolute top-0 right-0 p-8 opacity-[0.03] dark:opacity-5 pointer-events-none">
         <Music size={140} strokeWidth={1} className="text-slate-900 dark:text-white" />
       </div>
@@ -41,7 +45,9 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
           </div>
         ) : (
           <>
-            <Disc size={120} className={isActive && isPlaying ? 'animate-spin-slow text-brand-blue opacity-40' : 'opacity-20'} />
+            <Disc size={120} className={`transition-all duration-1000 ${isActive && isPlaying ? 'animate-spin-slow text-brand-blue opacity-40 scale-110' : 'opacity-20 scale-100'}`} />
+            
+            {/* Visualizer bars when playing */}
             {isActive && isPlaying && (
               <div className="absolute inset-0 flex items-center justify-center gap-1.5">
                 {[1, 2, 3, 4].map(i => (
@@ -49,38 +55,42 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
                     key={i} 
                     animate={{ height: [10, 40, 10] }} 
                     transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }} 
-                    className="w-1 bg-brand-blue rounded-full" 
+                    className="w-1 bg-brand-blue rounded-full shadow-[0_0_10px_#0090ff]" 
                   />
                 ))}
               </div>
             )}
             
             {/* Play Button Overlay - Highlighted for 'done' status */}
-            <button 
-               onClick={onPlay}
-               className={`absolute inset-0 flex items-center justify-center transition-all duration-300 z-20 ${
-                 isDone 
-                 ? 'bg-black/10 opacity-100' 
-                 : 'bg-black/20 opacity-0 group-hover:opacity-100'
-               }`}
-            >
-               <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
-                 isDone 
-                 ? 'bg-brand-blue text-white scale-100 shadow-[0_0_25px_rgba(0,144,255,0.5)]' 
-                 : 'bg-white/20 text-white scale-90 group-hover:scale-100'
-               }`}>
-                  {isActive && isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
-               </div>
-               
-               {isDone && !isActive && (
-                 <motion.div 
-                   initial={{ opacity: 0 }}
-                   animate={{ opacity: [0.4, 0.8, 0.4] }}
-                   transition={{ repeat: Infinity, duration: 2 }}
-                   className="absolute inset-0 rounded-2xl border-2 border-brand-blue/30 pointer-events-none"
-                 />
-               )}
-            </button>
+            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 z-20 ${isDone ? 'bg-black/5' : 'bg-black/20 opacity-0 group-hover:opacity-100'}`}>
+              
+              {/* Pulse effect for done status */}
+              {isDone && !isActive && (
+                <motion.div 
+                  animate={{ scale: [1, 1.4], opacity: [0.5, 0] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className="absolute w-20 h-20 bg-brand-blue/30 rounded-full"
+                />
+              )}
+
+              <button 
+                onClick={onPlay}
+                className={`relative w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
+                  isDone 
+                  ? 'bg-brand-blue text-white scale-100 shadow-[0_0_25px_rgba(0,144,255,0.6)] hover:scale-110' 
+                  : 'bg-white/20 text-white scale-90'
+                }`}
+              >
+                {isActive && isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
+                
+                {/* Success Sparkle Icon */}
+                {isDone && (
+                  <div className="absolute -top-2 -right-2 bg-[#dfff1a] text-black p-1 rounded-full shadow-lg">
+                    <Sparkles size={12} fill="currentColor" />
+                  </div>
+                )}
+              </button>
+            </div>
           </>
         )}
       </div>

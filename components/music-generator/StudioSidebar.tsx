@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Music, Sparkles, Maximize2, Zap, Loader2, ChevronLeft, Globe, Cpu, ChevronDown } from 'lucide-react';
+import { Music, Sparkles, Maximize2, Zap, Loader2, ChevronLeft, Globe, Cpu, ChevronDown, Wand2, Star, ChevronUp } from 'lucide-react';
 import { PricingModel } from '../../apis/pricing';
 import { ResourceControl } from '../fashion-studio/ResourceControl';
 
@@ -29,20 +29,79 @@ interface StudioSidebarProps {
   isGenerating: boolean;
   onExpand: (type: 'desc' | 'lyrics') => void;
   onGenerate: () => void;
+  isMobileExpanded: boolean;
+  setIsMobileExpanded: (val: boolean) => void;
 }
+
+const MUSIC_TEMPLATES = [
+  {
+    id: 'lofi',
+    label: 'Lo-fi Chill',
+    name: 'Midnight Study Session',
+    desc: 'Lofi, chill, nostalgic, smooth piano, vinyl crackle, 80bpm',
+    lyrics: '[Instrumental Chill Beats with subtle atmospheric raining sounds]'
+  },
+  {
+    id: 'cyber',
+    label: 'Cyberpunk',
+    name: 'Neon District Chase',
+    desc: 'Synthwave, aggressive, cinematic, heavy bass, dark electronic, 120bpm',
+    lyrics: 'Neon lights reflecting in the rain / Digital blood running through my veins'
+  },
+  {
+    id: 'pop',
+    label: 'Modern Pop',
+    name: 'Summer Love Story',
+    desc: 'Upbeat, catchy, acoustic guitar, female vocals, summer vibes, 105bpm',
+    lyrics: 'Walking down the coastline / Everything is just fine'
+  },
+  {
+    id: 'epic',
+    label: 'Epic Cinema',
+    name: 'Empire Rises',
+    desc: 'Orchestral, epic, powerful, dramatic strings, cinematic percussion',
+    lyrics: '[Grand orchestral choir and powerful horns intensify]'
+  }
+];
 
 export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
   const labelStyle = "text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-3 block px-1";
   const inputBg = "bg-slate-50 dark:bg-[#161b22] border border-slate-200 dark:border-transparent focus:border-brand-blue/30 rounded-xl transition-all outline-none text-slate-900 dark:text-white text-sm shadow-inner";
   const selectStyle = "w-full bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-white/5 p-2.5 rounded-lg text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-900 dark:text-white shadow-inner";
 
-  // Check if inputs are sufficient for enabling the button
+  const applyTemplate = (t: typeof MUSIC_TEMPLATES[0]) => {
+    props.setSongName(t.name);
+    props.setDescription(t.desc);
+    props.setLyrics(t.lyrics);
+    if (t.id === 'lofi' || t.id === 'epic') props.setIsInstrumental(true);
+    else props.setIsInstrumental(false);
+  };
+
   const isInputValid = props.songName.trim().length >= 5 && props.description.trim().length > 0 && (props.isInstrumental || props.lyrics.trim().length > 0);
 
   return (
-    <aside className="w-full lg:w-[400px] border-r border-black/5 dark:border-white/5 flex flex-col shrink-0 bg-white dark:bg-[#0d1117] transition-all z-20 shadow-2xl">
-      {/* Header */}
-      <div className="h-16 lg:h-20 flex items-center px-6 border-b border-black/5 dark:border-white/5 shrink-0">
+    <aside 
+      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[400px] bg-white dark:bg-[#0d1117] border-t lg:border-t-0 lg:border-r border-black/5 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-16 lg:h-full lg:rounded-none'}`}
+    >
+      {/* Mobile Handle Bar */}
+      <div 
+        className="lg:hidden h-16 flex flex-col items-center justify-center shrink-0 cursor-pointer relative"
+        onClick={() => props.setIsMobileExpanded(!props.isMobileExpanded)}
+      >
+        <div className="w-10 h-1.5 bg-slate-300 dark:bg-white/10 rounded-full mb-2"></div>
+        <div className="flex items-center gap-2">
+          <Music size={14} className="text-brand-blue" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400">
+            {props.isMobileExpanded ? 'Vuốt xuống để thu gọn' : 'Thiết lập âm nhạc'}
+          </span>
+        </div>
+        <div className="absolute right-6 top-1/2 -translate-y-1/2">
+          {props.isMobileExpanded ? <ChevronDown size={20} className="text-slate-400"/> : <ChevronUp size={20} className="text-slate-400"/>}
+        </div>
+      </div>
+
+      {/* Header (Desktop Only) */}
+      <div className="hidden lg:flex h-16 lg:h-20 items-center px-6 border-b border-black/5 dark:border-white/5 shrink-0">
         <button onClick={props.onClose} className="p-2 -ml-2 text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors mr-2">
           <ChevronLeft size={24} />
         </button>
@@ -57,8 +116,28 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
         </div>
       </div>
 
-      {/* Content: Main Input Section */}
-      <div className="flex-grow overflow-y-auto no-scrollbar p-6 space-y-8">
+      {/* Content: Main Input Section - Hidden on mobile if not expanded */}
+      <div className={`flex-grow overflow-y-auto no-scrollbar p-6 space-y-8 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+        
+        {/* TEMPLATES SELECTOR */}
+        <section className="space-y-4">
+           <label className={labelStyle}>Mẫu kịch bản nhanh</label>
+           <div className="grid grid-cols-2 gap-2">
+              {MUSIC_TEMPLATES.map(t => (
+                <button 
+                  key={t.id}
+                  onClick={() => applyTemplate(t)}
+                  className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-xl hover:border-brand-blue transition-all group text-left"
+                >
+                   <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-all">
+                      <Star size={14} />
+                   </div>
+                   <span className="text-[10px] font-black uppercase tracking-tight text-slate-600 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{t.label}</span>
+                </button>
+              ))}
+           </div>
+        </section>
+
         <div className="space-y-3">
           <label className={labelStyle}>Tên bài hát (Tối thiểu 5 ký tự)</label>
           <input 
@@ -110,8 +189,8 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
         </div>
       </div>
 
-      {/* Infrastructure & Action */}
-      <div className="p-6 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 space-y-6 shrink-0 backdrop-blur-md">
+      {/* Infrastructure & Action - Hidden on mobile if not expanded */}
+      <div className={`p-6 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 space-y-6 shrink-0 backdrop-blur-md ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         {/* Resource Selection Row */}
         <div className="flex items-center justify-between gap-4">
            <ResourceControl 

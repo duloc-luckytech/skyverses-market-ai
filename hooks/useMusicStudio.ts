@@ -88,13 +88,27 @@ export const useMusicStudio = () => {
     setActiveAudioId(null);
   }, []);
 
-  const downloadFile = useCallback((url: string, name: string) => {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${name.replace(/\s+/g, '_')}.mp3`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  // FIX: Download function to prevent opening new tab
+  const downloadFile = useCallback(async (url: string, name: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.url.includes('data:') 
+        ? await (await fetch(url)).blob()
+        : await response.blob();
+      
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `${name.replace(/\s+/g, '_')}.mp3`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      console.error("Download failed:", e);
+      // Fallback only if absolutely necessary
+      window.open(url, '_blank');
+    }
   }, []);
 
   const pollMusicJobStatus = async (jobId: string, resultId: string, cost: number) => {
