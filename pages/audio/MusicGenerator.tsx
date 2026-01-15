@@ -149,7 +149,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               <Download size={14} /> <span className="hidden sm:inline">Tải tất cả</span>
             </button>
 
-            <div className="h-8 w-px bg-black/5 dark:bg-white/5 hidden lg:block"></div>
+            <div className="h-8 w-px bg-black/5 dark:border-white/5 hidden lg:block"></div>
             <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
               <X size={24} />
             </button>
@@ -166,7 +166,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 w-full max-w-[1400px] overflow-y-auto no-scrollbar max-h-full py-4 lg:py-10 relative z-10">
                 {s.results.map(song => (
                   <MusicResultCard 
-                    key={song.id}
+                    key={song.id} 
                     id={song.id}
                     name={song.name}
                     desc={song.desc}
@@ -190,7 +190,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                 <div className="relative group">
                   <div className="absolute inset-0 bg-brand-blue blur-[60px] opacity-10 rounded-full animate-pulse"></div>
                   <div className="w-24 h-24 lg:w-40 lg:h-40 bg-slate-50 dark:bg-white/[0.03] rounded-[2rem] lg:rounded-[3rem] border border-black/5 dark:border-white/10 flex items-center justify-center relative z-10 shadow-2xl transition-transform group-hover:scale-110 duration-700">
-                    <Music size={40} lg:size={80} strokeWidth={1} className="text-brand-blue opacity-40 group-hover:opacity-100 transition-opacity" />
+                    <Music strokeWidth={1} className="w-10 h-10 lg:w-20 lg:h-20 text-brand-blue opacity-40 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
 
@@ -277,9 +277,9 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         <AnimatePresence>
           {s.isGenerating && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-white/90 dark:bg-[#0b0c10]/90 backdrop-blur-md flex flex-col items-center justify-center z-[200]">
-              <div className="relative mb-6 lg:mb-10">
-                <Loader2 size={60} lg:size={100} className="text-brand-blue animate-spin" strokeWidth={1} />
-                <Music size={20} lg:size={32} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/50 animate-pulse" />
+              <div className="relative mb-6 lg:mb-10 text-brand-blue">
+                <Loader2 strokeWidth={1} className="w-16 h-16 lg:w-24 lg:h-24 animate-spin" />
+                <Music className="w-5 h-5 lg:w-8 lg:h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/50 animate-pulse" />
               </div>
               <div className="text-center space-y-4 px-6">
                 <p className="text-lg lg:text-2xl font-black uppercase tracking-[0.4em] lg:tracking-[0.8em] text-brand-blue animate-pulse italic">MANIFESTING AUDIO...</p>
