@@ -20,6 +20,8 @@ interface MusicResultCardProps {
 export const MusicResultCard: React.FC<MusicResultCardProps> = ({ 
   id, name, desc, timestamp, isActive, isPlaying, onPlay, onDelete, onDownload, onRecreate, status = 'done' 
 }) => {
+  const isDone = status === 'done';
+
   return (
     <div className={`bg-white dark:bg-[#161b22] border border-black/5 dark:border-white/5 rounded-3xl p-6 space-y-6 hover:border-brand-blue/40 transition-all group shadow-xl relative overflow-hidden ${status === 'error' ? 'opacity-60' : ''}`}>
       <div className="absolute top-0 right-0 p-8 opacity-[0.03] dark:opacity-5 pointer-events-none">
@@ -52,14 +54,32 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
                 ))}
               </div>
             )}
-            {/* Play Button Overlay */}
+            
+            {/* Play Button Overlay - Highlighted for 'done' status */}
             <button 
                onClick={onPlay}
-               className={`absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity z-20`}
+               className={`absolute inset-0 flex items-center justify-center transition-all duration-300 z-20 ${
+                 isDone 
+                 ? 'bg-black/10 opacity-100' 
+                 : 'bg-black/20 opacity-0 group-hover:opacity-100'
+               }`}
             >
-               <div className="w-16 h-16 rounded-full bg-brand-blue text-white flex items-center justify-center shadow-2xl scale-90 group-hover:scale-100 transition-transform">
+               <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
+                 isDone 
+                 ? 'bg-brand-blue text-white scale-100 shadow-[0_0_25px_rgba(0,144,255,0.5)]' 
+                 : 'bg-white/20 text-white scale-90 group-hover:scale-100'
+               }`}>
                   {isActive && isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
                </div>
+               
+               {isDone && !isActive && (
+                 <motion.div 
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: [0.4, 0.8, 0.4] }}
+                   transition={{ repeat: Infinity, duration: 2 }}
+                   className="absolute inset-0 rounded-2xl border-2 border-brand-blue/30 pointer-events-none"
+                 />
+               )}
             </button>
           </>
         )}
@@ -94,8 +114,12 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
         
         <button 
           onClick={onDownload}
-          disabled={status !== 'done'}
-          className="px-6 py-3 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue text-slate-600 dark:text-gray-400 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm disabled:opacity-20 flex items-center gap-2"
+          disabled={!isDone}
+          className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm flex items-center gap-2 ${
+            isDone 
+            ? 'bg-brand-blue/10 dark:bg-white/5 hover:bg-brand-blue text-brand-blue dark:text-gray-400 hover:text-white' 
+            : 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/20 cursor-not-allowed'
+          }`}
         >
           <Download size={14}/> Tải xuống
         </button>
