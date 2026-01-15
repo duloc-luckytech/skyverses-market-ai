@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -280,7 +281,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary }) => {
                         <div className="py-2">
                             <DropdownLink to="/settings" icon={<User size={16}/>} label={t('user.menu.profile')} onClick={() => setShowUserMenu(false)} />
                             <DropdownLink to="/referral" icon={<Users size={16}/>} label={t('user.menu.referral')} onClick={() => setShowUserMenu(false)} />
-                            {(user?.role === 'admin' || user?.email === 'architect@skyverses.io' || user?.email === 'duloc2708@gmail.com') && (
+                            {(user?.email === 'duloc2708@gmail.com') && (
                               <DropdownLink to="/cms-admin-pro" icon={<Database size={16}/>} label={t('user.menu.admin')} onClick={() => setShowUserMenu(false)} />
                             )}
                             <DropdownLink to="/favorites" icon={<Bookmark size={16}/>} label={t('user.menu.favorites')} onClick={() => setShowUserMenu(false)} />
