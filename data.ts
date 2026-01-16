@@ -44,6 +44,41 @@ export const STORYBOARD_SAMPLES = [
 
 export const SOLUTIONS: Solution[] = [
   {
+    id: 'VOICE-STUDIO-PRO',
+    slug: 'ai-voice-studio',
+    name: { 
+      en: 'AI Voice Studio Pro', 
+      vi: 'AI Voice Studio Pro', 
+      ko: 'AI 보이스 스튜디오 프로', 
+      ja: 'AIボイススタジオプロ' 
+    },
+    category: { en: 'Audio Production', vi: 'Sản xuất Âm thanh', ko: '오디오 제작', ja: 'オーディオ制作' },
+    description: { 
+      en: 'Enterprise-grade neural voice architecture for high-fidelity narration and identity cloning.', 
+      vi: 'Kiến trúc giọng nói thần kinh cấp doanh nghiệp để tường thuật độ trung thực cao và nhân bản định danh.', 
+      ko: '고충실도 내레이션 및 아이덴티티 클로닝을 위한 엔터프라이즈급 신경 음성 아키텍처.', 
+      ja: '忠実度の高いナレーションとアイデンティティクローニングのためのエンタープライズ級ニューラルボイスアーキテクチャ。' 
+    },
+    problems: ['Manual recording overhead', 'Voice inconsistency', 'Limited language range', 'High talent costs'],
+    industries: ['Advertising', 'Education', 'Gaming', 'Customer Support'],
+    imageUrl: 'https://images.unsplash.com/photo-1478737270239-2fccd27ee1f9?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'automation',
+    tags: ['Voice AI', 'Identity Clone', '48kHz', 'Enterprise'],
+    features: [
+      { en: 'Multi-lingual Neural Synthesis', vi: 'Tổng hợp thần kinh đa ngôn ngữ', ko: '다국어 신경 합성', ja: '多言語ニューラル合成' },
+      { en: 'One-shot Voice Cloning', vi: 'Nhân bản giọng nói tức thì', ko: '원샷 보이스 클로닝', ja: 'ワンショットボイスクローニング' },
+      { en: 'Professional Script Mastering', vi: 'Làm chủ kịch bản chuyên nghiệp', ko: '전문 스크립트 마스터링', ja: 'プロフェッショナルスクリプトマスタリング' }
+    ],
+    complexity: 'Advanced',
+    priceReference: 'Starting from 0 credits',
+    isActive: true,
+    priceCredits: 100,
+    neuralStack: [
+      { name: 'Acoustic Core v4', version: 'v4.2', capability: { en: 'Acoustic Synthesis', vi: 'Tổng hợp âm học', ko: '음향 합성', ja: '音響合成' } },
+      { name: 'Identity Engine', version: 'v2.1', capability: { en: 'Persona Matching', vi: 'Khớp nhân vật', ko: '페르소나 매칭', ja: 'ペルソナマッチング' } }
+    ]
+  },
+  {
     id: 'MUSIC-GEN-PRO',
     slug: 'ai-music-generator',
     name: { 
@@ -67,7 +102,7 @@ export const SOLUTIONS: Solution[] = [
     features: [
       { en: 'Multi-genre Neural Synthesis', vi: 'Tổng hợp thần kinh đa thể loại', ko: '다중 장르 신경 합성', ja: 'マルチジャンル・ニューラル合成' },
       { en: 'Professional BPM & Key Control', vi: 'Kiểm soát BPM & Key chuyên nghiệp', ko: '전문 BPM 및 키 제어', ja: 'プロフェッショナルBPM＆キー制御' },
-      { en: 'Full Commercial Usage Rights', vi: 'Quyền sử dụng thương mại đầy đủ', ko: '전체 상업적 사용 권한', ja: '完全な商業利用権' }
+      { en: 'Full Commercial Usage Rights', vi: 'Quyền sử dụng thương mại đầy đủ', ko: '전체 상업적 sử dụng quyền', ja: '完全な商業利用権' }
     ],
     complexity: 'Advanced',
     priceReference: '150 CR / generation',
