@@ -1,9 +1,11 @@
+
 import { API_BASE_URL, getHeaders } from './config';
 
 export interface VideoJobRequest {
-  type: "text-to-video" | "image-to-video" | "start-end-image" | "ingredient";
+  type: "text-to-video" | "image-to-video" | "start-end-image" | "ingredient" | "image-to-animation";
   input: {
-    images: (string | null)[];
+    images?: (string | null)[];
+    videos?: (string | null)[];
   };
   config: {
     duration: number;
@@ -12,10 +14,10 @@ export interface VideoJobRequest {
   };
   engine: {
     provider: "gommo" | "fxlab";
-    model: "veo_3_1";
+    model: string;
   };
   enginePayload: {
-    accessToken: string;
+    accessToken?: string;
     prompt: string;
     privacy: "PRIVATE";
     translateToEn: boolean;
