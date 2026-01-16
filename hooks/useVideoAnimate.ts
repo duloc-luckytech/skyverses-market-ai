@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { generateDemoVideo } from '../services/gemini';
@@ -42,7 +43,8 @@ export const useVideoAnimate = () => {
   const [needsKey, setNeedsKey] = useState(false);
 
   const [usagePreference, setUsagePreference] = useState<'credits' | 'key'>(() => {
-    return (localStorage.getItem('skyverses_usage_preference') as any) || 'credits';
+    const saved = localStorage.getItem('skyverses_usage_preference');
+    return (saved as any) || 'credits';
   });
 
   useEffect(() => {
@@ -143,8 +145,11 @@ export const useVideoAnimate = () => {
         }
       } else {
         // CALLING REAL API WITH CREDITS
-        const payload: VideoJobRequest = {
-          type: "image-to-animation",
+        // Cập nhật type dựa trên mode: MOTION -> image-to-animation, SWAP -> swap-character
+        const payloadType = mode === 'MOTION' ? "image-to-animation" : "swap-character";
+
+        const payload: any = {
+          type: payloadType,
           input: {
             images: [sourceImg],
             videos: refVideo ? [refVideo] : []
@@ -155,7 +160,7 @@ export const useVideoAnimate = () => {
             resolution: selectedQuality.includes('1080') ? '1080p' : '720p'
           },
           engine: {
-            provider: selectedEngine as any, // Lấy trực tiếp từ Source được chọn (wan/fxlab/gommo)
+            provider: selectedEngine as any,
             model: selectedModel.modelKey as any
           },
           enginePayload: {
@@ -171,10 +176,8 @@ export const useVideoAnimate = () => {
         const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
         if (isSuccess && res.data.jobId) {
           useCredits(estimatedCost);
-          // Fix: reference taskId instead of undefined task.id
           pollVideoJobStatus(res.data.jobId, taskId, estimatedCost);
         } else {
-          // Fix: reference taskId instead of undefined task.id
           setTasks(prev => prev.map(r => r.id === taskId ? { ...r, status: 'error' } : r));
         }
       }
