@@ -5,6 +5,7 @@ import {
   Zap, Loader2, X, AlertTriangle, Coins, List, Maximize2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { API_BASE_URL, getHeaders } from '../apis/config';
 import { Link } from 'react-router-dom';
 import VoiceDesignLibrary, { DesignedVoice } from './VoiceDesignLibrary';
@@ -21,6 +22,7 @@ const STORAGE_KEY = 'skyverses_generated_voices';
 
 const VoiceDesignWorkspace: React.FC = () => {
   const { credits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
+  const { showToast } = useToast();
   const [description, setDescription] = useState('');
   const [sampleText, setSampleText] = useState('Chào mừng bạn đến với tương lai của âm thanh kỹ thuật số. Hệ thống của chúng tôi tạo ra những giọng nói chân thực từ mô tả của bạn.');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -143,7 +145,14 @@ const VoiceDesignWorkspace: React.FC = () => {
 
       const result = await response.json();
 
+      // KIỂM TRA DỮ LIỆU TRẢ VỀ
       if (result.success && Array.isArray(result.data)) {
+        if (result.data.length === 0) {
+          showToast("Hệ thống tạo lỗi, vui lòng thử lại", "error");
+          setIsGenerating(false);
+          return;
+        }
+
         useCredits(COST_PER_DESIGN);
         
         const now = new Date();
@@ -177,11 +186,11 @@ const VoiceDesignWorkspace: React.FC = () => {
         
         refreshUserInfo();
       } else {
-        alert(result.message || "Không thể khởi tạo thực thể giọng nói. Vui lòng thử lại.");
+        showToast(result.message || "Hệ thống tạo lỗi, vui lòng thử lại", "error");
       }
     } catch (e) {
       console.error("API Error:", e);
-      alert("Lỗi kết nối máy chủ thiết kế.");
+      showToast("Lỗi kết nối máy chủ thiết kế", "error");
     } finally {
       setIsGenerating(false);
     }
@@ -356,7 +365,7 @@ const VoiceDesignWorkspace: React.FC = () => {
                  <textarea 
                    value={sampleText}
                    onChange={e => setSampleText(e.target.value)}
-                   className="w-full h-[400px] bg-transparent border-none text-slate-900 dark:text-gray-200 text-lg font-medium text-slate-700 dark:text-gray-200 outline-none resize-none leading-relaxed italic no-scrollbar"
+                   className="w-full h-[400px] bg-transparent border-none text-slate-900 dark:text-gray-200 text-lg font-medium outline-none resize-none leading-relaxed italic no-scrollbar"
                    placeholder="Nhập văn bản dài tại đây..."
                    autoFocus
                  />
