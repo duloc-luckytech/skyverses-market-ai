@@ -1,26 +1,13 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Play, Pause, Zap, Loader2, Download, 
-  Trash2, Search, Volume2, 
-  RefreshCw, X, Sparkles,
-  Check, AlertTriangle, Coins, Clock, List, Maximize2
+  Zap, Loader2, X, AlertTriangle, Coins, List, Maximize2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL, getHeaders } from '../apis/config';
 import { Link } from 'react-router-dom';
-
-interface DesignedVoice {
-  id: string;
-  label: string; // Short văn bản mẫu
-  prompt: string; // Short mô tả giọng nói
-  duration: string;
-  timestamp: string;
-  date: string;
-  buffer: AudioBuffer | null;
-  base64?: string;
-}
+import VoiceDesignLibrary, { DesignedVoice } from './VoiceDesignLibrary';
 
 const EXAMPLES = [
   "Giọng nữ trẻ, ngọt ngào, đọc tin tức",
@@ -101,7 +88,7 @@ const VoiceDesignWorkspace: React.FC = () => {
     setIsPlayingId(null);
   };
 
-  const playVoice = async (voice: DesignedVoice) => {
+  const handlePlayVoice = async (voice: DesignedVoice) => {
     if (isPlayingId === voice.id) {
       stopPlayback();
       return;
@@ -200,14 +187,14 @@ const VoiceDesignWorkspace: React.FC = () => {
     }
   };
 
-  const deleteVoice = (id: string) => {
+  const handleDeleteVoice = (id: string) => {
     const updated = generatedVoices.filter(v => v.id !== id);
     setGeneratedVoices(updated);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated.map(v => ({ ...v, buffer: null }))));
     if (isPlayingId === id) stopPlayback();
   };
 
-  const handleDownload = (voice: DesignedVoice) => {
+  const handleDownloadVoice = (voice: DesignedVoice) => {
     if (!voice.base64) return;
     const blob = new Blob([new Uint8Array(atob(voice.base64).split("").map(c => c.charCodeAt(0)))], { type: 'audio/mpeg' });
     const url = window.URL.createObjectURL(blob);
@@ -219,10 +206,17 @@ const VoiceDesignWorkspace: React.FC = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  const filteredVoices = generatedVoices.filter(v => 
-    v.label.toLowerCase().includes(searchSaved.toLowerCase()) || 
-    v.prompt.toLowerCase().includes(searchSaved.toLowerCase())
-  );
+  const applyQuickTemplate = (p: string, t: string) => {
+    setDescription(p);
+    setSampleText(t);
+  };
+
+  const filteredVoices = useMemo(() => 
+    generatedVoices.filter(v => 
+      v.label.toLowerCase().includes(searchSaved.toLowerCase()) || 
+      v.prompt.toLowerCase().includes(searchSaved.toLowerCase())
+    ), 
+  [generatedVoices, searchSaved]);
 
   return (
     <div className="bg-white dark:bg-[#0c0c0e] min-h-[700px] w-full flex flex-col p-6 text-slate-800 dark:text-white font-sans selection:bg-brand-blue/30 transition-colors duration-500">
@@ -328,85 +322,19 @@ const VoiceDesignWorkspace: React.FC = () => {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: LIBRARY (2/3) */}
-        <div className="flex-grow flex flex-col bg-slate-50 dark:bg-[#141417] border border-slate-200 dark:border-white/5 rounded-2xl shadow-sm transition-colors overflow-hidden">
-           <div className="p-6 shrink-0 space-y-6 border-b border-black/5 dark:border-white/5">
-             <div className="flex items-center justify-between">
-               <div className="flex items-center gap-3">
-                  <Volume2 size={18} className="text-brand-blue" />
-                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-400">Thư viện giọng đã thiết kế</h3>
-               </div>
-               <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>
-             </div>
-             
-             <div className="relative">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-               <input 
-                 value={searchSaved}
-                 onChange={e => setSearchSaved(e.target.value)}
-                 placeholder="Tìm kiếm giọng nói..."
-                 className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl py-3 pl-12 pr-4 text-xs font-bold outline-none focus:border-brand-blue/20 text-slate-800 dark:text-white shadow-sm"
-               />
-             </div>
-           </div>
-
-           <div className="flex-grow overflow-y-auto no-scrollbar p-6 space-y-3">
-              <AnimatePresence mode="popLayout">
-                {filteredVoices.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     {filteredVoices.map((v, idx) => (
-                       <motion.div 
-                         key={v.id} 
-                         layout 
-                         initial={{ opacity: 0, scale: 0.95 }} 
-                         animate={{ opacity: 1, scale: 1 }} 
-                         exit={{ opacity: 0, scale: 0.95 }}
-                         className="p-5 bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 rounded-2xl group hover:border-brand-blue/30 transition-all shadow-sm relative overflow-hidden"
-                       >
-                          {/* Số thứ tự */}
-                          <div className="absolute -top-1 -left-1 w-7 h-7 bg-slate-50 dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-center rounded-br-xl text-[9px] font-black text-slate-400 z-10">
-                            {(filteredVoices.length - idx).toString().padStart(2, '0')}
-                          </div>
-
-                          <div className="flex justify-between items-start mb-4 pl-4">
-                             <div className="space-y-1 min-w-0 flex-grow">
-                                <h4 className="text-[13px] font-black uppercase italic text-slate-900 dark:text-white truncate">"{v.label}"</h4>
-                                <p className="text-[9px] font-bold text-brand-blue uppercase tracking-widest leading-none truncate opacity-60">{v.prompt}</p>
-                             </div>
-                             <div className="flex gap-1 shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => handleDownload(v)} className="p-2 bg-slate-50 dark:bg-white/5 rounded-lg text-slate-400 hover:text-brand-blue transition-colors" title="Tải xuống"><Download size={14}/></button>
-                                <button onClick={() => deleteVoice(v.id)} className="p-2 bg-slate-50 dark:bg-white/5 rounded-lg text-slate-400 hover:text-red-500 transition-colors" title="Xóa"><Trash2 size={14}/></button>
-                             </div>
-                          </div>
-                          
-                          <div className="flex items-center justify-between gap-3">
-                             <button 
-                               onClick={() => playVoice(v)}
-                               className={`flex-grow py-3 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all ${isPlayingId === v.id ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'bg-slate-50 dark:bg-white/5 text-gray-500 hover:text-slate-900 dark:hover:text-white border border-transparent dark:border-white/5'}`}
-                             >
-                                {isPlayingId === v.id ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />} 
-                                {isPlayingId === v.id ? 'Đang phát' : 'Nghe thử'}
-                             </button>
-                             <div className="flex flex-col items-end shrink-0">
-                                <span className="text-[8px] font-black text-slate-300 dark:text-gray-700 uppercase tracking-widest">{v.date}</span>
-                                <span className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">{v.duration}</span>
-                             </div>
-                          </div>
-                       </motion.div>
-                     ))}
-                  </div>
-                ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-center opacity-20 py-20">
-                     <Volume2 size={48} strokeWidth={1} className="mb-4" />
-                     <p className="text-[12px] font-black uppercase tracking-[0.4em] text-slate-900 dark:text-white">Thư viện trống</p>
-                  </div>
-                )}
-              </AnimatePresence>
-           </div>
-        </div>
+        {/* RIGHT COLUMN: LIBRARY (2/3) - MOVED TO COMPONENT */}
+        <VoiceDesignLibrary 
+          voices={filteredVoices}
+          isPlayingId={isPlayingId}
+          searchQuery={searchSaved}
+          setSearchQuery={setSearchSaved}
+          onPlay={handlePlayVoice}
+          onDelete={handleDeleteVoice}
+          onDownload={handleDownloadVoice}
+          onApplyTemplate={applyQuickTemplate}
+        />
       </div>
 
-      {/* FULL TEXT MODAL */}
       <AnimatePresence>
         {isTextModalOpen && (
           <motion.div 
@@ -428,7 +356,7 @@ const VoiceDesignWorkspace: React.FC = () => {
                  <textarea 
                    value={sampleText}
                    onChange={e => setSampleText(e.target.value)}
-                   className="w-full h-[400px] bg-transparent border-none text-lg font-medium text-slate-700 dark:text-gray-200 outline-none resize-none leading-relaxed italic no-scrollbar"
+                   className="w-full h-[400px] bg-transparent border-none text-slate-900 dark:text-gray-200 text-lg font-medium text-slate-700 dark:text-gray-200 outline-none resize-none leading-relaxed italic no-scrollbar"
                    placeholder="Nhập văn bản dài tại đây..."
                    autoFocus
                  />
