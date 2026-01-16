@@ -90,14 +90,12 @@ const MarketPage = () => {
     }
   }, [isAuthenticated, loginWithEmail, navigate]);
 
-  // Cần phối hợp với Layout để reset search khi nhấn logo Header
   useEffect(() => {
     const handleResetSearch = () => {
       setQuery("");
       setPrimary("ALL");
       setSecondary("ALL");
     };
-    // Đăng ký event thủ công để Header (nằm ngoài Page) có thể gọi
     window.addEventListener('resetMarketSearch', handleResetSearch);
     return () => window.removeEventListener('resetMarketSearch', handleResetSearch);
   }, []);
@@ -116,30 +114,39 @@ const MarketPage = () => {
     loadFeatured();
   }, []);
 
+  // Effect load danh sách sản phẩm chính
   useEffect(() => {
-    const timer = setTimeout(async () => {
-      setIsSearching(true);
+    const fetchMarketItems = async () => {
+      // Bắt đầu trạng thái tìm kiếm nếu có query, nếu không chỉ hiện loading ban đầu
+      if (query) setIsSearching(true);
+      else setLoading(true);
+
       try {
-        // Loại bỏ dấu + và giữ nguyên khoảng trắng cho query chuẩn B2B
-        const cleanQuery = query.replace(/\+/g, '');
+        // Làm sạch query
+        const cleanQuery = query.replace(/\+/g, ' ').trim();
         
+        // Gọi API với filter đầy đủ
         const res = await marketApi.getSolutions({
-          q: cleanQuery,
+          q: cleanQuery || undefined,
           category: primary !== 'ALL' ? primary : undefined,
           lang: lang
         });
         
         if (res && res.data) {
-          setSolutions(res.data);
+          // Lọc thủ công các item isActive để đảm bảo hiển thị đúng business logic
+          const activeOnly = res.data.filter(s => s.isActive !== false);
+          setSolutions(activeOnly);
         }
       } catch (error) {
-        console.error("Market Search Error:", error);
+        console.error("Market Data Sync Error:", error);
       } finally {
         setLoading(false);
         setIsSearching(false);
       }
-    }, query ? 500 : 0);
+    };
 
+    // Áp dụng debounce cho việc tìm kiếm text
+    const timer = setTimeout(fetchMarketItems, query ? 500 : 0);
     return () => clearTimeout(timer);
   }, [query, primary, lang]);
 
@@ -183,18 +190,10 @@ const MarketPage = () => {
 
   const filteredSolutions = useMemo(() => {
     return solutions.filter(sol => {
-      if (sol.isActive === false) return false;
-      // Trạng thái 'active' là bắt buộc cho market
-      if (sol.status && sol.status !== 'active') return false;
-
-      let matchesSecondary = true;
-      if (secondary !== 'ALL') {
-        // Lọc theo tag hoặc phân mục con từ API
-        matchesSecondary = sol.tags?.some(t => t.toLowerCase() === secondary.toLowerCase()) || 
-                           sol.id?.toLowerCase().includes(secondary.toLowerCase());
-      }
-      
-      return matchesSecondary;
+      if (secondary === 'ALL') return true;
+      // Lọc theo tag hoặc phân mục con từ API
+      return sol.tags?.some(t => t.toLowerCase() === secondary.toLowerCase()) || 
+             sol.id?.toLowerCase().includes(secondary.toLowerCase());
     });
   }, [solutions, secondary]);
 
@@ -208,7 +207,7 @@ const MarketPage = () => {
 
       <div className="relative z-10 pt-28 md:pt-44 pb-32 max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
         
-        {loading ? <FeaturedSkeleton /> : featuredSolutions.length > 0 && (
+        {loading && featuredSolutions.length === 0 ? <FeaturedSkeleton /> : featuredSolutions.length > 0 && (
           <section className="mb-8 md:mb-12 grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 items-center border-b border-black/5 dark:border-white/5 pb-16 md:pb-24">
             <div className="lg:col-span-5 space-y-6 md:space-y-10">
               <AnimatePresence mode="wait">
