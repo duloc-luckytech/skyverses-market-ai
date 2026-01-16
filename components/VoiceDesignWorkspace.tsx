@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, Pause, Zap, Loader2, Download, 
   Trash2, Search, Volume2, 
-  RefreshCw, Save, X, Sparkles,
+  RefreshCw, X, Sparkles,
   Check, AlertTriangle, Coins, Clock, List, Maximize2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -73,13 +73,17 @@ const VoiceDesignWorkspace: React.FC = () => {
   const getAudioCtx = () => {
     if (!audioCtxRef.current) {
       const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-      audioCtxRef.current = new AudioContextClass();
+      if (AudioContextClass) {
+        audioCtxRef.current = new AudioContextClass();
+      }
     }
     return audioCtxRef.current;
   };
 
-  const decodeBase64ToBuffer = async (base64: string): Promise<AudioBuffer> => {
+  const decodeBase64ToBuffer = async (base64: string): Promise<AudioBuffer | null> => {
     const ctx = getAudioCtx();
+    if (!ctx) return null;
+    
     const binaryString = atob(base64);
     const len = binaryString.length;
     const bytes = new Uint8Array(len);
@@ -111,6 +115,8 @@ const VoiceDesignWorkspace: React.FC = () => {
 
     if (buffer) {
       const ctx = getAudioCtx();
+      if (!ctx) return;
+      
       const source = ctx.createBufferSource();
       source.buffer = buffer;
       source.connect(ctx.destination);
@@ -469,6 +475,10 @@ const VoiceDesignWorkspace: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      <div className="mt-6 flex justify-end items-center text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-700 px-2 transition-colors">
+         <span className="italic opacity-30">ElevenLabs Architecture v4.2</span>
+      </div>
     </div>
   );
 };
