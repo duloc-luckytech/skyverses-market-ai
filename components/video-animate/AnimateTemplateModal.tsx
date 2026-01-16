@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, LayoutGrid, ImageIcon, Film, Play, Check, Move, User } from 'lucide-react';
 import { AnimateMode } from '../../hooks/useVideoAnimate';
-import { useLanguage } from '../../context/LanguageContext';
 
 interface Template {
   id: string;
@@ -59,7 +58,6 @@ interface AnimateTemplateModalProps {
 export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({ 
   isOpen, onClose, onApply, initialMode 
 }) => {
-  const { t } = useLanguage();
   const [filterMode, setFilterMode] = useState<AnimateMode>(initialMode);
 
   if (!isOpen) return null;
@@ -75,29 +73,31 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
         className="bg-white dark:bg-[#0d0d0f] border border-white/10 rounded-[2.5rem] w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden shadow-3xl"
       >
+        {/* Header */}
         <div className="p-8 border-b border-black/5 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-slate-50 dark:bg-black/40 shrink-0">
           <div className="flex items-center gap-4">
             <div className="p-2.5 bg-purple-600/10 rounded-xl text-purple-500">
               <LayoutGrid size={24} />
             </div>
             <div className="space-y-0.5">
-              <h2 className="text-xl font-black uppercase tracking-tight italic text-slate-900 dark:text-white leading-none">{t('animate.results.template')}</h2>
+              <h2 className="text-xl font-black uppercase tracking-tight italic text-slate-900 dark:text-white leading-none">Thư viện Template</h2>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">Khám phá các mẫu chuyển động công nghiệp</p>
             </div>
           </div>
 
+          {/* Tab Filter */}
           <div className="flex bg-slate-200 dark:bg-white/5 p-1 rounded-xl border border-black/5 dark:border-white/10 shadow-inner">
              <button 
                onClick={() => setFilterMode('MOTION')}
                className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 transition-all ${filterMode === 'MOTION' ? 'bg-white dark:bg-[#1a1a1e] text-cyan-500 shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
              >
-                <Move size={12} /> {t('animate.mode.motion')}
+                <Move size={12} /> Motion
              </button>
              <button 
                onClick={() => setFilterMode('SWAP')}
                className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 transition-all ${filterMode === 'SWAP' ? 'bg-white dark:bg-[#1a1a1e] text-purple-500 shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
              >
-                <User size={12} /> {t('animate.mode.swap')}
+                <User size={12} /> Swap
              </button>
           </div>
 
@@ -106,6 +106,7 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
           </button>
         </div>
         
+        {/* Scrollable Grid */}
         <div className="flex-grow overflow-y-auto no-scrollbar p-8">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <AnimatePresence mode="popLayout">
@@ -173,7 +174,7 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
                           className="w-full py-5 bg-slate-900 dark:bg-white text-white dark:text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-brand-blue dark:hover:bg-purple-600 dark:hover:text-white transition-all shadow-xl active:scale-95 group/btn overflow-hidden relative"
                         >
                           <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
-                          <Check size={16} strokeWidth={4} className="relative z-10" /> <span className="relative z-10">{t('animate.results.use_template')}</span>
+                          <Check size={16} strokeWidth={4} className="relative z-10" /> <span className="relative z-10">Sử dụng Template</span>
                         </button>
                       </div>
                     </div>
