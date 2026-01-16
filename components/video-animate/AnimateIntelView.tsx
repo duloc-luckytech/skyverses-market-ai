@@ -5,6 +5,7 @@ import {
   Sparkles, Layers, BookOpen, LayoutGrid, ImageIcon, Film, Play, Download 
 } from 'lucide-react';
 import { AnimateMode } from '../../hooks/useVideoAnimate';
+import { useLanguage } from '../../context/LanguageContext';
 
 const EXAMPLE_MEDIA = {
   motion: {
@@ -26,6 +27,8 @@ interface AnimateIntelViewProps {
 }
 
 export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShowTemplates, onDownload }) => {
+  const { t } = useLanguage();
+  
   return (
     <motion.div 
       key="intel-view"
@@ -51,7 +54,7 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
 
             <div className="space-y-6">
               <h4 className="text-[12px] font-black uppercase tracking-[0.5em] text-cyan-500 italic flex items-center gap-4">
-                <BookOpen size={18} /> Hướng dẫn
+                <BookOpen size={18} /> {t('animate.intel.guide')}
               </h4>
               <div className="space-y-4">
                   <p className="text-xl text-slate-700 dark:text-gray-200 font-bold leading-relaxed uppercase tracking-tight italic border-l-4 border-brand-blue pl-8 transition-colors">
@@ -86,12 +89,11 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
             
             <div className="pt-6">
               <button onClick={onShowTemplates} className="px-12 py-5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center gap-4 shadow-2xl hover:scale-105 active:scale-95 transition-all group">
-                  <LayoutGrid size={20} className="group-hover:rotate-12 transition-transform" /> Mở thư viện Template
+                  <LayoutGrid size={20} className="group-hover:rotate-12 transition-transform" /> {t('animate.results.template')}
               </button>
             </div>
           </div>
 
-          {/* EXAMPLE FLOW SECTION */}
           <div className="space-y-8">
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-3 text-[11px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-[0.4em]">
@@ -101,7 +103,6 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
             </div>
 
             <div className="grid grid-cols-2 gap-6">
-              {/* Input 1 */}
               <div className="space-y-3">
                   <p className="text-[9px] font-black text-slate-400 dark:text-gray-600 uppercase tracking-widest ml-2 italic flex items-center gap-2">
                     <div className="w-1 h-1 rounded-full bg-cyan-500"></div> {mode === 'MOTION' ? 'Input Image' : 'Input Video'}
@@ -120,7 +121,6 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
                   </div>
               </div>
 
-              {/* Input 2 */}
               <div className="space-y-3">
                   <p className="text-[9px] font-black text-slate-400 dark:text-gray-600 uppercase tracking-widest ml-2 italic flex items-center gap-2">
                     <div className="w-1 h-1 rounded-full bg-purple-500"></div> {mode === 'MOTION' ? 'Reference Video' : 'Input Image'}
@@ -139,7 +139,6 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
                   </div>
               </div>
 
-              {/* Result Output */}
               <div className="col-span-2 space-y-4 pt-4 border-t border-black/5 dark:border-white/5">
                   <div className="flex justify-between items-center px-2">
                     <p className="text-[10px] font-black text-brand-blue uppercase tracking-[0.3em] italic flex items-center gap-2">
