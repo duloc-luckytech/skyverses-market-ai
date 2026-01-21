@@ -5,13 +5,18 @@ import {
   Play, Zap, Sparkles, ArrowRight, ShieldCheck, 
   Activity, MonitorPlay, UserCircle, Film,
   Layers, Lock, ExternalLink, Cpu, ChevronLeft,
-  Scan, Maximize2
+  Scan, Maximize2, Mic2, Music, UserCheck
 } from 'lucide-react';
-import { useVideoAnimate } from '../../hooks/useVideoAnimate';
 import VideoAnimateWorkspace from '../../components/VideoAnimateWorkspace';
 import { Link } from 'react-router-dom';
 
 const HERO_EXAMPLES = [
+  {
+    id: 0,
+    url: 'https://video.aidancing.net/video-avatar/ai-talking-intro-product-2.mp4',
+    title: 'AI Presenter Pro',
+    tag: 'TALKING_AVATAR'
+  },
   {
     id: 1,
     url: 'https://video.aidancing.net/video-avatar/ai-change-bg-review-product.mp4',
@@ -23,6 +28,57 @@ const HERO_EXAMPLES = [
     url: 'https://video.aidancing.net/video-avatar/ai-fashion-walking-posing-1.mp4',
     title: 'Catwalk Thời Trang AI',
     tag: 'FASHION_CREATOR'
+  }
+];
+
+const SHOWCASE_LIST = [
+  {
+    id: 's1',
+    title: 'AI Talking Avatar',
+    desc: 'Tạo nhân vật ảo giới thiệu sản phẩm với khẩu hình và biểu cảm tự nhiên từ ảnh tĩnh.',
+    video: 'https://video.aidancing.net/video-avatar/ai-talking-intro-product-2.mp4',
+    mode: 'TALKING',
+    icon: <UserCircle className="text-cyan-400" />
+  },
+  {
+    id: 's2',
+    title: 'AI Singing Performance',
+    desc: 'Diễn hoạt ảnh tĩnh thành video ca hát chuyên nghiệp với độ ổn định và cảm xúc cao.',
+    video: 'https://video.aidancing.net/video-avatar/ai-singing.mp4',
+    mode: 'SINGING',
+    icon: <Music className="text-pink-500" />
+  },
+  {
+    id: 's3',
+    title: 'Speech to Speech Sync',
+    desc: 'Đồng bộ hóa giọng nói, nhịp môi và chuyển động gương mặt từ nguồn audio bất kỳ.',
+    video: 'https://video.aidancing.net/video-avatar/ai-sts.mp4',
+    mode: 'STS_SYNC',
+    icon: <Mic2 className="text-emerald-400" />
+  },
+  {
+    id: 's4',
+    title: 'Professional Face Swap',
+    desc: 'Thay đổi định danh nhân vật trong video gốc bằng gương mặt mới với độ khớp hoàn hảo.',
+    video: 'https://video.aidancing.net/video-avatar/face-swap.mp4',
+    mode: 'SWAP',
+    icon: <UserCheck className="text-purple-500" />
+  },
+  {
+    id: 's5',
+    title: 'E-commerce AI Review',
+    desc: 'Tự động hóa sản xuất video review sản phẩm với bối cảnh linh hoạt và chân thực.',
+    video: 'https://video.aidancing.net/video-avatar/ai-change-bg-review-product.mp4',
+    mode: 'REVIEW',
+    icon: <Zap className="text-orange-400" />
+  },
+  {
+    id: 's6',
+    title: 'AI Fashion Runway',
+    desc: 'Diễn hoạt dáng đi và chuyển động thời trang chuẩn Runway quốc tế từ ảnh mẫu.',
+    video: 'https://video.aidancing.net/video-avatar/ai-fashion-walking-posing-1.mp4',
+    mode: 'FASHION',
+    icon: <Sparkles className="text-blue-400" />
   }
 ];
 
@@ -38,7 +94,7 @@ const VideoAnimateAI: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-cyan-500/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-white dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* 1. BACKGROUND AMBIENCE */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -60,10 +116,10 @@ const VideoAnimateAI: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 className="inline-flex items-center gap-3 px-5 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-600 dark:text-cyan-400 text-[11px] font-black uppercase tracking-[0.4em] italic"
               >
-                <Sparkles size={14} /> Công nghệ diễn hoạt ảnh sang Video chuyên nghiệp
+                <Sparkles size={14} /> Công nghệ diễn hoạt AI Studio
               </motion.div>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <motion.h1 
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
                   className="text-6xl lg:text-[100px] font-black tracking-tighter uppercase italic leading-[0.8] text-slate-900 dark:text-white"
@@ -72,9 +128,9 @@ const VideoAnimateAI: React.FC = () => {
                 </motion.h1>
                 <motion.p 
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                  className="text-xl lg:text-2xl text-slate-500 dark:text-gray-400 font-medium max-w-xl leading-tight border-l-4 border-cyan-500 pl-8"
+                  className="text-xl lg:text-3xl text-slate-500 dark:text-gray-400 font-medium max-w-xl leading-tight border-l-4 border-cyan-500 pl-8"
                 >
-                  “Thổi hồn vào mọi khung hình. Khóa định danh nhân vật và tái cấu trúc chuyển động chân thực cho kỷ nguyên sáng tạo số tại Việt Nam.”
+                  “Hệ thống diễn hoạt hình ảnh và video chuyên nghiệp. Khóa định danh nhân vật (Identity Lock) và tái cấu trúc chuyển động chuẩn điện ảnh bằng trí tuệ nhân tạo.”
                 </motion.p>
               </div>
             </div>
@@ -95,7 +151,7 @@ const VideoAnimateAI: React.FC = () => {
             </motion.div>
           </div>
 
-          {/* VIDEO SHOWCASE COLUMN */}
+          {/* HERO VIDEO SHOWCASE */}
           <div className="lg:col-span-7 relative order-1 lg:order-2">
             <div className="relative aspect-[16/10] bg-white dark:bg-[#0a0a0c] border border-slate-200 dark:border-white/10 rounded-[3rem] p-4 shadow-3xl overflow-hidden group">
                <AnimatePresence mode="wait">
@@ -110,114 +166,90 @@ const VideoAnimateAI: React.FC = () => {
                     <video 
                       src={HERO_EXAMPLES[currentSlide].url} 
                       autoPlay loop muted playsInline 
-                      className="w-full h-full object-cover opacity-60 transition-all duration-1000 group-hover:scale-105" 
+                      className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105" 
                     />
-                    
-                    {/* HUD OVERLAY */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
-                    
                     <div className="absolute top-8 left-8 flex items-center gap-4 px-4 py-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-full">
                        <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse"></div>
                        <span className="text-[9px] font-black uppercase text-white tracking-widest italic">{HERO_EXAMPLES[currentSlide].tag}</span>
                     </div>
-
                     <div className="absolute bottom-10 left-10 space-y-2">
-                       <p className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] italic leading-none">Industrial_Output_v4.2</p>
                        <h3 className="text-4xl font-black italic uppercase tracking-tighter text-white leading-none">{HERO_EXAMPLES[currentSlide].title}</h3>
-                    </div>
-
-                    <div className="absolute bottom-10 right-10 flex gap-2">
-                       {HERO_EXAMPLES.map((_, i) => (
-                         <button 
-                           key={i} 
-                           onClick={() => setCurrentSlide(i)}
-                           className={`h-1 rounded-full transition-all duration-500 ${i === currentSlide ? 'w-10 bg-cyan-500' : 'w-2 bg-white/20'}`}
-                         />
-                       ))}
                     </div>
                   </motion.div>
                </AnimatePresence>
             </div>
-
-            {/* Floating Stats */}
-            <div className="absolute -bottom-6 -left-6 bg-white dark:bg-[#0c0c0e] p-6 rounded-3xl shadow-3xl border border-slate-100 dark:border-white/10 hidden md:block">
-               <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-600 dark:text-cyan-400">
-                     <Activity size={24} />
-                  </div>
-                  <div>
-                     <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Tốc độ xử lý</p>
-                     <p className="text-xl font-black italic text-slate-800 dark:text-white">60 FPS Native</p>
-                  </div>
-               </div>
-            </div>
           </div>
-
         </div>
       </section>
 
-      {/* 3. CAPABILITIES GRID */}
+      {/* 3. CAPABILITIES SHOWCASE GRID - FULL 6 VIDEOS */}
       <section className="py-40 bg-slate-50/50 dark:bg-black/20 border-y border-slate-100 dark:border-white/5 relative z-10">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 space-y-32">
-          
-          {/* Feature 1 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            <div className="space-y-8">
-              <div className="inline-block p-4 bg-cyan-500/10 rounded-2xl text-cyan-500">
-                <Activity size={32} />
-              </div>
-              <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter italic leading-none text-slate-900 dark:text-white">Diễn Hoạt <br /> Chuyển Động.</h2>
-              <p className="text-xl text-slate-600 dark:text-gray-400 font-medium leading-relaxed italic">
-                Sử dụng video tham chiếu để áp dụng các chuyển động phức tạp (nhảy múa, hành động, biểu cảm) lên ảnh tĩnh của bạn mà không làm biến dạng cấu trúc nhân vật. Phù hợp cho sáng tạo nội dung TikTok và Reels.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                 {['Mượt mà 60fps', 'Vật lý chuẩn xác', 'Độ nét 4K'].map(f => (
-                   <span key={f} className="px-3 py-1 bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-lg text-[9px] font-black uppercase tracking-widest text-cyan-600 dark:text-cyan-400 italic shadow-sm">{f}</span>
-                 ))}
-              </div>
-            </div>
-            <div className="aspect-video bg-black rounded-[2.5rem] border-4 border-cyan-500/20 shadow-3xl overflow-hidden relative group">
-               <video 
-                 src="https://video.aidancing.net/video-avatar/ai-fashion-walking-posing-1.mp4" 
-                 autoPlay loop muted playsInline
-                 className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-[5s]" 
-               />
-               <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-cyan-500/80 text-white flex items-center justify-center shadow-2xl animate-pulse">
-                     <Play size={24} fill="currentColor" className="ml-1" />
-                  </div>
-               </div>
-            </div>
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-12">
+          <div className="text-center space-y-4 mb-24">
+             <motion.span 
+               initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+               className="text-cyan-500 font-black uppercase tracking-[0.6em] text-[11px]"
+             >
+               Engine Capabilities
+             </motion.span>
+             <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Thư viện giải pháp Diễn hoạt</h2>
+             <p className="text-slate-500 dark:text-gray-400 font-medium max-w-2xl mx-auto">Khám phá các khả năng vượt trội của hệ thống diễn hoạt thông minh Skyverses.</p>
           </div>
 
-          {/* Feature 2 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            <div className="aspect-video bg-black rounded-[2.5rem] border-4 border-purple-500/20 shadow-3xl overflow-hidden relative group order-2 lg:order-1">
-               <video 
-                 src="https://video.aidancing.net/video-avatar/ai-change-bg-review-product.mp4" 
-                 autoPlay loop muted playsInline
-                 className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-[5s]" 
-               />
-               <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-purple-600/80 text-white flex items-center justify-center shadow-2xl animate-pulse">
-                     <UserCircle size={32} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+            {SHOWCASE_LIST.map((item, idx) => (
+              <motion.div 
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="group relative bg-white dark:bg-[#0d0d0f] border border-slate-100 dark:border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl hover:border-cyan-500/40 transition-all duration-500"
+              >
+                <div className="aspect-video bg-black relative overflow-hidden">
+                  <video 
+                    src={item.video} 
+                    autoPlay loop muted playsInline 
+                    className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 opacity-60 group-hover:opacity-100" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 group-hover:opacity-40 transition-opacity"></div>
+                  
+                  {/* Floating Tag */}
+                  <div className="absolute top-6 left-6 z-20">
+                    <span className="px-4 py-1.5 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-[9px] font-black uppercase text-white tracking-widest shadow-xl">
+                      {item.mode}
+                    </span>
                   </div>
-               </div>
-            </div>
-            <div className="space-y-8 order-1 lg:order-2">
-              <div className="inline-block p-4 bg-purple-600/10 rounded-2xl text-purple-600">
-                <UserCircle size={32} />
-              </div>
-              <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter italic leading-none text-slate-900 dark:text-white text-right">Thay Thế <br /> Định Danh.</h2>
-              <p className="text-xl text-slate-600 dark:text-gray-400 font-medium leading-relaxed text-right italic">
-                Thay thế gương mặt và nhân dạng một cách mượt mà. Hệ thống AI phân tích hàng nghìn điểm mốc trên khuôn mặt để tiêm định danh mới vào video gốc với độ ổn định cao nhất, hoàn hảo cho Review sản phẩm.
-              </p>
-              <div className="flex flex-wrap gap-4 justify-end">
-                 {['Khóa định danh', 'Khớp tông màu da', 'Không nháy hình'].map(f => (
-                   <span key={f} className="px-3 py-1 bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-lg text-[9px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400 italic shadow-sm">{f}</span>
-                 ))}
-              </div>
-            </div>
+
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                     <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white shadow-3xl">
+                        <Play size={28} fill="white" className="ml-1" />
+                     </div>
+                  </div>
+                </div>
+
+                <div className="p-10 space-y-6">
+                   <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center shadow-inner">
+                         {item.icon}
+                      </div>
+                      <div className="space-y-0.5">
+                         <h4 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">{item.title}</h4>
+                      </div>
+                   </div>
+                   <p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed italic">
+                     "{item.desc}"
+                   </p>
+                   <div className="pt-4 flex justify-between items-center border-t border-black/5 dark:border-white/5">
+                      <span className="text-[10px] font-black text-cyan-500 uppercase tracking-widest italic">Skyverses Workspace</span>
+                      <button className="p-3 bg-slate-100 dark:bg-white/5 rounded-xl text-slate-400 hover:text-brand-blue transition-colors">
+                         <ExternalLink size={18} />
+                      </button>
+                   </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

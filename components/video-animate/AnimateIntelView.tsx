@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Sparkles, Layers, BookOpen, LayoutGrid, ImageIcon, Film, Play, Download, Zap, ChevronRight 
+  Sparkles, Layers, BookOpen, LayoutGrid, ImageIcon, Film, Play, Download, Zap, ChevronRight, CheckCircle2 
 } from 'lucide-react';
 import { AnimateMode } from '../../hooks/useVideoAnimate';
 
@@ -20,6 +20,34 @@ const DEMO_LIST = [
     desc: 'Diễn hoạt dáng đi thời trang chuẩn Runway.',
     video: 'https://video.aidancing.net/video-avatar/ai-fashion-walking-posing-1.mp4',
     tag: 'FASHION'
+  },
+  {
+    id: 'd3',
+    title: 'AI Presenter Intro',
+    desc: 'Giới thiệu sản phẩm với Avatar nói tự nhiên.',
+    video: 'https://video.aidancing.net/video-avatar/ai-talking-intro-product-2.mp4',
+    tag: 'TALKING_AVATAR'
+  },
+  {
+    id: 'd4',
+    title: 'AI Singing Performance',
+    desc: 'Diễn hoạt ca hát chuyên nghiệp từ ảnh mẫu.',
+    video: 'https://video.aidancing.net/video-avatar/ai-singing.mp4',
+    tag: 'AI_SINGING'
+  },
+  {
+    id: 'd5',
+    title: 'Speech to Speech Sync',
+    desc: 'Đồng bộ giọng nói và biểu cảm khuôn mặt AI.',
+    video: 'https://video.aidancing.net/video-avatar/ai-sts.mp4',
+    tag: 'SPEECH_SYNC'
+  },
+  {
+    id: 'd6',
+    title: 'Professional Face Swap',
+    desc: 'Thay đổi nhân dạng chính xác cao trong video.',
+    video: 'https://video.aidancing.net/video-avatar/face-swap.mp4',
+    tag: 'IDENTITY_SWAP'
   }
 ];
 
@@ -49,9 +77,6 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
                 <h3 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">
                   {mode === 'MOTION' ? 'Motion AI' : 'Swap AI'}
                 </h3>
-                <p className="text-[11px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-[0.4em] italic leading-none">
-                  INDUSTRIAL_SYNTHESIS_ACTIVE
-                </p>
               </div>
             </div>
 
@@ -100,7 +125,7 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
           </div>
         </div>
 
-        {/* BOTTOM SECTION: INDUSTRIAL SAMPLE FLOW (VIDEO CARDS) */}
+        {/* BOTTOM SECTION: SAMPLE FLOW (VIDEO CARDS) */}
         <div className="space-y-8 pt-10 border-t border-black/5 dark:border-white/5">
           <div className="flex items-center justify-between px-2">
             <div className="flex items-center gap-4">
@@ -108,14 +133,13 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
                  <LayoutGrid size={20} />
               </div>
               <div className="space-y-0.5">
-                <h3 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Industrial Sample Flow</h3>
-                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-none">Kết quả thực tế từ hệ thống</p>
+                <h3 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Sample Flow</h3>
+                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-none">Ví dụ thực tế từ hệ thống</p>
               </div>
             </div>
-            <span className="text-[8px] font-black text-brand-blue uppercase opacity-50 tracking-[0.2em]">VALIDATED_OUTPUT_v4.2</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-12">
             {DEMO_LIST.map((demo) => (
               <div key={demo.id} className="group relative bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl hover:border-brand-blue/40 transition-all duration-500">
                 <div className="aspect-video bg-black relative overflow-hidden">
@@ -159,16 +183,16 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
             ))}
 
             {/* CTA CARD */}
-            <div className="p-10 bg-brand-blue/5 border border-dashed border-brand-blue/20 rounded-[2.5rem] flex flex-col items-center justify-center text-center space-y-6 group hover:bg-brand-blue/10 transition-all cursor-pointer" onClick={onShowTemplates}>
+            <div className="p-10 bg-brand-blue/5 border border-dashed border-brand-blue/20 rounded-[2.5rem] flex flex-col items-center justify-center text-center space-y-6 group hover:bg-brand-blue/10 transition-all cursor-pointer min-h-[300px]" onClick={onShowTemplates}>
                <div className="w-16 h-16 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
                   <Zap size={32} fill="currentColor" />
                </div>
                <div className="space-y-2">
-                  <h4 className="text-xl font-black uppercase italic tracking-tighter text-slate-800 dark:text-white">Thêm nhiều mẫu hơn?</h4>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-widest max-w-[200px]">Truy cập thư viện Template để xem hàng trăm kịch bản đã tối ưu.</p>
+                  <h4 className="text-xl font-black uppercase italic tracking-tighter text-slate-800 dark:text-white">Khám phá kịch bản?</h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-widest max-w-[200px]">Truy cập thư viện Template để xem hàng trăm kịch bản đã tối ưu hóa cho chuyển động.</p>
                </div>
                <div className="flex items-center gap-2 text-[10px] font-black uppercase text-brand-blue tracking-[0.2em] pt-4">
-                  KHÁM PHÁ NGAY <ChevronRight size={14} />
+                  XEM TOÀN BỘ <ChevronRight size={14} />
                </div>
             </div>
           </div>
@@ -178,5 +202,3 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
     </motion.div>
   );
 };
-
-const CheckCircle2 = ({ size, className }: { size?: number, className?: string }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>;
