@@ -1,8 +1,6 @@
-
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-// Fixed error on line 98: Added missing Info icon import
-import { Sparkles, LayoutGrid, MonitorPlay, Play, ChevronRight, Activity, UserCircle, Film, ArrowRight, Layers, Info } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Sparkles, LayoutGrid, Play, ChevronRight, Activity, UserCircle, Film, ArrowRight, Layers, Info, MonitorPlay } from 'lucide-react';
 import { AnimateMode } from '../../hooks/useVideoAnimate';
 
 interface Props {
@@ -10,8 +8,18 @@ interface Props {
 }
 
 const DEMOS = [
-  { id: 1, label: 'Kling Motion', color: 'bg-cyan-500', thumb: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=400' },
-  { id: 2, label: 'Face Swap Pro', color: 'bg-purple-500', thumb: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=400' },
+  { 
+    id: 1, 
+    label: 'AI Fashion Walking', 
+    color: 'bg-cyan-500', 
+    video: 'https://video.aidancing.net/video-avatar/ai-fashion-walking-posing-1.mp4' 
+  },
+  { 
+    id: 2, 
+    label: 'Product Review BG', 
+    color: 'bg-purple-500', 
+    video: 'https://video.aidancing.net/video-avatar/ai-change-bg-review-product.mp4' 
+  },
 ];
 
 export const AnimateViewport: React.FC<Props> = ({ mode }) => {
@@ -46,19 +54,27 @@ export const AnimateViewport: React.FC<Props> = ({ mode }) => {
             </div>
             <span className="text-[8px] font-bold text-cyan-500 uppercase opacity-50 tracking-[0.2em]">Validated Takes</span>
           </div>
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-6">
             {DEMOS.map(demo => (
               <div key={demo.id} className="aspect-video bg-slate-100 dark:bg-black border border-slate-100 dark:border-white/5 rounded-2xl relative overflow-hidden group cursor-pointer shadow-xl">
-                <img src={demo.thumb} className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 dark:group-hover:opacity-60 transition-all duration-1000 group-hover:scale-105" alt="" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-white/20 dark:bg-white/10 backdrop-blur-md border border-slate-200 dark:border-white/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-white group-hover:text-black transition-all">
-                    <Play size={20} fill="currentColor" className="ml-1" />
-                  </div>
-                </div>
+                <video 
+                  src={demo.video} 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
                 <div className="absolute top-4 left-4">
                   <span className={`px-3 py-1 rounded-md text-[9px] font-black uppercase text-white shadow-2xl ${demo.color}`}>
                     {demo.label}
                   </span>
+                </div>
+                <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all">
+                  <div className="p-2 bg-white/20 backdrop-blur-md rounded-full text-white">
+                    <MonitorPlay size={14} />
+                  </div>
                 </div>
               </div>
             ))}
@@ -96,11 +112,10 @@ export const AnimateViewport: React.FC<Props> = ({ mode }) => {
 
       <div className="p-8 bg-brand-blue/5 border border-brand-blue/10 rounded-[2rem] space-y-4">
         <div className="flex items-center gap-3 text-brand-blue">
-          {/* Fix: Info icon is now imported correctly */}
           <Info size={18} />
           <span className="text-[10px] font-black uppercase tracking-[0.3em]">Hỗ trợ kỹ thuật</span>
         </div>
-        <p className="text-[11px] text-slate-500 dark:text-gray-500 font-bold leading-relaxed uppercase italic">
+        <p className="text-[11px] text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase italic">
           Gặp khó khăn? Liên hệ Node_Admin tại <span className="text-brand-blue underline cursor-pointer">support@skyverses.com</span> để được tối ưu hóa tham số riêng.
         </p>
       </div>
