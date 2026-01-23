@@ -14,7 +14,7 @@ import ExploreMoreAI from '../components/ExploreMoreAI';
 import { motion, AnimatePresence } from 'framer-motion';
 import { handleAdminQuickLogin } from '../utils/adminAuth';
 
-// Import các sub-components mới
+// Import các sub-components
 import { FeaturedSkeleton, CardSkeleton } from '../components/market/MarketSkeleton';
 import { MarketSectionHeader } from '../components/market/MarketSectionHeader';
 import { SolutionCard } from '../components/market/SolutionCard';
@@ -151,7 +151,7 @@ const MarketPage = () => {
 
   const sectionedSolutions = useMemo(() => {
     return {
-      topHot: filteredSolutions.filter(s => s.featured),
+      topChoice: filteredSolutions.filter(s => s.featured),
       video: filteredSolutions.filter(s => s.demoType === 'video'),
       image: filteredSolutions.filter(s => s.demoType === 'image'),
       others: filteredSolutions.filter(s => s.demoType !== 'video' && s.demoType !== 'image' && !s.featured)
@@ -195,19 +195,19 @@ const MarketPage = () => {
           ) : filteredSolutions.length > 0 ? (
             <>
               {/* TOP CHOICE BLOCK */}
-              {sectionedSolutions.topHot.length > 0 && (
+              {sectionedSolutions.topChoice.length > 0 && (
                 <section>
                   <MarketSectionHeader 
                     icon={Flame} 
                     title="Top Choice" 
-                    subtitle="Creator-recommended tools tailored for you" 
-                    count={sectionedSolutions.topHot.length} 
+                    subtitle="Creator-recommended tools tailored for elite workflows" 
+                    count={sectionedSolutions.topChoice.length} 
                     colorClass="text-orange-500" 
                     onScrollLeft={() => scroll(topHotRef, 'left')} 
                     onScrollRight={() => scroll(topHotRef, 'right')}
                   />
                   <div ref={topHotRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
-                    {sectionedSolutions.topHot.map((sol, idx) => (
+                    {sectionedSolutions.topChoice.map((sol, idx) => (
                       <SolutionCard 
                         key={sol.id} sol={sol} idx={idx} lang={lang} 
                         isLiked={likedItems.includes(sol._id || sol.id)}
@@ -222,13 +222,13 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* STUDIO VIDEO BLOCK */}
+              {/* CINEMATIC STUDIO BLOCK */}
               {sectionedSolutions.video.length > 0 && (
                 <section>
                   <MarketSectionHeader 
                     icon={Video} 
-                    title="Studio Video" 
-                    subtitle="Professional AI motion for cinematic production"
+                    title="Cinematic Studio" 
+                    subtitle="High-end AI motion for professional storytelling"
                     count={sectionedSolutions.video.length} 
                     colorClass="text-purple-500" 
                     onScrollLeft={() => scroll(videoRef, 'left')} 
@@ -250,13 +250,13 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* IMAGE STUDIO BLOCK */}
+              {/* CREATIVE STUDIO BLOCK */}
               {sectionedSolutions.image.length > 0 && (
                 <section>
                   <MarketSectionHeader 
                     icon={ImageIcon} 
-                    title="Image Studio" 
-                    subtitle="Pixel-perfect visuals for professional creators"
+                    title="Creative Studio" 
+                    subtitle="Precision visual synthesis for modern designers"
                     count={sectionedSolutions.image.length} 
                     colorClass="text-brand-blue" 
                     onScrollLeft={() => scroll(imageRef, 'left')} 
@@ -278,13 +278,13 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* AI UTILITIES BLOCK */}
+              {/* UTILITY LAB BLOCK */}
               {sectionedSolutions.others.length > 0 && (
                 <section>
                   <MarketSectionHeader 
                     icon={LayoutGrid} 
-                    title="AI Utilities" 
-                    subtitle="Specialized tools to accelerate every workflow"
+                    title="Utility Lab" 
+                    subtitle="Powerful agents for complex production workflows"
                     count={sectionedSolutions.others.length} 
                     colorClass="text-emerald-500" 
                     onScrollLeft={() => scroll(othersRef, 'left')} 

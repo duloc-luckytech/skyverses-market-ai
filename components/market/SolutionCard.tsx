@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Bookmark, Sparkles, Users, Heart, Zap } from 'lucide-react';
-import { Solution } from '../../types';
+import { Solution, Language } from '../../types';
 
 interface SolutionCardProps {
   sol: Solution;
@@ -19,6 +19,8 @@ export const SolutionCard: React.FC<SolutionCardProps> = ({
   sol, idx, lang, isLiked, isFavorited, onToggleFavorite, onToggleLike, onClick, stats 
 }) => {
   const targetId = sol._id || sol.id;
+  const currentLang = lang as Language;
+
   return (
     <div 
       onClick={() => onClick(sol.slug)}
@@ -26,7 +28,7 @@ export const SolutionCard: React.FC<SolutionCardProps> = ({
       style={{ animationDelay: `${idx * 40}ms` }}
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-black">
-        <img src={sol.imageUrl} alt={sol.name[lang as any]} className="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-30 transition-all duration-1000" />
+        <img src={sol.imageUrl} alt={sol.name[currentLang]} className="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-30 transition-all duration-1000" />
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 z-40">
            <div className="px-5 py-2.5 bg-black/60 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2.5 shadow-2xl scale-90 group-hover:scale-100 transition-all duration-500">
               <Sparkles size={14} className="text-brand-blue" fill="currentColor" />
@@ -40,13 +42,13 @@ export const SolutionCard: React.FC<SolutionCardProps> = ({
           <Bookmark fill="currentColor" className="w-3.5 h-3.5 md:w-[18px] md:h-[18px]" />
         </button>
         <div className="absolute top-2 left-2 md:top-4 md:left-4">
-          <span className="bg-black/90 backdrop-blur-md text-white border border-white/20 px-1.5 md:px-3 py-0.5 md:py-1 text-[7px] md:text-[9px] font-black uppercase tracking-widest rounded-sm">{sol.category[lang as any]}</span>
+          <span className="bg-black/90 backdrop-blur-md text-white border border-white/20 px-1.5 md:px-3 py-0.5 md:py-1 text-[7px] md:text-[9px] font-black uppercase tracking-widest rounded-sm">{sol.category[currentLang]}</span>
         </div>
       </div>
       <div className="p-3 md:p-6 flex-grow flex flex-col gap-3 md:gap-6 bg-white dark:bg-[#0d0d0f]">
         <div className="space-y-2 md:space-y-4">
-          <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter text-brand-blue italic transition-colors flex-grow pr-2 truncate">{sol.name[lang as any]}</h3>
-          <p className="text-black/60 dark:text-white/50 text-[9px] md:text-[12px] leading-relaxed font-medium italic tracking-tight line-clamp-2 md:line-clamp-3">"{sol.description[lang as any]}"</p>
+          <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter text-brand-blue italic transition-colors flex-grow pr-2 truncate">{sol.name[currentLang]}</h3>
+          <p className="text-black/60 dark:text-white/50 text-[9px] md:text-[12px] leading-relaxed font-medium italic tracking-tight line-clamp-2 md:line-clamp-3">"{sol.description[currentLang]}"</p>
         </div>
         <div className="mt-auto pt-4 flex justify-between items-center border-t border-black/5 dark:border-white/5">
            <div className="flex items-center gap-3 md:gap-4">

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wand2, MonitorPlay } from 'lucide-react';
-import { Solution } from '../../types';
+import { Solution, LocalizedString, Language } from '../../types';
 
 interface FeaturedSectionProps {
   solutions: Solution[];
@@ -15,6 +15,7 @@ export const FeaturedSection: React.FC<FeaturedSectionProps> = ({
   solutions, lang, onNavigate, onOpenDemo 
 }) => {
   const [index, setIndex] = useState(0);
+  const currentLang = lang as Language;
 
   useEffect(() => {
     if (solutions.length <= 1) return;
@@ -38,11 +39,11 @@ export const FeaturedSection: React.FC<FeaturedSectionProps> = ({
           >
             <div className="flex items-center gap-3">
               <div className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-ping"></div>
-              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-brand-blue italic">FEATURED_NODE // {solutions[index].category[lang as any]}</span>
+              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-brand-blue italic">FEATURED_NODE // {solutions[index].category[currentLang]}</span>
             </div>
             <div className="space-y-4">
-              <h2 className="text-4xl md:text-5xl lg:text-7xl font-black uppercase tracking-tighter italic leading-[0.9] text-black dark:text-white">{solutions[index].name[lang as any]}</h2>
-              <p className="text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 font-medium leading-relaxed max-w-lg">{solutions[index].description[lang as any]}</p>
+              <h2 className="text-4xl md:text-5xl lg:text-7xl font-black uppercase tracking-tighter italic leading-[0.9] text-black dark:text-white">{solutions[index].name[currentLang]}</h2>
+              <p className="text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 font-medium leading-relaxed max-w-lg">{solutions[index].description[currentLang]}</p>
             </div>
             <div className="flex gap-2 pt-2">
               {solutions.map((_, i) => (
