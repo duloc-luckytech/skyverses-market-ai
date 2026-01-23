@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -117,7 +118,7 @@ const RefPickerSlot = ({
 
 export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
   return (
-    <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] bg-white dark:bg-[#141416] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2rem]' : 'h-20 lg:h-full lg:rounded-none'}`}>
+    <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] shrink-0 bg-white dark:bg-[#141416] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-20 lg:h-full lg:rounded-none'}`}>
       {/* Mobile Toggle Header */}
       <div 
         className="lg:hidden h-20 flex flex-col items-center justify-center shrink-0 cursor-pointer relative"

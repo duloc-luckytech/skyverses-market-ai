@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Download, Share2, AlertTriangle } from 'lucide-react';
@@ -461,6 +462,12 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
   const isGenerateDisabled = isGenerating || !!generateTooltip || !selectedModelObj;
 
+  const handleApplyExample = (item: any) => {
+    setPrompt(item.prompt);
+    setActiveMode('SINGLE');
+    if (window.innerWidth < 1024) setIsMobileExpanded(true);
+  };
+
   return (
     <div className="h-full w-full flex flex-col lg:flex-row bg-[#fcfcfd] dark:bg-[#0d0e12] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
       
@@ -529,17 +536,18 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         setFullscreenVideo={setFullscreenVideo} deleteResult={deleteResult}
         handleRetry={handleRetry} triggerDownload={triggerDownload}
         handleDownloadAllDone={handleDownloadAllDone} todayKey={todayKey}
+        onApplyExample={handleApplyExample}
       />
 
       <AnimatePresence>
         {fullscreenVideo && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/95 flex flex-col items-center justify-center p-6 md:p-12">
             <button onClick={() => setFullscreenVideo(null)} className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors"><X size={32} /></button>
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="w-full max-w-6xl aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(147,51,234,0.3)] border border-white/10 relative">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="w-full max-w-6xl aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative">
               {isDownloading === `video_${fullscreenVideo.id}.mp4` && (
                 <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center gap-4">
                   <Loader2 size={48} className="text-white animate-spin" />
-                  <span className="text-xs font-black uppercase tracking-widest text-white animate-pulse">Đang tải video...</span>
+                  <span className="textxs font-black uppercase tracking-widest text-white animate-pulse">Đang tải video...</span>
                 </div>
               )}
               <video src={fullscreenVideo.url} autoPlay controls className="w-full h-full object-contain" />
