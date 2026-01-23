@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -7,7 +8,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { CreationMode } from '../../hooks/useImageGenerator';
-// Fixed: Removed duplicate local declarations below to resolve import conflicts
 import { SidebarSingle } from './SidebarSingle';
 import { SidebarBatch } from './SidebarBatch';
 import { ModelEngineSettings } from './ModelEngineSettings';

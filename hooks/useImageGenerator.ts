@@ -32,7 +32,6 @@ export const useImageGenerator = () => {
   const { credits, addCredits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
   const navigate = useNavigate();
 
-  // -- App States --
   const [activeMode, setActiveMode] = useState<CreationMode>('SINGLE');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploadingRef, setIsUploadingRef] = useState(false);
@@ -44,11 +43,9 @@ export const useImageGenerator = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [activePreviewUrl, setActivePreviewUrl] = useState<string | null>(null);
 
-  // -- Dynamic Model Data --
   const [availableModels, setAvailableModels] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
 
-  // -- Control states --
   const [prompt, setPrompt] = useState('');
   const [batchPrompts, setBatchPrompts] = useState<string[]>(['', '', '']);
   const [isBulkImporting, setIsBulkImporting] = useState(false);
@@ -59,7 +56,6 @@ export const useImageGenerator = () => {
   const [references, setReferences] = useState<string[]>([]);
   const [results, setResults] = useState<ImageResult[]>([]);
 
-  // -- Resource states --
   const [showResourceModal, setShowResourceModal] = useState(false);
   const [isResumingGenerate, setIsResumingGenerate] = useState(false);
   const [usagePreference, setUsagePreference] = useState<'credits' | 'key' | null>(() => {
@@ -69,22 +65,17 @@ export const useImageGenerator = () => {
   const [hasPersonalKey, setHasPersonalKey] = useState(false);
   const [personalKey, setPersonalKey] = useState<string | undefined>(undefined);
 
-  // Fetch Pricing Models for Image Tool
   useEffect(() => {
     const fetchPricing = async () => {
       try {
         const res = await pricingApi.getPricing({ tool: 'image' });
         if (res.success && res.data.length > 0) {
-          const mapped = res.data.map((m: PricingModel) => {
-            return {
-              id: m.modelKey,
-              name: m.name,
-              raw: m
-            };
-          });
+          const mapped = res.data.map((m: PricingModel) => ({
+            id: m.modelKey,
+            name: m.name,
+            raw: m
+          }));
           setAvailableModels(mapped);
-          
-          // Ưu tiên chọn google_image_gen_4_5 làm mặc định
           const defaultModel = mapped.find(m => m.id === 'google_image_gen_4_5') || mapped[0];
           setSelectedModel(defaultModel);
         }
@@ -103,12 +94,8 @@ export const useImageGenerator = () => {
         if (keys.gemini && keys.gemini.trim() !== '') {
           setHasPersonalKey(true);
           setPersonalKey(keys.gemini);
-        } else {
-          setHasPersonalKey(false);
         }
-      } catch (e) {
-        setHasPersonalKey(false);
-      }
+      } catch (e) {}
     }
   }, [showResourceModal]);
 
@@ -149,15 +136,13 @@ export const useImageGenerator = () => {
       const response = await fetch(url);
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.body.appendChild(document.createElement('a'));
       link.href = blobUrl;
       link.download = filename;
-      document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      link.remove();
       window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
-      console.error("Download failed:", error);
       window.open(url, '_blank');
     }
   };
@@ -168,12 +153,9 @@ export const useImageGenerator = () => {
       if (response.data && response.data.status === 'done' && response.data.result?.images?.length) {
         const imageUrl = response.data.result.images[0];
         setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done' } : r));
-        setActivePreviewUrl(imageUrl);
         refreshUserInfo();
       } else if (response.data && response.data.status === 'failed') {
-        if (usagePreference === 'credits') {
-          addCredits(cost);
-        }
+        if (usagePreference === 'credits') addCredits(cost);
         setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error', isRefunded: true } : r));
       } else {
         setTimeout(() => pollJobStatus(jobId, resultId, cost), 5000);
@@ -235,7 +217,6 @@ export const useImageGenerator = () => {
           const url = await generateDemoImage({ prompt: task.prompt, images: references, model: selectedModel.id, aspectRatio: selectedRatio, quality: selectedRes, apiKey: personalKey });
           if (url) {
             setResults(prev => prev.map(r => r.id === task.id ? { ...r, url, status: 'done' } : r));
-            setActivePreviewUrl(url);
           } else {
             setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
           }
@@ -279,16 +260,17 @@ export const useImageGenerator = () => {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  const deleteResult = (id: string) => {
-    setResults(prev => prev.filter(r => r.id !== id));
-    if (activePreviewUrl === results.find(r => r.id === id)?.url) {
-        setActivePreviewUrl(null);
-    }
-  };
+  const deleteResult = (id: string) => setResults(prev => prev.filter(r => r.id !== id));
 
   const handleLibrarySelect = (selectedAssets: GCSAssetMetadata[]) => {
     const urls = selectedAssets.map(asset => asset.url);
     setReferences((prev: string[]) => [...prev, ...urls].slice(0, 6));
+  };
+
+  const handleEditorApply = (newUrl: string) => {
+    const editedResult: ImageResult = { id: `edit-${Date.now()}`, url: newUrl, prompt: 'Edited', fullTimestamp: 'Vừa xong', dateKey: todayKey, displayDate: 'Hôm nay', model: 'Editor', status: 'done', aspectRatio: '1:1', resolution: '1k', cost: 0, references: [] };
+    setResults(prev => [editedResult, ...prev]);
+    setIsEditorOpen(false);
   };
 
   return {
@@ -304,19 +286,9 @@ export const useImageGenerator = () => {
     selectedRes, setSelectedRes, quantity, setQuantity,
     references, setReferences, results, setResults, totalCost,
     generateTooltip, isGenerateDisabled, performInference,
-    handleLocalFileUpload,
-    handleGenerate,
-    openEditor,
-    toggleSelect,
-    deleteResult,
-    handleLibrarySelect,
-    isResumingGenerate,
-    setIsResumingGenerate,
-    triggerDownload,
-    handleEditorApply: (newUrl: string) => {
-        const editedResult: ImageResult = { id: `edit-${Date.now()}`, url: newUrl, prompt: 'Edited', fullTimestamp: 'Vừa xong', dateKey: todayKey, displayDate: 'Hôm nay', model: 'Editor', status: 'done', aspectRatio: '1:1', resolution: '1k', cost: 0, references: [] };
-        setResults(prev => [editedResult, ...prev]);
-        setActivePreviewUrl(newUrl);
-    }
+    handleLocalFileUpload, handleGenerate, openEditor,
+    toggleSelect, deleteResult, handleLibrarySelect,
+    isResumingGenerate, setIsResumingGenerate, triggerDownload,
+    handleEditorApply
   };
 };

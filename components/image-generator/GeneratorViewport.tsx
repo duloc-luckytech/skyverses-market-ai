@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -150,7 +151,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                          className="p-3 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
                        >
                          <Download size={18} />
-                       </button>
+                    </button>
                     </div>
                  </div>
               </motion.div>
