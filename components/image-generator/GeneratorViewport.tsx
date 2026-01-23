@@ -26,6 +26,7 @@ interface GeneratorViewportProps {
   deleteResult: (id: string) => void;
 }
 
+// Helper tương đồng với trang Explorer để tạo chỉ số giả lập đồng nhất
 const getFakeStats = (seedId: string) => {
   const hash = seedId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const views = (hash * 13) % 950 + 50;
@@ -264,11 +265,11 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                       <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 md:gap-6 space-y-4 md:space-y-6 pb-40">
                          {explorerItems.map((item, idx) => {
                             const isLast = idx === explorerItems.length - 1;
-                            const stats = getFakeStats(item._id);
+                            const stats = getFakeStats(item._id || item.id || idx.toString());
                             return (
                                <motion.div 
                                   layout
-                                  key={item._id}
+                                  key={item._id || item.id}
                                   ref={isLast ? lastItemRef : null}
                                   onClick={() => onApplyExample(item)}
                                   className="break-inside-avoid relative overflow-hidden bg-slate-100 dark:bg-[#0d0d0f] group cursor-pointer border border-black/5 dark:border-white/5 transition-all duration-500 rounded-[1.5rem] md:rounded-[2rem] shadow-sm hover:shadow-2xl hover:border-brand-blue/30"
