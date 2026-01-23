@@ -3,7 +3,7 @@ import React from 'react';
 import { ChevronDown, Cpu } from 'lucide-react';
 
 interface ModelAISelectorProps {
-  selectedModel: { id: string; name: string };
+  selectedModel: { id: string; name: string } | null;
   models: { id: string; name: string; cost: number }[];
   onSelect: (model: any) => void;
   variant?: 'full' | 'compact';
@@ -15,6 +15,15 @@ export const ModelAISelector: React.FC<ModelAISelectorProps> = ({
   onSelect,
   variant = 'full'
 }) => {
+  if (!selectedModel) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-white/5 rounded-lg opacity-50">
+        <Loader2 size={12} className="animate-spin" />
+        <span className="text-[10px] font-black uppercase">Loading Models...</span>
+      </div>
+    );
+  }
+
   if (variant === 'compact') {
     return (
       <div className="relative group">
@@ -52,3 +61,5 @@ export const ModelAISelector: React.FC<ModelAISelectorProps> = ({
     </div>
   );
 };
+
+import { Loader2 } from 'lucide-react';

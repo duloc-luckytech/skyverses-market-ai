@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Wand2, AlertTriangle, Plus, Settings, Coins, Key, Zap, Image as ImageIcon, History as HistoryIcon } from 'lucide-react';
@@ -256,7 +257,7 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
                   </div>
                   <div className="flex flex-col gap-4">
                      <Link to="/credits" className="bg-brand-blue text-white py-5 rounded-full text-xs font-black uppercase tracking-[0.4em] shadow-xl hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
-                     <button onClick={() => e.setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest italic underline underline-offset-8 decoration-white/20">Bỏ qua</button>
+                     <button onClick={() => e.setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-colors tracking-widest italic underline underline-offset-8 decoration-white/20">Bỏ qua</button>
                   </div>
                </motion.div>
             </motion.div>

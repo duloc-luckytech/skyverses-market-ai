@@ -44,6 +44,36 @@ export const STORYBOARD_SAMPLES = [
 
 export const SOLUTIONS: Solution[] = [
   {
+    id: 'PRODUCT-IMAGE',
+    slug: 'product-image',
+    name: { 
+      en: 'AI Image Studio', 
+      vi: 'AI Image Studio', 
+      ko: 'AI 이미지 스튜디오', 
+      ja: 'AIイメージスタジオ' 
+    },
+    category: { en: 'Generative Art', vi: 'Nghệ thuật sinh tạo', ko: '생성 예술', ja: '生成アート' },
+    description: { 
+      en: 'Professional creative studio for high-fidelity image synthesis and pixel-perfect editing.', 
+      vi: 'Studio sáng tạo chuyên nghiệp để tổng hợp hình ảnh độ trung thực cao và chỉnh sửa pixel hoàn hảo.', 
+      ko: '고충실도 이미지 합성 및 픽셀 완벽 편집을 위한 전문 크리에이티브 스튜디오.', 
+      ja: '忠実度の高い画像合成とピクセル完璧な編集のためのプロフェッショナルなクリエイティブスタジオ。' 
+    },
+    problems: ['Expensive photoshoot costs', 'Slow design iterations', 'Manual retouching overhead'],
+    industries: ['Marketing', 'E-commerce', 'Creative Agency'],
+    imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'image',
+    tags: ['AI Image', 'Editor', '8K', 'Upscale'],
+    features: [
+      { en: 'Neural Retouching', vi: 'Chỉnh sửa thần kinh', ko: '신경망 리터칭', ja: 'ニューラルレタッチ' },
+      { en: 'Identity Lock', vi: 'Khóa định danh', ko: '아이덴티티 락', ja: 'アイデンティティロック' }
+    ],
+    complexity: 'Advanced',
+    priceReference: '150 CR / generation',
+    isActive: true,
+    priceCredits: 150
+  },
+  {
     id: 'REAL-ESTATE-AI',
     slug: 'bat-dong-san-ai',
     name: { 
@@ -92,7 +122,7 @@ export const SOLUTIONS: Solution[] = [
       en: 'Enterprise-grade neural voice architecture for high-fidelity narration and identity cloning.', 
       vi: 'Kiến trúc giọng nói thần kinh cấp doanh nghiệp để tường thuật độ trung thực cao và nhân bản định danh.', 
       ko: '고충실도 내레이션 및 아이덴티티 클로닝을 위한 엔터프라이즈급 신경 음성 아키텍처.', 
-      ja: '忠実度の高いナレーションとアイデンティティクローニングのためのエンタープライズ級ニューラルボイスアーキテクチャ。' 
+      ja: '忠実度の高いナレーション và アイデンティティクローニングのためのエンタープライズ級ニューラルボイスアーキテクチャ。' 
     },
     problems: ['Manual recording overhead', 'Voice inconsistency', 'Limited language range', 'High talent costs'],
     industries: ['Advertising', 'Education', 'Gaming', 'Customer Support'],
@@ -137,7 +167,7 @@ export const SOLUTIONS: Solution[] = [
     features: [
       { en: 'Multi-genre Neural Synthesis', vi: 'Tổng hợp thần kinh đa thể loại', ko: '다중 장르 신경 합성', ja: 'マルチジャンル・ニューラル合成' },
       { en: 'Professional BPM & Key Control', vi: 'Kiểm soát BPM & Key chuyên nghiệp', ko: '전문 BPM 및 키 제어', ja: 'プロフェッショナルBPM＆キー制御' },
-      { en: 'Full Commercial Usage Rights', vi: 'Quyền sử dụng thương mại đầy đủ', ko: '전체 상업적 sử dụng quyền', ja: '完全な商業利用権' }
+      { en: 'Full Commercial Usage Rights', vi: 'Quyền sử dụng thương mại đầy đủ', ko: '전체 상업적 사용 권한', ja: '完全な商業利用権' }
     ],
     complexity: 'Advanced',
     priceReference: '150 CR / generation',
@@ -157,7 +187,7 @@ export const SOLUTIONS: Solution[] = [
       ko: 'AI 이미지 복원 프로', 
       ja: 'AI画像復元プロ' 
     },
-    category: { en: 'Image Restoration', vi: 'Phục chế hình ảnh', ko: '이미지 복원', ja: '画像復원' },
+    category: { en: 'Image Restoration', vi: 'Phục chế hình ảnh', ko: '이미지 복원', ja: '画像復元' },
     description: { 
       en: 'Professional neural engine to restore old, blurred, or damaged photos to 4K crystalline quality.', 
       vi: 'Công cụ thần kinh chuyên nghiệp để phục chế ảnh cũ, mờ hoặc bị hỏng lên chất lượng 4K sắc nét.', 
