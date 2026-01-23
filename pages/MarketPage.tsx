@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { marketApi } from '../apis/market';
 import { Solution } from '../types';
@@ -8,7 +8,7 @@ import {
   Sparkles, X, MonitorPlay, 
   Wand2, SearchX, Users, Heart,
   Flame, Video, ImageIcon, LayoutGrid,
-  ChevronRight
+  ChevronRight, ChevronLeft
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -44,7 +44,7 @@ const FeaturedSkeleton = () => (
 );
 
 const CardSkeleton = () => (
-  <div className="flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] rounded-xl overflow-hidden animate-pulse">
+  <div className="flex-shrink-0 w-[280px] md:w-[320px] xl:w-[calc(20%-1.2rem)] flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] rounded-xl overflow-hidden animate-pulse">
     <div className="aspect-[16/10] bg-slate-200 dark:bg-white/5 relative">
        <div className="absolute top-4 left-4 w-16 h-4 bg-black/10 dark:bg-white/5 rounded"></div>
     </div>
@@ -54,15 +54,25 @@ const CardSkeleton = () => (
         <div className="h-3 bg-slate-100 dark:bg-white/5 rounded w-full"></div>
         <div className="h-3 bg-slate-100 dark:bg-white/5 rounded w-5/6"></div>
       </div>
-      <div className="flex gap-2">
-        <div className="w-12 h-3 bg-slate-100 dark:bg-white/5 rounded"></div>
-        <div className="w-12 h-3 bg-slate-100 dark:bg-white/5 rounded"></div>
-      </div>
     </div>
   </div>
 );
 
-const MarketSectionHeader = ({ icon: Icon, title, count, colorClass }: { icon: any, title: string, count: number, colorClass: string }) => (
+const MarketSectionHeader = ({ 
+  icon: Icon, 
+  title, 
+  count, 
+  colorClass,
+  onScrollLeft,
+  onScrollRight
+}: { 
+  icon: any, 
+  title: string, 
+  count: number, 
+  colorClass: string,
+  onScrollLeft?: () => void,
+  onScrollRight?: () => void
+}) => (
   <div className="flex items-center justify-between mb-8 px-1">
     <div className="flex items-center gap-4">
       <div className={`p-3 rounded-2xl bg-opacity-10 shadow-sm ${colorClass.replace('text-', 'bg-')}`}>
@@ -72,13 +82,29 @@ const MarketSectionHeader = ({ icon: Icon, title, count, colorClass }: { icon: a
         <h2 className={`text-2xl md:text-4xl font-black uppercase tracking-tighter italic ${colorClass}`}>{title}</h2>
         <div className="flex items-center gap-2">
           <div className={`h-0.5 w-12 rounded-full ${colorClass.replace('text-', 'bg-')}`}></div>
-          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{count} giải pháp khả dụng</span>
+          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{count} giải pháp</span>
         </div>
       </div>
     </div>
-    <button className="hidden md:flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 hover:text-brand-blue transition-colors">
-      Xem tất cả <ChevronRight size={14} />
-    </button>
+    <div className="flex items-center gap-3">
+      <div className="hidden md:flex items-center gap-2 mr-4">
+        <button 
+          onClick={onScrollLeft}
+          className="p-2 bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-sm"
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <button 
+          onClick={onScrollRight}
+          className="p-2 bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-sm"
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
+      <button className="hidden md:flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 hover:text-brand-blue transition-colors">
+        Xem tất cả <ChevronRight size={14} />
+      </button>
+    </div>
   </div>
 );
 
@@ -99,6 +125,22 @@ const MarketPage = () => {
   
   const [featuredIndex, setFeaturedIndex] = useState(0);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
+
+  // Refs for horizontal scrolling
+  const topHotRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const othersRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
+    if (ref.current) {
+      const scrollAmount = ref.current.clientWidth * 0.8;
+      ref.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -205,17 +247,15 @@ const MarketPage = () => {
     });
   }, [solutions, secondary]);
 
-  // Phân loại giải pháp thành các block
   const sectionedSolutions = useMemo(() => {
     return {
-      topHot: filteredSolutions.filter(s => s.featured).slice(0, 4),
+      topHot: filteredSolutions.filter(s => s.featured),
       video: filteredSolutions.filter(s => s.demoType === 'video'),
       image: filteredSolutions.filter(s => s.demoType === 'image'),
       others: filteredSolutions.filter(s => s.demoType !== 'video' && s.demoType !== 'image' && !s.featured)
     };
   }, [filteredSolutions]);
 
-  // Fix: Explicitly type SolutionCard as React.FC to handle the reserved 'key' prop correctly in lists.
   const SolutionCard: React.FC<{ sol: Solution, idx: number }> = ({ sol, idx }) => {
     const targetId = sol._id || sol.id;
     const stats = getFakeStats(targetId);
@@ -223,7 +263,7 @@ const MarketPage = () => {
     return (
       <div 
         key={targetId} onClick={() => handleNavigate(sol.slug)}
-        className="group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] hover:border-brand-blue/40 transition-all duration-500 shadow-sm hover:shadow-2xl rounded-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 cursor-pointer"
+        className="flex-shrink-0 w-[280px] md:w-[320px] xl:w-[calc(20%-1.2rem)] snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] hover:border-brand-blue/40 transition-all duration-500 shadow-sm hover:shadow-2xl rounded-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 cursor-pointer"
         style={{ animationDelay: `${idx * 40}ms` }}
       >
         <div className="relative aspect-[16/10] overflow-hidden bg-black">
@@ -239,8 +279,8 @@ const MarketPage = () => {
         </div>
         <div className="p-3 md:p-6 flex-grow flex flex-col gap-3 md:gap-6 bg-white dark:bg-[#0d0d0f]">
           <div className="space-y-2 md:space-y-4">
-            <h3 className="text-sm md:text-2xl font-black uppercase tracking-tighter text-brand-blue italic transition-colors flex-grow pr-2 truncate">{sol.name[lang]}</h3>
-            <p className="text-black/60 dark:text-white/50 text-[9px] md:text-[13px] leading-relaxed font-medium italic tracking-tight line-clamp-2 md:line-clamp-3">"{sol.description[lang]}"</p>
+            <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter text-brand-blue italic transition-colors flex-grow pr-2 truncate">{sol.name[lang]}</h3>
+            <p className="text-black/60 dark:text-white/50 text-[9px] md:text-[12px] leading-relaxed font-medium italic tracking-tight line-clamp-2 md:line-clamp-3">"{sol.description[lang]}"</p>
           </div>
           <div className="mt-auto pt-4 flex justify-between items-center border-t border-black/5 dark:border-white/5">
              <div className="flex items-center gap-3 md:gap-4">
@@ -323,7 +363,7 @@ const MarketPage = () => {
         <AIModelsMarquee />
 
         <div className="sticky top-16 md:relative md:top-0 z-[140] transform-gpu bg-white/95 dark:bg-[#030304]/95 backdrop-blur-xl -mx-4 px-4 py-3 md:mx-0 md:px-0 md:py-0 md:bg-transparent md:backdrop-blur-none border-b border-black/5 dark:border-white/5 md:border-none transition-all duration-500">
-          <MarketSearchTerminal 
+          < MarketSearchTerminal 
             query={query} setQuery={setQuery}
             primary={primary} setPrimary={setPrimary}
             secondary={secondary} setSecondary={setSecondary}
@@ -332,16 +372,19 @@ const MarketPage = () => {
 
         <div className="space-y-24 relative z-10 md:border-t border-black/5 dark:border-white/5 pt-8">
           {(loading || isSearching) ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8">
-              {[1,2,3,4,5,6,7,8].map(i => <CardSkeleton key={i} />)}
+            <div className="flex gap-4 md:gap-8 overflow-x-hidden">
+              {[1,2,3,4,5].map(i => <CardSkeleton key={i} index={i} />)}
             </div>
           ) : filteredSolutions.length > 0 ? (
             <>
               {/* TOP HOT BLOCK */}
               {sectionedSolutions.topHot.length > 0 && (
                 <section>
-                  <MarketSectionHeader icon={Flame} title="Top Hot" count={sectionedSolutions.topHot.length} colorClass="text-orange-500" />
-                  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8">
+                  <MarketSectionHeader 
+                    icon={Flame} title="Top Hot" count={sectionedSolutions.topHot.length} colorClass="text-orange-500" 
+                    onScrollLeft={() => scroll(topHotRef, 'left')} onScrollRight={() => scroll(topHotRef, 'right')}
+                  />
+                  <div ref={topHotRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.topHot.map((sol, idx) => (
                       <SolutionCard key={sol.id} sol={sol} idx={idx} />
                     ))}
@@ -352,8 +395,11 @@ const MarketPage = () => {
               {/* TOOLS VIDEO BLOCK */}
               {sectionedSolutions.video.length > 0 && (
                 <section>
-                  <MarketSectionHeader icon={Video} title="Tools Video" count={sectionedSolutions.video.length} colorClass="text-purple-500" />
-                  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8">
+                  <MarketSectionHeader 
+                    icon={Video} title="Tools Video" count={sectionedSolutions.video.length} colorClass="text-purple-500" 
+                    onScrollLeft={() => scroll(videoRef, 'left')} onScrollRight={() => scroll(videoRef, 'right')}
+                  />
+                  <div ref={videoRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.video.map((sol, idx) => (
                       <SolutionCard key={sol.id} sol={sol} idx={idx} />
                     ))}
@@ -364,8 +410,11 @@ const MarketPage = () => {
               {/* TOOLS IMAGE BLOCK */}
               {sectionedSolutions.image.length > 0 && (
                 <section>
-                  <MarketSectionHeader icon={ImageIcon} title="Tools Image" count={sectionedSolutions.image.length} colorClass="text-brand-blue" />
-                  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8">
+                  <MarketSectionHeader 
+                    icon={ImageIcon} title="Tools Image" count={sectionedSolutions.image.length} colorClass="text-brand-blue" 
+                    onScrollLeft={() => scroll(imageRef, 'left')} onScrollRight={() => scroll(imageRef, 'right')}
+                  />
+                  <div ref={imageRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.image.map((sol, idx) => (
                       <SolutionCard key={sol.id} sol={sol} idx={idx} />
                     ))}
@@ -376,8 +425,11 @@ const MarketPage = () => {
               {/* OTHER TOOLS BLOCK */}
               {sectionedSolutions.others.length > 0 && (
                 <section>
-                  <MarketSectionHeader icon={LayoutGrid} title="Tools Khác" count={sectionedSolutions.others.length} colorClass="text-emerald-500" />
-                  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8">
+                  <MarketSectionHeader 
+                    icon={LayoutGrid} title="Tools Khác" count={sectionedSolutions.others.length} colorClass="text-emerald-500" 
+                    onScrollLeft={() => scroll(othersRef, 'left')} onScrollRight={() => scroll(othersRef, 'right')}
+                  />
+                  <div ref={othersRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.others.map((sol, idx) => (
                       <SolutionCard key={sol.id} sol={sol} idx={idx} />
                     ))}
