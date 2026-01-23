@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
   ChevronLeft, Sparkles, Wand2, Layers, 
-  Sliders, Zap, ArrowRight, Loader2, Video, MonitorPlay
+  Sliders, Zap, ArrowRight, Loader2, Video, PlayCircle
 } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -67,7 +67,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
             {[
               { label: 'SCRIPT TO VID', icon: <Wand2 size={16}/>, desc: 'Phân tách cảnh' },
               { label: 'IDENTITY LOCK', icon: <Layers size={16}/>, desc: 'Nhân vật đồng nhất' },
-              { label: 'ULTRA HD', icon: <MonitorPlay size={16}/>, desc: 'Kết xuất 4K' },
+              { label: 'ULTRA HD', icon: <PlayCircle size={16}/>, desc: 'Kết xuất 4K' },
               { label: 'AUTO MODE', icon: <Zap size={16}/>, desc: 'Sản xuất hàng loạt' }
             ].map(item => (
               <div key={item.label} className="p-5 bg-slate-50 dark:bg-white/[0.03] border border-black/5 dark:border-white/5 rounded-2xl flex flex-col gap-3 group hover:border-indigo-500/30 transition-all shadow-sm">
@@ -140,7 +140,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
           100% { transform: translateY(-50%); }
         }
         .animate-marquee-vertical {
-          animation: marquee-vertical 50s linear infinite;
+          animation: marquee-vertical 40s linear infinite;
         }
         .animate-marquee-vertical:hover {
           animation-play-state: paused;

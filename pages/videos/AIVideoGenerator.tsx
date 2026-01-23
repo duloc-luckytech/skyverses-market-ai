@@ -7,12 +7,13 @@ import { ModesSection } from '../../components/landing/video-generator/ModesSect
 import { UseCasesSection } from '../../components/landing/video-generator/UseCasesSection';
 import { FinalCTA } from '../../components/landing/video-generator/FinalCTA';
 
-const AIVideoGenerator = () => {
+const AIVideoGenerator: React.FC = () => {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
+  // Studio Mode Overlay
   if (isStudioOpen) {
     return (
-      <div className="fixed inset-0 z-[500] bg-white dark:bg-black animate-in fade-in duration-500">
+      <div className="fixed inset-0 z-[500] bg-white dark:bg-black">
         <AIVideoGeneratorWorkspace onClose={() => setIsStudioOpen(false)} />
       </div>
     );
