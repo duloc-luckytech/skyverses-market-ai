@@ -5,7 +5,7 @@ import {
   Activity, Download, Wand2, 
   Edit3, ChevronLeft, 
   Sparkles, X, LayoutGrid, ArrowLeft, Image as ImageIcon,
-  Loader2, Zap, AlertCircle, Eye, Heart, Maximize2
+  Loader2, Zap, AlertCircle, Eye, Heart, Maximize2, Tag
 } from 'lucide-react';
 import { ImageResult } from '../../hooks/useImageGenerator';
 import { ImageResultCard } from './ImageResultCard';
@@ -25,6 +25,12 @@ interface GeneratorViewportProps {
   toggleSelect: (id: string) => void;
   deleteResult: (id: string) => void;
 }
+
+const CATEGORY_TAGS = [
+  'All', 'Featured', 'Poster & Ad', 'Product', 'Social Media', 
+  'Card', 'Character', 'Comic', 'Logo', 
+  'Sticker', 'Wallpaper', 'Home'
+];
 
 // Helper tương đồng với trang Explorer để tạo chỉ số giả lập đồng nhất
 const getFakeStats = (seedId: string) => {
@@ -50,6 +56,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [selectedDetailItem, setSelectedDetailItem] = useState<ExplorerItem | null>(null);
+  const [activeTag, setActiveTag] = useState('All');
 
   const observer = useRef<IntersectionObserver | null>(null);
 
@@ -183,6 +190,28 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
             </div>
          </div>
       </div>
+
+      {/* Tags Filter Strip */}
+      {!activePreviewUrl && (
+        <div className="bg-white/50 dark:bg-[#0c0c0e]/50 backdrop-blur-sm border-b border-black/5 dark:border-white/5 px-4 md:px-8 py-3 flex items-center gap-3 overflow-x-auto no-scrollbar shrink-0">
+          <Tag size={14} className="text-slate-400 shrink-0" />
+          <div className="flex gap-2">
+            {CATEGORY_TAGS.map(tag => (
+              <button
+                key={tag}
+                onClick={() => setActiveTag(tag)}
+                className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
+                  activeTag === tag 
+                  ? 'bg-brand-blue border-brand-blue text-white shadow-lg' 
+                  : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/5 text-slate-500 dark:text-gray-400 hover:border-brand-blue'
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex-grow p-4 md:p-8 lg:p-12 relative overflow-y-auto no-scrollbar">
          <AnimatePresence mode="wait">

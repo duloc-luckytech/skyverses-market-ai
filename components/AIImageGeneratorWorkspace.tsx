@@ -29,6 +29,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         )}
       </AnimatePresence>
 
+      {/* Cột 1: Sidebar Điều khiển (Trái) */}
       <GeneratorSidebar 
         onClose={onClose}
         activeMode={g.activeMode}
@@ -47,7 +48,6 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         setIsBulkImporting={g.setIsBulkImporting}
         bulkText={g.bulkText}
         setBulkText={g.setBulkText}
-        // Fix: Completed handleBulkImport logic
         handleBulkImport={() => {
           if (!g.bulkText.trim()) { g.setIsBulkImporting(false); return; }
           const lines = g.bulkText.split('\n').map(l => l.trim()).filter(l => l !== '');
@@ -72,11 +72,13 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         setIsMobileExpanded={setIsMobileExpanded}
       />
 
+      {/* Cột 2: Viewport Hiển thị (Giữa) */}
       <GeneratorViewport 
         onClose={onClose}
         activePreviewUrl={g.activePreviewUrl}
         setActivePreviewUrl={g.setActivePreviewUrl}
         zoomLevel={g.zoomLevel}
+        // fix error in line 82: use g.setZoomLevel instead of setZoomLevel
         setZoomLevel={g.setZoomLevel}
         onApplyExample={(item) => {
           g.setPrompt(item.prompt);
@@ -132,6 +134,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
       <ProductImageWorkspace 
         isOpen={g.isEditorOpen} 
+        // fix error in line 137: use g.setIsEditorOpen(false) instead of setIsEditorOpen(false)
         onClose={() => g.setIsEditorOpen(false)} 
         initialImage={g.editorImage}
         onApply={g.handleEditorApply}
@@ -140,5 +143,4 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   );
 };
 
-// Fix: Added missing default export
 export default AIImageGeneratorWorkspace;
