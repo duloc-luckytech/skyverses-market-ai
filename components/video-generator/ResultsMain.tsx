@@ -140,7 +140,7 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
             
             {processingCount > 0 && (
               <div className="flex items-center gap-2 px-3 py-1 bg-brand-blue/10 border border-brand-blue/20 rounded-full">
-                <Loader2 size={12} className="animate-spin text-brand-blue" />
+                <div className="w-1 h-1 bg-brand-blue rounded-full animate-ping"></div>
                 <span className="text-[8px] font-black uppercase text-brand-blue animate-pulse">{processingCount} ĐANG TẠO...</span>
               </div>
             )}
@@ -296,7 +296,7 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
                           key={res.id} res={res} 
                           isSelected={selectedVideoIds.includes(res.id)} 
                           onToggleSelect={() => toggleSelect(res.id)} 
-                          onFullscreen={setFullscreenVideo} 
+                          onFullscreen={(url, hasSound, id) => setFullscreenVideo({ url, hasSound, id })} 
                           onDelete={deleteResult} 
                           onRetry={handleRetry} 
                           onDownload={triggerDownload} 
