@@ -222,13 +222,13 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* CINEMATIC STUDIO BLOCK */}
+              {/* VIDEO STUDIO BLOCK */}
               {sectionedSolutions.video.length > 0 && (
                 <section>
                   <MarketSectionHeader 
                     icon={Video} 
-                    title="Cinematic Studio" 
-                    subtitle="High-end AI motion for professional storytelling"
+                    title="Video Studio" 
+                    subtitle="AI motion engines for high-end cinematic production"
                     count={sectionedSolutions.video.length} 
                     colorClass="text-purple-500" 
                     onScrollLeft={() => scroll(videoRef, 'left')} 
@@ -250,13 +250,13 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* CREATIVE STUDIO BLOCK */}
+              {/* CREATIVE STUDIO BLOCK (APP IMAGES) */}
               {sectionedSolutions.image.length > 0 && (
                 <section>
                   <MarketSectionHeader 
                     icon={ImageIcon} 
                     title="Creative Studio" 
-                    subtitle="Precision visual synthesis for modern designers"
+                    subtitle="High-fidelity visual synthesis for design systems"
                     count={sectionedSolutions.image.length} 
                     colorClass="text-brand-blue" 
                     onScrollLeft={() => scroll(imageRef, 'left')} 
@@ -278,13 +278,13 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* UTILITY LAB BLOCK */}
+              {/* UTILITY LAB BLOCK (APP OTHERS) */}
               {sectionedSolutions.others.length > 0 && (
                 <section>
                   <MarketSectionHeader 
                     icon={LayoutGrid} 
                     title="Utility Lab" 
-                    subtitle="Powerful agents for complex production workflows"
+                    subtitle="Neural agents for automated operational tasks"
                     count={sectionedSolutions.others.length} 
                     colorClass="text-emerald-500" 
                     onScrollLeft={() => scroll(othersRef, 'left')} 

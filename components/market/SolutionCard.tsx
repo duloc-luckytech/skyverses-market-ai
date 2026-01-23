@@ -52,8 +52,8 @@ export const SolutionCard: React.FC<SolutionCardProps> = ({
         </div>
         <div className="mt-auto pt-4 flex justify-between items-center border-t border-black/5 dark:border-white/5">
            <div className="flex items-center gap-3 md:gap-4">
-              <div className="flex items-center gap-1 md:gap-1.5 opacity-40 group-hover:opacity-80 transition-opacity"><Users size={12} /><span className="text-[8px] md:text-[10px] font-black text-gray-500">{stats.users}</span></div>
-              <button onClick={(e) => onToggleLike(e, targetId)} className={`flex items-center gap-1 md:gap-1.5 transition-all ${isLiked ? 'text-red-500 opacity-100' : 'opacity-40 group-hover:opacity-80 text-gray-500'}`}><Heart size={12} fill="currentColor" /><span className="text-[8px] md:text-[10px] font-black">{stats.likes}</span></button>
+              <div className="flex items-center gap-1 md:gap-1.5 opacity-40 group-hover:opacity-80 transition-opacity"><Users size={12} /><span className="text-[8px] font-black text-gray-500">{stats.users}</span></div>
+              <button onClick={(e) => onToggleLike(e, targetId)} className={`flex items-center gap-1 md:gap-1.5 transition-all ${isLiked ? 'text-red-500 opacity-100' : 'opacity-40 group-hover:opacity-80 text-gray-500'}`}><Heart size={12} fill="currentColor" /><span className="text-[8px] font-black">{stats.likes}</span></button>
            </div>
            <div>{sol.isFree ? <span className="px-1.5 md:px-2 py-0.5 md:py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[6px] md:text-[9px] font-black uppercase tracking-widest rounded-sm">FREE</span> : <div className="flex items-center gap-1 pl-1 pr-2 py-0.5 md:py-1 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full"><div className="w-3.5 h-3.5 md:w-5 md:h-5 rounded-full bg-brand-blue flex items-center justify-center text-white"><Zap fill="currentColor" className="w-2 h-2 md:w-2.5 md:h-2.5" /></div><span className="text-[8px] md:text-[11px] font-black italic text-black dark:text-white leading-none">{sol.priceCredits}</span></div>}</div>
         </div>
