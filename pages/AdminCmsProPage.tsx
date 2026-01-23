@@ -63,7 +63,7 @@ const AdminCmsProPage = () => {
   const [isAiModelDrawerOpen, setIsAiModelDrawerOpen] = useState(false);
   const [editingAiModelId, setEditingAiModelId] = useState<string | null>(null);
 
-  // Fix: Added missing state variables for form payloads
+  // Payloads
   const [packPayload, setPackPayload] = useState<CreditPackageRequest>({
     code: '', name: '', description: '', credits: 1000, bonusPercent: 0, bonusCredits: 0,
     price: 0, originalPrice: 0, currency: 'VND', billingCycle: 'monthly', billedMonths: 1,
@@ -110,8 +110,6 @@ const AdminCmsProPage = () => {
       } else if (activeTab === 'AI_MODELS') {
         const res = await aiModelsApi.getModels();
         if (res.data) setAiModels(res.data);
-      } else if (activeTab === 'EXPLORER') {
-        // Handled inside ExplorerTab
       } else {
         const solRes = await marketApi.getSolutions();
         if (solRes && solRes.data) setRemoteSolutions(solRes.data);
@@ -259,23 +257,13 @@ const AdminCmsProPage = () => {
   };
 
   const handleDeletePack = async (id: string) => {
-    if (!window.confirm("CẢNH BÁO: Bạn có chắc chắn muốn xóa vĩnh viễn gói nạp này? Hành động này không thể hoàn tác.")) return;
-    
+    if (!window.confirm("CẢNH BÁO: Xóa vĩnh viễn gói nạp này?")) return;
     setLoading(true);
     try {
       const res = await creditsApi.deletePackage(id);
-      if (res.success) {
-        alert("✅ Thành công: Gói nạp đã được xóa khỏi hệ thống.");
-        await fetchData();
-      } else {
-        alert(`❌ Thất bại: ${res.message || 'Không thể xóa gói nạp.'}`);
-      }
-    } catch (e) {
-      console.error(e);
-      alert("❌ Lỗi kết nối API.");
-    } finally {
-      setLoading(false);
-    }
+      if (res.success) await fetchData();
+    } catch (e) { console.error(e); }
+    finally { setLoading(false); }
   };
 
   const handleSavePack = async () => {
@@ -284,14 +272,11 @@ const AdminCmsProPage = () => {
       let res;
       if (editingPackId) res = await creditsApi.updatePackage(editingPackId, packPayload);
       else res = await creditsApi.createPackage(packPayload);
-      
       if (res.success) {
         await fetchData();
         setIsPackDrawerOpen(false);
         setEditingPackId(null);
         alert("✅ Thành công: Cấu hình kinh tế đã được đồng bộ.");
-      } else {
-        alert(`❌ Thất bại: ${(res as any).message || 'Vui lòng kiểm tra lại dữ liệu.'}`);
       }
     } catch (e) { console.error(e); }
     finally { setIsSaving(false); }
@@ -300,15 +285,9 @@ const AdminCmsProPage = () => {
   const handleEditAiModel = (model: AIModel) => {
     setEditingAiModelId(model._id);
     setAiModelPayload({
-      key: model.key,
-      name: model.name,
-      logoUrl: model.logoUrl,
-      route: model.route,
-      description: model.description || '',
-      provider: model.provider || '',
-      category: model.category || 'text',
-      order: model.order,
-      status: model.status
+      key: model.key, name: model.name, logoUrl: model.logoUrl, route: model.route,
+      description: model.description || '', provider: model.provider || '',
+      category: model.category || 'text', order: model.order, status: model.status
     });
     setIsAiModelDrawerOpen(true);
   };
@@ -319,14 +298,11 @@ const AdminCmsProPage = () => {
       let res;
       if (editingAiModelId) res = await aiModelsApi.updateModel(editingAiModelId, aiModelPayload);
       else res = await aiModelsApi.createModel(aiModelPayload);
-      
       if (res.success) {
         await fetchData();
         setIsAiModelDrawerOpen(false);
         setEditingAiModelId(null);
         alert("✅ Thành công: Danh mục Model đã được cập nhật.");
-      } else {
-        alert("❌ Thất bại: " + ((res as any).message || "Lỗi cập nhật."));
       }
     } catch (e) { console.error(e); }
     finally { setIsSaving(false); }
@@ -430,11 +406,8 @@ const AdminCmsProPage = () => {
         await fetchData();
         setIsPricingDrawerOpen(false);
         setEditingPricingId(null);
-        alert(editingPricingId ? "✅ Thành công: Bảng giá đã được cập nhật." : "✅ Thành công: Bảng giá mới đã được khởi tạo.");
-      } else {
-        alert("❌ Thất bại: " + (res.message || "Lỗi đồng bộ ma trận giá."));
       }
-    } catch (e) { alert("❌ Lỗi hệ thống."); } finally { setIsSaving(false); }
+    } catch (e) { console.error(e); } finally { setIsSaving(false); }
   };
 
   const togglePricingExpand = (id: string) => {
@@ -464,9 +437,9 @@ const AdminCmsProPage = () => {
     <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#020203] text-black dark:text-white font-sans transition-colors duration-500 flex flex-col md:flex-row pt-24">
       
       {/* SIDEBAR NAVIGATION */}
-      <aside className="w-full md:w-80 shrink-0 border-r border-black/5 dark:border-white/5 bg-white dark:bg-[#08080a] flex flex-col z-[100] transition-all">
+      <aside className="w-full md:w-80 shrink-0 border-r border-slate-200 dark:border-white/5 bg-white dark:bg-[#08080a] flex flex-col z-[100] transition-all">
          <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center gap-3">
-            <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center text-white">
+            <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center text-white shadow-lg">
                <ShieldCheck size={18} />
             </div>
             <div>
@@ -475,7 +448,7 @@ const AdminCmsProPage = () => {
             </div>
          </div>
 
-         <div className="flex-grow p-4 space-y-1 overflow-y-auto no-scrollbar equator-content">
+         <div className="flex-grow p-4 space-y-1 overflow-y-auto no-scrollbar">
             {sidebarItems.map((item) => (
               <button 
                 key={item.id}
@@ -492,13 +465,13 @@ const AdminCmsProPage = () => {
 
       {/* MAIN CONTENT AREA */}
       <main className="flex-grow overflow-y-auto no-scrollbar flex flex-col">
-        <header className="p-8 lg:p-12 border-b border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-start md:items-end gap-8 bg-white dark:bg-[#020203] sticky top-0 z-[90] backdrop-blur-md bg-opacity-80 dark:bg-opacity-80">
+        <header className="p-8 lg:p-12 border-b border-slate-200 dark:border-white/5 flex flex-col md:flex-row justify-between items-start md:items-end gap-8 bg-white dark:bg-[#020203] sticky top-0 z-[90] backdrop-blur-md bg-opacity-80 dark:bg-opacity-80 transition-colors">
            <div className="space-y-3">
               <div className="flex items-center gap-3 text-brand-blue">
                  <Terminal size={18} className="animate-pulse" />
                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 italic">SYSTEM_PATH: /ADMIN/{activeTab}</span>
               </div>
-              <h1 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter italic leading-none">
+              <h1 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter italic leading-none text-slate-900 dark:text-white">
                 {sidebarItems.find(i => i.id === activeTab)?.label} <span className="text-brand-blue">Hub.</span>
               </h1>
            </div>
@@ -555,19 +528,18 @@ const AdminCmsProPage = () => {
              {activeTab === 'PRICING' && (
                <div className="flex flex-col h-full animate-in fade-in duration-700">
                  {/* PRICING TOOLBAR */}
-                 <div className="flex flex-col lg:flex-row justify-between items-center gap-6 bg-white dark:bg-[#08080a] p-8 lg:p-12 border-b border-black/5 dark:border-white/5 transition-all">
+                 <div className="flex flex-col lg:flex-row justify-between items-center gap-6 bg-white dark:bg-[#08080a] p-8 lg:p-12 border-b border-slate-200 dark:border-white/5 transition-all">
                     <div className="relative w-full lg:w-96 group">
                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue transition-colors" size={20} />
                        <input 
                          type="text" value={search} onChange={e => setSearch(e.target.value)}
                          placeholder="Tìm theo tên hoặc model key..."
-                         className="w-full bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:border-brand-blue outline-none transition-all shadow-sm"
+                         className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:border-brand-blue outline-none transition-all shadow-sm text-slate-800 dark:text-white"
                        />
                     </div>
 
                     <div className="flex flex-wrap items-center gap-4">
-                       {/* Tool Filter Group */}
-                       <div className="flex bg-black/5 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/10 shadow-inner">
+                       <div className="flex bg-slate-100 dark:bg-white/5 p-1.5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-inner">
                           {[
                             { id: '', label: 'Tất cả' },
                             { id: 'image', label: 'Image AI' },
@@ -576,27 +548,27 @@ const AdminCmsProPage = () => {
                             <button 
                               key={t.id}
                               onClick={() => updatePricingFilter('tool', t.id)}
-                              className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${pricingFilters.tool === t.id ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-xl shadow-brand-blue/10' : 'text-gray-500 hover:text-black dark:hover:text-white'}`}
+                              className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${pricingFilters.tool === t.id ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-xl shadow-brand-blue/10' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
                             >
                               {t.label}
                             </button>
                           ))}
                        </div>
 
-                       <div className="flex items-center gap-4 bg-black/5 dark:bg-white/5 p-2 rounded-2xl border border-black/5 dark:border-white/10">
-                          <div className="flex items-center gap-3 px-4 border-r border-black/10 dark:border-white/10 last:border-0">
+                       <div className="flex items-center gap-4 bg-slate-100 dark:bg-white/5 p-2 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
+                          <div className="flex items-center gap-3 px-4 border-r border-slate-200 dark:border-white/10 last:border-0">
                              <span className="text-[9px] font-black uppercase text-gray-400">Engine</span>
                              <input 
                                type="text" value={pricingFilters.engine} onChange={e => updatePricingFilter('engine', e.target.value)}
-                               className="bg-transparent border-none outline-none text-[11px] font-bold w-16"
+                               className="bg-transparent border-none outline-none text-[11px] font-bold w-16 text-slate-800 dark:text-white"
                                placeholder="gommo"
                              />
                           </div>
-                          <div className="flex items-center gap-3 px-4 border-r border-black/10 dark:border-white/10 last:border-0">
+                          <div className="flex items-center gap-3 px-4 border-r border-slate-200 dark:border-white/10 last:border-0">
                              <span className="text-[9px] font-black uppercase text-gray-400">Key</span>
                              <input 
                                type="text" value={pricingFilters.modelKey} onChange={e => updatePricingFilter('modelKey', e.target.value)}
-                               className="bg-transparent border-none outline-none text-[11px] font-bold w-20"
+                               className="bg-transparent border-none outline-none text-[11px] font-bold w-20 text-slate-800 dark:text-white"
                                placeholder="veo_3_1"
                              />
                           </div>
@@ -622,13 +594,13 @@ const AdminCmsProPage = () => {
              )}
              {activeTab === 'AI_MODELS' && (
                 <div className="flex flex-col h-full animate-in fade-in duration-700">
-                  <div className="p-8 lg:p-12 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-white dark:bg-[#08080a]">
+                  <div className="p-8 lg:p-12 border-b border-slate-200 dark:border-white/5 flex justify-between items-center bg-white dark:bg-[#08080a] transition-colors">
                      <div className="relative w-96 group">
                         <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue" size={18} />
                         <input 
                           type="text" value={search} onChange={e => setSearch(e.target.value)}
                           placeholder="Tìm model..."
-                          className="w-full bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold outline-none focus:border-brand-blue transition-all"
+                          className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold outline-none focus:border-brand-blue transition-all text-slate-800 dark:text-white"
                         />
                      </div>
                   </div>
@@ -669,7 +641,7 @@ const AdminCmsProPage = () => {
                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                className="relative w-full max-w-2xl bg-white dark:bg-[#0c0c0e] h-full shadow-3xl flex flex-col border-l border-black/10 dark:border-white/10 text-slate-900 dark:text-white"
              >
-                <div className="p-8 border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40">
+                <div className="p-8 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40 transition-colors">
                    <div className="flex items-center gap-4">
                       <div className="w-10 h-10 bg-brand-blue/10 flex items-center justify-center text-brand-blue rounded-lg">
                          <Settings size={20} />
@@ -686,8 +658,8 @@ const AdminCmsProPage = () => {
 
                 <div className="flex-grow overflow-y-auto p-8 space-y-10 no-scrollbar">
                    {/* Preview Header */}
-                   <div className="aspect-video bg-black rounded-lg overflow-hidden border border-white/10 relative group">
-                      <img src={editedItem.imageUrl} className="w-full h-full object-cover opacity-60" alt="" />
+                   <div className="aspect-video bg-black rounded-lg overflow-hidden border border-white/10 relative group shadow-inner">
+                      <img src={editedItem.imageUrl} className="w-full h-full object-cover opacity-60 transition-opacity duration-1000 group-hover:opacity-100" alt="" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                       <div className="absolute bottom-6 left-6 space-y-1">
                          <h4 className="text-xl font-black uppercase text-white tracking-tighter italic">{editedItem.name.en || 'UNNAMED_NODE'}</h4>
@@ -705,7 +677,7 @@ const AdminCmsProPage = () => {
                       <div className="grid grid-cols-2 gap-8">
                          <div className="space-y-3">
                             <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">Access Type</label>
-                            <div className="flex bg-black/5 dark:bg-white/5 p-1 rounded-xl">
+                            <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-xl shadow-inner transition-colors">
                                <button onClick={() => setEditedItem({...editedItem, isFree: true})} className={`flex-grow py-2 text-[10px] font-black uppercase rounded-lg transition-all ${editedItem.isFree ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-500'}`}>Free</button>
                                <button onClick={() => setEditedItem({...editedItem, isFree: false})} className={`flex-grow py-2 text-[10px] font-black uppercase rounded-lg transition-all ${!editedItem.isFree ? 'bg-orange-500 text-white shadow-lg' : 'text-gray-500'}`}>Paid</button>
                             </div>
@@ -745,21 +717,20 @@ const AdminCmsProPage = () => {
                            onChange={val => setEditedItem({...editedItem, models: val.split(',').map(s => s.trim()).filter(s => s !== '')} as any)} 
                            placeholder="gpt3.5, midjourney, veo3.1..."
                          />
-                         {/* Added Tags Input Field */}
                          <EditInput 
                            label="Registry Tags (Comma separated)" 
                            value={(editedItem.tags || []).join(', ')} 
                            onChange={val => setEditedItem({...editedItem, tags: val.split(',').map(s => s.trim()).filter(s => s !== '')} as any)} 
                            placeholder="Cyberpunk, Cinematic, Unreal Engine..."
                          />
-                         <EditInput label="Visual Asset URL" value={editedItem.imageUrl} onChange={v => setEditedItem({...editedItem, imageUrl: v})} />
+                         <EditInput label="Visual Asset URL" value={editingItem.imageUrl} onChange={v => setEditedItem({...editedItem, imageUrl: v})} />
                          <EditInput label="Pricing Reference" value={editedItem.priceReference || ''} onChange={v => setEditedItem({...editedItem, priceReference: v})} />
                       </div>
                    </div>
                 </div>
 
-                <div className="p-8 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 flex justify-between items-center gap-6 shrink-0">
-                   <button onClick={() => { setEditingId(null); setEditedItem(null); }} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black dark:hover:text-white transition-colors">Abort_Changes</button>
+                <div className="p-8 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/40 flex justify-between items-center gap-6 shrink-0 transition-colors">
+                   <button onClick={() => { setEditingId(null); setEditedItem(null); }} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">Abort_Changes</button>
                    <button 
                      onClick={handleSaveSolution}
                      disabled={isSaving}
@@ -788,7 +759,7 @@ const AdminCmsProPage = () => {
                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                className="relative w-full max-w-2xl bg-white dark:bg-[#0c0c0e] h-full shadow-3xl flex flex-col border-l border-black/10 dark:border-white/10 text-slate-900 dark:text-white"
              >
-                <div className="p-8 border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40">
+                <div className="p-8 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40 transition-colors">
                    <div className="flex items-center gap-4">
                       <div className="w-10 h-10 bg-brand-blue/10 flex items-center justify-center text-brand-blue rounded-lg">
                          <DollarSign size={20} />
@@ -895,8 +866,8 @@ const AdminCmsProPage = () => {
                    </div>
                 </div>
 
-                <div className="p-8 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 flex justify-between items-center gap-6 shrink-0">
-                   <button onClick={() => { setIsPricingDrawerOpen(false); setEditingPricingId(null); }} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black dark:hover:text-white transition-colors">Abort_Changes</button>
+                <div className="p-8 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/40 flex justify-between items-center gap-6 shrink-0 transition-colors">
+                   <button onClick={() => { setIsPricingDrawerOpen(false); setEditingPricingId(null); }} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">Abort_Changes</button>
                    <button 
                      onClick={handleSavePricing}
                      disabled={isSaving}
@@ -917,7 +888,7 @@ const AdminCmsProPage = () => {
           <div className="fixed inset-0 z-[1000] flex justify-end">
              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsPackDrawerOpen(false)} />
              <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="relative w-full max-w-5xl bg-white dark:bg-[#0c0c0e] h-full shadow-3xl flex flex-col border-l border-black/10 dark:border-white/10 text-slate-900 dark:text-white overflow-hidden">
-                <div className="p-8 border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40">
+                <div className="p-8 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40 transition-colors">
                    <div className="flex items-center gap-5">
                       <div className="w-14 h-14 bg-brand-blue/10 flex items-center justify-center text-brand-blue rounded-2xl shadow-inner"><Coins size={28} /></div>
                       <div>
@@ -958,7 +929,7 @@ const AdminCmsProPage = () => {
                    </div>
 
                    {/* 2. Quota & Engine */}
-                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-12 border-t border-black/5">
+                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-12 border-t border-slate-200 dark:border-white/5 transition-colors">
                       <div className="space-y-6">
                         <h4 className="text-[11px] font-black uppercase text-brand-blue tracking-[0.4em] border-b border-brand-blue/20 pb-2 flex items-center gap-3"><Zap size={14}/> Quota_Algorithm</h4>
                         <EditInput label="BASE CREDITS" type="number" value={packPayload.credits.toString()} onChange={(v) => setPackPayload({...packPayload, credits: parseInt(v) || 0})} />
@@ -980,7 +951,7 @@ const AdminCmsProPage = () => {
                            <EditInput label="CTA TEXT" value={packPayload.ctaText || 'Nâng cấp ngay'} onChange={(v) => setPackPayload({...packPayload, ctaText: v})} />
                         </div>
                         
-                        <div className="p-6 bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-2xl space-y-4">
+                        <div className="p-6 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl space-y-4 shadow-inner transition-colors">
                            <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest">Ribbon Branding</label>
                            <div className="grid grid-cols-2 gap-4">
                               <EditInput label="TEXT" value={packPayload.ribbon?.text || ''} onChange={(v) => setPackPayload({...packPayload, ribbon: {...packPayload.ribbon!, text: v}})} />
@@ -992,7 +963,7 @@ const AdminCmsProPage = () => {
                    </div>
 
                    {/* 3. Features & Unlimited Models (DYNAMIC LISTS) */}
-                   <div className="space-y-12 pt-12 border-t border-black/5">
+                   <div className="space-y-12 pt-12 border-t border-slate-200 dark:border-white/5 transition-colors">
                       {/* Features */}
                       <div className="space-y-6">
                          <div className="flex justify-between items-center border-b border-brand-blue/20 pb-2">
@@ -1004,8 +975,8 @@ const AdminCmsProPage = () => {
                          </div>
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {(packPayload.features || []).map((feat, idx) => (
-                               <div key={idx} className="p-4 bg-slate-50 dark:bg-white/[0.02] border border-black/5 rounded-xl space-y-4 relative group">
-                                  <button onClick={() => setPackPayload({...packPayload, features: packPayload.features?.filter((_, i) => i !== idx)})} className="absolute top-2 right-2 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={12}/></button>
+                               <div key={idx} className="p-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-xl space-y-4 relative group transition-all hover:border-brand-blue/30 shadow-sm">
+                                  <button onClick={() => setPackPayload({...packPayload, features: packPayload.features?.filter((_, i) => i !== idx)})} className="absolute top-2 right-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={12}/></button>
                                   <div className="grid grid-cols-2 gap-3">
                                      <EditInput label="KEY" value={feat.key} onChange={(v) => {
                                         const next = [...packPayload.features!];
@@ -1046,8 +1017,8 @@ const AdminCmsProPage = () => {
                          </div>
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {(packPayload.unlimitedModels || []).map((model, idx) => (
-                               <div key={idx} className="p-4 bg-slate-50 dark:bg-white/[0.02] border border-black/5 rounded-xl space-y-4 relative group">
-                                  <button onClick={() => setPackPayload({...packPayload, unlimitedModels: packPayload.unlimitedModels?.filter((_, i) => i !== idx)})} className="absolute top-2 right-2 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={12}/></button>
+                               <div key={idx} className="p-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-xl space-y-4 relative group transition-all hover:border-brand-blue/30 shadow-sm">
+                                  <button onClick={() => setPackPayload({...packPayload, unlimitedModels: packPayload.unlimitedModels?.filter((_, i) => i !== idx)})} className="absolute top-2 right-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={12}/></button>
                                   <div className="grid grid-cols-2 gap-3">
                                      <EditInput label="MODEL KEY" value={model.modelKey} onChange={(v) => {
                                         const next = [...packPayload.unlimitedModels!];
@@ -1087,7 +1058,7 @@ const AdminCmsProPage = () => {
                       {/* Theme Config */}
                       <div className="space-y-6">
                          <h4 className="text-[11px] font-black uppercase text-brand-blue tracking-[0.4em] border-b border-brand-blue/20 pb-2 flex items-center gap-3"><Palette size={14}/> Theme_Matrix</h4>
-                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-slate-50 dark:bg-white/[0.02] border border-black/5 rounded-2xl">
+                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl shadow-inner transition-colors">
                             <EditInput label="GRADIENT FROM" value={packPayload.theme?.gradientFrom || ''} onChange={v => setPackPayload({...packPayload, theme: {...packPayload.theme!, gradientFrom: v}})} />
                             <EditInput label="GRADIENT TO" value={packPayload.theme?.gradientTo || ''} onChange={v => setPackPayload({...packPayload, theme: {...packPayload.theme!, gradientTo: v}})} />
                             <EditInput label="ACCENT COLOR" value={packPayload.theme?.accentColor || ''} onChange={v => setPackPayload({...packPayload, theme: {...packPayload.theme!, accentColor: v}})} />
@@ -1097,7 +1068,7 @@ const AdminCmsProPage = () => {
                    </div>
                 </div>
 
-                <div className="p-10 border-t border-black/10 dark:border-white/10 bg-slate-50 dark:bg-black/60 flex justify-between items-center gap-10 shrink-0">
+                <div className="p-10 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/60 flex justify-between items-center gap-10 shrink-0 transition-colors">
                    <button onClick={() => setIsPackDrawerOpen(false)} className="text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">Abort_Changes</button>
                    <button onClick={handleSavePack} disabled={isSaving} className="flex-grow bg-brand-blue text-white py-6 rounded-2xl text-[13px] font-black uppercase tracking-[0.4em] shadow-[0_20px_60px_rgba(0,144,255,0.3)] flex items-center justify-center gap-6 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 group relative overflow-hidden">
                       <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
@@ -1115,8 +1086,8 @@ const AdminCmsProPage = () => {
         {isAiModelDrawerOpen && (
           <div className="fixed inset-0 z-[1100] flex justify-end">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsAiModelDrawerOpen(false)} />
-            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="relative w-full max-w-2xl bg-white dark:bg-[#0c0c0e] h-full shadow-3xl flex flex-col border-l border-black/10 dark:border-white/10 text-slate-900 dark:text-white">
-              <div className="p-8 border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40">
+            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="relative w-full max-w-2xl bg-white dark:bg-[#0c0c0e] h-full shadow-3xl flex flex-col border-l border-black/10 dark:border-white/10 text-slate-900 dark:text-white transition-colors">
+              <div className="p-8 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40 transition-colors">
                 <div className="flex items-center gap-4">
                   <Bot className="text-brand-blue" size={24} />
                   <h3 className="text-xl font-black uppercase tracking-tight italic">
@@ -1146,8 +1117,8 @@ const AdminCmsProPage = () => {
                  <EditSelect label="STATUS" value={aiModelPayload.status || 'active'} options={['active', 'inactive', 'draft']} onChange={v => setAiModelPayload({...aiModelPayload, status: v as any})} />
               </div>
 
-              <div className="p-8 border-t border-black/5 dark:border-white/10 bg-slate-50 dark:bg-black/40 flex gap-4 shrink-0">
-                <button onClick={() => setIsAiModelDrawerOpen(false)} className="flex-grow py-4 border border-black/10 dark:border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-all">Hủy bỏ</button>
+              <div className="p-8 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/40 flex gap-4 shrink-0 transition-colors">
+                <button onClick={() => setIsAiModelDrawerOpen(false)} className="flex-grow py-4 border border-black/10 dark:border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-all text-slate-500">Hủy bỏ</button>
                 <button onClick={handleSaveAiModel} disabled={isSaving} className="flex-grow py-4 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all disabled:opacity-50">
                   {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Check size={16} />} 
                   {editingAiModelId ? 'Update Registry' : 'Publish Model'}
@@ -1167,14 +1138,14 @@ interface EditInputProps { label: string; value?: string; onChange: (val: string
 const EditInput = ({ label, value, onChange, placeholder, type = "text", disabled = false }: EditInputProps) => (
   <div className="space-y-2">
      <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">{label}</label>
-     <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} disabled={disabled} className={`w-full bg-slate-100 dark:bg-white/5 border border-black/5 dark:border-white/10 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all ${disabled ? 'opacity-50 grayscale cursor-not-allowed' : 'text-slate-900 dark:text-white shadow-inner focus:bg-white dark:focus:bg-black'}`} />
+     <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} disabled={disabled} className={`w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all ${disabled ? 'opacity-50 grayscale cursor-not-allowed' : 'text-slate-900 dark:text-white shadow-inner focus:bg-white dark:focus:bg-black'}`} />
   </div>
 );
 
 const EditTextArea = ({ label, value, onChange }: { label: string, value: string, onChange: (val: string) => void }) => (
   <div className="space-y-2">
      <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">{label}</label>
-     <textarea rows={3} value={value} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 rounded-xl text-[11px] font-bold outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all resize-none shadow-inner text-slate-900 dark:text-white" />
+     <textarea rows={3} value={value} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-5 rounded-xl text-[11px] font-bold outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all resize-none shadow-inner text-slate-900 dark:text-white" />
   </div>
 );
 
@@ -1182,7 +1153,7 @@ const EditSelect = ({ label, value, options, onChange }: { label: string, value:
   <div className="space-y-2">
      <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">{label}</label>
      <div className="relative">
-        <select value={value} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-black/5 dark:border-white/10 p-4 rounded-xl text-[10px] font-black uppercase outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all shadow-inner appearance-none cursor-pointer text-slate-900 dark:text-white">
+        <select value={value} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-[10px] font-black uppercase outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all shadow-inner appearance-none cursor-pointer text-slate-900 dark:text-white">
           {options.map((opt: string) => <option key={opt} value={opt} className="bg-white dark:bg-black">{opt.toUpperCase()}</option>)}
         </select>
         <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />

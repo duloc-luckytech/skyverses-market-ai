@@ -58,6 +58,7 @@ import ProductCharacterSync from './pages/ProductCharacterSync';
 import AIStylistPage from './pages/images/AIStylistPage';
 import StoryboardStudioPage from './pages/videos/StoryboardStudioPage';
 import AIImageRestoration from './pages/images/AIImageRestoration';
+import RealEstateAI from './pages/images/RealEstateAI';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -97,6 +98,7 @@ const App: React.FC = () => {
                       <Route path="/referral" element={<ReferralPage />} />
                       <Route path="/policy" element={<PolicyPage />} />
                       
+                      <Route path="/product/bat-dong-san-ai" element={<RealEstateAI />} />
                       <Route path="/product/ai-music-generator" element={<MusicGenerator />} />
                       <Route path="/product/ai-image-restorer" element={<AIImageRestoration />} />
                       <Route path="/product/storyboard-studio" element={<StoryboardStudioPage />} />

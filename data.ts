@@ -44,6 +44,41 @@ export const STORYBOARD_SAMPLES = [
 
 export const SOLUTIONS: Solution[] = [
   {
+    id: 'REAL-ESTATE-AI',
+    slug: 'bat-dong-san-ai',
+    name: { 
+      en: 'Real Estate AI', 
+      vi: 'Bất Động Sản AI', 
+      ko: '부동산 AI', 
+      ja: '不動産AI' 
+    },
+    category: { en: 'Design & Architecture', vi: 'Thiết kế & Kiến trúc', ko: '디자인 및 건축', ja: 'デザインと建築' },
+    description: { 
+      en: 'Professional AI for virtual interior staging and architectural renovation.', 
+      vi: 'Hệ thống AI chuyên nghiệp cho dàn dựng nội thất ảo và cải tạo kiến trúc.', 
+      ko: '가상 인테리어 스테이징 및 건축 리노베이션을 위한 전문 AI.', 
+      ja: '仮想インテリアステージングと建築リ노베이션のためのプロフェッショナルAI。' 
+    },
+    problems: ['Manual interior staging costs', 'Slow renovation visualization', 'Limited design variations', 'High architectural rendering fees'],
+    industries: ['Real Estate', 'Interior Design', 'Architecture', 'Construction'],
+    imageUrl: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'image',
+    tags: ['Real Estate', 'Interior', 'Architecture', 'Renovation'],
+    features: [
+      { en: 'AI Virtual Staging', vi: 'Dàn dựng nội thất ảo AI', ko: 'AI 가상 스테이징', ja: 'AIバーチャルステージング' },
+      { en: 'Architectural Renovation', vi: 'Cải tạo kiến trúc AI', ko: '건축 리노베이션', ja: '建築リノベーション' },
+      { en: 'Style Transfer', vi: 'Chuyển đổi phong cách nội thất', ko: '인테리어 스타일 전송', ja: 'インテリアスタイルの転送' }
+    ],
+    complexity: 'Advanced',
+    priceReference: '150 CR / design',
+    isActive: true,
+    priceCredits: 150,
+    neuralStack: [
+      { name: 'Vision Core v7.4', version: 'v7.4', capability: { en: 'Spatial Analysis', vi: 'Phân tích không gian', ko: '공간 분석', ja: '空間分析' } },
+      { name: 'Interior Engine', version: 'v2.0', capability: { en: 'Style Injection', vi: 'Tiêm phong cách', ko: '스타일 주입', ja: 'スタイルの注入' } }
+    ]
+  },
+  {
     id: 'VOICE-STUDIO-PRO',
     slug: 'ai-voice-studio',
     name: { 
@@ -67,7 +102,7 @@ export const SOLUTIONS: Solution[] = [
     features: [
       { en: 'Multi-lingual Neural Synthesis', vi: 'Tổng hợp thần kinh đa ngôn ngữ', ko: '다국어 신경 합성', ja: '多言語ニューラル合成' },
       { en: 'One-shot Voice Cloning', vi: 'Nhân bản giọng nói tức thì', ko: '원샷 보이스 클로닝', ja: 'ワンショットボイスクローニング' },
-      { en: 'Professional Script Mastering', vi: 'Làm chủ kịch bản chuyên nghiệp', ko: '전문 스크립트 마스터링', ja: 'プロフェッショナルスクリプトマスタリング' }
+      { en: 'Professional Script Mastering', vi: 'Làm chủ kịch bản chuyên nghiệp', ko: '전문 스크립트 마스터링', ja: 'プロフェッショナルスクリプト마스터링' }
     ],
     complexity: 'Advanced',
     priceReference: 'Starting from 0 credits',
@@ -122,7 +157,7 @@ export const SOLUTIONS: Solution[] = [
       ko: 'AI 이미지 복원 프로', 
       ja: 'AI画像復元プロ' 
     },
-    category: { en: 'Image Restoration', vi: 'Phục chế hình ảnh', ko: '이미지 복원', ja: '画像復元' },
+    category: { en: 'Image Restoration', vi: 'Phục chế hình ảnh', ko: '이미지 복원', ja: '画像復원' },
     description: { 
       en: 'Professional neural engine to restore old, blurred, or damaged photos to 4K crystalline quality.', 
       vi: 'Công cụ thần kinh chuyên nghiệp để phục chế ảnh cũ, mờ hoặc bị hỏng lên chất lượng 4K sắc nét.', 
