@@ -4,11 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { marketApi } from '../apis/market';
 import { Solution } from '../types';
 import { 
-  Bookmark, Loader2, Zap, 
-  Sparkles, X, MonitorPlay, 
-  Wand2, SearchX, Users, Heart,
-  Flame, Video, ImageIcon, LayoutGrid,
-  ChevronRight, ChevronLeft
+  X, SearchX, Flame, Video, ImageIcon, LayoutGrid
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -18,95 +14,11 @@ import ExploreMoreAI from '../components/ExploreMoreAI';
 import { motion, AnimatePresence } from 'framer-motion';
 import { handleAdminQuickLogin } from '../utils/adminAuth';
 
-const FeaturedSkeleton = () => (
-  <div className="mb-8 md:mb-12 grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 items-center border-b border-black/5 dark:border-white/5 pb-16 md:pb-24 animate-pulse">
-    <div className="lg:col-span-5 space-y-8">
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-2 bg-slate-200 dark:bg-white/5 rounded-full"></div>
-      </div>
-      <div className="space-y-4">
-        <div className="h-16 md:h-24 bg-slate-200 dark:bg-white/5 rounded-2xl w-full"></div>
-        <div className="h-16 md:h-24 bg-slate-200 dark:bg-white/5 rounded-2xl w-3/4"></div>
-      </div>
-      <div className="space-y-3">
-        <div className="h-4 bg-slate-100 dark:bg-white/5 rounded-lg w-full"></div>
-        <div className="h-4 bg-slate-100 dark:bg-white/5 rounded-lg w-5/6"></div>
-      </div>
-      <div className="flex gap-4 pt-4">
-        <div className="w-40 h-14 bg-slate-200 dark:bg-white/5 rounded-full"></div>
-        <div className="w-40 h-14 bg-slate-200 dark:bg-white/5 rounded-full"></div>
-      </div>
-    </div>
-    <div className="lg:col-span-7 flex justify-center lg:justify-end relative min-h-[300px] md:min-h-[400px]">
-      <div className="relative w-full max-w-[450px] aspect-[4/3] bg-slate-200 dark:bg-white/5 rounded-[2rem] opacity-50 shadow-2xl"></div>
-    </div>
-  </div>
-);
-
-const CardSkeleton = () => (
-  <div className="flex-shrink-0 w-[280px] md:w-[320px] xl:w-[calc(20%-1.2rem)] flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] rounded-xl overflow-hidden animate-pulse">
-    <div className="aspect-[16/10] bg-slate-200 dark:bg-white/5 relative">
-       <div className="absolute top-4 left-4 w-16 h-4 bg-black/10 dark:bg-white/5 rounded"></div>
-    </div>
-    <div className="p-4 md:p-6 space-y-4">
-      <div className="h-6 bg-slate-200 dark:bg-white/5 rounded w-3/4"></div>
-      <div className="space-y-2">
-        <div className="h-3 bg-slate-100 dark:bg-white/5 rounded w-full"></div>
-        <div className="h-3 bg-slate-100 dark:bg-white/5 rounded w-5/6"></div>
-      </div>
-    </div>
-  </div>
-);
-
-const MarketSectionHeader = ({ 
-  icon: Icon, 
-  title, 
-  count, 
-  colorClass,
-  onScrollLeft,
-  onScrollRight
-}: { 
-  icon: any, 
-  title: string, 
-  count: number, 
-  colorClass: string,
-  onScrollLeft?: () => void,
-  onScrollRight?: () => void
-}) => (
-  <div className="flex items-center justify-between mb-8 px-1">
-    <div className="flex items-center gap-4">
-      <div className={`p-3 rounded-2xl bg-opacity-10 shadow-sm ${colorClass.replace('text-', 'bg-')}`}>
-        <Icon size={24} className={colorClass} />
-      </div>
-      <div className="flex flex-col">
-        <h2 className={`text-2xl md:text-4xl font-black uppercase tracking-tighter italic ${colorClass}`}>{title}</h2>
-        <div className="flex items-center gap-2">
-          <div className={`h-0.5 w-12 rounded-full ${colorClass.replace('text-', 'bg-')}`}></div>
-          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{count} giải pháp</span>
-        </div>
-      </div>
-    </div>
-    <div className="flex items-center gap-3">
-      <div className="hidden md:flex items-center gap-2 mr-4">
-        <button 
-          onClick={onScrollLeft}
-          className="p-2 bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-sm"
-        >
-          <ChevronLeft size={16} />
-        </button>
-        <button 
-          onClick={onScrollRight}
-          className="p-2 bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-sm"
-        >
-          <ChevronRight size={16} />
-        </button>
-      </div>
-      <button className="hidden md:flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 hover:text-brand-blue transition-colors">
-        Xem tất cả <ChevronRight size={14} />
-      </button>
-    </div>
-  </div>
-);
+// Import các sub-components mới
+import { FeaturedSkeleton, CardSkeleton } from '../components/market/MarketSkeleton';
+import { MarketSectionHeader } from '../components/market/MarketSectionHeader';
+import { SolutionCard } from '../components/market/SolutionCard';
+import { FeaturedSection } from '../components/market/FeaturedSection';
 
 const MarketPage = () => {
   const { lang, t } = useLanguage();
@@ -122,8 +34,6 @@ const MarketPage = () => {
   const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
   const [likedItems, setLikedItems] = useState<string[]>([]);
-  
-  const [featuredIndex, setFeaturedIndex] = useState(0);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
 
   // Refs for horizontal scrolling
@@ -202,14 +112,6 @@ const MarketPage = () => {
   }, [query, primary, lang]);
 
   useEffect(() => {
-    if (featuredSolutions.length <= 1) return;
-    const interval = setInterval(() => {
-      setFeaturedIndex(prev => (prev + 1) % featuredSolutions.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [featuredSolutions]);
-
-  useEffect(() => {
     const saved = localStorage.getItem('skyverses_favorites');
     if (saved) setFavorites(JSON.parse(saved));
   }, []);
@@ -256,44 +158,6 @@ const MarketPage = () => {
     };
   }, [filteredSolutions]);
 
-  const SolutionCard: React.FC<{ sol: Solution, idx: number }> = ({ sol, idx }) => {
-    const targetId = sol._id || sol.id;
-    const stats = getFakeStats(targetId);
-    const isLiked = likedItems.includes(targetId);
-    return (
-      <div 
-        key={targetId} onClick={() => handleNavigate(sol.slug)}
-        className="flex-shrink-0 w-[280px] md:w-[320px] xl:w-[calc(20%-1.2rem)] snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] hover:border-brand-blue/40 transition-all duration-500 shadow-sm hover:shadow-2xl rounded-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 cursor-pointer"
-        style={{ animationDelay: `${idx * 40}ms` }}
-      >
-        <div className="relative aspect-[16/10] overflow-hidden bg-black">
-          <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-30 transition-all duration-1000" />
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 z-40">
-             <div className="px-5 py-2.5 bg-black/60 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2.5 shadow-2xl scale-90 group-hover:scale-100 transition-all duration-500">
-                <Sparkles size={14} className="text-brand-blue" fill="currentColor" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue">Initialize</span>
-             </div>
-          </div>
-          <button onClick={(e) => toggleFavorite(e, sol.id)} className={`absolute top-2 right-2 md:top-4 md:right-4 p-1.5 md:p-2.5 bg-black/60 backdrop-blur-md rounded-full border transition-all z-30 shadow-xl ${favorites.includes(sol.id) ? 'text-brand-blue border-brand-blue/50' : 'text-white/40 border-white/10 hover:text-brand-blue'}`}><Bookmark fill="currentColor" className="w-3.5 h-3.5 md:w-[18px] md:h-[18px]" /></button>
-          <div className="absolute top-2 left-2 md:top-4 md:left-4"><span className="bg-black/90 backdrop-blur-md text-white border border-white/20 px-1.5 md:px-3 py-0.5 md:py-1 text-[7px] md:text-[9px] font-black uppercase tracking-widest rounded-sm">{sol.category[lang]}</span></div>
-        </div>
-        <div className="p-3 md:p-6 flex-grow flex flex-col gap-3 md:gap-6 bg-white dark:bg-[#0d0d0f]">
-          <div className="space-y-2 md:space-y-4">
-            <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter text-brand-blue italic transition-colors flex-grow pr-2 truncate">{sol.name[lang]}</h3>
-            <p className="text-black/60 dark:text-white/50 text-[9px] md:text-[12px] leading-relaxed font-medium italic tracking-tight line-clamp-2 md:line-clamp-3">"{sol.description[lang]}"</p>
-          </div>
-          <div className="mt-auto pt-4 flex justify-between items-center border-t border-black/5 dark:border-white/5">
-             <div className="flex items-center gap-3 md:gap-4">
-                <div className="flex items-center gap-1 md:gap-1.5 opacity-40 group-hover:opacity-80 transition-opacity"><Users size={12} /><span className="text-[8px] md:text-[10px] font-black text-gray-500">{stats.users}</span></div>
-                <button onClick={(e) => toggleLike(e, targetId)} className={`flex items-center gap-1 md:gap-1.5 transition-all ${isLiked ? 'text-red-500 opacity-100' : 'opacity-40 group-hover:opacity-80 text-gray-500'}`}><Heart size={12} fill="currentColor" /><span className="text-[8px] md:text-[10px] font-black">{stats.likes}</span></button>
-             </div>
-             <div>{sol.isFree ? <span className="px-1.5 md:px-2 py-0.5 md:py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[6px] md:text-[9px] font-black uppercase tracking-widest rounded-sm">FREE</span> : <div className="flex items-center gap-1 pl-1 pr-2 py-0.5 md:py-1 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full"><div className="w-3.5 h-3.5 md:w-5 md:h-5 rounded-full bg-brand-blue flex items-center justify-center text-white"><Zap fill="currentColor" className="w-2 h-2 md:w-2.5 md:h-2.5" /></div><span className="text-[8px] md:text-[11px] font-black italic text-black dark:text-white leading-none">{sol.priceCredits}</span></div>}</div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   const logoUrl = "https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268";
 
   return (
@@ -305,65 +169,18 @@ const MarketPage = () => {
       <div className="relative z-10 pt-28 md:pt-44 max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
         
         {loading && featuredSolutions.length === 0 ? <FeaturedSkeleton /> : featuredSolutions.length > 0 && !query && (
-          <section className="mb-8 md:mb-12 grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 items-center border-b border-black/5 dark:border-white/5 pb-16 md:pb-24">
-            <div className="lg:col-span-5 space-y-6 md:space-y-10">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={featuredSolutions[featuredIndex].id}
-                  initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.6 }}
-                  className="space-y-6 md:space-y-8"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-ping"></div>
-                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-brand-blue italic">FEATURED_NODE // {featuredSolutions[featuredIndex].category[lang]}</span>
-                  </div>
-                  <div className="space-y-4">
-                    <h2 className="text-4xl md:text-5xl lg:text-7xl font-black uppercase tracking-tighter italic leading-[0.9] text-black dark:text-white">{featuredSolutions[featuredIndex].name[lang]}</h2>
-                    <p className="text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 font-medium leading-relaxed max-w-lg">{featuredSolutions[featuredIndex].description[lang]}</p>
-                  </div>
-                  <div className="flex gap-2 pt-2">
-                    {featuredSolutions.map((_, i) => (
-                      <button key={i} onClick={() => setFeaturedIndex(i)} className={`h-1 rounded-full transition-all duration-500 ${i === featuredIndex ? 'w-8 bg-brand-blue' : 'w-2 bg-gray-200 dark:bg-white/10'}`} />
-                    ))}
-                  </div>
-                  <div className="hidden lg:flex pt-4 md:pt-6 flex-wrap gap-3 md:gap-4">
-                    <button onClick={() => handleNavigate(featuredSolutions[featuredIndex].slug)} className="inline-flex items-center gap-4 md:gap-6 bg-brand-blue text-white px-8 md:px-10 py-4 md:py-5 rounded-full text-[10px] md:text-11px font-black uppercase tracking-[0.2em] shadow-2xl shadow-brand-blue/30 hover:scale-105 active:scale-95 transition-all group">Explore <Wand2 size={16} fill="currentColor" className="group-hover:translate-x-1 transition-transform" /></button>
-                    <button onClick={() => setIsDemoOpen(true)} className="inline-flex items-center gap-3 md:gap-4 bg-white dark:bg-white/5 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 px-8 md:px-10 py-4 md:py-5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-50 transition-all">Watch Demo <MonitorPlay size={16} /></button>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            <div className="lg:col-span-7 flex justify-center lg:justify-end pr-0 md:pr-20 relative min-h-[300px] md:min-h-[400px]">
-               <div className="relative w-full max-w-[450px] aspect-[4/3]">
-                  <AnimatePresence>
-                    {featuredSolutions.map((sol, idx) => {
-                      const offset = (idx - featuredIndex + featuredSolutions.length) % featuredSolutions.length;
-                      if (offset > 4) return null;
-                      return (
-                        <motion.div
-                          key={sol.id} initial={false}
-                          animate={{ x: offset * (window.innerWidth < 768 ? 12 : 25), y: offset * (window.innerWidth < 768 ? -10 : -20), scale: 1 - offset * 0.06, rotate: offset * 2, opacity: 1 - offset * 0.2, zIndex: featuredSolutions.length - offset }}
-                          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                          className={`absolute inset-0 rounded-2xl md:rounded-[2rem] overflow-hidden border-2 md:border-4 bg-black shadow-3xl cursor-pointer ${offset === 0 ? 'border-brand-blue' : 'border-white/10'}`}
-                          onClick={() => handleNavigate(sol.slug)}
-                        >
-                          <img src={sol.imageUrl} className="w-full h-full object-cover" alt="" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
-               </div>
-            </div>
-          </section>
+          <FeaturedSection 
+            solutions={featuredSolutions} 
+            lang={lang} 
+            onNavigate={handleNavigate} 
+            onOpenDemo={() => setIsDemoOpen(true)} 
+          />
         )}
 
         <AIModelsMarquee />
 
         <div className="sticky top-16 md:relative md:top-0 z-[140] transform-gpu bg-white/95 dark:bg-[#030304]/95 backdrop-blur-xl -mx-4 px-4 py-3 md:mx-0 md:px-0 md:py-0 md:bg-transparent md:backdrop-blur-none border-b border-black/5 dark:border-white/5 md:border-none transition-all duration-500">
-          < MarketSearchTerminal 
+          <MarketSearchTerminal 
             query={query} setQuery={setQuery}
             primary={primary} setPrimary={setPrimary}
             secondary={secondary} setSecondary={setSecondary}
@@ -373,20 +190,33 @@ const MarketPage = () => {
         <div className="space-y-24 relative z-10 md:border-t border-black/5 dark:border-white/5 pt-8">
           {(loading || isSearching) ? (
             <div className="flex gap-4 md:gap-8 overflow-x-hidden">
-              {[1,2,3,4,5].map(i => <CardSkeleton key={i} index={i} />)}
+              {[1,2,3,4,5].map(i => <CardSkeleton key={i} />)}
             </div>
           ) : filteredSolutions.length > 0 ? (
             <>
-              {/* TOP HOT BLOCK */}
+              {/* TOP CHOICE BLOCK (REPLACED TOP HOT) */}
               {sectionedSolutions.topHot.length > 0 && (
                 <section>
                   <MarketSectionHeader 
-                    icon={Flame} title="Top Hot" count={sectionedSolutions.topHot.length} colorClass="text-orange-500" 
-                    onScrollLeft={() => scroll(topHotRef, 'left')} onScrollRight={() => scroll(topHotRef, 'right')}
+                    icon={Flame} 
+                    title="Top Choice" 
+                    subtitle="Creator-recommended tools tailored for you" 
+                    count={sectionedSolutions.topHot.length} 
+                    colorClass="text-orange-500" 
+                    onScrollLeft={() => scroll(topHotRef, 'left')} 
+                    onScrollRight={() => scroll(topHotRef, 'right')}
                   />
                   <div ref={topHotRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.topHot.map((sol, idx) => (
-                      <SolutionCard key={sol.id} sol={sol} idx={idx} />
+                      <SolutionCard 
+                        key={sol.id} sol={sol} idx={idx} lang={lang} 
+                        isLiked={likedItems.includes(sol._id || sol.id)}
+                        isFavorited={favorites.includes(sol.id)}
+                        onToggleFavorite={toggleFavorite}
+                        onToggleLike={toggleLike}
+                        onClick={handleNavigate}
+                        stats={getFakeStats(sol._id || sol.id)}
+                      />
                     ))}
                   </div>
                 </section>
@@ -401,7 +231,15 @@ const MarketPage = () => {
                   />
                   <div ref={videoRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.video.map((sol, idx) => (
-                      <SolutionCard key={sol.id} sol={sol} idx={idx} />
+                      <SolutionCard 
+                        key={sol.id} sol={sol} idx={idx} lang={lang} 
+                        isLiked={likedItems.includes(sol._id || sol.id)}
+                        isFavorited={favorites.includes(sol.id)}
+                        onToggleFavorite={toggleFavorite}
+                        onToggleLike={toggleLike}
+                        onClick={handleNavigate}
+                        stats={getFakeStats(sol._id || sol.id)}
+                      />
                     ))}
                   </div>
                 </section>
@@ -416,7 +254,15 @@ const MarketPage = () => {
                   />
                   <div ref={imageRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.image.map((sol, idx) => (
-                      <SolutionCard key={sol.id} sol={sol} idx={idx} />
+                      <SolutionCard 
+                        key={sol.id} sol={sol} idx={idx} lang={lang} 
+                        isLiked={likedItems.includes(sol._id || sol.id)}
+                        isFavorited={favorites.includes(sol.id)}
+                        onToggleFavorite={toggleFavorite}
+                        onToggleLike={toggleLike}
+                        onClick={handleNavigate}
+                        stats={getFakeStats(sol._id || sol.id)}
+                      />
                     ))}
                   </div>
                 </section>
@@ -431,7 +277,15 @@ const MarketPage = () => {
                   />
                   <div ref={othersRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.others.map((sol, idx) => (
-                      <SolutionCard key={sol.id} sol={sol} idx={idx} />
+                      <SolutionCard 
+                        key={sol.id} sol={sol} idx={idx} lang={lang} 
+                        isLiked={likedItems.includes(sol._id || sol.id)}
+                        isFavorited={favorites.includes(sol.id)}
+                        onToggleFavorite={toggleFavorite}
+                        onToggleLike={toggleLike}
+                        onClick={handleNavigate}
+                        stats={getFakeStats(sol._id || sol.id)}
+                      />
                     ))}
                   </div>
                 </section>
