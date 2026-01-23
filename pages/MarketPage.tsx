@@ -205,6 +205,7 @@ const MarketPage = () => {
                     colorClass="text-orange-500" 
                     onScrollLeft={() => scroll(topHotRef, 'left')} 
                     onScrollRight={() => scroll(topHotRef, 'right')}
+                    onSeeAll={() => navigate('/category/topChoice')}
                   />
                   <div ref={topHotRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.topChoice.map((sol, idx) => (
@@ -233,6 +234,7 @@ const MarketPage = () => {
                     colorClass="text-purple-500" 
                     onScrollLeft={() => scroll(videoRef, 'left')} 
                     onScrollRight={() => scroll(videoRef, 'right')}
+                    onSeeAll={() => navigate('/category/video')}
                   />
                   <div ref={videoRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.video.map((sol, idx) => (
@@ -250,7 +252,7 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* CREATIVE STUDIO BLOCK (APP IMAGES) */}
+              {/* CREATIVE STUDIO BLOCK */}
               {sectionedSolutions.image.length > 0 && (
                 <section>
                   <MarketSectionHeader 
@@ -261,6 +263,7 @@ const MarketPage = () => {
                     colorClass="text-brand-blue" 
                     onScrollLeft={() => scroll(imageRef, 'left')} 
                     onScrollRight={() => scroll(imageRef, 'right')}
+                    onSeeAll={() => navigate('/category/image')}
                   />
                   <div ref={imageRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.image.map((sol, idx) => (
@@ -278,7 +281,7 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* UTILITY LAB BLOCK (APP OTHERS) */}
+              {/* UTILITY LAB BLOCK */}
               {sectionedSolutions.others.length > 0 && (
                 <section>
                   <MarketSectionHeader 
@@ -289,6 +292,7 @@ const MarketPage = () => {
                     colorClass="text-emerald-500" 
                     onScrollLeft={() => scroll(othersRef, 'left')} 
                     onScrollRight={() => scroll(othersRef, 'right')}
+                    onSeeAll={() => navigate('/category/others')}
                   />
                   <div ref={othersRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.others.map((sol, idx) => (

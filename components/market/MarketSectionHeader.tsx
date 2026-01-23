@@ -10,6 +10,7 @@ interface MarketSectionHeaderProps {
   subtitle?: string;
   onScrollLeft?: () => void;
   onScrollRight?: () => void;
+  onSeeAll?: () => void;
 }
 
 export const MarketSectionHeader: React.FC<MarketSectionHeaderProps> = ({ 
@@ -19,7 +20,8 @@ export const MarketSectionHeader: React.FC<MarketSectionHeaderProps> = ({
   colorClass,
   subtitle,
   onScrollLeft,
-  onScrollRight
+  onScrollRight,
+  onSeeAll
 }) => (
   <div className="flex items-center justify-between mb-8 px-1">
     <div className="flex items-center gap-4">
@@ -51,7 +53,10 @@ export const MarketSectionHeader: React.FC<MarketSectionHeaderProps> = ({
           <ChevronRight size={16} />
         </button>
       </div>
-      <button className="hidden md:flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 hover:text-brand-blue transition-colors">
+      <button 
+        onClick={onSeeAll}
+        className="hidden md:flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 hover:text-brand-blue transition-colors"
+      >
         Xem tất cả <ChevronRight size={14} />
       </button>
     </div>

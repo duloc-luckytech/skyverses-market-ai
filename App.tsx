@@ -11,6 +11,7 @@ import { ToastProvider } from './context/ToastContext';
 // Page Imports
 import LandingPage from './pages/LandingPage';
 import MarketPage from './pages/MarketPage';
+import CategoryPage from './pages/CategoryPage';
 import ExplorerPage from './pages/ExplorerPage';
 import AppsPage from './pages/AppsPage';
 import AppInterfacePage from './pages/AppInterfacePage';
@@ -85,6 +86,7 @@ const App: React.FC = () => {
                   <Layout>
                     <Routes>
                       <Route path="/" element={<MarketPage />} />
+                      <Route path="/category/:id" element={<CategoryPage />} />
                       <Route path="/studio" element={<LandingPage />} />
                       <Route path="/explorer" element={<ExplorerPage />} />
                       <Route path="/apps" element={<AppsPage />} />

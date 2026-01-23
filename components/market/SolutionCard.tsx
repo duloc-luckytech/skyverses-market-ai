@@ -13,10 +13,11 @@ interface SolutionCardProps {
   onToggleLike: (e: React.MouseEvent, id: string) => void;
   onClick: (slug: string) => void;
   stats: { users: string; likes: string };
+  isGrid?: boolean;
 }
 
 export const SolutionCard: React.FC<SolutionCardProps> = ({ 
-  sol, idx, lang, isLiked, isFavorited, onToggleFavorite, onToggleLike, onClick, stats 
+  sol, idx, lang, isLiked, isFavorited, onToggleFavorite, onToggleLike, onClick, stats, isGrid = false 
 }) => {
   const targetId = sol._id || sol.id;
   const currentLang = lang as Language;
@@ -24,7 +25,9 @@ export const SolutionCard: React.FC<SolutionCardProps> = ({
   return (
     <div 
       onClick={() => onClick(sol.slug)}
-      className="flex-shrink-0 w-[280px] md:w-[320px] xl:w-[calc(20%-1.2rem)] snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] hover:border-brand-blue/40 transition-all duration-500 shadow-sm hover:shadow-2xl rounded-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 cursor-pointer"
+      className={`flex-shrink-0 snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] hover:border-brand-blue/40 transition-all duration-500 shadow-sm hover:shadow-2xl rounded-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 cursor-pointer ${
+        isGrid ? 'w-full' : 'w-[280px] md:w-[320px]'
+      }`}
       style={{ animationDelay: `${idx * 40}ms` }}
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-black">
