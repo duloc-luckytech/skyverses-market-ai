@@ -1,23 +1,15 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Activity, Download, Wand2, 
-  Terminal, Edit3, ChevronLeft, 
+  Edit3, ChevronLeft, 
   Sparkles, X, LayoutGrid, ArrowLeft, Image as ImageIcon,
-  Loader2, Zap, AlertCircle, Eye, Heart
+  Loader2, Zap, AlertCircle, Eye, Heart, Maximize2
 } from 'lucide-react';
 import { ImageResult } from '../../hooks/useImageGenerator';
 import { ImageResultCard } from './ImageResultCard';
-
-interface ExplorerItem {
-  _id: string;
-  thumbnailUrl: string;
-  mediaUrl: string;
-  title: string;
-  prompt: string;
-  description?: string;
-}
+import ExplorerDetailModal, { ExplorerItem } from '../ExplorerDetailModal';
 
 interface GeneratorViewportProps {
   onClose?: () => void;
@@ -34,7 +26,6 @@ interface GeneratorViewportProps {
   deleteResult: (id: string) => void;
 }
 
-// Helper tương đồng với trang Explorer để tạo chỉ số giả lập đồng nhất
 const getFakeStats = (seedId: string) => {
   const hash = seedId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const views = (hash * 13) % 950 + 50;
@@ -52,35 +43,66 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
 }) => {
   const [explorerItems, setExplorerItems] = useState<ExplorerItem[]>([]);
   const [loadingExplorer, setLoadingExplorer] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [autoDownload, setAutoDownload] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [selectedDetailItem, setSelectedDetailItem] = useState<ExplorerItem | null>(null);
 
-  useEffect(() => {
-    const fetchExplorer = async () => {
-      if (results.length > 0 || explorerItems.length > 0) return;
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const fetchExplorer = async (pageNum: number, isInitial: boolean = false) => {
+    if (pageNum === 1) setLoadingExplorer(true);
+    else setIsFetchingMore(true);
+    
+    setError(null);
+    try {
+      const res = await fetch(`https://api.skyverses.com/explorer?page=${pageNum}&limit=20&type=image`);
+      const json = await res.json();
+      const items = json.data || (Array.isArray(json) ? json : []);
       
-      setLoadingExplorer(true);
-      setError(null);
-      try {
-        const res = await fetch('https://api.skyverses.com/explorer?page=1&limit=20&type=image');
-        const json = await res.json();
-        const items = json.data || (Array.isArray(json) ? json : []);
-        
-        if (Array.isArray(items)) {
+      if (Array.isArray(items)) {
+        if (isInitial) {
           setExplorerItems(items);
         } else {
-          setError("Không thể giải mã dữ liệu kịch bản.");
+          setExplorerItems(prev => [...prev, ...items]);
         }
-      } catch (err) {
-        console.error("Explorer fetch error:", err);
-        setError("Lỗi kết nối máy chủ kịch bản.");
-      } finally {
-        setLoadingExplorer(false);
+        setHasMore(items.length === 20);
+      } else {
+        setHasMore(false);
       }
-    };
+    } catch (err) {
+      console.error("Explorer fetch error:", err);
+      setError("Lỗi kết nối máy chủ kịch bản.");
+    } finally {
+      setLoadingExplorer(false);
+      setIsFetchingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    if (results.length === 0 && explorerItems.length === 0) {
+      fetchExplorer(1, true);
+    }
+  }, [results.length]);
+
+  const lastItemRef = useCallback((node: HTMLDivElement | null) => {
+    if (loadingExplorer || isFetchingMore) return;
+    if (observer.current) observer.current.disconnect();
     
-    fetchExplorer();
-  }, [results.length, explorerItems.length]);
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prev => {
+          const next = prev + 1;
+          fetchExplorer(next);
+          return next;
+        });
+      }
+    });
+
+    if (node) observer.current.observe(node);
+  }, [loadingExplorer, isFetchingMore, hasMore]);
 
   const handleManualDownload = () => {
     if (selectedIds.length > 0) {
@@ -105,7 +127,11 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               >
                 <ChevronLeft size={20} />
               </button>
-              <span className="lg:hidden text-[11px] font-black uppercase tracking-tighter italic text-slate-900 dark:text-white truncate">Image Generator</span>
+              
+              <div className="flex items-center gap-3">
+                 <h3 className="text-[13px] font-black uppercase tracking-tighter italic text-slate-900 dark:text-white transition-colors">Kết quả</h3>
+                 <div className="h-4 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
+              </div>
             </div>
 
             <Activity size={16} className="text-brand-blue shrink-0 hidden sm:inline" />
@@ -236,12 +262,14 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
 
                    {explorerItems.length > 0 ? (
                       <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 md:gap-6 space-y-4 md:space-y-6 pb-40">
-                         {explorerItems.map((item) => {
+                         {explorerItems.map((item, idx) => {
+                            const isLast = idx === explorerItems.length - 1;
                             const stats = getFakeStats(item._id);
                             return (
                                <motion.div 
                                   layout
                                   key={item._id}
+                                  ref={isLast ? lastItemRef : null}
                                   onClick={() => onApplyExample(item)}
                                   className="break-inside-avoid relative overflow-hidden bg-slate-100 dark:bg-[#0d0d0f] group cursor-pointer border border-black/5 dark:border-white/5 transition-all duration-500 rounded-[1.5rem] md:rounded-[2rem] shadow-sm hover:shadow-2xl hover:border-brand-blue/30"
                                >
@@ -262,10 +290,20 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                                           <span className="flex items-center gap-1.5"><Eye size={12} className="text-brand-blue" /> {stats.views}</span>
                                           <span className="flex items-center gap-1.5"><Heart size={12} className="text-brand-blue" /> {stats.likes}</span>
                                         </div>
-                                        <div className="pt-2">
-                                          <div className="bg-brand-blue text-white px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 scale-95 hover:scale-100 transition-transform">
+                                        
+                                        <div className="flex gap-2 pt-2">
+                                          <button 
+                                            onClick={(e) => { e.stopPropagation(); onApplyExample(item); }}
+                                            className="flex-grow bg-brand-blue text-white px-4 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 scale-95 hover:scale-100 transition-transform"
+                                          >
                                             <Zap size={12} fill="currentColor" /> Sử dụng kịch bản
-                                          </div>
+                                          </button>
+                                          <button 
+                                            onClick={(e) => { e.stopPropagation(); setSelectedDetailItem(item); }}
+                                            className="p-2.5 bg-white/10 backdrop-blur-md text-white rounded-full border border-white/10 hover:bg-white hover:text-black transition-all"
+                                          >
+                                            <Maximize2 size={12} />
+                                          </button>
                                         </div>
                                      </div>
                                      <div className="mt-2 flex items-center gap-2 group-hover:opacity-0 transition-opacity">
@@ -283,7 +321,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                               <AlertCircle size={60} className="text-red-500" />
                               <div className="space-y-2">
                                 <p className="text-sm font-black uppercase tracking-widest">{error}</p>
-                                <button onClick={() => setExplorerItems([])} className="text-[10px] font-black text-brand-blue uppercase underline">Thử lại</button>
+                                <button onClick={() => fetchExplorer(1, true)} className="text-[10px] font-black text-brand-blue uppercase underline">Thử lại</button>
                               </div>
                             </>
                          ) : (
@@ -294,11 +332,22 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                          )}
                       </div>
                    )}
+
+                   {isFetchingMore && (
+                     <div className="flex justify-center py-10">
+                        <Loader2 className="animate-spin text-brand-blue" size={32} />
+                     </div>
+                   )}
                 </div>
               </motion.div>
             )}
          </AnimatePresence>
       </div>
+
+      <ExplorerDetailModal 
+        item={selectedDetailItem} 
+        onClose={() => setSelectedDetailItem(null)} 
+      />
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
