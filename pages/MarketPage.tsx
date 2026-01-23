@@ -194,7 +194,7 @@ const MarketPage = () => {
             </div>
           ) : filteredSolutions.length > 0 ? (
             <>
-              {/* TOP CHOICE BLOCK (REPLACED TOP HOT) */}
+              {/* TOP CHOICE BLOCK */}
               {sectionedSolutions.topHot.length > 0 && (
                 <section>
                   <MarketSectionHeader 
@@ -222,12 +222,17 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* TOOLS VIDEO BLOCK */}
+              {/* STUDIO VIDEO BLOCK */}
               {sectionedSolutions.video.length > 0 && (
                 <section>
                   <MarketSectionHeader 
-                    icon={Video} title="Tools Video" count={sectionedSolutions.video.length} colorClass="text-purple-500" 
-                    onScrollLeft={() => scroll(videoRef, 'left')} onScrollRight={() => scroll(videoRef, 'right')}
+                    icon={Video} 
+                    title="Studio Video" 
+                    subtitle="Professional AI motion for cinematic production"
+                    count={sectionedSolutions.video.length} 
+                    colorClass="text-purple-500" 
+                    onScrollLeft={() => scroll(videoRef, 'left')} 
+                    onScrollRight={() => scroll(videoRef, 'right')}
                   />
                   <div ref={videoRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.video.map((sol, idx) => (
@@ -245,12 +250,17 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* TOOLS IMAGE BLOCK */}
+              {/* IMAGE STUDIO BLOCK */}
               {sectionedSolutions.image.length > 0 && (
                 <section>
                   <MarketSectionHeader 
-                    icon={ImageIcon} title="Tools Image" count={sectionedSolutions.image.length} colorClass="text-brand-blue" 
-                    onScrollLeft={() => scroll(imageRef, 'left')} onScrollRight={() => scroll(imageRef, 'right')}
+                    icon={ImageIcon} 
+                    title="Image Studio" 
+                    subtitle="Pixel-perfect visuals for professional creators"
+                    count={sectionedSolutions.image.length} 
+                    colorClass="text-brand-blue" 
+                    onScrollLeft={() => scroll(imageRef, 'left')} 
+                    onScrollRight={() => scroll(imageRef, 'right')}
                   />
                   <div ref={imageRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.image.map((sol, idx) => (
@@ -268,12 +278,17 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* OTHER TOOLS BLOCK */}
+              {/* AI UTILITIES BLOCK */}
               {sectionedSolutions.others.length > 0 && (
                 <section>
                   <MarketSectionHeader 
-                    icon={LayoutGrid} title="Tools Khác" count={sectionedSolutions.others.length} colorClass="text-emerald-500" 
-                    onScrollLeft={() => scroll(othersRef, 'left')} onScrollRight={() => scroll(othersRef, 'right')}
+                    icon={LayoutGrid} 
+                    title="AI Utilities" 
+                    subtitle="Specialized tools to accelerate every workflow"
+                    count={sectionedSolutions.others.length} 
+                    colorClass="text-emerald-500" 
+                    onScrollLeft={() => scroll(othersRef, 'left')} 
+                    onScrollRight={() => scroll(othersRef, 'right')}
                   />
                   <div ref={othersRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.others.map((sol, idx) => (
