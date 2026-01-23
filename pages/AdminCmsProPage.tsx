@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -448,7 +447,7 @@ const AdminCmsProPage = () => {
             </div>
          </div>
 
-         <div className="flex-grow p-4 space-y-1 overflow-y-auto no-scrollbar">
+         <div className="flex-grow p-4 space-y-1 overflow-y-auto no-scrollbar flex flex-col">
             {sidebarItems.map((item) => (
               <button 
                 key={item.id}
@@ -457,7 +456,8 @@ const AdminCmsProPage = () => {
               >
                 {item.icon}
                 <span className="text-[11px]">{item.label}</span>
-                {activeTab === item.id && <ChevronRight size={16} className="ml-auto" />}
+                {activeTab === 'DASHBOARD' && item.id === activeTab && <ChevronRight size={16} className="ml-auto" />}
+                {activeTab !== 'DASHBOARD' && activeTab === item.id && <ChevronRight size={16} className="ml-auto" />}
               </button>
             ))}
          </div>
@@ -534,7 +534,7 @@ const AdminCmsProPage = () => {
                        <input 
                          type="text" value={search} onChange={e => setSearch(e.target.value)}
                          placeholder="Tìm theo tên hoặc model key..."
-                         className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:border-brand-blue outline-none transition-all shadow-sm text-slate-800 dark:text-white"
+                         className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold outline-none focus:border-brand-blue transition-all shadow-sm text-slate-800 dark:text-white"
                        />
                     </div>
 
@@ -723,7 +723,8 @@ const AdminCmsProPage = () => {
                            onChange={val => setEditedItem({...editedItem, tags: val.split(',').map(s => s.trim()).filter(s => s !== '')} as any)} 
                            placeholder="Cyberpunk, Cinematic, Unreal Engine..."
                          />
-                         <EditInput label="Visual Asset URL" value={editingItem.imageUrl} onChange={v => setEditedItem({...editedItem, imageUrl: v})} />
+                         {/* Fix typo on line 726: editingItem -> editedItem */}
+                         <EditInput label="Visual Asset URL" value={editedItem.imageUrl} onChange={v => setEditedItem({...editedItem, imageUrl: v})} />
                          <EditInput label="Pricing Reference" value={editedItem.priceReference || ''} onChange={v => setEditedItem({...editedItem, priceReference: v})} />
                       </div>
                    </div>
@@ -871,7 +872,7 @@ const AdminCmsProPage = () => {
                    <button 
                      onClick={handleSavePricing}
                      disabled={isSaving}
-                     className="bg-brand-blue text-white px-12 py-5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-brand-blue/20 flex items-center gap-4 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                     className="bg-brand-blue text-white px-12 py-5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-brand-blue/20 flex items-center justify-center gap-4 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
                    >
                       {isSaving ? <Loader2 className="animate-spin" size={18}/> : <Zap size={18} fill="currentColor"/>}
                       {editingPricingId ? 'Update Configuration' : 'Publish Configuration'}
