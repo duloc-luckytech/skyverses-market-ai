@@ -63,7 +63,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
 
   return (
     <aside 
-      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] bg-white dark:bg-[#111114] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[90dvh] rounded-t-[2.5rem]' : 'h-14 lg:h-full lg:rounded-none'}`}
+      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] lg:shrink-0 bg-white dark:bg-[#111114] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[90dvh] rounded-t-[2.5rem]' : 'h-14 lg:h-full lg:rounded-none'}`}
     >
       {/* Mobile Toggle Header - Fixed height to avoid covering viewport UI */}
       <div 
@@ -116,7 +116,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
               {props.references.map((ref, idx) => (
                 <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-black/5 dark:border-white/5 group">
                   <img src={ref} className="w-full h-full object-cover" alt="" />
-                  <button onClick={() => props.setReferences((prev: string[]) => prev.filter((_, i) => i !== idx))} className="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"><Plus className="rotate-45" size={20} /></button>
+                  <button onClick={() => props.setReferences((prev: string[]) => prev.filter((_: any, i: number) => i !== idx))} className="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"><Plus className="rotate-45" size={20} /></button>
                 </div>
               ))}
               {props.references.length < 6 && (
@@ -134,7 +134,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) props.handleLocalFileUpload(f); e.target.value = ''; }} />
         </div>
 
-        {/* Prompt Input Area - Single Mode Only here, mobile uses floating bar */}
+        {/* Prompt Input Area */}
         <div className="hidden lg:block">
            {props.activeMode === 'SINGLE' ? (
              <SidebarSingle prompt={props.prompt} setPrompt={props.setPrompt} />
