@@ -37,6 +37,7 @@ import AIVideoGenerator from './pages/videos/AIVideoGenerator';
 import AINoelGenerator from './pages/images/AINoelGenerator';
 import AITetGenerator from './pages/images/AITetGenerator';
 import AIWeddingGenerator from './pages/images/AIWeddingGenerator';
+import AIBirthdayGenerator from './pages/images/AIBirthdayGenerator';
 import ProductSintax from './pages/ProductSintax';
 import ProductPrompt2 from './pages/ProductPrompt2';
 import MotionGenProduct from './pages/videos/MotionGenProduct';
@@ -103,6 +104,7 @@ const App: React.FC = () => {
                       <Route path="/referral" element={<ReferralPage />} />
                       <Route path="/policy" element={<PolicyPage />} />
                       
+                      <Route path="/product/ai-birthday-generator" element={<AIBirthdayGenerator />} />
                       <Route path="/product/ai-wedding-generator" element={<AIWeddingGenerator />} />
                       <Route path="/product/ai-noel-generator" element={<AINoelGenerator />} />
                       <Route path="/product/ai-tet-generator" element={<AITetGenerator />} />

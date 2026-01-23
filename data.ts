@@ -44,6 +44,37 @@ export const STORYBOARD_SAMPLES = [
 
 export const SOLUTIONS: Solution[] = [
   {
+    id: 'BIRTHDAY-AI-PRO',
+    slug: 'ai-birthday-generator',
+    name: { 
+      en: 'AI Birthday Studio', 
+      vi: 'Ảnh Sinh Nhật AI', 
+      ko: 'AI 생일 스튜디오', 
+      ja: 'AI誕生日スタジオ' 
+    },
+    category: { en: 'Festivals', vi: 'Lễ hội & Sự kiện', ko: '축제', ja: 'フェスティバル' },
+    description: { 
+      en: 'Create festive and personalized birthday celebration photos with stunning AI concepts.', 
+      vi: 'Tạo ảnh kỷ niệm sinh nhật rực rỡ và cá nhân hóa với những concept AI sáng tạo đỉnh cao.', 
+      ko: '멋진 AI 컨셉으로 축제 분위기의 맞춤형 생일 축하 사진을 만드세요.', 
+      ja: '素晴らしいAIコンセプトで、お祝いのパーソナライズされた誕生日写真を撮りましょう。' 
+    },
+    problems: ['Generic birthday cards', 'Expensive decoration costs', 'Limited creative party themes'],
+    industries: ['Personal Branding', 'Social Media', 'Marketing'],
+    imageUrl: 'https://images.unsplash.com/photo-1530103043960-ef38714abb15?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'image',
+    tags: ['Birthday', 'Celebration', 'Party', 'Portrait'],
+    features: [
+      { en: 'Thematic Concept Engine', vi: 'Công cụ concept theo chủ đề', ko: '테마 컨셉 엔진', ja: 'テーマコンセプトエンジン' },
+      { en: 'Virtual Outfit Fitting', vi: 'Thử trang phục tiệc ảo', ko: '가상 파티 의상 피팅', ja: 'バーチャルパーティードレスフィッティング' }
+    ],
+    complexity: 'Advanced',
+    priceReference: '150 CR / generation',
+    isActive: true,
+    priceCredits: 150,
+    featured: true
+  },
+  {
     id: 'WEDDING-AI-PRO',
     slug: 'ai-wedding-generator',
     name: { 
@@ -225,7 +256,7 @@ export const SOLUTIONS: Solution[] = [
     features: [
       { en: 'Multi-lingual Neural Synthesis', vi: 'Tổng hợp thần kinh đa ngôn ngữ', ko: '다국어 신경 합성', ja: '多言語ニューラル合成' },
       { en: 'One-shot Voice Cloning', vi: 'Nhân bản giọng nói tức thì', ko: '원샷 보이스 클로닝', ja: '원샷 보이스 클로닝' },
-      { en: 'Professional Script Mastering', vi: 'Làm chủ kịch bản chuyên nghiệp', ko: '전문 스크립트 마스터링', ja: 'プロフェッショナルスクリプト마스터リング' }
+      { en: 'Professional Script Mastering', vi: 'Làm chủ kịch bản chuyên nghiệp', ko: '전문 스크립트 마스터リング', ja: 'プロフェッショナルスクリプト마스터リング' }
     ],
     complexity: 'Advanced',
     priceReference: 'Starting from 0 credits',
@@ -250,7 +281,7 @@ export const SOLUTIONS: Solution[] = [
       en: 'Professional neural music workstation to generate broadcast-quality tracks from text descriptions.', 
       vi: 'Trạm làm việc nhạc thần kinh chuyên nghiệp để tạo ra các bản nhạc chất lượng phát sóng từ mô tả văn bản.', 
       ko: '텍스트 설명을 통해 방송 품질의 트랙을 생성하는 전문 신경망 음악 워크스테이션.', 
-      ja: 'テキストの説明から放送品質のトラックを生成하는 전문 신경망 음악 워크스테이션.' 
+      ja: 'テキストの説明から放送品質의 트랙을 생성하는 chuyên nghiệp thần kinh nhạc workstation.' 
     },
     problems: ['Expensive licensing costs', 'Copyright strike risks', 'Slow composition cycles', 'Stock music genericness'],
     industries: ['Content Creation', 'Film Production', 'Advertising', 'Game Development'],
@@ -294,7 +325,7 @@ export const SOLUTIONS: Solution[] = [
     tags: ['Restoration', 'De-noise', '4K Upscale', 'Face Fix'],
     features: [
       { en: 'Neural Detail Reconstruction', vi: 'Tái tạo chi tiết thần kinh', ko: '신경망 세부 재구성', ja: 'ニューラル詳細再構築' },
-      { en: 'AI Scratch & Noise Removal', vi: 'Xóa vết xước & nhiễu AI', ko: 'AI 스크래치 및 노이즈 제거', ja: 'AI스크ラッチとノイズ除去' },
+      { en: 'AI Scratch & Noise Removal', vi: 'Xóa vết xước & nhiễu AI', ko: 'AI 스크래치 및 노이즈 제거', ja: 'AIスクラッチとノイズ除去' },
       { en: 'Intelligent Face Enhancement', vi: 'Nâng cấp khuôn mặt thông minh', ko: '지능형 얼굴 향상', ja: '지능형 얼굴 향상' }
     ],
     complexity: 'Advanced',
@@ -303,7 +334,7 @@ export const SOLUTIONS: Solution[] = [
     priceCredits: 100,
     neuralStack: [
       { name: 'Vision Core v7', version: 'v7.4', capability: { en: 'Detail Synthesis', vi: 'Tổng hợp chi tiết', ko: '세부 합성', ja: '詳細合成' } },
-      { name: 'Lattice Restorer', version: 'v2.1', capability: { en: 'Artifact Removal', vi: 'Loại bỏ nhiễu hạt', ko: '아티팩트 제거', ja: 'アーティファクト除去' } }
+      { name: 'Lattice Restorer', version: 'v2.1', capability: { en: 'Artifact Removal', vi: 'Loại bỏ nhiễu hạt', ko: 'アーティファクト除去', ja: 'アーティファクト除去' } }
     ]
   },
   {
@@ -338,7 +369,7 @@ export const SOLUTIONS: Solution[] = [
     priceCredits: 500,
     neuralStack: [
       { name: 'Narrative Engine v5', version: 'v5.2', capability: { en: 'Semantic Analysis', vi: 'Phân tích ngữ nghĩa', ko: '의미 분석', ja: '意味分析' } },
-      { name: 'Visual Orchestrator', version: 'v3.1', capability: { en: 'Frame Consistency', vi: 'Nhất quán khung hình', ko: '프레임 일관성', ja: 'フレームの一貫성' } }
+      { name: 'Visual Orchestrator', version: 'v3.1', capability: { en: 'Frame Consistency', vi: 'Nhất quán khung hình', ko: '프레임 일관성', ja: 'フレームの一貫性' } }
     ]
   }
 ];
