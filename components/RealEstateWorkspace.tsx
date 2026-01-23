@@ -5,7 +5,6 @@ import { SidebarControls } from './real-estate/SidebarControls';
 import { ActionFooter } from './real-estate/ActionFooter';
 import { ViewportHeader } from './real-estate/ViewportHeader';
 import { ViewportContent } from './real-estate/ViewportContent';
-import { StatusFooter } from './real-estate/StatusFooter';
 
 const RealEstateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const s = useRealEstateAI();
@@ -35,7 +34,6 @@ const RealEstateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => 
       <main className="flex-grow flex flex-col relative bg-[#f8f9fa] dark:bg-[#020202] transition-colors duration-500">
          <ViewportHeader onClose={onClose} />
          <ViewportContent resultImage={s.resultImage} isGenerating={s.isGenerating} />
-         <StatusFooter />
       </main>
 
       <style>{`
