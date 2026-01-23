@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { marketApi } from '../apis/market';
 import { Solution } from '../types';
 import { 
-  X, SearchX, Flame, Video, ImageIcon, LayoutGrid
+  X, SearchX, Flame, Video, ImageIcon, LayoutGrid, Gift
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -38,6 +38,7 @@ const MarketPage = () => {
 
   // Refs for horizontal scrolling
   const topHotRef = useRef<HTMLDivElement>(null);
+  const festivalRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const othersRef = useRef<HTMLDivElement>(null);
@@ -152,9 +153,10 @@ const MarketPage = () => {
   const sectionedSolutions = useMemo(() => {
     return {
       topChoice: filteredSolutions.filter(s => s.featured),
+      festivals: filteredSolutions.filter(s => s.category.en === 'Festivals' || s.tags?.includes('Noel')),
       video: filteredSolutions.filter(s => s.demoType === 'video'),
       image: filteredSolutions.filter(s => s.demoType === 'image'),
-      others: filteredSolutions.filter(s => s.demoType !== 'video' && s.demoType !== 'image' && !s.featured)
+      others: filteredSolutions.filter(s => s.demoType !== 'video' && s.demoType !== 'image' && !s.featured && s.category.en !== 'Festivals')
     };
   }, [filteredSolutions]);
 
@@ -296,6 +298,35 @@ const MarketPage = () => {
                   />
                   <div ref={othersRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
                     {sectionedSolutions.others.map((sol, idx) => (
+                      <SolutionCard 
+                        key={sol.id} sol={sol} idx={idx} lang={lang} 
+                        isLiked={likedItems.includes(sol._id || sol.id)}
+                        isFavorited={favorites.includes(sol.id)}
+                        onToggleFavorite={toggleFavorite}
+                        onToggleLike={toggleLike}
+                        onClick={handleNavigate}
+                        stats={getFakeStats(sol._id || sol.id)}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* FESTIVAL BLOCK - NEW - MOVED BELOW UTILITY LAB */}
+              {sectionedSolutions.festivals.length > 0 && (
+                <section>
+                  <MarketSectionHeader 
+                    icon={Gift} 
+                    title="Lễ hội & Sự kiện" 
+                    subtitle="Neural assets for magical holiday moments" 
+                    count={sectionedSolutions.festivals.length} 
+                    colorClass="text-rose-500" 
+                    onScrollLeft={() => scroll(festivalRef, 'left')} 
+                    onScrollRight={() => scroll(festivalRef, 'right')}
+                    onSeeAll={() => navigate('/category/festivals')}
+                  />
+                  <div ref={festivalRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
+                    {sectionedSolutions.festivals.map((sol, idx) => (
                       <SolutionCard 
                         key={sol.id} sol={sol} idx={idx} lang={lang} 
                         isLiked={likedItems.includes(sol._id || sol.id)}

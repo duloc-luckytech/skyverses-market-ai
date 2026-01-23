@@ -44,6 +44,37 @@ export const STORYBOARD_SAMPLES = [
 
 export const SOLUTIONS: Solution[] = [
   {
+    id: 'NOEL-GEN-PRO',
+    slug: 'ai-noel-generator',
+    name: { 
+      en: 'AI Noel Studio', 
+      vi: 'AI Noel Studio', 
+      ko: 'AI 노엘 스튜디오', 
+      ja: 'AIノエルスタジオ' 
+    },
+    category: { en: 'Festivals', vi: 'Lễ hội & Sự kiện', ko: '축제', ja: 'フェスティバル' },
+    description: { 
+      en: 'Create magical Christmas and holiday visuals with advanced neural style transfer.', 
+      vi: 'Kiến tạo hình ảnh Giáng sinh màu nhiệm với công nghệ chuyển đổi phong cách thần kinh tiên tiến.', 
+      ko: '고급 신경 스타일 전송으로 마법 같은 크리스마스 및 휴일 비주얼을 만듭니다.', 
+      ja: '高度なニューラルスタイル転送で、魔法のようなクリスマスとホリデーのビジュアルを作成します。' 
+    },
+    problems: ['Generic holiday cards', 'Expensive photography for seasonal marketing', 'Lack of unique festive content'],
+    industries: ['Marketing', 'Personal Branding', 'E-commerce'],
+    imageUrl: 'https://images.unsplash.com/photo-1543589077-47d81606c1ad?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'image',
+    tags: ['Noel', 'Christmas', 'Cyber-Santa', 'Winter'],
+    features: [
+      { en: 'Festive DNA Lock', vi: 'Khóa định danh lễ hội', ko: '축제 DNA 잠금', ja: 'フェスティブDNAロック' },
+      { en: 'Atmospheric Snow Engine', vi: 'Công cụ mô phỏng tuyết', ko: '대기 눈 엔진', ja: '大気雪エンジン' }
+    ],
+    complexity: 'Advanced',
+    priceReference: '150 CR / generation',
+    isActive: true,
+    priceCredits: 150,
+    featured: true
+  },
+  {
     id: 'PRODUCT-IMAGE',
     slug: 'product-image',
     name: { 
@@ -66,7 +97,7 @@ export const SOLUTIONS: Solution[] = [
     tags: ['AI Image', 'Editor', '8K', 'Upscale'],
     features: [
       { en: 'Neural Retouching', vi: 'Chỉnh sửa thần kinh', ko: '신경망 리터칭', ja: 'ニューラルレタッチ' },
-      { en: 'Identity Lock', vi: 'Khóa định danh', ko: '아이덴티티 락', ja: 'アイデンティティロック' }
+      { en: 'Identity Lock', vi: 'Khóa định danh', ko: '아이덴ti티 락', ja: 'アイデンティティロック' }
     ],
     complexity: 'Advanced',
     priceReference: '150 CR / generation',
@@ -140,7 +171,7 @@ export const SOLUTIONS: Solution[] = [
     priceCredits: 100,
     neuralStack: [
       { name: 'Acoustic Core v4', version: 'v4.2', capability: { en: 'Acoustic Synthesis', vi: 'Tổng hợp âm học', ko: '음향 합성', ja: '音響合成' } },
-      { name: 'Identity Engine', version: 'v2.1', capability: { en: 'Persona Matching', vi: 'Khớp nhân vật', ko: '페르소나 매칭', ja: 'ペルソナマッチング' } }
+      { name: 'Identity Engine', version: 'v2.1', capability: { en: 'Persona Matching', vi: 'Khớp nhân vật', ko: '페르소나 매칭', ja: 'ペル소나매칭' } }
     ]
   },
   {
@@ -210,7 +241,7 @@ export const SOLUTIONS: Solution[] = [
     priceCredits: 100,
     neuralStack: [
       { name: 'Vision Core v7', version: 'v7.4', capability: { en: 'Detail Synthesis', vi: 'Tổng hợp chi tiết', ko: '세부 합성', ja: '詳細合成' } },
-      { name: 'Lattice Restorer', version: 'v2.1', capability: { en: 'Artifact Removal', vi: 'Loại bỏ nhiễu hạt', ko: '아티팩트 제거', ja: 'アーティファクト除去' } }
+      { name: 'Lattice Restorer', version: 'v2.1', capability: { en: 'Artifact Removal', vi: 'Loại bỏ nhiễu hạt', ko: '아티팩트 제거', ja: 'アー티ファクト除去' } }
     ]
   },
   {
@@ -237,7 +268,7 @@ export const SOLUTIONS: Solution[] = [
     features: [
       { en: 'Automated Scene Decomposition', vi: 'Tự động phân rã kịch bản', ko: '자동 장면 분해', ja: '自動シーン分解' },
       { en: 'Cinematic Staging Control', vi: 'Kiểm soát dàn dựng điện ảnh', ko: '시네마틱 연출 제어', ja: '映画的な演出制御' },
-      { en: 'Multi-Modal Asset Sync', vi: 'Đồng bộ tài sản đa phương thức', ko: '멀티모달 자산 동기화', ja: '멀티모달 자산 동기화' }
+      { en: 'Multi-Modal Asset Sync', vi: 'Đồng bộ tài sản đa phương thức', ko: '멀ti모달 자산 동기화', ja: 'マルチモーダルアセット同期' }
     ],
     complexity: 'Enterprise',
     priceReference: '500 CR / project',
