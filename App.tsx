@@ -35,6 +35,8 @@ import PolicyPage from './pages/PolicyPage';
 import AIImageGenerator from './pages/images/AIImageGenerator';
 import AIVideoGenerator from './pages/videos/AIVideoGenerator';
 import AINoelGenerator from './pages/images/AINoelGenerator';
+import AITetGenerator from './pages/images/AITetGenerator';
+import AIWeddingGenerator from './pages/images/AIWeddingGenerator';
 import ProductSintax from './pages/ProductSintax';
 import ProductPrompt2 from './pages/ProductPrompt2';
 import MotionGenProduct from './pages/videos/MotionGenProduct';
@@ -101,7 +103,9 @@ const App: React.FC = () => {
                       <Route path="/referral" element={<ReferralPage />} />
                       <Route path="/policy" element={<PolicyPage />} />
                       
+                      <Route path="/product/ai-wedding-generator" element={<AIWeddingGenerator />} />
                       <Route path="/product/ai-noel-generator" element={<AINoelGenerator />} />
+                      <Route path="/product/ai-tet-generator" element={<AITetGenerator />} />
                       <Route path="/product/bat-dong-san-ai" element={<RealEstateAI />} />
                       <Route path="/product/ai-music-generator" element={<MusicGenerator />} />
                       <Route path="/product/ai-image-restorer" element={<AIImageRestoration />} />

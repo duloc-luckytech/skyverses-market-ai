@@ -44,6 +44,68 @@ export const STORYBOARD_SAMPLES = [
 
 export const SOLUTIONS: Solution[] = [
   {
+    id: 'WEDDING-AI-PRO',
+    slug: 'ai-wedding-generator',
+    name: { 
+      en: 'AI Wedding Studio', 
+      vi: 'Ảnh Cưới AI Pro', 
+      ko: 'AI 웨딩 스튜디오', 
+      ja: 'AIウェディングスタジオ' 
+    },
+    category: { en: 'Generative Art', vi: 'Nghệ thuật sinh tạo', ko: '생성 예술', ja: '生成アート' },
+    description: { 
+      en: 'Create stunning professional wedding photos from simple portraits with advanced face sync.', 
+      vi: 'Kiến tạo ảnh cưới chuyên nghiệp từ ảnh chân dung với công nghệ đồng bộ gương mặt kép tiên tiến.', 
+      ko: '고급 얼굴 동기화 기술을 사용하여 간단한 인물 사진으로 멋진 전문 웨딩 사진을 만드세요.', 
+      ja: '高度な顔同期技術を使用して、シンプルなポートレートから素晴らしいプロの結婚式の写真を作成します。' 
+    },
+    problems: ['Expensive wedding photoshoots', 'Limited time for outdoor shooting', 'Complexity of traditional editing'],
+    industries: ['Photography', 'Personal Branding', 'Social Media'],
+    imageUrl: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'image',
+    tags: ['Wedding', 'Romantic', 'Couple', 'Face Sync'],
+    features: [
+      { en: 'Dual Face Sync', vi: 'Đồng bộ gương mặt kép', ko: '이중 얼굴 동기화', ja: 'デュアルフェイス同期' },
+      { en: 'Luxury Dress Library', vi: 'Thư viện váy cưới cao cấp', ko: '럭셔리 드레스 라이브러리', ja: '高級ドレスライブラリ' }
+    ],
+    complexity: 'Advanced',
+    priceReference: '150 CR / generation',
+    isActive: true,
+    priceCredits: 150,
+    featured: true
+  },
+  {
+    id: 'TET-GEN-PRO',
+    slug: 'ai-tet-generator',
+    name: { 
+      en: 'AI Tet Studio', 
+      vi: 'AI Tết Studio', 
+      ko: 'AI 설날 스튜디오', 
+      ja: 'AIテトスタジオ' 
+    },
+    category: { en: 'Festivals', vi: 'Lễ hội & Sự kiện', ko: '축제', ja: 'フェスティバル' },
+    description: { 
+      en: 'Create stunning Lunar New Year photos with traditional Ao Dai and spring atmosphere.', 
+      vi: 'Kiến tạo ảnh Tết Nguyên Đán rạng rỡ với Áo dài truyền thống và không gian xuân rực rỡ.', 
+      ko: '전통 아오ザイ와 봄 분위기의 멋진 설날 사진을 만들어보세요.', 
+      ja: '伝統的なアオザイと春の雰囲気で素晴らしいテトの写真を撮りましょう。' 
+    },
+    problems: ['Expensive holiday photography', 'Crowded spring flower markets', 'Limited outfit choices'],
+    industries: ['Marketing', 'Personal Branding', 'Social Media'],
+    imageUrl: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'image',
+    tags: ['Tet', 'Lunar New Year', 'Ao Dai', 'Spring'],
+    features: [
+      { en: 'Ao Dai Pattern Library', vi: 'Thư viện mẫu Áo dài', ko: '아오자이 패턴 라이브러리', ja: 'アオザイパターンライブラリ' },
+      { en: 'Spring Flower Engine', vi: 'Công cụ mô phỏng hoa xuân', ko: '봄꽃 엔진', ja: '春の花エンジン' }
+    ],
+    complexity: 'Advanced',
+    priceReference: '150 CR / generation',
+    isActive: true,
+    priceCredits: 150,
+    featured: true
+  },
+  {
     id: 'NOEL-GEN-PRO',
     slug: 'ai-noel-generator',
     name: { 
@@ -162,8 +224,8 @@ export const SOLUTIONS: Solution[] = [
     tags: ['Voice AI', 'Identity Clone', '48kHz', 'Enterprise'],
     features: [
       { en: 'Multi-lingual Neural Synthesis', vi: 'Tổng hợp thần kinh đa ngôn ngữ', ko: '다국어 신경 합성', ja: '多言語ニューラル合成' },
-      { en: 'One-shot Voice Cloning', vi: 'Nhân bản giọng nói tức thì', ko: '원샷 보이스 클로닝', ja: 'ワンショットボイスクローニング' },
-      { en: 'Professional Script Mastering', vi: 'Làm chủ kịch bản chuyên nghiệp', ko: '전문 스크립트 마스터링', ja: 'プロフェッショナルスクリプト마스터링' }
+      { en: 'One-shot Voice Cloning', vi: 'Nhân bản giọng nói tức thì', ko: '원샷 보이스 클로닝', ja: '원샷 보이스 클로닝' },
+      { en: 'Professional Script Mastering', vi: 'Làm chủ kịch bản chuyên nghiệp', ko: '전문 스크립트 마스터링', ja: 'プロフェッショナルスクリプト마스터リング' }
     ],
     complexity: 'Advanced',
     priceReference: 'Starting from 0 credits',
@@ -171,7 +233,7 @@ export const SOLUTIONS: Solution[] = [
     priceCredits: 100,
     neuralStack: [
       { name: 'Acoustic Core v4', version: 'v4.2', capability: { en: 'Acoustic Synthesis', vi: 'Tổng hợp âm học', ko: '음향 합성', ja: '音響合成' } },
-      { name: 'Identity Engine', version: 'v2.1', capability: { en: 'Persona Matching', vi: 'Khớp nhân vật', ko: '페르소나 매칭', ja: 'ペル소나매칭' } }
+      { name: 'Identity Engine', version: 'v2.1', capability: { en: 'Persona Matching', vi: 'Khớp nhân vật', ko: '페르소나 매칭', ja: '페르소나 매칭' } }
     ]
   },
   {
@@ -188,7 +250,7 @@ export const SOLUTIONS: Solution[] = [
       en: 'Professional neural music workstation to generate broadcast-quality tracks from text descriptions.', 
       vi: 'Trạm làm việc nhạc thần kinh chuyên nghiệp để tạo ra các bản nhạc chất lượng phát sóng từ mô tả văn bản.', 
       ko: '텍스트 설명을 통해 방송 품질의 트랙을 생성하는 전문 신경망 음악 워크스테이션.', 
-      ja: 'テキストの説明から放送品質のトラックを生成するプロフェッショナルなニューラル音楽ワークステーション。' 
+      ja: 'テキストの説明から放送品質のトラックを生成하는 전문 신경망 음악 워크스테이션.' 
     },
     problems: ['Expensive licensing costs', 'Copyright strike risks', 'Slow composition cycles', 'Stock music genericness'],
     industries: ['Content Creation', 'Film Production', 'Advertising', 'Game Development'],
@@ -232,7 +294,7 @@ export const SOLUTIONS: Solution[] = [
     tags: ['Restoration', 'De-noise', '4K Upscale', 'Face Fix'],
     features: [
       { en: 'Neural Detail Reconstruction', vi: 'Tái tạo chi tiết thần kinh', ko: '신경망 세부 재구성', ja: 'ニューラル詳細再構築' },
-      { en: 'AI Scratch & Noise Removal', vi: 'Xóa vết xước & nhiễu AI', ko: 'AI 스크래치 및 노이즈 제거', ja: 'AIスクラッチとノイズ除去' },
+      { en: 'AI Scratch & Noise Removal', vi: 'Xóa vết xước & nhiễu AI', ko: 'AI 스크래치 및 노이즈 제거', ja: 'AI스크ラッチとノイズ除去' },
       { en: 'Intelligent Face Enhancement', vi: 'Nâng cấp khuôn mặt thông minh', ko: '지능형 얼굴 향상', ja: '지능형 얼굴 향상' }
     ],
     complexity: 'Advanced',
@@ -241,7 +303,7 @@ export const SOLUTIONS: Solution[] = [
     priceCredits: 100,
     neuralStack: [
       { name: 'Vision Core v7', version: 'v7.4', capability: { en: 'Detail Synthesis', vi: 'Tổng hợp chi tiết', ko: '세부 합성', ja: '詳細合成' } },
-      { name: 'Lattice Restorer', version: 'v2.1', capability: { en: 'Artifact Removal', vi: 'Loại bỏ nhiễu hạt', ko: '아티팩트 제거', ja: 'アー티ファクト除去' } }
+      { name: 'Lattice Restorer', version: 'v2.1', capability: { en: 'Artifact Removal', vi: 'Loại bỏ nhiễu hạt', ko: '아티팩트 제거', ja: 'アーティファクト除去' } }
     ]
   },
   {
@@ -276,7 +338,7 @@ export const SOLUTIONS: Solution[] = [
     priceCredits: 500,
     neuralStack: [
       { name: 'Narrative Engine v5', version: 'v5.2', capability: { en: 'Semantic Analysis', vi: 'Phân tích ngữ nghĩa', ko: '의미 분석', ja: '意味分析' } },
-      { name: 'Visual Orchestrator', version: 'v3.1', capability: { en: 'Frame Consistency', vi: 'Nhất quán khung hình', ko: '프레임 일관성', ja: 'フレームの一貫性' } }
+      { name: 'Visual Orchestrator', version: 'v3.1', capability: { en: 'Frame Consistency', vi: 'Nhất quán khung hình', ko: '프레임 일관성', ja: 'フレームの一貫성' } }
     ]
   }
 ];
