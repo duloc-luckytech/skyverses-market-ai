@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -18,7 +17,8 @@ import {
   Eye,
   Volume2,
   VolumeX,
-  BookOpen
+  BookOpen,
+  ArrowRightLeft
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -126,7 +126,7 @@ const VideoResultCard: React.FC<VideoResultCardProps> = ({ task, onDelete, onDow
           </div>
         )}
         
-        <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
+        <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0 z-20">
           {task.url && (
             <button 
               onClick={(e) => { e.stopPropagation(); onDownload(task.url!, task.id); }}
@@ -167,6 +167,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const [showModelMenu, setShowModelMenu] = useState(false);
   const [showResourceModal, setShowResourceModal] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showQualityModal, setShowQualityModal] = useState(false);
   const [autoDownload, setAutoDownload] = useState(false);
   const imgInputRef = useRef<HTMLInputElement>(null);
   const vidInputRef = useRef<HTMLInputElement>(null);
@@ -179,22 +180,14 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const hasJobs = v.tasks.length > 0;
 
   const handleApplyTemplate = (tmpl: any) => {
-    // 1. Cập nhật chế độ trước (MOTION hoặc SWAP)
     v.setMode(tmpl.type as any);
-    
-    // 2. Phân phối tài nguyên vào các ô input tương ứng
-    // Theo cấu trúc Template:
-    // - MOTION: input là ảnh, ref là video
-    // - SWAP: input là video, ref là ảnh
     if (tmpl.type === 'MOTION') {
-      v.setSourceImg(tmpl.input); // Ảnh chân dung
-      v.setRefVideo(tmpl.ref);    // Video chuyển động
+      v.setSourceImg(tmpl.input);
+      v.setRefVideo(tmpl.ref);
     } else if (tmpl.type === 'SWAP') {
-      v.setSourceImg(tmpl.ref);    // Ảnh khuôn mặt mới
-      v.setRefVideo(tmpl.input);   // Video gốc cần thay mặt
+      v.setSourceImg(tmpl.ref);
+      v.setRefVideo(tmpl.input);
     }
-    
-    // 3. Đóng modal
     setShowTemplateModal(false);
   };
 
@@ -225,9 +218,17 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const renderInputs = () => {
     const identityInput = (
       <div key="identity-input" className="space-y-3">
-        <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
-          <ImageIcon size={14} className="text-cyan-500" /> Identity
-        </label>
+        <div className="flex justify-between items-center px-1">
+          <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+            <ImageIcon size={14} className="text-cyan-500" /> Identity
+          </label>
+          <button 
+            onClick={() => setShowQualityModal(true)}
+            className="flex items-center gap-1.5 px-2 py-0.5 bg-brand-blue/10 rounded-md text-[9px] font-black text-brand-blue uppercase hover:bg-brand-blue hover:text-white transition-all border border-brand-blue/20"
+          >
+            <Info size={12} /> Hướng dẫn
+          </button>
+        </div>
         <div 
           className={`relative aspect-[3/4] rounded-2xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center gap-4 cursor-pointer group ${v.sourceImg ? 'border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.1)]' : 'border-slate-200 dark:border-white/10 hover:border-cyan-500/40 bg-slate-50 dark:bg-white/[0.02]'}`}
           onClick={() => !v.sourceImg && imgInputRef.current?.click()}
@@ -324,7 +325,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
            </button>
            <button 
              onClick={() => v.setMode('SWAP')}
-             className={`px-8 py-2 rounded-lg text-[11px] font-black uppercase flex items-center gap-2.5 transition-all duration-300 ${v.mode === 'SWAP' ? 'bg-purple-600 text-white shadow-[0_0_20px_rgba(147,51,234,0.4)]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'}`}
+             className={`px-8 py-2 rounded-lg text-[11px] font-black uppercase flex items-center gap-2.5 transition-all duration-300 ${v.mode === 'SWAP' ? 'bg-purple-600 text-white shadow-[0_0_20px_rgba(147,51,234,0.4)]' : 'text-slate-500 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
            >
               <User size={14} /> Swap
            </button>
@@ -356,7 +357,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         
         {/* 1. LEFT COLUMN: CONTROLS (1/3) */}
         <div className="w-[400px] xl:w-[480px] shrink-0 border-r border-black/5 dark:border-white/5 bg-white dark:bg-[#0d0d0f] flex flex-col transition-all duration-500">
-           <div className="flex-grow overflow-y-auto no-scrollbar p-8 space-y-10">
+           <div className="flex-grow overflow-y-auto no-scrollbar p-8 lg:p-10 space-y-10">
               {/* ASSET UPLOAD */}
               <div className="grid grid-cols-2 gap-6 relative z-10">
                  {renderInputs()}
@@ -364,10 +365,13 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
               {/* INFRASTRUCTURE CONFIG */}
               <div className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5 relative z-20">
-                <div className="grid grid-cols-2 gap-4">
+                <p className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-[0.4em] text-center italic">Infrastructure & Logic</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* SOURCE SELECTOR */}
                   <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest italic flex items-center gap-2">
-                      <Globe size={12} className="text-brand-blue" /> Source
+                    <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 italic flex items-center gap-2">
+                      <Globe size={12} className="text-brand-blue" /> Infrastructure
                     </label>
                     <select 
                       value={v.selectedEngine}
@@ -380,8 +384,9 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     </select>
                   </div>
 
+                  {/* MODEL SELECTOR */}
                   <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1 italic flex items-center gap-2">
+                    <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 italic flex items-center gap-2">
                       <Server size={12} className="text-brand-blue" /> Neural Model
                     </label>
                     <div className="relative">
@@ -422,7 +427,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               {/* SPECS */}
               <div className="grid grid-cols-2 gap-6">
                  <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest italic">Độ phân giải</label>
+                    <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest italic">Dung lượng</label>
                     <select 
                       value={v.selectedQuality} 
                       onChange={e => v.setSelectedQuality(e.target.value)}
@@ -436,7 +441,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     <select 
                       value={v.selectedRatio} 
                       onChange={e => v.setSelectedRatio(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-[11px] font-black uppercase outline-none focus:border-cyan-500/30 text-slate-900 dark:text-white shadow-inner"
+                      className="w-full bg-slate-50 dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none focus:border-brand-blue transition-colors text-slate-900 dark:text-white shadow-inner"
                     >
                       {RATIOS.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
@@ -462,11 +467,11 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  className={`w-full py-6 rounded-2xl flex items-center justify-center gap-4 text-[13px] font-black uppercase tracking-[0.3em] shadow-xl transition-all active:scale-[0.97] group overflow-hidden relative ${v.sourceImg && v.selectedModel ? `bg-gradient-to-r ${activeGradient} text-white` : 'bg-slate-200 dark:bg-[#222] text-slate-400 dark:text-gray-500 cursor-not-allowed grayscale'}`}
               >
                  <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                 {v.isGenerating ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} fill="currentColor" />}
+                 {v.isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} fill="currentColor" />}
                  KHỞI CHẠY STUDIO
               </button>
               
-              {!hasEnoughCredits && v.sourceImg && (
+              {credits < v.estimatedCost && v.sourceImg && (
                 <div className="flex items-center justify-center gap-2 text-amber-500 animate-pulse">
                   <AlertTriangle size={14} />
                   <span className="text-[10px] font-black uppercase tracking-widest">Số dư cạn kiệt (Cần {v.estimatedCost} CR)</span>
@@ -480,7 +485,6 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
            
            <AnimatePresence mode="wait">
               {hasJobs ? (
-                 /* GRID VIEW OF RESULTS & HISTORY */
                  <motion.div 
                     key="results-grid"
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -515,7 +519,6 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     </div>
                  </motion.div>
               ) : (
-                 /* EMPTY STATE SHOWING TOOL DESCRIPTION & EXAMPLE - MOVED TO EXTERNAL COMPONENT */
                  <AnimateIntelView 
                     mode={v.mode} 
                     onShowTemplates={() => setShowTemplateModal(true)}
@@ -525,6 +528,102 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
            </AnimatePresence>
         </div>
       </div>
+
+      {/* --- QUALITY GUIDE MODAL --- */}
+      <AnimatePresence>
+        {showQualityModal && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 md:p-6"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+              className="bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-[2.5rem] w-full max-w-2xl overflow-hidden shadow-3xl flex flex-col transition-colors"
+            >
+              <div className="p-8 border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-brand-blue/10 rounded-lg text-brand-blue">
+                     <Info size={20} />
+                  </div>
+                  <h3 className="text-xl font-black uppercase tracking-widest italic text-slate-900 dark:text-white leading-none">Hướng dẫn chất lượng</h3>
+                </div>
+                <button onClick={() => setShowQualityModal(false)} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                  <X size={28} />
+                </button>
+              </div>
+
+              <div className="flex-grow overflow-y-auto p-10 space-y-10 no-scrollbar">
+                <div className="space-y-6">
+                   <div className="flex gap-4 items-start group">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0 shadow-sm">
+                        <CheckCircle size={18} />
+                      </div>
+                      <p className="text-sm md:text-base font-bold text-slate-600 dark:text-gray-300 leading-relaxed uppercase tracking-tight italic">
+                         "Video có nhân vật không bị che khuất quá nhiều sẽ cho ra kết quả đẹp nhất. Hãy đảm bảo nhân vật luôn xuất hiện xuyên suốt."
+                      </p>
+                   </div>
+                   <div className="flex gap-4 items-start group">
+                      <div className="w-8 h-8 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue shrink-0 shadow-sm">
+                        <Maximize2 size={18} />
+                      </div>
+                      <p className="text-sm md:text-base font-bold text-slate-600 dark:text-gray-300 leading-relaxed uppercase tracking-tight italic">
+                         "Ảnh nhân vật và video đầu vào có độ phân giải càng cao <span className="text-brand-blue font-black">(720x1280)</span> thì video đầu ra càng sắc nét."
+                      </p>
+                   </div>
+                </div>
+
+                <div className="space-y-6 pt-10 border-t border-black/5 dark:border-white/10">
+                   <div className="flex items-center gap-3 text-orange-500">
+                      <Sparkles size={18} fill="currentColor" />
+                      <span className="text-xs font-black uppercase tracking-[0.4em] italic">Mẹo tối ưu: Fix da nhựa</span>
+                   </div>
+                   <p className="text-[12px] font-bold text-slate-500 dark:text-gray-400 uppercase italic leading-relaxed pl-1">
+                      Hãy sử dụng model <span className="text-orange-500">Làm ảnh siêu thực - Fix da nhựa</span> cho ảnh trước khi tạo video để đạt độ chân thực tối đa.
+                   </p>
+                   
+                   <div className="relative aspect-video rounded-[1.5rem] overflow-hidden border border-black/5 dark:border-white/10 group/compare bg-black shadow-2xl">
+                      <div className="absolute inset-0 flex">
+                         <div className="w-1/2 h-full relative">
+                            <img 
+                              src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=400" 
+                              className="w-full h-full object-cover blur-[1px] grayscale opacity-40" 
+                              alt="Plastic Skin" 
+                            />
+                            <div className="absolute bottom-3 left-4 px-3 py-1 bg-black/60 backdrop-blur-md rounded text-[8px] font-black text-white uppercase tracking-widest">GỐC (DA NHỰA)</div>
+                         </div>
+                         <div className="w-1/2 h-full relative">
+                            <img 
+                              src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=400" 
+                              className="w-full h-full object-cover brightness-110" 
+                              alt="Realistic" 
+                            />
+                            <div className="absolute bottom-3 right-4 px-3 py-1 bg-orange-600 rounded text-[8px] font-black text-white uppercase tracking-widest shadow-lg">FIX SIÊU THỰC</div>
+                         </div>
+                      </div>
+                      <div className="absolute inset-y-0 left-1/2 w-0.5 bg-white/20 z-10 shadow-[0_0_10px_white]"></div>
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 group-hover/compare:opacity-100 transition-opacity">
+                         <ArrowRightLeft className="text-white" size={32} />
+                      </div>
+                   </div>
+                   
+                   <p className="text-[10px] text-center text-slate-400 dark:text-gray-600 font-black uppercase tracking-widest italic">
+                      AI Chỉnh sửa ảnh trở lên siêu thực – Fix Da Nhựa
+                   </p>
+                </div>
+              </div>
+
+              <div className="p-8 border-t border-black/5 dark:border-white/10 bg-slate-50 dark:bg-black/40 text-center">
+                <button 
+                  onClick={() => setShowQualityModal(false)}
+                  className="px-16 py-4 bg-brand-blue text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
+                >
+                  Đã hiểu
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showTemplateModal && (
