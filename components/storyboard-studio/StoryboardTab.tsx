@@ -280,17 +280,17 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
              </div>
           </header>
 
-          <div className={`grid gap-6 lg:gap-8 ${viewLayout === 'list' ? 'grid-cols-1' : viewLayout === 'large' ? 'grid-cols-1 md:grid-cols-2' : viewLayout === 'compact' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'}`}>
+          <div className={`grid gap-3 md:gap-8 ${viewLayout === 'list' ? 'grid-cols-1' : viewLayout === 'large' ? 'grid-cols-1 md:grid-cols-2' : viewLayout === 'compact' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' : 'grid-cols-2 md:grid-cols-2 xl:grid-cols-3'}`}>
              {isProcessing ? Array.from({length: 4}).map((_, i) => <div key={i} className="aspect-video bg-slate-100 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-xl animate-pulse flex flex-col items-center justify-center gap-4"><Loader2 className="animate-spin text-brand-blue" /><span className="text-[10px] font-black text-slate-400 dark:text-gray-600 uppercase tracking-widest">Đang phân tích...</span></div>) : 
                scenes.map((scene) => (
-                <div key={scene.id} onClick={() => toggleSceneSelection(scene.id)} className={`group relative flex flex-col bg-slate-50 dark:bg-white/[0.02] border-2 rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden transition-all cursor-pointer shadow-lg dark:shadow-xl ${selectedSceneIds.includes(scene.id) ? 'border-brand-blue bg-brand-blue/5' : 'border-slate-100 dark:border-white/5 hover:border-slate-200 dark:hover:border-white/10'}`}>
+                <div key={scene.id} onClick={() => toggleSceneSelection(scene.id)} className={`group relative flex flex-col bg-slate-50 dark:bg-white/[0.02] border-2 rounded-xl lg:rounded-[2rem] overflow-hidden transition-all cursor-pointer shadow-lg dark:shadow-xl ${selectedSceneIds.includes(scene.id) ? 'border-brand-blue bg-brand-blue/5' : 'border-slate-100 dark:border-white/5 hover:border-slate-200 dark:hover:border-white/10'}`}>
                    <div onClick={(e) => { if (scene.visualUrl || scene.videoUrl) { e.stopPropagation(); onViewScene(scene); } }} className="aspect-video bg-slate-200 dark:bg-black relative overflow-hidden flex items-center justify-center transition-colors">
                       {scene.videoUrl ? <video src={scene.videoUrl} autoPlay loop muted className="w-full h-full object-cover" /> : scene.visualUrl ? <img src={scene.visualUrl} className="w-full h-full object-cover" /> : <div className="flex flex-col items-center gap-3 opacity-20 text-slate-500 dark:text-white"><MonitorPlay size={32} /><span className="text-[8px] font-black uppercase tracking-widest">Offline</span></div>}
                       <div className="absolute top-3 left-3 bg-white/80 dark:bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-sm border border-slate-200 dark:border-white/10 text-[8px] font-black text-slate-900 dark:text-white uppercase tracking-widest transition-colors">Cảnh 0{scene.order}</div>
                       {scene.status === 'generating' && <div className="absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-md flex flex-col items-center justify-center gap-2 z-20"><Loader2 className="text-brand-blue animate-spin" size={24} /><span className="text-[8px] font-black text-slate-800 dark:text-white uppercase tracking-[0.4em] animate-pulse">Rendering</span></div>}
                       <div onClick={(e) => { e.stopPropagation(); toggleSceneSelection(scene.id); }} className={`absolute top-3 right-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedSceneIds.includes(scene.id) ? 'bg-brand-blue border-brand-blue' : 'bg-white/40 dark:bg-black/40 border-slate-300 dark:border-white/20'}`}>{selectedSceneIds.includes(scene.id) && <Check size={12} strokeWidth={4} className="text-white" />}</div>
                    </div>
-                   <div className="px-4 py-3 lg:px-6 lg:py-4 bg-slate-100/50 dark:bg-black/40 border-b border-slate-200 dark:border-white/5 flex items-center gap-3 transition-colors duration-500">
+                   <div className="px-3 py-2 lg:px-6 lg:py-4 bg-slate-100/50 dark:bg-black/40 border-b border-slate-200 dark:border-white/5 flex items-center gap-3 transition-colors duration-500">
                       <div className="flex items-center gap-1.5 mr-1">
                         <User size={10} className="text-emerald-500" />
                         <span className="text-[7px] lg:text-[8px] font-black uppercase text-emerald-500 tracking-widest leading-none">Mỏ neo:</span>
@@ -300,7 +300,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                           const asset = assets.find(a => a.id === charId);
                           if (!asset) return null;
                           return (
-                            <div key={charId} className="w-6 h-6 lg:w-8 lg:h-8 rounded-full border-2 border-white dark:border-[#1c1f1f] overflow-hidden shadow-lg group/avatar relative" title={asset.name}>
+                            <div key={charId} className="w-5 h-5 lg:w-8 lg:h-8 rounded-full border-2 border-white dark:border-[#1c1f1f] overflow-hidden shadow-lg group/avatar relative" title={asset.name}>
                               {asset.url ? (
                                 <img src={asset.url} className="w-full h-full object-cover" />
                               ) : (
@@ -316,10 +316,10 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                         )}
                       </div>
                    </div>
-                   <div className="p-4 lg:p-6 space-y-3 lg:space-y-4 bg-white dark:bg-transparent transition-colors duration-500 flex-grow">
+                   <div className="p-3 lg:p-6 space-y-3 lg:space-y-4 bg-white dark:bg-transparent transition-colors duration-500 flex-grow">
                       <div className="space-y-1">
                         <label className="text-[7px] lg:text-[8px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest leading-none">Kịch bản chi tiết:</label>
-                        <textarea value={scene.prompt} onChange={(e) => updateScene(scene.id, { prompt: e.target.value })} onClick={(e) => e.stopPropagation()} className="w-full bg-transparent border-none p-0 text-[11px] lg:text-[12px] font-medium leading-relaxed text-slate-700 dark:text-gray-300 italic focus:ring-0 resize-none min-h-[50px] transition-colors no-scrollbar" />
+                        <textarea value={scene.prompt} onChange={(e) => updateScene(scene.id, { prompt: e.target.value })} onClick={(e) => e.stopPropagation()} className="w-full bg-transparent border-none p-0 text-[10px] lg:text-[12px] font-medium leading-relaxed text-slate-700 dark:text-gray-300 italic focus:ring-0 resize-none min-h-[40px] transition-colors no-scrollbar" />
                       </div>
                       <div className="flex justify-between items-center pt-2 text-[8px] lg:text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 border-t border-slate-100 dark:border-white/5">
                          <div className="flex items-center gap-1.5 text-slate-400 dark:text-white"><Clock size={10} /><span>{scene.duration}s</span></div>
