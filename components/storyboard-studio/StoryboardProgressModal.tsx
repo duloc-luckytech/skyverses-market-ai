@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Terminal, Loader2, Lightbulb, ChevronLeft, ChevronRight, Image as ImageIcon, Sparkles, Edit3 } from 'lucide-react';
@@ -65,34 +64,35 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="relative w-full max-w-6xl aspect-[16/8] md:aspect-[16/7] overflow-hidden flex flex-col md:flex-row gap-6 pointer-events-none"
+        className="relative w-full max-w-6xl h-[90vh] md:h-auto md:aspect-[16/7] overflow-hidden flex flex-col md:flex-row gap-4 md:gap-6 pointer-events-none"
       >
         {/* LEFT: TERMINAL STREAM */}
-        <div className="flex-grow flex flex-col bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl pointer-events-auto">
-           <div className="h-14 bg-[#0d0d0f] border-b border-white/5 flex items-center justify-between px-6 shrink-0">
+        <div className="flex-[1.2] md:flex-grow flex flex-col bg-black border border-white/10 rounded-3xl overflow-hidden shadow-2xl pointer-events-auto min-h-0">
+           <div className="h-12 md:h-14 bg-[#0d0d0f] border-b border-white/5 flex items-center justify-between px-5 md:px-6 shrink-0">
               <div className="flex items-center gap-3">
-                 <Terminal size={18} className="text-brand-blue" />
-                 <h3 className="text-[12px] font-black uppercase tracking-widest text-white/90 italic">Luồng thời gian thực</h3>
+                 <Terminal size={16} className="text-brand-blue" />
+                 <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-widest text-white/90 italic">Luồng thời gian thực</h3>
               </div>
               <div className="flex items-center gap-3">
-                 <Loader2 size={16} className="text-brand-blue animate-spin" />
-                 <span className="text-[10px] font-black uppercase tracking-widest text-brand-blue/60">Đang xử lý...</span>
+                 <Loader2 size={14} className="text-brand-blue animate-spin" />
+                 <span className="hidden xs:inline text-[9px] md:text-[10px] font-black uppercase tracking-widest text-brand-blue/60">Đang xử lý...</span>
               </div>
            </div>
            
-           <div className="flex-grow p-8 font-mono text-[14px] leading-relaxed overflow-y-auto no-scrollbar bg-black/40">
-              <div className="space-y-4">
+           <div className="flex-grow p-5 md:p-8 font-mono text-[12px] md:text-[14px] leading-relaxed overflow-y-auto no-scrollbar bg-black/40">
+              <div className="space-y-3 md:space-y-4">
                  {logs.map((log, i) => (
                    <div key={i} className="flex gap-4 animate-in fade-in slide-in-from-left-2 duration-300">
-                      <p className="text-green-500 font-bold tracking-tight">
+                      <p className="text-green-500 font-bold tracking-tight break-words">
+                        <span className="opacity-50 mr-2">$</span>
                         {log}
-                        {i === logs.length - 1 && <span className="inline-block w-2 h-4 bg-green-500/50 ml-2 animate-pulse align-middle">_</span>}
+                        {i === logs.length - 1 && <span className="inline-block w-1.5 h-3.5 bg-green-500/50 ml-1 animate-pulse align-middle">_</span>}
                       </p>
                    </div>
                  ))}
                  {logs.length === 0 && (
                    <div className="flex gap-4">
-                      <p className="text-green-500 font-bold tracking-tight">Đang kết nối...<span className="inline-block w-2 h-4 bg-green-500/50 ml-2 animate-pulse align-middle">_</span></p>
+                      <p className="text-green-500 font-bold tracking-tight opacity-50">Đang kết nối kịch bản...<span className="inline-block w-1.5 h-3.5 bg-green-500/50 ml-1 animate-pulse align-middle">_</span></p>
                    </div>
                  )}
               </div>
@@ -100,15 +100,15 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
         </div>
 
         {/* RIGHT: TIPS SLIDER */}
-        <div className="w-full md:w-[420px] flex flex-col bg-[#0d0d12] border border-white/10 rounded-2xl overflow-hidden shadow-2xl pointer-events-auto">
-           <div className="h-16 bg-[#111115] border-b border-white/5 flex items-center justify-between px-6 shrink-0">
+        <div className="flex-1 md:w-[420px] md:shrink-0 flex flex-col bg-[#0d0d12] border border-white/10 rounded-3xl overflow-hidden shadow-2xl pointer-events-auto min-h-0">
+           <div className="h-12 md:h-16 bg-[#111115] border-b border-white/5 flex items-center justify-between px-5 md:px-6 shrink-0">
               <div className="flex items-center gap-3">
-                 <div className="w-9 h-9 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner">
-                    <Lightbulb size={20} />
+                 <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner">
+                    <Lightbulb size={18} />
                  </div>
                  <div className="space-y-0.5">
-                   <h3 className="text-[12px] font-black uppercase tracking-widest text-white/90 italic leading-none">Mẹo sử dụng</h3>
-                   <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Tìm hiểu trong khi chờ đợi</p>
+                   <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-widest text-white/90 italic leading-none">Mẹo sử dụng</h3>
+                   <p className="text-[7px] md:text-[8px] font-bold text-gray-500 uppercase tracking-widest">Hệ thống gợi ý</p>
                  </div>
               </div>
               <button 
@@ -119,7 +119,7 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
               </button>
            </div>
 
-           <div className="flex-grow p-8 flex flex-col justify-center relative overflow-hidden">
+           <div className="flex-grow p-5 md:p-8 flex flex-col justify-center relative overflow-hidden">
               <AnimatePresence mode="wait">
                  <motion.div 
                    key={currentTip}
@@ -127,10 +127,10 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
                    animate={{ opacity: 1, x: 0 }}
                    exit={{ opacity: 0, x: -20 }}
                    transition={{ duration: 0.4 }}
-                   className="bg-white/[0.03] border border-white/5 p-8 rounded-[2rem] space-y-6 relative group"
+                   className="bg-white/[0.02] border border-white/5 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] space-y-4 md:space-y-6 relative group h-full md:h-auto overflow-y-auto no-scrollbar"
                  >
                     <div className="flex justify-between items-start">
-                       <span className="px-3 py-1 bg-white/10 border border-white/10 rounded text-[9px] font-black uppercase text-gray-400 tracking-widest">
+                       <span className="px-2 py-0.5 md:px-3 md:py-1 bg-white/10 border border-white/10 rounded text-[8px] md:text-[9px] font-black uppercase text-gray-400 tracking-widest">
                           {TIPS[currentTip].category}
                        </span>
                        <div className="text-brand-blue opacity-40 group-hover:opacity-100 transition-opacity">
@@ -138,9 +138,9 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
                        </div>
                     </div>
                     
-                    <div className="space-y-4">
-                       <h4 className="text-xl font-black text-white italic tracking-tight">{TIPS[currentTip].title}</h4>
-                       <p className="text-[13px] leading-relaxed text-gray-400 font-medium whitespace-pre-line">
+                    <div className="space-y-3 md:space-y-4">
+                       <h4 className="text-lg md:text-xl font-black text-white italic tracking-tight leading-tight">{TIPS[currentTip].title}</h4>
+                       <p className="text-[12px] md:text-[13px] leading-relaxed text-gray-400 font-medium whitespace-pre-line">
                           {TIPS[currentTip].desc}
                        </p>
                     </div>
@@ -148,32 +148,31 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
               </AnimatePresence>
            </div>
 
-           <div className="h-28 border-t border-white/5 px-8 flex flex-col items-center justify-center gap-4 shrink-0 bg-[#0a0a0d]">
+           <div className="h-20 md:h-28 border-t border-white/5 px-5 md:px-8 flex flex-col items-center justify-center gap-2 md:gap-4 shrink-0 bg-[#0a0a0d]">
               <div className="flex items-center justify-between w-full">
                  <button 
                    onClick={handlePrev} 
-                   className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
+                   className="p-2 md:px-5 md:py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
                  >
-                    <ChevronLeft size={16} /> Trước
+                    <ChevronLeft size={16} /> <span className="hidden xs:inline">Trước</span>
                  </button>
                  
                  <div className="flex items-center gap-2">
-                    <div className="flex gap-1.5">
+                    <div className="flex gap-1 md:gap-1.5">
                        {TIPS.map((_, i) => (
-                         <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === currentTip ? 'bg-brand-blue' : 'bg-gray-700'}`}></div>
+                         <div key={i} className={`w-1 md:w-1.5 h-1 md:h-1.5 rounded-full transition-all duration-300 ${i === currentTip ? 'bg-brand-blue' : 'bg-gray-700'}`}></div>
                        ))}
                     </div>
-                    <span className="text-[10px] font-bold text-gray-600 ml-1">+10</span>
                  </div>
 
                  <button 
                    onClick={handleNext} 
-                   className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
+                   className="p-2 md:px-5 md:py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
                  >
-                    Tiếp <ChevronRight size={16} />
+                    <span className="hidden xs:inline">Tiếp</span> <ChevronRight size={16} />
                  </button>
               </div>
-              <p className="text-[10px] font-black uppercase text-gray-700 tracking-widest">{currentTip + 1} / 15 mẹo</p>
+              <p className="text-[9px] md:text-[10px] font-black uppercase text-gray-700 tracking-widest">{currentTip + 1} / {TIPS.length} mẹo</p>
            </div>
         </div>
       </motion.div>
