@@ -1,49 +1,48 @@
 
-import React, { useState, useRef } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  X, Zap, Loader2, Play, Film, 
+  Terminal, ShieldCheck, Download, 
+  LayoutGrid, Plus, 
+  ArrowRight, Square, CheckCircle2, 
+  AlertTriangle, Layers, AlignLeft, 
+  Sparkles, Camera, MonitorPlay,
+  Lock, ExternalLink, Activity, Share2, 
+  Clapperboard, Sliders, Settings2, BookOpen,
+  ChevronRight, MoreVertical, Menu, LogOut,
+  History as HistoryIcon
+} from 'lucide-react';
 import { useStoryboardStudio } from '../hooks/useStoryboardStudio';
 import { HeaderNav } from './storyboard-studio/HeaderNav';
 import { StoryboardTab } from './storyboard-studio/StoryboardTab';
 import { AssetsTab } from './storyboard-studio/AssetsTab';
 import { SettingsTab } from './storyboard-studio/SettingsTab';
-import { LogicTab } from './storyboard-studio/LogicTab';
+import { FooterControls } from './storyboard-studio/FooterControls';
 import { CharacterEditModal } from './storyboard-studio/CharacterEditModal';
 import { StoryboardProgressModal } from './storyboard-studio/StoryboardProgressModal';
-import { FooterControls } from './storyboard-studio/FooterControls';
+import { RenderConfigModal } from './storyboard-studio/RenderConfigModal';
+import { AestheticProfileModal } from './storyboard-studio/AestheticProfileModal';
 import ExplorerDetailModal from './ExplorerDetailModal';
 
 const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const s = useStoryboardStudio();
-  const assetUploadRef = useRef<HTMLInputElement>(null);
-  const [activeUploadAssetId, setActiveUploadAssetId] = useState<string | null>(null);
-
-  const handleAssetUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (activeUploadAssetId) {
-          s.updateAsset(activeUploadAssetId, { url: reader.result as string, status: 'done' });
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const [isRenderModalOpen, setIsRenderModalOpen] = useState(false);
+  const [isAestheticModalOpen, setIsAestheticModalOpen] = useState(false);
 
   return (
-    <div className="fixed inset-0 z-[1000] flex flex-col bg-[#050506] text-white font-sans overflow-hidden transition-colors duration-500">
-      
+    <div className="h-full w-full flex flex-col bg-white dark:bg-[#050506] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
       <HeaderNav 
         activeTab={s.activeTab} 
         setActiveTab={s.setActiveTab} 
         onClose={onClose} 
       />
 
-      <div className="flex-grow overflow-hidden relative flex flex-col">
+      <div className="flex-grow flex flex-col overflow-hidden relative">
         <AnimatePresence mode="wait">
-          
           {s.activeTab === 'STORYBOARD' && (
             <StoryboardTab 
+              key="tab-story"
               script={s.script}
               setScript={s.setScript}
               scriptRefImage={s.scriptRefImage}
@@ -70,49 +69,86 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               selectAllScenes={s.selectAllScenes}
               isProcessing={s.isProcessing}
               isEnhancing={s.isEnhancing}
-              assetUploadRef={assetUploadRef}
-              setActiveUploadAssetId={setActiveUploadAssetId}
+              assetUploadRef={s.assetUploadRef}
+              setActiveUploadAssetId={s.setActiveUploadAssetId}
               onOpenSettings={() => s.setActiveTab('SETTINGS')}
+              onOpenRenderConfig={() => setIsRenderModalOpen(true)}
+              onOpenAestheticConfig={() => setIsAestheticModalOpen(true)}
               onLoadSample={s.handleLoadSample}
               onLoadSuggestion={s.handleLoadSuggestion}
               settings={s.settings}
             />
           )}
 
-          {s.activeTab === 'ASSETS' && <AssetsTab />}
+          {s.activeTab === 'ASSETS' && (
+            <AssetsTab key="tab-assets" />
+          )}
 
           {s.activeTab === 'SETTINGS' && (
             <SettingsTab 
+              key="tab-settings"
               script={s.script}
               setScript={s.setScript}
               settings={s.settings}
               setSettings={s.setSettings}
               onLoadSample={s.handleLoadSample}
               onLoadSuggestion={s.handleLoadSuggestion}
+              onOpenAestheticConfig={() => setIsAestheticModalOpen(true)}
+              onOpenRenderConfig={() => setIsRenderModalOpen(true)}
               isEnhancing={s.isEnhancing}
               isProcessing={s.isProcessing}
               onSaveAndGenerate={s.handleSaveAndGenerate}
-            />
-          )}
-
-          {s.activeTab === 'LOGIC' && (
-            <LogicTab 
-              systemPrompt={s.systemPrompt}
-              setSystemPrompt={s.setSystemPrompt}
             />
           )}
         </AnimatePresence>
       </div>
 
       <FooterControls 
-        scenesCount={s.selectedSceneIds.length}
+        scenesCount={s.scenes.length}
+        selectedCount={s.selectedSceneIds.length}
         isProcessing={s.isProcessing}
-        canCreate={!!s.script.trim()}
+        canCreate={s.script.trim().length > 0}
         onSynthesize={s.handleCreateStoryboard}
-        onReset={() => s.setSelectedSceneIds([])}
+        onGenerateImages={s.handleGenerateBatchImages}
+        onGenerateVideos={s.handleGenerateBatchVideos}
+        onReset={() => s.setScenes([])}
       />
 
-      {/* Progress Modal */}
+      <input 
+        type="file" 
+        ref={s.assetUploadRef} 
+        className="hidden" 
+        accept="image/*" 
+        onChange={s.handleAssetUpload} 
+      />
+
+      {/* Modals & Overlays */}
+      <RenderConfigModal 
+        isOpen={isRenderModalOpen}
+        onClose={() => setIsRenderModalOpen(false)}
+        settings={s.settings}
+        setSettings={s.setSettings}
+      />
+
+      <AestheticProfileModal 
+        isOpen={isAestheticModalOpen}
+        onClose={() => setIsAestheticModalOpen(false)}
+        settings={s.settings}
+        setSettings={s.setSettings}
+      />
+
+      <AnimatePresence>
+        {s.isAssetModalOpen && s.editingAsset && (
+          <CharacterEditModal 
+            asset={s.editingAsset}
+            updateAsset={(updates) => s.setEditingAsset(prev => prev ? { ...prev, ...updates } : null)}
+            onClose={s.closeAssetModal}
+            onSave={s.saveAsset}
+            onDelete={s.removeAsset}
+          />
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {s.showProgressModal && (
           <StoryboardProgressModal 
@@ -122,32 +158,15 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         )}
       </AnimatePresence>
 
-      {/* Asset Modal */}
-      <AnimatePresence>
-        {s.isAssetModalOpen && s.editingAsset && (
-          <CharacterEditModal 
-            asset={s.editingAsset}
-            onClose={s.closeAssetModal}
-            onSave={s.saveAsset}
-            onDelete={(id) => { s.removeAsset(id); s.closeAssetModal(); }}
-            updateAsset={(updates) => s.setEditingAsset(prev => prev ? ({ ...prev, ...updates }) : null)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Explorer Modal */}
       <ExplorerDetailModal 
-        item={s.viewingExplorerItem}
-        onClose={() => s.setViewingExplorerItem(null)}
+        item={s.viewingExplorerItem} 
+        onClose={() => s.setViewingExplorerItem(null)} 
       />
 
-      <input 
-        type="file" 
-        ref={assetUploadRef} 
-        className="hidden" 
-        accept="image/*" 
-        onChange={handleAssetUpload} 
-      />
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </div>
   );
 };

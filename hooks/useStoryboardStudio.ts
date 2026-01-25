@@ -1,5 +1,5 @@
-
-import { useState, useCallback, useRef } from 'react';
+// Added React import to fix "Cannot find namespace 'React'" error on line 519
+import React, { useState, useCallback, useRef } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { generateDemoImage } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
@@ -7,6 +7,7 @@ import { imagesApi } from '../apis/images';
 import { videosApi, VideoJobRequest, VideoJobResponse } from '../apis/videos';
 import { ExplorerItem } from '../components/ExplorerDetailModal';
 import { STORYBOARD_SAMPLES } from '../data';
+import { uploadToGCS } from '../services/storage';
 
 export interface Scene {
   id: string;
@@ -61,6 +62,10 @@ export const useStoryboardStudio = () => {
   const [scriptRefAudio, setScriptRefAudio] = useState<string | null>(null);
 
   const [assets, setAssets] = useState<ReferenceAsset[]>([]);
+
+  // Added assetUploadRef and setActiveUploadAssetId state to manage asset uploads from the sidebar/tab
+  const assetUploadRef = useRef<HTMLInputElement>(null);
+  const [activeUploadAssetId, setActiveUploadAssetId] = useState<string | null>(null);
 
   const [settings, setSettings] = useState({
     videoPrompt: true,
@@ -218,6 +223,7 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
       const jobStatus = response.data?.status?.toLowerCase();
 
       if (jobStatus === 'done' && response.data.result?.videoUrl) {
+        const videoUrl = response.data.result.videoUrl;
         updateScene(sceneId, { videoUrl: response.data.result.videoUrl, status: 'done' });
         addLog(`KẾT QUẢ: Phân cảnh #${sceneId.slice(-4)} kết xuất thành công.`);
         refreshUserInfo();
@@ -509,6 +515,27 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
     }
   }, [assets, triggerImageGeneration, updateAsset]);
 
+  // handleAssetUpload handler to process file selection for individual assets
+  const handleAssetUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && activeUploadAssetId) {
+      updateAsset(activeUploadAssetId, { status: 'processing' });
+      try {
+        const metadata = await uploadToGCS(file);
+        updateAsset(activeUploadAssetId, { 
+          url: metadata.url, 
+          mediaId: metadata.mediaId || metadata.id,
+          status: 'done' 
+        });
+      } catch (err) {
+        updateAsset(activeUploadAssetId, { status: 'error' });
+      } finally {
+        setActiveUploadAssetId(null);
+        if (e.target) e.target.value = '';
+      }
+    }
+  };
+
   return {
     activeTab, setActiveTab, script, setScript, scriptRefImage, setScriptRefImage, scriptRefAudio, setScriptRefAudio,
     totalDuration, setTotalDuration, sceneDuration, setSceneDuration, voiceOverEnabled, setVoiceOverEnabled,
@@ -519,6 +546,7 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
     assets, addAsset: () => openAssetModal(), removeAsset: (id: string) => setAssets(prev => prev.filter(a => a.id !== id)),
     updateAsset, isAssetModalOpen, openAssetModal, closeAssetModal, saveAsset, editingAsset, setEditingAsset,
     viewingExplorerItem, setViewingExplorerItem, openExplorerView, openExplorerViewScene,
-    systemPrompt, setSystemPrompt, handleGenerateBatchImages, handleGenerateBatchVideos
+    systemPrompt, setSystemPrompt, handleGenerateBatchImages, handleGenerateBatchVideos,
+    assetUploadRef, setActiveUploadAssetId, handleAssetUpload
   };
 };

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   Zap, Layers, Plus, RefreshCw, AlertCircle, Clock, 
   Trash2, Check, MonitorPlay, User, Maximize2, 
-  Download, Grid2X2, Grid3X3, Edit3, Film, 
+  Download, Grid2X2, Edit3, Film, 
   Image as LucideImage, Loader2, Square as SquareIcon, LayoutGrid, Settings,
   Sparkles, Camera, Music, Mic, FileAudio
 } from 'lucide-react';
@@ -41,6 +41,8 @@ interface StoryboardTabProps {
   assetUploadRef: React.RefObject<HTMLInputElement | null>;
   setActiveUploadAssetId: (id: string) => void;
   onOpenSettings: () => void;
+  onOpenRenderConfig: () => void;
+  onOpenAestheticConfig: () => void;
   onLoadSample: () => void;
   onLoadSuggestion: () => void;
   settings: any; 
@@ -53,7 +55,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   onViewAsset, onViewScene,
   scenes, selectedSceneIds, toggleSceneSelection, selectAllScenes,
   isProcessing, isEnhancing, assetUploadRef, setActiveUploadAssetId,
-  onOpenSettings, onLoadSample, onLoadSuggestion, settings
+  onOpenSettings, onOpenRenderConfig, onOpenAestheticConfig, onLoadSample, onLoadSuggestion, settings
 }) => {
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const mainAudioInputRef = useRef<HTMLInputElement>(null);
@@ -103,20 +105,20 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                 </div>
               )}
 
-              <div className="absolute bottom-4 right-4 lg:bottom-6 lg:right-6 flex gap-3 lg:gap-4">
+              <div className="absolute bottom-4 right-4 lg:bottom-6 lg:right-6 flex gap-3 lg:gap-4 text-slate-600 dark:text-white">
                 <button 
                   onClick={onLoadSuggestion} 
                   disabled={isEnhancing}
                   className="flex items-center gap-1.5 lg:gap-2 text-[9px] lg:text-[10px] font-black text-brand-blue uppercase tracking-widest hover:underline transition-all disabled:opacity-30"
                 >
-                  <Sparkles size={12} /> Gợi ý
+                  <span className="flex items-center gap-1.5"><Sparkles size={12} /> Gợi ý</span>
                 </button>
                 <button 
                   onClick={onLoadSample} 
                   disabled={isEnhancing}
                   className="flex items-center gap-1.5 lg:gap-2 text-[9px] lg:text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest hover:underline transition-all disabled:opacity-30"
                 >
-                  <LayoutGrid size={12} /> Mẫu
+                  <span className="flex items-center gap-1.5"><LayoutGrid size={12} /> Mẫu</span>
                 </button>
               </div>
            </div>
@@ -164,7 +166,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                 </div>
               </div>
               <button 
-                onClick={onOpenSettings}
+                onClick={onOpenRenderConfig}
                 className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-lg text-[8px] lg:text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 transition-all border border-slate-200 dark:border-white/5 ml-auto lg:ml-0"
               >
                 <Settings size={12} /> <span className="hidden sm:inline">Cấu hình</span>
@@ -173,13 +175,13 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
           </div>
 
           <div className="p-0.5 bg-slate-200 dark:bg-white/10 rounded-xl lg:rounded-2xl">
-             <div className="bg-slate-50 dark:bg-[#0a0a0c] rounded-lg lg:rounded-xl p-4 lg:p-6 h-full space-y-3">
+             <div className="bg-slate-50 dark:bg-[#0a0a0c] rounded-lg lg:rounded-xl p-4 lg:p-6 h-full space-y-3 transition-colors">
                 <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-1.5">
                    <div className="flex items-center gap-2">
                       <Sparkles size={12} className="text-brand-blue" />
                       <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-none">Aesthetic Profile</span>
                    </div>
-                   <button onClick={onOpenSettings} className="text-[8px] font-black text-brand-blue uppercase hover:underline leading-none">Đổi</button>
+                   <button onClick={onOpenAestheticConfig} className="text-[8px] font-black text-brand-blue uppercase hover:underline leading-none">Cấu Hình</button>
                 </div>
                 <div className="grid grid-cols-2 gap-x-3 gap-y-2">
                    <div className="space-y-0.5">
@@ -227,7 +229,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                     </div>
                   </div>
                 </div>
-                <span className="text-[8px] lg:text-[10px] font-black text-slate-300 dark:text-gray-700 uppercase">DIVISIBLE BY 8</span>
+                <span className="text-[8px] lg:text-[10px] font-black text-slate-300 dark:text-gray-700 uppercase italic">DIVISIBLE BY 8</span>
             </div>
             <div className="p-4 lg:p-6 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 flex items-center justify-between rounded-xl shadow-lg opacity-60 transition-colors">
                 <div className="flex items-center gap-3 lg:gap-4">
@@ -237,7 +239,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                     <p className="text-xl lg:text-2xl font-black italic tracking-tighter text-slate-900 dark:text-white leading-none pt-1">{sceneDuration}s</p>
                   </div>
                 </div>
-                <span className="text-[8px] lg:text-[10px] font-black text-slate-300 dark:text-gray-700 uppercase">FIXED</span>
+                <span className="text-[8px] lg:text-[10px] font-black text-slate-300 dark:text-gray-700 uppercase italic">FIXED</span>
             </div>
           </div>
         </div>
@@ -266,13 +268,13 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                    <div className={`w-3.5 h-3.5 lg:w-4 lg:h-4 rounded border flex items-center justify-center transition-all ${selectedSceneIds.length === scenes.length && scenes.length > 0 ? 'bg-brand-blue border-brand-blue dark:border-white' : 'border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-black/20'}`}>{selectedSceneIds.length === scenes.length && scenes.length > 0 && <Check size={10} strokeWidth={4} />}</div>
                    <span className="hidden xs:inline">Chọn tất cả</span><span className="xs:hidden">All</span>
                 </button>
-                <div className="flex gap-1 lg:gap-2">
+                <div className="flex gap-1 lg:gap-2 text-slate-600 dark:text-white">
                    <button className="flex items-center gap-2 px-3 lg:px-6 py-2 lg:py-2.5 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-lg lg:rounded-xl text-[9px] lg:text-[11px] font-black uppercase tracking-tight text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-all shadow-sm"><Download size={14} /> <span className="hidden sm:inline">Ảnh</span></button>
                    <button className="flex items-center gap-2 px-3 lg:px-6 py-2 lg:py-2.5 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-lg lg:rounded-xl text-[9px] lg:text-[11px] font-black uppercase tracking-tight text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-all shadow-sm"><Download size={14} /> <span className="hidden sm:inline">Video</span></button>
                 </div>
                 <div className="hidden sm:flex items-center bg-slate-200 dark:bg-black/40 p-1 rounded-lg lg:rounded-xl border border-slate-300 dark:border-white/10 transition-colors">
                    {[{ id: 'list', icon: <SquareIcon size={14}/> }, { id: 'grid', icon: <Grid2X2 size={14}/> }].map(l => (
-                     <button key={l.id} onClick={() => setViewLayout(l.id as any)} className={`p-1.5 lg:p-2.5 rounded-lg transition-all ${viewLayout === l.id ? 'bg-brand-blue text-white shadow-lg' : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'}`}>{l.icon}</button>
+                     <button key={l.id} onClick={() => setViewLayout(l.id as any)} className={`p-1.5 lg:p-2.5 rounded-lg transition-all ${viewLayout === l.id ? 'bg-brand-blue text-white shadow-lg' : 'text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'}`}>{l.icon}</button>
                    ))}
                 </div>
              </div>
@@ -298,7 +300,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                           const asset = assets.find(a => a.id === charId);
                           if (!asset) return null;
                           return (
-                            <div key={charId} className="w-6 h-6 lg:w-8 lg:h-8 rounded-full border-2 border-white dark:border-[#1c1c1f] overflow-hidden shadow-lg group/avatar relative" title={asset.name}>
+                            <div key={charId} className="w-6 h-6 lg:w-8 lg:h-8 rounded-full border-2 border-white dark:border-[#1c1f1f] overflow-hidden shadow-lg group/avatar relative" title={asset.name}>
                               {asset.url ? (
                                 <img src={asset.url} className="w-full h-full object-cover" />
                               ) : (
@@ -320,8 +322,8 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                         <textarea value={scene.prompt} onChange={(e) => updateScene(scene.id, { prompt: e.target.value })} onClick={(e) => e.stopPropagation()} className="w-full bg-transparent border-none p-0 text-[11px] lg:text-[12px] font-medium leading-relaxed text-slate-700 dark:text-gray-300 italic focus:ring-0 resize-none min-h-[50px] transition-colors no-scrollbar" />
                       </div>
                       <div className="flex justify-between items-center pt-2 text-[8px] lg:text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 border-t border-slate-100 dark:border-white/5">
-                         <div className="flex items-center gap-1.5"><Clock size={10} /><span>{scene.duration}s</span></div>
-                         <div className="flex items-center gap-2 lg:gap-3">
+                         <div className="flex items-center gap-1.5 text-slate-400 dark:text-white"><Clock size={10} /><span>{scene.duration}s</span></div>
+                         <div className="flex items-center gap-2 lg:gap-3 text-slate-400 dark:text-white">
                             <button className="flex items-center gap-1 hover:text-brand-blue transition-colors group/regen"><RefreshCw size={10} className="group-hover/regen:rotate-180 transition-transform duration-700" /> <span className="hidden xs:inline">Tạo lại</span></button>
                             <button className="hover:text-red-500 transition-colors"><Trash2 size={10}/></button>
                          </div>
