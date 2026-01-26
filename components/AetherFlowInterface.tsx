@@ -111,6 +111,11 @@ const AetherFlowInterface: React.FC = () => {
           workflowId={flow.workflowId}
           templates={flow.templates}
           loadingTemplates={flow.loadingTemplates}
+          // Passed page from flow hook
+          page={flow.page}
+          hasMore={flow.hasMore}
+          isFetchingMore={flow.isFetchingMore}
+          loadMoreTemplates={flow.loadMoreTemplates}
           onSelectTemplate={handleSelectTemplate}
           onOpenVisualEditor={handleOpenVisualEditor}
           onClear={() => flow.setResults([])}
@@ -137,7 +142,7 @@ const AetherFlowInterface: React.FC = () => {
             </div>
             <div className="space-y-2 text-center">
               <h3 className="text-sm font-black uppercase tracking-[0.4em] text-white animate-pulse italic">Synchronizing Mesh Lattice</h3>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest italic">Fetching workflow configuration detail...</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest italic text-center">Fetching workflow configuration detail...</p>
             </div>
           </motion.div>
         )}
