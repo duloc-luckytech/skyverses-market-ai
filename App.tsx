@@ -64,6 +64,7 @@ import AIStylistPage from './pages/images/AIStylistPage';
 import StoryboardStudioPage from './pages/videos/StoryboardStudioPage';
 import AIImageRestoration from './pages/images/AIImageRestoration';
 import RealEstateAI from './pages/images/RealEstateAI';
+import ProductAIAgentWorkflow from './pages/ProductAIAgentWorkflow';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -104,6 +105,7 @@ const App: React.FC = () => {
                       <Route path="/referral" element={<ReferralPage />} />
                       <Route path="/policy" element={<PolicyPage />} />
                       
+                      <Route path="/product/ai-agent-workflow" element={<ProductAIAgentWorkflow />} />
                       <Route path="/product/ai-birthday-generator" element={<AIBirthdayGenerator />} />
                       <Route path="/product/ai-wedding-generator" element={<AIWeddingGenerator />} />
                       <Route path="/product/ai-noel-generator" element={<AINoelGenerator />} />

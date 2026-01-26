@@ -44,6 +44,42 @@ export const STORYBOARD_SAMPLES = [
 
 export const SOLUTIONS: Solution[] = [
   {
+    id: 'AI-AGENT-WORKFLOW',
+    slug: 'ai-agent-workflow',
+    name: { 
+      en: 'Aether Flow Orchestrator', 
+      vi: 'AI Agent Workflow', 
+      ko: 'AI 에이전트 워크플로우', 
+      ja: 'AIエージェントワークフロー' 
+    },
+    category: { en: 'Automation', vi: 'Tự động hóa & Quy trình', ko: '자동화', ja: '自動化' },
+    description: { 
+      en: 'Professional node-based AI workflow for industrial image synthesis and automated creative pipelines.', 
+      vi: 'Quy trình AI node-based chuyên nghiệp để tổng hợp hình ảnh công nghiệp và tự động hóa dây chuyền sáng tạo.', 
+      ko: '산업용 이미지 합성 및 자동화된 크리에이ティブ 파이프라인을 위한 전문 노드 기반 AI 워크플로우.', 
+      ja: '産業用画像合成および自動化されたクリエイティブパイプラインのためのプロフェッショナルなノードベースのAIワークフロー。' 
+    },
+    problems: ['Disconnected AI tools', 'Inconsistent image output', 'Manual prompt repetitive work', 'Complex multi-stage production'],
+    industries: ['Game Studios', 'Advertising Agencies', 'E-commerce', 'Architectural Visualization'],
+    imageUrl: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'automation',
+    tags: ['Workflow', 'Agentic AI', 'Image Gen', 'Pipeline'],
+    features: [
+      { en: 'Sequential Node Architecture', vi: 'Kiến trúc Node tuần tự', ko: '순차 노드 아키텍처', ja: 'シーケンシャルノードアーキテクチャ' },
+      { en: 'Context Persistence', vi: 'Duy trì ngữ cảnh logic', ko: '컨텍스트 지속성', ja: 'コンテキストの永続性' },
+      { en: 'H100 Edge Processing', vi: 'Xử lý biên H100 GPU', ko: 'H100 에지 프로세싱', ja: 'H100エッジプロセッシング' }
+    ],
+    complexity: 'Enterprise',
+    priceReference: '500 CR / Orchestration',
+    isActive: true,
+    priceCredits: 500,
+    featured: true,
+    neuralStack: [
+      { name: 'Flow Kernel v1.0', version: 'v1.0.4', capability: { en: 'Logic Orchestration', vi: 'Điều phối Logic', ko: '로직 오케스트레이션', ja: 'ロジックオーケストレーション' } },
+      { name: 'Vision Edge v7', version: 'v7.2', capability: { en: 'High-Fidelity Synthesis', vi: 'Tổng hợp độ trung thực cao', ko: '고충실도 합성', ja: '高忠実度合成' } }
+    ]
+  },
+  {
     id: 'BIRTHDAY-AI-PRO',
     slug: 'ai-birthday-generator',
     name: { 
@@ -118,7 +154,7 @@ export const SOLUTIONS: Solution[] = [
     description: { 
       en: 'Create stunning Lunar New Year photos with traditional Ao Dai and spring atmosphere.', 
       vi: 'Kiến tạo ảnh Tết Nguyên Đán rạng rỡ với Áo dài truyền thống và không gian xuân rực rỡ.', 
-      ko: '전통 아오ザイ와 봄 분위기의 멋진 설날 사진을 만들어보세요.', 
+      ko: '전통 아오ザ이와 봄 분위기의 멋진 설날 사진을 만들어보세요.', 
       ja: '伝統的なアオザイと春の雰囲気で素晴らしいテトの写真を撮りましょう。' 
     },
     problems: ['Expensive holiday photography', 'Crowded spring flower markets', 'Limited outfit choices'],
@@ -361,7 +397,7 @@ export const SOLUTIONS: Solution[] = [
     features: [
       { en: 'Automated Scene Decomposition', vi: 'Tự động phân rã kịch bản', ko: '자동 장면 분해', ja: '自動シーン分解' },
       { en: 'Cinematic Staging Control', vi: 'Kiểm soát dàn dựng điện ảnh', ko: '시네마틱 연출 제어', ja: '映画的な演出制御' },
-      { en: 'Multi-Modal Asset Sync', vi: 'Đồng bộ tài sản đa phương thức', ko: '멀ti모달 자산 동기화', ja: 'マルチモーダルアセット同期' }
+      { en: 'Multi-Modal Asset Sync', vi: 'Đồng bộ tài sản đa phương thức', ko: '멀ti모달 자산 동기 hóa', ja: 'マルチモーダルアセット同期' }
     ],
     complexity: 'Enterprise',
     priceReference: '500 CR / project',
