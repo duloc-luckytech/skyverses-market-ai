@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAetherFlow, WorkflowTemplate } from '../hooks/useAetherFlow';
 import { ConfigPanel } from './aether-flow/ConfigPanel';
@@ -10,6 +9,7 @@ const AetherFlowInterface: React.FC = () => {
   const flow = useAetherFlow();
   const [showSettings, setShowSettings] = useState(false);
   const [visualEditorTemplate, setVisualEditorTemplate] = useState<WorkflowTemplate | null>(null);
+  const [isVisualEditorOpen, setIsVisualEditorOpen] = useState(false);
 
   const handleGenerate = async () => {
     try {
@@ -35,6 +35,16 @@ const AetherFlowInterface: React.FC = () => {
     if (tmpl.config) {
       handleImport(tmpl.config);
     }
+  };
+
+  const handleOpenVisualEditor = (tmpl: WorkflowTemplate | null) => {
+    setVisualEditorTemplate(tmpl);
+    setIsVisualEditorOpen(true);
+  };
+
+  const handleCloseVisualEditor = () => {
+    setIsVisualEditorOpen(false);
+    setVisualEditorTemplate(null);
   };
 
   return (
@@ -75,14 +85,14 @@ const AetherFlowInterface: React.FC = () => {
           statusText={flow.statusText}
           workflowId={flow.workflowId}
           onSelectTemplate={handleSelectTemplate}
-          onOpenVisualEditor={(tmpl) => setVisualEditorTemplate(tmpl)}
+          onOpenVisualEditor={handleOpenVisualEditor}
           onClear={() => flow.setResults([])}
         />
       </div>
 
       <WorkflowEditorModal 
-        isOpen={!!visualEditorTemplate}
-        onClose={() => setVisualEditorTemplate(null)}
+        isOpen={isVisualEditorOpen}
+        onClose={handleCloseVisualEditor}
         template={visualEditorTemplate}
       />
 

@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { ImageIcon, Sparkles, Download, Share2, Loader2, Activity, LayoutGrid, Film, Box, User, CheckCircle2, Eye } from 'lucide-react';
+import { ImageIcon, Sparkles, Download, Share2, Loader2, Activity, LayoutGrid, Film, Box, User, CheckCircle2, Eye, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GeneratedResult, WORKFLOW_TEMPLATES, WorkflowTemplate } from '../../hooks/useAetherFlow';
 
@@ -11,7 +10,7 @@ interface ResultsPanelProps {
   statusText: string;
   workflowId: string;
   onSelectTemplate: (tmpl: WorkflowTemplate) => void;
-  onOpenVisualEditor: (tmpl: WorkflowTemplate) => void;
+  onOpenVisualEditor: (tmpl: WorkflowTemplate | null) => void;
   onClear: () => void;
 }
 
@@ -155,9 +154,18 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
               exit={{ opacity: 0, y: -10 }}
               className="space-y-10 pb-20"
             >
-              <div className="space-y-4 px-1">
-                <h3 className="text-xl font-black uppercase tracking-tighter italic text-slate-800 dark:text-white">Quick Templates</h3>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">(Fast Create Your Workflow)</p>
+              <div className="flex justify-between items-end px-1">
+                <div className="space-y-4">
+                  <h3 className="text-xl font-black uppercase tracking-tighter italic text-slate-800 dark:text-white">Quick Templates</h3>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">(Fast Create Your Workflow)</p>
+                </div>
+                <button 
+                  onClick={() => onOpenVisualEditor(null)}
+                  className="px-6 py-2.5 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:scale-105 active:scale-95 transition-all italic group"
+                >
+                  <Plus size={14} strokeWidth={3} className="group-hover:rotate-90 transition-transform" /> 
+                  Tạo kịch bản
+                </button>
               </div>
 
               <div className="flex flex-col gap-6">
