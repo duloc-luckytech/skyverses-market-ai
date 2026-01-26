@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect } from 'react';
 import {
   useNodesState,
@@ -9,8 +10,8 @@ import {
 import { WorkflowTemplate } from './useAetherFlow';
 
 export const useWorkflowEditor = (template: WorkflowTemplate | null) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),

@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import {
   ReactFlow,
@@ -18,6 +19,7 @@ import { EditorHUD } from './editor/EditorHUD';
 import { NodesMapSidebar } from './editor/NodesMapSidebar';
 import { ViewportToolbar } from './editor/ViewportToolbar';
 import { WorkflowContextMenu } from './editor/WorkflowContextMenu';
+import { NodeEditorToolbar } from './editor/NodeEditorToolbar';
 
 interface WorkflowEditorModalProps {
   isOpen: boolean;
@@ -49,7 +51,7 @@ const EditorContent: React.FC<{
   const [menu, setMenu] = useState<{ x: number; y: number; flowX: number; flowY: number } | null>(null);
 
   const onPaneContextMenu = useCallback(
-    (event: React.MouseEvent) => {
+    (event: React.MouseEvent | MouseEvent) => {
       event.preventDefault();
       const position = screenToFlowPosition({
         x: event.clientX,
@@ -77,28 +79,32 @@ const EditorContent: React.FC<{
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
       />
 
-      <div className="flex-grow relative overflow-hidden">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onPaneContextMenu={onPaneContextMenu}
-            onPaneClick={onPaneClick}
-            nodeTypes={nodeTypes}
-            colorMode="dark"
-            fitView
-          >
-            <Background variant={BackgroundVariant.Lines} color="#1c1c22" gap={40} size={1} />
-            <Controls position="bottom-left" className="bg-[#1a1b23] border-white/5 p-1 rounded-xl" />
-            <MiniMap 
-              position="bottom-right" 
-              className="bg-[#1a1b23] border border-white/10 rounded-2xl overflow-hidden shadow-2xl" 
-              nodeColor={(node) => (node.data as any).headerColor === 'bg-amber-900' ? '#f59e0b' : '#0090ff'}
-              maskColor="rgba(0,0,0,0.6)"
-            />
-          </ReactFlow>
+      <div className="flex-grow relative overflow-hidden flex flex-col">
+          <NodeEditorToolbar onClose={onClose} />
+          
+          <div className="flex-grow relative">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onPaneContextMenu={onPaneContextMenu}
+              onPaneClick={onPaneClick}
+              nodeTypes={nodeTypes}
+              colorMode="dark"
+              fitView
+            >
+              <Background variant={BackgroundVariant.Lines} color="#1c1c22" gap={40} size={1} />
+              <Controls position="bottom-left" className="bg-[#1a1b23] border-white/5 p-1 rounded-xl" />
+              <MiniMap 
+                position="bottom-right" 
+                className="bg-[#1a1b23] border border-white/10 rounded-2xl overflow-hidden shadow-2xl" 
+                nodeColor={(node) => (node.data as any).headerColor === 'bg-amber-900' ? '#f59e0b' : '#0090ff'}
+                maskColor="rgba(0,0,0,0.6)"
+              />
+            </ReactFlow>
+          </div>
 
           <EditorHUD />
           <ViewportToolbar />
