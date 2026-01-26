@@ -94,6 +94,22 @@
           font-size: 16px !important;
         }
       }
+      
+      /* React Flow Styles Overlay */
+      .xyflow__node {
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+      }
+      .xyflow__handle {
+        width: 8px;
+        height: 8px;
+        background: #0090ff;
+        border: 2px solid #fff;
+      }
+      .xyflow__edge-path {
+        stroke: #0090ff;
+        stroke-width: 2;
+      }
     </style>
   <script type="importmap">
 {
@@ -111,11 +127,13 @@
     "three/examples/jsm/loaders/GLTFLoader": "https://esm.sh/three@0.173.0/examples/jsm/loaders/GLTFLoader.js",
     "three/examples/jsm/loaders/GLTFLoader.js": "https://esm.sh/three@0.173.0/examples/jsm/loaders/GLTFLoader.js",
     "three/": "https://esm.sh/three@0.173.0/",
+    "@xyflow/react": "https://esm.sh/@xyflow/react@12.4.2",
     "this": "https://esm.sh/this@^1.1.0"
   }
 }
 </script>
 <link rel="stylesheet" href="/index.css">
+<link rel="stylesheet" href="https://esm.sh/@xyflow/react@12.4.2/dist/style.css">
 </head>
   <body>
     <div class="bg-grid"></div>

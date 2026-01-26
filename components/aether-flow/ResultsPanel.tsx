@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ImageIcon, Sparkles, Download, Share2, Loader2, Activity, LayoutGrid, Film, Box, User, CheckCircle2 } from 'lucide-react';
+import { ImageIcon, Sparkles, Download, Share2, Loader2, Activity, LayoutGrid, Film, Box, User, CheckCircle2, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GeneratedResult, WORKFLOW_TEMPLATES, WorkflowTemplate } from '../../hooks/useAetherFlow';
 
@@ -11,6 +11,7 @@ interface ResultsPanelProps {
   statusText: string;
   workflowId: string;
   onSelectTemplate: (tmpl: WorkflowTemplate) => void;
+  onOpenVisualEditor: (tmpl: WorkflowTemplate) => void;
   onClear: () => void;
 }
 
@@ -31,6 +32,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   statusText,
   workflowId,
   onSelectTemplate,
+  onOpenVisualEditor,
   onClear 
 }) => {
   const [activeTab, setActiveTab] = useState<'RESULTS' | 'TEMPLATES'>('TEMPLATES');
@@ -49,7 +51,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
     } else if (results.length === 0 && !isGenerating) {
       setActiveTab('TEMPLATES');
     }
-  }, [results.length]);
+  }, [results.length, isGenerating]);
 
   return (
     <div className="flex-[1.5] bg-white dark:bg-[#0c0c12] border border-black/5 dark:border-white/5 rounded-2xl flex flex-col shadow-2xl overflow-hidden transition-all duration-500 h-[85vh]">
@@ -130,7 +132,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                       <img src={res.url} className="w-full aspect-square object-cover" alt="Output" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                        <span className="text-10px] font-bold text-white uppercase italic">{res.timestamp}</span>
+                        <span className="text-[10px] font-bold text-white uppercase italic">{res.timestamp}</span>
                         <div className="flex gap-2">
                           <a href={res.url} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/20 hover:bg-white/40 rounded-lg backdrop-blur-md transition-colors shadow-lg text-white">
                             <Download size={16} />
@@ -162,9 +164,8 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                 {WORKFLOW_TEMPLATES.map((tmpl) => {
                   const isActive = workflowId === tmpl.id;
                   return (
-                    <button
+                    <div
                       key={tmpl.id}
-                      onClick={() => onSelectTemplate(tmpl)}
                       className={`relative w-full aspect-[21/9] rounded-[1.5rem] border-2 transition-all text-left flex flex-col group overflow-hidden ${isActive ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-2xl' : 'border-black/5 dark:border-white/5 hover:border-indigo-500/40 shadow-sm'}`}
                     >
                       {/* Background Image */}
@@ -202,12 +203,20 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                           </p>
                         </div>
 
-                        {isActive && (
-                          <div className="flex items-center gap-2 text-indigo-400 animate-pulse">
-                             <CheckCircle2 size={14} />
-                             <span className="text-[9px] font-black uppercase tracking-widest">Active Node</span>
-                          </div>
-                        )}
+                        <div className="flex gap-3">
+                           <button 
+                             onClick={() => onSelectTemplate(tmpl)}
+                             className={`px-6 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${isActive ? 'bg-indigo-500 text-white shadow-xl' : 'bg-white text-black hover:bg-brand-blue hover:text-white'}`}
+                           >
+                             Select
+                           </button>
+                           <button 
+                             onClick={() => onOpenVisualEditor(tmpl)}
+                             className="px-6 py-2 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all flex items-center gap-2"
+                           >
+                             <Eye size={12} /> Detail
+                           </button>
+                        </div>
                       </div>
 
                       {/* Selection Indicator */}
@@ -218,7 +227,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                       <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-all z-20">
                          <span className="text-[9px] font-black text-white/40 uppercase tracking-widest italic">Fast_Ship_v1.4</span>
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>

@@ -1,12 +1,15 @@
+
 import React, { useState } from 'react';
 import { useAetherFlow, WorkflowTemplate } from '../hooks/useAetherFlow';
 import { ConfigPanel } from './aether-flow/ConfigPanel';
 import { ResultsPanel } from './aether-flow/ResultsPanel';
 import { SettingsDrawer } from './aether-flow/SettingsDrawer';
+import { WorkflowEditorModal } from './aether-flow/WorkflowEditorModal';
 
 const AetherFlowInterface: React.FC = () => {
   const flow = useAetherFlow();
   const [showSettings, setShowSettings] = useState(false);
+  const [visualEditorTemplate, setVisualEditorTemplate] = useState<WorkflowTemplate | null>(null);
 
   const handleGenerate = async () => {
     try {
@@ -72,9 +75,16 @@ const AetherFlowInterface: React.FC = () => {
           statusText={flow.statusText}
           workflowId={flow.workflowId}
           onSelectTemplate={handleSelectTemplate}
+          onOpenVisualEditor={(tmpl) => setVisualEditorTemplate(tmpl)}
           onClear={() => flow.setResults([])}
         />
       </div>
+
+      <WorkflowEditorModal 
+        isOpen={!!visualEditorTemplate}
+        onClose={() => setVisualEditorTemplate(null)}
+        template={visualEditorTemplate}
+      />
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
