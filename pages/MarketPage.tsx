@@ -314,13 +314,13 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* UTILITY LAB BLOCK */}
+              {/* UTILITY LAB BLOCK (RENAME TO APP KHÁC) */}
               {sectionedSolutions.others.length > 0 && (
                 <section>
                   <MarketSectionHeader 
                     icon={LayoutGrid} 
-                    title="Utility Lab" 
-                    subtitle="Các đại lý thần kinh cho các tác vụ vận hành tự động"
+                    title="App khác" 
+                    subtitle="Khám phá các ứng dụng hỗ trợ và tiện ích AI đa dạng"
                     count={sectionedSolutions.others.length} 
                     colorClass="text-emerald-500" 
                     onScrollLeft={() => scroll(othersRef, 'left')} 
