@@ -19,7 +19,6 @@ import { EditorHUD } from './editor/EditorHUD';
 import { NodesMapSidebar } from './editor/NodesMapSidebar';
 import { ViewportToolbar } from './editor/ViewportToolbar';
 import { WorkflowContextMenu } from './editor/WorkflowContextMenu';
-import { NodeEditorToolbar } from './editor/NodeEditorToolbar';
 
 interface WorkflowEditorModalProps {
   isOpen: boolean;
@@ -80,8 +79,6 @@ const EditorContent: React.FC<{
       />
 
       <div className="flex-grow relative overflow-hidden flex flex-col">
-          <NodeEditorToolbar onClose={onClose} />
-          
           <div className="flex-grow relative">
             <ReactFlow
               nodes={nodes}

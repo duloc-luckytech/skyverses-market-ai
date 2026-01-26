@@ -9,59 +9,63 @@ import {
   Info, 
   LayoutGrid, 
   LogOut, 
-  HelpCircle 
+  HelpCircle,
+  Eye
 } from 'lucide-react';
 
 interface NodeEditorToolbarProps {
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 export const NodeEditorToolbar: React.FC<NodeEditorToolbarProps> = ({ onClose }) => {
   return (
-    <div className="flex items-center justify-center pt-4 pb-2 z-[60] shrink-0">
-      <div className="bg-[#1a1b1e] border border-white/5 rounded-xl px-4 py-2 flex items-center gap-6 shadow-2xl">
-        <button className="text-gray-500 hover:text-white transition-colors">
-          <Play size={18} />
-        </button>
-
-        <div className="flex items-center gap-1 cursor-pointer group">
-          <div className="w-4 h-4 rounded-full bg-emerald-800 border border-emerald-500/30 flex items-center justify-center">
-             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
-          </div>
-          <ChevronDown size={14} className="text-gray-500 group-hover:text-white" />
+    <div className="flex items-center gap-1.5 bg-[#1a1b1e]/95 backdrop-blur-md border border-white/10 rounded-xl px-2.5 py-1.5 shadow-2xl pointer-events-auto">
+      {/* Mini Viewport / Status */}
+      <div className="flex items-center gap-2 pr-3 border-r border-white/10 mr-1 group/viewport">
+        <div className="w-8 h-8 rounded-lg bg-black border border-white/10 flex items-center justify-center overflow-hidden relative shadow-inner">
+           <div className="absolute inset-0 bg-brand-blue/5 animate-pulse"></div>
+           <Eye size={12} className="text-brand-blue/60 group-hover/viewport:text-brand-blue transition-colors" />
         </div>
-
-        <button className="text-gray-500 hover:text-white transition-colors">
-          <TrendingUp size={16} />
-        </button>
-
-        <button className="text-gray-500 hover:text-white transition-colors">
-          <Pin size={16} />
-        </button>
-
-        <button className="text-rose-500 hover:text-rose-400 transition-colors">
-          <Trash2 size={16} />
-        </button>
-
-        <button className="text-gray-500 hover:text-white transition-colors">
-          <Info size={16} />
-        </button>
-
-        <button className="text-gray-500 hover:text-white transition-colors">
-          <LayoutGrid size={16} />
-        </button>
-
-        <button 
-          onClick={onClose}
-          className="text-gray-500 hover:text-white transition-colors"
-        >
-          <LogOut size={16} />
-        </button>
-
-        <button className="text-gray-500 hover:text-white transition-colors">
-          <HelpCircle size={16} />
-        </button>
+        <div className="flex flex-col">
+           <span className="text-[7px] font-black text-gray-500 uppercase tracking-widest">Viewport</span>
+           <span className="text-[8px] font-black text-emerald-500 uppercase leading-none">Live_Sync</span>
+        </div>
       </div>
+
+      <button className="p-2 text-gray-400 hover:text-white transition-all hover:bg-white/5 rounded-lg" title="Run Node">
+        <Play size={16} fill="currentColor" />
+      </button>
+
+      <div className="flex items-center gap-1 cursor-pointer group p-1 hover:bg-white/5 rounded-lg transition-all">
+        <div className="w-3.5 h-3.5 rounded-full bg-emerald-800/40 border border-emerald-500/30 flex items-center justify-center">
+           <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse"></div>
+        </div>
+        <ChevronDown size={12} className="text-gray-500 group-hover:text-white" />
+      </div>
+
+      <button className="p-2 text-gray-400 hover:text-white transition-all hover:bg-white/5 rounded-lg" title="Performance">
+        <TrendingUp size={16} />
+      </button>
+
+      <button className="p-2 text-gray-400 hover:text-white transition-all hover:bg-white/5 rounded-lg" title="Pin Node">
+        <Pin size={16} />
+      </button>
+
+      <button className="p-2 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all" title="Delete">
+        <Trash2 size={16} />
+      </button>
+
+      <button className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Info">
+        <Info size={16} />
+      </button>
+
+      <button className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Grid Layout">
+        <LayoutGrid size={16} />
+      </button>
+
+      <button className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Help">
+        <HelpCircle size={16} />
+      </button>
     </div>
   );
 };
