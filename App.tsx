@@ -54,7 +54,6 @@ import ProductImage from './pages/images/ProductImage';
 import PosterMarketingAI from './pages/images/PosterMarketingAI';
 import FashionCenterAI from './pages/images/FashionCenterAI';
 import ImageUpscaleAI from './pages/images/ImageUpscaleAI';
-import ImageComposer from './pages/images/ImageComposer';
 import Product6Image from './pages/images/Product6Image';
 import Product7Comic from './pages/images/Product7Comic';
 import Art3DPage from './pages/Art3DPage';
@@ -134,7 +133,6 @@ const App: React.FC = () => {
                       <Route path="/product/poster-marketing-ai" element={<PosterMarketingAI />} />
                       <Route path="/product/fashion-center-ai" element={<FashionCenterAI />} />
                       <Route path="/product/image-upscale-ai" element={<ImageUpscaleAI />} />
-                      <Route path="/product/nexus-ideation-engine" element={<ImageComposer />} />
                       <Route path="/product/character-sync-studio" element={<Product6Image />} />
                       <Route path="/product/banana-pro-comic-engine" element={<Product7Comic />} />
                       <Route path="/product/neural-game-architect" element={<Art3DPage />} />
