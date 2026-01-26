@@ -164,7 +164,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                   className="px-6 py-2.5 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:scale-105 active:scale-95 transition-all italic group"
                 >
                   <Plus size={14} strokeWidth={3} className="group-hover:rotate-90 transition-transform" /> 
-                  Tạo kịch bản
+                  Tạo workflow
                 </button>
               </div>
 
@@ -216,13 +216,13 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                              onClick={() => onSelectTemplate(tmpl)}
                              className={`px-6 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${isActive ? 'bg-indigo-500 text-white shadow-xl' : 'bg-white text-black hover:bg-brand-blue hover:text-white'}`}
                            >
-                             Select
+                             Use template
                            </button>
                            <button 
                              onClick={() => onOpenVisualEditor(tmpl)}
                              className="px-6 py-2 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all flex items-center gap-2"
                            >
-                             <Eye size={12} /> Detail
+                             <Eye size={12} /> Workflow
                            </button>
                         </div>
                       </div>
