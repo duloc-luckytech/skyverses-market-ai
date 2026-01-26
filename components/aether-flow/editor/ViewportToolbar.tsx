@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { useReactFlow } from '@xyflow/react';
-import { Maximize, Minimize, MousePointer2, LayoutTemplate, Plus, Grid, RefreshCw } from 'lucide-react';
+import { Maximize, Minimize, LayoutTemplate, Plus, Grid } from 'lucide-react';
 
 export const ViewportToolbar: React.FC = () => {
   const { fitView, zoomIn, zoomOut } = useReactFlow();
@@ -44,12 +43,6 @@ export const ViewportToolbar: React.FC = () => {
         title="Toggle Grid"
       >
         <Grid size={18} />
-      </button>
-      <div className="w-px h-6 bg-white/10 mx-1"></div>
-      <button 
-        className="bg-brand-blue text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-lg flex items-center gap-2"
-      >
-        <RefreshCw size={14} /> Run Workflow
       </button>
     </div>
   );

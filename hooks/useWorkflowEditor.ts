@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect } from 'react';
 import {
   useNodesState,
@@ -29,10 +28,42 @@ export const useWorkflowEditor = (template: WorkflowTemplate | null) => {
     );
   }, [setNodes]);
 
+  const addNode = useCallback((type: string, position: { x: number, y: number }) => {
+    const id = `node_${Date.now()}`;
+    const newNode: Node = {
+      id,
+      type: 'custom',
+      position,
+      data: { 
+        label: `New ${type}`,
+        id,
+        inputs: {
+          "seed": Math.floor(Math.random() * 1000000000000),
+          "steps": 20,
+          "cfg": 8.0,
+          "sampler": "euler"
+        },
+        headerColor: type === 'Group' ? 'bg-amber-900' : 'bg-slate-800',
+        outputs: ['OUTPUT'],
+        onUpdate: (key: string, val: any) => updateNodeValue(id, key, val)
+      },
+    };
+    setNodes((nds) => nds.concat(newNode));
+  }, [setNodes]);
+
   const updateNodeValue = useCallback((nodeId: string, key: string, value: any) => {
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === nodeId) {
+          if (key === 'label') {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                label: value,
+              },
+            };
+          }
           return {
             ...node,
             data: {
@@ -116,6 +147,7 @@ export const useWorkflowEditor = (template: WorkflowTemplate | null) => {
     onNodesChange,
     onEdgesChange,
     onConnect,
+    addNode,
     toggleNodeVisibility,
     updateNodeValue
   };
