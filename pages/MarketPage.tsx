@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { marketApi } from '../apis/market';
 import { Solution } from '../types';
 import { 
-  X, SearchX, Flame, Video, ImageIcon, LayoutGrid, Gift
+  X, SearchX, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -38,6 +38,7 @@ const MarketPage = () => {
 
   // Refs for horizontal scrolling
   const topHotRef = useRef<HTMLDivElement>(null);
+  const agentWorkflowRef = useRef<HTMLDivElement>(null);
   const festivalRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
@@ -153,10 +154,11 @@ const MarketPage = () => {
   const sectionedSolutions = useMemo(() => {
     return {
       topChoice: filteredSolutions.filter(s => s.featured),
+      agentWorkflow: filteredSolutions.filter(s => s.demoType === 'automation' || s.category.en === 'Automation'),
       festivals: filteredSolutions.filter(s => s.category.en === 'Festivals' || s.tags?.includes('Noel')),
       video: filteredSolutions.filter(s => s.demoType === 'video'),
       image: filteredSolutions.filter(s => s.demoType === 'image'),
-      others: filteredSolutions.filter(s => s.demoType !== 'video' && s.demoType !== 'image' && !s.featured && s.category.en !== 'Festivals')
+      others: filteredSolutions.filter(s => s.demoType !== 'video' && s.demoType !== 'image' && s.demoType !== 'automation' && !s.featured && s.category.en !== 'Festivals')
     };
   }, [filteredSolutions]);
 
@@ -202,7 +204,7 @@ const MarketPage = () => {
                   <MarketSectionHeader 
                     icon={Flame} 
                     title="Top Choice" 
-                    subtitle="Creator-recommended tools tailored for elite workflows" 
+                    subtitle="Lựa chọn hàng đầu cho hiệu suất sáng tạo vượt trội" 
                     count={sectionedSolutions.topChoice.length} 
                     colorClass="text-orange-500" 
                     onScrollLeft={() => scroll(topHotRef, 'left')} 
@@ -225,13 +227,42 @@ const MarketPage = () => {
                 </section>
               )}
 
+              {/* AI AGENT WORKFLOW BLOCK - NEW */}
+              {sectionedSolutions.agentWorkflow.length > 0 && (
+                <section>
+                  <MarketSectionHeader 
+                    icon={Workflow} 
+                    title="AI Agent Workflow" 
+                    subtitle="Tự động hóa quy trình sáng tạo đa kênh với hệ thống AI Agent thông minh" 
+                    count={sectionedSolutions.agentWorkflow.length} 
+                    colorClass="text-indigo-600" 
+                    onScrollLeft={() => scroll(agentWorkflowRef, 'left')} 
+                    onScrollRight={() => scroll(agentWorkflowRef, 'right')}
+                    onSeeAll={() => navigate('/category/others')}
+                  />
+                  <div ref={agentWorkflowRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
+                    {sectionedSolutions.agentWorkflow.map((sol, idx) => (
+                      <SolutionCard 
+                        key={sol.id} sol={sol} idx={idx} lang={lang} 
+                        isLiked={likedItems.includes(sol._id || sol.id)}
+                        isFavorited={favorites.includes(sol.id)}
+                        onToggleFavorite={toggleFavorite}
+                        onToggleLike={toggleLike}
+                        onClick={handleNavigate}
+                        stats={getFakeStats(sol._id || sol.id)}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )}
+
               {/* VIDEO STUDIO BLOCK */}
               {sectionedSolutions.video.length > 0 && (
                 <section>
                   <MarketSectionHeader 
                     icon={Video} 
                     title="Video Studio" 
-                    subtitle="AI motion engines for high-end cinematic production"
+                    subtitle="Công cụ kiến tạo chuyển động AI cho sản xuất điện ảnh"
                     count={sectionedSolutions.video.length} 
                     colorClass="text-purple-500" 
                     onScrollLeft={() => scroll(videoRef, 'left')} 
@@ -260,7 +291,7 @@ const MarketPage = () => {
                   <MarketSectionHeader 
                     icon={ImageIcon} 
                     title="Creative Studio" 
-                    subtitle="High-fidelity visual synthesis for design systems"
+                    subtitle="Tổng hợp thị giác độ trung thực cao cho hệ thống thiết kế"
                     count={sectionedSolutions.image.length} 
                     colorClass="text-brand-blue" 
                     onScrollLeft={() => scroll(imageRef, 'left')} 
@@ -289,7 +320,7 @@ const MarketPage = () => {
                   <MarketSectionHeader 
                     icon={LayoutGrid} 
                     title="Utility Lab" 
-                    subtitle="Neural agents for automated operational tasks"
+                    subtitle="Các đại lý thần kinh cho các tác vụ vận hành tự động"
                     count={sectionedSolutions.others.length} 
                     colorClass="text-emerald-500" 
                     onScrollLeft={() => scroll(othersRef, 'left')} 
@@ -312,13 +343,13 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* FESTIVAL BLOCK - NEW - MOVED BELOW UTILITY LAB */}
+              {/* FESTIVAL BLOCK */}
               {sectionedSolutions.festivals.length > 0 && (
                 <section>
                   <MarketSectionHeader 
                     icon={Gift} 
                     title="Lễ hội & Sự kiện" 
-                    subtitle="Neural assets for magical holiday moments" 
+                    subtitle="Tài nguyên AI cho những khoảnh khắc lễ hội kỳ ảo" 
                     count={sectionedSolutions.festivals.length} 
                     colorClass="text-rose-500" 
                     onScrollLeft={() => scroll(festivalRef, 'left')} 
