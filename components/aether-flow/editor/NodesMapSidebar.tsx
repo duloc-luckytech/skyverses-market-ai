@@ -131,8 +131,8 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
   return (
     <motion.aside 
       initial={false}
-      animate={{ width: isOpen ? 380 : 48 }}
-      className="relative border-r border-white/5 bg-[#0f0f11] flex flex-row shrink-0 z-50 shadow-2xl transition-all duration-300"
+      animate={{ width: isOpen ? '25%' : 48 }}
+      className="relative border-r border-white/5 bg-[#0f0f11] flex flex-row shrink-0 z-50 shadow-2xl transition-all duration-300 min-w-[48px]"
     >
       {/* VERTICAL NAVIGATION BAR */}
       <div className="w-12 border-r border-white/5 flex flex-col items-center py-4 bg-black/40 shrink-0">

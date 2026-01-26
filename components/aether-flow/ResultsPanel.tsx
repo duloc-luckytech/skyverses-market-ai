@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ImageIcon, Sparkles, Download, Share2, Loader2, Activity, LayoutGrid, Film, Box, User, CheckCircle2, Eye, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -53,7 +54,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   }, [results.length, isGenerating]);
 
   return (
-    <div className="flex-[1.5] bg-white dark:bg-[#0c0c12] border border-black/5 dark:border-white/5 rounded-2xl flex flex-col shadow-2xl overflow-hidden transition-all duration-500 h-[85vh]">
+    <div className="w-full bg-white dark:bg-[#0c0c12] border border-black/5 dark:border-white/5 rounded-2xl flex flex-col shadow-2xl overflow-hidden transition-all duration-500 h-[85vh]">
       <div className="border-b border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/20 shrink-0">
         <div className="flex">
           <button 
