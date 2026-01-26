@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect } from 'react';
 import {
   useNodesState,
@@ -13,6 +12,10 @@ import { WorkflowTemplate } from './useAetherFlow';
 export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+  // Hệ số dãn cách cho quy trình nâng cao
+  const SCALE_X = 1.6;
+  const SCALE_Y = 2.4;
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge({
@@ -59,7 +62,6 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
         const newNodes: Node[] = [];
         const newEdges: Edge[] = [];
 
-        // Parsing Standard ComfyUI Web JSON (provided in prompt)
         if (targetData.nodes && Array.isArray(targetData.nodes)) {
           targetData.nodes.forEach((nodeData: any) => {
             const id = String(nodeData.id);
@@ -70,21 +72,22 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
             if (classType?.includes('Sampler')) headerColor = 'bg-purple-900';
             if (classType?.includes('Load')) headerColor = 'bg-slate-700';
 
+            const rawX = Array.isArray(nodeData.pos) ? nodeData.pos[0] : (nodeData.x || 0);
+            const rawY = Array.isArray(nodeData.pos) ? nodeData.pos[1] : (nodeData.y || 0);
+
             const position = { 
-              x: Array.isArray(nodeData.pos) ? nodeData.pos[0] : (nodeData.x || 0), 
-              y: Array.isArray(nodeData.pos) ? nodeData.pos[1] : (nodeData.y || 0) 
+              x: rawX * SCALE_X, 
+              y: rawY * SCALE_Y 
             };
 
             const inputs: Record<string, any> = {};
             
-            // Map inputs linked to other nodes
             if (nodeData.inputs && Array.isArray(nodeData.inputs)) {
               nodeData.inputs.forEach((input: any) => {
                 inputs[input.name] = ['LINK', input.link]; 
               });
             }
 
-            // Map widget values (actual data like "auto", "fixed", "1k")
             if (nodeData.widgets_values && Array.isArray(nodeData.widgets_values)) {
                nodeData.widgets_values.forEach((val: any, idx: number) => {
                   inputs[`widget_${idx}`] = val;
@@ -107,12 +110,9 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
             });
           });
 
-          // Parse Links [id, from_id, from_out, to_id, to_in, type]
           if (targetData.links && Array.isArray(targetData.links)) {
             targetData.links.forEach((link: any) => {
               const [linkId, fromId, fromOut, toId, toIn] = link;
-              
-              // Find the to-handle name if possible
               const targetNode = targetData.nodes.find((n: any) => n.id === toId);
               const targetHandle = targetNode?.inputs?.[toIn]?.name || String(toIn);
 

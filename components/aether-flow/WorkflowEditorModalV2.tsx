@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   ReactFlow,
@@ -56,8 +55,18 @@ const V2EditorContent: React.FC<{
         
         <div className="flex-grow relative overflow-hidden">
           <ReactFlow
-            nodes={nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
-            onConnect={onConnect} nodeTypes={nodeTypes} colorMode="dark" fitView
+            nodes={nodes} 
+            edges={edges} 
+            onNodesChange={onNodesChange} 
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect} 
+            nodeTypes={nodeTypes} 
+            colorMode="dark" 
+            fitView
+            fitViewOptions={{ padding: 0.5, minZoom: 0.08 }}
+            minZoom={0.05}
+            maxZoom={2}
+            onlyRenderVisibleElements={true}
           >
             <Background variant={BackgroundVariant.Lines} color="#ffffff05" gap={40} size={1} />
             <Controls position="bottom-left" className="bg-[#1a1b23] border-white/5 p-1 rounded-xl" />

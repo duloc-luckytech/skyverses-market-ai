@@ -13,6 +13,10 @@ export const useWorkflowEditor = (template: WorkflowTemplate | null) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
+  // Hệ số dãn cách để tránh chồng lấn khi số lượng node lớn
+  const SPACING_X = 1.6;
+  const SPACING_Y = 2.2;
+
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge({
       ...params,
@@ -71,13 +75,11 @@ export const useWorkflowEditor = (template: WorkflowTemplate | null) => {
           ? JSON.parse(template.config) 
           : template.config;
 
-        // CRITICAL: Support the { success: true, data: { nodes: [], links: [] } } structure
         const targetData = workflow.data || workflow;
 
         const newNodes: Node[] = [];
         const newEdges: Edge[] = [];
 
-        // CASE 1: COMFYUI WEB FORMAT (Detected by 'nodes' as an array)
         if (targetData.nodes && Array.isArray(targetData.nodes)) {
           targetData.nodes.forEach((nodeData: any) => {
             const id = String(nodeData.id);
@@ -90,22 +92,22 @@ export const useWorkflowEditor = (template: WorkflowTemplate | null) => {
             if (classType?.includes('Text')) headerColor = 'bg-purple-900';
             if (classType === 'PrimitiveNode') headerColor = 'bg-amber-700';
 
-            // ComfyUI uses 'pos' as [x, y]
+            // Áp dụng SPACING_FACTOR để bung dãn khoảng cách node
+            const rawX = Array.isArray(nodeData.pos) ? nodeData.pos[0] : (nodeData.x || 0);
+            const rawY = Array.isArray(nodeData.pos) ? nodeData.pos[1] : (nodeData.y || 0);
+            
             const position = { 
-              x: Array.isArray(nodeData.pos) ? nodeData.pos[0] : (nodeData.x || 0), 
-              y: Array.isArray(nodeData.pos) ? nodeData.pos[1] : (nodeData.y || 0) 
+              x: rawX * SPACING_X, 
+              y: rawY * SPACING_Y 
             };
 
             const inputs: Record<string, any> = {};
-            
-            // Map connected slots to names if possible
             if (nodeData.inputs && Array.isArray(nodeData.inputs)) {
               nodeData.inputs.forEach((input: any, idx: number) => {
                 inputs[input.name || `in_${idx}`] = ['LINK', input.link]; 
               });
             }
 
-            // Map widget values (actual data values like seed, steps)
             if (nodeData.widgets_values && Array.isArray(nodeData.widgets_values)) {
                nodeData.widgets_values.forEach((val: any, idx: number) => {
                   inputs[`widget_${idx}`] = val;
@@ -128,16 +130,11 @@ export const useWorkflowEditor = (template: WorkflowTemplate | null) => {
             });
           });
 
-          // Parse Links in format [link_id, from_id, from_out_index, to_id, to_in_index, type]
           if (targetData.links && Array.isArray(targetData.links)) {
             targetData.links.forEach((link: any) => {
               const [linkId, fromId, fromOut, toId, toIn] = link;
-              
-              // Target node data for handle matching
               const targetNodeData = targetData.nodes.find((n: any) => n.id === toId);
               let targetHandle = String(toIn);
-              
-              // If target node has inputs, the index usually maps to the input slot name
               if (targetNodeData?.inputs?.[toIn]) {
                 targetHandle = targetNodeData.inputs[toIn].name;
               }
@@ -155,8 +152,8 @@ export const useWorkflowEditor = (template: WorkflowTemplate | null) => {
             });
           }
         } 
-        // CASE 2: API FORMAT (Dictionary based / Prompt format)
         else {
+          // Trường hợp không có tọa độ (API format), dùng lưới rộng (650x850)
           Object.keys(targetData).forEach((id, index) => {
             const nodeData = targetData[id];
             if (!nodeData?.class_type) return;
@@ -164,7 +161,7 @@ export const useWorkflowEditor = (template: WorkflowTemplate | null) => {
             newNodes.push({
               id,
               type: 'custom',
-              position: { x: (index % 4) * 400, y: Math.floor(index / 4) * 450 },
+              position: { x: (index % 5) * 650, y: Math.floor(index / 5) * 850 },
               data: { 
                 label: nodeData._meta?.title || nodeData.class_type,
                 id,
@@ -172,7 +169,6 @@ export const useWorkflowEditor = (template: WorkflowTemplate | null) => {
                 classType: nodeData.class_type,
                 headerColor: 'bg-slate-800',
                 outputs: ['OUT'],
-                // Fix: updateConfigValue was not defined, changing to updateNodeValue
                 onUpdate: (key: string, val: any) => updateNodeValue(id, key, val)
               },
             });

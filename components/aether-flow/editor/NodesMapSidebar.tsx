@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -106,10 +105,12 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
     setFolders(prev => prev.map(f => f.id === id ? { ...f, isOpen: !f.isOpen } : f));
   };
 
-  const filteredNodes = nodes.filter(node => 
-    node.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (node.data?.label as string)?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredNodes = useMemo(() => {
+    return nodes.filter(node => 
+      node.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (node.data?.label as string)?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [nodes, searchQuery]);
 
   const NavItem = ({ id, icon: Icon, label }: { id: typeof activeMenu, icon: any, label: string }) => (
     <button 
@@ -132,10 +133,10 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
     <motion.aside 
       initial={false}
       animate={{ width: isOpen ? '25%' : 48 }}
-      className="relative border-r border-white/5 bg-[#0f0f11] flex flex-row shrink-0 z-50 shadow-2xl transition-all duration-300 min-w-[48px]"
+      className="relative border-r border-white/5 bg-[#0f0f11] flex flex-row shrink-0 z-50 shadow-2xl transition-all duration-300 min-w-[48px] h-full"
     >
       {/* VERTICAL NAVIGATION BAR */}
-      <div className="w-12 border-r border-white/5 flex flex-col items-center py-4 bg-black/40 shrink-0">
+      <div className="w-12 border-r border-white/5 flex flex-col items-center py-4 bg-black/40 shrink-0 h-full">
         <NavItem id="LIBRARY" icon={Package} label="Node Library" />
         <NavItem id="MAP" icon={MapIcon} label="Nodes Map" />
         <NavItem id="CHAT" icon={MessageSquare} label="Workflow Chat" />
@@ -176,7 +177,7 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
 
               {activeMenu !== 'CHAT' && (
                 <div className="relative group">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-brand-blue transition-colors" size={14} />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue transition-colors" size={14} />
                   <input 
                     type="text"
                     value={searchQuery}
@@ -188,7 +189,8 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
               )}
             </div>
 
-            <div className="flex-grow overflow-y-auto no-scrollbar">
+            {/* Scrolling container with min-h-0 to enable flex-grow scroll */}
+            <div className="flex-grow overflow-y-auto no-scrollbar min-h-0">
                {activeMenu === 'LIBRARY' && (
                  <div className="p-2 space-y-1">
                     {folders.map(folder => (
@@ -264,8 +266,8 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
                )}
 
                {activeMenu === 'CHAT' && (
-                 <div className="h-full flex flex-col bg-black/20">
-                    <div className="flex-grow p-4 space-y-4 overflow-y-auto no-scrollbar">
+                 <div className="h-full flex flex-col">
+                    <div className="flex-grow p-4 space-y-4 overflow-y-auto no-scrollbar min-h-0">
                        {chatMessages.map((msg, i) => (
                          <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                             <div className={`w-6 h-6 rounded flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-brand-blue text-white' : 'bg-white/5 text-brand-blue'}`}>
@@ -289,7 +291,7 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
                        <div ref={chatEndRef} />
                     </div>
                     
-                    <div className="p-4 bg-black/40 border-t border-white/5">
+                    <div className="p-4 bg-black/40 border-t border-white/5 shrink-0">
                        <form onSubmit={handleSendChat} className="relative">
                           <input 
                             value={chatInput}

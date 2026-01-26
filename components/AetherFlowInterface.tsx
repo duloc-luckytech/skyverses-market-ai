@@ -1,11 +1,8 @@
-
 import React, { useState } from 'react';
 import { useAetherFlow, WorkflowTemplate } from '../hooks/useAetherFlow';
 import { ConfigPanel } from './aether-flow/ConfigPanel';
 import { ResultsPanel } from './aether-flow/ResultsPanel';
 import { SettingsDrawer } from './aether-flow/SettingsDrawer';
-import { WorkflowEditorModal } from './aether-flow/WorkflowEditorModal';
-// Added missing import for WorkflowEditorModalV2
 import { WorkflowEditorModalV2 } from './aether-flow/WorkflowEditorModalV2';
 import { Loader2, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,8 +12,6 @@ const AetherFlowInterface: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [visualEditorTemplate, setVisualEditorTemplate] = useState<WorkflowTemplate | null>(null);
   const [isVisualEditorOpen, setIsVisualEditorOpen] = useState(false);
-  // Added state for V2 visual editor
-  const [isVisualEditorV2Open, setIsVisualEditorV2Open] = useState(false);
   const [isFetchingDetail, setIsFetchingDetail] = useState(false);
 
   const handleGenerate = async () => {
@@ -39,52 +34,32 @@ const AetherFlowInterface: React.FC = () => {
   };
 
   const handleSelectTemplate = (tmpl: WorkflowTemplate) => {
-    // FIX: Using templateId as defined in WorkflowTemplate interface in hooks/useAetherFlow.ts
     flow.setWorkflowId(tmpl.templateId);
     if (tmpl.config) {
       handleImport(tmpl.config);
     } else {
-       // Nếu không có config thô, ta chỉ set ID để chạy qua API RunningHub
        flow.setWorkflowId(tmpl.templateId);
     }
   };
 
+  // Sử dụng logic V2 (Advanced) cho tất cả các yêu cầu mở Editor
   const handleOpenVisualEditor = async (tmpl: WorkflowTemplate | null) => {
     if (tmpl) {
       setIsFetchingDetail(true);
       try {
-        // Fetch full workflow configuration detail from API
         const detail = await flow.fetchWorkflowDetail(tmpl.templateId);
-        if (detail && detail.config) {
-          setVisualEditorTemplate({ ...tmpl, config: detail.config });
-        } else {
-          setVisualEditorTemplate(tmpl);
-        }
+        setVisualEditorTemplate(detail ? { ...tmpl, config: JSON.stringify(detail) } : tmpl);
+        setIsVisualEditorOpen(true);
       } catch (err) {
         console.error("Detail Fetch Error", err);
         setVisualEditorTemplate(tmpl);
+        setIsVisualEditorOpen(true);
       } finally {
         setIsFetchingDetail(false);
       }
     } else {
       setVisualEditorTemplate(null);
-    }
-    setIsVisualEditorOpen(true);
-  };
-
-  // Added handler for V2 visual editor
-  const handleOpenVisualEditorV2 = async (tmpl: WorkflowTemplate) => {
-    setIsFetchingDetail(true);
-    try {
-      const detail = await flow.fetchWorkflowDetail(tmpl.templateId);
-      setVisualEditorTemplate(detail ? { ...tmpl, config: JSON.stringify(detail) } : tmpl);
-      setIsVisualEditorV2Open(true);
-    } catch (err) {
-      console.error(err);
-      setVisualEditorTemplate(tmpl);
-      setIsVisualEditorV2Open(true);
-    } finally {
-      setIsFetchingDetail(false);
+      setIsVisualEditorOpen(true);
     }
   };
 
@@ -95,10 +70,10 @@ const AetherFlowInterface: React.FC = () => {
 
   return (
     <div className="h-full w-full bg-[#fcfcfd] dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans p-4 md:p-6 lg:p-8 flex items-start justify-center overflow-y-auto no-scrollbar transition-colors duration-500 relative">
-      <div className="w-full flex flex-col md:flex-row gap-6 items-stretch">
+      <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
         
-        {/* LEFT PANEL: CONFIGURATION */}
-        <div className="flex-1 flex flex-col gap-4">
+        {/* LEFT PANEL: CONFIGURATION (1/4 width) */}
+        <div className="md:col-span-1 flex flex-col gap-4">
           <SettingsDrawer 
             isOpen={showSettings}
             apiKey={flow.apiKey}
@@ -123,8 +98,8 @@ const AetherFlowInterface: React.FC = () => {
           />
         </div>
 
-        {/* RIGHT PANEL: RESULTS & TEMPLATES */}
-        <div className="flex-1">
+        {/* RIGHT PANEL: RESULTS & TEMPLATES (3/4 width) */}
+        <div className="md:col-span-3">
           <ResultsPanel 
             results={flow.results}
             generationTime={flow.generationTime}
@@ -133,30 +108,22 @@ const AetherFlowInterface: React.FC = () => {
             workflowId={flow.workflowId}
             templates={flow.templates}
             loadingTemplates={flow.loadingTemplates}
-            // Passed page from flow hook
             page={flow.page}
             hasMore={flow.hasMore}
             isFetchingMore={flow.isFetchingMore}
             loadMoreTemplates={flow.loadMoreTemplates}
             onSelectTemplate={handleSelectTemplate}
             onOpenVisualEditor={handleOpenVisualEditor}
-            // Added onOpenVisualEditorV2 prop to satisfy requirements
-            onOpenVisualEditorV2={handleOpenVisualEditorV2}
+            onOpenVisualEditorV2={handleOpenVisualEditor} // Map cả 2 về chung một hàm xử lý
             onClear={() => flow.setResults([])}
           />
         </div>
       </div>
 
-      <WorkflowEditorModal 
+      {/* Chỉ sử dụng duy nhất Modal V2 */}
+      <WorkflowEditorModalV2 
         isOpen={isVisualEditorOpen}
         onClose={handleCloseVisualEditor}
-        template={visualEditorTemplate}
-      />
-
-      {/* Added WorkflowEditorModalV2 */}
-      <WorkflowEditorModalV2 
-        isOpen={isVisualEditorV2Open}
-        onClose={() => { setIsVisualEditorV2Open(false); setVisualEditorTemplate(null); }}
         template={visualEditorTemplate}
       />
 
