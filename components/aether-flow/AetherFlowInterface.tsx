@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
 import { useAetherFlow, WorkflowTemplate } from '../../hooks/useAetherFlow';
-import { ConfigPanel } from './aether-flow/ConfigPanel';
-import { ResultsPanel } from './aether-flow/ResultsPanel';
-import { SettingsDrawer } from './aether-flow/SettingsDrawer';
-import { WorkflowEditorModal } from './aether-flow/WorkflowEditorModal';
+import { ConfigPanel } from './ConfigPanel';
+import { ResultsPanel } from './ResultsPanel';
+import { SettingsDrawer } from './SettingsDrawer';
+import { WorkflowEditorModal } from './WorkflowEditorModal';
 
 const AetherFlowInterface: React.FC = () => {
   const flow = useAetherFlow();
@@ -32,9 +32,12 @@ const AetherFlowInterface: React.FC = () => {
   };
 
   const handleSelectTemplate = (tmpl: WorkflowTemplate) => {
-    flow.setWorkflowId(tmpl.id);
+    flow.setWorkflowId(tmpl.templateId); // Dùng templateId từ API
     if (tmpl.config) {
       handleImport(tmpl.config);
+    } else {
+       // Nếu không có config thô, ta chỉ set ID để chạy qua API RunningHub
+       flow.setWorkflowId(tmpl.templateId);
     }
   };
 
@@ -86,6 +89,8 @@ const AetherFlowInterface: React.FC = () => {
             isGenerating={flow.isGenerating}
             statusText={flow.statusText}
             workflowId={flow.workflowId}
+            templates={flow.templates}
+            loadingTemplates={flow.loadingTemplates}
             onSelectTemplate={handleSelectTemplate}
             onOpenVisualEditor={handleOpenVisualEditor}
             onClear={() => flow.setResults([])}

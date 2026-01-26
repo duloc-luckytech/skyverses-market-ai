@@ -1,29 +1,27 @@
 
 import React, { useState, useEffect } from 'react';
-import { ImageIcon, Sparkles, Download, Share2, Loader2, Activity, LayoutGrid, Film, Box, User, CheckCircle2, Eye, Plus } from 'lucide-react';
+import { 
+  ImageIcon, Sparkles, Download, Share2, Loader2, 
+  Activity, LayoutGrid, Film, Box, User, 
+  CheckCircle2, Eye, Plus, Play, Tag,
+  Users, Heart
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GeneratedResult, WORKFLOW_TEMPLATES, WorkflowTemplate } from '../../hooks/useAetherFlow';
+import { GeneratedResult, WorkflowTemplate } from '../../hooks/useAetherFlow';
+import { TemplateCard } from './TemplateCard';
 
 interface ResultsPanelProps {
   results: GeneratedResult[];
   generationTime: number;
-  isGenerating: boolean;
+  isGenerating: boolean; 
   statusText: string;
   workflowId: string;
+  templates: WorkflowTemplate[];
+  loadingTemplates: boolean;
   onSelectTemplate: (tmpl: WorkflowTemplate) => void;
   onOpenVisualEditor: (tmpl: WorkflowTemplate | null) => void;
   onClear: () => void;
 }
-
-const TemplateIcon = ({ type }: { type: WorkflowTemplate['iconType'] }) => {
-  switch (type) {
-    case 'Cinematic': return <Film size={20} />;
-    case 'Anime': return <Sparkles size={20} />;
-    case 'Product': return <Box size={20} />;
-    case 'Portrait': return <User size={20} />;
-    default: return <ImageIcon size={20} />;
-  }
-};
 
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({ 
   results, 
@@ -31,20 +29,20 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   isGenerating, 
   statusText,
   workflowId,
+  templates,
+  loadingTemplates,
   onSelectTemplate,
   onOpenVisualEditor,
   onClear 
 }) => {
   const [activeTab, setActiveTab] = useState<'RESULTS' | 'TEMPLATES'>('TEMPLATES');
 
-  // Tự động chuyển tab sang RESULTS khi bắt đầu tạo hình
   useEffect(() => {
     if (isGenerating) {
       setActiveTab('RESULTS');
     }
   }, [isGenerating]);
 
-  // Nếu đã có kết quả thì mặc định tab RESULTS, ngược lại TEMPLATES
   useEffect(() => {
     if (results.length > 0 && !isGenerating) {
       setActiveTab('RESULTS');
@@ -157,89 +155,36 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
             >
               <div className="flex justify-between items-end px-1">
                 <div className="space-y-4">
-                  <h3 className="text-xl font-black uppercase tracking-tighter italic text-slate-800 dark:text-white">Quick Templates</h3>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">(Fast Create Your Workflow)</p>
+                  <h3 className="text-xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Workflow Registry</h3>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">Cửa ngõ kịch bản RunningHub Pro</p>
                 </div>
                 <button 
                   onClick={() => onOpenVisualEditor(null)}
                   className="px-6 py-2.5 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:scale-105 active:scale-95 transition-all italic group"
                 >
                   <Plus size={14} strokeWidth={3} className="group-hover:rotate-90 transition-transform" /> 
-                  Tạo workflow
+                  Custom Workflow
                 </button>
               </div>
 
-              <div className="flex flex-col gap-6">
-                {WORKFLOW_TEMPLATES.map((tmpl) => {
-                  const isActive = workflowId === tmpl.id;
-                  return (
-                    <div
-                      key={tmpl.id}
-                      className={`relative w-full aspect-[21/9] rounded-[1.5rem] border-2 transition-all text-left flex flex-col group overflow-hidden ${isActive ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-2xl' : 'border-black/5 dark:border-white/5 hover:border-indigo-500/40 shadow-sm'}`}
-                    >
-                      {/* Background Image */}
-                      {tmpl.imageUrl ? (
-                        <img 
-                          src={tmpl.imageUrl} 
-                          className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ${isActive ? 'scale-105 opacity-80' : 'scale-100 opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-80'}`} 
-                          alt={tmpl.name} 
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-slate-100 dark:bg-black/40"></div>
-                      )}
-
-                      {/* Left Blurred Content Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10"></div>
-                      
-                      <div className="relative z-20 h-full flex flex-col justify-center p-8 md:p-10 space-y-4 max-w-[70%]">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all ${isActive ? 'bg-indigo-500 text-white shadow-xl' : 'bg-white/10 text-white border border-white/20'}`}>
-                            <TemplateIcon type={tmpl.iconType} />
-                          </div>
-                          {tmpl.category && (
-                            <span className="px-2 py-0.5 bg-black/40 backdrop-blur-md border border-white/10 text-[8px] font-black uppercase text-indigo-400 rounded">
-                              {tmpl.category}
-                            </span>
-                          )}
-                        </div>
-                        
-                        <div className="space-y-1">
-                          <h4 className="text-2xl md:text-4xl font-black uppercase italic tracking-tighter text-white leading-none drop-shadow-xl">
-                            {tmpl.name}
-                          </h4>
-                          <p className="text-[10px] md:text-xs text-white/60 font-bold uppercase tracking-widest leading-relaxed drop-shadow-md">
-                            {tmpl.description}
-                          </p>
-                        </div>
-
-                        <div className="flex gap-3">
-                           <button 
-                             onClick={() => onSelectTemplate(tmpl)}
-                             className={`px-6 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${isActive ? 'bg-indigo-500 text-white shadow-xl' : 'bg-white text-black hover:bg-brand-blue hover:text-white'}`}
-                           >
-                             Use template
-                           </button>
-                           <button 
-                             onClick={() => onOpenVisualEditor(tmpl)}
-                             className="px-6 py-2 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all flex items-center gap-2"
-                           >
-                             <Eye size={12} /> Workflow
-                           </button>
-                        </div>
-                      </div>
-
-                      {/* Selection Indicator */}
-                      <div className={`absolute top-6 right-6 w-8 h-8 rounded-full flex items-center justify-center transition-all z-20 ${isActive ? 'bg-indigo-500 text-white shadow-lg' : 'bg-white/10 text-white/40 border border-white/20 opacity-0 group-hover:opacity-100'}`}>
-                        {isActive ? <CheckCircle2 size={20} /> : <Sparkles size={16} />}
-                      </div>
-
-                      <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-all z-20">
-                         <span className="text-[9px] font-black text-white/40 uppercase tracking-widest italic">Fast_Ship_v1.4</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              {loadingTemplates ? (
+                <div className="py-40 flex flex-col items-center justify-center gap-6 opacity-30">
+                  <Loader2 size={48} className="animate-spin text-indigo-500" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.4em]">Đang đồng bộ Registry...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                  {templates.map((tmpl) => (
+                    <TemplateCard 
+                      key={tmpl._id}
+                      tmpl={tmpl}
+                      isActive={workflowId === tmpl.templateId}
+                      onSelect={onSelectTemplate}
+                      onOpenVisualEditor={onOpenVisualEditor}
+                    />
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

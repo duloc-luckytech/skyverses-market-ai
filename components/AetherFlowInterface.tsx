@@ -31,7 +31,8 @@ const AetherFlowInterface: React.FC = () => {
   };
 
   const handleSelectTemplate = (tmpl: WorkflowTemplate) => {
-    flow.setWorkflowId(tmpl.id);
+    // FIX: Using templateId as defined in WorkflowTemplate interface in hooks/useAetherFlow.ts
+    flow.setWorkflowId(tmpl.templateId);
     if (tmpl.config) {
       handleImport(tmpl.config);
     }
@@ -78,12 +79,15 @@ const AetherFlowInterface: React.FC = () => {
         </div>
 
         {/* RIGHT PANEL: RESULTS & TEMPLATES */}
+        {/* FIX: Passed missing templates and loadingTemplates properties from flow hook to ResultsPanel */}
         <ResultsPanel 
           results={flow.results}
           generationTime={flow.generationTime}
           isGenerating={flow.isGenerating}
           statusText={flow.statusText}
           workflowId={flow.workflowId}
+          templates={flow.templates}
+          loadingTemplates={flow.loadingTemplates}
           onSelectTemplate={handleSelectTemplate}
           onOpenVisualEditor={handleOpenVisualEditor}
           onClear={() => flow.setResults([])}

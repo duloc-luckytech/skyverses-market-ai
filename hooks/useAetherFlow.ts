@@ -1,6 +1,7 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL, getHeaders } from '../apis/config';
 
 export interface GeneratedResult {
   id: string;
@@ -17,16 +18,18 @@ export interface WorkflowNode {
 }
 
 export interface WorkflowTemplate {
-  id: string;
+  _id: string;
+  templateId: string;
   name: string;
-  description: string;
-  iconType: 'Cinematic' | 'Anime' | 'Product' | 'Portrait' | 'Default';
-  config?: string; // Chứa raw JSON
-  imageUrl?: string;
-  category?: string;
+  desc: string;
+  covers: { url: string; thumbnailUri: string }[];
+  owner: { name: string; avatar: string };
+  statistics: { useCount: number; likeCount: number };
+  tags: { name: string }[];
+  config?: string; 
 }
 
-// Kịch bản JSON mẫu theo yêu cầu người dùng
+// Kịch bản JSON mẫu dự phòng
 export const Z_IMAGE_TURBO_JSON = JSON.stringify({
   "1": { "inputs": { "unet_name": "z_image_turbo_bf16.safetensors", "weight_dtype": "default" }, "class_type": "UNETLoader", "_meta": { "title": "Load Diffusion Model" } },
   "2": { "inputs": { "clip_name": "qwen_3_4b.safetensors", "type": "qwen_image", "device": "default" }, "class_type": "CLIPLoader", "_meta": { "title": "Load CLIP" } },
@@ -39,61 +42,9 @@ export const Z_IMAGE_TURBO_JSON = JSON.stringify({
   "10": { "inputs": { "filename_prefix": "ComfyUI", "images": [ "8", 0 ] }, "class_type": "SaveImage", "_meta": { "title": "Save Image" } }
 });
 
-export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
-  {
-    id: '2013456755698700290',
-    name: 'Basic Text-to-Image',
-    description: 'Quy trình tạo ảnh từ văn bản cơ bản sử dụng mô hình SDXL Turbo.',
-    iconType: 'Portrait',
-    imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800',
-    config: Z_IMAGE_TURBO_JSON
-  },
-  {
-    id: '2013456755698700291',
-    name: 'Basic Image Generation',
-    description: 'Tối ưu hóa khả năng tổng hợp hình ảnh chân thực với độ chi tiết cao.',
-    iconType: 'Portrait',
-    imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800',
-    config: Z_IMAGE_TURBO_JSON
-  },
-  {
-    id: '2013456755698700292',
-    name: 'Text-to-Image LoRA',
-    description: 'Sử dụng các lớp LoRA chuyên biệt để tạo nhân vật nhất quán.',
-    iconType: 'Anime',
-    imageUrl: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=800',
-    config: Z_IMAGE_TURBO_JSON,
-    category: 'LoRA'
-  },
-  {
-    id: '2013456755698700293',
-    name: 'Realistic Human Synthesis',
-    description: 'Quy trình tạo chân dung người thật với độ phân giải 4K siêu sắc nét.',
-    iconType: 'Portrait',
-    imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800',
-    config: Z_IMAGE_TURBO_JSON
-  },
-  {
-    id: '2013456755698700294',
-    name: 'Cinematic World Build',
-    description: 'Kiến tạo bối cảnh không gian rộng lớn chuẩn điện ảnh.',
-    iconType: 'Cinematic',
-    imageUrl: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=800',
-    config: Z_IMAGE_TURBO_JSON
-  },
-  {
-    id: '2013456755698700295',
-    name: 'Product Ad Workflow',
-    description: 'Tự động hóa việc tạo ảnh quảng cáo sản phẩm chuyên nghiệp.',
-    iconType: 'Product',
-    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800',
-    config: Z_IMAGE_TURBO_JSON
-  }
-];
-
 const CONFIG = {
   BASE_URL: 'https://www.runninghub.ai',
-  DEFAULT_WORKFLOW_ID: '2013456755698700290',
+  DEFAULT_WORKFLOW_ID: '1845005868273160193',
   DEFAULT_API_KEY: 'aa6dd04cb596415697e7f4337a737ddb',
   POLL_INTERVAL: 3000,
   MAX_POLL_ATTEMPTS: 120
@@ -110,6 +61,31 @@ export const useAetherFlow = () => {
   const [generationTime, setGenerationTime] = useState(0);
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('runninghub_api_key') || CONFIG.DEFAULT_API_KEY);
   const [showApiKey, setShowApiKey] = useState(false);
+  
+  // Dynamic Templates
+  const [templates, setTemplates] = useState<WorkflowTemplate[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(true);
+
+  useEffect(() => {
+    fetchTemplates();
+  }, []);
+
+  const fetchTemplates = async () => {
+    setLoadingTemplates(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/runninghub/templates?limit=20`, {
+        headers: getHeaders()
+      });
+      const result = await response.json();
+      if (result.success && result.data) {
+        setTemplates(result.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch runninghub templates:", error);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
 
   const saveApiKey = (key: string) => {
     setApiKey(key);
@@ -281,6 +257,7 @@ export const useAetherFlow = () => {
     workflowId, setWorkflowId, workflowConfig, updateConfigValue,
     isGenerating, isUploadingJson, statusText, results, setResults,
     generationTime, apiKey, saveApiKey, showApiKey, setShowApiKey,
-    handleGenerate, handleImport
+    handleGenerate, handleImport,
+    templates, loadingTemplates
   };
 };
