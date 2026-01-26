@@ -87,6 +87,22 @@ export const useAetherFlow = () => {
     }
   };
 
+  const fetchWorkflowDetail = async (id: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/runninghub/workflow/${id}`, {
+        headers: getHeaders()
+      });
+      const result = await response.json();
+      if (result.success) {
+        return result.data;
+      }
+      return null;
+    } catch (error) {
+      console.error("Failed to fetch workflow detail:", error);
+      return null;
+    }
+  };
+
   const saveApiKey = (key: string) => {
     setApiKey(key);
     localStorage.setItem('runninghub_api_key', key);
@@ -257,7 +273,7 @@ export const useAetherFlow = () => {
     workflowId, setWorkflowId, workflowConfig, updateConfigValue,
     isGenerating, isUploadingJson, statusText, results, setResults,
     generationTime, apiKey, saveApiKey, showApiKey, setShowApiKey,
-    handleGenerate, handleImport,
+    handleGenerate, handleImport, fetchWorkflowDetail,
     templates, loadingTemplates
   };
 };
