@@ -130,7 +130,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                       <img src={res.url} className="w-full aspect-square object-cover" alt="Output" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                        <span className="text-[10px] font-bold text-white uppercase italic">{res.timestamp}</span>
+                        <span className="text-10px] font-bold text-white uppercase italic">{res.timestamp}</span>
                         <div className="flex gap-2">
                           <a href={res.url} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/20 hover:bg-white/40 rounded-lg backdrop-blur-md transition-colors shadow-lg text-white">
                             <Download size={16} />
@@ -151,42 +151,77 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 pb-20"
+              className="space-y-10 pb-20"
             >
-              {WORKFLOW_TEMPLATES.map((tmpl) => {
-                const isActive = workflowId === tmpl.id;
-                return (
-                  <button
-                    key={tmpl.id}
-                    onClick={() => onSelectTemplate(tmpl)}
-                    className={`relative p-6 md:p-8 rounded-[2rem] border-2 transition-all text-left flex flex-col gap-6 group overflow-hidden ${isActive ? 'bg-indigo-500/5 dark:bg-indigo-500/10 border-indigo-500/50 shadow-2xl shadow-indigo-500/10' : 'bg-slate-50 dark:bg-white/[0.02] border-black/5 dark:border-white/5 hover:border-indigo-500/20'}`}
-                  >
-                    <div className="flex justify-between items-start relative z-10">
-                      <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all ${isActive ? 'bg-indigo-500 text-white shadow-xl scale-110' : 'bg-white dark:bg-white/5 text-slate-400 dark:text-gray-500 group-hover:text-indigo-500 shadow-sm'}`}>
-                        <TemplateIcon type={tmpl.iconType} />
-                      </div>
-                      {isActive && (
-                        <div className="px-4 py-1.5 bg-indigo-500 text-white text-[9px] font-black uppercase rounded-full shadow-lg flex items-center gap-2">
-                           <CheckCircle2 size={12} /> Active Node
-                        </div>
+              <div className="space-y-4 px-1">
+                <h3 className="text-xl font-black uppercase tracking-tighter italic text-slate-800 dark:text-white">Quick Templates</h3>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">(Fast Create Your Workflow)</p>
+              </div>
+
+              <div className="flex flex-col gap-6">
+                {WORKFLOW_TEMPLATES.map((tmpl) => {
+                  const isActive = workflowId === tmpl.id;
+                  return (
+                    <button
+                      key={tmpl.id}
+                      onClick={() => onSelectTemplate(tmpl)}
+                      className={`relative w-full aspect-[21/9] rounded-[1.5rem] border-2 transition-all text-left flex flex-col group overflow-hidden ${isActive ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-2xl' : 'border-black/5 dark:border-white/5 hover:border-indigo-500/40 shadow-sm'}`}
+                    >
+                      {/* Background Image */}
+                      {tmpl.imageUrl ? (
+                        <img 
+                          src={tmpl.imageUrl} 
+                          className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ${isActive ? 'scale-105 opacity-80' : 'scale-100 opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-80'}`} 
+                          alt={tmpl.name} 
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-slate-100 dark:bg-black/40"></div>
                       )}
-                    </div>
-                    
-                    <div className="space-y-2 relative z-10">
-                      <h4 className={`text-lg md:text-xl font-black uppercase italic tracking-tighter transition-colors ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-800 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400'}`}>{tmpl.name}</h4>
-                      <p className="text-[10px] md:text-[11px] text-slate-500 dark:text-gray-500 font-bold uppercase tracking-widest leading-relaxed">"{tmpl.description}"</p>
-                    </div>
 
-                    <div className="pt-4 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-600 relative z-10">
-                       <span>Workflow Config</span>
-                       <span className={isActive ? 'text-indigo-500 dark:text-indigo-400' : ''}>{isActive ? 'Selected' : 'Use Preset'}</span>
-                    </div>
+                      {/* Left Blurred Content Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10"></div>
+                      
+                      <div className="relative z-20 h-full flex flex-col justify-center p-8 md:p-10 space-y-4 max-w-[70%]">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all ${isActive ? 'bg-indigo-500 text-white shadow-xl' : 'bg-white/10 text-white border border-white/20'}`}>
+                            <TemplateIcon type={tmpl.iconType} />
+                          </div>
+                          {tmpl.category && (
+                            <span className="px-2 py-0.5 bg-black/40 backdrop-blur-md border border-white/10 text-[8px] font-black uppercase text-indigo-400 rounded">
+                              {tmpl.category}
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <h4 className="text-2xl md:text-4xl font-black uppercase italic tracking-tighter text-white leading-none drop-shadow-xl">
+                            {tmpl.name}
+                          </h4>
+                          <p className="text-[10px] md:text-xs text-white/60 font-bold uppercase tracking-widest leading-relaxed drop-shadow-md">
+                            {tmpl.description}
+                          </p>
+                        </div>
 
-                    {/* Gradient Ambient Background */}
-                    <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 bg-gradient-to-br from-indigo-500/10 to-transparent`}></div>
-                  </button>
-                );
-              })}
+                        {isActive && (
+                          <div className="flex items-center gap-2 text-indigo-400 animate-pulse">
+                             <CheckCircle2 size={14} />
+                             <span className="text-[9px] font-black uppercase tracking-widest">Active Node</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Selection Indicator */}
+                      <div className={`absolute top-6 right-6 w-8 h-8 rounded-full flex items-center justify-center transition-all z-20 ${isActive ? 'bg-indigo-500 text-white shadow-lg' : 'bg-white/10 text-white/40 border border-white/20 opacity-0 group-hover:opacity-100'}`}>
+                        {isActive ? <CheckCircle2 size={20} /> : <Sparkles size={16} />}
+                      </div>
+
+                      <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-all z-20">
+                         <span className="text-[9px] font-black text-white/40 uppercase tracking-widest italic">Fast_Ship_v1.4</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
