@@ -1,9 +1,12 @@
+
 import React, { useState } from 'react';
 import { useAetherFlow, WorkflowTemplate } from '../hooks/useAetherFlow';
 import { ConfigPanel } from './aether-flow/ConfigPanel';
 import { ResultsPanel } from './aether-flow/ResultsPanel';
 import { SettingsDrawer } from './aether-flow/SettingsDrawer';
 import { WorkflowEditorModal } from './aether-flow/WorkflowEditorModal';
+// Added missing import for WorkflowEditorModalV2
+import { WorkflowEditorModalV2 } from './aether-flow/WorkflowEditorModalV2';
 import { Loader2, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -12,6 +15,8 @@ const AetherFlowInterface: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [visualEditorTemplate, setVisualEditorTemplate] = useState<WorkflowTemplate | null>(null);
   const [isVisualEditorOpen, setIsVisualEditorOpen] = useState(false);
+  // Added state for V2 visual editor
+  const [isVisualEditorV2Open, setIsVisualEditorV2Open] = useState(false);
   const [isFetchingDetail, setIsFetchingDetail] = useState(false);
 
   const handleGenerate = async () => {
@@ -67,6 +72,22 @@ const AetherFlowInterface: React.FC = () => {
     setIsVisualEditorOpen(true);
   };
 
+  // Added handler for V2 visual editor
+  const handleOpenVisualEditorV2 = async (tmpl: WorkflowTemplate) => {
+    setIsFetchingDetail(true);
+    try {
+      const detail = await flow.fetchWorkflowDetail(tmpl.templateId);
+      setVisualEditorTemplate(detail ? { ...tmpl, config: JSON.stringify(detail) } : tmpl);
+      setIsVisualEditorV2Open(true);
+    } catch (err) {
+      console.error(err);
+      setVisualEditorTemplate(tmpl);
+      setIsVisualEditorV2Open(true);
+    } finally {
+      setIsFetchingDetail(false);
+    }
+  };
+
   const handleCloseVisualEditor = () => {
     setIsVisualEditorOpen(false);
     setVisualEditorTemplate(null);
@@ -103,28 +124,39 @@ const AetherFlowInterface: React.FC = () => {
         </div>
 
         {/* RIGHT PANEL: RESULTS & TEMPLATES */}
-        <ResultsPanel 
-          results={flow.results}
-          generationTime={flow.generationTime}
-          isGenerating={flow.isGenerating}
-          statusText={flow.statusText}
-          workflowId={flow.workflowId}
-          templates={flow.templates}
-          loadingTemplates={flow.loadingTemplates}
-          // Passed page from flow hook
-          page={flow.page}
-          hasMore={flow.hasMore}
-          isFetchingMore={flow.isFetchingMore}
-          loadMoreTemplates={flow.loadMoreTemplates}
-          onSelectTemplate={handleSelectTemplate}
-          onOpenVisualEditor={handleOpenVisualEditor}
-          onClear={() => flow.setResults([])}
-        />
+        <div className="flex-1">
+          <ResultsPanel 
+            results={flow.results}
+            generationTime={flow.generationTime}
+            isGenerating={flow.isGenerating}
+            statusText={flow.statusText}
+            workflowId={flow.workflowId}
+            templates={flow.templates}
+            loadingTemplates={flow.loadingTemplates}
+            // Passed page from flow hook
+            page={flow.page}
+            hasMore={flow.hasMore}
+            isFetchingMore={flow.isFetchingMore}
+            loadMoreTemplates={flow.loadMoreTemplates}
+            onSelectTemplate={handleSelectTemplate}
+            onOpenVisualEditor={handleOpenVisualEditor}
+            // Added onOpenVisualEditorV2 prop to satisfy requirements
+            onOpenVisualEditorV2={handleOpenVisualEditorV2}
+            onClear={() => flow.setResults([])}
+          />
+        </div>
       </div>
 
       <WorkflowEditorModal 
         isOpen={isVisualEditorOpen}
         onClose={handleCloseVisualEditor}
+        template={visualEditorTemplate}
+      />
+
+      {/* Added WorkflowEditorModalV2 */}
+      <WorkflowEditorModalV2 
+        isOpen={isVisualEditorV2Open}
+        onClose={() => { setIsVisualEditorV2Open(false); setVisualEditorTemplate(null); }}
         template={visualEditorTemplate}
       />
 

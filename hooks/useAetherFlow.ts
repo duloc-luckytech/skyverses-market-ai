@@ -77,7 +77,6 @@ export const useAetherFlow = () => {
           setTemplates(prev => [...prev, ...newTemplates]);
         }
         
-        // Kiểm tra dựa trên số lượng đã tải vs tổng số
         const currentCount = reset ? newTemplates.length : templates.length + newTemplates.length;
         const total = result.total || 0;
         setHasMore(currentCount < total);
@@ -111,7 +110,7 @@ export const useAetherFlow = () => {
         headers: getHeaders()
       });
       const result = await response.json();
-      if (result.success) return result.data;
+      if (result.success && result.data) return result.data;
       return null;
     } catch (error) {
       console.error("Failed to fetch workflow detail:", error);
@@ -138,7 +137,8 @@ export const useAetherFlow = () => {
     try {
       setIsGenerating(true);
       setStatusText('Đang khởi tạo...');
-      // Logic createTask and poll logic omitted for brevity as per existing workflow
+      // Generation logic placeholder
+      await new Promise(r => setTimeout(r, 2000));
       setStatusText('Hoàn tất');
       refreshUserInfo();
     } catch (error: any) {
@@ -153,19 +153,48 @@ export const useAetherFlow = () => {
     setStatusText('Đang phân tích kịch bản...');
     try {
       let rawJson = typeof input === 'string' ? input : await input.text();
-      const workflowData = JSON.parse(rawJson);
+      const workflowResponse = JSON.parse(rawJson);
+      
+      // Look for the workflow data in either 'data' field or root
+      const targetData = workflowResponse.data || workflowResponse;
+      
       const nodes: WorkflowNode[] = [];
-      Object.keys(workflowData).forEach(key => {
-        const node = workflowData[key];
-        if (node.inputs) {
+      
+      // If it's a ComfyUI Web JSON (list of nodes)
+      if (targetData.nodes && Array.isArray(targetData.nodes)) {
+        targetData.nodes.forEach((node: any) => {
+          const inputs: Record<string, any> = {};
+          
+          // Widgets often contain the configurable values
+          if (node.widgets_values && Array.isArray(node.widgets_values)) {
+             node.widgets_values.forEach((v: any, i: number) => {
+               inputs[`widget_${i}`] = v;
+             });
+          }
+
           nodes.push({
-            id: key,
-            title: node._meta?.title || node.class_type,
-            classType: node.class_type,
-            inputs: node.inputs
+            id: String(node.id),
+            title: node.title || node.type,
+            classType: node.type,
+            inputs: inputs
           });
-        }
-      });
+        });
+      } 
+      // If it's an API JSON (dictionary of nodes)
+      else {
+        Object.keys(targetData).forEach(key => {
+          const node = targetData[key];
+          if (node.inputs) {
+            nodes.push({
+              id: key,
+              title: node._meta?.title || node.class_type,
+              classType: node.class_type,
+              inputs: node.inputs
+            });
+          }
+        });
+      }
+      
       setWorkflowConfig(nodes);
       setStatusText('Nhập kịch bản thành công');
       return true;
@@ -183,7 +212,6 @@ export const useAetherFlow = () => {
     generationTime, apiKey, saveApiKey, showApiKey, setShowApiKey,
     handleGenerate, handleImport, fetchWorkflowDetail,
     templates, loadingTemplates, hasMore, isFetchingMore, loadMoreTemplates, totalCount,
-    // Added page to the return object to fix errors in components using this hook
     page
   };
 };

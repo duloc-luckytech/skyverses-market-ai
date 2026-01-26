@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   ImageIcon, Sparkles, Download, Share2, Loader2, 
@@ -15,13 +16,13 @@ interface ResultsPanelProps {
   workflowId: string;
   templates: WorkflowTemplate[];
   loadingTemplates: boolean;
-  // Added page prop to fix missing reference error
   page: number;
   hasMore: boolean;
   isFetchingMore: boolean;
   loadMoreTemplates: () => void;
   onSelectTemplate: (tmpl: WorkflowTemplate) => void;
   onOpenVisualEditor: (tmpl: WorkflowTemplate | null) => void;
+  onOpenVisualEditorV2: (tmpl: WorkflowTemplate) => void;
   onClear: () => void;
 }
 
@@ -33,18 +34,17 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   workflowId,
   templates,
   loadingTemplates,
-  // Destructured page prop
   page,
   hasMore,
   isFetchingMore,
   loadMoreTemplates,
   onSelectTemplate,
   onOpenVisualEditor,
+  onOpenVisualEditorV2,
   onClear 
 }) => {
   const [activeTab, setActiveTab] = useState<'RESULTS' | 'TEMPLATES'>('TEMPLATES');
   
-  // Intersection Observer for Infinite Scroll
   const observer = useRef<IntersectionObserver | null>(null);
   const lastTemplateRef = useCallback((node: HTMLDivElement | null) => {
     if (loadingTemplates || isFetchingMore) return;
@@ -64,7 +64,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   }, [isGenerating]);
 
   return (
-    <div className="w-full bg-white dark:bg-[#0c0c12] border border-black/5 dark:border-white/5 rounded-2xl flex flex-col shadow-2xl overflow-hidden transition-all duration-500 h-[85vh]">
+    <div className="w-full bg-white dark:bg-[#0c0c12] border border-black/5 dark:border-white/5 rounded-2xl p-0 flex flex-col shadow-2xl overflow-hidden transition-all duration-500 h-[85vh]">
       <div className="border-b border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/20 shrink-0">
         <div className="flex">
           <button 
@@ -164,6 +164,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                             isActive={workflowId === tmpl.templateId}
                             onSelect={onSelectTemplate}
                             onOpenVisualEditor={onOpenVisualEditor}
+                            onOpenVisualEditorV2={onOpenVisualEditorV2}
                           />
                         </div>
                       );

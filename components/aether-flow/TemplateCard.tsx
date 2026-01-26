@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Play, Heart, CheckCircle2, ChevronRight, Wand2, Eye } from 'lucide-react';
+import { Play, Heart, CheckCircle2, ChevronRight, Wand2, Eye, Layout } from 'lucide-react';
 import { WorkflowTemplate } from '../../hooks/useAetherFlow';
 
 interface TemplateCardProps {
@@ -8,13 +9,15 @@ interface TemplateCardProps {
   isActive: boolean;
   onSelect: (tmpl: WorkflowTemplate) => void;
   onOpenVisualEditor: (tmpl: WorkflowTemplate) => void;
+  onOpenVisualEditorV2: (tmpl: WorkflowTemplate) => void;
 }
 
 export const TemplateCard: React.FC<TemplateCardProps> = ({ 
   tmpl, 
   isActive, 
   onSelect, 
-  onOpenVisualEditor 
+  onOpenVisualEditor,
+  onOpenVisualEditorV2
 }) => {
   const coverImg = tmpl.covers?.[0]?.thumbnailUri || tmpl.covers?.[0]?.url || 'https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=800';
 
@@ -86,15 +89,23 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
                   : 'bg-white text-black hover:bg-indigo-500 hover:text-white'
               }`}
             >
-              <Wand2 size={14} /> Use template
+              <Wand2 size={14} /> Use
             </button>
             <button 
               onClick={() => onOpenVisualEditor(tmpl)}
-              className="px-5 py-3.5 bg-black/40 backdrop-blur-md border border-white/10 text-white rounded-xl hover:bg-white hover:text-black text-[10px] font-black uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-2 active:scale-95"
-              title="View Workflow Graph"
+              className="px-3 py-3.5 bg-black/40 backdrop-blur-md border border-white/10 text-white rounded-xl hover:bg-white hover:text-black text-[10px] font-black uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-2 active:scale-95"
+              title="View Workflow Graph V1"
             >
               <Eye size={14} />
-              <span className="hidden sm:inline">Workflow</span>
+              <span className="hidden sm:inline">V1</span>
+            </button>
+            <button 
+              onClick={() => onOpenVisualEditorV2(tmpl)}
+              className="px-3 py-3.5 bg-brand-blue/40 backdrop-blur-md border border-brand-blue/30 text-white rounded-xl hover:bg-brand-blue hover:text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-2 active:scale-95"
+              title="Open Advanced Workflow V2"
+            >
+              <Layout size={14} />
+              <span className="hidden sm:inline">V2</span>
             </button>
           </div>
         </div>
