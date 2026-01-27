@@ -16,11 +16,17 @@ export const EditorNode = ({ id, data, selected }: any) => {
 
   // Base URL template for RunningHub Image Viewing
   const getRunningHubImageUrl = (filename: string) => {
+    if (filename.startsWith('/view')) {
+      return `https://www.runninghub.ai${filename}`;
+    }
     return `https://www.runninghub.ai/view?type=input&filename=${filename}&Auth=${AUTH_TOKEN}&Rh-Identify=${IDENTIFY_TOKEN}`;
   };
 
   // Base URL template for RunningHub Video Viewing
   const getRunningHubVideoUrl = (filename: string) => {
+    if (filename.startsWith('/vhs/viewvideo')) {
+      return `https://www.runninghub.ai${filename}`;
+    }
     return `https://www.runninghub.ai/vhs/viewvideo?custom_height=0&force_rate=24&filename=${filename}&custom_width=0&select_every_nth=1&frame_load_cap=0&format=video%2Fmp4&skip_first_frames=0&type=input&timestamp=1769519141146&force_size=1100.0787353515625x%3F&deadline=realtime&Rh-Comfy-Auth=${AUTH_TOKEN}&Rh-Identify=${IDENTIFY_TOKEN}`;
   };
 
@@ -87,10 +93,19 @@ export const EditorNode = ({ id, data, selected }: any) => {
             <div className="space-y-4">
                {data.widgets.map((widget: any, idx: number) => {
                  const isVideoFile = typeof widget.value === 'string' && widget.value.toLowerCase().endsWith('.mp4');
-                 const isImageFile = typeof widget.value === 'string' && /\.(png|jpg|jpeg|webp|gif)$/i.test(widget.value);
                  const isLongText = typeof widget.value === 'string' && widget.value.length > 40;
                  
-                 // Render VIDEO PREVIEW if value is an mp4 filename
+                 // Phát hiện ảnh dựa trên string hoặc cấu trúc mảng đối tượng phức tạp có trường 'url'
+                 let imagePreviewUrl = null;
+                 if (typeof widget.value === 'string' && /\.(png|jpg|jpeg|webp|gif)$/i.test(widget.value)) {
+                    imagePreviewUrl = getRunningHubImageUrl(widget.value);
+                 } else if (Array.isArray(widget.value) && widget.value.length > 0 && typeof widget.value[0] === 'object' && widget.value[0].url) {
+                    const rawUrl = widget.value[0].url;
+                    // Xử lý tự động thêm domain nếu là đường dẫn tương đối
+                    imagePreviewUrl = rawUrl.startsWith('/') ? `https://www.runninghub.ai${rawUrl}` : rawUrl;
+                 }
+
+                 // Render VIDEO PREVIEW
                  if (isVideoFile) {
                     return (
                       <div key={idx} className="space-y-2 py-2">
@@ -113,14 +128,14 @@ export const EditorNode = ({ id, data, selected }: any) => {
                            </div>
                         </div>
                         <div className="px-2 py-1 bg-black/20 rounded border border-white/[0.03]">
-                           <p className="text-[8px] font-mono text-gray-500 truncate uppercase tracking-tighter">{widget.value}</p>
+                           <p className="text-[8px] font-mono text-gray-500 truncate uppercase tracking-tighter">{String(widget.value)}</p>
                         </div>
                       </div>
                     );
                  }
 
-                 // Render IMAGE PREVIEW if value is a filename
-                 if (isImageFile) {
+                 // Render IMAGE PREVIEW
+                 if (imagePreviewUrl) {
                     return (
                       <div key={idx} className="space-y-2 py-2">
                         <label className="text-[9px] font-black uppercase text-gray-500 tracking-tighter italic flex items-center gap-2">
@@ -128,7 +143,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
                         </label>
                         <div className="relative aspect-video bg-black/40 rounded-lg overflow-hidden border border-white/5 group/img shadow-inner">
                            <img 
-                            src={getRunningHubImageUrl(widget.value)} 
+                            src={imagePreviewUrl} 
                             className="w-full h-full object-contain transition-transform duration-700 group-hover/img:scale-105" 
                             alt="Node Asset"
                             onError={(e) => {
@@ -145,7 +160,9 @@ export const EditorNode = ({ id, data, selected }: any) => {
                            </div>
                         </div>
                         <div className="px-2 py-1 bg-black/20 rounded border border-white/[0.03]">
-                           <p className="text-[8px] font-mono text-gray-500 truncate uppercase tracking-tighter">{widget.value}</p>
+                           <p className="text-[8px] font-mono text-gray-500 truncate uppercase tracking-tighter">
+                             {typeof widget.value === 'string' ? widget.value : `Complex Object: ${widget.label}`}
+                           </p>
                         </div>
                       </div>
                     );
@@ -170,7 +187,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
                    );
                  }
 
-                 // Ngược lại render dạng Pill như cũ cho các tham số số, bool hoặc text ngắn
+                 // Ngược lại render dạng Pill như cũ
                  return (
                    <div 
                     key={idx} 
