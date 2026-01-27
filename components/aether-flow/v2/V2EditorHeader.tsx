@@ -43,8 +43,8 @@ export const V2EditorHeader: React.FC<V2EditorHeaderProps> = ({ template, nodeCo
 
     <div className="flex items-center gap-4">
        <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-slate-100 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-none">
-          <Cpu size={14} className="text-slate-400" />
-          <span className="text-[10px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">Xử lý: Cụm máy chủ hiệu năng cao</span>
+          <Cpu size={14} className="text-indigo-500" />
+          <span className="text-[10px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">ID: {template?.templateId || 'KHÔNG XÁC ĐỊNH'}</span>
        </div>
        <button 
          onClick={onClose} 

@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect } from 'react';
 import {
   useNodesState,
@@ -13,7 +14,6 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
-  // Hệ số dãn cách cho quy trình nâng cao
   const SCALE_X = 1.6;
   const SCALE_Y = 2.4;
 
@@ -21,8 +21,8 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
     (params: any) => setEdges((eds) => addEdge({
       ...params,
       animated: true,
-      style: { stroke: '#0090ff', strokeWidth: 2 },
-      markerEnd: { type: MarkerType.ArrowClosed, color: '#0090ff' }
+      style: { stroke: '#6366f1', strokeWidth: 2 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: '#6366f1' }
     }, eds)),
     [setEdges]
   );
@@ -38,10 +38,9 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
             ...node,
             data: {
               ...node.data,
-              inputs: {
-                ...(node.data.inputs as any),
-                [key]: value,
-              },
+              widgets: node.data.widgets?.map((w: any) => 
+                w.label === key ? { ...w, value } : w
+              ),
             },
           };
         }
@@ -62,6 +61,31 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
         const newNodes: Node[] = [];
         const newEdges: Edge[] = [];
 
+        // 1. Parse Groups
+        if (targetData.groups && Array.isArray(targetData.groups)) {
+          targetData.groups.forEach((group: any) => {
+            const [gx, gy, gw, gh] = group.bounding;
+            newNodes.push({
+              id: `group_${group.id}`,
+              type: 'groupNode',
+              position: { x: gx * SCALE_X, y: gy * SCALE_Y },
+              style: { 
+                width: gw * SCALE_X, 
+                height: gh * SCALE_Y,
+                zIndex: -1 
+              },
+              data: { 
+                label: group.title || 'Vùng quy trình',
+                color: group.color || '#3f789e',
+                fontSize: group.font_size || 24
+              },
+              selectable: true,
+              draggable: true,
+            });
+          });
+        }
+
+        // 2. Parse Nodes
         if (targetData.nodes && Array.isArray(targetData.nodes)) {
           targetData.nodes.forEach((nodeData: any) => {
             const id = String(nodeData.id);
@@ -75,22 +99,21 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
             const rawX = Array.isArray(nodeData.pos) ? nodeData.pos[0] : (nodeData.x || 0);
             const rawY = Array.isArray(nodeData.pos) ? nodeData.pos[1] : (nodeData.y || 0);
 
-            const position = { 
-              x: rawX * SCALE_X, 
-              y: rawY * SCALE_Y 
-            };
+            const position = { x: rawX * SCALE_X, y: rawY * SCALE_Y };
 
-            const inputs: Record<string, any> = {};
+            // Phân loại Inputs: Link (kết nối) và Widget (thông số)
+            const allInputs = nodeData.inputs || [];
+            const connectionInputs = allInputs.filter((i: any) => !i.widget);
+            const widgetMetadata = allInputs.filter((i: any) => i.widget);
             
-            if (nodeData.inputs && Array.isArray(nodeData.inputs)) {
-              nodeData.inputs.forEach((input: any) => {
-                inputs[input.name] = ['LINK', input.link]; 
-              });
-            }
-
+            const widgets: { label: string, value: any }[] = [];
+            
+            // Mapping widgets_values dựa trên metadata từ mảng inputs (theo thứ tự)
             if (nodeData.widgets_values && Array.isArray(nodeData.widgets_values)) {
                nodeData.widgets_values.forEach((val: any, idx: number) => {
-                  inputs[`widget_${idx}`] = val;
+                  // Lấy nhãn từ inputs[].widget.name, nếu không có thì fallback
+                  const label = widgetMetadata[idx]?.widget?.name || widgetMetadata[idx]?.name || nodeData.widgets?.[idx]?.name || `param_${idx}`;
+                  widgets.push({ label, value: val });
                });
             }
 
@@ -101,10 +124,11 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
               data: { 
                 label: nodeData.title || nodeData.type || 'Node',
                 id,
-                inputs: inputs,
                 classType,
                 headerColor,
+                inputs: connectionInputs,
                 outputs: nodeData.outputs?.map((o: any) => o.name) || ['OUT'],
+                widgets: widgets,
                 onUpdate: (key: string, val: any) => updateNodeValue(id, key, val)
               },
             });

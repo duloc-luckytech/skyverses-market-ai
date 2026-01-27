@@ -9,9 +9,11 @@ import {
 } from '@xyflow/react';
 import { EditorNode } from '../editor/EditorNode';
 import { ViewportToolbar } from '../editor/ViewportToolbar';
+import { GroupNode } from './GroupNode';
 
 const nodeTypes = {
   custom: EditorNode,
+  groupNode: GroupNode,
 };
 
 interface V2EditorCanvasProps {
