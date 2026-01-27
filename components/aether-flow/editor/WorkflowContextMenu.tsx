@@ -1,6 +1,6 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
-// Fixed: Moved Sparkles to top-level imports from lucide-react
 import { 
   Plus, 
   Layers, 
@@ -28,25 +28,20 @@ const MenuItem = ({ label, icon, shortcut, hasSubmenu, onClick, isDanger = false
       e.stopPropagation();
       onClick?.();
     }}
-    className={`w-full flex items-center justify-between px-3 py-2 text-[12px] font-medium transition-colors hover:bg-white/10 group ${isDanger ? 'text-red-400' : 'text-gray-200'}`}
+    className={`w-full flex items-center justify-between px-3 py-2 text-[12px] font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/10 group ${isDanger ? 'text-red-500' : 'text-slate-700 dark:text-gray-200'}`}
   >
     <div className="flex items-center gap-3">
-      {icon && <span className="text-gray-500 group-hover:text-white transition-colors">{icon}</span>}
+      {icon && <span className="text-slate-400 group-hover:text-indigo-600 transition-colors">{icon}</span>}
       <span className="truncate">{label}</span>
     </div>
     <div className="flex items-center gap-2">
-      {shortcut && <span className="text-[10px] text-gray-600 group-hover:text-gray-400 font-mono">{shortcut}</span>}
-      {hasSubmenu && (
-        <div className="flex items-center">
-          <ChevronRight size={14} className="text-gray-600" />
-          <div className="w-1 h-4 bg-brand-blue ml-1 rounded-sm opacity-60"></div>
-        </div>
-      )}
+      {shortcut && <span className="text-[10px] text-gray-400 group-hover:text-gray-600 font-mono">{shortcut}</span>}
+      {hasSubmenu && <ChevronRight size={14} className="text-gray-400" />}
     </div>
   </button>
 );
 
-const Separator = () => <div className="h-px bg-white/5 my-1" />;
+const Separator = () => <div className="h-px bg-black/5 dark:bg-white/5 my-1" />;
 
 export const WorkflowContextMenu: React.FC<WorkflowContextMenuProps> = ({ x, y, onClose, onAddNode, onAddGroup }) => {
   return (
@@ -55,72 +50,54 @@ export const WorkflowContextMenu: React.FC<WorkflowContextMenuProps> = ({ x, y, 
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       style={{ top: y, left: x }}
-      className="fixed z-[600] w-64 bg-[#222222] border border-[#444444] rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.6)] py-1.5 overflow-hidden backdrop-blur-md"
+      className="fixed z-[600] w-64 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-[#444] rounded-lg shadow-2xl py-1.5 overflow-hidden backdrop-blur-md"
     >
-      <MenuItem 
-        label="Nodes Map" 
-        icon={<MapIcon size={14} />} 
-        shortcut="(Shift+m)" 
-      />
-      <MenuItem 
-        label="Cleanup Of VRAM Usage" 
-        icon={<Rocket size={14} />} 
-        shortcut="(Shift+r)" 
-      />
+      <MenuItem label="Bản đồ quy trình" icon={<MapIcon size={14} />} shortcut="(Shift+m)" />
+      <MenuItem label="Dọn dẹp bộ nhớ đồ họa" icon={<Rocket size={14} />} shortcut="(Shift+r)" />
       
       <Separator />
       
       <MenuItem 
-        label="Add Node" 
-        icon={<Plus size={14} />} 
-        hasSubmenu 
-        onClick={() => {
-          onAddNode();
-          onClose();
-        }}
+        label="Thêm khối mới" icon={<Plus size={14} />} hasSubmenu 
+        onClick={() => { onAddNode(); onClose(); }}
       />
       <MenuItem 
-        label="Add Group" 
-        icon={<Layers size={14} />} 
-        onClick={() => {
-          onAddGroup();
-          onClose();
-        }}
+        label="Tạo nhóm khối" icon={<Layers size={14} />} 
+        onClick={() => { onAddGroup(); onClose(); }}
       />
-      <MenuItem label="Convert to Group Node" icon={<Layout size={14} />} />
-      <MenuItem label="Queue Selected Output Nodes" />
-      <MenuItem label="Queue Group Output Nodes" />
-
-      <Separator />
-
-      <MenuItem label="aether-flow-core" hasSubmenu icon={<Cpu size={14} />} />
-      <MenuItem label="Manage Group Nodes" />
+      <MenuItem label="Chuyển thành khối nhóm" icon={<Layout size={14} />} />
+      <MenuItem label="Chạy các khối kết quả đã chọn" />
       
       <Separator />
 
-      <MenuItem label="Save Selected as Template" />
-      <MenuItem label="Node Templates" hasSubmenu />
-      <MenuItem label="Arrange (float left)" />
-      <MenuItem label="Arrange (float right)" />
-
-      <Separator />
-
-      <MenuItem label="Follow execution" />
-      <MenuItem label="Go to node" hasSubmenu />
+      <MenuItem label="Lõi quy trình chính" hasSubmenu icon={<Cpu size={14} />} />
+      <MenuItem label="Quản lý các nhóm khối" />
       
       <Separator />
 
-      <MenuItem label="Hide UE links" />
-      <MenuItem label="Convert all UEs to real links" />
+      <MenuItem label="Lưu vùng chọn làm mẫu" />
+      <MenuItem label="Thư viện mẫu quy trình" hasSubmenu />
+      <MenuItem label="Sắp xếp (Căn trái)" />
+      <MenuItem label="Sắp xếp (Căn phải)" />
+
+      <Separator />
+
+      <MenuItem label="Theo dõi quá trình chạy" />
+      <MenuItem label="Di chuyển tới khối..." hasSubmenu />
       
       <Separator />
 
-      <MenuItem label="skyverses-nodes" hasSubmenu icon={<Sparkles size={14} />} />
-      <MenuItem label="Workflow Image" hasSubmenu />
+      <MenuItem label="Ẩn các liên kết rác" />
+      <MenuItem label="Chuẩn hóa toàn bộ liên kết" />
       
       <Separator />
 
-      <MenuItem label="Nodes Map Mixlab" isDanger />
+      <MenuItem label="Khối mở rộng" hasSubmenu icon={<Sparkles size={14} />} />
+      <MenuItem label="Hình ảnh quy trình" hasSubmenu />
+      
+      <Separator />
+
+      <MenuItem label="Thoát trình biên tập" isDanger onClick={onClose} />
     </motion.div>
   );
 };
