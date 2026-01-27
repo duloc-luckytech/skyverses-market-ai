@@ -39,8 +39,6 @@ import AITetGenerator from './pages/images/AITetGenerator';
 import AIWeddingGenerator from './pages/images/AIWeddingGenerator';
 import AIBirthdayGenerator from './pages/images/AIBirthdayGenerator';
 import ProductSintax from './pages/ProductSintax';
-import ProductPrompt2 from './pages/ProductPrompt2';
-import MotionGenProduct from './pages/videos/MotionGenProduct';
 import GenyuProduct from './pages/videos/GenyuProduct';
 import KineticProduct from './pages/videos/KineticProduct';
 import SequenceProduct from './pages/videos/SequenceProduct';
@@ -56,7 +54,6 @@ import FashionCenterAI from './pages/images/FashionCenterAI';
 import ImageUpscaleAI from './pages/images/ImageUpscaleAI';
 import Product6Image from './pages/images/Product6Image';
 import Product7Comic from './pages/images/Product7Comic';
-import Art3DPage from './pages/Art3DPage';
 import SpatialArchitectPage from './pages/SpatialArchitectPage';
 import ProductCharacterSync from './pages/ProductCharacterSync';
 import AIStylistPage from './pages/images/AIStylistPage';
@@ -120,8 +117,6 @@ const App: React.FC = () => {
                       <Route path="/product/voice-design-ai" element={<VoiceDesignAI />} />
                       <Route path="/product/ai-voice-studio" element={<VoiceStudio />} />
                       <Route path="/product/sintax-prompt-builder" element={<ProductSintax />} />
-                      <Route path="/product/sintax-architect-diagnostics" element={<ProductPrompt2 />} />
-                      <Route path="/product/motion-1-pro" element={<MotionGenProduct />} />
                       <Route path="/product/studio-architect" element={<GenyuProduct />} />
                       <Route path="/product/kinetic-core-engine" element={<KineticProduct />} />
                       <Route path="/product/sequence-story-engine" element={<SequenceProduct />} />
@@ -135,7 +130,6 @@ const App: React.FC = () => {
                       <Route path="/product/image-upscale-ai" element={<ImageUpscaleAI />} />
                       <Route path="/product/character-sync-studio" element={<Product6Image />} />
                       <Route path="/product/banana-pro-comic-engine" element={<Product7Comic />} />
-                      <Route path="/product/neural-game-architect" element={<Art3DPage />} />
                       <Route path="/product/3d-spatial-architect" element={<SpatialArchitectPage />} />
                       
                       <Route path="/product/:slug" element={<SolutionDetail />} />
