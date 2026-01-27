@@ -2,16 +2,18 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   ImageIcon, Sparkles, Download, Share2, Loader2, 
-  Activity, LayoutGrid, Plus, Heart, Play
+  Activity, LayoutGrid, Plus, Heart, Play, FileJson
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GeneratedResult, WorkflowTemplate } from '../../hooks/useAetherFlow';
 import { TemplateCard } from './TemplateCard';
+import { ImportWorkflowModal } from './ImportWorkflowModal';
 
 interface ResultsPanelProps {
   results: GeneratedResult[];
   generationTime: number;
   isGenerating: boolean; 
+  isUploadingJson: boolean;
   statusText: string;
   workflowId: string;
   templates: WorkflowTemplate[];
@@ -24,12 +26,14 @@ interface ResultsPanelProps {
   onOpenVisualEditor: (tmpl: WorkflowTemplate | null) => void;
   onOpenVisualEditorV2: (tmpl: WorkflowTemplate) => void;
   onClear: () => void;
+  onImport: (input: File | string) => Promise<any>;
 }
 
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({ 
   results, 
   generationTime, 
   isGenerating, 
+  isUploadingJson,
   statusText,
   workflowId,
   templates,
@@ -41,9 +45,11 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   onSelectTemplate,
   onOpenVisualEditor,
   onOpenVisualEditorV2,
-  onClear 
+  onClear,
+  onImport
 }) => {
   const [activeTab, setActiveTab] = useState<'RESULTS' | 'TEMPLATES'>('TEMPLATES');
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   
   const observer = useRef<IntersectionObserver | null>(null);
   const lastTemplateRef = useCallback((node: HTMLDivElement | null) => {
@@ -133,18 +139,28 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
               className="space-y-10 pb-20"
             >
-              <div className="flex justify-between items-end px-1">
+              <div className="flex flex-wrap justify-between items-end gap-4 px-1">
                 <div className="space-y-2">
                   <h3 className="text-xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Workflow Registry</h3>
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">Cửa ngõ kịch bản RunningHub Pro</p>
                 </div>
-                <button 
-                  onClick={() => onOpenVisualEditor(null)}
-                  className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:scale-105 active:scale-95 transition-all italic group"
-                >
-                  <Plus size={14} strokeWidth={3} className="group-hover:rotate-90 transition-transform" /> 
-                  Custom Workflow
-                </button>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => setIsImportModalOpen(true)}
+                    disabled={isUploadingJson || isGenerating}
+                    className="px-6 py-2.5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 text-slate-700 dark:text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center gap-2 shadow-sm italic group"
+                  >
+                    {isUploadingJson ? <Loader2 size={14} className="animate-spin" /> : <FileJson size={14} />}
+                    <span className="hidden sm:inline">Import JSON</span>
+                  </button>
+                  <button 
+                    onClick={() => onOpenVisualEditor(null)}
+                    className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all italic group"
+                  >
+                    <Plus size={14} strokeWidth={3} className="group-hover:rotate-90 transition-transform" /> 
+                    Custom Workflow
+                  </button>
+                </div>
               </div>
 
               {loadingTemplates && page === 1 ? (
@@ -201,6 +217,12 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
            <span className="flex items-center gap-1.5 italic underline decoration-indigo-500/30">{generationTime}s total</span>
         </div>
       </div>
+
+      <ImportWorkflowModal 
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImport={onImport}
+      />
     </div>
   );
 };

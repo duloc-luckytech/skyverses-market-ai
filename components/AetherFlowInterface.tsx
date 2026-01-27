@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAetherFlow, WorkflowTemplate } from '../hooks/useAetherFlow';
 import { ConfigPanel } from './aether-flow/ConfigPanel';
@@ -93,7 +94,6 @@ const AetherFlowInterface: React.FC = () => {
             isUploadingJson={flow.isUploadingJson}
             showSettings={showSettings}
             setShowSettings={setShowSettings}
-            onImport={handleImport}
             onGenerate={handleGenerate}
           />
         </div>
@@ -104,6 +104,7 @@ const AetherFlowInterface: React.FC = () => {
             results={flow.results}
             generationTime={flow.generationTime}
             isGenerating={flow.isGenerating}
+            isUploadingJson={flow.isUploadingJson}
             statusText={flow.statusText}
             workflowId={flow.workflowId}
             templates={flow.templates}
@@ -116,6 +117,7 @@ const AetherFlowInterface: React.FC = () => {
             onOpenVisualEditor={handleOpenVisualEditor}
             onOpenVisualEditorV2={handleOpenVisualEditor} // Map cả 2 về chung một hàm xử lý
             onClear={() => flow.setResults([])}
+            onImport={handleImport}
           />
         </div>
       </div>

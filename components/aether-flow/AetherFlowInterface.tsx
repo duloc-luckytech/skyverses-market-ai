@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAetherFlow, WorkflowTemplate } from '../../hooks/useAetherFlow';
 import { ConfigPanel } from './ConfigPanel';
@@ -72,20 +71,24 @@ const AetherFlowInterface: React.FC = () => {
             isOpen={showSettings} apiKey={flow.apiKey} setApiKey={flow.saveApiKey}
             showApiKey={flow.showApiKey} setShowApiKey={flow.setShowApiKey}
           />
+          {/* Fix: remove onImport as it is not a valid prop for ConfigPanel */}
           <ConfigPanel 
             workflowId={flow.workflowId} setWorkflowId={flow.setWorkflowId}
             workflowConfig={flow.workflowConfig} updateConfigValue={flow.updateConfigValue}
             apiKey={flow.apiKey} statusText={flow.statusText} isGenerating={flow.isGenerating}
             isUploadingJson={flow.isUploadingJson} showSettings={showSettings}
-            setShowSettings={setShowSettings} onImport={flow.handleImport}
+            setShowSettings={setShowSettings}
             onGenerate={flow.handleGenerate}
           />
         </div>
 
         <div className="md:col-span-3 h-full">
+          {/* Fix: add missing isUploadingJson and onImport props to ResultsPanel */}
           <ResultsPanel 
             results={flow.results} generationTime={flow.generationTime}
-            isGenerating={flow.isGenerating} statusText={flow.statusText}
+            isGenerating={flow.isGenerating} 
+            isUploadingJson={flow.isUploadingJson}
+            statusText={flow.statusText}
             workflowId={flow.workflowId} templates={flow.templates}
             loadingTemplates={flow.loadingTemplates} page={flow.page}
             hasMore={flow.hasMore} isFetchingMore={flow.isFetchingMore}
@@ -93,6 +96,7 @@ const AetherFlowInterface: React.FC = () => {
             onOpenVisualEditor={handleOpenVisualEditor} 
             onOpenVisualEditorV2={handleOpenVisualEditorV2}
             onClear={() => flow.setResults([])}
+            onImport={flow.handleImport}
           />
         </div>
       </div>

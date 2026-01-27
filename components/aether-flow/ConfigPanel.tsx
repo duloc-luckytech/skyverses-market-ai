@@ -1,7 +1,7 @@
+
 import React, { useState, useMemo } from 'react';
 import { Settings, Save, ChevronDown, FileJson, Loader2, AlertCircle, Dices, Sliders, X, Trash2, Minimize2, Maximize2, Coins } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ImportWorkflowModal } from './ImportWorkflowModal';
 import { WorkflowNode } from '../../hooks/useAetherFlow';
 
 interface ConfigPanelProps {
@@ -15,7 +15,6 @@ interface ConfigPanelProps {
   isUploadingJson: boolean;
   showSettings: boolean;
   setShowSettings: (val: boolean) => void;
-  onImport: (input: File | string) => Promise<any>;
   onGenerate: () => void;
 }
 
@@ -99,9 +98,8 @@ const DynamicControl = ({ label, value, onChange, nodeId, inputKey }: any) => {
 
 export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   workflowId, setWorkflowId, workflowConfig = [], updateConfigValue, apiKey, statusText, isGenerating, isUploadingJson,
-  showSettings, setShowSettings, onImport, onGenerate
+  showSettings, setShowSettings, onGenerate
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [collapsedNodes, setCollapsedNodes] = useState<string[]>([]);
 
   const isMissingRequirements = !apiKey.trim() || !workflowId.trim();
@@ -163,18 +161,6 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
               <Save size={20} />
             </button>
           </div>
-        </div>
-
-        {/* NÚT IMPORT ĐẶT TRÊN DANH SÁCH THAM CHIẾU */}
-        <div className="space-y-4 pt-4 border-t border-black/5 dark:border-white/5">
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            disabled={isUploadingJson || isGenerating}
-            className="w-full py-5 bg-indigo-500/5 dark:bg-indigo-600/10 border border-indigo-500/10 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center gap-3 text-[11px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-50"
-          >
-            {isUploadingJson ? <Loader2 className="animate-spin" size={18}/> : <FileJson size={18} />}
-            <span>{isUploadingJson ? 'Synchronizing...' : 'Import Workflow JSON'}</span>
-          </button>
         </div>
 
         {/* KHU VỰC HIỂN THỊ DANH SÁCH NODE VÀ FIELD (DASHED BOX KHI CÓ DATA) */}
@@ -278,12 +264,6 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
           </div>
         )}
       </div>
-
-      <ImportWorkflowModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onImport={onImport}
-      />
     </div>
   );
 };

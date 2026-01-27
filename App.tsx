@@ -38,10 +38,8 @@ import AINoelGenerator from './pages/images/AINoelGenerator';
 import AITetGenerator from './pages/images/AITetGenerator';
 import AIWeddingGenerator from './pages/images/AIWeddingGenerator';
 import AIBirthdayGenerator from './pages/images/AIBirthdayGenerator';
-import ProductSintax from './pages/ProductSintax';
 import GenyuProduct from './pages/videos/GenyuProduct';
 import KineticProduct from './pages/videos/KineticProduct';
-import SequenceProduct from './pages/videos/SequenceProduct';
 import AvatarLipsyncAI from './pages/videos/AvatarLipsyncAI';
 import VideoAnimateAI from './pages/videos/VideoAnimateAI';
 import TextToSpeech from './pages/audio/TextToSpeech';
@@ -116,10 +114,8 @@ const App: React.FC = () => {
                       <Route path="/product/ai-image-generator" element={<AIImageGenerator />} />
                       <Route path="/product/voice-design-ai" element={<VoiceDesignAI />} />
                       <Route path="/product/ai-voice-studio" element={<VoiceStudio />} />
-                      <Route path="/product/sintax-prompt-builder" element={<ProductSintax />} />
                       <Route path="/product/studio-architect" element={<GenyuProduct />} />
                       <Route path="/product/kinetic-core-engine" element={<KineticProduct />} />
-                      <Route path="/product/sequence-story-engine" element={<SequenceProduct />} />
                       <Route path="/product/avatar-sync-ai" element={<AvatarLipsyncAI />} />
                       <Route path="/product/video-animate-ai" element={<VideoAnimateAI />} />
                       <Route path="/product/text-to-speech" element={<TextToSpeech />} />
