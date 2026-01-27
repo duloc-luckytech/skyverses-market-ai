@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAetherFlow, WorkflowTemplate } from '../../hooks/useAetherFlow';
 import { ConfigPanel } from './ConfigPanel';
@@ -71,7 +72,6 @@ const AetherFlowInterface: React.FC = () => {
             isOpen={showSettings} apiKey={flow.apiKey} setApiKey={flow.saveApiKey}
             showApiKey={flow.showApiKey} setShowApiKey={flow.setShowApiKey}
           />
-          {/* Fix: remove onImport as it is not a valid prop for ConfigPanel */}
           <ConfigPanel 
             workflowId={flow.workflowId} setWorkflowId={flow.setWorkflowId}
             workflowConfig={flow.workflowConfig} updateConfigValue={flow.updateConfigValue}
@@ -83,7 +83,6 @@ const AetherFlowInterface: React.FC = () => {
         </div>
 
         <div className="md:col-span-3 h-full">
-          {/* Fix: add missing isUploadingJson and onImport props to ResultsPanel */}
           <ResultsPanel 
             results={flow.results} generationTime={flow.generationTime}
             isGenerating={flow.isGenerating} 
@@ -120,7 +119,7 @@ const AetherFlowInterface: React.FC = () => {
               <div className="w-16 h-16 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
               <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-400/30 animate-pulse" size={24} />
             </div>
-            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest italic animate-pulse">Synchronizing Registry...</p>
+            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest italic animate-pulse">ĐANG ĐỒNG BỘ DỮ LIỆU...</p>
           </motion.div>
         )}
       </AnimatePresence>

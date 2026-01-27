@@ -93,16 +93,15 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   return (
     <div className="flex-1 bg-white dark:bg-[#111114] rounded-none p-0 flex flex-col relative max-h-[88vh] overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
       
-      {/* HEADER: STRICT SQUARE */}
       <div className="p-8 bg-slate-50 dark:bg-[#18181c] shrink-0 border-b border-black/5 dark:border-none">
         <div className="flex justify-between items-center mb-6">
            <div className="flex items-center gap-3">
               <div className="w-1.5 h-6 bg-indigo-600"></div>
-              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white leading-none">AI AGENT WORKFLOW</h3>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white leading-none">CẤU HÌNH QUY TRÌNH</h3>
            </div>
            <button 
              onClick={() => setShowSettings(!showSettings)}
-             className={`p-2 transition-all ${showSettings ? 'text-indigo-500' : 'text-slate-400 dark:text-zinc-600 hover:text-slate-900 dark:hover:text-white'}`}
+             className={`p-2 transition-all ${showSettings ? 'text-indigo-600' : 'text-slate-400 dark:text-zinc-600 hover:text-slate-900 dark:hover:text-white'}`}
            >
              <Settings size={18} />
            </button>
@@ -111,7 +110,9 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-none ${isGenerating || isUploadingJson ? 'bg-orange-500 animate-pulse' : 'bg-emerald-500'}`}></div>
-            <p className="text-[9px] text-slate-400 dark:text-zinc-500 uppercase font-black tracking-widest leading-none">{statusText}</p>
+            <p className="text-[9px] text-slate-400 dark:text-zinc-500 uppercase font-black tracking-widest leading-none">
+              {statusText.replace('Hệ thống sẵn sàng', 'Hệ thống trực tuyến').replace('_', ' ')}
+            </p>
           </div>
           
           <div className="relative">
@@ -126,7 +127,6 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         </div>
       </div>
 
-      {/* BODY: FLAT NODE LIST */}
       <div className="flex-grow overflow-y-auto no-scrollbar p-0 bg-white dark:bg-[#111114]">
         {workflowConfig.length > 0 ? (
           <div className="divide-y divide-black/5 dark:divide-white/[0.03]">
@@ -140,7 +140,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                     >
                       <div className="flex items-center gap-4">
                          <span className={`text-[10px] font-black uppercase italic tracking-widest ${isOpen ? 'text-indigo-600 dark:text-white' : 'text-slate-400 dark:text-zinc-500'}`}>
-                           KHỐI {node.id}: {node.title}
+                           {node.title.replace('_', ' ')} (ID: {node.id})
                          </span>
                       </div>
                       <ChevronDown size={14} className={`text-slate-400 dark:text-zinc-600 transition-transform ${isOpen ? 'rotate-180 text-indigo-600 dark:text-indigo-500' : ''}`} />
@@ -176,12 +176,11 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         ) : (
           <div className="py-32 flex flex-col items-center justify-center gap-6 opacity-20 italic">
              <Sliders size={48} strokeWidth={1} className="text-slate-900 dark:text-white" />
-             <p className="text-[10px] font-black uppercase tracking-[0.6em] text-center px-10 text-slate-900 dark:text-white">Đang chờ kết nối kịch bản...</p>
+             <p className="text-[10px] font-black uppercase tracking-[0.6em] text-center px-10 text-slate-900 dark:text-white">Đang đợi nạp quy trình...</p>
           </div>
         )}
       </div>
 
-      {/* FOOTER: INDUSTRIAL BUTTON */}
       <div className="mt-auto bg-slate-50 dark:bg-[#18181c] p-0 z-30 border-t border-black/5 dark:border-none">
         <button 
           onClick={onGenerate}
@@ -193,7 +192,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
           ) : (
             <>
               <Zap size={18} fill="currentColor" />
-              <span>BẮT ĐẦU TẠO</span>
+              <span>BẮT ĐẦU KHỞI TẠO</span>
               <div className="flex items-center gap-2 bg-black/20 dark:bg-black/40 px-4 py-1.5 rounded-none border border-white/10">
                  <Coins size={14} className="text-yellow-400" fill="currentColor" />
                  <span className="text-[10px] font-black tracking-normal">500</span>
