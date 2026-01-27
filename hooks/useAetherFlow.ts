@@ -122,12 +122,47 @@ export const useAetherFlow = () => {
 
   const handleGenerate = async () => {
     if (isGenerating) return;
+    if (!apiKey) {
+      setStatusText('Lỗi: Thiếu API Key');
+      return;
+    }
+    
     setIsGenerating(true);
-    setStatusText('Đang khởi tạo...');
-    await new Promise(r => setTimeout(r, 2000));
-    setStatusText('Hoàn tất');
-    setIsGenerating(false);
-    refreshUserInfo();
+    setStatusText('Đang gửi tác vụ...');
+    
+    try {
+      // Chuyển đổi cấu hình nodes hiện tại sang định dạng RunningHub OpenAPI
+      const nodeInfoList = workflowConfig.map(node => ({
+        nodeId: node.id,
+        fieldName: 'widgets_values',
+        fieldValue: node.widgets_values
+      }));
+
+      const response = await fetch(`${CONFIG.BASE_URL}/task/openapi/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          apiKey,
+          workflowId,
+          nodeInfoList,
+          addMetadata: true
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.code === 0 && result.data?.taskId) {
+        setStatusText(`Đã tạo: ${result.data.taskId}`);
+        // Cập nhật lại thông tin user sau khi trừ credit (nếu hệ thống có hiển thị)
+        refreshUserInfo();
+      } else {
+        setStatusText(`Lỗi: ${result.msg || 'Không thể tạo tác vụ'}`);
+      }
+    } catch (error: any) {
+      setStatusText(`Lỗi kết nối: ${error.message}`);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleImport = async (input: File | string) => {

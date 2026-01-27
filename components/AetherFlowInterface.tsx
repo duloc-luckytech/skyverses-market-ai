@@ -50,7 +50,6 @@ const AetherFlowInterface: React.FC = () => {
     }
   };
 
-  // Sử dụng logic V2 (Advanced) cho tất cả các yêu cầu mở Editor
   const handleOpenVisualEditorV2 = async (tmpl: WorkflowTemplate) => {
     setIsFetchingDetail(true);
     try {
@@ -78,10 +77,11 @@ const AetherFlowInterface: React.FC = () => {
 
   return (
     <div className="h-full w-full bg-[#fcfcfd] dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans p-4 md:p-6 lg:p-8 flex items-start justify-center overflow-y-auto no-scrollbar transition-colors duration-500 relative">
-      <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
+      {/* Cấu trúc Grid 12 cột: Cột trái chiếm 4, cột phải chiếm 8 */}
+      <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
         
-        {/* LEFT PANEL: CONFIGURATION (1/4 width) */}
-        <div className="md:col-span-1 flex flex-col gap-4">
+        {/* LEFT PANEL: CONFIGURATION (4/12 width) */}
+        <div className="md:col-span-4 flex flex-col gap-4">
           <SettingsDrawer 
             isOpen={showSettings}
             apiKey={flow.apiKey}
@@ -105,8 +105,8 @@ const AetherFlowInterface: React.FC = () => {
           />
         </div>
 
-        {/* RIGHT PANEL: RESULTS & TEMPLATES (3/4 width) */}
-        <div className="md:col-span-3">
+        {/* RIGHT PANEL: RESULTS & TEMPLATES (8/12 width) */}
+        <div className="md:col-span-8">
           <ResultsPanel 
             results={flow.results}
             generationTime={flow.generationTime}
