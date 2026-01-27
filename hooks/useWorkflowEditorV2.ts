@@ -39,7 +39,7 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
             ...node,
             data: {
               ...node.data,
-              widgets: node.data.widgets?.map((w: any) => 
+              widgets: (node.data.widgets as any[])?.map((w: any) => 
                 w.label === key ? { ...w, value } : w
               ),
             },
