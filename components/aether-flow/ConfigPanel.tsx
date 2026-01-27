@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Settings, ChevronDown, Loader2, Zap, Sliders, Dices, AlertCircle, ClipboardList, Coins, Box } from 'lucide-react';
+import { Settings, ChevronDown, Loader2, Zap, Sliders, Dices, AlertCircle, ClipboardList, Coins, Box, ExternalLink, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WorkflowNode } from '../../hooks/useAetherFlow';
 
@@ -18,10 +18,76 @@ interface ConfigPanelProps {
   onGenerate: () => void;
 }
 
+// Trình render Markdown đơn giản cho giao diện Skyverses
+const MarkdownRenderer = ({ content }: { content: string }) => {
+  // Xử lý các khối mã (Code Blocks) - Vẽ viền đứt đoạn như hình mẫu
+  const parts = content.split(/(```[\s\S]*?```)/g);
+
+  return (
+    <div className="space-y-4 font-sans text-[13px] leading-relaxed text-slate-300">
+      {parts.map((part, i) => {
+        if (part.startsWith('```')) {
+          const code = part.replace(/```/g, '').trim();
+          return (
+            <div key={i} className="my-4 p-4 bg-black/40 border border-dashed border-white/20 rounded-lg font-mono text-[11px] text-zinc-400 overflow-x-auto leading-normal">
+              <pre>{code}</pre>
+            </div>
+          );
+        }
+
+        // Xử lý các thành phần inline (Links, Bold, Lists)
+        const lines = part.split('\n');
+        return (
+          <div key={i} className="space-y-2">
+            {lines.map((line, li) => {
+              // Heading 2
+              if (line.startsWith('## ')) {
+                return <h3 key={li} className="text-base font-black text-white uppercase tracking-tight mt-6 mb-2">{line.replace('## ', '')}</h3>;
+              }
+              // List item
+              if (line.trim().startsWith('- ')) {
+                const item = line.trim().replace('- ', '');
+                return (
+                  <div key={li} className="flex gap-2 pl-2">
+                    <span className="text-brand-blue">•</span>
+                    <div dangerouslySetInnerHTML={{ 
+                      __html: formatInlineMarkdown(item) 
+                    }} />
+                  </div>
+                );
+              }
+              // Normal line
+              return (
+                <p key={li} className="min-h-[1.2em]" dangerouslySetInnerHTML={{ 
+                  __html: formatInlineMarkdown(line) 
+                }} />
+              );
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// Helper format chữ đậm và liên kết
+const formatInlineMarkdown = (text: string) => {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')
+    .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="text-brand-blue hover:underline inline-flex items-center gap-1">$1</a>');
+};
+
 const WidgetField = ({ value, index, nodeId, onChange }: any) => {
   const isNumber = typeof value === 'number';
   const isBoolean = typeof value === 'boolean';
-  const isLongText = typeof value === 'string' && (value.length > 50 || value.includes('\n'));
+  
+  // Kiểm tra xem chuỗi có phải là một bản ghi chú Markdown không
+  const isMarkdownNote = typeof value === 'string' && (
+    value.includes('##') || 
+    value.includes('**') || 
+    value.includes('```') ||
+    value.includes('📂')
+  );
 
   const fieldLabel = `THÔNG SỐ 0${index + 1}`;
 
@@ -44,6 +110,38 @@ const WidgetField = ({ value, index, nodeId, onChange }: any) => {
     );
   }
 
+  if (isMarkdownNote) {
+    return (
+      <div className="space-y-4 py-6 border-b border-black/5 dark:border-white/[0.03] last:border-0">
+        <div className="flex items-center justify-between">
+           <div className="flex items-center gap-2">
+             <FileText size={14} className="text-brand-blue" />
+             <span className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">BẢN GHI CHÚ QUY TRÌNH</span>
+           </div>
+           <button 
+             onClick={() => {
+               const newVal = window.prompt("Cập nhật ghi chú kịch bản:", value);
+               if (newVal !== null) onChange(nodeId, index, newVal);
+             }}
+             className="p-1.5 bg-black/20 hover:bg-brand-blue/10 rounded text-gray-500 hover:text-brand-blue transition-all"
+           >
+             <Settings size={12} />
+           </button>
+        </div>
+        
+        <div className="bg-[#121214] border border-white/5 rounded-2xl p-6 lg:p-8 shadow-inner overflow-hidden relative group">
+           {/* Decor icon mờ ở nền */}
+           <div className="absolute top-4 right-4 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
+              <FileText size={120} />
+           </div>
+           <MarkdownRenderer content={value} />
+        </div>
+      </div>
+    );
+  }
+
+  const isLongText = typeof value === 'string' && (value.length > 50 || value.includes('\n'));
+
   return (
     <div className="space-y-2 py-4 border-b border-black/5 dark:border-white/[0.03] last:border-0">
       <div className="flex justify-between items-center">
@@ -63,14 +161,14 @@ const WidgetField = ({ value, index, nodeId, onChange }: any) => {
           <textarea
             value={String(value)}
             onChange={(e) => onChange(nodeId, index, e.target.value)}
-            className="w-full bg-slate-100 dark:bg-black border-none rounded-none p-4 text-[12px] font-medium text-slate-800 dark:text-zinc-300 outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all resize-none min-h-[100px] font-mono leading-relaxed"
+            className="w-full bg-slate-100 dark:bg-black border-none rounded-none p-4 text-[12px] font-medium text-slate-800 dark:text-zinc-300 outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all resize-none min-h-[100px] font-mono leading-relaxed shadow-inner"
           />
         ) : (
           <input 
             type={isNumber ? "number" : "text"}
             value={String(value)}
             onChange={(e) => onChange(nodeId, index, isNumber ? parseFloat(e.target.value) || 0 : e.target.value)}
-            className="w-full bg-slate-100 dark:bg-black border-none rounded-none p-3 text-[12px] font-bold text-slate-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all"
+            className="w-full bg-slate-100 dark:bg-black border-none rounded-none p-3 text-[12px] font-bold text-slate-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all shadow-inner"
           />
         )}
       </div>

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Handle, Position, NodeToolbar } from '@xyflow/react';
-import { Settings, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Settings, Zap, ChevronLeft, ChevronRight, FileText, Image as ImageIcon, Upload, RefreshCw, Film } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NodeEditorToolbar } from './NodeEditorToolbar';
 
@@ -9,6 +9,25 @@ export const EditorNode = ({ id, data, selected }: any) => {
   const [editingField, setEditingField] = useState<{ key: string; value: any } | null>(null);
   const [tempValue, setTempValue] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Common Auth Tokens for RunningHub
+  const AUTH_TOKEN = "eyJ1c2VySWQiOiIyMmUxNjNlM2U3YjQ2MmI1YWNkYjVmOTgxNTNmMjRiMiIsInNpZ25FeHBpcmUiOjE3NzAxMjM5MDg1MjgsInRzIjoxNzY5NTE5MTA4NTI4LCJzaWduIjoiODYzNzJiOWJjN2IwODA3MGZmNTYzMjA2N2Y0YTAzYWYifQ==";
+  const IDENTIFY_TOKEN = "22e163e3e7b462b5acdb5f98153f24b2";
+
+  // Base URL template for RunningHub Image Viewing
+  const getRunningHubImageUrl = (filename: string) => {
+    return `https://www.runninghub.ai/view?type=input&filename=${filename}&Auth=${AUTH_TOKEN}&Rh-Identify=${IDENTIFY_TOKEN}`;
+  };
+
+  // Base URL template for RunningHub Video Viewing
+  const getRunningHubVideoUrl = (filename: string) => {
+    return `https://www.runninghub.ai/vhs/viewvideo?custom_height=0&force_rate=24&filename=${filename}&custom_width=0&select_every_nth=1&frame_load_cap=0&format=video%2Fmp4&skip_first_frames=0&type=input&timestamp=1769519141146&force_size=1100.0787353515625x%3F&deadline=realtime&Rh-Comfy-Auth=${AUTH_TOKEN}&Rh-Identify=${IDENTIFY_TOKEN}`;
+  };
+
+  // Kiểm tra xem node này có phải là node STRING chuyên dụng (Multiline) không
+  const isStringNode = data.classType === 'PrimitiveStringMultiline' || 
+                       data.outputs?.includes('STRING') ||
+                       data.label?.toUpperCase() === 'PROMPT';
 
   const submitEdit = () => {
     if (!editingField) return;
@@ -63,32 +82,114 @@ export const EditorNode = ({ id, data, selected }: any) => {
             </div>
           )}
 
-          {/* Internal Widgets (Parameters - Pill Style based on image) */}
+          {/* Internal Widgets / Parameters */}
           {data.widgets && data.widgets.length > 0 && (
-            <div className="space-y-1">
-               {data.widgets.map((widget: any, idx: number) => (
-                 <div 
-                  key={idx} 
-                  onClick={() => { setEditingField({ key: widget.label, value: widget.value }); setTempValue(String(widget.value)); }}
-                  className="group flex items-center bg-[#0d0d0f] border border-white/[0.03] rounded-full px-3 py-1.5 hover:border-indigo-500/40 transition-all cursor-pointer shadow-inner"
-                 >
-                    {/* Left Chevron */}
-                    <ChevronLeft size={10} className="text-gray-600 group-hover:text-indigo-400" />
-                    
-                    {/* Label and Value Container */}
-                    <div className="flex-grow flex justify-between items-center px-3 overflow-hidden">
-                      <span className="text-[9px] font-black uppercase text-gray-500 tracking-tighter group-hover:text-gray-300 truncate mr-4">
-                        {widget.label}
-                      </span>
-                      <span className="text-[11px] font-mono font-bold text-gray-200 tracking-tight whitespace-nowrap">
-                         {String(widget.value)}
-                      </span>
-                    </div>
+            <div className="space-y-4">
+               {data.widgets.map((widget: any, idx: number) => {
+                 const isVideoFile = typeof widget.value === 'string' && widget.value.toLowerCase().endsWith('.mp4');
+                 const isImageFile = typeof widget.value === 'string' && /\.(png|jpg|jpeg|webp|gif)$/i.test(widget.value);
+                 const isLongText = typeof widget.value === 'string' && widget.value.length > 40;
+                 
+                 // Render VIDEO PREVIEW if value is an mp4 filename
+                 if (isVideoFile) {
+                    return (
+                      <div key={idx} className="space-y-2 py-2">
+                        <label className="text-[9px] font-black uppercase text-gray-500 tracking-tighter italic flex items-center gap-2">
+                          <Film size={10} className="text-purple-400" /> {widget.label}
+                        </label>
+                        <div className="relative aspect-video bg-black/40 rounded-lg overflow-hidden border border-white/5 group/vid shadow-inner">
+                           <video 
+                             src={getRunningHubVideoUrl(widget.value)} 
+                             autoPlay loop muted playsInline
+                             className="w-full h-full object-cover transition-transform duration-700 group-hover/vid:scale-105" 
+                           />
+                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/vid:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                              <button className="p-2.5 bg-white text-black rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-xl">
+                                <Upload size={14} />
+                              </button>
+                              <button className="p-2.5 bg-white text-black rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-xl">
+                                <RefreshCw size={14} />
+                              </button>
+                           </div>
+                        </div>
+                        <div className="px-2 py-1 bg-black/20 rounded border border-white/[0.03]">
+                           <p className="text-[8px] font-mono text-gray-500 truncate uppercase tracking-tighter">{widget.value}</p>
+                        </div>
+                      </div>
+                    );
+                 }
 
-                    {/* Right Chevron */}
-                    <ChevronRight size={10} className="text-gray-600 group-hover:text-indigo-400" />
-                 </div>
-               ))}
+                 // Render IMAGE PREVIEW if value is a filename
+                 if (isImageFile) {
+                    return (
+                      <div key={idx} className="space-y-2 py-2">
+                        <label className="text-[9px] font-black uppercase text-gray-500 tracking-tighter italic flex items-center gap-2">
+                          <ImageIcon size={10} className="text-indigo-400" /> {widget.label}
+                        </label>
+                        <div className="relative aspect-video bg-black/40 rounded-lg overflow-hidden border border-white/5 group/img shadow-inner">
+                           <img 
+                            src={getRunningHubImageUrl(widget.value)} 
+                            className="w-full h-full object-contain transition-transform duration-700 group-hover/img:scale-105" 
+                            alt="Node Asset"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=400';
+                            }}
+                           />
+                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                              <button className="p-2.5 bg-white text-black rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-xl">
+                                <Upload size={14} />
+                              </button>
+                              <button className="p-2.5 bg-white text-black rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-xl">
+                                <RefreshCw size={14} />
+                              </button>
+                           </div>
+                        </div>
+                        <div className="px-2 py-1 bg-black/20 rounded border border-white/[0.03]">
+                           <p className="text-[8px] font-mono text-gray-500 truncate uppercase tracking-tighter">{widget.value}</p>
+                        </div>
+                      </div>
+                    );
+                 }
+
+                 // Render Textarea for Prompt/Long strings
+                 if ((isStringNode || isLongText) && typeof widget.value === 'string') {
+                   return (
+                     <div key={idx} className="space-y-2">
+                        <div className="flex items-center justify-between px-1">
+                          <label className="text-[9px] font-black uppercase text-gray-500 tracking-tighter italic flex items-center gap-2">
+                            <FileText size={10} className="text-indigo-400" /> {widget.label}
+                          </label>
+                        </div>
+                        <textarea
+                          value={widget.value}
+                          onChange={(e) => data.onUpdate && data.onUpdate(widget.label, e.target.value)}
+                          className="w-full h-32 bg-[#0d0d0f] border border-white/[0.05] rounded-lg p-4 text-[11px] font-mono text-indigo-100/80 focus:border-indigo-500/50 outline-none transition-all resize-none shadow-inner scrollbar-hide"
+                          placeholder="Nhập nội dung..."
+                        />
+                     </div>
+                   );
+                 }
+
+                 // Ngược lại render dạng Pill như cũ cho các tham số số, bool hoặc text ngắn
+                 return (
+                   <div 
+                    key={idx} 
+                    onClick={() => { setEditingField({ key: widget.label, value: widget.value }); setTempValue(String(widget.value)); }}
+                    className="group flex items-center bg-[#0d0d0f] border border-white/[0.03] rounded-full px-3 py-1.5 hover:border-indigo-500/40 transition-all cursor-pointer shadow-inner"
+                   >
+                      <ChevronLeft size={10} className="text-gray-600 group-hover:text-indigo-400" />
+                      <div className="flex-grow flex justify-between items-center px-3 overflow-hidden">
+                        <span className="text-[9px] font-black uppercase text-gray-500 tracking-tighter group-hover:text-gray-300 truncate mr-4">
+                          {widget.label}
+                        </span>
+                        <span className="text-[11px] font-mono font-bold text-gray-200 tracking-tight whitespace-nowrap">
+                           {String(widget.value)}
+                        </span>
+                      </div>
+                      <ChevronRight size={10} className="text-gray-600 group-hover:text-indigo-400" />
+                   </div>
+                 );
+               })}
             </div>
           )}
 
@@ -115,14 +216,14 @@ export const EditorNode = ({ id, data, selected }: any) => {
            <Zap size={8} />
         </div>
 
-        {/* Edit Modal for Parameters */}
+        {/* Edit Modal for Parameters (Pill Mode only) */}
         <AnimatePresence>
           {editingField && (
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }} 
-              className="fixed inset-0 z-[500] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 pointer-events-auto" 
+              className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto" 
               onClick={() => setEditingField(null)}
             >
               <div className="bg-[#1a1b2e] rounded-none p-8 flex flex-col gap-6 shadow-3xl border border-white/10 w-full max-w-sm" onClick={e => e.stopPropagation()}>
