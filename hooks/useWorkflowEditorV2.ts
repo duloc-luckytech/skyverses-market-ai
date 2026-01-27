@@ -14,8 +14,9 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
-  const SCALE_X = 1.6;
-  const SCALE_Y = 2.4;
+  // Đưa về tỷ lệ 1.0 để các node sát lại gần nhau hơn theo kịch bản gốc
+  const SCALE_X = 1.0;
+  const SCALE_Y = 1.0;
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge({
@@ -101,17 +102,14 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
 
             const position = { x: rawX * SCALE_X, y: rawY * SCALE_Y };
 
-            // Phân loại Inputs: Link (kết nối) và Widget (thông số)
             const allInputs = nodeData.inputs || [];
             const connectionInputs = allInputs.filter((i: any) => !i.widget);
             const widgetMetadata = allInputs.filter((i: any) => i.widget);
             
             const widgets: { label: string, value: any }[] = [];
             
-            // Mapping widgets_values dựa trên metadata từ mảng inputs (theo thứ tự)
             if (nodeData.widgets_values && Array.isArray(nodeData.widgets_values)) {
                nodeData.widgets_values.forEach((val: any, idx: number) => {
-                  // Lấy nhãn từ inputs[].widget.name, nếu không có thì fallback
                   const label = widgetMetadata[idx]?.widget?.name || widgetMetadata[idx]?.name || nodeData.widgets?.[idx]?.name || `param_${idx}`;
                   widgets.push({ label, value: val });
                });

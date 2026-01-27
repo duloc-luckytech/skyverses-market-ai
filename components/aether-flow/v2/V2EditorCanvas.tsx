@@ -38,8 +38,8 @@ export const V2EditorCanvas: React.FC<V2EditorCanvasProps> = ({
         nodeTypes={nodeTypes} 
         colorMode="system" 
         fitView
-        fitViewOptions={{ padding: 0.5, minZoom: 0.08 }}
-        minZoom={0.05}
+        fitViewOptions={{ padding: 0.2, minZoom: 0.05 }}
+        minZoom={0.01}
         maxZoom={2}
         onlyRenderVisibleElements={true}
       >

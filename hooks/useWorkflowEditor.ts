@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect } from 'react';
 import {
   useNodesState,
@@ -14,8 +15,8 @@ export const useWorkflowEditor = (template: WorkflowTemplate | null) => {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
   // Hệ số dãn cách để tránh chồng lấn khi số lượng node lớn
-  const SPACING_X = 1.6;
-  const SPACING_Y = 2.2;
+  const SPACING_X = 1.1;
+  const SPACING_Y = 1.1;
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge({
