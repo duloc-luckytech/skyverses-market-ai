@@ -34,34 +34,41 @@ const AetherFlowInterface: React.FC = () => {
     }
   };
 
-  const handleSelectTemplate = (tmpl: WorkflowTemplate) => {
+  const handleSelectTemplate = async (tmpl: WorkflowTemplate) => {
     flow.setWorkflowId(tmpl.templateId);
-    if (tmpl.config) {
-      handleImport(tmpl.config);
-    } else {
-       flow.setWorkflowId(tmpl.templateId);
+    setIsFetchingDetail(true);
+    try {
+      const detail = await flow.fetchWorkflowDetail(tmpl.templateId);
+      if (detail) {
+        // Tự động phân tích các node để tạo form ở cột trái
+        await flow.handleImport(JSON.stringify(detail));
+      }
+    } catch (err) {
+      console.error("Detail Fetch Error", err);
+    } finally {
+      setIsFetchingDetail(false);
     }
   };
 
   // Sử dụng logic V2 (Advanced) cho tất cả các yêu cầu mở Editor
-  const handleOpenVisualEditor = async (tmpl: WorkflowTemplate | null) => {
-    if (tmpl) {
-      setIsFetchingDetail(true);
-      try {
-        const detail = await flow.fetchWorkflowDetail(tmpl.templateId);
-        setVisualEditorTemplate(detail ? { ...tmpl, config: JSON.stringify(detail) } : tmpl);
-        setIsVisualEditorOpen(true);
-      } catch (err) {
-        console.error("Detail Fetch Error", err);
-        setVisualEditorTemplate(tmpl);
-        setIsVisualEditorOpen(true);
-      } finally {
-        setIsFetchingDetail(false);
-      }
-    } else {
-      setVisualEditorTemplate(null);
+  const handleOpenVisualEditorV2 = async (tmpl: WorkflowTemplate) => {
+    setIsFetchingDetail(true);
+    try {
+      const detail = await flow.fetchWorkflowDetail(tmpl.templateId);
+      setVisualEditorTemplate(detail ? { ...tmpl, config: JSON.stringify(detail) } : tmpl);
       setIsVisualEditorOpen(true);
+    } catch (err) {
+      console.error("Detail Fetch Error", err);
+      setVisualEditorTemplate(tmpl);
+      setIsVisualEditorOpen(true);
+    } finally {
+      setIsFetchingDetail(false);
     }
+  };
+
+  const handleOpenVisualEditorEmpty = () => {
+    setVisualEditorTemplate(null);
+    setIsVisualEditorOpen(true);
   };
 
   const handleCloseVisualEditor = () => {
@@ -114,15 +121,14 @@ const AetherFlowInterface: React.FC = () => {
             isFetchingMore={flow.isFetchingMore}
             loadMoreTemplates={flow.loadMoreTemplates}
             onSelectTemplate={handleSelectTemplate}
-            onOpenVisualEditor={handleOpenVisualEditor}
-            onOpenVisualEditorV2={handleOpenVisualEditor} // Map cả 2 về chung một hàm xử lý
+            onOpenVisualEditor={handleOpenVisualEditorEmpty}
+            onOpenVisualEditorV2={handleOpenVisualEditorV2}
             onClear={() => flow.setResults([])}
             onImport={handleImport}
           />
         </div>
       </div>
 
-      {/* Chỉ sử dụng duy nhất Modal V2 */}
       <WorkflowEditorModalV2 
         isOpen={isVisualEditorOpen}
         onClose={handleCloseVisualEditor}

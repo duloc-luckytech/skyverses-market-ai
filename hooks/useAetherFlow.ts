@@ -14,7 +14,8 @@ export interface WorkflowNode {
   id: string;
   title: string;
   classType: string;
-  inputs: Record<string, any>;
+  widgets_values: any[];
+  inputs?: any[];
 }
 
 export interface WorkflowTemplate {
@@ -33,8 +34,6 @@ const CONFIG = {
   BASE_URL: 'https://www.runninghub.ai',
   DEFAULT_WORKFLOW_ID: '1845005868273160193',
   DEFAULT_API_KEY: 'aa6dd04cb596415697e7f4337a737ddb',
-  POLL_INTERVAL: 3000,
-  MAX_POLL_ATTEMPTS: 120,
   PAGE_SIZE: 12
 };
 
@@ -50,7 +49,6 @@ export const useAetherFlow = () => {
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('runninghub_api_key') || CONFIG.DEFAULT_API_KEY);
   const [showApiKey, setShowApiKey] = useState(false);
   
-  // Library Pagination State
   const [templates, setTemplates] = useState<WorkflowTemplate[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -69,33 +67,23 @@ export const useAetherFlow = () => {
       const result = await response.json();
       
       if (result.success && result.data) {
-        const newTemplates = result.data;
         if (reset) {
-          setTemplates(newTemplates);
+          setTemplates(result.data);
           setTotalCount(result.total || 0);
         } else {
-          setTemplates(prev => [...prev, ...newTemplates]);
+          setTemplates(prev => [...prev, ...result.data]);
         }
-        
-        const currentCount = reset ? newTemplates.length : templates.length + newTemplates.length;
-        const total = result.total || 0;
-        setHasMore(currentCount < total);
-      } else {
-        if (reset) setTemplates([]);
-        setHasMore(false);
+        setHasMore(templates.length + result.data.length < (result.total || 0));
       }
     } catch (error) {
-      console.error("Failed to fetch runninghub templates:", error);
-      if (reset) setTemplates([]);
+      console.error("Failed to fetch templates:", error);
     } finally {
       setLoadingTemplates(false);
       setIsFetchingMore(false);
     }
   }, [templates.length]);
 
-  useEffect(() => {
-    fetchTemplates(1, true);
-  }, []);
+  useEffect(() => { fetchTemplates(1, true); }, []);
 
   const loadMoreTemplates = useCallback(() => {
     if (isFetchingMore || !hasMore) return;
@@ -110,10 +98,8 @@ export const useAetherFlow = () => {
         headers: getHeaders()
       });
       const result = await response.json();
-      if (result.success && result.data) return result.data;
-      return null;
+      return result.success ? result.data : null;
     } catch (error) {
-      console.error("Failed to fetch workflow detail:", error);
       return null;
     }
   };
@@ -123,10 +109,12 @@ export const useAetherFlow = () => {
     localStorage.setItem('runninghub_api_key', key);
   };
 
-  const updateConfigValue = (nodeId: string, inputKey: string, value: any) => {
+  const updateConfigValue = (nodeId: string, widgetIndex: number, value: any) => {
     setWorkflowConfig(prev => prev.map(node => {
       if (node.id === nodeId) {
-        return { ...node, inputs: { ...node.inputs, [inputKey]: value } };
+        const newWidgets = [...node.widgets_values];
+        newWidgets[widgetIndex] = value;
+        return { ...node, widgets_values: newWidgets };
       }
       return node;
     }));
@@ -134,72 +122,53 @@ export const useAetherFlow = () => {
 
   const handleGenerate = async () => {
     if (isGenerating) return;
-    try {
-      setIsGenerating(true);
-      setStatusText('Đang khởi tạo...');
-      // Generation logic placeholder
-      await new Promise(r => setTimeout(r, 2000));
-      setStatusText('Hoàn tất');
-      refreshUserInfo();
-    } catch (error: any) {
-      setStatusText(`Lỗi: ${error.message}`);
-    } finally {
-      setIsGenerating(false);
-    }
+    setIsGenerating(true);
+    setStatusText('Đang khởi tạo...');
+    await new Promise(r => setTimeout(r, 2000));
+    setStatusText('Hoàn tất');
+    setIsGenerating(false);
+    refreshUserInfo();
   };
 
   const handleImport = async (input: File | string) => {
     setIsUploadingJson(true);
-    setStatusText('Đang phân tích kịch bản...');
+    setStatusText('Đang phân tích...');
     try {
       let rawJson = typeof input === 'string' ? input : await input.text();
-      const workflowResponse = JSON.parse(rawJson);
+      const workflowData = JSON.parse(rawJson);
+      const data = workflowData.data || workflowData;
       
-      // Look for the workflow data in either 'data' field or root
-      const targetData = workflowResponse.data || workflowResponse;
+      let nodes: WorkflowNode[] = [];
       
-      const nodes: WorkflowNode[] = [];
-      
-      // If it's a ComfyUI Web JSON (list of nodes)
-      if (targetData.nodes && Array.isArray(targetData.nodes)) {
-        targetData.nodes.forEach((node: any) => {
-          const inputs: Record<string, any> = {};
-          
-          // Widgets often contain the configurable values
-          if (node.widgets_values && Array.isArray(node.widgets_values)) {
-             node.widgets_values.forEach((v: any, i: number) => {
-               inputs[`widget_${i}`] = v;
-             });
-          }
-
-          nodes.push({
-            id: String(node.id),
-            title: node.title || node.type,
-            classType: node.type,
-            inputs: inputs
-          });
-        });
+      // Hỗ trợ format Array (Workflow)
+      if (data.nodes && Array.isArray(data.nodes)) {
+        nodes = data.nodes.map((n: any) => ({
+          id: String(n.id),
+          title: n.title || n.type,
+          classType: n.type,
+          widgets_values: n.widgets_values || []
+        }));
       } 
-      // If it's an API JSON (dictionary of nodes)
+      // Hỗ trợ format Object (API Prompt)
       else {
-        Object.keys(targetData).forEach(key => {
-          const node = targetData[key];
+        Object.keys(data).forEach(key => {
+          const node = data[key];
           if (node.inputs) {
             nodes.push({
               id: key,
               title: node._meta?.title || node.class_type,
               classType: node.class_type,
-              inputs: node.inputs
+              widgets_values: Object.values(node.inputs).filter(v => !Array.isArray(v))
             });
           }
         });
       }
       
-      setWorkflowConfig(nodes);
-      setStatusText('Nhập kịch bản thành công');
+      setWorkflowConfig(nodes.filter(n => n.widgets_values.length > 0));
+      setStatusText('Đã nạp kịch bản');
       return true;
-    } catch (error: any) {
-      setStatusText(`Lỗi: ${error.message}`);
+    } catch (error) {
+      setStatusText('Lỗi phân tích JSON');
       throw error;
     } finally {
       setIsUploadingJson(false);
@@ -211,7 +180,6 @@ export const useAetherFlow = () => {
     isGenerating, isUploadingJson, statusText, results, setResults,
     generationTime, apiKey, saveApiKey, showApiKey, setShowApiKey,
     handleGenerate, handleImport, fetchWorkflowDetail,
-    templates, loadingTemplates, hasMore, isFetchingMore, loadMoreTemplates, totalCount,
-    page
+    templates, loadingTemplates, hasMore, isFetchingMore, loadMoreTemplates, totalCount, page
   };
 };
