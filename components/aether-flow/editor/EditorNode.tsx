@@ -64,19 +64,17 @@ export const EditorNode = ({ id, data, selected }: any) => {
                   ) : (
                     <div className="w-full bg-brand-blue/10 border border-brand-blue/20 rounded-xl px-4 py-3 text-[10px] font-black text-brand-blue italic flex items-center gap-2">
                       <Box size={10} /> 
-                      {isLinkPlaceholder ? `LINKED_ID_${value[1]}` : `NODE_${value[0]}`}
-                      <span className="opacity-40 ml-auto">{isLinkPlaceholder ? 'REMOTE' : `SLOT_${value[1]}`}</span>
+                      {isLinkPlaceholder ? `LINKED ID ${value[1]}` : `NODE ${value[0]}`}
+                      <span className="opacity-40 ml-auto">{isLinkPlaceholder ? 'REMOTE' : `SLOT ${value[1]}`}</span>
                     </div>
                   )}
                 </div>
-                {/* Use the input name/key as ID for handle matching */}
                 <Handle 
                   type="target" 
                   position={Position.Left} 
                   id={key} 
                   style={{ left: -18, top: '50%', background: '#0090ff', border: '4px solid #0d0d12', width: '14px', height: '14px' }} 
                 />
-                {/* Also provide a numeric handle for simple link matching */}
                 <Handle 
                   type="target" 
                   position={Position.Left} 
@@ -110,7 +108,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
         <AnimatePresence>
           {editingField && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[500] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto" onClick={() => setEditingField(null)}>
-              <div className="bg-[#1a1b1e] rounded-[2rem] p-8 flex flex-col gap-6 shadow-3xl border border-white/10 w-full max-w-sm" onClick={e => e.stopPropagation()}>
+              <div className="bg-[#1a1b2e] rounded-[2rem] p-8 flex flex-col gap-6 shadow-3xl border border-white/10 w-full max-w-sm" onClick={e => e.stopPropagation()}>
                  <div className="flex items-center gap-4 border-b border-white/5 pb-4">
                     <Settings size={20} className="text-brand-blue"/>
                     <span className="text-white text-sm font-black uppercase tracking-widest italic">Update Parameter</span>

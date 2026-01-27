@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   ReactFlow,
@@ -78,7 +79,7 @@ const V2EditorContent: React.FC<{
           <div className="absolute top-6 left-6 p-4 bg-indigo-600/10 border border-indigo-500/20 backdrop-blur-xl rounded-xl z-50">
              <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400">Advanced_Orchestrator_V2</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400">ADVANCED ORCHESTRATOR V2</span>
              </div>
           </div>
         </div>

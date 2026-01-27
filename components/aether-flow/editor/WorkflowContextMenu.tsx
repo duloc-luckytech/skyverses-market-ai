@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+// Fixed: Moved Sparkles to top-level imports from lucide-react
 import { 
   Plus, 
   Layers, 
@@ -9,7 +10,8 @@ import {
   Layout, 
   Settings, 
   Trash2,
-  Cpu
+  Cpu,
+  Sparkles
 } from 'lucide-react';
 
 interface WorkflowContextMenuProps {
@@ -122,5 +124,3 @@ export const WorkflowContextMenu: React.FC<WorkflowContextMenuProps> = ({ x, y, 
     </motion.div>
   );
 };
-
-import { Sparkles } from 'lucide-react';

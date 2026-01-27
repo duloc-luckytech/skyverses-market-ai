@@ -23,23 +23,21 @@ const WidgetField = ({ value, index, nodeId, onChange }: any) => {
   const isBoolean = typeof value === 'boolean';
   const isLongText = typeof value === 'string' && (value.length > 50 || value.includes('\n'));
 
-  // Nhãn hiển thị dựa trên vị trí (vì widgets_values của ComfyUI API là mảng không nhãn)
-  const fieldLabel = `FIELD_0${index + 1}`;
+  const fieldLabel = `THÔNG SỐ 0${index + 1}`;
 
   if (isBoolean) {
     return (
-      <div className="flex items-center justify-between py-4 group">
-        <div className="flex flex-col gap-1">
-          <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] group-hover:text-indigo-400 transition-colors">{fieldLabel}</span>
-          <span className="text-[10px] font-bold text-slate-400 italic">Toggle State</span>
+      <div className="flex items-center justify-between py-3 group border-b border-black/5 dark:border-white/[0.03] last:border-0">
+        <div className="flex flex-col">
+          <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">{fieldLabel}</span>
         </div>
         <button 
           onClick={() => onChange(nodeId, index, !value)}
-          className={`w-12 h-6 rounded-full relative transition-all duration-500 ${value ? 'bg-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.4)]' : 'bg-[#1a1a1f]'}`}
+          className={`w-10 h-5 rounded-none relative transition-colors ${value ? 'bg-indigo-600' : 'bg-slate-200 dark:bg-zinc-800'}`}
         >
           <motion.div 
-            animate={{ x: value ? 26 : 2 }} 
-            className="absolute top-1 left-0 w-4 h-4 bg-white rounded-full shadow-lg" 
+            animate={{ x: value ? 22 : 2 }} 
+            className="absolute top-1 left-0 w-3 h-3 bg-white rounded-none shadow-sm" 
           />
         </button>
       </div>
@@ -47,13 +45,13 @@ const WidgetField = ({ value, index, nodeId, onChange }: any) => {
   }
 
   return (
-    <div className="space-y-3 py-4">
-      <div className="flex justify-between items-center px-1">
-        <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">{fieldLabel}</span>
+    <div className="space-y-2 py-4 border-b border-black/5 dark:border-white/[0.03] last:border-0">
+      <div className="flex justify-between items-center">
+        <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">{fieldLabel}</span>
         {isNumber && fieldLabel.includes('SEED') && (
            <button 
              onClick={() => onChange(nodeId, index, Math.floor(Math.random() * 1000000000000000))}
-             className="text-indigo-500 hover:text-indigo-400 transition-colors"
+             className="text-indigo-500 hover:text-indigo-600 dark:hover:text-white transition-colors"
            >
               <Dices size={12} />
            </button>
@@ -65,14 +63,14 @@ const WidgetField = ({ value, index, nodeId, onChange }: any) => {
           <textarea
             value={String(value)}
             onChange={(e) => onChange(nodeId, index, e.target.value)}
-            className="w-full bg-[#050505] border-none rounded-xl p-5 text-[13px] font-medium text-slate-200 outline-none focus:ring-1 focus:ring-indigo-500/30 transition-all resize-none min-h-[120px] shadow-inner leading-relaxed font-mono"
+            className="w-full bg-slate-100 dark:bg-black border-none rounded-none p-4 text-[12px] font-medium text-slate-800 dark:text-zinc-300 outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all resize-none min-h-[100px] font-mono leading-relaxed"
           />
         ) : (
           <input 
             type={isNumber ? "number" : "text"}
             value={String(value)}
             onChange={(e) => onChange(nodeId, index, isNumber ? parseFloat(e.target.value) || 0 : e.target.value)}
-            className="w-full bg-[#050505] border-none rounded-xl p-4 text-[13px] font-black text-indigo-100 outline-none focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner px-6"
+            className="w-full bg-slate-100 dark:bg-black border-none rounded-none p-3 text-[12px] font-bold text-slate-900 dark:text-zinc-100 outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all"
           />
         )}
       </div>
@@ -93,30 +91,27 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   const isMissingRequirements = !apiKey.trim() || !workflowId.trim();
 
   return (
-    <div className="flex-1 bg-[#0b0b0f] rounded-[2.5rem] p-0 flex flex-col shadow-3xl relative max-h-[88vh] overflow-hidden transition-all duration-700">
+    <div className="flex-1 bg-white dark:bg-[#111114] rounded-none p-0 flex flex-col relative max-h-[88vh] overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
       
-      {/* HEADER: FLAT & CLEAN */}
-      <div className="p-10 border-b border-white/[0.03] bg-[#0d0d12] shrink-0">
-        <div className="flex justify-between items-center mb-8">
-           <div className="flex items-center gap-4">
-              <div className="w-2 h-8 bg-indigo-600 rounded-full shadow-[0_0_15px_#6366f1]"></div>
-              <div className="space-y-1">
-                 <h3 className="text-sm font-black uppercase tracking-[0.3em] text-white italic leading-none">Parameters</h3>
-                 <p className="text-[8px] font-black text-indigo-500/60 uppercase tracking-widest leading-none">Aether_Flow_Engine</p>
-              </div>
+      {/* HEADER: STRICT SQUARE */}
+      <div className="p-8 bg-slate-50 dark:bg-[#18181c] shrink-0 border-b border-black/5 dark:border-none">
+        <div className="flex justify-between items-center mb-6">
+           <div className="flex items-center gap-3">
+              <div className="w-1.5 h-6 bg-indigo-600"></div>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white leading-none">AI AGENT WORKFLOW</h3>
            </div>
            <button 
              onClick={() => setShowSettings(!showSettings)}
-             className={`p-3 rounded-xl transition-all ${showSettings ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'bg-white/[0.03] text-slate-500 hover:text-white'}`}
+             className={`p-2 transition-all ${showSettings ? 'text-indigo-500' : 'text-slate-400 dark:text-zinc-600 hover:text-slate-900 dark:hover:text-white'}`}
            >
              <Settings size={18} />
            </button>
         </div>
 
-        <div className="space-y-6">
-          <div className="flex items-center gap-3">
-            <div className={`w-1.5 h-1.5 rounded-full ${isGenerating || isUploadingJson ? 'bg-orange-500 animate-pulse' : 'bg-emerald-500 shadow-[0_0_8px_#10b981]'}`}></div>
-            <p className="text-[10px] text-slate-400 uppercase font-black italic tracking-widest leading-none">{statusText}</p>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-none ${isGenerating || isUploadingJson ? 'bg-orange-500 animate-pulse' : 'bg-emerald-500'}`}></div>
+            <p className="text-[9px] text-slate-400 dark:text-zinc-500 uppercase font-black tracking-widest leading-none">{statusText}</p>
           </div>
           
           <div className="relative">
@@ -124,32 +119,31 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                type="text" 
                value={workflowId}
                onChange={(e) => setWorkflowId(e.target.value)}
-               className="w-full bg-[#050505] border-none rounded-2xl px-6 py-5 text-indigo-400 font-mono text-[11px] font-black focus:outline-none focus:ring-1 focus:ring-indigo-500/20 transition-all shadow-inner tracking-tight"
-               placeholder="REGISTRY_ID_..."
+               className="w-full bg-slate-100 dark:bg-black border-none rounded-none px-4 py-4 text-indigo-600 dark:text-indigo-400 font-mono text-[11px] font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500/30 transition-all tracking-tighter"
+               placeholder="MÃ KỊCH BẢN..."
              />
           </div>
         </div>
       </div>
 
       {/* BODY: FLAT NODE LIST */}
-      <div className="flex-grow overflow-y-auto no-scrollbar p-6 space-y-2 bg-[#0b0b0f]">
+      <div className="flex-grow overflow-y-auto no-scrollbar p-0 bg-white dark:bg-[#111114]">
         {workflowConfig.length > 0 ? (
-          <div className="space-y-2">
+          <div className="divide-y divide-black/5 dark:divide-white/[0.03]">
              {workflowConfig.map((node) => {
                 const isOpen = expandedNodes.includes(node.id);
                 return (
-                  <div key={node.id} className="overflow-hidden transition-all">
+                  <div key={node.id} className="transition-all">
                     <button 
                       onClick={() => toggleNode(node.id)}
-                      className={`w-full px-6 py-5 flex items-center justify-between transition-all rounded-2xl ${isOpen ? 'bg-white/[0.03]' : 'hover:bg-white/[0.02]'}`}
+                      className={`w-full px-8 py-5 flex items-center justify-between transition-all ${isOpen ? 'bg-slate-50 dark:bg-white/[0.02]' : 'hover:bg-slate-50 dark:hover:bg-white/[0.01]'}`}
                     >
                       <div className="flex items-center gap-4">
-                         <Box size={14} className={isOpen ? 'text-indigo-500' : 'text-slate-600'} />
-                         <span className={`text-[11px] font-black uppercase italic tracking-widest ${isOpen ? 'text-white' : 'text-slate-500'}`}>
-                           Node {node.id}: {node.title}
+                         <span className={`text-[10px] font-black uppercase italic tracking-widest ${isOpen ? 'text-indigo-600 dark:text-white' : 'text-slate-400 dark:text-zinc-500'}`}>
+                           KHỐI {node.id}: {node.title}
                          </span>
                       </div>
-                      <ChevronDown size={14} className={`text-slate-600 transition-transform duration-500 ${isOpen ? 'rotate-180 text-indigo-500' : ''}`} />
+                      <ChevronDown size={14} className={`text-slate-400 dark:text-zinc-600 transition-transform ${isOpen ? 'rotate-180 text-indigo-600 dark:text-indigo-500' : ''}`} />
                     </button>
                     
                     <AnimatePresence initial={false}>
@@ -158,7 +152,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: 'auto', opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
-                          className="px-8 pb-4 pt-2 space-y-1"
+                          className="px-8 pb-6 pt-2"
                         >
                            {node.widgets_values.map((val, idx) => {
                              if (val === null || Array.isArray(val)) return null;
@@ -180,41 +174,33 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
              })}
           </div>
         ) : (
-          <div className="py-32 flex flex-col items-center justify-center gap-8 opacity-10 italic">
-             <Sliders size={56} strokeWidth={1} />
-             <p className="text-[12px] font-black uppercase tracking-[0.6em] text-center px-10">Awaiting Registry Ingestion</p>
+          <div className="py-32 flex flex-col items-center justify-center gap-6 opacity-20 italic">
+             <Sliders size={48} strokeWidth={1} className="text-slate-900 dark:text-white" />
+             <p className="text-[10px] font-black uppercase tracking-[0.6em] text-center px-10 text-slate-900 dark:text-white">Đang chờ kết nối kịch bản...</p>
           </div>
         )}
       </div>
 
-      {/* FOOTER: PRO ACTION */}
-      <div className="mt-auto p-10 bg-[#0d0d12] z-30 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
+      {/* FOOTER: INDUSTRIAL BUTTON */}
+      <div className="mt-auto bg-slate-50 dark:bg-[#18181c] p-0 z-30 border-t border-black/5 dark:border-none">
         <button 
           onClick={onGenerate}
           disabled={isGenerating || isUploadingJson || isMissingRequirements}
-          className={`w-full py-7 rounded-[2rem] flex items-center justify-center gap-6 text-base font-black uppercase tracking-[0.4em] shadow-2xl transition-all active:scale-[0.98] group overflow-hidden relative ${isGenerating || isUploadingJson || isMissingRequirements ? 'bg-slate-900 text-slate-700 cursor-not-allowed grayscale' : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-indigo-600/40 hover:brightness-110'}`}
+          className={`w-full py-8 rounded-none flex items-center justify-center gap-6 text-sm font-black uppercase tracking-[0.5em] transition-all active:scale-[0.99] group overflow-hidden relative ${isGenerating || isUploadingJson || isMissingRequirements ? 'bg-slate-200 dark:bg-zinc-900 text-slate-400 dark:text-zinc-700 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700 dark:hover:bg-indigo-500 shadow-lg shadow-indigo-600/20'}`}
         >
-          <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
           {isGenerating ? (
             <Loader2 className="animate-spin" size={24} />
           ) : (
             <>
-              <Zap size={20} fill="currentColor" className="group-hover:rotate-12 transition-transform" />
-              <span>Generate</span>
-              <div className="flex items-center gap-2 bg-black/40 px-4 py-1.5 rounded-full border border-white/10">
+              <Zap size={18} fill="currentColor" />
+              <span>BẮT ĐẦU TẠO</span>
+              <div className="flex items-center gap-2 bg-black/20 dark:bg-black/40 px-4 py-1.5 rounded-none border border-white/10">
                  <Coins size={14} className="text-yellow-400" fill="currentColor" />
-                 <span className="text-[11px] font-black italic tracking-normal">500</span>
+                 <span className="text-[10px] font-black tracking-normal">500</span>
               </div>
             </>
           )}
         </button>
-
-        {isMissingRequirements && !isGenerating && (
-          <div className="mt-6 flex items-center justify-center gap-3 text-orange-500/80 animate-pulse">
-             <AlertCircle size={14} />
-             <span className="text-[10px] font-black uppercase tracking-widest italic leading-none">Authentication Required</span>
-          </div>
-        )}
       </div>
     </div>
   );

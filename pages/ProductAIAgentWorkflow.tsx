@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -28,7 +29,7 @@ const ProductAIAgentWorkflow = () => {
            <div className="h-16 border-b border-black/10 dark:border-white/5 bg-white/80 dark:bg-black/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0">
              <div className="flex items-center gap-4">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 italic">SKY_FLOW // Creator_Lattice_v2.0</span>
+                <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 italic">AI AGENT WORKFLOW</span>
              </div>
              <button onClick={() => setIsStudioOpen(false)} className="w-10 h-10 border border-black/10 dark:border-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-black dark:hover:text-white transition-all">
                 <X size={18} />

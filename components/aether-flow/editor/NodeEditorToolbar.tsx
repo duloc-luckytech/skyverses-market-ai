@@ -13,11 +13,7 @@ import {
   Eye
 } from 'lucide-react';
 
-interface NodeEditorToolbarProps {
-  onClose?: () => void;
-}
-
-export const NodeEditorToolbar: React.FC<NodeEditorToolbarProps> = ({ onClose }) => {
+export const NodeEditorToolbar: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   return (
     <div className="flex items-center gap-1.5 bg-[#1a1b1e]/95 backdrop-blur-md border border-white/10 rounded-xl px-2.5 py-1.5 shadow-2xl pointer-events-auto">
       {/* Mini Viewport / Status */}
@@ -28,7 +24,7 @@ export const NodeEditorToolbar: React.FC<NodeEditorToolbarProps> = ({ onClose })
         </div>
         <div className="flex flex-col">
            <span className="text-[7px] font-black text-gray-500 uppercase tracking-widest">Viewport</span>
-           <span className="text-[8px] font-black text-emerald-500 uppercase leading-none">Live_Sync</span>
+           <span className="text-[8px] font-black text-emerald-500 uppercase leading-none">Live Sync</span>
         </div>
       </div>
 

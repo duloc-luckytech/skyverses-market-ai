@@ -40,7 +40,6 @@ const AetherFlowInterface: React.FC = () => {
     try {
       const detail = await flow.fetchWorkflowDetail(tmpl.templateId);
       if (detail) {
-        // Tự động phân tích các node để tạo form ở cột trái
         await flow.handleImport(JSON.stringify(detail));
       }
     } catch (err) {
@@ -76,12 +75,12 @@ const AetherFlowInterface: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full bg-[#fcfcfd] dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans p-4 md:p-6 lg:p-8 flex items-start justify-center overflow-y-auto no-scrollbar transition-colors duration-500 relative">
-      {/* Cấu trúc Grid 12 cột: Cột trái chiếm 4, cột phải chiếm 8 */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+    <div className="h-full w-full bg-[#f4f7f9] dark:bg-[#050507] text-slate-700 dark:text-zinc-300 font-sans p-0 flex items-start justify-center overflow-y-auto no-scrollbar transition-all duration-500 relative">
+      {/* 12-Column Industrial Grid */}
+      <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-0 items-start min-h-screen">
         
-        {/* LEFT PANEL: CONFIGURATION (4/12 width) */}
-        <div className="md:col-span-4 flex flex-col gap-4">
+        {/* LEFT PANEL: CONFIGURATION (4/12 width) - FIXED SQUARE */}
+        <div className="md:col-span-4 flex flex-col h-full bg-white dark:bg-[#111114] border-r border-black/5 dark:border-white/5">
           <SettingsDrawer 
             isOpen={showSettings}
             apiKey={flow.apiKey}
@@ -106,7 +105,7 @@ const AetherFlowInterface: React.FC = () => {
         </div>
 
         {/* RIGHT PANEL: RESULTS & TEMPLATES (8/12 width) */}
-        <div className="md:col-span-8">
+        <div className="md:col-span-8 bg-slate-50 dark:bg-[#0c0c0e]">
           <ResultsPanel 
             results={flow.results}
             generationTime={flow.generationTime}
@@ -141,15 +140,13 @@ const AetherFlowInterface: React.FC = () => {
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center gap-6"
+            className="fixed inset-0 z-[2000] bg-black/60 dark:bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-6"
           >
             <div className="relative">
-              <Loader2 className="w-16 h-16 text-brand-blue animate-spin" strokeWidth={1.5} />
-              <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/30 animate-pulse" size={24} />
+              <div className="w-16 h-16 border-2 border-indigo-600/20 dark:border-indigo-500/20 border-t-indigo-600 dark:border-t-indigo-500 rounded-none animate-spin"></div>
             </div>
             <div className="space-y-2 text-center">
-              <h3 className="text-sm font-black uppercase tracking-[0.4em] text-white animate-pulse italic">Synchronizing Mesh Lattice</h3>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest italic text-center">Fetching workflow configuration detail...</p>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white animate-pulse italic">ĐANG ĐỒNG BỘ HỆ THỐNG...</h3>
             </div>
           </motion.div>
         )}

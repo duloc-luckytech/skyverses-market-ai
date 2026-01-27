@@ -1,6 +1,6 @@
-
 import React from 'react';
-import { ChevronDown, Cpu } from 'lucide-react';
+// Fixed: Moved Loader2 to top-level imports from lucide-react
+import { ChevronDown, Cpu, Loader2 } from 'lucide-react';
 
 interface ModelAISelectorProps {
   selectedModel: { id: string; name: string } | null;
@@ -56,10 +56,8 @@ export const ModelAISelector: React.FC<ModelAISelectorProps> = ({
             <option key={m.id} value={m.id} className="dark:bg-[#0d151c]">{m.name}</option>
           ))}
         </select>
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
+        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
       </div>
     </div>
   );
 };
-
-import { Loader2 } from 'lucide-react';

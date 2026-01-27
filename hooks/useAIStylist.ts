@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { generateDemoImage } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
@@ -51,9 +50,8 @@ export const useAIStylist = () => {
     selectedBg: null,
     selectedPose: null,
     userPhoto: null,
-    // Fix: removed invalid 'boolean =' syntax in object literal
+    // Fixed: removed duplicate isGenerating key
     isGenerating: false,
-    // Fix: removed invalid 'boolean =' syntax in object literal
     hasResult: false,
     history: [],
     activeHistoryIndex: null,
