@@ -117,14 +117,17 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                   {results.map((res) => (
                     <div key={res.id} className="group relative bg-white dark:bg-[#14141a] rounded-none overflow-hidden transition-all border border-black/5 dark:border-none hover:ring-1 hover:ring-indigo-600 dark:hover:ring-indigo-500/50">
                       <img src={res.url} className="w-full aspect-square object-cover transition-all duration-1000 group-hover:scale-105" alt="Output" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
-                      <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center">
+                      
+                      {/* Subdued Bottom Gradient instead of heavy overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      
+                      <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
                         <div className="flex flex-col">
-                           <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">DỮ LIỆU HOÀN TẤT</span>
-                           <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase italic">{res.timestamp}</span>
+                           <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1 drop-shadow-md">DỮ LIỆU HOÀN TẤT</span>
+                           <span className="text-[10px] font-bold text-zinc-100 uppercase italic drop-shadow-md">{res.timestamp}</span>
                         </div>
                         <div className="flex gap-2">
-                          <a href={res.url} target="_blank" rel="noopener noreferrer" className="p-3 bg-white/10 hover:bg-indigo-600 rounded-none transition-all text-white"><Download size={18} /></a>
+                          <a href={res.url} target="_blank" rel="noopener noreferrer" className="p-3 bg-white/20 backdrop-blur-md hover:bg-indigo-600 rounded-none transition-all text-white border border-white/10"><Download size={18} /></a>
                         </div>
                       </div>
                     </div>
@@ -143,13 +146,13 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                    <div className="flex items-center gap-3 text-indigo-600 dark:text-indigo-500">
                       <h3 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white leading-none">THƯ VIỆN KỊCH BẢN</h3>
                    </div>
-                   <p className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.5em] leading-none italic">BỘ SƯU TẬP CÔNG NGHIỆP V2</p>
+                   <p className="text-[9px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-[0.5em] leading-none italic">BỘ SƯU TẬP CÔNG NGHIỆP V2</p>
                 </div>
                 
                 <div className="flex gap-3 w-full sm:w-auto">
                   <button 
                     onClick={() => setIsImportModalOpen(true)}
-                    className="flex-1 sm:flex-none px-8 py-4 bg-slate-200 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 rounded-none text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center gap-3 group"
+                    className="flex-1 sm:flex-none px-8 py-4 bg-slate-200 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 rounded-none text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center gap-3 group border border-black/5 dark:border-white/5 shadow-sm"
                   >
                     <FileJson size={16} /> NHẬP FILE JSON
                   </button>
