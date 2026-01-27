@@ -160,6 +160,7 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
             exit={{ opacity: 0, x: -10 }}
             className="flex-grow flex flex-col h-full overflow-hidden"
           >
+            {/* Header - Fixed */}
             <div className="p-5 border-b border-white/5 bg-black/20 shrink-0 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -189,7 +190,7 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
               )}
             </div>
 
-            {/* Scrolling container with min-h-0 to enable flex-grow scroll */}
+            {/* SCROLLABLE CONTENT AREA - IMPORTANT: flex-grow + overflow-y-auto + min-h-0 */}
             <div className="flex-grow overflow-y-auto no-scrollbar min-h-0">
                {activeMenu === 'LIBRARY' && (
                  <div className="p-2 space-y-1">
@@ -312,6 +313,7 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
                )}
             </div>
 
+            {/* Footer Stats - Fixed */}
             <div className="p-4 border-t border-white/5 bg-black/20 shrink-0">
               <div className="flex items-center justify-between text-[8px] font-black uppercase text-gray-600 tracking-widest italic">
                 <span>{activeMenu === 'CHAT' ? 'Aether Assistant' : `Nodes: ${nodes.length}`}</span>
