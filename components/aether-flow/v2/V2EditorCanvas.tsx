@@ -47,13 +47,6 @@ export const V2EditorCanvas: React.FC<V2EditorCanvasProps> = ({
       </ReactFlow>
 
       <ViewportToolbar />
-      
-      <div className="absolute top-6 left-6 p-5 bg-white/80 dark:bg-indigo-900/10 border border-black/5 dark:border-indigo-500/20 backdrop-blur-xl rounded-none z-50 shadow-sm">
-         <div className="flex items-center gap-4">
-            <div className="w-2.5 h-2.5 bg-indigo-500 rounded-none animate-pulse"></div>
-            <span className="text-[11px] font-black uppercase tracking-widest text-indigo-700 dark:text-indigo-400 italic">TRUNG TÂM ĐIỀU PHỐI NÂNG CAO</span>
-         </div>
-      </div>
     </div>
   );
 };
