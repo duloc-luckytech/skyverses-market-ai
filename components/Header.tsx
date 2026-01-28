@@ -6,7 +6,8 @@ import {
   User, Settings, CheckCircle2, 
   Zap, ArrowRight, BarChart3, Image as ImageIcon,
   ChevronDown, Bookmark, Loader2, Sparkles,
-  Database, HelpCircle, Users, Gift, Plus
+  Database, HelpCircle, Users, Gift, Plus,
+  Compass, Box
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
@@ -61,7 +62,6 @@ const DropdownLink = ({
 
 interface HeaderProps {
   onOpenLibrary: () => void;
-  // Các props truyền từ Layout để xử lý việc reset search khi bấm logo
   resetSearch?: () => void;
 }
 
@@ -70,6 +70,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const [scrolled, setScrolled] = useState(false);
   const [showDesktopLang, setShowDesktopLang] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showExploreMenu, setShowExploreMenu] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [isClaimingDaily, setIsClaimingDaily] = useState(false);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
@@ -82,6 +83,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   
   const langRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
+  const exploreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -93,6 +95,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
     const handleClickOutside = (e: MouseEvent) => {
       if (langRef.current && !langRef.current.contains(e.target as Node)) setShowDesktopLang(false);
       if (userRef.current && !userRef.current.contains(e.target as Node)) setShowUserMenu(false);
+      if (exploreRef.current && !exploreRef.current.contains(e.target as Node)) setShowExploreMenu(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -130,7 +133,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
   const navLinks = [
     { id: '02', name: t('nav.browse'), path: '/market' },
-    { id: '03', name: t('nav.explorer'), path: '/explorer' },
+    // nav.explore will be handled by the dropdown
+    { id: '04', name: t('nav.apps'), path: '/apps' },
     { id: '05', name: t('nav.about'), path: 'https://skyverses.com/', external: true },
   ];
 
@@ -163,7 +167,39 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
             </Link>
 
             <div className="hidden md:flex items-center space-x-10 ml-10 flex-grow">
-              {navLinks.map((link) => (
+              {/* Market Link */}
+              <Link to="/market" className={`text-[13px] font-bold uppercase tracking-widest transition-colors duration-200 ${location.pathname === '/market' ? 'text-brand-blue' : 'text-black/40 dark:text-white/40 hover:text-brand-blue'}`}>
+                {t('nav.browse')}
+              </Link>
+
+              {/* Explore Dropdown */}
+              <div className="relative" ref={exploreRef}>
+                <button 
+                  onClick={() => setShowExploreMenu(!showExploreMenu)}
+                  onMouseEnter={() => setShowExploreMenu(true)}
+                  className={`text-[13px] font-bold uppercase tracking-widest transition-all duration-200 flex items-center gap-1.5 ${location.pathname.startsWith('/explorer') || location.pathname === '/models' ? 'text-brand-blue' : 'text-black/40 dark:text-white/40 hover:text-brand-blue'}`}
+                >
+                  {t('nav.explore')}
+                  <ChevronDown size={14} className={`transition-transform duration-300 ${showExploreMenu ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {showExploreMenu && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      onMouseLeave={() => setShowExploreMenu(false)}
+                      className="absolute top-full left-0 mt-3 w-48 bg-white dark:bg-[#0c0c0e] border border-black/10 dark:border-white/5 shadow-2xl rounded-2xl p-2 z-[200] overflow-hidden"
+                    >
+                      <DropdownLink to="/explorer" icon={<Compass size={16} />} label={t('nav.explorer')} onClick={() => setShowExploreMenu(false)} />
+                      <DropdownLink to="/models" icon={<Box size={16} />} label={t('nav.models')} onClick={() => setShowExploreMenu(false)} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Other Links */}
+              {navLinks.slice(1).map((link) => (
                 link.external ? (
                   <a 
                     key={link.name} href={link.path} target="_blank" rel="noopener noreferrer" 
@@ -271,7 +307,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                       className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-black/5 dark:border-white/10 object-cover" 
                       alt="Avatar" 
                     />
-                    <ChevronDown size={14} className="hidden md:block text-slate-400 dark:text-gray-500 transition-transform ${showUserMenu ? 'rotate-180' : ''}" />
+                    <ChevronDown size={14} className={`hidden md:block text-slate-400 dark:text-gray-500 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
                     {showUserMenu && (
@@ -291,7 +327,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                         <div className="py-2">
                             <DropdownLink to="/settings" icon={<User size={16}/>} label={t('user.menu.profile')} onClick={() => setShowUserMenu(false)} />
                             <DropdownLink to="/referral" icon={<Users size={16}/>} label={t('user.menu.referral')} onClick={() => setShowUserMenu(false)} />
-                            {(user?.email === 'duloc2708@gmail.com') && (
+                            {(user?.role === 'admin' || user?.email === 'duloc2708@gmail.com') && (
                               <DropdownLink to="/cms-admin-pro" icon={<Database size={16}/>} label={t('user.menu.admin')} onClick={() => setShowUserMenu(false)} />
                             )}
                             <DropdownLink to="/favorites" icon={<Bookmark size={16}/>} label={t('user.menu.favorites')} onClick={() => setShowUserMenu(false)} />
@@ -346,11 +382,38 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
             
             <div className="flex-grow overflow-y-auto p-8 space-y-10 no-scrollbar">
               <div className="space-y-1">
-                 {navLinks.map((link) => (
+                 {/* Market Link */}
+                 <Link to="/market" onClick={() => setIsOpen(false)} className="flex items-center justify-between py-4 group border-b border-black/[0.03] dark:border-white/[0.03]">
+                    <div className="flex items-center gap-5">
+                       <span className="text-[10px] font-black text-brand-blue opacity-40">01</span>
+                       <span className={`text-xl font-black uppercase tracking-tighter italic transition-all group-hover:translate-x-2 ${location.pathname === '/market' ? 'text-brand-blue' : 'text-slate-800 dark:text-white'}`}>{t('nav.browse')}</span>
+                    </div>
+                    <ChevronRight size={16} className="text-slate-200 dark:text-gray-800" />
+                 </Link>
+
+                 {/* Explore Sub-links Mobile */}
+                 <div className="py-4 border-b border-black/[0.03] dark:border-white/[0.03] space-y-4">
+                    <div className="flex items-center gap-5 text-gray-400 opacity-40">
+                       <span className="text-[10px] font-black uppercase tracking-widest">02</span>
+                       <span className="text-[10px] font-black uppercase tracking-widest">{t('nav.explore')}</span>
+                    </div>
+                    <div className="pl-12 space-y-4">
+                      <Link to="/explorer" onClick={() => setIsOpen(false)} className="flex items-center justify-between group">
+                         <span className={`text-lg font-black uppercase tracking-tighter italic ${location.pathname === '/explorer' ? 'text-brand-blue' : 'text-slate-700 dark:text-gray-300'}`}>{t('nav.explorer')}</span>
+                         <ArrowRight size={14} className="text-slate-200 dark:text-gray-800" />
+                      </Link>
+                      <Link to="/models" onClick={() => setIsOpen(false)} className="flex items-center justify-between group">
+                         <span className={`text-lg font-black uppercase tracking-tighter italic ${location.pathname === '/models' ? 'text-brand-blue' : 'text-slate-700 dark:text-gray-300'}`}>{t('nav.models')}</span>
+                         <ArrowRight size={14} className="text-slate-200 dark:text-gray-800" />
+                      </Link>
+                    </div>
+                 </div>
+
+                 {navLinks.slice(1).map((link, idx) => (
                     link.external ? (
                       <a key={link.name} href={link.path} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between py-4 group border-b border-black/[0.03] dark:border-white/[0.03]">
                          <div className="flex items-center gap-5">
-                            <span className="text-[10px] font-black text-brand-blue opacity-40">{link.id}</span>
+                            <span className="text-[10px] font-black text-brand-blue opacity-40">0{idx+3}</span>
                             <span className="text-xl font-black uppercase tracking-tighter italic transition-all group-hover:translate-x-2 group-hover:text-brand-blue text-slate-800 dark:text-white">{link.name}</span>
                          </div>
                          <ArrowRight size={16} className="text-slate-200 dark:text-gray-800" />
@@ -358,7 +421,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                     ) : (
                       <Link key={link.name} to={link.path} onClick={() => setIsOpen(false)} className="flex items-center justify-between py-4 group border-b border-black/[0.03] dark:border-white/[0.03]">
                          <div className="flex items-center gap-5">
-                            <span className="text-[10px] font-black text-brand-blue opacity-40">{link.id}</span>
+                            <span className="text-[10px] font-black text-brand-blue opacity-40">0{idx+3}</span>
                             <span className={`text-xl font-black uppercase tracking-tighter italic transition-all group-hover:translate-x-2 ${location.pathname === link.path ? 'text-brand-blue' : 'text-slate-800 dark:text-white'}`}>{link.name}</span>
                          </div>
                          <ChevronRight size={16} className="text-slate-200 dark:text-gray-800" />
@@ -373,7 +436,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                     <Languages size={14} /> {t('nav.lang_settings')}
                   </span>
                   
-                  {/* Language Selector Mobile - Icons Only */}
                   <div className="grid grid-cols-4 gap-2">
                     {languages.map((l) => (
                       <button

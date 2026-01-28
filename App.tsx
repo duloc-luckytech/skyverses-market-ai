@@ -13,6 +13,7 @@ import LandingPage from './pages/LandingPage';
 import MarketPage from './pages/MarketPage';
 import CategoryPage from './pages/CategoryPage';
 import ExplorerPage from './pages/ExplorerPage';
+import ModelsPage from './pages/ModelsPage';
 import AppsPage from './pages/AppsPage';
 import AppInterfacePage from './pages/AppInterfacePage';
 import CreditsPage from './pages/CreditsPage';
@@ -88,6 +89,7 @@ const App: React.FC = () => {
                       <Route path="/category/:id" element={<CategoryPage />} />
                       <Route path="/studio" element={<LandingPage />} />
                       <Route path="/explorer" element={<ExplorerPage />} />
+                      <Route path="/models" element={<ModelsPage />} />
                       <Route path="/apps" element={<AppsPage />} />
                       <Route path="/app/:id" element={<AppInterfacePage />} />
                       <Route path="/credits" element={<CreditsPage />} />
