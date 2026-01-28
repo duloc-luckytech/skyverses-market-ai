@@ -4,7 +4,7 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWorkflowEditorV2 } from '../../hooks/useWorkflowEditorV2';
 import { WorkflowTemplate } from '../../hooks/useAetherFlow';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, X } from 'lucide-react';
 
 // Sub-components
 import { V2EditorHeader } from './v2/V2EditorHeader';

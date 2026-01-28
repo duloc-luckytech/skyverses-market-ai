@@ -199,21 +199,17 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         </AnimatePresence>
       </div>
 
-      <div className="px-10 py-6 bg-slate-100 dark:bg-[#08080a] flex items-center justify-between shrink-0 z-30 border-t border-black/5 dark:border-none">
-        {activeTab === 'RESULTS' && results.length > 0 && !isGenerating && (
+      {activeTab === 'RESULTS' && results.length > 0 && !isGenerating && (
+        <div className="px-10 py-6 bg-slate-100 dark:bg-[#08080a] flex items-center shrink-0 z-30 border-t border-black/5 dark:border-none">
           <button 
             onClick={onClear} 
             className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-red-600 dark:text-red-500/60 hover:text-red-700 dark:hover:text-red-500 transition-colors italic"
           >
             XÓA TẤT CẢ KẾT QUẢ
           </button>
-        )}
-        <div className="ml-auto flex items-center gap-10 text-[9px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-widest">
-           <span className="flex items-center gap-2.5">TỔNG THÀNH PHẨM: {results.length}</span>
-           <span className="flex items-center gap-2.5 italic">THỜI GIAN CHỜ TRUNG BÌNH: {generationTime}s</span>
         </div>
-      </div>
-
+      )}
+      
       <ImportWorkflowModal 
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
