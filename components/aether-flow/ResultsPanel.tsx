@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   ImageIcon, Sparkles, Download, Share2, Loader2, 
@@ -31,7 +30,6 @@ interface ResultsPanelProps {
 
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({ 
   results, 
-  generationTime, 
   isGenerating, 
   isUploadingJson,
   statusText,
@@ -70,7 +68,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   }, [isGenerating]);
 
   return (
-    <div className="w-full bg-slate-50 dark:bg-[#0c0c0e] rounded-none p-0 flex flex-col h-[88vh] overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
+    <div className="w-full bg-slate-50 dark:bg-[#0c0c0e] rounded-none p-0 flex flex-col h-full overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
       
       <div className="bg-slate-200 dark:bg-[#141418] shrink-0 border-b border-black/5 dark:border-none">
         <div className="flex h-16">
@@ -114,22 +112,34 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                   <p className="text-xl font-black uppercase tracking-[0.5em] text-slate-900 dark:text-white">CHƯA CÓ KẾT QUẢ SẢN XUẤT</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pb-32">
-                  {results.map((res) => (
-                    <div key={res.id} className="group relative bg-white dark:bg-[#14141a] rounded-none overflow-hidden transition-all border border-black/5 dark:border-none hover:ring-1 hover:ring-indigo-600 dark:hover:ring-indigo-500/50 shadow-sm">
-                      <img src={res.url} className="w-full aspect-square object-cover transition-all duration-1000 group-hover:scale-105" alt="Output" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                      <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                        <div className="flex flex-col">
-                           <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">DỮ LIỆU HOÀN TẤT</span>
-                           <span className="text-[10px] font-bold text-zinc-100 uppercase italic">{res.timestamp}</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <button onClick={() => triggerDownload(res.url, `res_${res.id}.png`)} className="p-3 bg-white/10 backdrop-blur-md hover:bg-indigo-600 rounded-none transition-all text-white border border-white/10"><Download size={18} /></button>
+                <div className="space-y-12 pb-20">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    {results.map((res) => (
+                      <div key={res.id} className="group relative bg-white dark:bg-[#14141a] rounded-none overflow-hidden transition-all border border-black/5 dark:border-none hover:ring-1 hover:ring-indigo-600 dark:hover:ring-indigo-500/50 shadow-sm">
+                        <img src={res.url} className="w-full aspect-square object-cover transition-all duration-1000 group-hover:scale-105" alt="Output" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                          <div className="flex flex-col">
+                             <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">DỮ LIỆU HOÀN TẤT</span>
+                             <span className="text-[10px] font-bold text-zinc-100 uppercase italic">{res.timestamp}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => triggerDownload(res.url, `res_${res.id}.png`)} className="p-3 bg-white/10 backdrop-blur-md hover:bg-indigo-600 rounded-none transition-all text-white border border-white/10"><Download size={18} /></button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+
+                  {/* Integrated Clear Button at end of scroll */}
+                  <div className="flex justify-center pt-8 border-t border-black/5 dark:border-white/5">
+                    <button 
+                      onClick={onClear} 
+                      className="flex items-center gap-3 px-8 py-3 bg-red-500/10 text-red-600 dark:text-red-500/80 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-sm italic"
+                    >
+                      <Trash2 size={14} /> XÓA TẤT CẢ KẾT QUẢ
+                    </button>
+                  </div>
                 </div>
               )}
             </motion.div>
@@ -198,17 +208,6 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
           )}
         </AnimatePresence>
       </div>
-
-      {activeTab === 'RESULTS' && results.length > 0 && !isGenerating && (
-        <div className="px-10 py-6 bg-slate-100 dark:bg-[#08080a] flex items-center shrink-0 z-30 border-t border-black/5 dark:border-none">
-          <button 
-            onClick={onClear} 
-            className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-red-600 dark:text-red-500/60 hover:text-red-700 dark:hover:text-red-500 transition-colors italic"
-          >
-            XÓA TẤT CẢ KẾT QUẢ
-          </button>
-        </div>
-      )}
       
       <ImportWorkflowModal 
         isOpen={isImportModalOpen}

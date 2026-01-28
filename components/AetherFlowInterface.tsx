@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAetherFlow, WorkflowTemplate } from '../hooks/useAetherFlow';
 import { ConfigPanel } from './aether-flow/ConfigPanel';
@@ -75,12 +74,12 @@ const AetherFlowInterface: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full bg-[#f4f7f9] dark:bg-[#050507] text-slate-700 dark:text-zinc-300 font-sans p-0 flex items-start justify-center overflow-y-auto no-scrollbar transition-all duration-500 relative">
-      {/* 12-Column Industrial Grid */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-0 items-start min-h-screen">
+    <div className="h-full w-full bg-[#f4f7f9] dark:bg-[#050507] text-slate-700 dark:text-zinc-300 font-sans p-0 flex flex-col transition-all duration-500 relative overflow-hidden">
+      {/* 12-Column Industrial Grid - Ép chiều cao h-full để độc lập vùng cuộn */}
+      <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-0 flex-grow overflow-hidden">
         
-        {/* LEFT PANEL: CONFIGURATION (4/12 width) - FIXED SQUARE */}
-        <div className="md:col-span-4 flex flex-col h-full bg-white dark:bg-[#111114] border-r border-black/5 dark:border-white/5">
+        {/* LEFT PANEL: CONFIGURATION (4/12 width) - Cố định và có vùng cuộn riêng */}
+        <div className="md:col-span-4 flex flex-col h-full bg-white dark:bg-[#111114] border-r border-black/5 dark:border-white/5 overflow-hidden">
           <SettingsDrawer 
             isOpen={showSettings}
             apiKey={flow.apiKey}
@@ -104,8 +103,8 @@ const AetherFlowInterface: React.FC = () => {
           />
         </div>
 
-        {/* RIGHT PANEL: RESULTS & TEMPLATES (8/12 width) */}
-        <div className="md:col-span-8 bg-slate-50 dark:bg-[#0c0c0e]">
+        {/* RIGHT PANEL: RESULTS & TEMPLATES (8/12 width) - Cuộn độc lập */}
+        <div className="md:col-span-8 h-full bg-slate-50 dark:bg-[#0c0c0e] overflow-hidden">
           <ResultsPanel 
             results={flow.results}
             generationTime={flow.generationTime}

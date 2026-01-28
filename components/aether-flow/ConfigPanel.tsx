@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Settings, ChevronDown, Loader2, Zap, Sliders, Dices, AlertCircle, ClipboardList, Coins, Box, ExternalLink, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -189,7 +188,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   const isMissingRequirements = !apiKey.trim() || !workflowId.trim();
 
   return (
-    <div className="flex-1 bg-white dark:bg-[#111114] rounded-none p-0 flex flex-col relative max-h-[88vh] overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
+    <div className="flex-1 bg-white dark:bg-[#111114] rounded-none p-0 flex flex-col relative h-full overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
       
       <div className="p-8 bg-slate-50 dark:bg-[#18181c] shrink-0 border-b border-black/5 dark:border-none">
         <div className="flex justify-between items-center mb-6">
@@ -279,7 +278,8 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         )}
       </div>
 
-      <div className="mt-auto bg-slate-50 dark:bg-[#18181c] p-0 z-30 border-t border-black/5 dark:border-none">
+      {/* STICKY BOTTOM BUTTON */}
+      <div className="mt-auto bg-slate-50 dark:bg-[#18181c] p-0 z-30 border-t border-black/5 dark:border-white/5 sticky bottom-0">
         <button 
           onClick={onGenerate}
           disabled={isGenerating || isUploadingJson || isMissingRequirements}
