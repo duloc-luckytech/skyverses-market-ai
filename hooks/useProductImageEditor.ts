@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -29,7 +28,7 @@ export interface ActiveTask {
 }
 
 export const useProductImageEditor = (initialImage: string | null | undefined, theme: string) => {
-  const { credits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
+  const { credits, useCredits, addCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
   const navigate = useNavigate();
 
   const [activeTool, setActiveTool] = useState<string>('pointer');
@@ -50,6 +49,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
   
   const [availableModels, setAvailableModels] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
+  const [selectedEngine, setSelectedEngine] = useState('gommo');
 
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -59,7 +59,6 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
   const [activeTasks, setActiveTasks] = useState<ActiveTask[]>([]);
   const [references, setReferences] = useState<string[]>([]);
   
-  // Refined History State for Undo/Redo
   const [undoRedoState, setUndoRedoState] = useState<{ stack: string[], index: number }>({
     stack: initialImage ? [initialImage] : [],
     index: initialImage ? 0 : -1
@@ -89,12 +88,11 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
   const [activeTab, setActiveTab] = useState<'layers' | 'history'>('layers');
   const [visibleLayers, setVisibleLayers] = useState<string[]>(['bg', 'draw', 'mask', 'text']);
 
-  // Atomic update to history stack
   const pushToHistory = useCallback((url: string) => {
     setUndoRedoState(prev => {
       const newStack = prev.stack.slice(0, prev.index + 1);
       newStack.push(url);
-      const limitedStack = newStack.slice(-20); // Limit to 20 steps
+      const limitedStack = newStack.slice(-20);
       return {
         stack: limitedStack,
         index: limitedStack.length - 1
@@ -124,7 +122,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
   useEffect(() => {
     const fetchModels = async () => {
       try {
-        const res = await pricingApi.getPricing({ tool: 'image' });
+        const res = await pricingApi.getPricing({ tool: 'image', engine: selectedEngine });
         if (res.success && res.data.length > 0) {
           const mapped = res.data.map((m: PricingModel) => {
             let cost = 150;
@@ -142,7 +140,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
       }
     };
     fetchModels();
-  }, []);
+  }, [selectedEngine]);
 
   useEffect(() => {
     const vault = localStorage.getItem('skyverses_model_vault');
@@ -181,26 +179,27 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     }
   }, [result, zoom]);
 
-  const pollJobStatus = async (jobId: string, tempId: string, originalPrompt: string) => {
+  const pollJobStatus = async (jobId: string, resultId: string, cost: number) => {
     try {
       const response: ImageJobResponse = await imagesApi.getJobStatus(jobId);
       if (response.data && response.data.status === 'done' && response.data.result?.images?.length) {
         const imageUrl = response.data.result.images[0];
         pushToHistory(imageUrl);
-        setHistory(prev => [{ id: Date.now().toString(), url: imageUrl, prompt: originalPrompt, timestamp: new Date().toLocaleTimeString() }, ...prev]);
+        setHistory(prev => [{ id: Date.now().toString(), url: imageUrl, prompt: '', timestamp: new Date().toLocaleTimeString() }, ...prev]);
         refreshUserInfo();
         setStatus('Hoàn tất');
         setIsGenerating(false);
-        setActiveTasks(prev => prev.filter(t => t.id !== tempId));
+        setActiveTasks(prev => prev.filter(t => t.id !== resultId));
       } else if (response.data && response.data.status === 'failed') {
-        setActiveTasks(prev => prev.filter(t => t.id !== tempId));
+        if (usagePreference === 'credits') addCredits(cost);
+        setActiveTasks(prev => prev.filter(t => t.id !== resultId));
         setStatus('Lỗi xử lý từ máy chủ');
         setIsGenerating(false);
       } else {
-        setTimeout(() => pollJobStatus(jobId, tempId, originalPrompt), 5000);
+        setTimeout(() => pollJobStatus(jobId, resultId, cost), 5000);
       }
     } catch (e) {
-      setActiveTasks(prev => prev.filter(t => t.id !== tempId));
+      setActiveTasks(prev => prev.filter(t => t.id !== resultId));
       setStatus('Lỗi đồng bộ trạng thái');
       setIsGenerating(false);
     }
@@ -246,11 +245,11 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
           type: "image_to_image",
           input: { prompt: finalPrompt, images: references.length > 0 ? [...references] : undefined },
           config: { width: 1024, height: 1024, aspectRatio: '1:1', seed: 0, style: "cinematic" },
-          engine: { provider: "gommo", model: selectedModel.id as any },
+          engine: { provider: selectedEngine as any, model: selectedModel.id as any },
           enginePayload: { prompt: finalPrompt, privacy: "PRIVATE", projectId: "default" }
         };
         const apiRes = await imagesApi.createJob(payload);
-        if (apiRes.success && apiRes.data.jobId) pollJobStatus(apiRes.data.jobId, taskId, finalPrompt);
+        if (apiRes.success && apiRes.data.jobId) pollJobStatus(apiRes.data.jobId, taskId, currentCost);
         else { setActiveTasks(prev => prev.filter(t => t.id !== taskId)); setIsGenerating(false); setStatus('Lỗi khởi tạo job'); }
       } catch (e) { setActiveTasks(prev => prev.filter(t => t.id !== taskId)); setIsGenerating(false); setStatus('Lỗi kết nối API'); }
     }
@@ -493,7 +492,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     isCropping, setIsCropping, cropRatio, setCropRatio, cropBox, setCropBox,
     showLowCreditAlert, setShowLowCreditAlert, isLibraryOpen, setIsLibraryOpen,
     handleGenerate, applyCrop, handleExport, addTextLayer, updateTextLayer,
-    availableModels, selectedModel, setSelectedModel,
+    availableModels, selectedModel, setSelectedModel, selectedEngine, setSelectedEngine,
     isResumingGenerate, setIsResumingGenerate,
     activeTab, setActiveTab,
     visibleLayers, setVisibleLayers,

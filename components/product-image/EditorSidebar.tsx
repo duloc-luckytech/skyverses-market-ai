@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Check, ChevronDown, ChevronUp, Settings, Sparkles, Palette, Sun, Activity, Maximize2, Scissors, Waves, Ghost, Brush, Zap,
-  Image as ImageIcon, PenTool, Eraser, Type, Sliders, Trash2, History as HistoryIcon
+  Image as ImageIcon, PenTool, Eraser, Type, Sliders, Trash2, History as HistoryIcon, Globe, Cpu
 } from 'lucide-react';
+import { ModelAISelector } from './ModelAISelector';
 
 interface EditorSidebarProps {
   activeTab: 'layers' | 'history';
@@ -25,6 +26,8 @@ interface EditorSidebarProps {
   deleteSelectedText: () => void;
   isMobileExpanded?: boolean;
   setIsMobileExpanded?: (val: boolean) => void;
+  selectedEngine?: string;
+  onSelectEngine?: (val: string) => void;
 }
 
 const LayerButton = ({ icon, label, active, onToggle }: any) => (
@@ -68,7 +71,7 @@ const ActionButton = ({ label, icon, onClick, cost, disabled }: any) => (
 );
 
 export const EditorSidebar: React.FC<EditorSidebarProps> = (props) => {
-  const [openAccordions, setOpenAccordions] = useState<string[]>(['beauty', 'fix', 'bg', 'style', 'text-edit']);
+  const [openAccordions, setOpenAccordions] = useState<string[]>(['beauty', 'fix', 'bg', 'style', 'text-edit', 'infrastructure']);
 
   const toggleLayer = (id: string) => {
     props.setVisibleLayers(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
@@ -114,6 +117,19 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = (props) => {
                 <LayerButton label="Text" icon={<Type size={14}/>} active={props.visibleLayers.includes('text')} onToggle={() => toggleLayer('text')} />
               </div>
             </div>
+
+            {/* NEW: INFRASTRUCTURE ACCORDION */}
+            <SidebarAccordion id="infrastructure" title="HẠ TẦNG XỬ LÝ" openAccordions={openAccordions} setOpenAccordions={setOpenAccordions}>
+               <div className="p-4 pt-1">
+                  <ModelAISelector 
+                    selectedModel={props.selectedModel}
+                    models={props.models}
+                    onSelect={props.setSelectedModel}
+                    selectedEngine={props.selectedEngine}
+                    onSelectEngine={props.onSelectEngine}
+                  />
+               </div>
+            </SidebarAccordion>
 
             <AnimatePresence>
                {props.selectedTextId && selectedTextLayer && (

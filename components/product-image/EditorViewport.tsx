@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Plus, RotateCcw, Check, X, Loader2, Maximize2, Upload } from 'lucide-react';
+import { Search, Plus, RotateCcw, Check, X, Loader2, Maximize2, Upload, Sparkles } from 'lucide-react';
 
 interface EditorViewportProps {
   result: string | null;
@@ -125,6 +125,17 @@ export const EditorViewport: React.FC<EditorViewportProps> = ({
                     )}
                   </AnimatePresence>
                </div>
+            ) : isGenerating ? (
+               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center gap-8 text-center p-10 md:p-20">
+                  <div className="relative">
+                    <Loader2 size={100} className="text-brand-blue animate-spin" strokeWidth={1} />
+                    <Sparkles size={32} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/50 animate-pulse" />
+                  </div>
+                  <div className="space-y-3">
+                    <p className="text-xl md:text-3xl font-black uppercase tracking-[0.5em] text-slate-800 dark:text-white animate-pulse italic">Đang tạo...</p>
+                    <p className="text-[10px] font-bold text-slate-400 dark:text-gray-600 uppercase tracking-widest italic">Neural_Synthesis_In_Progress</p>
+                  </div>
+               </motion.div>
             ) : (
                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center gap-6 p-10 md:p-20 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/10 bg-white dark:bg-black/20 cursor-pointer group hover:border-brand-blue/50 transition-all" onClick={onUploadClick}>
                   <div className="w-24 h-24 md:w-32 md:h-32 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl flex items-center justify-center text-slate-300 dark:text-gray-600 group-hover:text-brand-blue transition-all shadow-xl">

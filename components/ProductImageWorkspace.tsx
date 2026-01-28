@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Wand2, AlertTriangle, Plus, Settings, Coins, Key, Zap, Image as ImageIcon, History as HistoryIcon } from 'lucide-react';
@@ -64,7 +63,7 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }} 
               onClick={() => setIsMobileSidebarExpanded(false)} 
-              className="lg:hidden fixed inset-0 bg-black/60 z-[115] backdrop-blur-sm" 
+              className="lg:hidden fixed inset-0 bg-black/60 z-[140] backdrop-blur-sm" 
             />
           )}
         </AnimatePresence>
@@ -116,6 +115,8 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
               deleteSelectedText={e.deleteSelectedText}
               isMobileExpanded={isMobileSidebarExpanded}
               setIsMobileExpanded={setIsMobileSidebarExpanded}
+              selectedEngine={e.selectedEngine}
+              onSelectEngine={e.setSelectedEngine}
             />
           )}
 
@@ -162,6 +163,8 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
                             selectedModel={e.selectedModel}
                             models={e.availableModels}
                             onSelect={e.setSelectedModel}
+                            selectedEngine={e.selectedEngine}
+                            onSelectEngine={e.setSelectedEngine}
                             variant="compact"
                           />
                         </div>
@@ -203,7 +206,6 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
               </div>
             )}
 
-            {/* Vertical Asset List - Always Right Side */}
             <div className="absolute right-0 top-0 bottom-0 w-16 md:w-20 lg:w-24 bg-white/40 dark:bg-[#050b10]/40 backdrop-blur-xl border-l border-black/5 dark:border-white/5 z-50 flex flex-col items-center py-6 gap-3 md:gap-4 overflow-y-auto no-scrollbar">
                 <div className="text-[7px] md:text-[8px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest flex flex-col items-center gap-1 mb-2 text-center shrink-0">
                   <HistoryIcon size={12} /> Tệp tin
