@@ -8,7 +8,6 @@ import {
   CheckCircle2, Database, Globe, Server, Command, Check,
   MousePointer2, Volume2, Sparkles, Monitor as MonitorIcon
 } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
 
 interface AIModel {
   id_base: string;
@@ -119,34 +118,19 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
                </div>
             </div>
 
-            {/* Right: Pricing Table */}
+            {/* Right: Pricing Table (Hiding prices per user request) */}
             <div className="lg:col-span-5 space-y-8">
-               <div className="p-8 bg-slate-50 dark:bg-black border border-black/5 dark:border-white/5 rounded-3xl shadow-inner">
-                  <div className="flex items-center gap-3 mb-6">
-                    <Zap size={18} className="text-orange-500" fill="currentColor" />
-                    <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Biểu phí định mức</h4>
+               <div className="p-8 bg-slate-50 dark:bg-black border border-black/5 dark:border-white/5 rounded-3xl shadow-inner flex flex-col items-center justify-center min-h-[300px] text-center">
+                  <div className="w-16 h-16 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center text-slate-400 mb-6">
+                    <Clock size={32} />
                   </div>
-                  <div className="space-y-2 max-h-[300px] overflow-y-auto no-scrollbar pr-2">
-                     <table className="w-full border-collapse">
-                        <thead>
-                           <tr className="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-black/5 dark:border-white/5">
-                              <th className="py-2 text-left">Thời lượng</th>
-                              <th className="py-2 text-right">Chi phí (CR)</th>
-                           </tr>
-                        </thead>
-                        <tbody className="divide-y divide-black/5 dark:divide-white/5">
-                           {model.prices.map((p, i) => (
-                             <tr key={i} className="group hover:bg-brand-blue/5 transition-colors">
-                                <td className="py-3 text-[11px] font-black text-slate-600 dark:text-gray-400 uppercase italic">Take: {p.duration}s</td>
-                                <td className="py-3 text-right text-[12px] font-black text-brand-blue">{p.price.toLocaleString()} CR</td>
-                             </tr>
-                           ))}
-                        </tbody>
-                     </table>
+                  <div className="space-y-2">
+                    <h4 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Giá cước đang cập nhật</h4>
+                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Hệ thống đang đồng bộ biểu phí chính thức</p>
                   </div>
-                  <div className="mt-6 pt-6 border-t border-black/5 dark:border-white/10 flex justify-between items-center">
-                     <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Rate Type</span>
-                     <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase">{model.rate_type.replace('_', ' ')}</span>
+                  <div className="mt-8 pt-6 border-t border-black/5 dark:border-white/10 w-full flex justify-between items-center">
+                     <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Tình trạng</span>
+                     <span className="text-[10px] font-black text-brand-blue uppercase italic">Sắp công bố</span>
                   </div>
                </div>
 
@@ -164,7 +148,7 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
         </div>
 
         {/* Footer */}
-        <div className="p-8 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 flex flex-col sm:flex-row justify-between items-center gap-6 shrink-0 transition-colors">
+        <div className="p-8 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 flex flex-col sm:flex-row justify-between items-center gap-6 shrink-0 transition-colors duration-500">
            <div className="flex items-center gap-6 text-gray-500">
               <div className="flex items-center gap-2">
                  <div className={`w-2 h-2 rounded-full ${model.status === 'ON' ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse`}></div>
@@ -250,7 +234,7 @@ const ModelsPage: React.FC = () => {
                  className="w-full bg-transparent border-none px-6 text-base md:text-lg font-bold outline-none placeholder:text-slate-300 dark:placeholder:text-gray-800 text-slate-900 dark:text-white"
                />
                <div className="mr-8 hidden md:flex items-center gap-2 px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full text-[9px] text-gray-400 font-black uppercase italic">
-                  <Command size={12} /> <span>K</span>
+                  <Command size={10} /> <span>K</span>
                </div>
             </div>
           </div>
@@ -306,9 +290,6 @@ const ModelsPage: React.FC = () => {
              {filteredModels.map((model, idx) => {
                // Logic determine if "NEW" (mocked based on index for demo)
                const isNew = idx < 2 || model.id_base.includes('grok') || model.id_base.includes('kling') || model.name.includes('Pro');
-               const priceValues = model.prices.map(p => p.price);
-               const minPrice = priceValues.length > 0 ? Math.min(...priceValues) : model.price;
-               const maxPrice = priceValues.length > 0 ? Math.max(...priceValues) : model.price * 5;
 
                return (
                  <motion.div 
@@ -376,14 +357,12 @@ const ModelsPage: React.FC = () => {
                        </div>
                     </div>
 
+                    {/* Footer Area - Updated to hide credit range */}
                     <div className="pt-8 border-t border-black/5 dark:border-white/5 flex items-center justify-between relative z-10 mt-auto">
                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2.5">
-                             <span className="text-yellow-600 dark:text-yellow-500 text-2xl font-black italic">$</span>
-                             <span className="text-2xl md:text-3xl font-black italic tracking-tighter text-slate-900 dark:text-white">
-                                {minPrice.toLocaleString()} - {maxPrice.toLocaleString()}
-                             </span>
-                             <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest ml-1">CREDITS</span>
+                          <div className="flex items-center gap-2 text-slate-400">
+                             <Clock size={14} />
+                             <span className="text-[10px] font-black uppercase tracking-widest italic leading-none pt-0.5">Sắp công bố giá</span>
                           </div>
                           <button className="text-[9px] font-black text-brand-blue uppercase tracking-[0.2em] hover:underline w-fit">Chi tiết</button>
                        </div>
