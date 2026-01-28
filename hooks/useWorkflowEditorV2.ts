@@ -14,9 +14,12 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
-  // Đưa về tỷ lệ 1.0 để các node sát lại gần nhau hơn theo kịch bản gốc
-  const SCALE_X = 1.0;
-  const SCALE_Y = 1.0;
+  // Các hằng số layout để tối ưu hóa không gian hiển thị
+  const LAYOUT_SCALE = 1.25; // Dãn cách các node ra 25% so với nguyên bản
+  const GROUP_PADDING_TOP = 100; // Khoảng cách từ đỉnh Group đến node đầu tiên (chừa chỗ cho tiêu đề)
+  const GROUP_PADDING_LEFT = 50; // Khoảng cách đệm bên trái
+  const GROUP_PADDING_RIGHT = 50; // Khoảng cách đệm bên phải
+  const GROUP_PADDING_BOTTOM = 50; // Khoảng cách đệm bên dưới
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge({
@@ -62,17 +65,25 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
         const newNodes: Node[] = [];
         const newEdges: Edge[] = [];
 
-        // 1. Parse Groups
+        // 1. Phân tích danh sách Group trước
+        const parsedGroups: any[] = [];
         if (targetData.groups && Array.isArray(targetData.groups)) {
           targetData.groups.forEach((group: any) => {
             const [gx, gy, gw, gh] = group.bounding;
+            const groupId = `group_${group.id}`;
+            
+            // Lưu thông tin thô để tính toán node con sau này
+            parsedGroups.push({ id: groupId, x: gx, y: gy, w: gw, h: gh });
+            
             newNodes.push({
-              id: `group_${group.id}`,
+              id: groupId,
               type: 'groupNode',
-              position: { x: gx * SCALE_X, y: gy * SCALE_Y },
+              // Vị trí Group cũng được scale để giữ khoảng cách giữa các Group
+              position: { x: gx * LAYOUT_SCALE, y: gy * LAYOUT_SCALE },
               style: { 
-                width: gw * SCALE_X, 
-                height: gh * SCALE_Y,
+                // Mở rộng kích thước Group để chứa padding
+                width: (gw * LAYOUT_SCALE) + GROUP_PADDING_LEFT + GROUP_PADDING_RIGHT, 
+                height: (gh * LAYOUT_SCALE) + GROUP_PADDING_TOP + GROUP_PADDING_BOTTOM,
                 zIndex: -1 
               },
               data: { 
@@ -86,7 +97,7 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
           });
         }
 
-        // 2. Parse Nodes
+        // 2. Phân tích Nodes và xử lý Parenting (Phân cấp)
         if (targetData.nodes && Array.isArray(targetData.nodes)) {
           targetData.nodes.forEach((nodeData: any) => {
             const id = String(nodeData.id);
@@ -100,14 +111,29 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
             const rawX = Array.isArray(nodeData.pos) ? nodeData.pos[0] : (nodeData.x || 0);
             const rawY = Array.isArray(nodeData.pos) ? nodeData.pos[1] : (nodeData.y || 0);
 
-            const position = { x: rawX * SCALE_X, y: rawY * SCALE_Y };
+            let parentId: string | undefined = undefined;
+            let finalPosition = { x: rawX * LAYOUT_SCALE, y: rawY * LAYOUT_SCALE };
+
+            // Tìm group chứa node này
+            for (const group of parsedGroups) {
+              if (rawX >= group.x && rawX <= group.x + group.w &&
+                  rawY >= group.y && rawY <= group.y + group.h) {
+                parentId = group.id;
+                
+                // Tọa độ tương đối: (Toạ độ node - Toạ độ group) * scale + offset padding
+                finalPosition = {
+                  x: (rawX - group.x) * LAYOUT_SCALE + GROUP_PADDING_LEFT,
+                  y: (rawY - group.y) * LAYOUT_SCALE + GROUP_PADDING_TOP
+                };
+                break;
+              }
+            }
 
             const allInputs = nodeData.inputs || [];
             const connectionInputs = allInputs.filter((i: any) => !i.widget);
             const widgetMetadata = allInputs.filter((i: any) => i.widget);
             
             const widgets: { label: string, value: any }[] = [];
-            
             if (nodeData.widgets_values && Array.isArray(nodeData.widgets_values)) {
                nodeData.widgets_values.forEach((val: any, idx: number) => {
                   const label = widgetMetadata[idx]?.widget?.name || widgetMetadata[idx]?.name || nodeData.widgets?.[idx]?.name || `param_${idx}`;
@@ -118,7 +144,10 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
             newNodes.push({
               id,
               type: 'custom',
-              position,
+              position: finalPosition,
+              parentId: parentId,
+              // Ràng buộc node không được kéo ra khỏi Group
+              extent: parentId ? 'parent' : undefined,
               data: { 
                 label: nodeData.title || nodeData.type || 'Node',
                 id,
@@ -132,6 +161,7 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
             });
           });
 
+          // 3. Phân tích Edges (Liên kết)
           if (targetData.links && Array.isArray(targetData.links)) {
             targetData.links.forEach((link: any) => {
               const [linkId, fromId, fromOut, toId, toIn] = link;
