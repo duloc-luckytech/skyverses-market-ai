@@ -45,6 +45,7 @@ export const useImageGenerator = () => {
   const [availableModels, setAvailableModels] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
   const [selectedMode, setSelectedMode] = useState<string>('relaxed');
+  const [selectedEngine, setSelectedEngine] = useState<string>('gommo');
 
   const [prompt, setPrompt] = useState('');
   const [batchPrompts, setBatchPrompts] = useState<string[]>(['', '', '']);
@@ -68,7 +69,7 @@ export const useImageGenerator = () => {
   useEffect(() => {
     const fetchPricing = async () => {
       try {
-        const res = await pricingApi.getPricing({ tool: 'image' });
+        const res = await pricingApi.getPricing({ tool: 'image', engine: selectedEngine });
         if (res.success && res.data.length > 0) {
           const mapped = res.data.map((m: PricingModel) => ({
             id: m._id, 
@@ -76,15 +77,20 @@ export const useImageGenerator = () => {
             raw: m
           }));
           setAvailableModels(mapped);
+          
+          // Chọn model mặc định hoặc giữ model cũ nếu tồn tại trong danh sách mới
           const defaultModel = mapped.find(m => m.raw.modelKey === 'google_image_gen_banana_pro') || mapped[0];
           setSelectedModel(defaultModel);
+        } else {
+          setAvailableModels([]);
+          setSelectedModel(null);
         }
       } catch (error) {
         console.error("Failed to fetch image pricing:", error);
       }
     };
     fetchPricing();
-  }, []);
+  }, [selectedEngine]);
 
   // Đồng bộ selectedMode khi selectedModel thay đổi
   useEffect(() => {
@@ -232,7 +238,7 @@ export const useImageGenerator = () => {
             type: references.length > 0 ? "image_to_image" : "text_to_image",
             input: { prompt: task.prompt, images: references.length > 0 ? references : undefined },
             config: { width: 1024, height: 1024, aspectRatio: selectedRatio, seed: 0, style: "cinematic" },
-            engine: { provider: "gommo", model: selectedModel.raw.modelKey as any },
+            engine: { provider: selectedEngine as any, model: selectedModel.raw.modelKey as any },
             enginePayload: { 
               prompt: task.prompt, 
               privacy: "PRIVATE", 
@@ -330,6 +336,7 @@ export const useImageGenerator = () => {
     handleLocalFileUpload, handleGenerate, openEditor,
     toggleSelect, deleteResult, handleLibrarySelect,
     isResumingGenerate, setIsResumingGenerate, triggerDownload,
-    handleEditorApply, selectedMode, setSelectedMode
+    handleEditorApply, selectedMode, setSelectedMode,
+    selectedEngine, setSelectedEngine
   };
 };

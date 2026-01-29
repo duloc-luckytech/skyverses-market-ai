@@ -50,6 +50,9 @@ interface GeneratorSidebarProps {
   // Mode props from hook
   selectedMode: string;
   setSelectedMode: (val: string) => void;
+  // Engine props from hook
+  selectedEngine: string;
+  setSelectedEngine: (val: string) => void;
 }
 
 export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
@@ -65,7 +68,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
 
   return (
     <aside 
-      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] lg:shrink-0 bg-white dark:bg-[#111114] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[90dvh] rounded-t-[2.5rem]' : 'h-14 lg:h-full lg:rounded-none'}`}
+      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] lg:shrink-0 bg-white dark:bg-[#111114] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-14 lg:h-full lg:rounded-none'}`}
     >
       {/* Mobile Toggle Header - Fixed height to avoid covering viewport UI */}
       <div 
@@ -158,6 +161,8 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           setQuantity={props.setQuantity}
           selectedMode={props.selectedMode}
           setSelectedMode={props.setSelectedMode}
+          selectedEngine={props.selectedEngine}
+          onSelectEngine={props.setSelectedEngine}
         />
       </div>
 

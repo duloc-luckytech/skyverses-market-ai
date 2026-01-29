@@ -49,6 +49,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
               <option value="gommo">Gommo</option>
               <option value="fxlab">FxLab</option>
               <option value="wan">Wan</option>
+              <option value="running">Running</option>
             </select>
             <Globe size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           </div>
@@ -80,6 +81,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
                    <option value="gommo">Gommo</option>
                    <option value="fxlab">FxLab</option>
                    <option value="wan">Wan</option>
+                   <option value="running">Running</option>
                 </select>
                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
               </div>

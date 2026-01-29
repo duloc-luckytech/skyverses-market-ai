@@ -70,9 +70,10 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         isGenerateDisabled={g.isGenerateDisabled}
         isMobileExpanded={isMobileExpanded}
         setIsMobileExpanded={setIsMobileExpanded}
-        // Added selectedMode and setSelectedMode to fix the missing props error
         selectedMode={g.selectedMode}
         setSelectedMode={g.setSelectedMode}
+        selectedEngine={g.selectedEngine}
+        setSelectedEngine={g.setSelectedEngine}
       />
 
       {/* Cột 2: Viewport Hiển thị (Giữa) */}
@@ -81,7 +82,6 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         activePreviewUrl={g.activePreviewUrl}
         setActivePreviewUrl={g.setActivePreviewUrl}
         zoomLevel={g.zoomLevel}
-        // fix error in line 82: use g.setZoomLevel instead of setZoomLevel
         setZoomLevel={g.setZoomLevel}
         onApplyExample={(item) => {
           g.setPrompt(item.prompt);
@@ -137,7 +137,6 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
       <ProductImageWorkspace 
         isOpen={g.isEditorOpen} 
-        // fix error in line 137: use g.setIsEditorOpen(false) instead of setIsEditorOpen(false)
         onClose={() => g.setIsEditorOpen(false)} 
         initialImage={g.editorImage}
         onApply={g.handleEditorApply}
