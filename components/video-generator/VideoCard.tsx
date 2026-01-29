@@ -47,8 +47,6 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         playPromise.then(() => {
           setIsPlaying(true);
         }).catch(() => {
-          // Auto-play might be blocked by browser policy if not muted
-          // Video is already muted in the render below
           setIsPlaying(false);
         });
       }
@@ -74,103 +72,55 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#141416] hover:border-black/10 dark:hover:border-white/10 shadow-xl'
   }`;
 
-  if (res.status === 'processing') {
-    return (
-      <motion.div layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className={cardClass}>
-        <div className={`relative aspect-video rounded-2xl overflow-hidden bg-slate-200 dark:bg-black/60 border border-black/5 dark:border-white/5 flex flex-col items-center justify-center`}>
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-             <div className="absolute top-0 left-0 w-full h-[1px] bg-[#0090ff] animate-[scan_2s_infinite_linear]"></div>
-          </div>
-          <Loader2 size={32} className="text-[#0090ff] animate-spin mb-4" />
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0090ff] animate-pulse">Rendering...</p>
-          
-          <div className="absolute bottom-2 left-2 flex gap-1.5 z-10 opacity-60">
-            {res.startImg && <div className="w-8 h-8 rounded-md border border-white/20 overflow-hidden bg-black/40 shadow-lg"><img src={res.startImg} className="w-full h-full object-cover" /></div>}
-            {res.endImg && <div className="w-8 h-8 rounded-md border border-white/20 overflow-hidden bg-black/40 shadow-lg"><img src={res.endImg} className="w-full h-full object-cover" /></div>}
-          </div>
-        </div>
-        <div className="px-2 pb-2">
-           <h4 className="text-[10px] font-black uppercase italic tracking-tighter text-slate-400 dark:text-white/30 truncate mb-1">"{res.prompt}"</h4>
-           <div className="flex justify-between items-center mt-2">
-              <p className="text-[8px] font-bold text-slate-500 dark:text-gray-600 uppercase tracking-widest">{res.fullTimestamp}</p>
-              <div className="flex items-center gap-1 text-[9px] font-black text-orange-500 italic">
-                <Zap size={10} fill="currentColor" /> -{res.cost}
-              </div>
-           </div>
-        </div>
-      </motion.div>
-    );
-  }
-
-  if (res.status === 'error' || (!res.url && res.status === 'done')) {
-    return (
-      <motion.div layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className={cardClass}>
-        <div className={`relative aspect-video rounded-2xl overflow-hidden bg-red-50 dark:bg-black/40 border border-red-500/10 flex flex-col items-center justify-center text-center p-6 gap-3`}>
-          <AlertCircle size={32} className="text-red-500/50" />
-          <p className="text-red-500/80 tracking-widest leading-relaxed font-black uppercase text-[11px]">lỗi video, vui lòng thử lại sau</p>
-          
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 px-2 py-1 rounded text-[8px] text-white/60 font-bold whitespace-nowrap">
-             Video quá tải hoặc lỗi vi phạm
-          </div>
-
-          <div className="absolute top-3 right-3 flex gap-2">
-            <button 
-              onClick={(e) => { e.stopPropagation(); onRetry(res); }}
-              className="p-1.5 bg-red-500/20 hover:bg-red-500/40 text-red-500 rounded-full transition-colors"
-              title="Thử lại"
-            >
-              <RefreshCw size={14} />
-            </button>
-            <button 
-              onClick={(e) => { e.stopPropagation(); onDelete(res.id); }}
-              className="p-1.5 bg-red-500/20 hover:bg-red-500/40 text-red-500 rounded-full transition-colors"
-            >
-              <Trash2 size={14} />
-            </button>
-          </div>
-        </div>
-        <div className="px-2 pb-2">
-          <h4 className="text-[10px] font-black uppercase italic tracking-tighter text-slate-400 dark:text-white/30 truncate mb-1">{res.prompt}</h4>
-          <div className="flex justify-between items-center mt-2">
-            <p className="text-[8px] font-bold text-slate-500 dark:text-gray-600 uppercase tracking-widest">{res.fullTimestamp}</p>
-            <div className="flex items-center gap-1 text-[9px] font-black text-emerald-500 italic">
-              <Zap size={10} fill="currentColor" /> {res.isRefunded ? 'REFUNDED' : 'PENDING REFUND'}
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    );
-  }
-
   return (
     <motion.div 
-      layout
+      layout 
       initial={{ opacity: 0, scale: 0.9 }} 
-      animate={{ opacity: 1, scale: 1 }}
+      animate={{ opacity: 1, scale: 1 }} 
       className={cardClass}
       onClick={() => onToggleSelect()}
     >
+      {/* Visual Area */}
       <div className={`relative aspect-video rounded-2xl overflow-hidden bg-slate-200 dark:bg-black border border-black/5 dark:border-white/5 flex items-center justify-center`}>
-        <video 
-          ref={videoRef}
-          src={res.url ?? undefined} 
-          preload="metadata"
-          loop 
-          muted 
-          className={`w-full h-full ${res.aspectRatio === '9:16' ? 'object-contain bg-black/20' : 'object-cover'}`} 
-        />
+        {res.status === 'processing' ? (
+          <div className="w-full h-full flex flex-col items-center justify-center relative bg-slate-200 dark:bg-black/60">
+            <div className="absolute inset-0 opacity-10 pointer-events-none">
+               <div className="absolute top-0 left-0 w-full h-[1px] bg-[#0090ff] animate-[scan_2s_infinite_linear]"></div>
+            </div>
+            <Loader2 size={32} className="text-[#0090ff] animate-spin mb-4" />
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0090ff] animate-pulse">Rendering...</p>
+          </div>
+        ) : (res.status === 'error' || (!res.url && res.status === 'done')) ? (
+          <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 gap-3 bg-red-50 dark:bg-black/40">
+            <AlertCircle size={32} className="text-red-500/50" />
+            <p className="text-red-500/80 tracking-widest leading-relaxed font-black uppercase text-[11px]">lỗi video, vui lòng thử lại sau</p>
+          </div>
+        ) : (
+          <video 
+            ref={videoRef}
+            src={res.url ?? undefined} 
+            preload="metadata"
+            loop 
+            muted 
+            className={`w-full h-full ${res.aspectRatio === '9:16' ? 'object-contain bg-black/20' : 'object-cover'}`} 
+          />
+        )}
         
-        <div 
-          onClick={togglePlay}
-          className={`absolute inset-0 flex items-center justify-center bg-black/20 dark:bg-black/40 transition-opacity ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
-        >
-          {isPlaying ? (
-            <Pause size={48} className="text-white dark:text-white drop-shadow-2xl" fill="currentColor" />
-          ) : (
-            <Play size={48} className="text-white dark:text-white drop-shadow-2xl ml-2" fill="currentColor" />
-          )}
-        </div>
+        {/* Done Overlays */}
+        {res.status === 'done' && res.url && (
+           <div 
+             onClick={togglePlay}
+             className={`absolute inset-0 flex items-center justify-center bg-black/20 dark:bg-black/40 transition-opacity ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
+           >
+             {isPlaying ? (
+               <Pause size={48} className="text-white dark:text-white drop-shadow-2xl" fill="currentColor" />
+             ) : (
+               <Play size={48} className="text-white dark:text-white drop-shadow-2xl ml-2" fill="currentColor" />
+             )}
+           </div>
+        )}
 
+        {/* Reference images indicators (Always show if present) */}
         <div className="absolute bottom-2 left-2 flex gap-1.5 z-10 pointer-events-none group-hover:opacity-0 transition-opacity">
           {res.startImg && (
             <div className="w-8 h-8 rounded-md border border-white/20 overflow-hidden bg-black/40 shadow-lg">
@@ -184,49 +134,77 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           )}
         </div>
 
-        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-          <button 
-            onClick={(e) => { e.stopPropagation(); onDownload(res.url!, `video_${res.id}.mp4`); }}
-            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-purple-600 shadow-xl"
-            title="Tải xuống"
-          >
-            <Download size={16} />
-          </button>
-          <button 
-            onClick={(e) => { e.stopPropagation(); onFullscreen(res.url!, res.hasSound, res.id); }}
-            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-purple-600 shadow-xl"
-            title="Phóng to"
-          >
-            <Maximize2 size={16} />
-          </button>
+        {/* Top Right Actions */}
+        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-20">
+          {res.status === 'done' && res.url && (
+            <>
+              <button 
+                onClick={(e) => { e.stopPropagation(); onDownload(res.url!, `video_${res.id}.mp4`); }}
+                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-purple-600 shadow-xl"
+                title="Tải xuống"
+              >
+                <Download size={16} />
+              </button>
+              <button 
+                onClick={(e) => { e.stopPropagation(); onFullscreen(res.url!, res.hasSound, res.id); }}
+                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-purple-600 shadow-xl"
+                title="Phóng to"
+              >
+                <Maximize2 size={16} />
+              </button>
+            </>
+          )}
+          {res.status === 'error' && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); onRetry(res); }}
+              className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-red-500 shadow-xl"
+              title="Thử lại"
+            >
+              <RefreshCw size={16} />
+            </button>
+          )}
+          {res.status !== 'processing' && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); onDelete(res.id); }}
+              className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-red-500 shadow-xl"
+              title="Xóa"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
         </div>
 
+        {/* Select indicator */}
         <div 
           className={`absolute top-3 left-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-purple-600 border-purple-500 shadow-xl scale-110' : 'border-white/20 bg-black/40 hover:bg-black/60'}`}
         >
           {isSelected && <Check size={14} strokeWidth={4} className="text-white" />}
         </div>
 
-        {!res.hasSound && (
+        {res.status === 'done' && !res.hasSound && (
           <div className="absolute bottom-3 right-3 p-1.5 bg-black/60 backdrop-blur-md rounded-md text-white/40">
             <VolumeX size={12} />
           </div>
         )}
       </div>
 
-      <div className="px-2 pb-2 space-y-3">
+      {/* Info Area - UNIFIED FOR ALL STATES */}
+      <div className={`px-2 pb-2 space-y-3 ${res.status === 'processing' ? 'opacity-60' : ''}`}>
         <div className="space-y-1">
-          <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-900 dark:text-white/90 leading-none truncate">{res.prompt}</h4>
-          <p className="text-[9px] font-bold text-slate-500 dark:text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2">
+          <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-900 dark:text-white/90 leading-none truncate">
+            {res.prompt}
+          </h4>
+          <p className="text-[9px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
             <Clock size={10} className="text-slate-400 dark:text-gray-700" /> {res.fullTimestamp}
           </p>
         </div>
 
-        <div className="flex justify-between items-center pt-2">
+        <div className="flex justify-between items-center pt-2 border-t border-black/5 dark:border-white/5">
           <div className="flex flex-col gap-0.5">
             <span className="text-[9px] font-black uppercase text-[#0090ff] tracking-widest">{res.duration} • {res.aspectRatio}</span>
-            <div className="flex items-center gap-1 text-[9px] font-black text-orange-500 italic">
-               <Zap size={10} fill="currentColor" /> -{res.cost}
+            <div className={`flex items-center gap-1 text-[9px] font-black italic ${res.isRefunded ? 'text-emerald-500' : 'text-orange-500'}`}>
+               <Zap size={10} fill="currentColor" /> 
+               {res.isRefunded ? 'REFUNDED' : `-${res.cost}`}
             </div>
           </div>
           <span className="text-[8px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest italic">{res.model}</span>
@@ -235,3 +213,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     </motion.div>
   );
 };
+
+const AlertCircle = ({ size, className }: { size: number, className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+);
