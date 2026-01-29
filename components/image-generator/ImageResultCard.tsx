@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Loader2, Check, Maximize2, Trash2, Edit3, Download, Zap, Box, Monitor } from 'lucide-react';
+import { Loader2, Check, Maximize2, Trash2, Edit3, Download, Zap, Box, Monitor, AlertCircle, Clock } from 'lucide-react';
 import { ImageResult } from '../../hooks/useImageGenerator';
 
 interface ImageResultCardProps {
@@ -18,48 +17,37 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
 }) => {
   const aspectClass = res.aspectRatio === '9:16' ? 'aspect-[9/16]' : res.aspectRatio === '16:9' ? 'aspect-video' : 'aspect-square';
 
-  if (res.status === 'processing') {
-    return (
-      <div className="p-4 rounded-2xl border-2 border-black/5 dark:border-white/5 bg-slate-50 dark:bg-[#141416] flex flex-col gap-3">
-        <div className={`relative ${aspectClass} rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 flex flex-col items-center justify-center`}>
-          <Loader2 size={24} className="text-brand-blue animate-spin mb-2" />
-          <p className="text-[8px] font-black uppercase tracking-widest text-brand-blue animate-pulse">Synthesizing</p>
-          
-          {res.references.length > 0 && (
-            <div className="absolute bottom-2 left-2 flex gap-1 z-10 opacity-40">
-               {res.references.slice(0, 3).map((ref, i) => (
-                 <div key={i} className="w-8 h-8 rounded-sm border border-white/20 overflow-hidden">
-                    <img src={ref} className="w-full h-full object-cover" alt="" />
-                 </div>
-               ))}
-            </div>
-          )}
-        </div>
-        <div className="px-1 space-y-1">
-          <p className="text-[10px] font-bold text-gray-500 truncate italic">"{res.prompt}"</p>
-          <div className="flex items-center gap-1 text-[8px] font-black text-orange-500 uppercase italic">
-             <Zap size={8} fill="currentColor" /> -{res.cost}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const isProcessing = res.status === 'processing';
 
   return (
     <div 
-      className={`group relative p-4 rounded-2xl border-2 transition-all flex flex-col gap-3 cursor-pointer ${isSelected ? 'border-brand-blue bg-brand-blue/5' : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#141416] hover:border-black/10 dark:hover:border-white/10 shadow-sm'}`}
+      className={`group relative p-4 rounded-2xl border-2 transition-all flex flex-col gap-3 cursor-pointer ${
+        isSelected 
+          ? 'border-brand-blue bg-brand-blue/5' 
+          : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#141416] hover:border-black/10 dark:hover:border-white/10 shadow-sm'
+      }`}
       onClick={() => res.url && onFullscreen(res.url)}
     >
+      {/* Visual Area */}
       <div className={`relative ${aspectClass} rounded-xl overflow-hidden bg-black border border-black/5 dark:border-white/5`}>
-        {res.url ? (
+        {isProcessing ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-50 dark:bg-black/40 backdrop-blur-sm z-10">
+            <div className="relative">
+              <Loader2 size={32} className="text-brand-blue animate-spin" />
+              <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/30 animate-pulse" size={14} />
+            </div>
+            <p className="text-[9px] font-black uppercase tracking-[0.4em] text-brand-blue animate-pulse">Rendering...</p>
+          </div>
+        ) : res.url ? (
           <img src={res.url} className="w-full h-full object-cover" alt="Gen" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-red-500/5 text-red-500/40">
+          <div className="w-full h-full flex flex-col items-center justify-center bg-red-500/5 text-red-500/40 gap-2">
              <AlertCircle size={24} />
+             <span className="text-[8px] font-black uppercase">Lỗi hệ thống</span>
           </div>
         )}
 
-        {/* Reference Thumbnails Overlay (Bottom Left) - TO HƠN (40px) */}
+        {/* Reference Thumbnails Overlay (Bottom Left) */}
         {res.references.length > 0 && (
           <div className="absolute bottom-2 left-2 flex gap-1.5 z-10 pointer-events-none group-hover:opacity-0 transition-opacity">
             {res.references.slice(0, 3).map((ref, i) => (
@@ -75,7 +63,8 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           </div>
         )}
 
-        {res.url && (
+        {/* Hover Actions */}
+        {!isProcessing && res.url && (
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
              <button onClick={(e) => { e.stopPropagation(); onFullscreen(res.url!); }} className="p-2.5 bg-white text-black rounded-full hover:scale-110 transition-transform shadow-xl"><Maximize2 size={16}/></button>
              <button onClick={(e) => { e.stopPropagation(); onEdit(res.url!); }} className="p-2.5 bg-brand-blue text-white rounded-full hover:scale-110 transition-transform shadow-xl"><Edit3 size={16}/></button>
@@ -93,16 +82,19 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         </div>
       </div>
 
+      {/* Info Area - Visible for all states */}
       <div className="px-1 space-y-2.5">
         <div className="space-y-1">
-          <h4 className="text-[11px] font-black uppercase italic tracking-tighter text-slate-800 dark:text-white/90 truncate leading-none">{res.prompt}</h4>
+          <h4 className="text-[11px] font-black uppercase italic tracking-tighter text-slate-800 dark:text-white/90 truncate leading-none">
+            {res.prompt}
+          </h4>
           <div className="flex justify-between items-center text-[7px] font-bold text-gray-500 uppercase tracking-widest">
-             <span>{res.fullTimestamp}</span>
-             <span>{res.model}</span>
+             <span className="flex items-center gap-1"><Clock size={10} /> {res.fullTimestamp}</span>
+             <span className="text-brand-blue">{res.model}</span>
           </div>
         </div>
 
-        {/* THÔNG TIN TỶ LỆ & ĐỘ PHÂN GIẢI */}
+        {/* Technical Specs Hub */}
         <div className="flex flex-wrap gap-1.5 border-t border-black/5 dark:border-white/5 pt-2.5">
            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-slate-100 dark:bg-white/5 rounded text-[7px] font-black text-slate-500 dark:text-gray-400 uppercase tracking-widest">
               <Box size={8} /> {res.aspectRatio}
@@ -112,7 +104,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
            </div>
         </div>
 
-        {/* Credit Cost / Refund Status */}
+        {/* Economic / Status Hub */}
         <div className="flex items-center justify-between border-t border-black/5 dark:border-white/5 pt-2">
            <div className={`flex items-center gap-1.5 text-[9px] font-black italic ${res.isRefunded ? 'text-emerald-500' : 'text-orange-500'}`}>
               <Zap size={10} fill="currentColor" />
@@ -121,12 +113,15 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
            {res.status === 'error' && (
              <span className="text-[7px] font-black uppercase text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded">Failed</span>
            )}
+           {isProcessing && (
+             <span className="text-[7px] font-black uppercase text-brand-blue animate-pulse">Syncing...</span>
+           )}
         </div>
       </div>
     </div>
   );
 };
 
-const AlertCircle = ({ size }: { size: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+const Sparkles = ({ size, className }: { size: number, className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
 );
