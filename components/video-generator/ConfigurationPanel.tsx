@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// Added Zap and Loader2 to the imports
 import { Settings2, ChevronDown, Settings, Zap, Loader2, Activity } from 'lucide-react';
 import { UniversalModelSelector } from '../common/UniversalModelSelector';
 import { DurationSelector } from './DurationSelector';
@@ -67,30 +66,25 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
               selectedEngine={props.selectedEngine}
               onEngineChange={props.setSelectedEngine}
               disabled={props.isGenerating}
+              modeSelector={
+                <div className="relative">
+                  <select 
+                    value={props.selectedMode} 
+                    onChange={e => props.setSelectedMode(e.target.value)} 
+                    className="w-full bg-slate-50 dark:bg-[#16161a] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-800 dark:text-white shadow-sm"
+                  >
+                    {props.selectedModelObj?.modes && props.selectedModelObj.modes.length > 0 ? (
+                      props.selectedModelObj.modes.map(m => (
+                        <option key={m} value={m}>{m.toUpperCase()}</option>
+                      ))
+                    ) : (
+                      <option value={props.selectedModelObj?.mode}>{props.selectedModelObj?.mode?.toUpperCase() || 'STANDARD'}</option>
+                    )}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
+                </div>
+              }
             />
-
-            {/* AI MODEL MODE SELECTOR */}
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-[0.2em] mb-2 flex items-center gap-2 px-1 italic">
-                <Activity size={12} className="text-brand-blue" /> Execution Mode
-              </label>
-              <div className="relative">
-                <select 
-                  value={props.selectedMode} 
-                  onChange={e => props.setSelectedMode(e.target.value)} 
-                  className="w-full bg-slate-50 dark:bg-[#16161a] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-800 dark:text-white shadow-sm"
-                >
-                  {props.selectedModelObj?.modes && props.selectedModelObj.modes.length > 0 ? (
-                    props.selectedModelObj.modes.map(m => (
-                      <option key={m} value={m}>{m.toUpperCase()}</option>
-                    ))
-                  ) : (
-                    <option value={props.selectedModelObj?.mode}>{props.selectedModelObj?.mode?.toUpperCase() || 'STANDARD'}</option>
-                  )}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
-              </div>
-            </div>
 
             <div className="grid grid-cols-4 gap-2">
               <div className="space-y-1.5 text-center">
@@ -115,7 +109,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
               <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-2">
                   <div className="flex flex-col">
-                    <span className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Nguồn</span>
+                    <span className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest leading-none">Nguồn</span>
                     <span className={`text-[10px] font-black uppercase tracking-tight leading-none ${props.usagePreference === 'key' ? 'text-purple-500' : 'text-brand-blue'}`}>
                         {props.usagePreference === 'credits' ? `Credits (${props.credits.toLocaleString()} CR)` : props.usagePreference === 'key' ? 'API Key' : 'N/A'}
                     </span>
@@ -126,7 +120,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
                 </div>
 
                 <div className="text-right flex flex-col items-end">
-                   <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-1">Chi phí</span>
+                   <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest mb-1">Chi phí</span>
                    <div className="flex items-center gap-1.5 text-orange-500 leading-none">
                       <Zap size={10} fill="currentColor" />
                       <span className="text-[11px] font-black italic">{props.usagePreference === 'key' ? '0' : props.currentTotalCost} credits</span>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Globe, Cpu, Zap, Activity, Info, Search } from 'lucide-react';
@@ -15,6 +14,7 @@ interface UniversalModelSelectorProps {
   showCost?: boolean;
   currentCost?: number;
   disabled?: boolean;
+  modeSelector?: React.ReactNode;
 }
 
 export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
@@ -26,7 +26,8 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
   variant = 'full',
   showCost = false,
   currentCost = 0,
-  disabled = false
+  disabled = false,
+  modeSelector
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const selectedModel = availableModels.find(m => m._id === selectedModelId);
@@ -63,11 +64,11 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            {/* INFRASTRUCTURE SOURCE */}
+          <div className={`grid ${modeSelector ? 'grid-cols-3' : 'grid-cols-2'} gap-4`}>
+            {/* SOURCE SELECTION */}
             <div className="space-y-1">
               <label className={labelClass}>
-                <Globe size={12} className="text-brand-blue" /> Infrastructure
+                <Globe size={12} className="text-brand-blue" /> Source
               </label>
               <div className="relative">
                 <select 
@@ -76,28 +77,38 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
                   onChange={e => onEngineChange(e.target.value)} 
                   className="w-full bg-slate-50 dark:bg-[#16161a] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-800 dark:text-white shadow-sm disabled:opacity-50"
                 >
-                   <option value="gommo">Gommo Cluster</option>
-                   <option value="fxlab">FxLab Node</option>
-                   <option value="wan">Wan Direct</option>
+                   <option value="gommo">Gommo</option>
+                   <option value="fxlab">FxLab</option>
+                   <option value="wan">Wan</option>
                 </select>
                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
               </div>
             </div>
 
-            {/* MODEL SELECTION TRIGGER */}
+            {/* MODELS SELECTION TRIGGER */}
             <div className="space-y-1">
               <label className={labelClass}>
-                <Cpu size={12} className="text-brand-blue" /> Neural Model
+                <Cpu size={12} className="text-brand-blue" /> Models
               </label>
               <button 
                 disabled={disabled}
                 onClick={() => setIsModalOpen(true)}
                 className={triggerClass}
               >
-                <span className="truncate pr-4">{selectedModel?.name || 'Syncing Registry...'}</span>
+                <span className="truncate pr-4">{selectedModel?.name || 'Syncing...'}</span>
                 <Search size={14} className="text-gray-400" />
               </button>
             </div>
+
+            {/* OPTIONAL MODE SELECTOR */}
+            {modeSelector && (
+              <div className="space-y-1">
+                <label className={labelClass}>
+                  <Activity size={12} className="text-brand-blue" /> Mode
+                </label>
+                {modeSelector}
+              </div>
+            )}
           </div>
 
           {showCost && (
