@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -111,7 +110,7 @@ export const CreditPacksTab: React.FC = () => {
   return (
     <div className="p-12 h-full flex flex-col">
       <div className="flex justify-between items-center mb-10">
-         <h3 className="text-xl font-black uppercase italic tracking-tighter">Quản lý Gói nạp</h3>
+         <h3 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Quản lý Gói nạp</h3>
          <button onClick={handleAddNew} className="bg-brand-blue text-white px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg hover:scale-105 transition-all">+ Tạo gói mới</button>
       </div>
 
@@ -119,7 +118,7 @@ export const CreditPacksTab: React.FC = () => {
         {loading && packs.length === 0 ? (
           <div className="col-span-full h-[400px] flex flex-col items-center justify-center gap-6 opacity-40">
              <Loader2 className="animate-spin text-brand-blue" size={48} />
-             <p className="text-[10px] font-black uppercase tracking-[0.5em]">Synchronizing_Economic_Vault...</p>
+             <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-900 dark:text-white">Synchronizing_Economic_Vault...</p>
           </div>
         ) : packs.map(pack => (
           <div 
@@ -194,28 +193,31 @@ export const CreditPacksTab: React.FC = () => {
                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                       <div className="space-y-6">
                         <h4 className="text-[11px] font-black uppercase text-brand-blue tracking-[0.4em] border-b border-brand-blue/20 pb-2 flex items-center gap-3"><AlignLeft size={14}/> Basic_Identity</h4>
-                        <EditInput label="UNIQUE CODE" value={payload.code} onChange={(v) => setPayload({...payload, code: v})} />
-                        <EditInput label="DISPLAY NAME" value={payload.name} onChange={(v) => setPayload({...payload, name: v})} />
-                        <textarea value={payload.description} onChange={(e) => setPayload({...payload, description: e.target.value})} className="w-full bg-slate-50 dark:bg-white/5 border p-4 text-xs" rows={3} placeholder="Mô tả gói..." />
-                        <EditInput label="SORT ORDER" type="number" value={payload.sortOrder?.toString() || '0'} onChange={(v) => setPayload({...payload, sortOrder: parseInt(v) || 0})} />
+                        <EditInput label="UNIQUE CODE" value={payload.code} onChange={(v: string) => setPayload({...payload, code: v})} />
+                        <EditInput label="DISPLAY NAME" value={payload.name} onChange={(v: string) => setPayload({...payload, name: v})} />
+                        <div className="space-y-2">
+                           <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">Description</label>
+                           <textarea value={payload.description} onChange={e => setPayload({...payload, description: e.target.value})} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-xs font-medium text-slate-900 dark:text-white" rows={3} placeholder="Mô tả gói..." />
+                        </div>
+                        <EditInput label="SORT ORDER" type="number" value={payload.sortOrder?.toString() || '0'} onChange={(v: string) => setPayload({...payload, sortOrder: parseInt(v) || 0})} />
                       </div>
                       <div className="space-y-6">
                         <h4 className="text-[11px] font-black uppercase text-brand-blue tracking-[0.4em] border-b border-brand-blue/20 pb-2 flex items-center gap-3"><DollarSign size={14}/> Financial_Model</h4>
                         <div className="grid grid-cols-2 gap-4">
-                           <EditInput label="PRICE" type="number" value={payload.price.toString()} onChange={(v) => setPayload({...payload, price: parseFloat(v) || 0})} />
-                           <EditInput label="ORIGINAL PRICE" type="number" value={payload.originalPrice?.toString() || '0'} onChange={(v) => setPayload({...payload, originalPrice: parseFloat(v) || 0})} />
+                           <EditInput label="PRICE" type="number" value={payload.price.toString()} onChange={(v: string) => setPayload({...payload, price: parseFloat(v) || 0})} />
+                           <EditInput label="ORIGINAL PRICE" type="number" value={payload.originalPrice?.toString() || '0'} onChange={(v: string) => setPayload({...payload, originalPrice: parseFloat(v) || 0})} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                            <div className="space-y-2">
                              <label className="text-[9px] font-black text-gray-400">CYCLE</label>
-                             <select value={payload.billingCycle} onChange={e => setPayload({...payload, billingCycle: e.target.value as any})} className="w-full bg-slate-100 dark:bg-white/5 p-4 rounded-xl text-xs font-black uppercase">
+                             <select value={payload.billingCycle} onChange={e => setPayload({...payload, billingCycle: e.target.value as any})} className="w-full bg-slate-100 dark:bg-white/5 p-4 rounded-xl text-xs font-black uppercase text-slate-900 dark:text-white">
                                 <option value="monthly">Monthly</option>
                                 <option value="annual">Annual</option>
                              </select>
                            </div>
-                           <EditInput label="BILLED MO" type="number" value={payload.billedMonths?.toString() || '1'} onChange={(v) => setPayload({...payload, billedMonths: parseInt(v) || 1})} />
+                           <EditInput label="BILLED MO" type="number" value={payload.billedMonths?.toString() || '1'} onChange={(v: string) => setPayload({...payload, billedMonths: parseInt(v) || 1})} />
                         </div>
-                        <EditInput label="CREDITS" type="number" value={payload.credits.toString()} onChange={(v) => setPayload({...payload, credits: parseInt(v) || 0})} />
+                        <EditInput label="CREDITS" type="number" value={payload.credits.toString()} onChange={(v: string) => setPayload({...payload, credits: parseInt(v) || 0})} />
                       </div>
                    </div>
                 </div>
@@ -234,7 +236,7 @@ export const CreditPacksTab: React.FC = () => {
   );
 };
 
-const EditInput = ({ label, value, onChange, type = "text" }: any) => (
+const EditInput = ({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) => (
   <div className="space-y-2">
      <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">{label}</label>
      <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white shadow-inner" />

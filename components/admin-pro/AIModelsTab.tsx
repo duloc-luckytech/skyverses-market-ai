@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -6,7 +5,7 @@ import {
   AlertCircle, Clock, ExternalLink,
   ChevronRight, ArrowRight, Activity,
   Globe, LayoutGrid, Layers, Loader2,
-  ToggleLeft, ToggleRight, Search, X, Check, Save
+  ToggleLeft, ToggleRight, Search, X, Check, Save, Zap
 } from 'lucide-react';
 import { aiModelsApi, AIModel, AIModelRequest } from '../../apis/ai-models';
 
@@ -186,23 +185,26 @@ export const AIModelsTab: React.FC = () => {
               </div>
               <div className="flex-grow overflow-y-auto p-8 space-y-8 no-scrollbar">
                  <div className="grid grid-cols-2 gap-6">
-                    <EditInput label="MODEL KEY" value={payload.key} onChange={v => setPayload({...payload, key: v})} />
-                    <EditInput label="DISPLAY NAME" value={payload.name} onChange={v => setPayload({...payload, name: v})} />
+                    <EditInput label="MODEL KEY" value={payload.key} onChange={(v: string) => setPayload({...payload, key: v})} />
+                    <EditInput label="DISPLAY NAME" value={payload.name} onChange={(v: string) => setPayload({...payload, name: v})} />
                  </div>
                  <div className="grid grid-cols-2 gap-6">
-                    <EditInput label="PROVIDER" value={payload.provider || ''} onChange={v => setPayload({...payload, provider: v})} />
-                    <EditInput label="ROUTE" value={payload.route} onChange={v => setPayload({...payload, route: v})} />
+                    <EditInput label="PROVIDER" value={payload.provider || ''} onChange={(v: string) => setPayload({...payload, provider: v})} />
+                    <EditInput label="ROUTE" value={payload.route} onChange={(v: string) => setPayload({...payload, route: v})} />
                  </div>
-                 <EditInput label="LOGO URL" value={payload.logoUrl} onChange={v => setPayload({...payload, logoUrl: v})} />
-                 <textarea value={payload.description} onChange={e => setPayload({...payload, description: e.target.value})} className="w-full bg-slate-50 dark:bg-black/40 border border-black/5 p-4 rounded-xl text-xs" rows={3} placeholder="Mô tả..." />
+                 <EditInput label="LOGO URL" value={payload.logoUrl} onChange={(v: string) => setPayload({...payload, logoUrl: v})} />
+                 <div className="space-y-2">
+                    <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">Description</label>
+                    <textarea value={payload.description} onChange={e => setPayload({...payload, description: e.target.value})} className="w-full bg-slate-50 dark:bg-black/40 border border-black/5 p-4 rounded-xl text-xs font-medium text-slate-900 dark:text-white" rows={3} placeholder="Mô tả..." />
+                 </div>
                  <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
                        <label className="text-[9px] font-black uppercase text-gray-400">CATEGORY</label>
-                       <select value={payload.category} onChange={e => setPayload({...payload, category: e.target.value as any})} className="w-full bg-slate-100 dark:bg-white/5 border border-black/5 p-4 rounded-xl text-xs font-black uppercase">
+                       <select value={payload.category} onChange={e => setPayload({...payload, category: e.target.value as any})} className="w-full bg-slate-100 dark:bg-white/5 border border-black/5 p-4 rounded-xl text-xs font-black uppercase text-slate-900 dark:text-white">
                           {['text', 'image', 'video', 'audio'].map(o => <option key={o} value={o}>{o}</option>)}
                        </select>
                     </div>
-                    <EditInput label="ORDER" type="number" value={payload.order?.toString() || '0'} onChange={v => setPayload({...payload, order: parseInt(v) || 0})} />
+                    <EditInput label="ORDER" type="number" value={payload.order?.toString() || '0'} onChange={(v: string) => setPayload({...payload, order: parseInt(v) || 0})} />
                  </div>
               </div>
               <div className="p-8 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/40 flex gap-4 shrink-0">
@@ -220,7 +222,7 @@ export const AIModelsTab: React.FC = () => {
   );
 };
 
-const EditInput = ({ label, value, onChange, type = "text" }: any) => (
+const EditInput = ({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) => (
   <div className="space-y-2">
      <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">{label}</label>
      <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white shadow-inner" />

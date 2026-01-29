@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -180,19 +179,22 @@ const AdminCmsProPage = () => {
                    <button onClick={() => setEditedItem(null)} className="p-2 text-gray-400 hover:text-red-500"><X size={24}/></button>
                 </div>
                 <div className="flex-grow overflow-y-auto p-8 space-y-10 no-scrollbar">
-                   <EditInput label="Identity Slug" value={editedItem.slug} onChange={v => setEditedItem({...editedItem, slug: v})} />
+                   <EditInput label="Identity Slug" value={editedItem.slug} onChange={(v: string) => setEditedItem({...editedItem, slug: v})} />
                    <div className="grid grid-cols-2 gap-8">
                       <div className="space-y-3">
                          <label className="text-[9px] font-black uppercase text-gray-400">Access Mode</label>
                          <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-xl shadow-inner"><button onClick={() => setEditedItem({...editedItem, isFree: true})} className={`flex-grow py-2 text-[10px] font-black uppercase rounded-lg transition-all ${editedItem.isFree ? 'bg-emerald-500 text-white' : 'text-gray-500'}`}>Free</button><button onClick={() => setEditedItem({...editedItem, isFree: false})} className={`flex-grow py-2 text-[10px] font-black uppercase rounded-lg transition-all ${!editedItem.isFree ? 'bg-orange-500 text-white' : 'text-gray-500'}`}>Paid</button></div>
                       </div>
-                      {!editedItem.isFree && <EditInput label="Credit Cost" type="number" value={editedItem.priceCredits?.toString() || '0'} onChange={v => setEditedItem({...editedItem, priceCredits: parseInt(v) || 0})} />}
+                      {!editedItem.isFree && <EditInput label="Credit Cost" type="number" value={editedItem.priceCredits?.toString() || '0'} onChange={(v: string) => setEditedItem({...editedItem, priceCredits: parseInt(v) || 0})} />}
                    </div>
                    <div className="grid grid-cols-2 gap-6">
-                      <EditInput label="Name (EN)" value={editedItem.name.en} onChange={v => setEditedItem({...editedItem, name: {...editedItem.name, en: v}})} />
-                      <EditInput label="Name (VI)" value={editedItem.name.vi} onChange={v => setEditedItem({...editedItem, name: {...editedItem.name, vi: v}})} />
+                      <EditInput label="Name (EN)" value={editedItem.name.en} onChange={(v: string) => setEditedItem({...editedItem, name: {...editedItem.name, en: v}})} />
+                      <EditInput label="Name (VI)" value={editedItem.name.vi} onChange={(v: string) => setEditedItem({...editedItem, name: {...editedItem.name, vi: v}})} />
                    </div>
-                   <textarea value={editedItem.description.en} onChange={e => setEditedItem({...editedItem, description: {...editedItem.description, en: e.target.value}})} className="w-full bg-slate-50 dark:bg-white/5 p-4 rounded-xl text-xs" rows={3} placeholder="Description (EN)..." />
+                   <div className="space-y-2">
+                     <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">Description (EN)</label>
+                     <textarea value={editedItem.description.en} onChange={e => setEditedItem({...editedItem, description: {...editedItem.description, en: e.target.value}})} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-xs font-medium text-slate-900 dark:text-white" rows={3} placeholder="Description (EN)..." />
+                   </div>
                 </div>
                 <div className="p-8 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/40 flex justify-between items-center gap-6 shrink-0"><button onClick={() => setEditedItem(null)} className="text-[10px] font-black uppercase tracking-widest text-gray-400">Abort_Changes</button><button onClick={handleSaveSolution} disabled={isSaving} className="bg-brand-blue text-white px-12 py-5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-2xl flex items-center gap-4 group">{isSaving ? <Loader2 className="animate-spin" size={18}/> : <Zap size={18} fill="currentColor"/>} Synchronize Node</button></div>
              </motion.div>
@@ -203,8 +205,8 @@ const AdminCmsProPage = () => {
   );
 };
 
-const EditInput = ({ label, value, onChange, type = "text" }: any) => (
-  <div className="space-y-2"><label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">{label}</label><input type={type} value={value || ''} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white" /></div>
+const EditInput = ({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) => (
+  <div className="space-y-2"><label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">{label}</label><input type={type} value={value || ''} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white shadow-inner" /></div>
 );
 
 export default AdminCmsProPage;

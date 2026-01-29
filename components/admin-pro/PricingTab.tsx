@@ -1,18 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Zap, Edit3, ChevronDown, Monitor, Clock, 
   Loader2, Trash2, Search, Filter as FilterIcon,
-  X, DollarSign, Settings2, Info, RefreshCw, Plus
+  X, DollarSign, Settings2, Info, RefreshCw, Plus, Check
 } from 'lucide-react';
 import { pricingApi, PricingModel, PricingFilters, CreatePricingRequest } from '../../apis/pricing';
 
-interface PricingTabProps {
-  onRefreshNeeded?: () => void;
-}
-
-export const PricingTab: React.FC<PricingTabProps> = () => {
+export const PricingTab: React.FC = () => {
   const [pricingModels, setPricingModels] = useState<PricingModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -190,7 +185,7 @@ export const PricingTab: React.FC<PricingTabProps> = () => {
                     </div>
                   </td>
                   <td className="px-8 py-6">
-                    <span className="px-2 py-0.5 bg-black/5 dark:bg-white/5 rounded text-[7px] font-black text-gray-500 uppercase tracking-widest border border-black/5 dark:border-white/10">{model.tool}</span>
+                    <span className="px-2 py-0.5 bg-black/5 dark:bg-white/5 rounded text-[7px] font-black text-gray-500 uppercase tracking-widest border border-black/5 dark:border-white/10 text-slate-900 dark:text-white">{model.tool}</span>
                   </td>
                   <td className="px-8 py-6">
                     <div className="flex flex-col gap-1">
@@ -253,10 +248,10 @@ export const PricingTab: React.FC<PricingTabProps> = () => {
                          <h3 className="text-xl font-black uppercase tracking-tight italic">
                             {editingId ? 'Update Pricing Manifest' : 'Create Pricing Manifest'}
                          </h3>
-                         <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] italic">ADMIN_OVERRIDE_ACTIVE</p>
+                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] italic">ADMIN_OVERRIDE_ACTIVE</p>
                       </div>
                    </div>
-                   <button onClick={() => setIsDrawerOpen(false)} className="p-2 text-gray-400 hover:text-red-500"><X size={24}/></button>
+                   <button onClick={() => setIsDrawerOpen(false)} className="p-2 text-gray-400 hover:text-red-500 transition-colors"><X size={24}/></button>
                 </div>
 
                 <div className="flex-grow overflow-y-auto p-8 space-y-10 no-scrollbar">
@@ -264,15 +259,15 @@ export const PricingTab: React.FC<PricingTabProps> = () => {
                       <h4 className="text-[10px] font-black uppercase text-brand-blue tracking-[0.4em] border-b border-brand-blue/20 pb-2">Metadata_Registry</h4>
                       <div className="grid grid-cols-1 gap-6">
                          <div className="grid grid-cols-2 gap-6">
-                            <EditInput label="Tool Category" value={payload.tool} onChange={v => setPayload({...payload, tool: v})} />
-                            <EditInput label="Model Name" value={payload.name || ''} onChange={v => setPayload({...payload, name: v})} />
+                            <EditInput label="Tool Category" value={payload.tool} onChange={(v: string) => setPayload({...payload, tool: v})} />
+                            <EditInput label="Model Name" value={payload.name || ''} onChange={(v: string) => setPayload({...payload, name: v})} />
                          </div>
                          <div className="grid grid-cols-2 gap-6">
-                            <EditInput label="Engine Provider" value={payload.engine} onChange={v => setPayload({...payload, engine: v})} />
-                            <EditInput label="Model Key" value={payload.modelKey} onChange={v => setPayload({...payload, modelKey: v})} />
+                            <EditInput label="Engine Provider" value={payload.engine} onChange={(v: string) => setPayload({...payload, engine: v})} />
+                            <EditInput label="Model Key" value={payload.modelKey} onChange={(v: string) => setPayload({...payload, modelKey: v})} />
                          </div>
                          <div className="grid grid-cols-2 gap-6">
-                            <EditInput label="Version" value={payload.version} onChange={v => setPayload({...payload, version: v})} />
+                            <EditInput label="Version" value={payload.version} onChange={(v: string) => setPayload({...payload, version: v})} />
                             <div className="space-y-2">
                                <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">Modes</label>
                                <div className="flex gap-2">
@@ -295,18 +290,21 @@ export const PricingTab: React.FC<PricingTabProps> = () => {
                                </div>
                             </div>
                          </div>
-                         <textarea value={payload.description} onChange={e => setPayload({...payload, description: e.target.value})} className="w-full bg-slate-100 dark:bg-white/5 border border-black/5 p-4 rounded-xl text-xs" rows={3} placeholder="Mô tả hệ thống..." />
+                         <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">Description</label>
+                            <textarea value={payload.description} onChange={e => setPayload({...payload, description: e.target.value})} className="w-full bg-slate-100 dark:bg-white/5 border border-black/5 p-4 rounded-xl text-xs font-medium text-slate-900 dark:text-white" rows={3} placeholder="Mô tả hệ thống..." />
+                         </div>
                       </div>
                    </div>
                    <div className="space-y-6">
                       <h4 className="text-[11px] font-black uppercase text-brand-blue tracking-[0.4em] border-b border-brand-blue/20 pb-2">Economic_Algorithm</h4>
                       <div className="grid grid-cols-3 gap-6">
-                         <EditInput label="Base Credits" type="number" value={payload.baseCredits.toString()} onChange={v => setPayload({...payload, baseCredits: parseInt(v) || 0})} />
-                         <EditInput label="Cost Per Second" type="number" value={payload.perSecond.toString()} onChange={v => setPayload({...payload, perSecond: parseInt(v) || 0})} />
-                         <EditInput label="Default Dur" type="number" value={payload.defaultDuration?.toString() || '4'} onChange={v => setPayload({...payload, defaultDuration: parseInt(v) || 4})} />
+                         <EditInput label="Base Credits" type="number" value={payload.baseCredits.toString()} onChange={(v: string) => setPayload({...payload, baseCredits: parseInt(v) || 0})} />
+                         <EditInput label="Cost Per Second" type="number" value={payload.perSecond.toString()} onChange={(v: string) => setPayload({...payload, perSecond: parseInt(v) || 0})} />
+                         <EditInput label="Default Dur" type="number" value={payload.defaultDuration?.toString() || '4'} onChange={(v: string) => setPayload({...payload, defaultDuration: parseInt(v) || 4})} />
                       </div>
-                      <EditInput label="Multipliers (Res:Mul, e.g. 720p:1, 1080p:1.5)" value={resInput} onChange={setResInput} />
-                      <EditInput label="Durations (e.g. 5, 8, 10)" value={durInput} onChange={setDurInput} />
+                      <EditInput label="Multipliers (Res:Mul, e.g. 720p:1, 1080p:1.5)" value={resInput} onChange={(v: string) => setResInput(v)} />
+                      <EditInput label="Durations (e.g. 5, 8, 10)" value={durInput} onChange={(v: string) => setDurInput(v)} />
                    </div>
                 </div>
 
@@ -331,6 +329,7 @@ const EditableCell = ({ modelId, res, dur, initialValue, onUpdate }: any) => {
   const handleBlur = async () => {
     const numValue = parseInt(value);
     if (isNaN(numValue) || numValue === initialValue) { setValue(initialValue?.toString() ?? '0'); return; }
+    setIsGenerating(true); // Assuming shared state or just logic
     setIsSaving(true);
     try { await onUpdate(modelId, res, dur, numValue); } catch (e) {}
     finally { setIsSaving(false); }
@@ -345,7 +344,10 @@ const EditableCell = ({ modelId, res, dur, initialValue, onUpdate }: any) => {
   );
 };
 
-const EditInput = ({ label, value, onChange, type = "text" }: any) => (
+// Global-ish state hack for the demo to prevent generate errors if we don't have setIsGenerating
+const setIsGenerating = (v: boolean) => {};
+
+const EditInput = ({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) => (
   <div className="space-y-2">
     <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">{label}</label>
     <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white" />
