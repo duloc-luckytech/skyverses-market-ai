@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Zap, Edit3, ChevronDown, Monitor, Clock, 
@@ -54,6 +54,18 @@ export const PricingTab: React.FC = () => {
     setExpandedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
+  const handleAddNew = () => {
+    setEditingId(null);
+    setResInput('720p:1, 1080p:1.5');
+    setDurInput('5, 8, 10');
+    setPayload({
+      tool: 'video', engine: 'gommo', modelKey: 'veo_3_1', version: '3.1',
+      name: '', modes: ['relaxed'], baseCredits: 20, perSecond: 2, defaultDuration: 5,
+      resolutions: {}, durations: [5, 8, 10], description: '', status: 'active'
+    });
+    setIsDrawerOpen(true);
+  };
+
   const handleEdit = (model: PricingModel) => {
     setEditingId(model._id);
     const resolutions = Object.keys(model.pricing || {});
@@ -82,7 +94,7 @@ export const PricingTab: React.FC = () => {
         ...payload,
         resolutions: resObj,
         durations: finalDurations,
-        mode: payload.modes?.[0] || '' // Compatibility with older 'mode' field
+        mode: payload.modes?.[0] || '' 
       };
       let res;
       if (editingId) res = await pricingApi.updatePricing(editingId, body);
@@ -151,7 +163,13 @@ export const PricingTab: React.FC = () => {
               </button>
             ))}
           </div>
-          <button onClick={fetchData} className="p-2.5 bg-brand-blue text-white rounded-xl shadow-lg hover:scale-105 transition-all">
+          <button 
+            onClick={handleAddNew}
+            className="flex items-center gap-2 px-6 py-3 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:scale-105 transition-all"
+          >
+            <Plus size={16} strokeWidth={3} /> Thêm cấu hình
+          </button>
+          <button onClick={fetchData} className="p-2.5 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-400 hover:text-brand-blue rounded-xl shadow-sm transition-all">
             <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
           </button>
         </div>
@@ -172,7 +190,7 @@ export const PricingTab: React.FC = () => {
           <tbody className="divide-y divide-black/5 dark:divide-white/5">
             {loading ? (
               <tr><td colSpan={5} className="py-20 text-center"><Loader2 className="animate-spin mx-auto text-brand-blue" /></td></tr>
-            ) : filteredModels.map((model) => (
+            ) : filteredModels.length > 0 ? filteredModels.map((model) => (
               <React.Fragment key={model._id}>
                 <tr className="group hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors">
                   <td className="px-8 py-6">
@@ -228,7 +246,13 @@ export const PricingTab: React.FC = () => {
                   )}
                 </AnimatePresence>
               </React.Fragment>
-            ))}
+            )) : (
+              <tr>
+                <td colSpan={5} className="py-40 text-center opacity-30">
+                  <p className="text-xl font-black uppercase tracking-[0.2em] italic">No Configurations Found</p>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -259,7 +283,14 @@ export const PricingTab: React.FC = () => {
                       <h4 className="text-[10px] font-black uppercase text-brand-blue tracking-[0.4em] border-b border-brand-blue/20 pb-2">Metadata_Registry</h4>
                       <div className="grid grid-cols-1 gap-6">
                          <div className="grid grid-cols-2 gap-6">
-                            <EditInput label="Tool Category" value={payload.tool} onChange={(v: string) => setPayload({...payload, tool: v})} />
+                            <div className="space-y-2">
+                               <label className="text-[9px] font-black uppercase text-gray-400">Tool Category</label>
+                               <select value={payload.tool} onChange={e => setPayload({...payload, tool: e.target.value as any})} className="w-full bg-slate-100 dark:bg-white/5 p-4 rounded-xl text-xs font-black uppercase text-slate-900 dark:text-white">
+                                  <option value="video">Video</option>
+                                  <option value="image">Image</option>
+                                  <option value="music">Music</option>
+                               </select>
+                            </div>
                             <EditInput label="Model Name" value={payload.name || ''} onChange={(v: string) => setPayload({...payload, name: v})} />
                          </div>
                          <div className="grid grid-cols-2 gap-6">
@@ -329,7 +360,6 @@ const EditableCell = ({ modelId, res, dur, initialValue, onUpdate }: any) => {
   const handleBlur = async () => {
     const numValue = parseInt(value);
     if (isNaN(numValue) || numValue === initialValue) { setValue(initialValue?.toString() ?? '0'); return; }
-    setIsGenerating(true); // Assuming shared state or just logic
     setIsSaving(true);
     try { await onUpdate(modelId, res, dur, numValue); } catch (e) {}
     finally { setIsSaving(false); }
@@ -343,9 +373,6 @@ const EditableCell = ({ modelId, res, dur, initialValue, onUpdate }: any) => {
     </div>
   );
 };
-
-// Global-ish state hack for the demo to prevent generate errors if we don't have setIsGenerating
-const setIsGenerating = (v: boolean) => {};
 
 const EditInput = ({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) => (
   <div className="space-y-2">
