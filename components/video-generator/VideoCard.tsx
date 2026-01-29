@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -13,6 +12,7 @@ export interface VideoResult {
   dateKey: string;
   displayDate: string;
   model: string;
+  mode: string;
   duration: string;
   status: 'processing' | 'done' | 'error';
   hasSound: boolean;
@@ -191,7 +191,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       {/* Info Area - UNIFIED FOR ALL STATES (Processing & Done) */}
       <div className={`px-2 pb-2 space-y-3 ${res.status === 'processing' ? 'opacity-60' : ''}`}>
         <div className="space-y-1">
-          <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-900 dark:text-white/90 leading-none truncate">
+          <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-900 dark:text-white/90 truncate leading-none">
             {res.prompt}
           </h4>
           <p className="text-[9px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
@@ -201,7 +201,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
         <div className="flex justify-between items-center pt-2 border-t border-black/5 dark:border-white/5">
           <div className="flex flex-col gap-0.5">
-            <span className="text-[9px] font-black uppercase text-[#0090ff] tracking-widest">{res.duration} • {res.aspectRatio}</span>
+            <span className="text-[9px] font-black uppercase text-[#0090ff] tracking-widest">{res.duration} • {res.aspectRatio} • {res.mode}</span>
             <div className={`flex items-center gap-1 text-[9px] font-black italic ${res.isRefunded ? 'text-emerald-500' : 'text-orange-500'}`}>
                <Zap size={10} fill="currentColor" /> 
                {res.isRefunded ? 'REFUNDED' : `-${res.cost}`}

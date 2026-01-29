@@ -405,7 +405,23 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           : autoTasks.filter(t => t.prompt.trim() !== '').map((t, idx) => ({ id: `auto-${Date.now()}-${idx}`, type: t.startUrl && t.endUrl ? "start-end-image" as const : t.startUrl ? "image-to-video" as const : "text-to-video" as const, prompt: t.prompt, startUrl: t.startUrl, startMediaId: t.startMediaId, endUrl: t.endUrl, endMediaId: t.endMediaId, cost: currentUnitCost, ratio }));
 
     if (!retryTask) {
-      const newResults: VideoResult[] = tasksToProduce.map(t => ({ id: t.id, url: null, prompt: t.prompt, fullTimestamp: timestamp, dateKey: todayKey, displayDate: now.toLocaleDateString('vi-VN'), model: selectedModelObj.name, duration, status: 'processing', hasSound: soundEnabled, aspectRatio: t.ratio as any, cost: t.cost, startImg: t.startUrl, endImg: t.endUrl }));
+      const newResults: VideoResult[] = tasksToProduce.map(t => ({ 
+        id: t.id, 
+        url: null, 
+        prompt: t.prompt, 
+        fullTimestamp: timestamp, 
+        dateKey: todayKey, 
+        displayDate: now.toLocaleDateString('vi-VN'), 
+        model: selectedModelObj.name, 
+        mode: selectedMode, // Save current mode
+        duration, 
+        status: 'processing', 
+        hasSound: soundEnabled, 
+        aspectRatio: t.ratio as any, 
+        cost: t.cost, 
+        startImg: t.startUrl, 
+        endImg: t.endUrl 
+      }));
       setResults(prev => [...newResults, ...prev]);
     } else {
       setResults(prev => prev.map(r => r.id === retryTask.id ? { ...r, status: 'processing', isRefunded: false } : r));
@@ -586,7 +602,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         {showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[#111114] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors">
-              <div className="w-24 h-24 bg-orange-500/10 border border-orange-500/20 rounded-full flex items-center justify-center mx-auto text-orange-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]"><AlertTriangle size={48} /></div>
+              <div className="w-24 h-24 bg-orange-500/10 border border-orange-500/20 rounded-full flex items-center justify-center mx-auto text-orange-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]"><AlertTriangle size={40} /></div>
               <div className="space-y-4">
                 <h3 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Quota Depleted</h3>
                 <p className="text-sm text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight">Video synthesis requires ít nhất **{currentUnitCost} credits** per take. <br />Your current node balance is too low.</p>
