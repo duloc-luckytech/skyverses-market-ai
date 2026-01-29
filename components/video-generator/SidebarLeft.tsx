@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -59,6 +58,8 @@ interface SidebarLeftProps {
   setSelectedModelObj: (model: PricingModel | null) => void;
   selectedEngine: string;
   setSelectedEngine: (val: string) => void;
+  selectedMode: string;
+  setSelectedMode: (val: string) => void;
   ratio: '16:9' | '9:16';
   cycleRatio: () => void;
   duration: string;
@@ -282,6 +283,8 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
         setSelectedModelObj={props.setSelectedModelObj}
         selectedEngine={props.selectedEngine}
         setSelectedEngine={props.setSelectedEngine}
+        selectedMode={props.selectedMode}
+        setSelectedMode={props.setSelectedMode}
         ratio={props.ratio}
         cycleRatio={props.cycleRatio}
         duration={props.duration}

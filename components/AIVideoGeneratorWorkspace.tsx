@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Download, Share2, AlertTriangle } from 'lucide-react';
@@ -74,6 +73,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [availableModels, setAvailableModels] = useState<PricingModel[]>([]);
   const [selectedModelObj, setSelectedModelObj] = useState<PricingModel | null>(null);
   const [selectedEngine, setSelectedEngine] = useState('gommo');
+  const [selectedMode, setSelectedMode] = useState<string>('relaxed');
 
   // -- Common Config --
   const [ratio, setRatio] = useState<'16:9' | '9:16'>('16:9');
@@ -128,6 +128,17 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     };
     fetchPricing();
   }, [selectedEngine]);
+
+  // Sync selectedMode when selectedModelObj changes
+  useEffect(() => {
+    if (selectedModelObj) {
+      if (selectedModelObj.modes && selectedModelObj.modes.length > 0) {
+        setSelectedMode(selectedModelObj.modes[0]);
+      } else {
+        setSelectedMode(selectedModelObj.mode || 'relaxed');
+      }
+    }
+  }, [selectedModelObj]);
 
   const availableDurations = useMemo(() => {
     if (!selectedModelObj || !selectedModelObj.pricing) return ['5s', '8s', '10s'];
@@ -405,7 +416,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         try {
           if (currentPreference === 'credits') {
             const inputImages = selectedEngine === 'fxlab' ? [task.startMediaId || null, task.endMediaId || null] : [task.startUrl || null, task.endUrl || null];
-            const payload: VideoJobRequest = { type: task.type, input: { images: inputImages }, config: { duration: parseInt(duration), aspectRatio: task.ratio, resolution: resolution }, engine: { provider: selectedEngine as any, model: selectedModelObj.modelKey as any }, enginePayload: { accessToken: "YOUR_GOMMO_ACCESS_TOKEN", prompt: task.prompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: selectedModelObj.mode as any } };
+            const payload: VideoJobRequest = { type: task.type, input: { images: inputImages }, config: { duration: parseInt(duration), aspectRatio: task.ratio, resolution: resolution }, engine: { provider: selectedEngine as any, model: selectedModelObj.modelKey as any }, enginePayload: { accessToken: "YOUR_GOMMO_ACCESS_TOKEN", prompt: task.prompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: selectedMode as any } };
             const res = await videosApi.createJob(payload);
             const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
             if (isSuccess && res.data.jobId) {
@@ -509,6 +520,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         setSelectedModelObj={setSelectedModelObj}
         selectedEngine={selectedEngine}
         setSelectedEngine={setSelectedEngine}
+        selectedMode={selectedMode}
+        setSelectedMode={setSelectedMode}
         ratio={ratio}
         cycleRatio={cycleRatio}
         duration={duration}
