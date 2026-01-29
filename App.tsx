@@ -27,7 +27,6 @@ import BookingPage from './pages/BookingPage';
 import AboutPage from './pages/AboutPage';
 import SettingsPage from './pages/SettingsPage';
 import FavoritesPage from './pages/FavoritesPage';
-import CMSAdminPage from './pages/CMSAdminPage';
 import AdminCmsProPage from './pages/AdminCmsProPage';
 import ReferralPage from './pages/ReferralPage';
 import PolicyPage from './pages/PolicyPage';
@@ -96,7 +95,6 @@ const App: React.FC = () => {
                       <Route path="/usage" element={<CreditUsagePage />} />
                       <Route path="/settings" element={<SettingsPage />} />
                       <Route path="/favorites" element={<FavoritesPage />} />
-                      <Route path="/cms-admin" element={<CMSAdminPage />} />
                       <Route path="/cms-admin-pro" element={<AdminCmsProPage />} />
                       <Route path="/referral" element={<ReferralPage />} />
                       <Route path="/policy" element={<PolicyPage />} />
