@@ -10,6 +10,7 @@ export interface PricingModel {
   version: string;
   description: string;
   mode: string;
+  modes?: string[];
   status: string;
   pricing: {
     [resolution: string]: {
@@ -34,6 +35,7 @@ export interface CreatePricingRequest {
   version: string;
   name?: string;
   mode?: string;
+  modes?: string[];
   baseCredits: number;
   defaultDuration?: number;
   perSecond: number;
