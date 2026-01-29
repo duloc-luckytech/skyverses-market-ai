@@ -44,6 +44,7 @@ export const useImageGenerator = () => {
 
   const [availableModels, setAvailableModels] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
+  const [selectedMode, setSelectedMode] = useState<string>('relaxed');
 
   const [prompt, setPrompt] = useState('');
   const [batchPrompts, setBatchPrompts] = useState<string[]>(['', '', '']);
@@ -84,6 +85,18 @@ export const useImageGenerator = () => {
     };
     fetchPricing();
   }, []);
+
+  // Đồng bộ selectedMode khi selectedModel thay đổi
+  useEffect(() => {
+    if (selectedModel?.raw) {
+      const m = selectedModel.raw;
+      if (m.modes && m.modes.length > 0) {
+        setSelectedMode(m.modes[0]);
+      } else {
+        setSelectedMode(m.mode || 'relaxed');
+      }
+    }
+  }, [selectedModel]);
 
   useEffect(() => {
     const vault = localStorage.getItem('skyverses_model_vault');
@@ -151,13 +164,10 @@ export const useImageGenerator = () => {
     try {
       const response: ImageJobResponse = await imagesApi.getJobStatus(jobId);
       
-      // Kiểm tra lỗi dựa trên cấu hình trả về của người dùng
       const isError = response.status === 'error' || response.data?.status === 'error' || response.data?.status === 'failed';
 
       if (isError) {
-        // Dừng poll và note lỗi
         if (usagePreference === 'credits') {
-          // Chỉ hoàn tiền nếu chưa được hoàn trả trước đó
           setResults(prev => prev.map(r => {
             if (r.id === resultId && !r.isRefunded) {
               addCredits(cost);
@@ -168,7 +178,7 @@ export const useImageGenerator = () => {
         } else {
           setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
         }
-        return; // Dừng hàm, không gọi setTimeout tiếp theo
+        return;
       }
 
       if (response.data && response.data.status === 'done' && response.data.result?.images?.length) {
@@ -176,11 +186,9 @@ export const useImageGenerator = () => {
         setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done' } : r));
         refreshUserInfo();
       } else {
-        // Tiếp tục poll nếu đang ở trạng thái pending/processing
         setTimeout(() => pollJobStatus(jobId, resultId, cost), 5000);
       }
     } catch (e) {
-      // Khi có lỗi network, ta có thể thử lại thay vì dừng hẳn ngay lập tức
       console.error("Polling Network Error:", e);
       setTimeout(() => pollJobStatus(jobId, resultId, cost), 10000);
     }
@@ -317,6 +325,6 @@ export const useImageGenerator = () => {
     handleLocalFileUpload, handleGenerate, openEditor,
     toggleSelect, deleteResult, handleLibrarySelect,
     isResumingGenerate, setIsResumingGenerate, triggerDownload,
-    handleEditorApply
+    handleEditorApply, selectedMode, setSelectedMode
   };
 };

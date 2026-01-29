@@ -70,6 +70,9 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         isGenerateDisabled={g.isGenerateDisabled}
         isMobileExpanded={isMobileExpanded}
         setIsMobileExpanded={setIsMobileExpanded}
+        // Added selectedMode and setSelectedMode to fix the missing props error
+        selectedMode={g.selectedMode}
+        setSelectedMode={g.setSelectedMode}
       />
 
       {/* Cột 2: Viewport Hiển thị (Giữa) */}

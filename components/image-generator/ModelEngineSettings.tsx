@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Hash } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { RATIOS, RESOLUTIONS } from '../../hooks/useImageGenerator';
 import { UniversalModelSelector } from '../common/UniversalModelSelector';
 
@@ -17,6 +16,9 @@ interface ModelEngineSettingsProps {
   // Hỗ trợ engine nếu cần thiết cho quy trình image
   selectedEngine?: string;
   onSelectEngine?: (val: string) => void;
+  // New props for mode
+  selectedMode: string;
+  setSelectedMode: (val: string) => void;
 }
 
 export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
@@ -30,7 +32,9 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
   quantity,
   setQuantity,
   selectedEngine = 'gommo',
-  onSelectEngine = () => {}
+  onSelectEngine = () => {},
+  selectedMode,
+  setSelectedMode
 }) => {
   return (
     <div className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
@@ -40,6 +44,24 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
         onModelChange={(id) => setSelectedModel(availableModels.find(m => m.id === id))}
         selectedEngine={selectedEngine}
         onEngineChange={onSelectEngine}
+        modeSelector={
+          <div className="relative">
+            <select 
+              value={selectedMode} 
+              onChange={e => setSelectedMode(e.target.value)} 
+              className="w-full bg-slate-50 dark:bg-[#16161a] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-800 dark:text-white shadow-sm"
+            >
+              {selectedModel?.raw?.modes && selectedModel.raw.modes.length > 0 ? (
+                selectedModel.raw.modes.map((m: string) => (
+                  <option key={m} value={m}>{m.toUpperCase()}</option>
+                ))
+              ) : (
+                <option value={selectedMode}>{selectedMode.toUpperCase() || 'RELAXED'}</option>
+              )}
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
+          </div>
+        }
       />
 
       <div className="grid grid-cols-3 gap-3">
@@ -51,10 +73,11 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
             <select 
               value={selectedRatio} 
               onChange={e => setSelectedRatio(e.target.value)} 
-              className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 p-2 rounded-lg text-[10px] font-black uppercase outline-none focus:border-brand-blue transition-colors text-slate-800 dark:text-white appearance-none cursor-pointer"
+              className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 p-2 rounded-lg text-[10px] font-black uppercase outline-none focus:border-brand-blue transition-colors text-slate-800 dark:text-white appearance-none cursor-pointer shadow-sm"
             >
               {RATIOS.map(r => <option key={r} value={r} className="bg-white dark:bg-[#111]">{r}</option>)}
             </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
           </div>
         </div>
 
@@ -66,10 +89,11 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
             <select 
               value={selectedRes} 
               onChange={e => setSelectedRes(e.target.value)} 
-              className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 p-2 rounded-lg text-[10px] font-black uppercase outline-none focus:border-brand-blue transition-colors text-slate-800 dark:text-white appearance-none cursor-pointer"
+              className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 p-2 rounded-lg text-[10px] font-black uppercase outline-none focus:border-brand-blue transition-colors text-slate-800 dark:text-white appearance-none cursor-pointer shadow-sm"
             >
               {RESOLUTIONS.map(r => <option key={r} value={r} className="bg-white dark:bg-[#111]">{r.toUpperCase()}</option>)}
             </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
           </div>
         </div>
 
@@ -82,7 +106,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
               type="number" min="1" max="4"
               value={quantity} 
               onChange={e => setQuantity(Math.max(1, Math.min(4, parseInt(e.target.value) || 1)))}
-              className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 p-2 rounded-lg text-[10px] font-black text-center outline-none focus:border-brand-blue transition-colors text-slate-800 dark:text-white"
+              className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 p-2 rounded-lg text-[10px] font-black text-center outline-none focus:border-brand-blue transition-colors text-slate-800 dark:text-white shadow-sm"
             />
           </div>
         </div>

@@ -64,11 +64,11 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
         </div>
       ) : (
         <div className="space-y-6">
-          <div className={`grid ${modeSelector ? 'grid-cols-3' : 'grid-cols-2'} gap-4`}>
+          <div className={`grid ${modeSelector ? 'grid-cols-3' : 'grid-cols-2'} gap-2 lg:gap-3`}>
             {/* SOURCE SELECTION */}
             <div className="space-y-1">
               <label className={labelClass}>
-                <Globe size={12} className="text-brand-blue" /> Source
+                <Globe size={10} className="text-brand-blue" /> Source
               </label>
               <div className="relative">
                 <select 
@@ -88,15 +88,15 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
             {/* MODELS SELECTION TRIGGER */}
             <div className="space-y-1">
               <label className={labelClass}>
-                <Cpu size={12} className="text-brand-blue" /> Models
+                <Cpu size={10} className="text-brand-blue" /> Models
               </label>
               <button 
                 disabled={disabled}
                 onClick={() => setIsModalOpen(true)}
                 className={triggerClass}
               >
-                <span className="truncate pr-4">{selectedModel?.name || 'Syncing...'}</span>
-                <Search size={14} className="text-gray-400" />
+                <span className="truncate pr-1">{selectedModel?.name || 'Syncing...'}</span>
+                <Search size={12} className="text-gray-400 shrink-0" />
               </button>
             </div>
 
@@ -104,7 +104,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
             {modeSelector && (
               <div className="space-y-1">
                 <label className={labelClass}>
-                  <Activity size={12} className="text-brand-blue" /> Mode
+                  <Activity size={10} className="text-brand-blue" /> Mode
                 </label>
                 {modeSelector}
               </div>

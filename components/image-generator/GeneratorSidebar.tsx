@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -48,6 +47,9 @@ interface GeneratorSidebarProps {
   isGenerateDisabled: boolean;
   isMobileExpanded: boolean;
   setIsMobileExpanded: (val: boolean) => void;
+  // Mode props from hook
+  selectedMode: string;
+  setSelectedMode: (val: string) => void;
 }
 
 export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
@@ -154,6 +156,8 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           setSelectedRes={props.setSelectedRes}
           quantity={props.quantity}
           setQuantity={props.setQuantity}
+          selectedMode={props.selectedMode}
+          setSelectedMode={props.setSelectedMode}
         />
       </div>
 
