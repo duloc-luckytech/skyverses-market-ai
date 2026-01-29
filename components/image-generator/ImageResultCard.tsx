@@ -10,10 +10,11 @@ interface ImageResultCardProps {
   onEdit: (url: string) => void;
   onDelete: (id: string) => void;
   onDownload: (url: string, filename: string) => void;
+  onRetry: () => void;
 }
 
 export const ImageResultCard: React.FC<ImageResultCardProps> = ({ 
-  res, isSelected, onToggleSelect, onFullscreen, onEdit, onDelete, onDownload 
+  res, isSelected, onToggleSelect, onFullscreen, onEdit, onDelete, onDownload, onRetry 
 }) => {
   const aspectClass = res.aspectRatio === '9:16' ? 'aspect-[9/16]' : res.aspectRatio === '16:9' ? 'aspect-video' : 'aspect-square';
 
@@ -37,7 +38,8 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-50 dark:bg-black/40 backdrop-blur-sm z-10">
             <div className="relative">
               <Loader2 size={32} className="text-brand-blue animate-spin" />
-              <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/30 animate-pulse" size={14} />
+              {/* Added fix for duplicate size attribute */}
+              <Sparkles size={14} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/30 animate-pulse" />
             </div>
             <p className="text-[9px] font-black uppercase tracking-[0.4em] text-brand-blue animate-pulse">Rendering...</p>
           </div>
@@ -85,8 +87,18 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         )}
 
         {isError && (
-          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-             <button onClick={(e) => { e.stopPropagation(); onDelete(res.id); }} className="p-3 bg-red-600 text-white rounded-full shadow-2xl flex items-center gap-2">
+          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+             <button 
+               onClick={(e) => { e.stopPropagation(); onRetry(); }} 
+               className="p-3 bg-brand-blue text-white rounded-full shadow-2xl flex items-center gap-2 hover:scale-105 active:scale-95"
+             >
+                <RefreshCw size={16} />
+                <span className="text-[9px] font-black uppercase pr-1">Tạo lại</span>
+             </button>
+             <button 
+               onClick={(e) => { e.stopPropagation(); onDelete(res.id); }} 
+               className="p-3 bg-red-600 text-white rounded-full shadow-2xl flex items-center gap-2 hover:scale-105 active:scale-95"
+             >
                 <Trash2 size={16} />
                 <span className="text-[9px] font-black uppercase pr-1">Xóa bản ghi</span>
              </button>

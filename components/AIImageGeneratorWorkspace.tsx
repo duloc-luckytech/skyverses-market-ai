@@ -93,6 +93,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         selectedIds={g.selectedIds}
         toggleSelect={g.toggleSelect}
         deleteResult={g.deleteResult}
+        onRetry={g.handleRetry}
       />
 
       <ImageLibraryModal 

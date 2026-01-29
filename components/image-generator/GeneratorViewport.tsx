@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -24,6 +23,7 @@ interface GeneratorViewportProps {
   selectedIds: string[];
   toggleSelect: (id: string) => void;
   deleteResult: (id: string) => void;
+  onRetry: (res: ImageResult) => void;
 }
 
 const CATEGORY_TAGS = [
@@ -46,7 +46,7 @@ const getFakeStats = (seedId: string) => {
 
 export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({ 
   onClose, activePreviewUrl, setActivePreviewUrl, zoomLevel, setZoomLevel, onApplyExample, onEdit, onDownload,
-  results, selectedIds, toggleSelect, deleteResult
+  results, selectedIds, toggleSelect, deleteResult, onRetry
 }) => {
   const [explorerItems, setExplorerItems] = useState<ExplorerItem[]>([]);
   const [loadingExplorer, setLoadingExplorer] = useState(false);
@@ -260,6 +260,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                       onEdit={onEdit}
                       onDelete={deleteResult}
                       onDownload={onDownload}
+                      onRetry={() => onRetry(res)}
                     />
                   ))}
                 </div>

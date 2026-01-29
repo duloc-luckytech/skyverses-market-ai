@@ -200,13 +200,15 @@ export const useImageGenerator = () => {
     }
   };
 
-  const performInference = async (currentPreference: 'credits' | 'key') => {
+  const performInference = async (currentPreference: 'credits' | 'key', retryItem?: ImageResult) => {
     if (!selectedModel) return;
-    const unitCost = currentUnitCost;
-    const currentRefs = [...references];
-    const promptsToRun = activeMode === 'SINGLE' 
-      ? Array(quantity).fill(prompt) 
-      : batchPrompts.filter(p => p.trim());
+    const unitCost = retryItem ? retryItem.cost : currentUnitCost;
+    const currentRefs = retryItem ? retryItem.references : [...references];
+    const promptsToRun = retryItem 
+      ? [retryItem.prompt]
+      : (activeMode === 'SINGLE' 
+          ? Array(quantity).fill(prompt) 
+          : batchPrompts.filter(p => p.trim()));
     
     if (promptsToRun.length === 0) return;
     setIsGenerating(true);
@@ -214,30 +216,38 @@ export const useImageGenerator = () => {
     const now = new Date();
     const ts = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')} ${now.toLocaleDateString('vi-VN')}`;
 
-    const newTasks: ImageResult[] = promptsToRun.map((p, idx) => ({
-      id: `img-${Date.now()}-${idx}`,
-      url: null,
-      prompt: p,
-      fullTimestamp: ts,
-      dateKey: todayKey,
-      displayDate: now.toLocaleDateString('vi-VN'),
-      model: selectedModel.name,
-      status: 'processing',
-      aspectRatio: selectedRatio,
-      resolution: selectedRes,
-      cost: currentPreference === 'credits' ? unitCost : 0,
-      references: currentRefs
-    }));
+    const newTasks: ImageResult[] = retryItem 
+      ? [] 
+      : promptsToRun.map((p, idx) => ({
+          id: `img-${Date.now()}-${idx}`,
+          url: null,
+          prompt: p,
+          fullTimestamp: ts,
+          dateKey: todayKey,
+          displayDate: now.toLocaleDateString('vi-VN'),
+          model: selectedModel.name,
+          status: 'processing',
+          aspectRatio: selectedRatio,
+          resolution: selectedRes,
+          cost: currentPreference === 'credits' ? unitCost : 0,
+          references: currentRefs
+        }));
     
-    setResults(prev => [...newTasks, ...prev]);
+    if (retryItem) {
+      setResults(prev => prev.map(r => r.id === retryItem.id ? { ...r, status: 'processing', isRefunded: false } : r));
+    } else {
+      setResults(prev => [...newTasks, ...prev]);
+    }
+
+    const targetTasks = retryItem ? [retryItem] : newTasks;
 
     try {
-      await Promise.all(newTasks.map(async (task) => {
+      await Promise.all(targetTasks.map(async (task) => {
         if (currentPreference === 'credits') {
           const payload: ImageJobRequest = {
-            type: references.length > 0 ? "image_to_image" : "text_to_image",
-            input: { prompt: task.prompt, images: references.length > 0 ? references : undefined },
-            config: { width: 1024, height: 1024, aspectRatio: selectedRatio, seed: 0, style: "cinematic" },
+            type: task.references.length > 0 ? "image_to_image" : "text_to_image",
+            input: { prompt: task.prompt, images: task.references.length > 0 ? task.references : undefined },
+            config: { width: 1024, height: 1024, aspectRatio: task.aspectRatio || selectedRatio, seed: 0, style: "cinematic" },
             engine: { provider: selectedEngine as any, model: selectedModel.raw.modelKey as any },
             enginePayload: { 
               prompt: task.prompt, 
@@ -256,10 +266,10 @@ export const useImageGenerator = () => {
         } else {
           const url = await generateDemoImage({ 
             prompt: task.prompt, 
-            images: references, 
+            images: task.references, 
             model: selectedModel.raw.modelKey, 
-            aspectRatio: selectedRatio, 
-            quality: selectedRes, 
+            aspectRatio: task.aspectRatio || selectedRatio, 
+            quality: task.resolution || selectedRes, 
             apiKey: personalKey 
           });
           if (url) {
@@ -298,6 +308,11 @@ export const useImageGenerator = () => {
     performInference(usagePreference);
   };
 
+  const handleRetry = (res: ImageResult) => {
+    if (!usagePreference) return;
+    performInference(usagePreference, res);
+  };
+
   const openEditor = (url: string) => {
     setEditorImage(url);
     setIsEditorOpen(true);
@@ -333,7 +348,7 @@ export const useImageGenerator = () => {
     selectedRes, setSelectedRes, quantity, setQuantity,
     references, setReferences, results, setResults, totalCost,
     generateTooltip, isGenerateDisabled, performInference,
-    handleLocalFileUpload, handleGenerate, openEditor,
+    handleLocalFileUpload, handleGenerate, handleRetry, openEditor,
     toggleSelect, deleteResult, handleLibrarySelect,
     isResumingGenerate, setIsResumingGenerate, triggerDownload,
     handleEditorApply, selectedMode, setSelectedMode,

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { History as HistoryIcon, Loader2, Sparkles, Database, Wand2 } from 'lucide-react';
@@ -22,10 +21,12 @@ interface GeneratorHistoryProps {
   deleteResult: (id: string) => void;
   onDownload: (url: string, filename: string) => void;
   onUsePrompt: (prompt: string) => void;
+  // Added onRetry property to satisfy ImageResultCard requirements
+  onRetry: (res: ImageResult) => void;
 }
 
 export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
-  results, selectedIds, toggleSelect, setActivePreviewUrl, onEdit, deleteResult, onDownload, onUsePrompt
+  results, selectedIds, toggleSelect, setActivePreviewUrl, onEdit, deleteResult, onDownload, onUsePrompt, onRetry
 }) => {
   const [explorerItems, setExplorerItems] = useState<ExplorerItem[]>([]);
   const [loadingExplorer, setLoadingExplorer] = useState(true);
@@ -57,7 +58,7 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
           </div>
        </div>
 
-       <div className="flex-grow overflow-y-auto p-4 space-y-6 no-scrollbar">
+       <div className="flex-grow overflow-y-auto no-scrollbar p-4 space-y-6">
           {/* Section 1: Explore (Inspiration) */}
           <div className="space-y-4">
              <div className="flex items-center gap-2 px-1">
@@ -114,6 +115,8 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
                       onEdit={onEdit}
                       onDelete={deleteResult}
                       onDownload={onDownload}
+                      // Passed onRetry to satisfy ImageResultCard requirements
+                      onRetry={() => onRetry(res)}
                     />
                   ))}
                </div>
