@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { generateDemoImage } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
@@ -25,7 +24,7 @@ export interface ImageResult {
   isRefunded?: boolean;
 }
 
-export const RATIOS = ['1:1', '16:9', '9:16', '4:5', '3:4'];
+export const RATIOS = ['1:1', '16:9', '9:16', '4:3', '3:4'];
 export const RESOLUTIONS = ['1k', '2k', '4k'];
 
 export const useImageGenerator = () => {
@@ -71,12 +70,11 @@ export const useImageGenerator = () => {
         const res = await pricingApi.getPricing({ tool: 'image' });
         if (res.success && res.data.length > 0) {
           const mapped = res.data.map((m: PricingModel) => ({
-            id: m._id, // Use _id for reliable identification in session
+            id: m._id, 
             name: m.name,
             raw: m
           }));
           setAvailableModels(mapped);
-          // Default to Banana Pro if available, otherwise first model
           const defaultModel = mapped.find(m => m.raw.modelKey === 'google_image_gen_banana_pro') || mapped[0];
           setSelectedModel(defaultModel);
         }
@@ -137,9 +135,10 @@ export const useImageGenerator = () => {
       const response = await fetch(url);
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.body.appendChild(document.createElement('a'));
+      const link = document.createElement('a');
       link.href = blobUrl;
       link.download = filename;
+      document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(blobUrl);
@@ -151,18 +150,39 @@ export const useImageGenerator = () => {
   const pollJobStatus = async (jobId: string, resultId: string, cost: number) => {
     try {
       const response: ImageJobResponse = await imagesApi.getJobStatus(jobId);
+      
+      // Kiểm tra lỗi dựa trên cấu hình trả về của người dùng
+      const isError = response.status === 'error' || response.data?.status === 'error' || response.data?.status === 'failed';
+
+      if (isError) {
+        // Dừng poll và note lỗi
+        if (usagePreference === 'credits') {
+          // Chỉ hoàn tiền nếu chưa được hoàn trả trước đó
+          setResults(prev => prev.map(r => {
+            if (r.id === resultId && !r.isRefunded) {
+              addCredits(cost);
+              return { ...r, status: 'error', isRefunded: true };
+            }
+            return r.id === resultId ? { ...r, status: 'error' } : r;
+          }));
+        } else {
+          setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
+        }
+        return; // Dừng hàm, không gọi setTimeout tiếp theo
+      }
+
       if (response.data && response.data.status === 'done' && response.data.result?.images?.length) {
         const imageUrl = response.data.result.images[0];
         setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done' } : r));
         refreshUserInfo();
-      } else if (response.data && response.data.status === 'failed') {
-        if (usagePreference === 'credits') addCredits(cost);
-        setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error', isRefunded: true } : r));
       } else {
+        // Tiếp tục poll nếu đang ở trạng thái pending/processing
         setTimeout(() => pollJobStatus(jobId, resultId, cost), 5000);
       }
     } catch (e) {
-      setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
+      // Khi có lỗi network, ta có thể thử lại thay vì dừng hẳn ngay lập tức
+      console.error("Polling Network Error:", e);
+      setTimeout(() => pollJobStatus(jobId, resultId, cost), 10000);
     }
   };
 

@@ -30,9 +30,10 @@ export interface ImageJobRequest {
 }
 
 export interface ImageJobResponse {
-  success: boolean;
+  success?: boolean;
+  status?: string;
   data: {
-    status: "pending" | "processing" | "done" | "failed";
+    status: "pending" | "processing" | "done" | "failed" | "error";
     jobId: string;
     result?: {
       images: string[];
@@ -52,13 +53,16 @@ export const imagesApi = {
     try {
       const response = await fetch(`${API_BASE_URL}/image-jobs`, {
         method: 'POST',
-        headers: getHeaders(),
+        headers: {
+          'accept': '*/*',
+          ...getHeaders()
+        },
         body: JSON.stringify(payload),
       });
       return await response.json();
     } catch (error) {
       console.error('Image Job Creation Error:', error);
-      return { success: false, data: { status: 'failed', jobId: '' }, message: 'Network connection failed' };
+      return { success: false, status: 'error', data: { status: 'failed', jobId: '' }, message: 'Network connection failed' };
     }
   },
 
@@ -70,12 +74,15 @@ export const imagesApi = {
     try {
       const response = await fetch(`${API_BASE_URL}/image-jobs/${jobId}`, {
         method: 'GET',
-        headers: getHeaders(),
+        headers: {
+          'accept': '*/*',
+          ...getHeaders()
+        },
       });
       return await response.json();
     } catch (error) {
       console.error('Image Job Status Error:', error);
-      return { success: false, data: { status: 'failed', jobId }, message: 'Status check failed' };
+      return { success: false, status: 'error', data: { status: 'failed', jobId }, message: 'Status check failed' };
     }
   }
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Loader2, Check, Maximize2, Trash2, Edit3, Download, Zap, Box, Monitor, AlertCircle, Clock } from 'lucide-react';
+import { Loader2, Check, Maximize2, Trash2, Edit3, Download, Zap, Box, Monitor, AlertCircle, Clock, RefreshCw } from 'lucide-react';
 import { ImageResult } from '../../hooks/useImageGenerator';
 
 interface ImageResultCardProps {
@@ -18,15 +18,18 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
   const aspectClass = res.aspectRatio === '9:16' ? 'aspect-[9/16]' : res.aspectRatio === '16:9' ? 'aspect-video' : 'aspect-square';
 
   const isProcessing = res.status === 'processing';
+  const isError = res.status === 'error';
 
   return (
     <div 
       className={`group relative p-4 rounded-2xl border-2 transition-all flex flex-col gap-3 cursor-pointer ${
         isSelected 
           ? 'border-brand-blue bg-brand-blue/5' 
-          : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#141416] hover:border-black/10 dark:hover:border-white/10 shadow-sm'
+          : isError
+            ? 'border-red-500/20 bg-red-50/30 dark:bg-red-900/5 hover:border-red-500/40'
+            : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#141416] hover:border-black/10 dark:hover:border-white/10 shadow-sm'
       }`}
-      onClick={() => res.url && onFullscreen(res.url)}
+      onClick={() => res.url ? onFullscreen(res.url) : null}
     >
       {/* Visual Area */}
       <div className={`relative ${aspectClass} rounded-xl overflow-hidden bg-black border border-black/5 dark:border-white/5`}>
@@ -38,6 +41,14 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
             </div>
             <p className="text-[9px] font-black uppercase tracking-[0.4em] text-brand-blue animate-pulse">Rendering...</p>
           </div>
+        ) : isError ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-red-50 dark:bg-black/60 backdrop-blur-sm z-10 p-6 text-center">
+             <AlertCircle size={32} className="text-red-500/50" />
+             <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-widest text-red-500">LỖI TỔNG HỢP</p>
+                <p className="text-[8px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-tighter">Vui lòng kiểm tra lại kịch bản và thử tạo lại</p>
+             </div>
+          </div>
         ) : res.url ? (
           <img src={res.url} className="w-full h-full object-cover" alt="Gen" />
         ) : (
@@ -48,7 +59,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         )}
 
         {/* Reference Thumbnails Overlay (Bottom Left) */}
-        {res.references.length > 0 && (
+        {!isError && res.references.length > 0 && (
           <div className="absolute bottom-2 left-2 flex gap-1.5 z-10 pointer-events-none group-hover:opacity-0 transition-opacity">
             {res.references.slice(0, 3).map((ref, i) => (
               <div key={i} className="w-10 h-10 rounded-md border border-white/40 shadow-2xl overflow-hidden bg-black/40 backdrop-blur-sm">
@@ -64,7 +75,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         )}
 
         {/* Hover Actions */}
-        {!isProcessing && res.url && (
+        {!isProcessing && !isError && res.url && (
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
              <button onClick={(e) => { e.stopPropagation(); onFullscreen(res.url!); }} className="p-2.5 bg-white text-black rounded-full hover:scale-110 transition-transform shadow-xl"><Maximize2 size={16}/></button>
              <button onClick={(e) => { e.stopPropagation(); onEdit(res.url!); }} className="p-2.5 bg-brand-blue text-white rounded-full hover:scale-110 transition-transform shadow-xl"><Edit3 size={16}/></button>
@@ -72,14 +83,25 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
              <button onClick={(e) => { e.stopPropagation(); onDelete(res.id); }} className="p-2.5 bg-red-500 text-white rounded-full hover:scale-110 transition-transform shadow-xl"><Trash2 size={16}/></button>
           </div>
         )}
+
+        {isError && (
+          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+             <button onClick={(e) => { e.stopPropagation(); onDelete(res.id); }} className="p-3 bg-red-600 text-white rounded-full shadow-2xl flex items-center gap-2">
+                <Trash2 size={16} />
+                <span className="text-[9px] font-black uppercase pr-1">Xóa bản ghi</span>
+             </button>
+          </div>
+        )}
         
         {/* Selection Checkbox Overlay */}
-        <div 
-          onClick={(e) => { e.stopPropagation(); onToggleSelect(); }}
-          className={`absolute top-2 left-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-brand-blue border-brand-blue shadow-lg' : 'border-white/20 bg-black/40 hover:bg-black/60'}`}
-        >
-          {isSelected && <Check size={12} strokeWidth={4} className="text-white" />}
-        </div>
+        {!isError && (
+          <div 
+            onClick={(e) => { e.stopPropagation(); onToggleSelect(); }}
+            className={`absolute top-2 left-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-brand-blue border-brand-blue shadow-lg' : 'border-white/20 bg-black/40 hover:bg-black/60'}`}
+          >
+            {isSelected && <Check size={12} strokeWidth={4} className="text-white" />}
+          </div>
+        )}
       </div>
 
       {/* Info Area - Visible for all states */}
@@ -90,7 +112,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           </h4>
           <div className="flex justify-between items-center text-[7px] font-bold text-gray-500 uppercase tracking-widest">
              <span className="flex items-center gap-1"><Clock size={10} /> {res.fullTimestamp}</span>
-             <span className="text-brand-blue">{res.model}</span>
+             <span className={isError ? 'text-red-500' : 'text-brand-blue'}>{res.model}</span>
           </div>
         </div>
 
@@ -106,12 +128,14 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
 
         {/* Economic / Status Hub */}
         <div className="flex items-center justify-between border-t border-black/5 dark:border-white/5 pt-2">
-           <div className={`flex items-center gap-1.5 text-[9px] font-black italic ${res.isRefunded ? 'text-emerald-500' : 'text-orange-500'}`}>
+           <div className={`flex items-center gap-1.5 text-[9px] font-black italic ${res.isRefunded ? 'text-emerald-500' : isError ? 'text-red-500' : 'text-orange-500'}`}>
               <Zap size={10} fill="currentColor" />
-              {res.isRefunded ? 'REFUNDED' : `-${res.cost}`}
+              {res.isRefunded ? 'REFUNDED' : isError ? 'FAILED' : `-${res.cost}`}
            </div>
-           {res.status === 'error' && (
-             <span className="text-[7px] font-black uppercase text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded">Failed</span>
+           {isError && (
+             <span className="text-[7px] font-black uppercase text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded flex items-center gap-1">
+               <AlertCircle size={8} /> Thử tạo lại
+             </span>
            )}
            {isProcessing && (
              <span className="text-[7px] font-black uppercase text-brand-blue animate-pulse">Syncing...</span>
