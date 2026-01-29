@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings2, ChevronDown, Zap, Loader2, Settings } from 'lucide-react';
-import { ModelEngineSelector } from './ModelEngineSelector';
+// Added Zap and Loader2 to the imports
+import { Settings2, ChevronDown, Settings, Zap, Loader2 } from 'lucide-react';
+import { UniversalModelSelector } from '../common/UniversalModelSelector';
 import { DurationSelector } from './DurationSelector';
 import { PricingModel } from '../../apis/pricing';
 
@@ -57,20 +58,33 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
             exit={window.innerWidth < 1024 ? { height: 0, opacity: 0 } : undefined}
             className="overflow-hidden p-6 space-y-6"
           >
-            <ModelEngineSelector 
+            <UniversalModelSelector 
               availableModels={props.availableModels}
               selectedModelId={props.selectedModelObj?._id || ''}
-              setSelectedModelId={(id) => props.setSelectedModelObj(props.availableModels.find(m => m._id === id) || null)}
+              onModelChange={(id) => props.setSelectedModelObj(props.availableModels.find(m => m._id === id) || null)}
               selectedEngine={props.selectedEngine}
-              setSelectedEngine={props.setSelectedEngine}
-              ratio={props.ratio}
-              cycleRatio={props.cycleRatio}
-              durationComponent={<DurationSelector value={props.duration} onClick={props.cycleDuration} />}
-              soundEnabled={props.soundEnabled}
-              cycleSound={props.cycleSound}
-              resolution={props.resolution}
-              cycleResolution={props.cycleResolution}
+              onEngineChange={props.setSelectedEngine}
+              disabled={props.isGenerating}
             />
+
+            <div className="grid grid-cols-4 gap-2">
+              <div className="space-y-1.5 text-center">
+                <p className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600">Tỉ lệ</p>
+                <button onClick={props.cycleRatio} className="w-full py-2 border rounded-sm text-[8px] font-black uppercase transition-all bg-white dark:bg-[#1c1c1e] border-slate-200 dark:border-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue">{props.ratio}</button>
+              </div>
+
+              <DurationSelector value={props.duration} onClick={props.cycleDuration} />
+
+              <div className="space-y-1.5 text-center">
+                <p className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600">Âm thanh</p>
+                <button onClick={props.cycleSound} className={`w-full py-2 border rounded-sm text-[8px] font-black uppercase transition-all ${props.soundEnabled ? 'bg-purple-500 text-white border-purple-400 shadow-lg shadow-purple-500/20' : 'bg-white dark:bg-[#1c1c1e] border-slate-200 dark:border-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue'}`}>{props.soundEnabled ? 'Bật' : 'Tắt'}</button>
+              </div>
+
+              <div className="space-y-1.5 text-center">
+                <p className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600">P.Giải</p>
+                <button onClick={props.cycleResolution} className="w-full py-2 border rounded-sm text-[8px] font-black uppercase transition-all bg-white dark:bg-[#1c1c1e] border-slate-200 dark:border-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue">{props.resolution}</button>
+              </div>
+            </div>
             
             <div className="flex flex-col gap-4 border-t border-black/5 dark:border-white/5 pt-4">
               <div className="flex items-center justify-between px-1">
@@ -104,7 +118,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
            <button 
              onClick={props.handleGenerate} 
              disabled={props.isGenerateDisabled} 
-             className={`w-full py-5 rounded-xl text-white font-black uppercase text-xs tracking-[0.3em] shadow-xl transition-all flex items-center justify-center gap-4 ${props.isGenerateDisabled ? 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400 cursor-not-allowed' : 'bg-purple-600 hover:brightness-110 active:scale-95'}`}
+             className={`w-full py-5 rounded-xl text-white font-black uppercase text-xs tracking-[0.3em] shadow-xl transition-all flex items-center justify-center gap-4 ${props.isGenerateDisabled ? 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400 cursor-not-allowed' : 'bg-purple-600 hover:brightness-110 active:scale-[0.97]'}`}
            >
               {props.isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} fill="currentColor" />}
               {props.activeMode === 'AUTO' ? `KHỞI CHẠY ${props.autoTasksCount} TÁC VỤ` : props.activeMode === 'MULTI' ? `TẠO ${props.multiFramesCount} VIDEO` : 'TẠO VIDEO'}
