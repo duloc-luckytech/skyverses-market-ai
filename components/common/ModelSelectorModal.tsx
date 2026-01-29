@@ -48,8 +48,20 @@ export const ModelSelectorModal: React.FC<ModelSelectorModalProps> = ({
     return groups;
   }, [models]);
 
-  const sortedEngines = Object.keys(engineGroups).sort();
-  const [activeEngine, setActiveEngine] = useState<string>(sortedEngines[0] || '');
+  const sortedEngines = useMemo(() => Object.keys(engineGroups).sort(), [engineGroups]);
+
+  // Xác định engine mặc định dựa trên model đang được chọn
+  const initialEngine = useMemo(() => {
+    if (selectedModelId) {
+      const currentModel = models.find(m => m._id === selectedModelId);
+      if (currentModel) {
+        return currentModel.name.split(' ')[0].toLowerCase().replace(/[^a-z]/g, '');
+      }
+    }
+    return sortedEngines[0] || '';
+  }, [selectedModelId, models, sortedEngines]);
+
+  const [activeEngine, setActiveEngine] = useState<string>(initialEngine);
 
   if (!isOpen) return null;
 
@@ -125,6 +137,7 @@ export const ModelSelectorModal: React.FC<ModelSelectorModalProps> = ({
                 const isMotion = model.name.toLowerCase().includes('motion');
                 const isEdit = model.name.toLowerCase().includes('o1') || model.name.toLowerCase().includes('edit');
                 const isLipsync = model.name.toLowerCase().includes('lipsync');
+                const isSelected = selectedModelId === model._id;
                 
                 // Tính toán dải giá
                 const prices: number[] = [];
@@ -138,13 +151,17 @@ export const ModelSelectorModal: React.FC<ModelSelectorModalProps> = ({
                   <div 
                     key={model._id}
                     onClick={() => { onSelect(model._id); onClose(); }}
-                    className={`p-8 border-2 rounded-[2.5rem] space-y-6 transition-all cursor-pointer group relative overflow-hidden ${selectedModelId === model._id ? 'bg-brand-blue/5 border-brand-blue shadow-2xl shadow-brand-blue/10' : 'bg-white dark:bg-white/[0.02] border-slate-200 dark:border-white/5 hover:border-brand-blue/20'}`}
+                    className={`p-8 border-2 rounded-[2.5rem] space-y-6 transition-all cursor-pointer group relative overflow-hidden ${isSelected ? 'bg-brand-blue/5 border-brand-blue shadow-2xl shadow-brand-blue/10' : 'bg-white dark:bg-white/[0.02] border-slate-200 dark:border-white/5 hover:border-brand-blue/20'}`}
                   >
                      <div className="flex justify-between items-start">
                         <div className="space-y-4 flex-grow pr-8">
                            <div className="flex items-center gap-4">
                               <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">{model.name}</h3>
-                              <span className="px-3 py-1 bg-emerald-600 text-white text-[9px] font-black rounded-lg uppercase tracking-widest shadow-lg">MỚI</span>
+                              {isSelected ? (
+                                <span className="px-3 py-1 bg-brand-blue text-white text-[9px] font-black rounded-lg uppercase tracking-widest shadow-lg">ĐANG CHỌN</span>
+                              ) : (
+                                <span className="px-3 py-1 bg-emerald-600 text-white text-[9px] font-black rounded-lg uppercase tracking-widest shadow-lg">MỚI</span>
+                              )}
                            </div>
                            <p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed italic max-w-2xl">
                              {model.description || `Mô hình cao cấp từ hệ sinh thái ${model.engine.toUpperCase()}, tối ưu hóa ${model.tool} với độ trung thực tuyệt đối và tính nhất quán định danh.`}
