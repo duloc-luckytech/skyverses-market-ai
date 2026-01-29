@@ -233,7 +233,12 @@ export const useImageGenerator = () => {
             input: { prompt: task.prompt, images: references.length > 0 ? references : undefined },
             config: { width: 1024, height: 1024, aspectRatio: selectedRatio, seed: 0, style: "cinematic" },
             engine: { provider: "gommo", model: selectedModel.raw.modelKey as any },
-            enginePayload: { prompt: task.prompt, privacy: "PRIVATE", projectId: "default" }
+            enginePayload: { 
+              prompt: task.prompt, 
+              privacy: "PRIVATE", 
+              projectId: "default",
+              mode: selectedMode 
+            }
           };
           const apiRes = await imagesApi.createJob(payload);
           if (apiRes.success && apiRes.data.jobId) {

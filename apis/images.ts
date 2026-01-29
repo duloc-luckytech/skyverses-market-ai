@@ -26,6 +26,7 @@ export interface ImageJobRequest {
     editImage?: boolean;
     base64Image?: string;
     category?: string;
+    mode?: string;
   };
 }
 
