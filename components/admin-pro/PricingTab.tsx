@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Zap, Edit3, ChevronDown, Monitor, Clock, 
   Loader2, Trash2, Search, Filter as FilterIcon,
-  X, DollarSign, Settings2, Info, RefreshCw, Plus, Check
+  X, DollarSign, Settings2, Info, RefreshCw, Plus, Check, Copy
 } from 'lucide-react';
 import { pricingApi, PricingModel, PricingFilters, CreatePricingRequest } from '../../apis/pricing';
 
@@ -77,6 +77,29 @@ export const PricingTab: React.FC = () => {
       tool: model.tool, engine: model.engine, modelKey: model.modelKey, version: model.version,
       name: model.name, modes: model.modes || [model.mode || 'relaxed'], baseCredits: 20, perSecond: 2, defaultDuration: 5,
       resolutions: {}, durations: durations, description: model.description, status: model.status
+    });
+    setIsDrawerOpen(true);
+  };
+
+  const handleDuplicate = (model: PricingModel) => {
+    setEditingId(null); // Đặt null để tạo mới thay vì update
+    const resolutions = Object.keys(model.pricing || {});
+    const firstRes = resolutions[0];
+    const durations = firstRes ? Object.keys(model.pricing[firstRes]).map(Number) : [];
+    setResInput(resolutions.map(r => `${r}:1`).join(', '));
+    setDurInput(durations.join(', '));
+    setPayload({
+      tool: model.tool, engine: model.engine, modelKey: `${model.modelKey}_copy`,
+      version: model.version,
+      name: `${model.name} (Copy)`,
+      modes: model.modes || [model.mode || 'relaxed'], 
+      baseCredits: 20, 
+      perSecond: 2, 
+      defaultDuration: 5,
+      resolutions: {}, 
+      durations: durations, 
+      description: model.description, 
+      status: 'active'
     });
     setIsDrawerOpen(true);
   };
@@ -216,8 +239,9 @@ export const PricingTab: React.FC = () => {
                   </td>
                   <td className="px-8 py-6 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => handleEdit(model)} className="p-2.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-lg transition-all shadow-sm"><Edit3 size={14} /></button>
-                      <button onClick={() => handleDelete(model._id)} className="p-2.5 bg-rose-50 dark:bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white rounded-lg transition-all shadow-sm"><Trash2 size={14} /></button>
+                      <button onClick={() => handleDuplicate(model)} title="Nhân bản" className="p-2.5 bg-slate-100 dark:bg-white/5 hover:bg-emerald-500 hover:text-white rounded-lg transition-all shadow-sm"><Copy size={14} /></button>
+                      <button onClick={() => handleEdit(model)} title="Chỉnh sửa" className="p-2.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-lg transition-all shadow-sm"><Edit3 size={14} /></button>
+                      <button onClick={() => handleDelete(model._id)} title="Xóa" className="p-2.5 bg-rose-50 dark:bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white rounded-lg transition-all shadow-sm"><Trash2 size={14} /></button>
                       <button onClick={() => toggleExpand(model._id)} className="p-2.5 rounded-lg bg-slate-100 dark:bg-white/5 text-gray-400 hover:text-brand-blue transition-all"><ChevronDown size={14} className={`transition-transform ${expandedIds.includes(model._id) ? 'rotate-180' : ''}`} /></button>
                     </div>
                   </td>
