@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { marketApi } from '../apis/market';
 import { Solution } from '../types';
 import { 
-  X, SearchX, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow
+  X, SearchX, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow, Sparkles
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -227,21 +227,24 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* AI AGENT WORKFLOW BLOCK - NEW */}
-              {sectionedSolutions.agentWorkflow.length > 0 && (
-                <section>
+              {/* IMAGE STUDIO BLOCK */}
+              {sectionedSolutions.image.length > 0 && (
+                <section className="relative">
+                  {/* Background Aura for Image Studio */}
+                  <div className="absolute -inset-10 bg-brand-blue/5 blur-[120px] pointer-events-none rounded-full"></div>
+                  
                   <MarketSectionHeader 
-                    icon={Workflow} 
-                    title="AI Agent Workflow" 
-                    subtitle="Tự động hóa quy trình sáng tạo đa kênh với hệ thống AI Agent thông minh" 
-                    count={sectionedSolutions.agentWorkflow.length} 
-                    colorClass="text-indigo-600" 
-                    onScrollLeft={() => scroll(agentWorkflowRef, 'left')} 
-                    onScrollRight={() => scroll(agentWorkflowRef, 'right')}
-                    onSeeAll={() => navigate('/category/others')}
+                    icon={ImageIcon} 
+                    title="Image Studio" 
+                    subtitle="Tổng hợp thị giác độ trung thực cao cho hệ thống thiết kế"
+                    count={sectionedSolutions.image.length} 
+                    colorClass="text-brand-blue" 
+                    onScrollLeft={() => scroll(imageRef, 'left')} 
+                    onScrollRight={() => scroll(imageRef, 'right')}
+                    onSeeAll={() => navigate('/category/image')}
                   />
-                  <div ref={agentWorkflowRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
-                    {sectionedSolutions.agentWorkflow.map((sol, idx) => (
+                  <div ref={imageRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4 relative z-10">
+                    {sectionedSolutions.image.map((sol, idx) => (
                       <SolutionCard 
                         key={sol.id} sol={sol} idx={idx} lang={lang} 
                         isLiked={likedItems.includes(sol._id || sol.id)}
@@ -285,21 +288,21 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* CREATIVE STUDIO BLOCK */}
-              {sectionedSolutions.image.length > 0 && (
+              {/* AI AGENT WORKFLOW BLOCK */}
+              {sectionedSolutions.agentWorkflow.length > 0 && (
                 <section>
                   <MarketSectionHeader 
-                    icon={ImageIcon} 
-                    title="Creative Studio" 
-                    subtitle="Tổng hợp thị giác độ trung thực cao cho hệ thống thiết kế"
-                    count={sectionedSolutions.image.length} 
-                    colorClass="text-brand-blue" 
-                    onScrollLeft={() => scroll(imageRef, 'left')} 
-                    onScrollRight={() => scroll(imageRef, 'right')}
-                    onSeeAll={() => navigate('/category/image')}
+                    icon={Workflow} 
+                    title="AI Agent Workflow" 
+                    subtitle="Tự động hóa quy trình sáng tạo đa kênh với hệ thống AI Agent thông minh" 
+                    count={sectionedSolutions.agentWorkflow.length} 
+                    colorClass="text-indigo-600" 
+                    onScrollLeft={() => scroll(agentWorkflowRef, 'left')} 
+                    onScrollRight={() => scroll(agentWorkflowRef, 'right')}
+                    onSeeAll={() => navigate('/category/others')}
                   />
-                  <div ref={imageRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
-                    {sectionedSolutions.image.map((sol, idx) => (
+                  <div ref={agentWorkflowRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
+                    {sectionedSolutions.agentWorkflow.map((sol, idx) => (
                       <SolutionCard 
                         key={sol.id} sol={sol} idx={idx} lang={lang} 
                         isLiked={likedItems.includes(sol._id || sol.id)}
@@ -314,7 +317,7 @@ const MarketPage = () => {
                 </section>
               )}
 
-              {/* UTILITY LAB BLOCK (RENAME TO APP KHÁC) */}
+              {/* UTILITY LAB BLOCK */}
               {sectionedSolutions.others.length > 0 && (
                 <section>
                   <MarketSectionHeader 

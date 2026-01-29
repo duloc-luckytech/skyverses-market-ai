@@ -124,12 +124,12 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         <div className="absolute bottom-2 left-2 flex gap-1.5 z-10 pointer-events-none group-hover:opacity-0 transition-opacity">
           {res.startImg && (
             <div className="w-8 h-8 rounded-md border border-white/20 overflow-hidden bg-black/40 shadow-lg">
-              <img src={res.startImg} className="w-full h-full object-cover" />
+              <img src={res.startImg} className="w-full h-full object-cover" alt="" />
             </div>
           )}
           {res.endImg && (
             <div className="w-8 h-8 rounded-md border border-white/20 overflow-hidden bg-black/40 shadow-lg">
-              <img src={res.endImg} className="w-full h-full object-cover" />
+              <img src={res.endImg} className="w-full h-full object-cover" alt="" />
             </div>
           )}
         </div>
@@ -188,7 +188,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         )}
       </div>
 
-      {/* Info Area - UNIFIED FOR ALL STATES */}
+      {/* Info Area - UNIFIED FOR ALL STATES (Processing & Done) */}
       <div className={`px-2 pb-2 space-y-3 ${res.status === 'processing' ? 'opacity-60' : ''}`}>
         <div className="space-y-1">
           <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-900 dark:text-white/90 leading-none truncate">
@@ -213,7 +213,3 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     </motion.div>
   );
 };
-
-const AlertCircle = ({ size, className }: { size: number, className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-);
