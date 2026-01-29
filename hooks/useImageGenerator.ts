@@ -71,12 +71,13 @@ export const useImageGenerator = () => {
         const res = await pricingApi.getPricing({ tool: 'image' });
         if (res.success && res.data.length > 0) {
           const mapped = res.data.map((m: PricingModel) => ({
-            id: m.modelKey,
+            id: m._id, // Use _id for reliable identification in session
             name: m.name,
             raw: m
           }));
           setAvailableModels(mapped);
-          const defaultModel = mapped.find(m => m.id === 'google_image_gen_4_5') || mapped[0];
+          // Default to Banana Pro if available, otherwise first model
+          const defaultModel = mapped.find(m => m.raw.modelKey === 'google_image_gen_banana_pro') || mapped[0];
           setSelectedModel(defaultModel);
         }
       } catch (error) {
@@ -203,7 +204,7 @@ export const useImageGenerator = () => {
             type: references.length > 0 ? "image_to_image" : "text_to_image",
             input: { prompt: task.prompt, images: references.length > 0 ? references : undefined },
             config: { width: 1024, height: 1024, aspectRatio: selectedRatio, seed: 0, style: "cinematic" },
-            engine: { provider: "gommo", model: selectedModel.id as any },
+            engine: { provider: "gommo", model: selectedModel.raw.modelKey as any },
             enginePayload: { prompt: task.prompt, privacy: "PRIVATE", projectId: "default" }
           };
           const apiRes = await imagesApi.createJob(payload);
@@ -214,7 +215,14 @@ export const useImageGenerator = () => {
             setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
           }
         } else {
-          const url = await generateDemoImage({ prompt: task.prompt, images: references, model: selectedModel.id, aspectRatio: selectedRatio, quality: selectedRes, apiKey: personalKey });
+          const url = await generateDemoImage({ 
+            prompt: task.prompt, 
+            images: references, 
+            model: selectedModel.raw.modelKey, 
+            aspectRatio: selectedRatio, 
+            quality: selectedRes, 
+            apiKey: personalKey 
+          });
           if (url) {
             setResults(prev => prev.map(r => r.id === task.id ? { ...r, url, status: 'done' } : r));
           } else {
