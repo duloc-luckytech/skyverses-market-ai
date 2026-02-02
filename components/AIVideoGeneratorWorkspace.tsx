@@ -109,6 +109,9 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [results, setResults] = useState<VideoResult[]>([]);
   const [selectedVideoIds, setSelectedVideoIds] = useState<string[]>([]);
 
+  // Define hasJobs to check if results are present
+  const hasJobs = results.length > 0;
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const todayKey = useMemo(() => new Date().toISOString().split('T')[0], []);
 

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Loader2, Check, Maximize2, Trash2, Edit3, Download, Zap, Box, Monitor, AlertCircle, Clock, RefreshCw } from 'lucide-react';
 import { ImageResult } from '../../hooks/useImageGenerator';
@@ -38,7 +39,6 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-50 dark:bg-black/40 backdrop-blur-sm z-10">
             <div className="relative">
               <Loader2 size={32} className="text-brand-blue animate-spin" />
-              {/* Added fix for duplicate size attribute */}
               <Sparkles size={14} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/30 animate-pulse" />
             </div>
             <p className="text-[9px] font-black uppercase tracking-[0.4em] text-brand-blue animate-pulse">Rendering...</p>
@@ -65,7 +65,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           <div className="absolute bottom-2 left-2 flex gap-1.5 z-10 pointer-events-none group-hover:opacity-0 transition-opacity">
             {res.references.slice(0, 3).map((ref, i) => (
               <div key={i} className="w-10 h-10 rounded-md border border-white/40 shadow-2xl overflow-hidden bg-black/40 backdrop-blur-sm">
-                <img src={ref} className="w-full h-full object-cover" alt="Ref" />
+                <img src={ref.url} className="w-full h-full object-cover" alt="Ref" />
               </div>
             ))}
             {res.references.length > 3 && (

@@ -6,7 +6,7 @@ import {
   ChevronUp, SlidersHorizontal, ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { CreationMode } from '../../hooks/useImageGenerator';
+import { CreationMode, ReferenceItem } from '../../hooks/useImageGenerator';
 import { SidebarSingle } from './SidebarSingle';
 import { SidebarBatch } from './SidebarBatch';
 import { ModelEngineSettings } from './ModelEngineSettings';
@@ -18,7 +18,7 @@ interface GeneratorSidebarProps {
   usagePreference: 'credits' | 'key' | null;
   setShowResourceModal: (val: boolean) => void;
   totalCost: number;
-  references: string[];
+  references: ReferenceItem[];
   setReferences: any;
   setIsLibraryOpen: (val: boolean) => void;
   prompt: string;
@@ -41,16 +41,15 @@ interface GeneratorSidebarProps {
   setSelectedRes: (val: string) => void;
   isGenerating: boolean;
   isUploadingRef?: boolean;
+  tempUploadUrl?: string | null;
   handleLocalFileUpload: (file: File) => Promise<void>;
   handleGenerate: () => void;
   generateTooltip: string | null;
   isGenerateDisabled: boolean;
   isMobileExpanded: boolean;
   setIsMobileExpanded: (val: boolean) => void;
-  // Mode props from hook
   selectedMode: string;
   setSelectedMode: (val: string) => void;
-  // Engine props from hook
   selectedEngine: string;
   setSelectedEngine: (val: string) => void;
 }
@@ -70,7 +69,6 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
     <aside 
       className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] lg:shrink-0 bg-white dark:bg-[#111114] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-14 lg:h-full lg:rounded-none'}`}
     >
-      {/* Mobile Toggle Header - Fixed height to avoid covering viewport UI */}
       <div 
         className="lg:hidden h-14 flex items-center justify-between px-6 shrink-0 cursor-pointer border-b border-black/5 dark:border-white/5"
         onClick={() => props.setIsMobileExpanded(!props.isMobileExpanded)}
@@ -86,7 +84,6 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         </div>
       </div>
 
-      {/* Scrollable Content - Hidden when collapsed on mobile */}
       <div className={`flex-grow overflow-y-auto no-scrollbar p-6 space-y-8 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         <div className="hidden lg:flex items-center gap-4">
            <button onClick={props.onClose} className="p-1 text-slate-400 hover:text-brand-blue transition-colors">
@@ -95,7 +92,6 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            <h2 className="text-lg font-black uppercase tracking-tight italic text-slate-900 dark:text-white">Image Studio</h2>
         </div>
 
-        {/* Mode Tabs */}
         <div className="grid grid-cols-2 bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/10">
            <button 
              onClick={() => props.setActiveMode('SINGLE')}
@@ -111,23 +107,33 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            </button>
         </div>
 
-        {/* References */}
         <div className="space-y-4">
            <div className="flex justify-between items-center px-1">
              <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Ảnh tham chiếu</label>
-             <span className="text-[10px] font-bold text-gray-500">{props.references.length}/6</span>
+             <span className="text-[10px] font-bold text-gray-500">{props.references.length + (props.tempUploadUrl ? 1 : 0)}/6</span>
            </div>
            <div className="grid grid-cols-3 gap-2">
               {props.references.map((ref, idx) => (
                 <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-black/5 dark:border-white/5 group">
-                  <img src={ref} className="w-full h-full object-cover" alt="" />
-                  <button onClick={() => props.setReferences((prev: string[]) => prev.filter((_: any, i: number) => i !== idx))} className="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"><Plus className="rotate-45" size={20} /></button>
+                  <img src={ref.url} className="w-full h-full object-cover" alt="" />
+                  <button onClick={() => props.setReferences((prev: ReferenceItem[]) => prev.filter((_: any, i: number) => i !== idx))} className="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"><Plus className="rotate-45" size={20} /></button>
                 </div>
               ))}
-              {props.references.length < 6 && (
+              
+              {/* Temporary Upload Slot with Preview */}
+              {props.tempUploadUrl && (
+                <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-brand-blue/30 bg-brand-blue/5 animate-pulse">
+                  <img src={props.tempUploadUrl} className="w-full h-full object-cover opacity-50 blur-[1px]" alt="Uplinking" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Loader2 size={18} className="text-brand-blue animate-spin" />
+                  </div>
+                </div>
+              )}
+
+              {props.references.length + (props.tempUploadUrl ? 1 : 0) < 6 && (
                 <div className="relative aspect-square group">
                   <div className="absolute inset-0 border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-brand-blue transition-all rounded-lg cursor-pointer">
-                    {props.isUploadingRef ? <Loader2 size={20} className="animate-spin text-brand-blue" /> : <Plus size={20} />}
+                    {props.isUploadingRef && !props.tempUploadUrl ? <Loader2 size={20} className="animate-spin text-brand-blue" /> : <Plus size={20} />}
                   </div>
                   <div className="absolute inset-0 bg-white dark:bg-[#111114] opacity-0 group-hover:opacity-100 transition-all flex flex-col p-1 gap-1 z-10 border border-slate-200 dark:border-white/10 rounded-lg">
                     <button onClick={() => fileInputRef.current?.click()} className="flex-grow flex items-center justify-center gap-2 bg-slate-50 dark:bg-white/5 rounded-md hover:bg-brand-blue hover:text-white transition-all"><Upload size={14} /></button>
@@ -139,7 +145,6 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) props.handleLocalFileUpload(f); e.target.value = ''; }} />
         </div>
 
-        {/* Prompt Input Area */}
         <div className="hidden lg:block">
            {props.activeMode === 'SINGLE' ? (
              <SidebarSingle prompt={props.prompt} setPrompt={props.setPrompt} />
@@ -148,7 +153,6 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            )}
         </div>
 
-        {/* Model and Settings Matrix */}
         <ModelEngineSettings 
           availableModels={props.availableModels}
           selectedModel={props.selectedModel}
@@ -166,7 +170,6 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         />
       </div>
 
-      {/* Floating Prompt Bar for Mobile & Desktop Footer */}
       <div className={`shrink-0 p-6 bg-white dark:bg-[#111114] border-t border-black/5 dark:border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] space-y-4 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         <div className="flex items-center justify-between px-1">
            <div className="flex items-center gap-3">
@@ -211,7 +214,6 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         </div>
       </div>
 
-      {/* Floating Prompt Input for mobile when sidebar is collapsed */}
       {!props.isMobileExpanded && (
          <div className="lg:hidden fixed bottom-20 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-[160]">
             <div className="bg-white/95 dark:bg-[#0d151c]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/10 rounded-[2rem] h-14 px-4 flex items-center gap-3 shadow-2xl overflow-hidden">

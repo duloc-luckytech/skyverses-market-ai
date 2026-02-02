@@ -18,7 +18,7 @@ export const STORYBOARD_SAMPLES = [
   {
     id: 's-dbz',
     title: 'Dragon Ball: Ultra Instinct Rise',
-    script: 'Goku đứng giữa đấu trường đổ nát, bao quanh bởi luồng hào quang bạc lấp lánh của Bản Năng Vô Cực. Jiren lao tới với nắm đấm rực lửa nhưng Goku né tránh nhẹ nhàng như một chiếc lá trong gió, trước khi tung đòn phản công bằng luồng năng lượng xanh chói lòa.'
+    script: 'Goku đứng giữa đấu trường đổ nát, bao quanh bởi luồng hào quang bạc lẵng lấp lánh của Bản Năng Vô Cực. Jiren lao tới với nắm đấm rực lửa nhưng Goku né tránh nhẹ nhàng như một chiếc lá trong gió, trước khi tung đòn phản công bằng luồng năng lượng xanh chói lòa.'
   },
   {
     id: 's-naruto',
@@ -133,7 +133,7 @@ export const SOLUTIONS: Solution[] = [
     tags: ['Wedding', 'Romantic', 'Couple', 'Face Sync'],
     features: [
       { en: 'Dual Face Sync', vi: 'Đồng bộ gương mặt kép', ko: '이중 얼굴 동기화', ja: 'デュアルフェイス同期' },
-      { en: 'Luxury Dress Library', vi: 'Thư viện váy cưới cao cấp', ko: '럭셔리 드레스 라이브러리', ja: '高級ドレスライブラリ' }
+      { en: 'Luxury Dress Library', vi: 'Thư viện váy cưới cao cấp', ko: '럭xer리 드레스 라이브러리', ja: '高級ドレスライブラリ' }
     ],
     complexity: 'Advanced',
     priceReference: '150 CR / generation',
@@ -142,166 +142,36 @@ export const SOLUTIONS: Solution[] = [
     featured: true
   },
   {
-    id: 'TET-GEN-PRO',
-    slug: 'ai-tet-generator',
+    id: 'IMAGE-UPSCALE-AI',
+    slug: 'image-upscale-ai',
     name: { 
-      en: 'AI Tet Studio', 
-      vi: 'AI Tết Studio', 
-      ko: 'AI 설날 스튜디오', 
-      ja: 'AIテトスタジオ' 
+      en: 'Generative Upscale AI', 
+      vi: 'Generative Upscale - Nâng Cấp Ảnh AI', 
+      ko: '생성형 업스케일 AI', 
+      ja: '生成型アップスケールAI' 
     },
-    category: { en: 'Festivals', vi: 'Lễ hội & Sự kiện', ko: '축제', ja: 'フェスティバル' },
+    category: { en: 'Enhancement', vi: 'Tối ưu & Phục chế', ko: '강화', ja: '強化' },
     description: { 
-      en: 'Create stunning Lunar New Year photos with traditional Ao Dai and spring atmosphere.', 
-      vi: 'Kiến tạo ảnh Tết Nguyên Đán rạng rỡ với Áo dài truyền thống và không gian xuân rực rỡ.', 
-      ko: '전통 아오자이와 봄 분위기의 멋진 설날 사진을 만들어보세요.', 
-      ja: '伝統的なアオザイと春の雰囲気で素晴らしいテトの写真を撮りましょう。' 
+      en: 'Advanced generative upscaling technology that reconstructs details for crystal-clear 4K/12K results.', 
+      vi: 'Giải pháp upscale ảnh cao cấp, nhanh và tự nhiên, không chỉ phóng to mà còn tái tạo chi tiết thông minh bằng AI.', 
+      ko: '크리스탈 클리어 4K/12K 결과를 위해 세부 사항을 재구성하는 고급 생성형 업스케일링 기술.', 
+      ja: 'クリスタルクリアな4K/12Kの結果を得るために詳細を再構成する高度な生成型アップスケーリング技術。' 
     },
-    problems: ['Expensive holiday photography', 'Crowded spring flower markets', 'Limited outfit choices'],
-    industries: ['Marketing', 'Personal Branding', 'Social Media'],
-    imageUrl: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&q=80&w=1600',
+    problems: ['Blurry low-res assets', 'Digital compression artifacts', 'Loss of skin and fabric textures', 'Limited print resolution'],
+    industries: ['Photography', 'Marketing', 'Printing', 'E-commerce'],
+    imageUrl: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=1600',
     demoType: 'image',
-    tags: ['Tet', 'Lunar New Year', 'Ao Dai', 'Spring'],
+    tags: ['Upscale', '4K', '12K', 'Detail Reconstruction'],
     features: [
-      { en: 'Ao Dai Pattern Library', vi: 'Thư viện mẫu Áo dài', ko: '아오자이 패턴 라이브러리', ja: 'アオザイパターンライブラリ' },
-      { en: 'Spring Flower Engine', vi: 'Công cụ mô phỏng hoa xuân', ko: '봄꽃 엔진', ja: '春の花エンジン' }
+      { en: 'Generative Detail Recovery', vi: 'Tái tạo chi tiết thông minh', ko: '생성적 세부 복구', ja: '生成的な詳細の復元' },
+      { en: 'Multi-Resolution 12K', vi: 'Hỗ trợ độ phân giải tới 12K', ko: '다중 해상도 12K', ja: 'マルチ解像度12K' },
+      { en: 'Human-like Realism', vi: 'Tái tạo chân thực (da, tóc)', ko: '인간과 같은 사실감', ja: '人間のようなリアルさ' }
     ],
     complexity: 'Advanced',
-    priceReference: '150 CR / generation',
-    isActive: true,
-    priceCredits: 150,
-    featured: true
-  },
-  {
-    id: 'NOEL-GEN-PRO',
-    slug: 'ai-noel-generator',
-    name: { 
-      en: 'AI Noel Studio', 
-      vi: 'AI Noel Studio', 
-      ko: 'AI 노엘 스튜디오', 
-      ja: 'AIノエルスタジオ' 
-    },
-    category: { en: 'Festivals', vi: 'Lễ hội & Sự kiện', ko: '축제', ja: 'フェスティバル' },
-    description: { 
-      en: 'Create magical Christmas and holiday visuals with advanced neural style transfer.', 
-      vi: 'Kiến tạo hình ảnh Giáng sinh màu nhiệm với công nghệ chuyển đổi phong cách thần kinh tiên tiến.', 
-      ko: '고급 신경 스타일 전송으로 마법 같은 크리스마스 및 휴일 비주얼을 만듭니다.', 
-      ja: '高度なニューラルスタイル転送で、魔法のようなクリスマスとホリデーのビジュアルを作成します。' 
-    },
-    problems: ['Generic holiday cards', 'Expensive photography for seasonal marketing', 'Lack of unique festive content'],
-    industries: ['Marketing', 'Personal Branding', 'E-commerce'],
-    imageUrl: 'https://images.unsplash.com/photo-1543589077-47d81606c1ad?auto=format&fit=crop&q=80&w=1600',
-    demoType: 'image',
-    tags: ['Noel', 'Christmas', 'Cyber-Santa', 'Winter'],
-    features: [
-      { en: 'Festive DNA Lock', vi: 'Khóa định danh lễ hội', ko: '축제 DNA 잠금', ja: 'フェスティブDNAロック' },
-      { en: 'Atmospheric Snow Engine', vi: 'Công cụ mô phỏng tuyết', ko: '대기 눈 엔진', ja: '大気雪エンジン' }
-    ],
-    complexity: 'Advanced',
-    priceReference: '150 CR / generation',
-    isActive: true,
-    priceCredits: 150,
-    featured: true
-  },
-  {
-    id: 'PRODUCT-IMAGE',
-    slug: 'product-image',
-    name: { 
-      en: 'AI Image Studio', 
-      vi: 'AI Image Studio', 
-      ko: 'AI 이미지 스튜디오', 
-      ja: 'AIイメージスタジオ' 
-    },
-    category: { en: 'Generative Art', vi: 'Nghệ thuật sinh tạo', ko: '생성 예술', ja: '生成アート' },
-    description: { 
-      en: 'Professional creative studio for high-fidelity image synthesis and pixel-perfect editing.', 
-      vi: 'Studio sáng tạo chuyên nghiệp để tổng hợp hình ảnh độ trung thực cao và chỉnh sửa pixel hoàn hảo.', 
-      ko: '고충실도 이미지 합성 및 픽셀 완벽 편집을 위한 전문 크리에이티브 스튜디오.', 
-      ja: '忠実度の高い画像合成とピクセル完璧な編集のためのプロフェッショナルなクリエイティブスタジオ。' 
-    },
-    problems: ['Expensive photoshoot costs', 'Slow design iterations', 'Manual retouching overhead'],
-    industries: ['Marketing', 'E-commerce', 'Creative Agency'],
-    imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1600',
-    demoType: 'image',
-    tags: ['AI Image', 'Editor', '8K', 'Upscale'],
-    features: [
-      { en: 'Neural Retouching', vi: 'Chỉnh sửa thần kinh', ko: '신경망 리터칭', ja: 'ニューラルレタッチ' },
-      { en: 'Identity Lock', vi: 'Khóa định danh', ko: '아이덴티티 락', ja: 'アイデンティティロック' }
-    ],
-    complexity: 'Advanced',
-    priceReference: '150 CR / generation',
-    isActive: true,
-    priceCredits: 150
-  },
-  {
-    id: 'REAL-ESTATE-AI',
-    slug: 'bat-dong-san-ai',
-    name: { 
-      en: 'Real Estate AI', 
-      vi: 'Bất Động Sản AI', 
-      ko: '부동산 AI', 
-      ja: '不動産AI' 
-    },
-    category: { en: 'Design & Architecture', vi: 'Thiết kế & Kiến trúc', ko: '디자인 및 건축', ja: 'デザインと建築' },
-    description: { 
-      en: 'Professional AI for virtual interior staging and architectural renovation.', 
-      vi: 'Hệ thống AI chuyên nghiệp cho dàn dựng nội thất ảo và cải tạo kiến trúc.', 
-      ko: '가상 인테리어 스테이징 및 건축 리노베이션을 위한 전문 AI.', 
-      ja: '仮想インテリアステージングと建築リノベーションのためのプロフェッショナルAI。' 
-    },
-    problems: ['Manual interior staging costs', 'Slow renovation visualization', 'Limited design variations', 'High architectural rendering fees'],
-    industries: ['Real Estate', 'Interior Design', 'Architecture', 'Construction'],
-    imageUrl: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=1600',
-    demoType: 'image',
-    tags: ['Real Estate', 'Interior', 'Architecture', 'Renovation'],
-    features: [
-      { en: 'AI Virtual Staging', vi: 'Dàn dựng nội thất ảo AI', ko: 'AI 가상 스테이징', ja: 'AIバーチャルステージング' },
-      { en: 'Architectural Renovation', vi: 'Cải tạo kiến trúc AI', ko: '건축 리노베이션', ja: '建築リノベーション' },
-      { en: 'Style Transfer', vi: 'Chuyển đổi phong cách nội thất', ko: '인테리어 스타일 전송', ja: 'インテリアスタイルの転送' }
-    ],
-    complexity: 'Advanced',
-    priceReference: '150 CR / design',
-    isActive: true,
-    priceCredits: 150,
-    neuralStack: [
-      { name: 'Vision Core v7.4', version: 'v7.4', capability: { en: 'Spatial Analysis', vi: 'Phân tích không gian', ko: '공간 분석', ja: '空間分析' } },
-      { name: 'Interior Engine', version: 'v2.0', capability: { en: 'Style Injection', vi: 'Tiêm phong cách', ko: '스타일 주입', ja: 'スタイルの注入' } }
-    ]
-  },
-  {
-    id: 'VOICE-STUDIO-PRO',
-    slug: 'ai-voice-studio',
-    name: { 
-      en: 'AI Voice Studio Pro', 
-      vi: 'AI Voice Studio Pro', 
-      ko: 'AI 보이스 스튜디오 프로', 
-      ja: 'AIボイススタジオプロ' 
-    },
-    category: { en: 'Audio Production', vi: 'Sản xuất Âm thanh', ko: '오디오 제작', ja: 'オーディオ制作' },
-    description: { 
-      en: 'Enterprise-grade neural voice architecture for high-fidelity narration and identity cloning.', 
-      vi: 'Kiến trúc giọng nói thần kinh cấp doanh nghiệp để tường thuật độ trung thực cao và nhân bản định danh.', 
-      ko: '고충실도 내레이션 및 아이덴티티 클로닝을 위한 엔터프라이즈급 신경 음성 아키텍처.', 
-      ja: '忠実度の高いナレーション và アイデンティティクローニングのためのエンタープライズ級ニューラルボイスアーキテクチャ。' 
-    },
-    problems: ['Manual recording overhead', 'Voice inconsistency', 'Limited language range', 'High talent costs'],
-    industries: ['Advertising', 'Education', 'Gaming', 'Customer Support'],
-    imageUrl: 'https://images.unsplash.com/photo-1478737270239-2fccd27ee1f9?auto=format&fit=crop&q=80&w=1600',
-    demoType: 'automation',
-    tags: ['Voice AI', 'Identity Clone', '48kHz', 'Enterprise'],
-    features: [
-      { en: 'Multi-lingual Neural Synthesis', vi: 'Tổng hợp thần kinh đa ngôn ngữ', ko: '다국어 신경 합성', ja: '多言語ニューラル合成' },
-      { en: 'One-shot Voice Cloning', vi: 'Nhân bản giọng nói tức thì', ko: '원샷 보이스 클로닝', ja: '원샷 보이스 클로닝' },
-      { en: 'Professional Script Mastering', vi: 'Làm chủ kịch bản chuyên nghiệp', ko: '전문 스크립트 마스터링', ja: 'プロフェッショナルスクリプトマ스터リング' }
-    ],
-    complexity: 'Advanced',
-    priceReference: 'Starting from 0 credits',
+    priceReference: '100 CR / upscaling',
     isActive: true,
     priceCredits: 100,
-    neuralStack: [
-      { name: 'Acoustic Core v4', version: 'v4.2', capability: { en: 'Acoustic Synthesis', vi: 'Tổng hợp âm học', ko: '음향 합성', ja: '音響合成' } },
-      { name: 'Identity Engine', version: 'v2.1', capability: { en: 'Persona Matching', vi: 'Khớp nhân vật', ko: '페르소나 매칭', ja: '페르소나 매칭' } }
-    ]
+    featured: true
   }
 ];
 

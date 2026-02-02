@@ -8,6 +8,11 @@ import { pricingApi, PricingModel } from '../apis/pricing';
 
 export type CreationMode = 'SINGLE' | 'BATCH';
 
+export interface ReferenceItem {
+  url: string;
+  mediaId?: string;
+}
+
 export interface ImageResult {
   id: string;
   url: string | null;
@@ -20,7 +25,7 @@ export interface ImageResult {
   aspectRatio: string;
   resolution: string;
   cost: number;
-  references: string[];
+  references: ReferenceItem[];
   isRefunded?: boolean;
 }
 
@@ -34,6 +39,7 @@ export const useImageGenerator = () => {
   const [activeMode, setActiveMode] = useState<CreationMode>('SINGLE');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploadingRef, setIsUploadingRef] = useState(false);
+  const [tempUploadUrl, setTempUploadUrl] = useState<string | null>(null);
   const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(5);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -45,7 +51,7 @@ export const useImageGenerator = () => {
   const [availableModels, setAvailableModels] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
   const [selectedMode, setSelectedMode] = useState<string>('relaxed');
-  const [selectedEngine, setSelectedEngine] = useState<string>('gommo');
+  const [selectedEngine, _setSelectedEngine] = useState<string>('gommo');
 
   const [prompt, setPrompt] = useState('');
   const [batchPrompts, setBatchPrompts] = useState<string[]>(['', '', '']);
@@ -54,17 +60,23 @@ export const useImageGenerator = () => {
   const [selectedRatio, setSelectedRatio] = useState(RATIOS[0]);
   const [selectedRes, setSelectedRes] = useState(RESOLUTIONS[0]);
   const [quantity, setQuantity] = useState(1);
-  const [references, setReferences] = useState<string[]>([]);
+  const [references, setReferences] = useState<ReferenceItem[]>([]);
   const [results, setResults] = useState<ImageResult[]>([]);
 
   const [showResourceModal, setShowResourceModal] = useState(false);
   const [isResumingGenerate, setIsResumingGenerate] = useState(false);
   const [usagePreference, setUsagePreference] = useState<'credits' | 'key' | null>(() => {
-    return (localStorage.getItem('skyverses_usage_preference') as any) || 'credits';
+    const saved = localStorage.getItem('skyverses_usage_preference');
+    return (saved as any) || 'credits';
   });
 
   const [hasPersonalKey, setHasPersonalKey] = useState(false);
   const [personalKey, setPersonalKey] = useState<string | undefined>(undefined);
+
+  const setSelectedEngine = (val: string) => {
+    _setSelectedEngine(val);
+    setReferences([]);
+  };
 
   useEffect(() => {
     const fetchPricing = async () => {
@@ -77,8 +89,6 @@ export const useImageGenerator = () => {
             raw: m
           }));
           setAvailableModels(mapped);
-          
-          // Chọn model mặc định hoặc giữ model cũ nếu tồn tại trong danh sách mới
           const defaultModel = mapped.find(m => m.raw.modelKey === 'google_image_gen_banana_pro') || mapped[0];
           setSelectedModel(defaultModel);
         } else {
@@ -92,7 +102,6 @@ export const useImageGenerator = () => {
     fetchPricing();
   }, [selectedEngine]);
 
-  // Đồng bộ selectedMode khi selectedModel thay đổi
   useEffect(() => {
     if (selectedModel?.raw) {
       const m = selectedModel.raw;
@@ -169,7 +178,6 @@ export const useImageGenerator = () => {
   const pollJobStatus = async (jobId: string, resultId: string, cost: number) => {
     try {
       const response: ImageJobResponse = await imagesApi.getJobStatus(jobId);
-      
       const isError = response.status === 'error' || response.data?.status === 'error' || response.data?.status === 'failed';
 
       if (isError) {
@@ -244,9 +252,16 @@ export const useImageGenerator = () => {
     try {
       await Promise.all(targetTasks.map(async (task) => {
         if (currentPreference === 'credits') {
+          const processedRefs = selectedEngine === 'fxlab' 
+            ? task.references.map(r => r.mediaId).filter(Boolean) as string[]
+            : task.references.map(r => r.url);
+
           const payload: ImageJobRequest = {
-            type: task.references.length > 0 ? "image_to_image" : "text_to_image",
-            input: { prompt: task.prompt, images: task.references.length > 0 ? task.references : undefined },
+            type: processedRefs.length > 0 ? "image_to_image" : "text_to_image",
+            input: { 
+              prompt: task.prompt, 
+              images: processedRefs.length > 0 ? processedRefs : undefined 
+            },
             config: { width: 1024, height: 1024, aspectRatio: task.aspectRatio || selectedRatio, seed: 0, style: "cinematic" },
             engine: { provider: selectedEngine as any, model: selectedModel.raw.modelKey as any },
             enginePayload: { 
@@ -266,7 +281,7 @@ export const useImageGenerator = () => {
         } else {
           const url = await generateDemoImage({ 
             prompt: task.prompt, 
-            images: task.references, 
+            images: task.references.map(r => r.url), 
             model: selectedModel.raw.modelKey, 
             aspectRatio: task.aspectRatio || selectedRatio, 
             quality: task.resolution || selectedRes, 
@@ -285,21 +300,24 @@ export const useImageGenerator = () => {
   };
 
   const handleLocalFileUpload = async (file: File) => {
+    const localUrl = URL.createObjectURL(file);
+    setTempUploadUrl(localUrl);
     setIsUploadingRef(true);
     try {
-      const metadata = await uploadToGCS(file);
-      setReferences((prev: string[]) => [...prev, metadata.url].slice(0, 6));
+      const metadata = await uploadToGCS(file, selectedEngine);
+      setReferences((prev) => [...prev, { url: metadata.url, mediaId: metadata.mediaId }].slice(0, 6));
     } catch (error) {
       console.error("Upload failed", error);
     } finally {
       setIsUploadingRef(false);
+      setTempUploadUrl(null);
+      URL.revokeObjectURL(localUrl);
     }
   };
 
   const handleGenerate = async () => {
     if (generateTooltip) return;
     if (!isAuthenticated) { login(); return; }
-
     if (!usagePreference) {
       setIsResumingGenerate(true);
       setShowResourceModal(true);
@@ -325,8 +343,8 @@ export const useImageGenerator = () => {
   const deleteResult = (id: string) => setResults(prev => prev.filter(r => r.id !== id));
 
   const handleLibrarySelect = (selectedAssets: GCSAssetMetadata[]) => {
-    const urls = selectedAssets.map(asset => asset.url);
-    setReferences((prev: string[]) => [...prev, ...urls].slice(0, 6));
+    const items = selectedAssets.map(asset => ({ url: asset.url, mediaId: asset.mediaId }));
+    setReferences((prev) => [...prev, ...items].slice(0, 6));
   };
 
   const handleEditorApply = (newUrl: string) => {
@@ -336,7 +354,7 @@ export const useImageGenerator = () => {
   };
 
   return {
-    activeMode, setActiveMode, isGenerating, isUploadingRef,
+    activeMode, setActiveMode, isGenerating, isUploadingRef, tempUploadUrl,
     showLowCreditAlert, setShowLowCreditAlert, zoomLevel, setZoomLevel,
     isLibraryOpen, setIsLibraryOpen, isEditorOpen, setIsEditorOpen,
     editorImage, setActivePreviewUrl, selectedIds, setSelectedIds,

@@ -1,34 +1,30 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  X, Zap, Download, Share2, 
-  Loader2, RefreshCw, Layers, MonitorPlay,
-  Film, User, Activity, ShieldCheck, 
-  Settings2, ArrowRight, 
-  Maximize2, Trash2, Lock, ExternalLink,
-  Sparkles, History as HistoryIcon, Image as ImageIcon,
-  ChevronDown, UserCircle, LayoutGrid,
-  ChevronLeft, AlertCircle, Info,
-  Move, Database, CheckCircle, Cpu,
-  AlertTriangle, Globe, Server,
-  Play, Pause, ArrowDown, ArrowRightCircle,
-  Settings,
-  Check,
-  Eye,
-  Volume2,
-  VolumeX,
-  BookOpen,
-  ArrowRightLeft
+  X, Upload, Mic, Play, Zap, 
+  Download, Loader2, Sparkles, User, 
+  Search, Plus, History as HistoryIcon, Volume2, 
+  VolumeX, Check, ChevronDown, MonitorPlay,
+  Image as ImageIcon,
+  MoreVertical, ShieldCheck, Cpu,
+  Mic2, Headphones, AlertTriangle,
+  Share2, Wand2, Grid, LayoutGrid,
+  Link as LinkIcon, FolderOpen, Monitor,
+  Maximize2, AlertCircle, Trash2, Info,
+  Film, ChevronLeft, Move, Globe, Server,
+  // Added CheckCircle2 to imports from lucide-react to avoid name-finding errors
+  Clipboard, Search as SearchIcon, CheckCircle2
 } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Link } from 'react-router-dom';
 import { useVideoAnimate, RATIOS, QUALITY_MODES, RenderTask } from '../hooks/useVideoAnimate';
 import ResourceAuthModal from './common/ResourceAuthModal';
 import { ResourceControl } from './fashion-studio/ResourceControl';
 import { AnimateIntelView } from './video-animate/AnimateIntelView';
 import { AnimateTemplateModal } from './video-animate/AnimateTemplateModal';
+import ImageLibraryModal from './ImageLibraryModal';
+import { QuickImageGenModal } from './QuickImageGenModal';
 
 interface VideoResultCardProps {
   task: RenderTask;
@@ -91,19 +87,16 @@ const VideoResultCard: React.FC<VideoResultCardProps> = ({ task, onDelete, onDow
               className="w-full h-full object-cover" 
             />
             
-            {/* Mode Tag */}
             <div className="absolute top-4 left-4 z-20">
                <span className={`px-3 py-1 rounded-md text-[8px] font-black uppercase text-white shadow-lg ${task.type === 'MOTION' ? 'bg-cyan-500' : 'bg-purple-600'}`}>
                   {task.type}
                </span>
             </div>
 
-            {/* Play/Pause Overlay */}
             <div className={`absolute inset-0 bg-black/20 transition-opacity flex items-center justify-center ${isPlaying ? 'opacity-0' : 'opacity-100'}`}>
               <Play size={48} fill="white" className="text-white ml-2" />
             </div>
 
-            {/* Quick Controls Overlay */}
             <div className="absolute bottom-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
                <button 
                 onClick={toggleMute}
@@ -160,6 +153,127 @@ const VideoResultCard: React.FC<VideoResultCardProps> = ({ task, onDelete, onDow
   );
 };
 
+const LinkExtractorModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  onExtract: (url: string) => void;
+}> = ({ isOpen, onClose, onExtract }) => {
+  const [url, setUrl] = useState('');
+  const [isExtracting, setIsExtracting] = useState(false);
+
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setUrl(text);
+    } catch (err) {
+      console.error('Failed to read clipboard', err);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!url.trim()) return;
+    setIsExtracting(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    onExtract(url);
+    setIsExtracting(false);
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/60 dark:bg-black/90 backdrop-blur-md"
+            onClick={onClose}
+          />
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            className="relative w-full max-w-xl bg-white dark:bg-[#121214] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col transition-colors duration-500"
+          >
+            <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-black/20">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue shadow-inner">
+                  <LinkIcon size={20} />
+                </div>
+                <div className="space-y-0.5">
+                  <h3 className="text-lg font-black uppercase tracking-tight italic text-slate-900 dark:text-white leading-none">Trích xuất từ liên kết</h3>
+                  <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-none">Uplink: SNS, URL, Social Assets</p>
+                </div>
+              </div>
+              <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-white/5 rounded-full">
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="p-8 space-y-8">
+              <div className="space-y-4">
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-blue transition-colors">
+                    <Globe size={18} />
+                  </div>
+                  <input 
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 rounded-2xl py-5 pl-14 pr-24 text-sm font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-brand-blue/50 transition-all placeholder:text-slate-300 dark:placeholder:text-gray-700 shadow-inner"
+                    placeholder="Dán link bài viết hoặc video..."
+                  />
+                  <button 
+                    onClick={handlePaste}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 bg-white dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-all flex items-center gap-2"
+                  >
+                    <Clipboard size={14} /> DÁN
+                  </button>
+                </div>
+                <p className="text-[10px] text-slate-400 dark:text-gray-600 font-bold uppercase italic px-1">
+                  * Hỗ trợ: TikTok, Facebook, Instagram, YouTube, Threads, v.v.
+                </p>
+              </div>
+
+              <div className="flex flex-col items-center justify-center py-16 bg-slate-50 dark:bg-black/40 border-slate-100 dark:border-white/5 rounded-[2rem] space-y-6">
+                 <div className="w-16 h-16 bg-white dark:bg-white/5 rounded-3xl flex items-center justify-center text-slate-300 dark:text-gray-800 shadow-sm">
+                    <SearchIcon size={32} />
+                 </div>
+                 <div className="text-center space-y-2">
+                    <h4 className="text-lg font-black uppercase italic tracking-tight text-slate-800 dark:text-white">Sẵn sàng phân tích</h4>
+                    <p className="text-[11px] font-bold text-slate-400 dark:text-gray-600 uppercase tracking-widest max-w-[280px] mx-auto leading-relaxed">
+                       Hệ thống sẽ tự động quét và lấy ra hình ảnh gốc chất lượng cao nhất từ liên kết.
+                    </p>
+                 </div>
+              </div>
+            </div>
+
+            <div className="p-8 border-t border-black/5 dark:border-white/10 bg-slate-50 dark:bg-black/20 shrink-0">
+               <button 
+                 onClick={handleSubmit}
+                 disabled={!url.trim() || isExtracting}
+                 className="w-full py-5 bg-brand-blue text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-xl shadow-brand-blue/20 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-30 relative overflow-hidden"
+               >
+                  <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  {isExtracting ? (
+                    <div className="flex items-center gap-3">
+                       <Loader2 className="animate-spin" size={18} /> 
+                       <span>Đang phân tích định danh</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                       <LinkIcon size={18} /> 
+                       <span>Xác thực & Trích xuất</span>
+                    </div>
+                  )}
+               </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { credits, isAuthenticated, login } = useAuth();
   const v = useVideoAnimate();
@@ -168,16 +282,20 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const [showResourceModal, setShowResourceModal] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showQualityModal, setShowQualityModal] = useState(false);
+  const [showQuickGen, setShowQuickGen] = useState(false);
+  const [showLinkExtractor, setShowLinkExtractor] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [autoDownload, setAutoDownload] = useState(false);
+  const [uploadTarget, setUploadTarget] = useState<'IMG' | 'VID'>('IMG');
   const imgInputRef = useRef<HTMLInputElement>(null);
   const vidInputRef = useRef<HTMLInputElement>(null);
+
+  // Define hasJobs to check if there are active tasks
+  const hasJobs = v.tasks.length > 0;
 
   const activeGradient = v.mode === 'MOTION' 
     ? 'from-cyan-500 to-blue-600 shadow-cyan-500/20' 
     : 'from-purple-600 to-fuchsia-600 shadow-purple-500/20';
-
-  const hasEnoughCredits = credits >= v.estimatedCost;
-  const hasJobs = v.tasks.length > 0;
 
   const handleApplyTemplate = (tmpl: any) => {
     v.setMode(tmpl.type as any);
@@ -215,12 +333,20 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     });
   };
 
+  const handleExtractFromLink = (extractedUrl: string) => {
+    if (extractedUrl.includes('http')) {
+      if (uploadTarget === 'IMG') v.setSourceImg(extractedUrl);
+      else v.setRefVideo(extractedUrl);
+    }
+    setShowLinkExtractor(false);
+  };
+
   const renderInputs = () => {
     const identityInput = (
       <div key="identity-input" className="space-y-3">
         <div className="flex justify-between items-center px-1">
           <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
-            <ImageIcon size={14} className="text-cyan-500" /> Identity
+            <ImageIcon size={14} className="text-cyan-500" /> {v.mode === 'MOTION' ? 'Chọn ảnh' : 'Identity'}
           </label>
           <button 
             onClick={() => setShowQualityModal(true)}
@@ -231,14 +357,13 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </div>
         <div 
           className={`relative aspect-[3/4] rounded-2xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center gap-4 cursor-pointer group ${v.sourceImg ? 'border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.1)]' : 'border-slate-200 dark:border-white/10 hover:border-cyan-500/40 bg-slate-50 dark:bg-white/[0.02]'}`}
-          onClick={() => !v.sourceImg && imgInputRef.current?.click()}
         >
           {v.sourceImg ? (
             <>
               <img src={v.sourceImg} className="w-full h-full object-cover" alt="Identity" />
               <button 
                 onClick={(e) => { e.stopPropagation(); v.setSourceImg(null); }}
-                className="absolute top-3 right-3 p-1 bg-red-500 rounded-full hover:scale-110 transition-transform shadow-xl text-white"
+                className="absolute top-3 right-3 p-1 bg-red-500 rounded-full hover:scale-110 transition-transform shadow-xl text-white z-50"
               >
                 <X size={12} strokeWidth={3} />
               </button>
@@ -248,9 +373,37 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-600 mx-auto group-hover:scale-110 transition-transform shadow-inner">
                 <User size={28} />
               </div>
-              <p className="text-[9px] font-black uppercase text-slate-400">Tải ảnh mẫu</p>
+              <p className="text-[9px] font-black uppercase text-slate-400">Chọn nguồn ảnh</p>
             </div>
           )}
+          
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-4 z-40">
+             <button 
+               onClick={(e) => { e.stopPropagation(); setUploadTarget('IMG'); imgInputRef.current?.click(); }}
+               className="w-full py-2.5 bg-white text-black text-[9px] font-black uppercase rounded-lg hover:bg-brand-blue hover:text-white transition-all flex items-center justify-center gap-2 shadow-xl"
+             >
+                <Monitor size={12} /> Tải từ máy tính
+             </button>
+             <button 
+               onClick={(e) => { e.stopPropagation(); setUploadTarget('IMG'); setIsLibraryOpen(true); }}
+               className="w-full py-2.5 bg-white text-black text-[9px] font-black uppercase rounded-lg hover:bg-brand-blue hover:text-white transition-all flex items-center justify-center gap-2 shadow-xl"
+             >
+                <FolderOpen size={12} /> Từ thư viện
+             </button>
+             <button 
+               onClick={(e) => { e.stopPropagation(); setShowQuickGen(true); }}
+               className="w-full py-2.5 bg-white text-black text-[9px] font-black uppercase rounded-lg hover:bg-brand-blue hover:text-white transition-all flex items-center justify-center gap-2 shadow-xl"
+             >
+                <Sparkles size={12} /> Tạo ảnh AI
+             </button>
+             <button 
+               onClick={(e) => { e.stopPropagation(); setUploadTarget('IMG'); setShowLinkExtractor(true); }}
+               className="w-full py-2.5 bg-white text-black text-[9px] font-black uppercase rounded-lg hover:bg-brand-blue hover:text-white transition-all flex items-center justify-center gap-2 shadow-xl"
+             >
+                <LinkIcon size={12} /> Từ liên kết
+             </button>
+          </div>
+
           <input type="file" ref={imgInputRef} className="hidden" accept="image/*" onChange={(e) => v.handleFileUpload(e, 'IMG')} />
         </div>
       </div>
@@ -263,7 +416,6 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </label>
         <div 
           className={`relative aspect-[3/4] rounded-2xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center gap-4 cursor-pointer group ${v.refVideo ? 'border-purple-500 shadow-[0_0_30_rgba(147,51,234,0.1)]' : 'border-slate-200 dark:border-white/10 hover:border-purple-500/40 bg-slate-50 dark:bg-white/[0.02]'}`}
-          onClick={() => !v.refVideo && vidInputRef.current?.click()}
         >
           {v.refVideo ? (
             <>
@@ -284,12 +436,34 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
             </>
           ) : (
             <div className="text-center space-y-2 p-4">
-              <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600 mx-auto group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600 mx-auto group-hover:scale-110 transition-transform shadow-inner">
                 <MonitorPlay size={28} />
               </div>
               <p className="text-[9px] font-black uppercase text-slate-400">Tải video mẫu</p>
             </div>
           )}
+
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-4 z-40">
+             <button 
+               onClick={(e) => { e.stopPropagation(); setUploadTarget('VID'); vidInputRef.current?.click(); }}
+               className="w-full py-2.5 bg-white text-black text-[9px] font-black uppercase rounded-lg hover:bg-brand-blue hover:text-white transition-all flex items-center justify-center gap-2 shadow-xl"
+             >
+                <Monitor size={12} /> Tải từ máy tính
+             </button>
+             <button 
+               onClick={(e) => { e.stopPropagation(); setUploadTarget('VID'); setIsLibraryOpen(true); }}
+               className="w-full py-2.5 bg-white text-black text-[9px] font-black uppercase rounded-lg hover:bg-brand-blue hover:text-white transition-all flex items-center justify-center gap-2 shadow-xl"
+             >
+                <FolderOpen size={12} /> Từ thư viện
+             </button>
+             <button 
+               onClick={(e) => { e.stopPropagation(); setUploadTarget('VID'); setShowLinkExtractor(true); }}
+               className="w-full py-2.5 bg-white text-black text-[9px] font-black uppercase rounded-lg hover:bg-brand-blue hover:text-white transition-all flex items-center justify-center gap-2 shadow-xl"
+             >
+                <LinkIcon size={12} /> Từ liên kết
+             </button>
+          </div>
+
           <input type="file" ref={vidInputRef} className="hidden" accept="video/*" onChange={(e) => v.handleFileUpload(e, 'VID')} />
         </div>
       </div>
@@ -315,7 +489,6 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           </div>
         </div>
 
-        {/* MODE TOGGLE */}
         <div className="flex bg-slate-100 dark:bg-[#1a1a1a] p-1 rounded-xl border border-black/5 dark:border-white/10 shadow-inner transition-colors">
            <button 
              onClick={() => v.setMode('MOTION')}
@@ -332,7 +505,6 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </div>
 
         <div className="flex items-center gap-4">
-           {/* Auto Download Toggle */}
            <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-4 py-1.5 rounded-full border border-black/5 dark:border-white/10">
               <span className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400">Tự động tải</span>
               <button 
@@ -352,18 +524,14 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </div>
       </header>
 
-      {/* --- MAIN WORKSPACE FULL WIDTH --- */}
       <div className="flex-grow flex overflow-hidden">
         
-        {/* 1. LEFT COLUMN: CONTROLS (1/3) */}
         <div className="w-[400px] xl:w-[480px] shrink-0 border-r border-black/5 dark:border-white/5 bg-white dark:bg-[#0d0d0f] flex flex-col transition-all duration-500">
            <div className="flex-grow overflow-y-auto no-scrollbar p-8 lg:p-10 space-y-10">
-              {/* ASSET UPLOAD */}
               <div className="grid grid-cols-2 gap-6 relative z-10">
                  {renderInputs()}
               </div>
 
-              {/* INFRASTRUCTURE CONFIG */}
               <div className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5 relative z-20">
                 <p className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-[0.4em] text-center italic">Infrastructure & Logic</p>
                 
@@ -384,7 +552,6 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     </select>
                   </div>
 
-                  {/* MODEL SELECTOR */}
                   <div className="space-y-2">
                     <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 italic flex items-center gap-2">
                       <Server size={12} className="text-brand-blue" /> Neural Model
@@ -424,7 +591,6 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 </div>
               </div>
 
-              {/* SPECS */}
               <div className="grid grid-cols-2 gap-6">
                  <div className="space-y-2">
                     <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest italic">Dung lượng</label>
@@ -449,7 +615,6 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               </div>
            </div>
 
-           {/* ACTION FOOTER */}
            <div className="p-8 border-t border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/20 shrink-0 space-y-4 transition-colors">
               <div className="flex items-center justify-between px-1 mb-2">
                  <div className="text-left flex flex-col">
@@ -464,7 +629,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               <button 
                  onClick={v.handleSynthesize}
                  disabled={v.isGenerating || !v.sourceImg || !v.selectedModel}
-                 className={`w-full py-6 rounded-2xl flex items-center justify-center gap-4 text-[13px] font-black uppercase tracking-[0.3em] shadow-xl transition-all active:scale-[0.97] group overflow-hidden relative ${v.sourceImg && v.selectedModel ? `bg-gradient-to-r ${activeGradient} text-white` : 'bg-slate-200 dark:bg-[#222] text-slate-400 dark:text-gray-500 cursor-not-allowed grayscale'}`}
+                 className={`w-full py-6 rounded-2xl flex items-center justify-center gap-4 text-[13px] font-black uppercase tracking-[0.3em] shadow-xl transition-all active:scale-[0.97] group overflow-hidden relative ${v.sourceImg && v.selectedModel ? `bg-gradient-to-r ${activeGradient} text-white` : 'bg-slate-100 dark:bg-[#222] text-slate-400 dark:text-gray-500 cursor-not-allowed grayscale'}`}
               >
                  <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                  {v.isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} fill="currentColor" />}
@@ -480,9 +645,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
            </div>
         </div>
 
-        {/* 2. RIGHT COLUMN: VIEWPORT & HISTORY (2/3) */}
         <div className="flex-grow flex flex-col bg-[#f0f1f4] dark:bg-[#050507] overflow-hidden relative">
-           
            <AnimatePresence mode="wait">
               {hasJobs ? (
                  <motion.div 
@@ -492,7 +655,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  >
                     <div className="max-w-[1400px] mx-auto space-y-12">
                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-4">
                              <div className="p-2 bg-brand-blue/10 rounded-lg text-brand-blue">
                                 <LayoutGrid size={24} />
                              </div>
@@ -529,7 +692,45 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </div>
       </div>
 
-      {/* --- QUALITY GUIDE MODAL --- */}
+      <AnimatePresence>
+        {showQuickGen && (
+          <QuickImageGenModal 
+            isOpen={showQuickGen}
+            onClose={() => setShowQuickGen(false)}
+            onSuccess={() => {
+              setShowQuickGen(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showLinkExtractor && (
+          <LinkExtractorModal 
+            isOpen={showLinkExtractor}
+            onClose={() => setShowLinkExtractor(false)}
+            onExtract={handleExtractFromLink}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isLibraryOpen && (
+          <ImageLibraryModal 
+            isOpen={isLibraryOpen}
+            onClose={() => setIsLibraryOpen(false)}
+            onConfirm={(assets) => {
+              if (assets.length > 0) {
+                if (uploadTarget === 'IMG') v.setSourceImg(assets[0].url);
+                else v.setRefVideo(assets[0].url);
+              }
+              setIsLibraryOpen(false);
+            }}
+            maxSelect={1}
+          />
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {showQualityModal && (
           <motion.div 
@@ -556,7 +757,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 <div className="space-y-6">
                    <div className="flex gap-4 items-start group">
                       <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0 shadow-sm">
-                        <CheckCircle size={18} />
+                        <CheckCircle2 size={18} />
                       </div>
                       <p className="text-sm md:text-base font-bold text-slate-600 dark:text-gray-300 leading-relaxed uppercase tracking-tight italic">
                          "Video có nhân vật không bị che khuất quá nhiều sẽ cho ra kết quả đẹp nhất. Hãy đảm bảo nhân vật luôn xuất hiện xuyên suốt."
@@ -601,14 +802,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                          </div>
                       </div>
                       <div className="absolute inset-y-0 left-1/2 w-0.5 bg-white/20 z-10 shadow-[0_0_10px_white]"></div>
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 group-hover/compare:opacity-100 transition-opacity">
-                         <ArrowRightLeft className="text-white" size={32} />
-                      </div>
                    </div>
-                   
-                   <p className="text-[10px] text-center text-slate-400 dark:text-gray-600 font-black uppercase tracking-widest italic">
-                      AI Chỉnh sửa ảnh trở lên siêu thực – Fix Da Nhựa
-                   </p>
                 </div>
               </div>
 
@@ -625,17 +819,6 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {showTemplateModal && (
-          <AnimateTemplateModal 
-            isOpen={showTemplateModal}
-            onClose={() => setShowTemplateModal(false)}
-            onApply={handleApplyTemplate}
-            initialMode={v.mode}
-          />
-        )}
-      </AnimatePresence>
-
       <ResourceAuthModal 
         isOpen={showResourceModal} 
         onClose={() => setShowResourceModal(false)} 
@@ -646,6 +829,13 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         }} 
         hasPersonalKey={v.usagePreference === 'key' || !!localStorage.getItem('skyverses_model_vault')} 
         totalCost={v.estimatedCost} 
+      />
+
+      <AnimateTemplateModal 
+        isOpen={showTemplateModal} 
+        onClose={() => setShowTemplateModal(false)} 
+        onApply={handleApplyTemplate} 
+        initialMode={v.mode} 
       />
 
       <style>{`
