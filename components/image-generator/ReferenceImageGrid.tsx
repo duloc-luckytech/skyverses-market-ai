@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Plus, Upload, FolderOpen, Loader2, Info, Activity } from 'lucide-react';
+import { Plus, Upload, FolderOpen, Loader2, Info } from 'lucide-react';
 import { ReferenceItem } from '../../hooks/useImageGenerator';
 
 interface ReferenceImageGridProps {
@@ -46,26 +46,15 @@ export const ReferenceImageGrid: React.FC<ReferenceImageGridProps> = ({
           </div>
         ))}
         
-        {/* Uploading State Card - Enhanced with Skyverses visual language */}
+        {/* Uploading Skeleton State */}
         {isUploading && (
-          <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-brand-blue/40 bg-slate-50 dark:bg-black flex items-center justify-center shadow-[0_0_20px_rgba(0,144,255,0.1)] ring-1 ring-brand-blue/20">
-            {tempUrl ? (
-              <img src={tempUrl} className="w-full h-full object-cover opacity-30 blur-[2px] scale-110" alt="Uploading" />
-            ) : (
-              <div className="absolute inset-0 bg-black/20" />
+          <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-dashed border-brand-blue/30 bg-slate-50 dark:bg-white/5 animate-pulse flex items-center justify-center">
+            {tempUrl && (
+              <img src={tempUrl} className="w-full h-full object-cover opacity-50 blur-[1px]" alt="Uploading" />
             )}
-            
-            {/* Loading HUD Overlay */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-10">
-              <div className="relative">
-                <Loader2 size={20} className="text-brand-blue animate-spin" />
-                <Activity size={10} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/40 animate-pulse" />
-              </div>
-              <span className="text-[7px] font-black uppercase tracking-[0.2em] text-brand-blue animate-pulse">Syncing</span>
+            <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+              <Loader2 size={18} className="text-brand-blue animate-spin" />
             </div>
-
-            {/* Scanning line animation */}
-            <div className="absolute inset-x-0 top-0 h-px bg-brand-blue/50 shadow-[0_0_10px_rgba(0,144,255,1)] animate-[scan_2s_infinite_linear]"></div>
           </div>
         )}
 
@@ -101,15 +90,6 @@ export const ReferenceImageGrid: React.FC<ReferenceImageGridProps> = ({
           Tải lên tối đa 6 ảnh để hướng dẫn AI về bố cục, màu sắc hoặc nhân vật.
         </p>
       </div>
-
-      <style>{`
-        @keyframes scan {
-          0% { top: 0%; opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { top: 100%; opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 };
