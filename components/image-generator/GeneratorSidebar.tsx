@@ -1,15 +1,16 @@
+
 import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronLeft, Image as ImageIcon, Layers, Settings, 
-  Plus, Upload, FolderOpen, Loader2, Wand2, Zap,
-  ChevronUp, SlidersHorizontal, ArrowRight
+  Loader2, Zap, ChevronUp, SlidersHorizontal, ArrowRight 
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { CreationMode, ReferenceItem } from '../../hooks/useImageGenerator';
 import { SidebarSingle } from './SidebarSingle';
 import { SidebarBatch } from './SidebarBatch';
 import { ModelEngineSettings } from './ModelEngineSettings';
+import { ReferenceImageGrid } from './ReferenceImageGrid';
 
 interface GeneratorSidebarProps {
   onClose: () => void;
@@ -108,63 +109,47 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            </button>
         </div>
 
-        {/* Reference Images: ẢNH THAM CHIẾU */}
-        <div className="space-y-4">
-           <div className="flex justify-between items-center px-1">
-             <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">ẢNH THAM CHIẾU</label>
-             <span className="text-[10px] font-bold text-gray-500">{props.references.length + (props.tempUploadUrl ? 1 : 0)}/6</span>
-           </div>
-           
-           {/* Reference Grid */}
-           <div className="grid grid-cols-3 gap-2">
-              {props.references.map((ref, idx) => (
-                <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-black/5 dark:border-white/5 group">
-                  <img src={ref.url} className="w-full h-full object-cover" alt="" />
-                  <button 
-                    onClick={() => props.setReferences((prev: ReferenceItem[]) => prev.filter((_: any, i: number) => i !== idx))} 
-                    className="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
-                  >
-                    <Plus className="rotate-45" size={20} />
-                  </button>
-                </div>
-              ))}
-              
-              {/* Skeleton/Uplinking State */}
-              {props.isUploadingRef && props.tempUploadUrl && (
-                <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-brand-blue/30 bg-brand-blue/5 animate-pulse">
-                  <img src={props.tempUploadUrl} className="w-full h-full object-cover opacity-50 blur-[1px]" alt="Uplinking" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Loader2 size={18} className="text-brand-blue animate-spin" />
-                  </div>
-                </div>
-              )}
+        {/* --- TÁCH COMPONENT: ẢNH THAM CHIẾU --- */}
+        <ReferenceImageGrid 
+          references={props.references}
+          isUploading={!!props.isUploadingRef}
+          tempUrl={props.tempUploadUrl || null}
+          onRemove={(idx) => props.setReferences((prev: ReferenceItem[]) => prev.filter((_, i) => i !== idx))}
+          onUploadTrigger={() => fileInputRef.current?.click()}
+          onLibraryTrigger={() => props.setIsLibraryOpen(true)}
+        />
 
-              {/* Add New Slots */}
-              {props.references.length + (props.isUploadingRef ? 1 : 0) < 6 && (
-                <div className="relative aspect-square group">
-                  <div className="absolute inset-0 border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-brand-blue transition-all rounded-lg cursor-pointer">
-                    {props.isUploadingRef && !props.tempUploadUrl ? <Loader2 size={20} className="animate-spin text-brand-blue" /> : <Plus size={20} />}
-                  </div>
-                  <div className="absolute inset-0 bg-white dark:bg-[#111114] opacity-0 group-hover:opacity-100 transition-all flex flex-col p-1 gap-1 z-10 border border-slate-200 dark:border-white/10 rounded-lg">
-                    <button onClick={() => fileInputRef.current?.click()} className="flex-grow flex items-center justify-center gap-2 bg-slate-50 dark:bg-white/5 rounded-md hover:bg-brand-blue hover:text-white transition-all"><Upload size={14} /></button>
-                    <button onClick={() => props.setIsLibraryOpen(true)} className="flex-grow flex items-center justify-center gap-2 bg-slate-50 dark:bg-white/5 rounded-md hover:bg-brand-blue hover:text-white transition-all"><FolderOpen size={14} /></button>
-                  </div>
-                </div>
-              )}
-           </div>
-           <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) props.handleLocalFileUpload(f); e.target.value = ''; }} />
-        </div>
+        {/* Hidden input for local file uploads */}
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          className="hidden" 
+          accept="image/png, image/jpeg" 
+          onChange={(e) => { 
+            const f = e.target.files?.[0]; 
+            if (f) props.handleLocalFileUpload(f); 
+            e.target.value = ''; 
+          }} 
+        />
 
-        {/* Prompt Section: KỊCH BẢN (PROMPT) */}
+        {/* Prompt Section */}
         <div className="hidden lg:block">
            {props.activeMode === 'SINGLE' ? (
              <SidebarSingle prompt={props.prompt} setPrompt={props.setPrompt} />
            ) : (
-             <SidebarBatch batchPrompts={props.batchPrompts} setBatchPrompts={props.setBatchPrompts} isBulk={props.isBulkImporting} setIsBulk={props.setIsBulkImporting} bulkText={props.bulkText} setBulkText={props.setBulkText} onBulkImport={props.handleBulkImport} />
+             <SidebarBatch 
+                batchPrompts={props.batchPrompts} 
+                setBatchPrompts={props.setBatchPrompts} 
+                isBulk={props.isBulkImporting} 
+                setIsBulk={props.setIsBulkImporting} 
+                bulkText={props.bulkText} 
+                setBulkText={props.setBulkText} 
+                onBulkImport={props.handleBulkImport} 
+              />
            )}
         </div>
 
-        {/* Configurations: SOURCE, MODELS, MODE, etc. */}
+        {/* Configurations */}
         <ModelEngineSettings 
           availableModels={props.availableModels}
           selectedModel={props.selectedModel}
@@ -187,7 +172,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         <div className="flex items-center justify-between px-1">
            <div className="flex items-center gap-3">
               <div className="flex flex-col">
-                 <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest leading-none">RESOURCE: CREDITS</span>
+                 <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest leading-none">RESOURCE</span>
                  <span className="text-[10px] font-black text-slate-900 dark:text-white italic mt-1">{props.usagePreference === 'key' ? 'UNLIMITED' : `${credits.toLocaleString()} CR`}</span>
               </div>
               <button onClick={() => props.setShowResourceModal(true)} className="p-1.5 bg-slate-100 dark:bg-white/5 rounded-md text-slate-400 hover:text-brand-blue transition-all"><Settings size={14} /></button>
@@ -198,42 +183,14 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            </div>
         </div>
 
-        <div className="relative group/genbtn">
-           <button 
-             onClick={onGenerateClick} disabled={props.isGenerateDisabled}
-             className={`w-full py-4 rounded-xl font-black uppercase text-[11px] tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all ${props.isGenerateDisabled ? 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-600 cursor-not-allowed grayscale' : 'bg-brand-blue text-white hover:brightness-110 active:scale-[0.98]'}`}
-           >
-              {props.isGenerating ? <Loader2 className="animate-spin" size={16} /> : <ImageIcon size={16} />}
-              <span>{props.isGenerating ? 'Đang tạo...' : 'TẠO HÌNH ẢNH'}</span>
-           </button>
-        </div>
+        <button 
+          onClick={onGenerateClick} disabled={props.isGenerateDisabled}
+          className={`w-full py-4 rounded-xl font-black uppercase text-[11px] tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all ${props.isGenerateDisabled ? 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-600 cursor-not-allowed grayscale' : 'bg-brand-blue text-white hover:brightness-110 active:scale-[0.98]'}`}
+        >
+           {props.isGenerating ? <Loader2 className="animate-spin" size={16} /> : <ImageIcon size={16} />}
+           <span>{props.isGenerating ? 'Đang tạo...' : 'TẠO HÌNH ẢNH'}</span>
+        </button>
       </div>
-
-      {!props.isMobileExpanded && (
-         <div className="lg:hidden fixed bottom-20 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-[160]">
-            <div className="bg-white/95 dark:bg-[#0d151c]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/10 rounded-[2rem] h-14 px-4 flex items-center gap-3 shadow-2xl overflow-hidden">
-               <div className="flex items-center gap-1.5 shrink-0 pr-3 border-r border-black/5 dark:border-white/5">
-                  <div className={`w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center ${props.isGenerating ? 'animate-spin' : ''}`}>
-                    <Wand2 size={16} className="text-brand-blue" />
-                  </div>
-               </div>
-               <input 
-                  value={props.prompt}
-                  onChange={(e) => props.setPrompt(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && onGenerateClick()}
-                  className="flex-grow bg-transparent border-none outline-none text-[11px] font-bold text-slate-900 dark:text-white placeholder:text-slate-400"
-                  placeholder="Mô tả cho AI..."
-               />
-               <button 
-                  onClick={onGenerateClick}
-                  disabled={props.isGenerateDisabled}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${props.isGenerateDisabled ? 'text-slate-300' : 'text-brand-blue hover:scale-110'}`}
-               >
-                  {props.isGenerating ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
-               </button>
-            </div>
-         </div>
-      )}
     </aside>
   );
 };

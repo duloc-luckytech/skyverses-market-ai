@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { GCSAssetMetadata, uploadToGCS } from '../services/storage';
 import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
 import { pricingApi, PricingModel } from '../apis/pricing';
+import { useToast } from '../context/ToastContext';
 
 export type CreationMode = 'SINGLE' | 'BATCH';
 
@@ -34,6 +35,7 @@ export const RESOLUTIONS = ['1k', '2k', '4k'];
 
 export const useImageGenerator = () => {
   const { credits, addCredits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const [activeMode, setActiveMode] = useState<CreationMode>('SINGLE');
@@ -303,6 +305,20 @@ export const useImageGenerator = () => {
   };
 
   const handleLocalFileUpload = async (file: File) => {
+    // Validation
+    const maxSize = 5 * 1024 * 1024;
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    
+    if (!allowedTypes.includes(file.type)) {
+      showToast("Định dạng file không hỗ trợ. Vui lòng chọn PNG hoặc JPEG.", "error");
+      return;
+    }
+    
+    if (file.size > maxSize) {
+      showToast("Dung lượng file quá lớn. Tối đa 5MB.", "error");
+      return;
+    }
+
     // Immediate preview
     const localUrl = URL.createObjectURL(file);
     setTempUploadUrl(localUrl);
@@ -312,6 +328,7 @@ export const useImageGenerator = () => {
       setReferences((prev) => [...prev, { url: metadata.url, mediaId: metadata.mediaId }].slice(0, 6));
     } catch (error) {
       console.error("Upload failed", error);
+      showToast("Tải ảnh lên thất bại. Vui lòng thử lại.", "error");
     } finally {
       setIsUploadingRef(false);
       setTempUploadUrl(null);
