@@ -27,12 +27,10 @@ interface GeneratorViewportProps {
 }
 
 const CATEGORY_TAGS = [
-  'All', 'Featured', 'Poster & Ad', 'Product', 'Social Media', 
-  'Card', 'Character', 'Comic', 'Logo', 
-  'Sticker', 'Wallpaper', 'Home'
+  'ALL', 'FEATURED', 'POSTER & AD', 'PRODUCT', 'SOCIAL MEDIA', 
+  'CARD', 'CHARACTER'
 ];
 
-// Helper tương đồng với trang Explorer để tạo chỉ số giả lập đồng nhất
 const getFakeStats = (seedId: string) => {
   const hash = seedId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const views = (hash * 13) % 950 + 50;
@@ -56,7 +54,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [selectedDetailItem, setSelectedDetailItem] = useState<ExplorerItem | null>(null);
-  const [activeTag, setActiveTag] = useState('All');
+  const [activeTag, setActiveTag] = useState('ALL');
 
   const observer = useRef<IntersectionObserver | null>(null);
 
@@ -137,7 +135,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               </button>
               
               <div className="flex items-center gap-3">
-                 <h3 className="text-[13px] font-black uppercase tracking-tighter italic text-slate-900 dark:text-white transition-colors">Kết quả</h3>
+                 <h3 className="text-[13px] font-black uppercase tracking-tighter italic text-slate-900 dark:text-white transition-colors">KẾT QUẢ</h3>
                  <div className="h-4 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
               </div>
             </div>
@@ -157,8 +155,8 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
             ) : (
               <div className="flex items-center gap-2 md:gap-4">
                  {/* Auto Download Toggle */}
-                 <div className="hidden sm:flex items-center gap-2 bg-black/5 dark:bg-white/5 px-4 py-1.5 rounded-full border border-black/5 dark:border-white/10">
-                    <span className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400">Tự động tải</span>
+                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-4 py-1.5 rounded-full border border-black/5 dark:border-white/10">
+                    <span className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400">TỰ ĐỘNG TẢI</span>
                     <button 
                       onClick={() => setAutoDownload(!autoDownload)}
                       className={`w-8 h-4 rounded-full relative transition-colors ${autoDownload ? 'bg-brand-blue' : 'bg-gray-300 dark:bg-gray-700'}`}
@@ -173,21 +171,22 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                  {/* Manual Download Button */}
                  <button 
                    onClick={handleManualDownload}
-                   className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-brand-blue text-white rounded-full text-[9px] font-black uppercase hover:brightness-110 shadow-lg"
+                   className="flex items-center gap-2 px-4 py-1.5 bg-brand-blue text-white rounded-full text-[9px] font-black uppercase hover:brightness-110 shadow-lg"
                  >
-                    <Download size={14} /> <span>Tải xuống</span>
+                    <Download size={14} /> <span>TẢI XUỐNG</span>
                  </button>
+
+                 <div className="h-6 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
+                 <div className="flex items-center gap-3 pl-2">
+                    <ImageIcon size={14} className="text-slate-400" />
+                    <input 
+                      type="range" min="1" max="10" 
+                      value={zoomLevel} onChange={e => setZoomLevel(parseInt(e.target.value))}
+                      className="w-16 md:w-28 h-1 bg-slate-200 dark:bg-white/10 appearance-none rounded-full accent-brand-blue cursor-pointer"
+                    />
+                 </div>
               </div>
             )}
-            
-            <div className="flex items-center gap-3 border-l border-black/5 dark:border-white/5 pl-4">
-              <ImageIcon size={14} className="text-slate-400" />
-              <input 
-                type="range" min="1" max="10" 
-                value={zoomLevel} onChange={e => setZoomLevel(parseInt(e.target.value))}
-                className="w-16 md:w-28 h-1 bg-slate-200 dark:bg-white/10 appearance-none rounded-full accent-brand-blue cursor-pointer"
-              />
-            </div>
          </div>
       </div>
 
@@ -279,8 +278,13 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                          <div className="flex items-center gap-3 text-brand-blue">
                             <Sparkles size={20} />
                          </div>
-                         <h2 className="text-4xl lg:text-7xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Kịch bản <br /> <span className="text-brand-blue">gợi ý.</span></h2>
-                         <p className="text-sm text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest italic leading-relaxed max-w-2xl">Lựa chọn các tác phẩm tiêu biểu để kế thừa cấu trúc kịch bản và bắt đầu tiến trình tổng hợp cá nhân.</p>
+                         <div className="space-y-2">
+                           <h2 className="text-[64px] lg:text-[110px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-[0.8] italic">
+                             KỊCH BẢN <br />
+                             <span className="text-brand-blue">gợi ý.</span>
+                           </h2>
+                         </div>
+                         <p className="text-sm text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest italic leading-relaxed max-w-2xl pt-4">LỰA CHỌN CÁC TÁC PHẨM TIÊU BIỂU ĐỂ KẾ THỪA CẤU TRÚC KỊCH BẢN VÀ BẮT ĐẦU TIẾN TRÌNH TỔNG HỢP CÁ NHÂN.</p>
                       </div>
                       
                       {loadingExplorer && (
@@ -314,7 +318,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
 
                                   <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-8 z-20">
                                      <div className="space-y-3 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                                        <p className="text-[10px] md:text-[11px] text-white/60 font-medium italic line-clamp-2 pr-6 leading-relaxed">
+                                        <p className="text-[10px] md:text-[11px] text-white/60 font-medium italic line-clamp-2 pr-6 leading-relaxed uppercase">
                                           "{item.prompt}"
                                         </p>
                                         <div className="flex items-center gap-4 text-[8px] font-black text-white/30 uppercase tracking-widest">

@@ -92,36 +92,45 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            <h2 className="text-lg font-black uppercase tracking-tight italic text-slate-900 dark:text-white">Image Studio</h2>
         </div>
 
-        <div className="grid grid-cols-2 bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/10">
+        {/* Tab Selection: ĐƠN LẺ / HÀNG LOẠT */}
+        <div className="grid grid-cols-2 bg-slate-100 dark:bg-black/40 p-1 rounded-lg border border-black/5 dark:border-white/10">
            <button 
              onClick={() => props.setActiveMode('SINGLE')}
              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${props.activeMode === 'SINGLE' ? 'bg-white dark:bg-white/10 text-brand-blue shadow-sm' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
            >
-              <ImageIcon size={12} /> Đơn lẻ
+              <ImageIcon size={12} /> ĐƠN LẺ
            </button>
            <button 
              onClick={() => props.setActiveMode('BATCH')}
              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${props.activeMode === 'BATCH' ? 'bg-white dark:bg-white/10 text-brand-blue shadow-sm' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
            >
-              <Layers size={12} /> Hàng loạt
+              <Layers size={12} /> HÀNG LOẠT
            </button>
         </div>
 
+        {/* Reference Images: ẢNH THAM CHIẾU */}
         <div className="space-y-4">
            <div className="flex justify-between items-center px-1">
-             <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Ảnh tham chiếu</label>
+             <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">ẢNH THAM CHIẾU</label>
              <span className="text-[10px] font-bold text-gray-500">{props.references.length + (props.tempUploadUrl ? 1 : 0)}/6</span>
            </div>
+           
+           {/* Reference Grid */}
            <div className="grid grid-cols-3 gap-2">
               {props.references.map((ref, idx) => (
                 <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-black/5 dark:border-white/5 group">
                   <img src={ref.url} className="w-full h-full object-cover" alt="" />
-                  <button onClick={() => props.setReferences((prev: ReferenceItem[]) => prev.filter((_: any, i: number) => i !== idx))} className="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"><Plus className="rotate-45" size={20} /></button>
+                  <button 
+                    onClick={() => props.setReferences((prev: ReferenceItem[]) => prev.filter((_: any, i: number) => i !== idx))} 
+                    className="absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                  >
+                    <Plus className="rotate-45" size={20} />
+                  </button>
                 </div>
               ))}
               
-              {/* Temporary Upload Slot with Preview */}
-              {props.tempUploadUrl && (
+              {/* Skeleton/Uplinking State */}
+              {props.isUploadingRef && props.tempUploadUrl && (
                 <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-brand-blue/30 bg-brand-blue/5 animate-pulse">
                   <img src={props.tempUploadUrl} className="w-full h-full object-cover opacity-50 blur-[1px]" alt="Uplinking" />
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -130,7 +139,8 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
                 </div>
               )}
 
-              {props.references.length + (props.tempUploadUrl ? 1 : 0) < 6 && (
+              {/* Add New Slots */}
+              {props.references.length + (props.isUploadingRef ? 1 : 0) < 6 && (
                 <div className="relative aspect-square group">
                   <div className="absolute inset-0 border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-brand-blue transition-all rounded-lg cursor-pointer">
                     {props.isUploadingRef && !props.tempUploadUrl ? <Loader2 size={20} className="animate-spin text-brand-blue" /> : <Plus size={20} />}
@@ -145,6 +155,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) props.handleLocalFileUpload(f); e.target.value = ''; }} />
         </div>
 
+        {/* Prompt Section: KỊCH BẢN (PROMPT) */}
         <div className="hidden lg:block">
            {props.activeMode === 'SINGLE' ? (
              <SidebarSingle prompt={props.prompt} setPrompt={props.setPrompt} />
@@ -153,6 +164,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            )}
         </div>
 
+        {/* Configurations: SOURCE, MODELS, MODE, etc. */}
         <ModelEngineSettings 
           availableModels={props.availableModels}
           selectedModel={props.selectedModel}
@@ -170,11 +182,12 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         />
       </div>
 
+      {/* Credit Footer */}
       <div className={`shrink-0 p-6 bg-white dark:bg-[#111114] border-t border-black/5 dark:border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] space-y-4 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         <div className="flex items-center justify-between px-1">
            <div className="flex items-center gap-3">
               <div className="flex flex-col">
-                 <span className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest leading-none">Resource: {props.usagePreference === 'credits' ? 'Credits' : 'API Key'}</span>
+                 <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest leading-none">RESOURCE: CREDITS</span>
                  <span className="text-[10px] font-black text-slate-900 dark:text-white italic mt-1">{props.usagePreference === 'key' ? 'UNLIMITED' : `${credits.toLocaleString()} CR`}</span>
               </div>
               <button onClick={() => props.setShowResourceModal(true)} className="p-1.5 bg-slate-100 dark:bg-white/5 rounded-md text-slate-400 hover:text-brand-blue transition-all"><Settings size={14} /></button>
@@ -185,31 +198,13 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            </div>
         </div>
 
-        {props.activeMode === 'SINGLE' && (
-           <div className="lg:hidden relative">
-              <input 
-                 value={props.prompt}
-                 onChange={(e) => props.setPrompt(e.target.value)}
-                 className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl p-4 text-xs font-bold focus:border-brand-blue outline-none transition-all pr-12"
-                 placeholder="Mô tả cho AI..."
-              />
-              <button 
-                 onClick={onGenerateClick}
-                 disabled={props.isGenerateDisabled}
-                 className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-brand-blue disabled:opacity-30"
-              >
-                 <Wand2 size={18} />
-              </button>
-           </div>
-        )}
-
         <div className="relative group/genbtn">
            <button 
              onClick={onGenerateClick} disabled={props.isGenerateDisabled}
              className={`w-full py-4 rounded-xl font-black uppercase text-[11px] tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all ${props.isGenerateDisabled ? 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-600 cursor-not-allowed grayscale' : 'bg-brand-blue text-white hover:brightness-110 active:scale-[0.98]'}`}
            >
-              {props.isGenerating ? <Loader2 className="animate-spin" size={16} /> : <Wand2 size={16} />}
-              <span>{props.isGenerating ? 'Đang tạo...' : 'Tạo Hình Ảnh'}</span>
+              {props.isGenerating ? <Loader2 className="animate-spin" size={16} /> : <ImageIcon size={16} />}
+              <span>{props.isGenerating ? 'Đang tạo...' : 'TẠO HÌNH ẢNH'}</span>
            </button>
         </div>
       </div>

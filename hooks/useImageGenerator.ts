@@ -38,8 +38,11 @@ export const useImageGenerator = () => {
 
   const [activeMode, setActiveMode] = useState<CreationMode>('SINGLE');
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  // States for upload skeleton and preview
   const [isUploadingRef, setIsUploadingRef] = useState(false);
   const [tempUploadUrl, setTempUploadUrl] = useState<string | null>(null);
+  
   const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(5);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -263,7 +266,7 @@ export const useImageGenerator = () => {
               images: processedRefs.length > 0 ? processedRefs : undefined 
             },
             config: { width: 1024, height: 1024, aspectRatio: task.aspectRatio || selectedRatio, seed: 0, style: "cinematic" },
-            engine: { provider: selectedEngine as any, model: selectedModel.raw.modelKey as any },
+            engine: { provider: selectedEngine as any, model: selectedModel.id as any },
             enginePayload: { 
               prompt: task.prompt, 
               privacy: "PRIVATE", 
@@ -300,6 +303,7 @@ export const useImageGenerator = () => {
   };
 
   const handleLocalFileUpload = async (file: File) => {
+    // Immediate preview
     const localUrl = URL.createObjectURL(file);
     setTempUploadUrl(localUrl);
     setIsUploadingRef(true);
@@ -311,6 +315,7 @@ export const useImageGenerator = () => {
     } finally {
       setIsUploadingRef(false);
       setTempUploadUrl(null);
+      // Clean up local URL
       URL.revokeObjectURL(localUrl);
     }
   };
