@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +17,24 @@ import { CaptchaPaymentModal } from '../components/captcha-token/CaptchaPaymentM
 const ProductCaptchaToken = () => {
   const { isAuthenticated, login } = useAuth();
   const t = useCaptchaToken();
+
+  useEffect(() => {
+    // Update Page Title
+    document.title = "Captcha Token Service for Google VEO3 & FX Lab | Skyverses";
+
+    // Update Meta Description
+    let metaDescription = document.querySelector('meta[name="description"]');
+    const descriptionText = "Professional CAPTCHA token service for Google FX Lab & VEO3. Use for image generation, video generation, automation & batch workflows.";
+    
+    if (metaDescription) {
+      metaDescription.setAttribute('content', descriptionText);
+    } else {
+      metaDescription = document.createElement('meta');
+      (metaDescription as HTMLMetaElement).name = "description";
+      (metaDescription as HTMLMetaElement).content = descriptionText;
+      document.head.appendChild(metaDescription);
+    }
+  }, []);
 
   return (
     <div className="pt-24 bg-[#fcfcfd] dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden transition-colors duration-500 pb-32">
