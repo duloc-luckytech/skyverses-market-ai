@@ -8,6 +8,16 @@ export const handleAdminQuickLogin = async (
   navigate: (path: string) => void,
   setIsAdminLogging?: (val: boolean) => void
 ) => {
+  // Kiểm tra cấu hình Auto Login trong localStorage
+  const autoLoginConfig = localStorage.getItem('skyverses_auto_login_admin');
+  const isAutoLoginEnabled = autoLoginConfig !== 'false';
+
+  // Nếu người dùng tắt auto login, thoát hàm
+  if (!isAutoLoginEnabled) {
+    console.log("[ADMIN_AUTH] Auto-login is disabled via system configuration.");
+    return;
+  }
+
   if (setIsAdminLogging) setIsAdminLogging(true);
   try {
     const adminEmail = 'duloc2708@gmail.com';

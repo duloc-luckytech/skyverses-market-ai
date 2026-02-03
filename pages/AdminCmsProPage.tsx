@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -11,7 +12,7 @@ import {
   ListPlus, Crown, Star, Flame, LayoutTemplate,
   PlusCircle, Layout, AlignLeft, Globe, List, Code2, Layers,
   CheckCircle2, AlertTriangle, ToggleLeft, ToggleRight,
-  Sparkles, Compass, Search, RefreshCw, Bot, Filter
+  Sparkles, Compass, Search, RefreshCw, Bot, Filter, Cog
 } from 'lucide-react';
 import { marketApi } from '../apis/market';
 import { authApi, UserListResponse, UserListParams } from '../apis/auth';
@@ -30,8 +31,9 @@ import { LogsTab } from '../components/admin-pro/LogsTab';
 import { ExplorerTab } from '../components/admin-pro/ExplorerTab';
 import { AIModelsTab } from '../components/admin-pro/AIModelsTab';
 import { MarketFiltersTab } from '../components/admin-pro/MarketFiltersTab';
+import { ConfigurationTab } from '../components/admin-pro/ConfigurationTab';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG';
 
 const AdminCmsProPage = () => {
   const { user } = useAuth();
@@ -122,6 +124,7 @@ const AdminCmsProPage = () => {
     { id: 'CREDIT_PACKS', label: 'Gói nạp Credit', icon: <Package size={20} /> },
     { id: 'USERS', label: 'Khách hàng', icon: <Users size={20} /> },
     { id: 'LOGS', label: 'Nhật ký hệ thống', icon: <History size={20} /> },
+    { id: 'CONFIG', label: 'Cấu hình', icon: <Cog size={20} /> },
   ];
 
   return (
@@ -161,6 +164,7 @@ const AdminCmsProPage = () => {
              {activeTab === 'AI_MODELS' && <AIModelsTab key="ai_models" />}
              {activeTab === 'LOGS' && <LogsTab key="logs" remoteSolutions={remoteSolutions} />}
              {activeTab === 'USERS' && <UsersTab key="users" loading={loading} response={null} onParamsChange={()=>{}} />}
+             {activeTab === 'CONFIG' && <ConfigurationTab key="config" />}
              {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
                <NodeRegistryTab key={activeTab} activeTab={activeTab} solutions={activeTab === 'CLOUD' ? remoteSolutions : LOCAL_SOLUTIONS} onEdit={handleEdit} onDelete={()=>{}} onToggleActive={handleToggleActive} isSyncedOnCloud={isSyncedOnCloud} />
              )}
