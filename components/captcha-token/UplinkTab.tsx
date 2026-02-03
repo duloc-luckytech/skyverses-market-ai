@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Copy, Loader2, Zap, Link as LinkIcon, ShieldCheck, Layers, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Copy, Loader2, Zap, Link as LinkIcon, ShieldCheck, Layers, AlertCircle, Play } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import { CaptchaAccount } from '../../hooks/useCaptchaToken';
 
@@ -12,10 +12,12 @@ interface UplinkTabProps {
   handleGenerateKey: () => void;
   handleLinkAccount: () => void;
   isAuthenticated: boolean;
+  login?: () => void;
+  onTryIt: () => void;
 }
 
 export const UplinkTab: React.FC<UplinkTabProps> = ({ 
-  accountData, isGeneratingKey, isLinking, handleGenerateKey, handleLinkAccount, isAuthenticated 
+  accountData, isGeneratingKey, isLinking, handleGenerateKey, handleLinkAccount, isAuthenticated, login, onTryIt 
 }) => {
   const [showKey, setShowKey] = useState(false);
   const { showToast } = useToast();
@@ -23,7 +25,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
   const handleCopy = (text: string) => {
     if (!text) return;
     navigator.clipboard.writeText(text);
-    showToast("Đã sao chép Secret Key", "info");
+    showToast("Đã sao chép Api Key", "info");
   };
 
   return (
@@ -34,12 +36,11 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
       className="space-y-10"
     >
       <div className="p-8 lg:p-12 bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-10 relative overflow-hidden">
-         {/* Subtle pattern for tech feel */}
          <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#6366f1 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
          
          <div className="space-y-3 relative z-10">
             <h3 className="text-3xl lg:text-4xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Giao diện lập trình (API).</h3>
-            <p className="text-sm text-slate-500 dark:text-gray-400 font-medium max-w-xl">Sử dụng Secret Key để xác thực các yêu cầu giải mã từ ứng dụng của bạn qua API.</p>
+            <p className="text-sm text-slate-500 dark:text-gray-400 font-medium max-w-xl">Sử dụng Api Key để xác thực các yêu cầu giải mã từ ứng dụng của bạn qua API.</p>
          </div>
          
          <div className="space-y-8 relative z-10">
@@ -47,7 +48,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
               <div className="space-y-6">
                 <div className="space-y-3">
                    <div className="flex justify-between items-center px-1">
-                      <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest italic">YOUR_API_SECRET_KEY</label>
+                      <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest italic">YOUR_API_KEY</label>
                       {accountData.apiKey?.lastUsedAt && (
                         <span className="text-[8px] font-bold text-slate-400 uppercase">Hoạt động: {new Date(accountData.apiKey.lastUsedAt).toLocaleTimeString()}</span>
                       )}
@@ -56,7 +57,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                       <input 
                         readOnly 
                         type={showKey ? "text" : "password"} 
-                        value={accountData.apiKey?.apiKey || ''} // Updated from .key to .apiKey
+                        value={accountData.apiKey?.key || ''}
                         placeholder={accountData.apiKey ? '' : 'Chưa có Key được tạo'}
                         className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 p-5 rounded-2xl font-mono text-sm font-black text-indigo-600 dark:text-indigo-400 tracking-widest outline-none shadow-inner transition-all focus:border-indigo-500/30"
                       />
@@ -69,7 +70,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                            {showKey ? <EyeOff size={18}/> : <Eye size={18}/>}
                          </button>
                          <button 
-                           onClick={() => handleCopy(accountData.apiKey?.apiKey || '')} // Updated from .key to .apiKey
+                           onClick={() => handleCopy(accountData.apiKey?.key || '')}
                            disabled={!accountData.apiKey}
                            className="p-2.5 text-slate-400 hover:text-indigo-600 transition-colors disabled:opacity-20"
                          >
@@ -79,15 +80,22 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                    </div>
                 </div>
                 
-                <div className="flex flex-wrap gap-4 pt-2">
+                <div className="flex flex-row items-center gap-4 pt-2">
                    <button 
                      onClick={handleGenerateKey} 
                      disabled={isGeneratingKey}
-                     className="px-10 py-4 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all group relative overflow-hidden"
+                     className="flex-grow py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-3 hover:scale-102 active:scale-95 transition-all group relative overflow-hidden h-14"
                    >
                       <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                       {isGeneratingKey ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} fill="currentColor" />} 
-                      {accountData.apiKey ? 'Làm mới Secret Key' : 'Khởi tạo API Key'}
+                      {accountData.apiKey ? 'Làm mới Api Key' : 'Khởi tạo API Key'}
+                   </button>
+
+                   <button 
+                     onClick={onTryIt}
+                     className="flex-grow py-5 border-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-3 active:scale-95 h-14"
+                   >
+                      <Play size={16} fill="currentColor" /> Try it
                    </button>
                 </div>
               </div>
@@ -97,19 +105,19 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                     <LinkIcon size={32} />
                  </div>
                  <div className="space-y-2 px-8">
-                    <h4 className="text-xl font-black uppercase italic tracking-tight">Kích hoạt Uplink</h4>
+                    <h4 className="text-xl font-black uppercase italic tracking-tight text-slate-800 dark:text-white">Kích hoạt tài khoản</h4>
                     <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm uppercase font-bold leading-relaxed">
                        Để bắt đầu sử dụng API giải mã Captcha, bạn cần liên kết tài khoản Skyverses với dịch vụ Token.
                     </p>
                  </div>
                  <button 
-                   onClick={handleLinkAccount}
-                   disabled={isLinking || !isAuthenticated}
-                   className="px-12 py-4 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all group relative overflow-hidden"
+                   onClick={isAuthenticated ? handleLinkAccount : login}
+                   disabled={isLinking}
+                   className="px-12 py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-xl shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all group relative overflow-hidden"
                  >
                     <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                     {isLinking ? <Loader2 size={16} className="animate-spin" /> : <LinkIcon size={16} />}
-                    Xác thực & Kết nối Node
+                    {!isAuthenticated ? 'Cần đăng nhập' : 'Xác thực tài khoản'}
                  </button>
                  {!isAuthenticated && (
                    <p className="text-[10px] font-black text-orange-500 uppercase flex items-center gap-2">
@@ -140,7 +148,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
             <div className="space-y-3">
                <h4 className="text-2xl font-black uppercase italic tracking-tighter">Đa nền tảng</h4>
                <p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed italic border-l-2 border-brand-blue pl-4">
-                  "Hỗ trợ đồng thời 12 loại Captcha hiện đại nhất, bao gồm cả những biến thể AI phức tạp từ Google và Cloudflare."
+                  "Hỗ trợ tạo captcha video hoặc hình ảnh trên hệ thống Veo3 Fx Lab flow, tối ưu hóa cho các tác vụ tự động hóa phức tạp."
                </p>
             </div>
          </div>

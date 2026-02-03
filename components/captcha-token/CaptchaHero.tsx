@@ -12,9 +12,8 @@ interface CaptchaHeroProps {
 export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTab }) => {
   const tabs: {id: CaptchaTab, label: string}[] = [
     { id: 'CONNECT', label: 'KẾT NỐI' },
-    { id: 'TELEMETRY', label: 'NHẬT KÝ' },
-    { id: 'DOCS', label: 'API DOCS' },
-    { id: 'ACCOUNT', label: 'TÀI KHOẢN' }
+    { id: 'PAYMENTS', label: 'THANH TOÁN' },
+    { id: 'DOCS', label: 'API DOCS' }
   ];
 
   return (
@@ -28,7 +27,7 @@ export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTa
              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-xl shadow-indigo-500/20">
                 <ShieldAlert size={20} />
              </div>
-             <h1 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter leading-none">Captcha <span className="text-indigo-600">Solver.</span></h1>
+             <h1 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter leading-none">Captcha <span className="text-indigo-600">Veo3.</span></h1>
           </div>
           <p className="text-gray-500 dark:text-gray-400 text-lg font-medium italic">Dịch vụ giải mã Captcha tốc độ cao tích hợp qua API Token.</p>
         </div>

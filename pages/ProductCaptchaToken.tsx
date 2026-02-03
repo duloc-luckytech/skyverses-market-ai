@@ -9,13 +9,13 @@ import { useCaptchaToken } from '../hooks/useCaptchaToken';
 import { CaptchaHero } from '../components/captcha-token/CaptchaHero';
 import { QuotaCard } from '../components/captcha-token/QuotaCard';
 import { UplinkTab } from '../components/captcha-token/UplinkTab';
-import { TelemetryTab } from '../components/captcha-token/TelemetryTab';
+import { PaymentHistoryTab } from '../components/captcha-token/PaymentHistoryTab';
 import { DocsTab } from '../components/captcha-token/DocsTab';
 import { PricingMatrix } from '../components/captcha-token/PricingMatrix';
-import { AccountTab as CaptchaAccountTab } from '../components/captcha-token/AccountTab';
+import { CaptchaPaymentModal } from '../components/captcha-token/CaptchaPaymentModal';
 
 const ProductCaptchaToken = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, login } = useAuth();
   const t = useCaptchaToken();
 
   return (
@@ -49,14 +49,16 @@ const ProductCaptchaToken = () => {
                      handleGenerateKey={t.handleGenerateKey}
                      handleLinkAccount={t.handleLinkAccount}
                      isAuthenticated={isAuthenticated}
+                     login={login}
+                     onTryIt={() => t.setActiveTab('DOCS')}
                    />
                  )}
 
-                 {t.activeTab === 'TELEMETRY' && (
-                   <TelemetryTab 
-                     key="telemetry"
-                     logs={t.logs}
-                     setLogs={t.setLogs}
+                 {t.activeTab === 'PAYMENTS' && (
+                   <PaymentHistoryTab 
+                     key="payments"
+                     logs={t.paymentHistory}
+                     loading={t.loadingHistory}
                    />
                  )}
 
@@ -65,23 +67,19 @@ const ProductCaptchaToken = () => {
                      key="docs"
                    />
                  )}
-
-                 {t.activeTab === 'ACCOUNT' && (
-                   <CaptchaAccountTab 
-                     key="account"
-                     accountData={t.accountData}
-                     /* Fix: Pass missing setAccountData prop required by component */
-                     setAccountData={t.setAccountData}
-                     isLinking={t.isLinking}
-                     handleLinkAccount={t.handleLinkAccount}
-                   />
-                 )}
               </AnimatePresence>
            </div>
         </div>
 
         {/* PRICING MATRIX */}
-        <PricingMatrix plans={t.plans} loading={t.loadingPlans} />
+        <div id="pricing-matrix">
+           <PricingMatrix 
+             plans={t.plans} 
+             loading={t.loadingPlans} 
+             onSelectPlan={t.handleCreatePayment}
+             isCreatingPayment={t.isCreatingPayment}
+           />
+        </div>
 
         {/* FOOTER CTA */}
         <section className="py-40 text-center relative overflow-hidden bg-indigo-600 rounded-[3rem] shadow-3xl mx-4 mt-32 transition-all duration-700 group">
@@ -93,7 +91,10 @@ const ProductCaptchaToken = () => {
               <h2 className="text-7xl lg:text-[140px] font-black tracking-tighter leading-[0.8] italic text-white drop-shadow-2xl">Unify Your <br /> <span className="text-black">Automation.</span></h2>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-12 pt-10">
-                 <button className="w-full sm:w-auto bg-black text-white px-24 py-8 rounded-full text-sm font-black uppercase tracking-[0.4em] shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center gap-6 group">
+                 <button 
+                   onClick={() => document.getElementById('pricing-matrix')?.scrollIntoView({ behavior: 'smooth' })}
+                   className="w-full sm:w-auto bg-black text-white px-24 py-8 rounded-full text-sm font-black uppercase tracking-[0.4em] shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center gap-6 group"
+                 >
                     MUA TOKEN NGAY <Zap size={24} fill="currentColor" className="group-hover:rotate-12 transition-transform" />
                  </button>
                  <a href="#/booking" className="px-16 py-8 border-2 border-black/20 text-black hover:bg-black hover:text-white text-sm font-black uppercase tracking-[0.4em] transition-all rounded-full italic">
@@ -104,6 +105,16 @@ const ProductCaptchaToken = () => {
         </section>
 
       </div>
+
+      <AnimatePresence>
+        {t.activePayment && (
+          <CaptchaPaymentModal 
+            paymentData={t.activePayment}
+            onClose={() => t.setActivePayment(null)}
+            onPollStatus={t.pollPaymentStatus}
+          />
+        )}
+      </AnimatePresence>
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }

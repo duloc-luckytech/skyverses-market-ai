@@ -1,14 +1,16 @@
 
 import React from 'react';
-import { Zap, MailCheck, ShieldCheck, Activity, Loader2 } from 'lucide-react';
+import { Zap, MailCheck, Loader2 } from 'lucide-react';
 import { CaptchaPlan } from '../../hooks/useCaptchaToken';
 
 interface PricingMatrixProps {
   plans: CaptchaPlan[];
   loading: boolean;
+  onSelectPlan: (planCode: string) => void;
+  isCreatingPayment: boolean;
 }
 
-export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading }) => {
+export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading, onSelectPlan, isCreatingPayment }) => {
   return (
     <section className="mt-32 border-t border-black/5 dark:border-white/5 pt-20">
        <div className="text-center space-y-4 mb-20">
@@ -27,7 +29,6 @@ export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading }) 
        ) : (
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {plans.map((plan, idx) => {
-              // Logic hiển thị Popular cho gói thứ 3 hoặc gói có giá cao nhất trong demo
               const isPopular = plan.code.includes('pro') || idx === 2;
 
               return (
@@ -60,20 +61,6 @@ export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading }) 
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Yêu cầu đồng thời</span>
                             <span className="text-sm font-black italic text-emerald-500">{plan.maxConcurrentRequests} Request</span>
                          </div>
-                         <div className="space-y-3 pt-2">
-                            <div className="flex items-center gap-3">
-                               <ShieldCheck size={14} className="text-indigo-500/40" />
-                               <span className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 tracking-wider">Hỗ trợ v2/v3/v4</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                               <ShieldCheck size={14} className="text-indigo-500/40" />
-                               <span className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 tracking-wider">Tốc độ: {plan.rateLimit.perMinute} request/phút</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                               <ShieldCheck size={14} className="text-indigo-500/40" />
-                               <span className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 tracking-wider">Bảo mật định danh 1:1</span>
-                            </div>
-                         </div>
                       </div>
 
                       <div className="space-y-8">
@@ -84,15 +71,18 @@ export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading }) 
                             <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{plan.description}</p>
                          </div>
                          
-                         <button className={`w-full py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.4em] transition-all shadow-xl active:scale-[0.95] relative overflow-hidden group/btn ${isPopular ? 'bg-indigo-600 text-white shadow-indigo-600/20' : 'bg-slate-100 dark:bg-white/5 text-gray-500 border border-black/5 dark:border-white/10 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black'}`}>
+                         <button 
+                           onClick={() => !plan.isFree && onSelectPlan(plan.code)}
+                           disabled={plan.isFree || isCreatingPayment}
+                           className={`w-full py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.4em] transition-all shadow-xl active:scale-[0.95] relative overflow-hidden group/btn ${isPopular ? 'bg-indigo-600 text-white shadow-indigo-600/20' : 'bg-slate-100 dark:bg-white/5 text-gray-500 border border-black/5 dark:border-white/10 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black'}`}
+                         >
                             <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
-                            <span className="relative z-10">Đăng ký sử dụng</span>
+                            <span className="relative z-10 flex items-center justify-center gap-2">
+                               {isCreatingPayment ? <Loader2 size={14} className="animate-spin" /> : null}
+                               {plan.isFree ? 'Gói miễn phí mặc định' : 'Đăng ký sử dụng'}
+                            </span>
                          </button>
                       </div>
-                   </div>
-
-                   <div className="absolute -bottom-4 -right-4 opacity-[0.02] dark:opacity-[0.05] pointer-events-none group-hover:scale-110 transition-transform duration-[3s]">
-                      <Activity size={180} />
                    </div>
                 </div>
               );

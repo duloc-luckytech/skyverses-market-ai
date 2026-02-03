@@ -7,12 +7,25 @@ import { API_BASE_URL, getHeaders } from '../apis/config';
 export const CAPTCHA_API_BASE = 'https://captcha.skyverses.com';
 export const TOKEN_STORAGE_KEY = 'skyverses_captcha_access_token';
 
+export interface PaymentLog {
+  _id: string;
+  createdAt: string;
+  plan: {
+    name: string;
+    code: string;
+  };
+  amount: number;
+  currency: string;
+  status: 'SUCCESS' | 'PENDING' | 'FAILED' | string;
+  bankRef?: string;
+}
+
 export interface CaptchaLog {
   id: string;
   timestamp: string;
-  action: 'IMAGE' | 'VIDEO' | 'CUSTOM';
-  status: 'SUCCESS' | 'FAILED' | 'BYPASS';
+  action: string;
   latency: string;
+  status: string;
   cost: number;
 }
 
@@ -31,31 +44,53 @@ export interface CaptchaPlan {
 }
 
 export interface CaptchaApiKey {
-  apiKey: string; // Updated from 'key' to match new response
+  _id: string;
+  key: string;
   quotaRemaining: number;
-  totalTokens?: number;
-  usedTokens?: number;
+  usedQuota: number;
   plan: string;
   planName?: string;
   rateLimit: {
     perMinute: number;
   };
-  maxConcurrentRequests?: number;
+  maxConcurrentRequests: number;
   lastUsedAt?: string;
   createdAt: string;
   note?: string;
+  isActive: boolean;
 }
 
 export interface CaptchaAccount {
-  id: string;
-  email: string;
-  name: string;
-  userIdSkyverses: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    userIdSkyverses: string;
+  };
   apiKey: CaptchaApiKey | null;
   accessTokenCaptcha?: string;
 }
 
-export type CaptchaTab = 'CONNECT' | 'TELEMETRY' | 'DOCS' | 'ACCOUNT';
+export interface CaptchaPaymentData {
+  transactionId: string;
+  amount: number;
+  currency: string;
+  transferContent: string;
+  bank: {
+    provider: string;
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+  };
+  plan: {
+    code: string;
+    name: string;
+    quota: number;
+  };
+  createdAt: string;
+}
+
+export type CaptchaTab = 'CONNECT' | 'PAYMENTS' | 'DOCS';
 
 export const useCaptchaToken = () => {
   const { user } = useAuth();
@@ -64,20 +99,14 @@ export const useCaptchaToken = () => {
   const [activeTab, setActiveTab] = useState<CaptchaTab>('CONNECT');
   const [loading, setLoading] = useState(false);
   const [loadingPlans, setLoadingPlans] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [isGeneratingKey, setIsGeneratingKey] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
   const [accountData, setAccountData] = useState<CaptchaAccount | null>(null);
   const [plans, setPlans] = useState<CaptchaPlan[]>([]);
-
-  const [logs, setLogs] = useState<CaptchaLog[]>([
-    { id: 'TX-8429', timestamp: '14:22:05', action: 'IMAGE', status: 'SUCCESS', latency: '0.24s', cost: 0.5 },
-    { id: 'TX-8430', timestamp: '14:25:12', action: 'VIDEO', status: 'BYPASS', latency: '1.42s', cost: 2.0 },
-    { id: 'TX-8431', timestamp: '14:30:44', action: 'CUSTOM', status: 'SUCCESS', latency: '0.12s', cost: 1.0 },
-  ]);
-
-  const [requestMode, setRequestMode] = useState<'IMAGE' | 'VIDEO' | 'CUSTOM'>('IMAGE');
-  const [targetUrl, setTargetUrl] = useState('');
-  const [isExecuting, setIsExecuting] = useState(false);
+  const [activePayment, setActivePayment] = useState<CaptchaPaymentData | null>(null);
+  const [isCreatingPayment, setIsCreatingPayment] = useState(false);
+  const [paymentHistory, setPaymentHistory] = useState<PaymentLog[]>([]);
 
   const getCaptchaHeaders = () => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
@@ -102,6 +131,27 @@ export const useCaptchaToken = () => {
     }
   };
 
+  const fetchPaymentHistory = async () => {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+    if (!token) return;
+
+    setLoadingHistory(true);
+    try {
+      const response = await fetch(`${CAPTCHA_API_BASE}/payment/history`, {
+        headers: getCaptchaHeaders()
+      });
+      const result = await response.json();
+      if (result.success && result.data) {
+        setPaymentHistory(result.data);
+      }
+    } catch (err) {
+      console.error("Fetch Payment History Error:", err);
+      showToast("Không thể tải lịch sử thanh toán", "error");
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
   const fetchAccountInfo = async () => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (!token) return;
@@ -120,24 +170,6 @@ export const useCaptchaToken = () => {
       }
     } catch (err) {
       console.error("Load Account Info Error:", err);
-      if (!accountData && user) {
-        setAccountData({
-          id: "NODE-42-X",
-          email: user.email,
-          name: user.name,
-          userIdSkyverses: user._id,
-          apiKey: {
-            apiKey: "cap_sky_42_********************",
-            plan: "pro",
-            planName: "Pro",
-            totalTokens: 10000,
-            usedTokens: 1542,
-            quotaRemaining: 8458,
-            rateLimit: { perMinute: 60 },
-            createdAt: new Date().toISOString()
-          }
-        });
-      }
     } finally {
       setLoading(false);
     }
@@ -147,6 +179,12 @@ export const useCaptchaToken = () => {
     fetchAccountInfo();
     fetchPlans();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'PAYMENTS') {
+      fetchPaymentHistory();
+    }
+  }, [activeTab]);
 
   const handleLinkAccount = async () => {
     if (!user || isLinking) return;
@@ -190,7 +228,6 @@ export const useCaptchaToken = () => {
       const result = await response.json();
       if (result.success && result.data) {
         showToast("Đã khởi tạo Secret Key mới thành công", "success");
-        // Correctly update local state with the new data object
         setAccountData(prev => prev ? ({
           ...prev,
           apiKey: result.data
@@ -206,34 +243,68 @@ export const useCaptchaToken = () => {
     }
   };
 
-  const handleRunSandbox = () => {
-    if (!targetUrl.trim() || isExecuting) return;
-    setIsExecuting(true);
-    setTimeout(() => {
-      const newLog: CaptchaLog = {
-        id: `TX-${Math.floor(Math.random() * 9000 + 1000)}`,
-        timestamp: new Date().toLocaleTimeString(),
-        action: requestMode,
-        status: Math.random() > 0.1 ? 'SUCCESS' : 'FAILED',
-        latency: (Math.random() * 0.5 + 0.1).toFixed(2) + 's',
-        cost: requestMode === 'IMAGE' ? 0.5 : requestMode === 'VIDEO' ? 2.0 : 1.0
-      };
-      setLogs(prev => [newLog, ...prev]);
-      setIsExecuting(false);
-      setTargetUrl('');
-      showToast("Xử lý thử nghiệm hoàn tất", "success");
-    }, 2000);
+  const handleCreatePayment = async (planCode: string) => {
+    if (!accountData || !accountData.apiKey || isCreatingPayment) {
+      if (!accountData) {
+        showToast("Vui lòng kết nối tài khoản trước.", "warning");
+      } else if (!accountData.apiKey) {
+        showToast("Vui lòng khởi tạo API Key trước khi nạp Token.", "warning");
+      }
+      return;
+    }
+
+    setIsCreatingPayment(true);
+    try {
+      const response = await fetch(`${CAPTCHA_API_BASE}/payment/create`, {
+        method: 'POST',
+        headers: getCaptchaHeaders(),
+        body: JSON.stringify({
+          plan: planCode,
+          apiKeyId: accountData.apiKey._id
+        }),
+      });
+      const result = await response.json();
+      if (result.success && result.data) {
+        setActivePayment(result.data);
+      } else {
+        showToast(result.message || "Không thể khởi tạo thanh toán.", "error");
+      }
+    } catch (err) {
+      console.error("Create Payment Error:", err);
+      showToast("Lỗi kết nối máy chủ thanh toán.", "error");
+    } finally {
+      setIsCreatingPayment(false);
+    }
+  };
+
+  const pollPaymentStatus = async (txId: string): Promise<string> => {
+    try {
+      const response = await fetch(`${CAPTCHA_API_BASE}/payment/poll/${txId}`, {
+        headers: getCaptchaHeaders()
+      });
+      const result = await response.json();
+      if (result.success) {
+        if (result.status === 'SUCCESS') {
+          await fetchAccountInfo();
+          await fetchPaymentHistory();
+        }
+        return result.status;
+      }
+      return 'PENDING';
+    } catch (err) {
+      console.error("Polling error", err);
+      return 'PENDING';
+    }
   };
 
   return {
     activeTab, setActiveTab,
-    loading, loadingPlans, isGeneratingKey, isLinking,
+    loading, loadingPlans, loadingHistory, isGeneratingKey, isLinking,
     accountData, setAccountData,
     plans,
-    logs, setLogs,
-    requestMode, setRequestMode,
-    targetUrl, setTargetUrl,
-    isExecuting,
-    handleLinkAccount, handleGenerateKey, handleRunSandbox
+    paymentHistory, setPaymentHistory,
+    activePayment, setActivePayment,
+    isCreatingPayment,
+    handleLinkAccount, handleGenerateKey, handleCreatePayment, pollPaymentStatus
   };
 };
