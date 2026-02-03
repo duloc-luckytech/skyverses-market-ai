@@ -13,7 +13,7 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
   const quotaRemaining = accountData?.apiKey?.quotaRemaining || 0;
   const totalTokens = accountData?.apiKey?.totalTokens || 0;
   const usedTokens = accountData?.apiKey?.usedTokens || 0;
-  const currentPlan = accountData?.apiKey?.plan || 'Free';
+  const currentPlan = accountData?.apiKey?.planName || accountData?.apiKey?.plan || 'Free';
   
   const specs = [
     { l: 'Gói dịch vụ', v: currentPlan, i: <ShieldCheck size={12}/> },
@@ -22,7 +22,7 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
     { l: 'Tốc độ trung bình', v: '5-10s / Request', i: <Clock size={12}/> }
   ];
 
-  const progressWidth = totalTokens > 0 ? Math.min(100, (quotaRemaining / totalTokens) * 100) : 0;
+  const progressWidth = totalTokens > 0 ? Math.min(100, (quotaRemaining / totalTokens) * 100) : (quotaRemaining > 0 ? 100 : 0);
 
   return (
     <div className="lg:col-span-4 space-y-8">
@@ -35,7 +35,7 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
                <div className="flex flex-col">
                   <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest italic">Gói hiện tại</span>
                   <span className={`text-sm font-black uppercase italic ${
-                    currentPlan === 'Pro' ? 'text-indigo-600' : currentPlan === 'Basic' ? 'text-blue-500' : 'text-slate-400'
+                    currentPlan.toLowerCase().includes('pro') ? 'text-indigo-600' : currentPlan.toLowerCase().includes('basic') ? 'text-blue-500' : 'text-slate-400'
                   }`}>{currentPlan}</span>
                </div>
                <div className="flex items-center gap-2 text-emerald-500">

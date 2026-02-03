@@ -16,15 +16,31 @@ export interface CaptchaLog {
   cost: number;
 }
 
-export interface CaptchaApiKey {
-  key: string;
-  quotaRemaining: number;
-  totalTokens: number;
-  usedTokens: number;
-  plan: 'Free' | 'Basic' | 'Pro';
+export interface CaptchaPlan {
+  code: string;
+  name: string;
+  price: number;
+  currency: string;
+  quota: number;
+  maxConcurrentRequests: number;
   rateLimit: {
     perMinute: number;
   };
+  description: string;
+  isFree: boolean;
+}
+
+export interface CaptchaApiKey {
+  apiKey: string; // Updated from 'key' to match new response
+  quotaRemaining: number;
+  totalTokens?: number;
+  usedTokens?: number;
+  plan: string;
+  planName?: string;
+  rateLimit: {
+    perMinute: number;
+  };
+  maxConcurrentRequests?: number;
   lastUsedAt?: string;
   createdAt: string;
   note?: string;
@@ -47,9 +63,11 @@ export const useCaptchaToken = () => {
 
   const [activeTab, setActiveTab] = useState<CaptchaTab>('CONNECT');
   const [loading, setLoading] = useState(false);
+  const [loadingPlans, setLoadingPlans] = useState(false);
   const [isGeneratingKey, setIsGeneratingKey] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
   const [accountData, setAccountData] = useState<CaptchaAccount | null>(null);
+  const [plans, setPlans] = useState<CaptchaPlan[]>([]);
 
   const [logs, setLogs] = useState<CaptchaLog[]>([
     { id: 'TX-8429', timestamp: '14:22:05', action: 'IMAGE', status: 'SUCCESS', latency: '0.24s', cost: 0.5 },
@@ -67,6 +85,21 @@ export const useCaptchaToken = () => {
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     };
+  };
+
+  const fetchPlans = async () => {
+    setLoadingPlans(true);
+    try {
+      const response = await fetch(`${CAPTCHA_API_BASE}/captcha/plans`);
+      const result = await response.json();
+      if (result.success && result.data) {
+        setPlans(result.data);
+      }
+    } catch (err) {
+      console.error("Fetch Plans Error:", err);
+    } finally {
+      setLoadingPlans(false);
+    }
   };
 
   const fetchAccountInfo = async () => {
@@ -87,16 +120,16 @@ export const useCaptchaToken = () => {
       }
     } catch (err) {
       console.error("Load Account Info Error:", err);
-      // Mock data for display if API fails in demo
-      if (!accountData) {
+      if (!accountData && user) {
         setAccountData({
           id: "NODE-42-X",
-          email: user?.email || "architect@skyverses.io",
-          name: user?.name || "Architect",
-          userIdSkyverses: user?._id || "001",
+          email: user.email,
+          name: user.name,
+          userIdSkyverses: user._id,
           apiKey: {
-            key: "sk_sky_42_********************",
-            plan: "Pro",
+            apiKey: "cap_sky_42_********************",
+            plan: "pro",
+            planName: "Pro",
             totalTokens: 10000,
             usedTokens: 1542,
             quotaRemaining: 8458,
@@ -112,6 +145,7 @@ export const useCaptchaToken = () => {
 
   useEffect(() => {
     fetchAccountInfo();
+    fetchPlans();
   }, []);
 
   const handleLinkAccount = async () => {
@@ -154,9 +188,13 @@ export const useCaptchaToken = () => {
         body: JSON.stringify({}),
       });
       const result = await response.json();
-      if (result.success) {
+      if (result.success && result.data) {
         showToast("Đã khởi tạo Secret Key mới thành công", "success");
-        await fetchAccountInfo();
+        // Correctly update local state with the new data object
+        setAccountData(prev => prev ? ({
+          ...prev,
+          apiKey: result.data
+        }) : null);
       } else {
         showToast(result.message || "Không thể tạo Secret Key.", "error");
       }
@@ -189,8 +227,9 @@ export const useCaptchaToken = () => {
 
   return {
     activeTab, setActiveTab,
-    loading, isGeneratingKey, isLinking,
+    loading, loadingPlans, isGeneratingKey, isLinking,
     accountData, setAccountData,
+    plans,
     logs, setLogs,
     requestMode, setRequestMode,
     targetUrl, setTargetUrl,

@@ -10,9 +10,9 @@ import { CaptchaHero } from '../components/captcha-token/CaptchaHero';
 import { QuotaCard } from '../components/captcha-token/QuotaCard';
 import { UplinkTab } from '../components/captcha-token/UplinkTab';
 import { TelemetryTab } from '../components/captcha-token/TelemetryTab';
-import { AccountTab } from '../components/captcha-token/AccountTab';
 import { DocsTab } from '../components/captcha-token/DocsTab';
 import { PricingMatrix } from '../components/captcha-token/PricingMatrix';
+import { AccountTab as CaptchaAccountTab } from '../components/captcha-token/AccountTab';
 
 const ProductCaptchaToken = () => {
   const { isAuthenticated } = useAuth();
@@ -67,9 +67,10 @@ const ProductCaptchaToken = () => {
                  )}
 
                  {t.activeTab === 'ACCOUNT' && (
-                   <AccountTab 
+                   <CaptchaAccountTab 
                      key="account"
                      accountData={t.accountData}
+                     /* Fix: Pass missing setAccountData prop required by component */
                      setAccountData={t.setAccountData}
                      isLinking={t.isLinking}
                      handleLinkAccount={t.handleLinkAccount}
@@ -80,7 +81,7 @@ const ProductCaptchaToken = () => {
         </div>
 
         {/* PRICING MATRIX */}
-        <PricingMatrix />
+        <PricingMatrix plans={t.plans} loading={t.loadingPlans} />
 
         {/* FOOTER CTA */}
         <section className="py-40 text-center relative overflow-hidden bg-indigo-600 rounded-[3rem] shadow-3xl mx-4 mt-32 transition-all duration-700 group">

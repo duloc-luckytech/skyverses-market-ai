@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Copy, Loader2, Zap, Link as LinkIcon, ShieldCheck, Layers, AlertCircle } from 'lucide-react';
@@ -55,7 +56,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                       <input 
                         readOnly 
                         type={showKey ? "text" : "password"} 
-                        value={accountData.apiKey?.key || ''}
+                        value={accountData.apiKey?.apiKey || ''} // Updated from .key to .apiKey
                         placeholder={accountData.apiKey ? '' : 'Chưa có Key được tạo'}
                         className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 p-5 rounded-2xl font-mono text-sm font-black text-indigo-600 dark:text-indigo-400 tracking-widest outline-none shadow-inner transition-all focus:border-indigo-500/30"
                       />
@@ -68,7 +69,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                            {showKey ? <EyeOff size={18}/> : <Eye size={18}/>}
                          </button>
                          <button 
-                           onClick={() => handleCopy(accountData.apiKey?.key || '')} 
+                           onClick={() => handleCopy(accountData.apiKey?.apiKey || '')} // Updated from .key to .apiKey
                            disabled={!accountData.apiKey}
                            className="p-2.5 text-slate-400 hover:text-indigo-600 transition-colors disabled:opacity-20"
                          >
