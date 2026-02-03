@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -88,7 +87,7 @@ export const AppCard: React.FC<AppCardProps> = ({ app }) => {
            onClick={(e) => { e.stopPropagation(); handleAction(); }}
            className="w-full py-4 bg-slate-900 dark:bg-white text-white dark:text-black rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-brand-blue dark:hover:bg-brand-blue hover:text-white transition-all shadow-xl active:scale-95"
          >
-            Initialize Node <ArrowRight size={14} />
+            Sử dụng <ArrowRight size={14} />
          </button>
       </div>
     </motion.div>

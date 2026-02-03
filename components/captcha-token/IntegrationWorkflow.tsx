@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -15,7 +16,7 @@ export const IntegrationWorkflow: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [showResponse, setShowResponse] = useState(false);
   const [activeWorkflowTab, setActiveWorkflowTab] = useState<'IMAGE' | 'VIDEO'>('IMAGE');
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [lastResponse, setLastResponse] = useState<any>(null);
 
   // Input States
@@ -165,7 +166,7 @@ export const IntegrationWorkflow: React.FC = () => {
           </div>
           <div className="space-y-1">
             <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">List examples</h3>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Kịch bản tích hợp hệ thống thực tế</p>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Các api của fx lab google veo3</p>
           </div>
         </div>
         <div className="flex items-center gap-4 pr-2">

@@ -17,8 +17,8 @@ export interface AppNode {
 export const APP_REGISTRY: AppNode[] = [
   {
     id: 'a-captcha',
-    name: 'Neural Captcha Resolver',
-    desc: 'Hạ tầng giải mã Captcha bằng AI tốc độ cao cho các hệ thống tự động hóa quy mô lớn.',
+    name: 'Captcha Veo3',
+    desc: 'Cung cấp Token Captcha để sử dụng Google VEO3 & FX LAB',
     category: 'INFRA',
     status: 'OPERATIONAL',
     stats: { latency: '0.2s', version: 'API v2', users: 'Enterprise' },
