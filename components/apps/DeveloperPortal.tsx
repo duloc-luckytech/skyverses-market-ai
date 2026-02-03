@@ -38,7 +38,7 @@ export const DeveloperPortal: React.FC<DeveloperPortalProps> = ({ onApply }) => 
             ].map((item, i) => (
               <div key={i} className="space-y-3 group">
                 <div className="w-10 h-10 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform shadow-sm">
-                  {React.cloneElement(item.i as React.ReactElement, { size: 20 })}
+                  {React.cloneElement(item.i as React.ReactElement<any>, { size: 20 })}
                 </div>
                 <h4 className="text-sm font-black uppercase italic tracking-tight text-slate-800 dark:text-white">{item.t}</h4>
                 <p className="text-xs text-slate-500 dark:text-gray-400 font-medium">"{item.d}"</p>

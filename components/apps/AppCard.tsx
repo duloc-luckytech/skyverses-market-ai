@@ -11,18 +11,18 @@ interface AppCardProps {
 
 const getIcon = (id: string, color: string) => {
   const icons: any = {
-    a1: <Sparkles size={20} />,
-    a2: <Layers size={20} />,
-    a3: <Zap size={20} />,
-    a4: <Workflow size={20} />,
-    a5: <Activity size={20} />,
-    a6: <Bot size={20} />,
-    'a-captcha': <ShieldAlert size={20} />,
-    a7: <Server size={20} />,
-    a8: <ShieldCheck size={20} />,
-    a9: <Code2 size={20} />
+    a1: <Sparkles />,
+    a2: <Layers />,
+    a3: <Zap />,
+    a4: <Workflow />,
+    a5: <Activity />,
+    a6: <Bot />,
+    'a-captcha': <ShieldAlert />,
+    a7: <Server />,
+    a8: <ShieldCheck />,
+    a9: <Code2 />
   };
-  return React.cloneElement(icons[id] || <Zap size={20}/>, { className: color });
+  return React.cloneElement(icons[id] || <Zap />, { className: color });
 };
 
 export const AppCard: React.FC<AppCardProps> = ({ app }) => {
@@ -47,12 +47,12 @@ export const AppCard: React.FC<AppCardProps> = ({ app }) => {
       onClick={handleAction}
     >
       <div className={`absolute -top-10 -right-10 opacity-[0.02] dark:opacity-[0.05] group-hover:scale-110 group-hover:rotate-12 transition-transform duration-[3s] ${app.color}`}>
-         {React.cloneElement(getIcon(app.id, app.color), { size: 200 })}
+         {React.cloneElement(getIcon(app.id, app.color) as React.ReactElement<any>, { size: 200 })}
       </div>
 
       <div className="flex justify-between items-start relative z-10">
          <div className={`w-14 h-14 rounded-2xl bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/5 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform`}>
-            {getIcon(app.id, app.color)}
+            {React.cloneElement(getIcon(app.id, app.color) as React.ReactElement<any>, { size: 24 })}
          </div>
          <div className={`px-3 py-1 rounded-full border text-[8px] font-black uppercase tracking-widest ${
            app.status === 'OPERATIONAL' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :

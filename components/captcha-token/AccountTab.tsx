@@ -62,11 +62,11 @@ export const AccountTab: React.FC<AccountTabProps> = ({
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="p-6 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-2xl space-y-1">
                        <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest italic">Mã khách hàng (UID)</p>
-                       <p className="text-xs font-mono font-bold text-slate-700 dark:text-gray-300 select-all">{accountData.id}</p>
+                       <p className="text-xs font-mono font-bold text-slate-700 dark:text-gray-300 select-all">{accountData.user.id}</p>
                     </div>
                     <div className="p-6 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-2xl space-y-1">
                        <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest italic">Email đăng ký</p>
-                       <p className="text-xs font-mono font-bold text-slate-700 dark:text-gray-300">{accountData.email}</p>
+                       <p className="text-xs font-mono font-bold text-slate-700 dark:text-gray-300">{accountData.user.email}</p>
                     </div>
                     {accountData.accessTokenCaptcha && (
                        <div className="p-6 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-2xl space-y-1 md:col-span-2">
