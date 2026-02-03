@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -305,6 +304,7 @@ export const useCaptchaToken = () => {
     paymentHistory, setPaymentHistory,
     activePayment, setActivePayment,
     isCreatingPayment,
-    handleLinkAccount, handleGenerateKey, handleCreatePayment, pollPaymentStatus
+    handleLinkAccount, handleGenerateKey, handleCreatePayment, pollPaymentStatus,
+    fetchAccountInfo // Added this to return object
   };
 };

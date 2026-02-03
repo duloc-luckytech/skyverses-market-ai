@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Zap } from 'lucide-react';
@@ -84,6 +83,7 @@ const ProductCaptchaToken = () => {
                    <DocsTab 
                      key="docs"
                      apiKey={t.accountData?.apiKey?.key}
+                     onRefreshAccount={t.fetchAccountInfo}
                    />
                  )}
               </AnimatePresence>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Copy, Loader2, Zap, Link as LinkIcon, ShieldCheck, Layers, AlertCircle, Play, AlertTriangle } from 'lucide-react';
@@ -35,7 +34,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
       exit={{ opacity: 0, x: -20 }} 
       className="space-y-10"
     >
-      <div className="p-8 lg:p-12 bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-10 relative overflow-hidden">
+      <div className="p-8 lg:p-12 bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-10 relative overflow-hidden transition-colors">
          <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#6366f1 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
          
          <div className="space-y-3 relative z-10">
@@ -137,7 +136,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                    className="px-12 py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-xl shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all group relative overflow-hidden"
                  >
                     <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                    {isLinking ? <Loader2 size={16} className="animate-spin" /> : <LinkIcon size={16} />}
+                    {isLinking && <Loader2 className="animate-spin mr-2" size={16} />}
                     {!isAuthenticated ? 'Cần đăng nhập' : 'Xác thực tài khoản'}
                  </button>
                  {!isAuthenticated && (

@@ -16,9 +16,10 @@ type CaptchaAction = 'IMAGE' | 'VIDEO';
 
 interface DocsTabProps {
   apiKey?: string;
+  onRefreshAccount?: () => void;
 }
 
-export const DocsTab: React.FC<DocsTabProps> = ({ apiKey: accountApiKey }) => {
+export const DocsTab: React.FC<DocsTabProps> = ({ apiKey: accountApiKey, onRefreshAccount }) => {
   const { showToast } = useToast();
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
   const [activeLang, setActiveLang] = useState<CodeLang>('CURL');
@@ -112,6 +113,8 @@ console.log(data);`;
       
       if (data.success) {
         showToast("Yêu cầu thành công", "success");
+        // CALL REFRESH ACCOUNT INFO ON SUCCESS
+        if (onRefreshAccount) onRefreshAccount();
       } else {
         showToast(data.message || "Yêu cầu bị từ chối", "error");
       }
