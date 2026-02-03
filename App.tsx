@@ -9,7 +9,6 @@ import Layout from './components/Layout';
 import { ToastProvider } from './context/ToastContext';
 
 // Page Imports
-import LandingPage from './pages/LandingPage';
 import MarketPage from './pages/MarketPage';
 import CategoryPage from './pages/CategoryPage';
 import ExplorerPage from './pages/ExplorerPage';
@@ -22,7 +21,6 @@ import LoginPage from './pages/LoginPage';
 import SolutionDetail from './pages/SolutionDetail';
 import UseCasesPage from './pages/UseCasesPage';
 import PricingPage from './pages/PricingPage';
-import DemoPlayground from './pages/DemoPlayground';
 import BookingPage from './pages/BookingPage';
 import AboutPage from './pages/AboutPage';
 import SettingsPage from './pages/SettingsPage';
@@ -39,7 +37,6 @@ import AITetGenerator from './pages/images/AITetGenerator';
 import AIWeddingGenerator from './pages/images/AIWeddingGenerator';
 import AIBirthdayGenerator from './pages/images/AIBirthdayGenerator';
 import GenyuProduct from './pages/videos/GenyuProduct';
-import KineticProduct from './pages/videos/KineticProduct';
 import AvatarLipsyncAI from './pages/videos/AvatarLipsyncAI';
 import VideoAnimateAI from './pages/videos/VideoAnimateAI';
 import TextToSpeech from './pages/audio/TextToSpeech';
@@ -87,7 +84,6 @@ const App: React.FC = () => {
                     <Routes>
                       <Route path="/" element={<MarketPage />} />
                       <Route path="/category/:id" element={<CategoryPage />} />
-                      <Route path="/studio" element={<LandingPage />} />
                       <Route path="/explorer" element={<ExplorerPage />} />
                       <Route path="/models" element={<ModelsPage />} />
                       <Route path="/apps" element={<AppsPage />} />
@@ -117,7 +113,6 @@ const App: React.FC = () => {
                       <Route path="/product/voice-design-ai" element={<VoiceDesignAI />} />
                       <Route path="/product/ai-voice-studio" element={<VoiceStudio />} />
                       <Route path="/product/studio-architect" element={<GenyuProduct />} />
-                      <Route path="/product/kinetic-core-engine" element={<KineticProduct />} />
                       <Route path="/product/avatar-sync-ai" element={<AvatarLipsyncAI />} />
                       <Route path="/product/video-animate-ai" element={<VideoAnimateAI />} />
                       <Route path="/product/text-to-speech" element={<TextToSpeech />} />
@@ -134,7 +129,6 @@ const App: React.FC = () => {
                       
                       <Route path="/use-cases" element={<UseCasesPage />} />
                       <Route path="/pricing" element={<PricingPage />} />
-                      <Route path="/demo" element={<DemoPlayground />} />
                       <Route path="/booking" element={<BookingPage />} />
                       <Route path="/about" element={<AboutPage />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
