@@ -101,7 +101,7 @@ const App: React.FC = () => {
                       <Route path="/policy" element={<PolicyPage />} />
                       
                       <Route path="/product/ai-agent-workflow" element={<ProductAIAgentWorkflow />} />
-                      <Route path="/product/captcha-token" element={<ProductCaptchaToken />} />
+                      <Route path="/product/captcha-veo3" element={<ProductCaptchaToken />} />
                       <Route path="/product/ai-birthday-generator" element={<AIBirthdayGenerator />} />
                       <Route path="/product/ai-wedding-generator" element={<AIWeddingGenerator />} />
                       <Route path="/product/ai-noel-generator" element={<AINoelGenerator />} />

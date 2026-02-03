@@ -23,7 +23,7 @@ export const APP_REGISTRY: AppNode[] = [
     status: 'OPERATIONAL',
     stats: { latency: '0.2s', version: 'API v2', users: 'Enterprise' },
     color: 'text-indigo-500',
-    slug: 'captcha-token'
+    slug: 'captcha-veo3'
   }
 ];
 
