@@ -271,7 +271,7 @@ export const IntegrationWorkflow: React.FC = () => {
                             disabled={isRunning}
                             className="w-full py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.4em] shadow-xl shadow-indigo-600/20 hover:scale-102 active:scale-95 transition-all flex items-center justify-center gap-4 relative overflow-hidden group"
                           >
-                            <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                            <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                             {isRunning ? <Loader2 className="animate-spin" size={20} /> : <Play size={20} fill="currentColor" />}
                             {isRunning ? 'ĐANG KHỞI CHẠY...' : `RUN REAL ${activeWorkflowTab} REQUEST`}
                           </button>
@@ -367,20 +367,14 @@ export const IntegrationWorkflow: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* COMPLIANCE FOOTER */}
-      <div className="p-10 bg-slate-900 dark:bg-black rounded-[3rem] border border-white/10 flex flex-col md:flex-row items-center justify-between gap-10 shadow-3xl">
-         <div className="space-y-4 max-w-2xl text-center md:text-left">
-            <div className="flex items-center gap-3 justify-center md:justify-start">
-               <ShieldCheck size={24} className="text-emerald-500" />
-               <h4 className="text-xl font-black uppercase tracking-tighter text-white italic leading-none">B2B Compliance & Scalability</h4>
-            </div>
-            <p className="text-sm text-gray-400 font-medium leading-relaxed">
-              Hệ thống Token Captcha của Skyverses được thiết kế để xử lý hàng triệu request mỗi ngày với tỷ lệ uptime 99.99%. Toàn bộ dữ liệu được mã hóa đầu-cuối và tuân thủ các tiêu chuẩn bảo mật khắt khe nhất.
-            </p>
-         </div>
-         <button className="px-12 py-5 bg-white text-black rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-xl active:scale-95 whitespace-nowrap">
+      {/* COMPLIANCE FOOTER - MODIFIED TO SHOW ONLY CONTACT BUTTON */}
+      <div className="p-10 bg-slate-900 dark:bg-black rounded-[3rem] border border-white/10 flex flex-col items-center justify-center gap-6 shadow-3xl">
+         <button className="px-16 py-6 bg-white text-black rounded-xl text-[12px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-xl active:scale-95 whitespace-nowrap">
             Liên hệ đội ngũ kỹ sư
          </button>
+         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest italic text-center">
+            Mọi yêu cầu hỗ trợ kỹ thuật và tích hợp hệ thống sẽ được phản hồi trong vòng 24h.
+         </p>
       </div>
     </div>
   );

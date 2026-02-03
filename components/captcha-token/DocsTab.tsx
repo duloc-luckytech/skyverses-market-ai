@@ -226,18 +226,6 @@ console.log(data);`;
                      </div>
                   </div>
                </div>
-
-               <div className="p-8 bg-indigo-600/5 border border-indigo-600/10 rounded-[2rem] flex gap-5 items-start shadow-sm transition-all hover:bg-indigo-600/10 group">
-                  <div className="p-3 bg-indigo-600/10 rounded-xl text-indigo-600 group-hover:scale-110 transition-transform">
-                    <Cpu size={24} className="animate-pulse" />
-                  </div>
-                  <div className="space-y-1">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600 italic">Real-time Node implementation</p>
-                     <p className="text-[11px] text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight italic">
-                        Thay đổi các tham số ở cột trái để thấy kịch bản tích hợp thay đổi trực tiếp ở cột phải.
-                     </p>
-                  </div>
-               </div>
             </div>
 
             {/* LIVE CODE PREVIEW (RIGHT) */}
@@ -245,7 +233,7 @@ console.log(data);`;
                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="flex items-center gap-3">
                      <Code2 size={16} className="text-indigo-500" />
-                     <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 flex items-center gap-3 italic leading-none">Request Implementation</h4>
+                     <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 flex items-center gap-3 italic leading-none">Request</h4>
                   </div>
                   
                   <div className="flex bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/5 shadow-inner">
@@ -301,14 +289,24 @@ console.log(data);`;
                     <div className="flex items-center gap-3">
                        <Server size={16} className={liveResponse ? "text-indigo-500" : "text-emerald-500"} />
                        <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 flex items-center gap-3 italic leading-none">
-                         {liveResponse ? "Live Response Trace" : "Response Manifest (Schema)"}
+                         {liveResponse ? "Output" : "Response Manifest (Schema)"}
                        </h4>
                     </div>
                     <div className="flex gap-4">
                       {liveResponse && (
-                        <button onClick={() => setLiveResponse(null)} className="text-[9px] font-black uppercase text-gray-400 hover:text-white tracking-widest italic flex items-center gap-2">
-                           <RefreshCw size={12} /> RESET_VIEW
-                        </button>
+                        <>
+                          {liveResponse.captchaToken && (
+                            <button 
+                              onClick={() => handleCopy(liveResponse.captchaToken, 'Captcha Token')}
+                              className="px-4 py-1.5 bg-indigo-600 text-white rounded-full text-[9px] font-black uppercase tracking-widest transition-all shadow-lg flex items-center gap-2"
+                            >
+                               <Zap size={12} fill="currentColor" /> COPY_TOKEN
+                            </button>
+                          )}
+                          <button onClick={() => setLiveResponse(null)} className="text-[9px] font-black uppercase text-gray-400 hover:text-white tracking-widest italic flex items-center gap-2">
+                             <RefreshCw size={12} /> RESET
+                          </button>
+                        </>
                       )}
                       <button onClick={() => handleCopy(liveResponse ? JSON.stringify(liveResponse, null, 4) : responseSchemaExample, 'JSON Response')} className="text-[9px] font-black uppercase text-emerald-500 hover:underline tracking-widest italic flex items-center gap-2 transition-all">
                          <Copy size={12} /> COPY_JSON
@@ -316,10 +314,9 @@ console.log(data);`;
                     </div>
                   </div>
                   <div className="relative group">
-                    <pre className={`p-8 rounded-[2rem] border border-white/5 text-[12px] font-mono overflow-x-auto shadow-inner leading-relaxed transition-colors duration-500 ${liveResponse ? "bg-black/60 text-indigo-400" : "bg-[#08080a] text-emerald-500/80"}`}>
+                    <pre className={`p-8 rounded-[2.5rem] border border-white/5 text-[12px] font-mono overflow-x-auto shadow-inner leading-relaxed transition-colors duration-700 ${liveResponse ? "bg-black text-indigo-400" : "bg-[#08080a] text-emerald-500/80"}`}>
                        {liveResponse ? JSON.stringify(liveResponse, null, 4) : responseSchemaExample}
                     </pre>
-                    <div className={`absolute inset-0 pointer-events-none rounded-[2rem] ${liveResponse ? "bg-indigo-500/[0.02]" : "bg-emerald-500/[0.01]"}`}></div>
                   </div>
                </div>
             </div>
