@@ -1,10 +1,10 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Terminal, Copy, Check, ExternalLink, 
-  Code2, Info, ChevronRight, Globe,
-  ShieldCheck, ArrowRightLeft, Book,
-  // Added missing CheckCircle2 import
+  Code2, ChevronRight, Globe,
+  ArrowRightLeft,
   CheckCircle2
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
@@ -122,36 +122,6 @@ export const DocsTab: React.FC = () => {
                   </div>
                </div>
             </div>
-         </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-         <div className="p-8 bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-3xl space-y-4">
-            <div className="flex items-center gap-3 text-brand-blue">
-               <ShieldCheck size={18}/>
-               <span className="text-[10px] font-black uppercase tracking-widest italic">Security Node</span>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed uppercase tracking-tight italic">
-               Hệ thống sử dụng chữ ký điện tử để bảo vệ API Key. Mỗi request đều được ghi nhật ký và phân tích qua telemetry.
-            </p>
-         </div>
-         <div className="p-8 bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-3xl space-y-4">
-            <div className="flex items-center gap-3 text-indigo-500">
-               <Book size={18}/>
-               <span className="text-[10px] font-black uppercase tracking-widest italic">SDK Integration</span>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed uppercase tracking-tight italic">
-               Tải ngay bộ thư viện Python/NodeJS SDK để tích hợp nhanh chỉ với 3 dòng code. Hỗ trợ đầy đủ các framework phổ biến.
-            </p>
-         </div>
-         <div className="p-8 bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-3xl space-y-4">
-            <div className="flex items-center gap-3 text-emerald-500">
-               <Info size={18}/>
-               <span className="text-[10px] font-black uppercase tracking-widest italic">Dev Support</span>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed uppercase tracking-tight italic">
-               Cộng đồng Discord chuyên sâu cho lập trình viên AI. Giải đáp thắc mắc về tích hợp kịch bản 24/7.
-            </p>
          </div>
       </div>
     </motion.div>
