@@ -4,14 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Terminal, Copy, Check, ExternalLink, 
   Code2, ChevronRight, Globe,
-  ArrowRightLeft,
-  CheckCircle2,
-  ChevronDown,
-  Key as KeyIcon,
   Activity,
-  ShieldCheck,
+  Server,
   Cpu,
-  Server
+  Key as KeyIcon,
+  ChevronDown
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 
@@ -25,7 +22,7 @@ export const DocsTab: React.FC = () => {
   
   // Interactive States
   const [action, setAction] = useState<CaptchaAction>('IMAGE_GENERATION');
-  const [apiKey, setApiKey] = useState('sk_live_6f7a8b9c... ');
+  const [apiKey, setApiKey] = useState('cap_87dd7a9edb5c2...');
 
   const handleCopy = (text: string, section: string) => {
     navigator.clipboard.writeText(text);
@@ -39,9 +36,9 @@ export const DocsTab: React.FC = () => {
       case 'CURL':
         return `curl --location 'https://captcha.skyverses.com/captcha/request' \\
 --header 'Content-Type: application/json' \\
---header 'Authorization: Bearer ${apiKey}' \\
 --data '{
-    "action": "${action}"
+    "action": "${action}",
+    "apiKey": "${apiKey}"
 }'`;
       case 'PYTHON':
         return `import requests
@@ -49,11 +46,11 @@ import json
 
 url = "https://captcha.skyverses.com/captcha/request"
 payload = {
-    "action": "${action}"
+    "action": "${action}",
+    "apiKey": "${apiKey}"
 }
 headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ${apiKey}'
+    'Content-Type': 'application/json'
 }
 
 response = requests.post(url, data=json.dumps(payload), headers=headers)
@@ -61,14 +58,14 @@ print(response.json())`;
       case 'NODEJS':
         return `const url = 'https://captcha.skyverses.com/captcha/request';
 const payload = {
-  action: '${action}'
+  action: '${action}',
+  apiKey: '${apiKey}'
 };
 
 const response = await fetch(url, {
   method: 'POST',
   headers: { 
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ${apiKey}'
+    'Content-Type': 'application/json'
   },
   body: JSON.stringify(payload)
 });
@@ -159,9 +156,9 @@ console.log(data);`;
                      <div className="space-y-3">
                         <div className="flex justify-between items-center px-1">
                            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest flex items-center gap-2">
-                             Authorization <span className="text-red-500">*</span>
+                             apiKey <span className="text-red-500">*</span>
                            </label>
-                           <span className="text-[8px] font-bold text-purple-500 uppercase bg-purple-500/10 px-1.5 py-0.5 rounded">Header: Bearer</span>
+                           <span className="text-[8px] font-bold text-purple-500 uppercase bg-purple-500/10 px-1.5 py-0.5 rounded">Body Parameter</span>
                         </div>
                         <div className="relative group">
                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
