@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -154,7 +155,7 @@ console.log(data);`;
                   <h3 className="text-3xl lg:text-4xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">API Reference</h3>
                </div>
                <p className="text-sm text-gray-500 font-medium max-w-xl italic">
-                 Giao thức trích xuất và giải mã Captcha nơ-ron chuyên dụng cho các kịch bản tự động hóa quy mô lớn.
+                 Cung cấp Token Captcha để sử dụng Google VEO3 & FX LAB
                </p>
             </div>
             <div className="flex flex-col items-end gap-2">
@@ -197,7 +198,7 @@ console.log(data);`;
                               <option value="IMAGE">IMAGE</option>
                               <option value="VIDEO">VIDEO</option>
                            </select>
-                           <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-hover:text-indigo-500 transition-colors" />
+                           <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover:text-indigo-500 transition-colors" />
                         </div>
                         <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed italic px-1 opacity-70 leading-loose">Xác định loại captcha cần giải mã dựa trên kiến trúc nơ-ron hiện tại.</p>
                      </div>
