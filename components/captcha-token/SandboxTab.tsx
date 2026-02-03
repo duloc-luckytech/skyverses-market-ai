@@ -22,8 +22,8 @@ export const SandboxTab: React.FC<SandboxTabProps> = ({
       <div className="p-10 bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/10 rounded-[2.5rem] shadow-2xl space-y-10">
          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="space-y-1">
-               <h3 className="text-2xl font-black uppercase italic tracking-tighter">Request Sandbox.</h3>
-               <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Kiểm thử giải mã trong môi trường giả lập</p>
+               <h3 className="text-2xl font-black uppercase italic tracking-tighter">Thử nghiệm API.</h3>
+               <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Kiểm thử giải mã trực tiếp từ trình duyệt</p>
             </div>
             <div className="flex bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/10">
                {(['IMAGE', 'VIDEO', 'CUSTOM'] as const).map(m => (
@@ -39,11 +39,11 @@ export const SandboxTab: React.FC<SandboxTabProps> = ({
 
          <div className="space-y-6">
             <div className="space-y-3">
-               <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-2 italic">Target SiteKey / Payload</label>
+               <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-2 italic">SiteKey / Dữ liệu kịch bản</label>
                <textarea 
                  value={targetUrl} onChange={e => setTargetUrl(e.target.value)}
                  className="w-full h-32 bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/5 p-5 rounded-2xl font-mono text-[12px] text-slate-800 dark:text-zinc-300 outline-none focus:ring-1 focus:ring-indigo-500/40 transition-all resize-none shadow-inner"
-                 placeholder="Nhập SiteKey hoặc dữ liệu kịch bản cần giải mã..."
+                 placeholder="Nhập SiteKey hoặc dữ liệu cần giải mã để thử nghiệm..."
                />
             </div>
 
@@ -54,7 +54,7 @@ export const SandboxTab: React.FC<SandboxTabProps> = ({
             >
                <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                {isExecuting ? <Loader2 className="animate-spin" size={20} /> : <Play size={20} fill="currentColor" />}
-               {isExecuting ? 'SOLVING_CAPTCHA...' : 'RUN_TEST_BYPASS'}
+               {isExecuting ? 'ĐANG GIẢI MÃ...' : 'CHẠY THỬ NGHIỆM'}
             </button>
          </div>
       </div>
@@ -62,15 +62,15 @@ export const SandboxTab: React.FC<SandboxTabProps> = ({
       <div className="p-8 bg-black rounded-[2rem] border border-white/5 overflow-hidden relative shadow-2xl">
          <div className="absolute top-4 right-4 text-emerald-500/20"><Terminal size={32}/></div>
          <div className="space-y-6">
-            <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-500 italic">Response_Output_Monitor</h4>
+            <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-500 italic">Kết quả phản hồi hệ thống</h4>
             <div className="font-mono text-[12px] text-emerald-500 space-y-2 max-h-40 overflow-y-auto no-scrollbar pb-2">
-               {isExecuting && <p className="animate-pulse">> UPLINKING_TO_SOLVER_NODE...</p>}
-               <p className="opacity-40">> Pipeline standby. Waiting for Sandbox trigger.</p>
+               {isExecuting && <p className="animate-pulse">> ĐANG GỬI YÊU CẦU TỚI MÁY CHỦ...</p>}
+               <p className="opacity-40">> Hệ thống sẵn sàng. Đang chờ lệnh thực thi.</p>
                {logs.slice(0, 1).map(l => (
                  <div key={l.id} className="space-y-1 animate-in fade-in duration-500 border-l border-emerald-500/30 pl-4 mt-4">
-                    <p className="text-white font-bold">> STATUS: {l.status}</p>
-                    <p className="text-emerald-400">> LATENCY: {l.latency}</p>
-                    <p className="text-brand-blue leading-relaxed break-all font-medium">> G-TOKEN: {Math.random().toString(36).substring(2, 64).toUpperCase()}...</p>
+                    <p className="text-white font-bold">> TRẠNG THÁI: {l.status}</p>
+                    <p className="text-emerald-400">> ĐỘ TRỄ: {l.latency}</p>
+                    <p className="text-brand-blue leading-relaxed break-all font-medium">> TOKEN KẾT QUẢ: {Math.random().toString(36).substring(2, 64).toUpperCase()}...</p>
                  </div>
                ))}
             </div>

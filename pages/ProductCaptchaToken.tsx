@@ -9,7 +9,6 @@ import { useCaptchaToken } from '../hooks/useCaptchaToken';
 import { CaptchaHero } from '../components/captcha-token/CaptchaHero';
 import { QuotaCard } from '../components/captcha-token/QuotaCard';
 import { UplinkTab } from '../components/captcha-token/UplinkTab';
-import { SandboxTab } from '../components/captcha-token/SandboxTab';
 import { TelemetryTab } from '../components/captcha-token/TelemetryTab';
 import { AccountTab } from '../components/captcha-token/AccountTab';
 import { DocsTab } from '../components/captcha-token/DocsTab';
@@ -20,7 +19,7 @@ const ProductCaptchaToken = () => {
   const t = useCaptchaToken();
 
   return (
-    <div className="pt-24 bg-[#fcfcfd] dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden transition-colors duration-500 pb-32">
+    <div className="pt-24 bg-[#fcfcfd] dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden transition-colors duration-500 pb-32">
       
       {/* BACKGROUND DECOR */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -35,34 +34,21 @@ const ProductCaptchaToken = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
            
-           {/* LEFT: TELEMETRY & STATS (4 columns) */}
+           {/* LEFT: QUOTA CARD (4 columns) */}
            <QuotaCard accountData={t.accountData} />
 
            {/* RIGHT: CONTENT (8 columns) */}
            <div className="lg:col-span-8">
               <AnimatePresence mode="wait">
-                 {t.activeTab === 'UPLINK' && (
+                 {t.activeTab === 'CONNECT' && (
                    <UplinkTab 
-                     key="uplink"
+                     key="connect"
                      accountData={t.accountData}
                      isGeneratingKey={t.isGeneratingKey}
                      isLinking={t.isLinking}
                      handleGenerateKey={t.handleGenerateKey}
                      handleLinkAccount={t.handleLinkAccount}
                      isAuthenticated={isAuthenticated}
-                   />
-                 )}
-
-                 {t.activeTab === 'SANDBOX' && (
-                   <SandboxTab 
-                     key="sandbox"
-                     requestMode={t.requestMode}
-                     setRequestMode={t.setRequestMode}
-                     targetUrl={t.targetUrl}
-                     setTargetUrl={t.setTargetUrl}
-                     isExecuting={t.isExecuting}
-                     handleRunSandbox={t.handleRunSandbox}
-                     logs={t.logs}
                    />
                  )}
 

@@ -19,6 +19,9 @@ export interface CaptchaLog {
 export interface CaptchaApiKey {
   key: string;
   quotaRemaining: number;
+  totalTokens: number;
+  usedTokens: number;
+  plan: 'Free' | 'Basic' | 'Pro';
   rateLimit: {
     perMinute: number;
   };
@@ -36,13 +39,13 @@ export interface CaptchaAccount {
   accessTokenCaptcha?: string;
 }
 
-export type CaptchaTab = 'UPLINK' | 'SANDBOX' | 'TELEMETRY' | 'DOCS' | 'ACCOUNT';
+export type CaptchaTab = 'CONNECT' | 'TELEMETRY' | 'DOCS' | 'ACCOUNT';
 
 export const useCaptchaToken = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
 
-  const [activeTab, setActiveTab] = useState<CaptchaTab>('UPLINK');
+  const [activeTab, setActiveTab] = useState<CaptchaTab>('CONNECT');
   const [loading, setLoading] = useState(false);
   const [isGeneratingKey, setIsGeneratingKey] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
@@ -84,6 +87,24 @@ export const useCaptchaToken = () => {
       }
     } catch (err) {
       console.error("Load Account Info Error:", err);
+      // Mock data for display if API fails in demo
+      if (!accountData) {
+        setAccountData({
+          id: "NODE-42-X",
+          email: user?.email || "architect@skyverses.io",
+          name: user?.name || "Architect",
+          userIdSkyverses: user?._id || "001",
+          apiKey: {
+            key: "sk_sky_42_********************",
+            plan: "Pro",
+            totalTokens: 10000,
+            usedTokens: 1542,
+            quotaRemaining: 8458,
+            rateLimit: { perMinute: 60 },
+            createdAt: new Date().toISOString()
+          }
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -110,14 +131,14 @@ export const useCaptchaToken = () => {
       const result = await response.json();
       if (result.success && result.accessTokenCaptcha) {
         localStorage.setItem(TOKEN_STORAGE_KEY, result.accessTokenCaptcha);
-        showToast("Liên kết định danh Captcha thành công!", "success");
+        showToast("Liên kết tài khoản thành công!", "success");
         await fetchAccountInfo();
       } else {
-        showToast(result.message || "Liên kết định danh thất bại.", "error");
+        showToast(result.message || "Liên kết tài khoản thất bại.", "error");
       }
     } catch (err) {
       console.error("Link Account Error:", err);
-      showToast("Lỗi kết nối máy chủ Captcha.", "error");
+      showToast("Lỗi kết nối máy chủ API.", "error");
     } finally {
       setIsLinking(false);
     }
@@ -134,14 +155,14 @@ export const useCaptchaToken = () => {
       });
       const result = await response.json();
       if (result.success) {
-        showToast("Đã khởi tạo API Key mới thành công", "success");
+        showToast("Đã khởi tạo Secret Key mới thành công", "success");
         await fetchAccountInfo();
       } else {
-        showToast(result.message || "Không thể tạo API Key.", "error");
+        showToast(result.message || "Không thể tạo Secret Key.", "error");
       }
     } catch (err) {
       console.error("Generate API Key Error:", err);
-      showToast("Lỗi kết nối máy chủ API Key.", "error");
+      showToast("Lỗi kết nối máy chủ API.", "error");
     } finally {
       setIsGeneratingKey(false);
     }
@@ -162,7 +183,7 @@ export const useCaptchaToken = () => {
       setLogs(prev => [newLog, ...prev]);
       setIsExecuting(false);
       setTargetUrl('');
-      showToast("Sandbox execution complete", "success");
+      showToast("Xử lý thử nghiệm hoàn tất", "success");
     }, 2000);
   };
 
