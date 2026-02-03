@@ -65,6 +65,7 @@ const ProductCaptchaToken = () => {
                  {t.activeTab === 'DOCS' && (
                    <DocsTab 
                      key="docs"
+                     apiKey={t.accountData?.apiKey?.key}
                    />
                  )}
               </AnimatePresence>
