@@ -37,7 +37,7 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
          <div className="space-y-6 relative z-10">
             <div className="flex justify-between items-center">
                <div className="flex flex-col">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest italic">Hạn ngạch Node</span>
+                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest italic">Quota</span>
                   <span className={`text-sm font-black uppercase italic ${
                     currentPlan.toLowerCase().includes('pro') ? 'text-indigo-600' : 'text-brand-blue'
                   }`}>{currentPlan}</span>
@@ -64,7 +64,7 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
                     className="h-full bg-indigo-600 shadow-[0_0_15px_rgba(99,102,241,0.5)]" 
                   />
                </div>
-               <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest text-right italic">Băng thông thời gian thực</p>
+               <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest text-right italic">mỗi lượt captcha = 1 token</p>
             </div>
             <button 
               onClick={scrollToPricing}

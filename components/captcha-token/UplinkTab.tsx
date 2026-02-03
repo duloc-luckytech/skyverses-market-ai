@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Copy, Loader2, Zap, Link as LinkIcon, ShieldCheck, Layers, AlertCircle, Play } from 'lucide-react';
+import { Eye, EyeOff, Copy, Loader2, Zap, Link as LinkIcon, ShieldCheck, Layers, AlertCircle, Play, AlertTriangle } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import { CaptchaAccount } from '../../hooks/useCaptchaToken';
 
@@ -22,7 +22,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
   const [showKey, setShowKey] = useState(false);
   const { showToast } = useToast();
 
-  const handleCopy = (text: string) => {
+  const handleCopy = (text: string, section: string) => {
     if (!text) return;
     navigator.clipboard.writeText(text);
     showToast("Đã sao chép Api Key", "info");
@@ -70,7 +70,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                            {showKey ? <EyeOff size={18}/> : <Eye size={18}/>}
                          </button>
                          <button 
-                           onClick={() => handleCopy(accountData.apiKey?.key || '')}
+                           onClick={() => handleCopy(accountData.apiKey?.key || '', 'Api Key')}
                            disabled={!accountData.apiKey}
                            className="p-2.5 text-slate-400 hover:text-indigo-600 transition-colors disabled:opacity-20"
                          >
@@ -79,17 +79,38 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                       </div>
                    </div>
                 </div>
+
+                {/* SECURITY WARNING NOTE - UPDATED WORDING */}
+                {accountData.apiKey && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-5 bg-amber-500/5 border border-amber-500/20 rounded-2xl flex gap-5 items-start animate-in fade-in duration-700"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-500 shrink-0 shadow-inner">
+                      <AlertTriangle size={20} />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600 dark:text-amber-500 italic">Security Protocol</p>
+                      <p className="text-[11px] text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight italic">
+                        "API Key này là định danh bảo mật duy nhất. Việc để lộ Key sẽ khiến người khác có quyền truy cập và sử dụng toàn bộ số dư Token trong tài khoản của bạn."
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
                 
                 <div className="flex flex-row items-center gap-4 pt-2">
-                   <button 
-                     onClick={handleGenerateKey} 
-                     disabled={isGeneratingKey}
-                     className="flex-grow py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-3 hover:scale-102 active:scale-95 transition-all group relative overflow-hidden h-14"
-                   >
-                      <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                      {isGeneratingKey ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} fill="currentColor" />} 
-                      {accountData.apiKey ? 'Làm mới Api Key' : 'Khởi tạo API Key'}
-                   </button>
+                   {!accountData.apiKey && (
+                     <button 
+                       onClick={handleGenerateKey} 
+                       disabled={isGeneratingKey}
+                       className="flex-grow py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-3 hover:scale-102 active:scale-95 transition-all group relative overflow-hidden h-14"
+                     >
+                        <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                        {isGeneratingKey ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} fill="currentColor" />} 
+                        Khởi tạo API Key
+                     </button>
+                   )}
 
                    <button 
                      onClick={onTryIt}
