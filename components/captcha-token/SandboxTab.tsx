@@ -64,13 +64,13 @@ export const SandboxTab: React.FC<SandboxTabProps> = ({
          <div className="space-y-6">
             <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-500 italic">Kết quả phản hồi hệ thống</h4>
             <div className="font-mono text-[12px] text-emerald-500 space-y-2 max-h-40 overflow-y-auto no-scrollbar pb-2">
-               {isExecuting && <p className="animate-pulse">> ĐANG GỬI YÊU CẦU TỚI MÁY CHỦ...</p>}
-               <p className="opacity-40">> Hệ thống sẵn sàng. Đang chờ lệnh thực thi.</p>
+               {isExecuting && <p className="animate-pulse">&gt; ĐANG GỬI YÊU CẦU TỚI MÁY CHỦ...</p>}
+               <p className="opacity-40">&gt; Hệ thống sẵn sàng. Đang chờ lệnh thực thi.</p>
                {logs.slice(0, 1).map(l => (
                  <div key={l.id} className="space-y-1 animate-in fade-in duration-500 border-l border-emerald-500/30 pl-4 mt-4">
-                    <p className="text-white font-bold">> TRẠNG THÁI: {l.status}</p>
-                    <p className="text-emerald-400">> ĐỘ TRỄ: {l.latency}</p>
-                    <p className="text-brand-blue leading-relaxed break-all font-medium">> TOKEN KẾT QUẢ: {Math.random().toString(36).substring(2, 64).toUpperCase()}...</p>
+                    <p className="text-white font-bold">&gt; TRẠNG THÁI: {l.status}</p>
+                    <p className="text-emerald-400">&gt; ĐỘ TRỄ: {l.latency}</p>
+                    <p className="text-brand-blue leading-relaxed break-all font-medium">&gt; TOKEN KẾT QUẢ: {Math.random().toString(36).substring(2, 64).toUpperCase()}...</p>
                  </div>
                ))}
             </div>
