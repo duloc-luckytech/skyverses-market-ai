@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -13,7 +12,7 @@ import { useToast } from '../../context/ToastContext';
 import { IntegrationWorkflow } from './IntegrationWorkflow';
 
 type CodeLang = 'CURL' | 'PYTHON' | 'NODEJS';
-type CaptchaAction = 'IMAGE_RECOGNITION' | 'VIDEO_ANALYSIS' | 'VEO3_ORCHESTRATION';
+type CaptchaAction = 'IMAGE' | 'VIDEO';
 
 interface DocsTabProps {
   apiKey?: string;
@@ -25,7 +24,7 @@ export const DocsTab: React.FC<DocsTabProps> = ({ apiKey: accountApiKey }) => {
   const [activeLang, setActiveLang] = useState<CodeLang>('CURL');
   
   // Interactive States
-  const [action, setAction] = useState<CaptchaAction>('VIDEO_ANALYSIS');
+  const [action, setAction] = useState<CaptchaAction>('VIDEO');
   const [displayApiKey, setDisplayApiKey] = useState(accountApiKey || 'YOUR_API_KEY');
 
   // Live Execution State
@@ -117,7 +116,7 @@ console.log(data);`;
         showToast(data.message || "Yêu cầu bị từ chối", "error");
       }
     } catch (err) {
-      setLiveResponse({ error: "FAILED_TO_CONNECT", message: "Không thể kết nối tới máy chủ Captcha." });
+      setLiveResponse({ error: "CONNECTION_FAILED", message: "Không thể kết nối tới máy chủ Captcha." });
       showToast("Lỗi kết nối máy chủ", "error");
     } finally {
       setIsRunning(false);
@@ -192,9 +191,8 @@ console.log(data);`;
                              onChange={(e) => setAction(e.target.value as CaptchaAction)}
                              className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-xs font-black uppercase italic outline-none focus:border-indigo-500/40 appearance-none cursor-pointer text-slate-800 dark:text-white shadow-inner transition-all"
                            >
-                              <option value="IMAGE_RECOGNITION">IMAGE_RECOGNITION</option>
-                              <option value="VIDEO_ANALYSIS">VIDEO_ANALYSIS</option>
-                              <option value="VEO3_ORCHESTRATION">VEO3_ORCHESTRATION</option>
+                              <option value="IMAGE">IMAGE</option>
+                              <option value="VIDEO">VIDEO</option>
                            </select>
                            <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-hover:text-indigo-500 transition-colors" />
                         </div>
