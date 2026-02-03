@@ -15,7 +15,7 @@ export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading, on
     <section className="mt-32 border-t border-black/5 dark:border-white/5 pt-20">
        <div className="text-center space-y-4 mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-[0.4em] italic mb-2">
-             <Zap size={12} fill="currentColor" /> Biểu phí dịch vụ
+             < Zap size={12} fill="currentColor" /> Biểu phí dịch vụ
           </div>
           <h2 className="text-4xl lg:text-7xl font-black uppercase italic tracking-tighter leading-none text-slate-900 dark:text-white">Gói cước <span className="text-indigo-600">Token.</span></h2>
           <p className="text-gray-500 dark:text-gray-400 font-bold uppercase text-[10px] tracking-[0.5em] italic leading-none">Mô hình giá linh hoạt theo nhu cầu quy mô</p>
@@ -54,7 +54,7 @@ export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading, on
 
                       <div className="py-8 border-y border-black/5 dark:border-white/5 space-y-6">
                          <div className="flex justify-between items-center">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hạn ngạch Token</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Token</span>
                             <span className="text-2xl font-black italic text-indigo-600">{plan.quota.toLocaleString()}</span>
                          </div>
                          <div className="flex justify-between items-center">

@@ -39,7 +39,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
          <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#6366f1 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
          
          <div className="space-y-3 relative z-10">
-            <h3 className="text-3xl lg:text-4xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Giao diện lập trình (API).</h3>
+            <h3 className="text-3xl lg:text-4xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Giao thức Captcha Veo3.</h3>
             <p className="text-sm text-slate-500 dark:text-gray-400 font-medium max-w-xl">Sử dụng Api Key để xác thực các yêu cầu giải mã từ ứng dụng của bạn qua API.</p>
          </div>
          
