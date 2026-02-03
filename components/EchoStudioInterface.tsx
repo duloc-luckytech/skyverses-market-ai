@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 // Added motion import
 import { motion } from 'framer-motion';
@@ -52,20 +53,28 @@ const EchoStudioInterface = () => {
     stopPlayback();
     if (!audioCtxRef.current) {
       const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-      audioCtxRef.current = new AudioContextClass();
+      if (AudioContextClass) {
+        audioCtxRef.current = new AudioContextClass();
+      }
     }
-    const source = audioCtxRef.current.createBufferSource();
-    source.buffer = buffer;
-    source.connect(audioCtxRef.current.destination);
-    source.onended = () => setIsPlaying(false);
-    source.start(0);
-    sourceNodeRef.current = source;
-    setIsPlaying(true);
+    
+    const ctx = audioCtxRef.current;
+    if (ctx) {
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(ctx.destination);
+      source.onended = () => setIsPlaying(false);
+      source.start(0);
+      sourceNodeRef.current = source;
+      setIsPlaying(true);
+    }
   };
 
   const stopPlayback = () => {
     if (sourceNodeRef.current) {
-      try { sourceNodeRef.current.stop(); } catch (e) {}
+      try {
+        sourceNodeRef.current.stop();
+      } catch (e) {}
       sourceNodeRef.current = null;
     }
     setIsPlaying(false);

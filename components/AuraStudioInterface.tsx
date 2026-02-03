@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 // Added motion import
 import { motion } from 'framer-motion';
@@ -63,9 +64,13 @@ const AuraStudioInterface = () => {
       const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
       audioCtxRef.current = new AudioContextClass();
     }
-    const source = audioCtxRef.current.createBufferSource();
+    
+    const ctx = audioCtxRef.current;
+    if (!ctx) return;
+    
+    const source = ctx.createBufferSource();
     source.buffer = buffer;
-    source.connect(audioCtxRef.current.destination);
+    source.connect(ctx.destination);
     source.onended = () => setIsPlaying(false);
     source.start(0);
     sourceNodeRef.current = source;

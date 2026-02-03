@@ -7,8 +7,16 @@ import {
 } from 'lucide-react';
 import { generateDemoVideo } from '../services/gemini';
 
+interface Scene {
+  id: string;
+  title: string;
+  prompt: string;
+  videoUrl: string | null;
+  status: string;
+}
+
 const AetherStudioInterface = () => {
-  const [scenes, setScenes] = useState([
+  const [scenes, setScenes] = useState<Scene[]>([
     { id: 'sc-1', title: 'ACT_01: ARRIVAL', prompt: 'Lone wanderer walking into a futuristic ruined city, dust particles in neon light, volumetric fog.', videoUrl: null, status: 'draft' }
   ]);
   const [selectedSceneId, setSelectedSceneId] = useState(scenes[0].id);
