@@ -12,6 +12,7 @@ import { UplinkTab } from '../components/captcha-token/UplinkTab';
 import { SandboxTab } from '../components/captcha-token/SandboxTab';
 import { TelemetryTab } from '../components/captcha-token/TelemetryTab';
 import { AccountTab } from '../components/captcha-token/AccountTab';
+import { DocsTab } from '../components/captcha-token/DocsTab';
 import { PricingMatrix } from '../components/captcha-token/PricingMatrix';
 
 const ProductCaptchaToken = () => {
@@ -70,6 +71,12 @@ const ProductCaptchaToken = () => {
                      key="telemetry"
                      logs={t.logs}
                      setLogs={t.setLogs}
+                   />
+                 )}
+
+                 {t.activeTab === 'DOCS' && (
+                   <DocsTab 
+                     key="docs"
                    />
                  )}
 

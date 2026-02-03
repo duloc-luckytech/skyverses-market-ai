@@ -10,7 +10,7 @@ interface CaptchaHeroProps {
 }
 
 export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTab }) => {
-  const tabs: CaptchaTab[] = ['UPLINK', 'SANDBOX', 'TELEMETRY', 'ACCOUNT'];
+  const tabs: CaptchaTab[] = ['UPLINK', 'SANDBOX', 'TELEMETRY', 'DOCS', 'ACCOUNT'];
 
   return (
     <section className="py-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-black/5 dark:border-white/5 mb-16 pb-12">
@@ -29,13 +29,13 @@ export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTa
         </div>
       </div>
 
-      <div className="flex items-center gap-4 bg-slate-50 dark:bg-black/40 p-1.5 rounded-full border border-black/5 dark:border-white/10 shadow-inner transition-colors">
+      <div className="flex items-center gap-2 bg-slate-50 dark:bg-black/40 p-1 rounded-full border border-black/5 dark:border-white/10 shadow-inner transition-colors overflow-x-auto no-scrollbar max-w-full">
          {tabs.map(tab => (
            <button 
              key={tab} onClick={() => setActiveTab(tab)}
-             className={`px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-white dark:bg-[#1a1a1e] text-indigo-600 shadow-xl' : 'text-gray-500 hover:text-indigo-600'}`}
+             className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-white dark:bg-[#1a1a1e] text-indigo-600 shadow-xl' : 'text-gray-500 hover:text-indigo-600'}`}
            >
-             {tab === 'ACCOUNT' ? 'Linked Account' : tab}
+             {tab === 'ACCOUNT' ? 'Account' : tab === 'DOCS' ? 'API Docs' : tab}
            </button>
          ))}
       </div>

@@ -36,7 +36,7 @@ export interface CaptchaAccount {
   accessTokenCaptcha?: string;
 }
 
-export type CaptchaTab = 'UPLINK' | 'SANDBOX' | 'TELEMETRY' | 'ACCOUNT';
+export type CaptchaTab = 'UPLINK' | 'SANDBOX' | 'TELEMETRY' | 'DOCS' | 'ACCOUNT';
 
 export const useCaptchaToken = () => {
   const { user } = useAuth();
