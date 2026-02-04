@@ -46,8 +46,8 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
               onChange={(e) => onEngineChange(e.target.value)}
               className="appearance-none bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 pl-2.5 pr-7 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-tight outline-none focus:border-brand-blue transition-all cursor-pointer text-slate-700 dark:text-white"
             >
-              <option value="gommo">Gommo</option>
               <option value="fxlab">FxLab</option>
+              <option value="gommo">Gommo</option>
               <option value="wan">Wan</option>
               <option value="running">Running</option>
             </select>
@@ -78,8 +78,8 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
                   onChange={e => onEngineChange(e.target.value)} 
                   className="w-full bg-slate-50 dark:bg-[#16161a] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-800 dark:text-white shadow-sm disabled:opacity-50"
                 >
-                   <option value="gommo">Gommo</option>
                    <option value="fxlab">FxLab</option>
+                   <option value="gommo">Gommo</option>
                    <option value="wan">Wan</option>
                    <option value="running">Running</option>
                 </select>

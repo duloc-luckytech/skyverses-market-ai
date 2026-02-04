@@ -72,7 +72,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   // -- Dynamic Pricing Data --
   const [availableModels, setAvailableModels] = useState<PricingModel[]>([]);
   const [selectedModelObj, setSelectedModelObj] = useState<PricingModel | null>(null);
-  const [selectedEngine, setSelectedEngine] = useState('gommo');
+  const [selectedEngine, setSelectedEngine] = useState('fxlab');
   const [selectedMode, setSelectedMode] = useState<string>('relaxed');
 
   // -- Common Config --
@@ -575,7 +575,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         {fullscreenVideo && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/95 flex flex-col items-center justify-center p-6 md:p-12">
             <button onClick={() => setFullscreenVideo(null)} className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors"><X size={32} /></button>
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="w-full max-w-6xl aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-6xl aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative">
               {isDownloading === `video_${fullscreenVideo.id}.mp4` && (
                 <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center gap-4">
                   <Loader2 size={48} className="text-white animate-spin" />
