@@ -31,7 +31,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
   setSelectedRes,
   quantity,
   setQuantity,
-  selectedEngine = 'gommo',
+  selectedEngine = 'fxlab',
   onSelectEngine = () => {},
   selectedMode,
   setSelectedMode

@@ -56,7 +56,7 @@ export const useImageGenerator = () => {
   const [availableModels, setAvailableModels] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
   const [selectedMode, setSelectedMode] = useState<string>('relaxed');
-  const [selectedEngine, _setSelectedEngine] = useState<string>('gommo');
+  const [selectedEngine, _setSelectedEngine] = useState<string>('fxlab');
 
   const [prompt, setPrompt] = useState('');
   const [batchPrompts, setBatchPrompts] = useState<string[]>(['', '', '']);
