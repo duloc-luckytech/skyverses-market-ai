@@ -1,10 +1,12 @@
+
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Activity, Download, Wand2, 
   Edit3, ChevronLeft, 
   Sparkles, X, LayoutGrid, ArrowLeft, Image as ImageIcon,
-  Loader2, Zap, AlertCircle, Eye, Heart, Maximize2, Tag
+  Loader2, Zap, AlertCircle, Eye, Heart, Maximize2, Tag,
+  History as HistoryIcon, Database
 } from 'lucide-react';
 import { ImageResult } from '../../hooks/useImageGenerator';
 import { ImageResultCard } from './ImageResultCard';
@@ -20,6 +22,10 @@ interface GeneratorViewportProps {
   onEdit: (url: string) => void;
   onDownload: (url: string, filename: string) => void;
   results: ImageResult[];
+  serverResults: ImageResult[];
+  isFetchingServer: boolean;
+  hasMoreServer: boolean;
+  onLoadMoreServer: () => void;
   selectedIds: string[];
   toggleSelect: (id: string) => void;
   deleteResult: (id: string) => void;
@@ -44,8 +50,9 @@ const getFakeStats = (seedId: string) => {
 
 export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({ 
   onClose, activePreviewUrl, setActivePreviewUrl, zoomLevel, setZoomLevel, onApplyExample, onEdit, onDownload,
-  results, selectedIds, toggleSelect, deleteResult, onRetry
+  results, serverResults, isFetchingServer, hasMoreServer, onLoadMoreServer, selectedIds, toggleSelect, deleteResult, onRetry
 }) => {
+  const [activeTab, setActiveTab] = useState<'RESULTS' | 'HISTORY'>('RESULTS');
   const [explorerItems, setExplorerItems] = useState<ExplorerItem[]>([]);
   const [loadingExplorer, setLoadingExplorer] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -110,13 +117,25 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
     if (node) observer.current.observe(node);
   }, [loadingExplorer, isFetchingMore, hasMore]);
 
+  const lastHistoryRef = useCallback((node: HTMLDivElement | null) => {
+    if (isFetchingServer) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMoreServer) {
+        onLoadMoreServer();
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [isFetchingServer, hasMoreServer, onLoadMoreServer]);
+
   const handleManualDownload = () => {
+    const list = activeTab === 'RESULTS' ? results : serverResults;
     if (selectedIds.length > 0) {
-      results.filter(r => selectedIds.includes(r.id)).forEach(res => {
+      list.filter(r => selectedIds.includes(r.id)).forEach(res => {
         if (res.url) onDownload(res.url, `gen_${res.id}.png`);
       });
     } else {
-      const lastResult = results[0];
+      const lastResult = list[0];
       if (lastResult?.url) onDownload(lastResult.url, `gen_${lastResult.id}.png`);
     }
   };
@@ -134,9 +153,19 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                 <ChevronLeft size={20} />
               </button>
               
-              <div className="flex items-center gap-3">
-                 <h3 className="text-[13px] font-black uppercase tracking-tighter italic text-slate-900 dark:text-white transition-colors">KẾT QUẢ</h3>
-                 <div className="h-4 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
+              <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-[#1a1a1a] p-1 rounded-full border border-black/5 dark:border-white/10 shadow-inner">
+                <button 
+                  onClick={() => setActiveTab('RESULTS')}
+                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'RESULTS' ? 'bg-white dark:bg-[#2a2a2e] text-brand-blue shadow-md' : 'text-slate-500'}`}
+                >
+                  Kết quả
+                </button>
+                <button 
+                  onClick={() => setActiveTab('HISTORY')}
+                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'HISTORY' ? 'bg-white dark:bg-[#2a2a2e] text-brand-blue shadow-md' : 'text-slate-500'}`}
+                >
+                  Lịch sử
+                </button>
               </div>
             </div>
 
@@ -240,7 +269,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                     </div>
                  </div>
               </motion.div>
-            ) : results.length > 0 ? (
+            ) : activeTab === 'RESULTS' && results.length > 0 ? (
               <motion.div 
                 key="grid-view"
                 initial={{ opacity: 0, y: 10 }} 
@@ -264,7 +293,48 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                   ))}
                 </div>
               </motion.div>
-            ) : (
+            ) : activeTab === 'HISTORY' ? (
+              <motion.div 
+                key="history-view"
+                initial={{ opacity: 0, y: 10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                exit={{ opacity: 0, y: -10 }}
+                className="w-full h-full pb-32 lg:pb-10"
+              >
+                <div className="flex items-center gap-3 mb-8">
+                  <Database size={18} className="text-purple-500" />
+                  <h4 className="text-sm font-black uppercase tracking-widest italic">Lịch sử từ Cloud</h4>
+                </div>
+                {serverResults.length === 0 && !isFetchingServer ? (
+                   <div className="py-20 text-center opacity-10 flex flex-col items-center gap-6 select-none">
+                      <HistoryIcon size={80} strokeWidth={1} />
+                      <p className="text-sm font-black uppercase tracking-[0.5em]">No records found</p>
+                   </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {serverResults.map((res, idx) => (
+                      <div key={res.id} ref={idx === serverResults.length - 1 ? lastHistoryRef : null}>
+                        <ImageResultCard 
+                          res={res} 
+                          isSelected={selectedIds.includes(res.id)} 
+                          onToggleSelect={() => toggleSelect(res.id)} 
+                          onFullscreen={setActivePreviewUrl}
+                          onEdit={onEdit}
+                          onDelete={deleteResult}
+                          onDownload={onDownload}
+                          onRetry={() => onRetry(res)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {isFetchingServer && (
+                  <div className="py-10 flex justify-center">
+                    <Loader2 className="animate-spin text-brand-blue" size={32} />
+                  </div>
+                )}
+              </motion.div>
+            ) : activeTab === 'RESULTS' && (
               <motion.div 
                 key="standby-view"
                 initial={{ opacity: 0 }} 

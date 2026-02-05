@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { generateDemoImage } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -61,10 +61,16 @@ export const useImageGenerator = () => {
   const [bulkText, setBulkText] = useState('');
   
   const [selectedRatio, setSelectedRatio] = useState(DEFAULT_ASPECT_RATIO);
-  const [selectedRes, setSelectedRes] = useState(''); // Sẽ set khi load model
+  const [selectedRes, setSelectedRes] = useState(''); 
   const [quantity, setQuantity] = useState(1);
   const [references, setReferences] = useState<ReferenceItem[]>([]);
   const [results, setResults] = useState<ImageResult[]>([]);
+
+  // Server History States
+  const [serverResults, setServerResults] = useState<ImageResult[]>([]);
+  const [isFetchingHistory, setIsFetchingHistory] = useState(false);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [hasMoreHistory, setHasMoreHistory] = useState(true);
 
   const [showResourceModal, setShowResourceModal] = useState(false);
   const [isResumingGenerate, setIsResumingGenerate] = useState(false);
@@ -75,8 +81,6 @@ export const useImageGenerator = () => {
 
   const [hasPersonalKey, setHasPersonalKey] = useState(false);
   const [personalKey, setPersonalKey] = useState<string | undefined>(undefined);
-
-  // Added showLowCreditAlert state variable
   const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
 
   const setSelectedEngine = (val: string) => {
@@ -98,13 +102,11 @@ export const useImageGenerator = () => {
           const defaultModel = mapped.find(m => m.raw.modelKey === 'google_image_gen_banana_pro') || mapped[0];
           setSelectedModel(defaultModel);
 
-          // Cập nhật resolution mặc định từ model đầu tiên
           const resOptions = getResolutionsFromPricing(defaultModel.raw.pricing);
           if (resOptions.length > 0) {
             setSelectedRes(resOptions[0]);
           }
           
-          // Cập nhật tỷ lệ mặc định từ model
           if (defaultModel.raw.aspectRatios && defaultModel.raw.aspectRatios.length > 0) {
             setSelectedRatio(defaultModel.raw.aspectRatios[0]);
           }
@@ -128,18 +130,51 @@ export const useImageGenerator = () => {
         setSelectedMode(m.mode || 'relaxed');
       }
       
-      // Đảm bảo selectedRes hợp lệ với model mới
       const resOptions = getResolutionsFromPricing(m.pricing);
       if (resOptions.length > 0 && !resOptions.includes(selectedRes)) {
         setSelectedRes(resOptions[0]);
       }
 
-      // Đảm bảo selectedRatio hợp lệ với model mới
       if (m.aspectRatios && m.aspectRatios.length > 0 && !m.aspectRatios.includes(selectedRatio)) {
         setSelectedRatio(m.aspectRatios[0]);
       }
     }
   }, [selectedModel]);
+
+  const fetchServerResults = useCallback(async (page: number = 1, isInitial: boolean = false) => {
+    if (isInitial) setIsFetchingHistory(true);
+    try {
+      const response = await imagesApi.getJobs({ status: 'done', page, limit: 20 });
+      const mapped: ImageResult[] = (response.data || []).map(job => {
+        const date = new Date(job.createdAt);
+        return {
+          id: job._id,
+          url: job.result?.images?.[0] || job.result?.thumbnail || null,
+          prompt: job.input?.prompt || 'Untitled',
+          fullTimestamp: date.toLocaleString('vi-VN'),
+          dateKey: date.toISOString().split('T')[0],
+          displayDate: date.toLocaleDateString('vi-VN'),
+          model: job.engine?.model || 'AI Model',
+          status: job.status === 'done' ? 'done' : 'error',
+          aspectRatio: job.config?.aspectRatio || '1:1',
+          resolution: job.result?.width ? `${job.result.width}x${job.result.height}` : '1024x1024',
+          cost: job.creditsUsed || 0,
+          references: []
+        };
+      });
+
+      if (isInitial) setServerResults(mapped);
+      else setServerResults(prev => [...prev, ...mapped]);
+
+      const pagination = response.pagination;
+      setHasMoreHistory(page < (pagination?.total / pagination?.limit || 0));
+      setHistoryPage(page);
+    } catch (error) {
+      console.error("Failed to fetch history:", error);
+    } finally {
+      setIsFetchingHistory(false);
+    }
+  }, []);
 
   const currentUnitCost = useMemo(() => {
     if (!selectedModel) return 0;
@@ -207,6 +242,8 @@ export const useImageGenerator = () => {
         const imageUrl = response.data.result.images[0];
         setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done' } : r));
         refreshUserInfo();
+        // Cập nhật lại lịch sử server khi có ảnh mới xong
+        fetchServerResults(1, true);
       } else {
         setTimeout(() => pollVideoJobStatus(jobId, resultId, cost), 5000);
       }
@@ -273,7 +310,7 @@ export const useImageGenerator = () => {
             config: { width: 1024, height: 1024, aspectRatio: task.aspectRatio || selectedRatio, seed: 0, style: "cinematic" },
             engine: { 
               provider: selectedEngine as any, 
-              model: selectedModel.raw.modelKey as any // Use modelKey from technical registry
+              model: selectedModel.raw.modelKey as any 
             },
             enginePayload: { 
               prompt: task.prompt, 
@@ -326,7 +363,7 @@ export const useImageGenerator = () => {
     setIsUploadingRef(true);
     try {
       const metadata = await uploadToGCS(file, selectedEngine);
-      setReferences((prev) => [...prev, { url: metadata.url, mediaId: metadata.mediaId }].slice(0, 6));
+      setReferences((prev: any) => [...prev, { url: metadata.url, mediaId: metadata.mediaId }].slice(0, 6));
     } catch (error) {
       console.error("Upload failed", error);
       showToast("Tải ảnh lên thất bại. Vui lòng thử lại.", "error");
@@ -366,7 +403,7 @@ export const useImageGenerator = () => {
 
   const handleLibrarySelect = (selectedAssets: GCSAssetMetadata[]) => {
     const items = selectedAssets.map(asset => ({ url: asset.url, mediaId: asset.mediaId }));
-    setReferences((prev) => [...prev, ...items].slice(0, 6));
+    setReferences((prev: any) => [...prev, ...items].slice(0, 6));
   };
 
   const handleEditorApply = (newUrl: string) => {
@@ -392,7 +429,7 @@ export const useImageGenerator = () => {
     isResumingGenerate, setIsResumingGenerate, triggerDownload,
     handleEditorApply, selectedMode, setSelectedMode,
     selectedEngine, setSelectedEngine,
-    // Exported missing state variables to resolve property access errors
-    zoomLevel, setZoomLevel, showLowCreditAlert, setShowLowCreditAlert
+    zoomLevel, setZoomLevel, showLowCreditAlert, setShowLowCreditAlert,
+    serverResults, isFetchingHistory, hasMoreHistory, historyPage, fetchServerResults
   };
 };

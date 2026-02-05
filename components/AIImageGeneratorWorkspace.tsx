@@ -65,9 +65,6 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         selectedRes={g.selectedRes}
         setSelectedRes={g.setSelectedRes}
         isGenerating={g.isGenerating}
-        // Added isUploadingRef and tempUploadUrl to handle upload state in sidebar
-        isUploadingRef={g.isUploadingRef}
-        tempUploadUrl={g.tempUploadUrl}
         handleLocalFileUpload={g.handleLocalFileUpload}
         handleGenerate={g.handleGenerate}
         generateTooltip={g.generateTooltip}
@@ -94,6 +91,10 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         onEdit={g.openEditor}
         onDownload={g.triggerDownload}
         results={g.results}
+        serverResults={g.serverResults}
+        isFetchingServer={g.isFetchingHistory}
+        hasMoreServer={g.hasMoreHistory}
+        onLoadMoreServer={() => g.fetchServerResults(g.historyPage + 1)}
         selectedIds={g.selectedIds}
         toggleSelect={g.toggleSelect}
         deleteResult={g.deleteResult}

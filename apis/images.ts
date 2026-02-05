@@ -1,3 +1,4 @@
+
 import { API_BASE_URL, getHeaders } from './config';
 
 export interface ImageJobRequest {
@@ -40,9 +41,20 @@ export interface ImageJobResponse {
       images: string[];
       thumbnail: string;
       imageId: string;
+      width?: number;
+      height?: number;
     };
   };
   message?: string;
+}
+
+export interface ImageJobHistoryResponse {
+  data: any[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+  };
 }
 
 export const imagesApi = {
@@ -84,6 +96,28 @@ export const imagesApi = {
     } catch (error) {
       console.error('Image Job Status Error:', error);
       return { success: false, status: 'error', data: { status: 'failed', jobId }, message: 'Status check failed' };
+    }
+  },
+
+  /**
+   * List image jobs of current user
+   * GET /image-jobs
+   */
+  getJobs: async (params: { status?: string, page?: number, limit?: number }): Promise<ImageJobHistoryResponse> => {
+    try {
+      const query = new URLSearchParams();
+      if (params.status) query.append('status', params.status);
+      if (params.page) query.append('page', String(params.page));
+      if (params.limit) query.append('limit', String(params.limit));
+
+      const response = await fetch(`${API_BASE_URL}/image-jobs?${query.toString()}`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Fetch Image Jobs Error:', error);
+      throw error;
     }
   }
 };
