@@ -271,7 +271,10 @@ export const useImageGenerator = () => {
               images: processedRefs.length > 0 ? processedRefs : undefined 
             },
             config: { width: 1024, height: 1024, aspectRatio: task.aspectRatio || selectedRatio, seed: 0, style: "cinematic" },
-            engine: { provider: selectedEngine as any, model: selectedModel.id as any },
+            engine: { 
+              provider: selectedEngine as any, 
+              model: selectedModel.raw.modelKey as any // Use modelKey from technical registry
+            },
             enginePayload: { 
               prompt: task.prompt, 
               privacy: "PRIVATE", 
