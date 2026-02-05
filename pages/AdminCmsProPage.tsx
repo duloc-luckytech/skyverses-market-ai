@@ -12,7 +12,8 @@ import {
   ListPlus, Crown, Star, Flame, LayoutTemplate,
   PlusCircle, Layout, AlignLeft, Globe, List, Code2, Layers,
   CheckCircle2, AlertTriangle, ToggleLeft, ToggleRight,
-  Sparkles, Compass, Search, RefreshCw, Bot, Filter, Cog
+  Sparkles, Compass, Search, RefreshCw, Bot, Filter, Cog,
+  Key
 } from 'lucide-react';
 import { marketApi } from '../apis/market';
 import { authApi, UserListResponse, UserListParams } from '../apis/auth';
@@ -32,8 +33,9 @@ import { ExplorerTab } from '../components/admin-pro/ExplorerTab';
 import { AIModelsTab } from '../components/admin-pro/AIModelsTab';
 import { MarketFiltersTab } from '../components/admin-pro/MarketFiltersTab';
 import { ConfigurationTab } from '../components/admin-pro/ConfigurationTab';
+import { ProviderTokensTab } from '../components/admin-pro/ProviderTokensTab';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS';
 
 const AdminCmsProPage = () => {
   const { user } = useAuth();
@@ -120,6 +122,7 @@ const AdminCmsProPage = () => {
     { id: 'MARKET_FILTERS', label: 'Market Filters', icon: <Filter size={20} /> },
     { id: 'EXPLORER', label: 'Thư viện Explorer', icon: <Compass size={20} /> },
     { id: 'AI_MODELS', label: 'List AI Models', icon: <Bot size={20} /> },
+    { id: 'PROVIDER_TOKENS', label: 'Provider Token', icon: <Key size={20} /> },
     { id: 'PRICING', label: 'Bảng giá (Model)', icon: <DollarSign size={20} /> },
     { id: 'CREDIT_PACKS', label: 'Gói nạp Credit', icon: <Package size={20} /> },
     { id: 'USERS', label: 'Khách hàng', icon: <Users size={20} /> },
@@ -162,6 +165,7 @@ const AdminCmsProPage = () => {
              {activeTab === 'CREDIT_PACKS' && <CreditPacksTab key="packs" />}
              {activeTab === 'PRICING' && <PricingTab key="pricing" />}
              {activeTab === 'AI_MODELS' && <AIModelsTab key="ai_models" />}
+             {activeTab === 'PROVIDER_TOKENS' && <ProviderTokensTab key="provider_tokens" />}
              {activeTab === 'LOGS' && <LogsTab key="logs" remoteSolutions={remoteSolutions} />}
              {activeTab === 'USERS' && <UsersTab key="users" loading={loading} response={null} onParamsChange={()=>{}} />}
              {activeTab === 'CONFIG' && <ConfigurationTab key="config" />}
