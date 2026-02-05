@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle } from 'lucide-react';
@@ -64,6 +65,9 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         selectedRes={g.selectedRes}
         setSelectedRes={g.setSelectedRes}
         isGenerating={g.isGenerating}
+        // Added isUploadingRef and tempUploadUrl to handle upload state in sidebar
+        isUploadingRef={g.isUploadingRef}
+        tempUploadUrl={g.tempUploadUrl}
         handleLocalFileUpload={g.handleLocalFileUpload}
         handleGenerate={g.handleGenerate}
         generateTooltip={g.generateTooltip}
@@ -119,7 +123,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       <AnimatePresence>
         {g.showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[#111114] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors">
+             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-md w-full bg-white dark:bg-[#111114] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors">
                 <div className="w-24 h-24 bg-orange-500/10 border border-orange-500/20 rounded-full flex items-center justify-center mx-auto text-orange-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]">
                    <AlertTriangle size={48} />
                 </div>
@@ -129,7 +133,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 </div>
                 <div className="flex flex-col gap-4">
                    <Link to="/credits" className="bg-brand-blue text-white py-5 rounded-full text-xs font-black uppercase tracking-[0.4em] shadow-xl hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
-                   <button onClick={() => g.setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest italic underline underline-offset-8 decoration-white/20">Bỏ qua</button>
+                   <button onClick={() => g.setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-colors tracking-widest italic underline underline-offset-8 decoration-white/20">Bỏ qua</button>
                 </div>
              </motion.div>
           </motion.div>

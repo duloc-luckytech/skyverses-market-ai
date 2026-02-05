@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Zap, Edit3, ChevronDown, Monitor, Clock, 
   Loader2, Trash2, Search, Filter as FilterIcon,
-  X, DollarSign, Settings2, Info, RefreshCw, Plus, Check, Copy
+  X, DollarSign, Settings2, Info, RefreshCw, Plus, Check, Copy, Globe
 } from 'lucide-react';
 import { pricingApi, PricingModel, PricingFilters, CreatePricingRequest } from '../../apis/pricing';
 
@@ -44,11 +44,11 @@ export const PricingTab: React.FC = () => {
     fetchData();
   }, [filters]);
 
-  const filteredModels = pricingModels.filter(m => 
+  const filteredModels = useMemo(() => pricingModels.filter(m => 
     !search || 
     m.name.toLowerCase().includes(search.toLowerCase()) || 
     m.modelKey.toLowerCase().includes(search.toLowerCase())
-  );
+  ), [pricingModels, search]);
 
   const toggleExpand = (id: string) => {
     setExpandedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
@@ -82,7 +82,7 @@ export const PricingTab: React.FC = () => {
   };
 
   const handleDuplicate = (model: PricingModel) => {
-    setEditingId(null); // Đặt null để tạo mới thay vì update
+    setEditingId(null); 
     const resolutions = Object.keys(model.pricing || {});
     const firstRes = resolutions[0];
     const durations = firstRes ? Object.keys(model.pricing[firstRes]).map(Number) : [];
@@ -161,39 +161,70 @@ export const PricingTab: React.FC = () => {
     });
   };
 
+  // Added fix for undefined settings and setSettings - using local payload state instead
+  const handleChange = (key: string, value: any) => {
+    setPayload({ ...payload, [key]: value });
+  };
+
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-700">
       {/* TOOLBAR */}
-      <div className="flex flex-col lg:flex-row justify-between items-center gap-6 bg-white dark:bg-[#08080a] p-8 lg:p-12 border-b border-slate-200 dark:border-white/5 transition-all">
-        <div className="relative w-full lg:w-96 group">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue" size={20} />
-          <input 
-            type="text" value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Tìm theo tên hoặc model key..."
-            className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold outline-none focus:border-brand-blue text-slate-800 dark:text-white shadow-sm"
-          />
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 bg-white dark:bg-[#08080a] p-8 lg:p-12 border-b border-slate-200 dark:border-white/5 transition-all">
+        <div className="space-y-6 flex-grow w-full lg:w-auto">
+          <div className="relative w-full group">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue" size={20} />
+            <input 
+              type="text" value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Tìm theo tên hoặc model key..."
+              className="w-full bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold outline-none focus:border-brand-blue text-slate-800 dark:text-white shadow-sm"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-6">
+            {/* Filter by Tool */}
+            <div className="space-y-2">
+              <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest pl-1">Loại công cụ</label>
+              <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-2xl border border-slate-200 dark:border-white/10">
+                {['', 'image', 'video'].map(t => (
+                  <button 
+                    key={t}
+                    onClick={() => setFilters({ ...filters, tool: t })}
+                    className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filters.tool === t ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-xl' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
+                  >
+                    {t === '' ? 'Tất cả' : `${t.toUpperCase()}`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Filter by Engine */}
+            <div className="space-y-2">
+              <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest pl-1">Hạ tầng (Engine)</label>
+              <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-2xl border border-slate-200 dark:border-white/10">
+                {['', 'gommo', 'fxlab', 'wan'].map(e => (
+                  <button 
+                    key={e}
+                    onClick={() => setFilters({ ...filters, engine: e })}
+                    className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filters.engine === e ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-xl' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
+                  >
+                    {e === '' ? 'Tất cả' : e.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex bg-slate-100 dark:bg-white/5 p-1.5 rounded-2xl border border-slate-200 dark:border-white/10">
-            {['', 'image', 'video'].map(t => (
-              <button 
-                key={t}
-                onClick={() => setFilters({ ...filters, tool: t })}
-                className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filters.tool === t ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-xl' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
-              >
-                {t === '' ? 'Tất cả' : `${t.toUpperCase()} AI`}
-              </button>
-            ))}
-          </div>
+        <div className="flex flex-col items-end gap-4 shrink-0">
           <button 
             onClick={handleAddNew}
-            className="flex items-center gap-2 px-6 py-3 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:scale-105 transition-all"
+            className="flex items-center gap-3 px-8 py-4 bg-brand-blue text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg hover:scale-105 transition-all"
           >
-            <Plus size={16} strokeWidth={3} /> Thêm cấu hình
+            <Plus size={18} strokeWidth={3} /> Thêm cấu hình
           </button>
-          <button onClick={fetchData} className="p-2.5 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-400 hover:text-brand-blue rounded-xl shadow-sm transition-all">
-            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+          <button onClick={fetchData} className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 hover:text-brand-blue transition-all">
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+            Làm mới Registry
           </button>
         </div>
       </div>

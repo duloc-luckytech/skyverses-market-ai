@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
-import { RATIOS, RESOLUTIONS } from '../../hooks/useImageGenerator';
+import { ASPECT_RATIOS } from '../../constants/media-presets';
+import { getResolutionsFromPricing } from '../../utils/pricing-helpers';
 import { UniversalModelSelector } from '../common/UniversalModelSelector';
 
 interface ModelEngineSettingsProps {
@@ -13,10 +14,8 @@ interface ModelEngineSettingsProps {
   setSelectedRes: (val: string) => void;
   quantity: number;
   setQuantity: (val: number) => void;
-  // Hỗ trợ engine nếu cần thiết cho quy trình image
   selectedEngine?: string;
   onSelectEngine?: (val: string) => void;
-  // New props for mode
   selectedMode: string;
   setSelectedMode: (val: string) => void;
 }
@@ -36,6 +35,11 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
   selectedMode,
   setSelectedMode
 }) => {
+  // Lấy resolutions động từ model đang chọn
+  const dynamicResolutions = React.useMemo(() => {
+    return getResolutionsFromPricing(selectedModel?.raw?.pricing);
+  }, [selectedModel]);
+
   return (
     <div className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
       <UniversalModelSelector 
@@ -75,7 +79,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
               onChange={e => setSelectedRatio(e.target.value)} 
               className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 p-2 rounded-lg text-[10px] font-black uppercase outline-none focus:border-brand-blue transition-colors text-slate-800 dark:text-white appearance-none cursor-pointer shadow-sm"
             >
-              {RATIOS.map(r => <option key={r} value={r} className="bg-white dark:bg-[#111]">{r}</option>)}
+              {ASPECT_RATIOS.map(r => <option key={r} value={r} className="bg-white dark:bg-[#111]">{r}</option>)}
             </select>
             <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
           </div>
@@ -91,7 +95,11 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
               onChange={e => setSelectedRes(e.target.value)} 
               className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 p-2 rounded-lg text-[10px] font-black uppercase outline-none focus:border-brand-blue transition-colors text-slate-800 dark:text-white appearance-none cursor-pointer shadow-sm"
             >
-              {RESOLUTIONS.map(r => <option key={r} value={r} className="bg-white dark:bg-[#111]">{r.toUpperCase()}</option>)}
+              {dynamicResolutions.length > 0 ? (
+                dynamicResolutions.map(r => <option key={r} value={r} className="bg-white dark:bg-[#111]">{r.toUpperCase()}</option>)
+              ) : (
+                <option value="">N/A</option>
+              )}
             </select>
             <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
           </div>

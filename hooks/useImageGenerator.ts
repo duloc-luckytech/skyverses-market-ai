@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { generateDemoImage } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
@@ -6,6 +7,8 @@ import { GCSAssetMetadata, uploadToGCS } from '../services/storage';
 import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
 import { pricingApi, PricingModel } from '../apis/pricing';
 import { useToast } from '../context/ToastContext';
+import { ASPECT_RATIOS, DEFAULT_ASPECT_RATIO } from '../constants/media-presets';
+import { getResolutionsFromPricing, getCostFromPricing } from '../utils/pricing-helpers';
 
 export type CreationMode = 'SINGLE' | 'BATCH';
 
@@ -30,9 +33,6 @@ export interface ImageResult {
   isRefunded?: boolean;
 }
 
-export const RATIOS = ['1:1', '16:9', '9:16', '4:3', '3:4'];
-export const RESOLUTIONS = ['1k', '2k', '4k'];
-
 export const useImageGenerator = () => {
   const { credits, addCredits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
   const { showToast } = useToast();
@@ -40,12 +40,9 @@ export const useImageGenerator = () => {
 
   const [activeMode, setActiveMode] = useState<CreationMode>('SINGLE');
   const [isGenerating, setIsGenerating] = useState(false);
-  
-  // States for upload skeleton and preview
   const [isUploadingRef, setIsUploadingRef] = useState(false);
   const [tempUploadUrl, setTempUploadUrl] = useState<string | null>(null);
   
-  const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(5);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -62,8 +59,9 @@ export const useImageGenerator = () => {
   const [batchPrompts, setBatchPrompts] = useState<string[]>(['', '', '']);
   const [isBulkImporting, setIsBulkImporting] = useState(false);
   const [bulkText, setBulkText] = useState('');
-  const [selectedRatio, setSelectedRatio] = useState(RATIOS[0]);
-  const [selectedRes, setSelectedRes] = useState(RESOLUTIONS[0]);
+  
+  const [selectedRatio, setSelectedRatio] = useState(DEFAULT_ASPECT_RATIO);
+  const [selectedRes, setSelectedRes] = useState(''); // Sẽ set khi load model
   const [quantity, setQuantity] = useState(1);
   const [references, setReferences] = useState<ReferenceItem[]>([]);
   const [results, setResults] = useState<ImageResult[]>([]);
@@ -77,6 +75,9 @@ export const useImageGenerator = () => {
 
   const [hasPersonalKey, setHasPersonalKey] = useState(false);
   const [personalKey, setPersonalKey] = useState<string | undefined>(undefined);
+
+  // Added showLowCreditAlert state variable
+  const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
 
   const setSelectedEngine = (val: string) => {
     _setSelectedEngine(val);
@@ -96,6 +97,12 @@ export const useImageGenerator = () => {
           setAvailableModels(mapped);
           const defaultModel = mapped.find(m => m.raw.modelKey === 'google_image_gen_banana_pro') || mapped[0];
           setSelectedModel(defaultModel);
+
+          // Cập nhật resolution mặc định từ model đầu tiên
+          const resOptions = getResolutionsFromPricing(defaultModel.raw.pricing);
+          if (resOptions.length > 0) {
+            setSelectedRes(resOptions[0]);
+          }
         } else {
           setAvailableModels([]);
           setSelectedModel(null);
@@ -115,34 +122,18 @@ export const useImageGenerator = () => {
       } else {
         setSelectedMode(m.mode || 'relaxed');
       }
+      
+      // Đảm bảo selectedRes hợp lệ với model mới
+      const resOptions = getResolutionsFromPricing(m.pricing);
+      if (resOptions.length > 0 && !resOptions.includes(selectedRes)) {
+        setSelectedRes(resOptions[0]);
+      }
     }
   }, [selectedModel]);
 
-  useEffect(() => {
-    const vault = localStorage.getItem('skyverses_model_vault');
-    if (vault) {
-      try {
-        const keys = JSON.parse(vault);
-        if (keys.gemini && keys.gemini.trim() !== '') {
-          setHasPersonalKey(true);
-          setPersonalKey(keys.gemini);
-        }
-      } catch (e) {}
-    }
-  }, [showResourceModal]);
-
-  const todayKey = useMemo(() => new Date().toISOString().split('T')[0], []);
-
-  const getUnitCost = (model: any, resKey: string) => {
-    if (!model || !model.raw || !model.raw.pricing) return 0;
-    const resPricing = model.raw.pricing[resKey.toLowerCase()];
-    if (!resPricing) return 0;
-    const firstKey = Object.keys(resPricing)[0];
-    return resPricing[firstKey] || 0;
-  };
-
   const currentUnitCost = useMemo(() => {
-    return getUnitCost(selectedModel, selectedRes);
+    if (!selectedModel) return 0;
+    return getCostFromPricing(selectedModel.raw.pricing, selectedRes);
   }, [selectedModel, selectedRes]);
 
   const totalCost = useMemo(() => {
@@ -151,6 +142,8 @@ export const useImageGenerator = () => {
     if (activeMode === 'SINGLE') return unitCost * quantity;
     return batchPrompts.filter(p => p.trim()).length * unitCost;
   }, [activeMode, selectedModel, quantity, batchPrompts, currentUnitCost]);
+
+  const todayKey = useMemo(() => new Date().toISOString().split('T')[0], []);
 
   const generateTooltip = useMemo(() => {
     if (!isAuthenticated) return "Vui lòng đăng nhập";
@@ -305,21 +298,16 @@ export const useImageGenerator = () => {
   };
 
   const handleLocalFileUpload = async (file: File) => {
-    // Validation
     const maxSize = 5 * 1024 * 1024;
     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-    
     if (!allowedTypes.includes(file.type)) {
       showToast("Định dạng file không hỗ trợ. Vui lòng chọn PNG hoặc JPEG.", "error");
       return;
     }
-    
     if (file.size > maxSize) {
       showToast("Dung lượng file quá lớn. Tối đa 5MB.", "error");
       return;
     }
-
-    // Immediate preview
     const localUrl = URL.createObjectURL(file);
     setTempUploadUrl(localUrl);
     setIsUploadingRef(true);
@@ -332,7 +320,6 @@ export const useImageGenerator = () => {
     } finally {
       setIsUploadingRef(false);
       setTempUploadUrl(null);
-      // Clean up local URL
       URL.revokeObjectURL(localUrl);
     }
   };
@@ -377,7 +364,6 @@ export const useImageGenerator = () => {
 
   return {
     activeMode, setActiveMode, isGenerating, isUploadingRef, tempUploadUrl,
-    showLowCreditAlert, setShowLowCreditAlert, zoomLevel, setZoomLevel,
     isLibraryOpen, setIsLibraryOpen, isEditorOpen, setIsEditorOpen,
     editorImage, setActivePreviewUrl, selectedIds, setSelectedIds,
     activePreviewUrl, showResourceModal, setShowResourceModal,
@@ -392,6 +378,8 @@ export const useImageGenerator = () => {
     toggleSelect, deleteResult, handleLibrarySelect,
     isResumingGenerate, setIsResumingGenerate, triggerDownload,
     handleEditorApply, selectedMode, setSelectedMode,
-    selectedEngine, setSelectedEngine
+    selectedEngine, setSelectedEngine,
+    // Exported missing state variables to resolve property access errors
+    zoomLevel, setZoomLevel, showLowCreditAlert, setShowLowCreditAlert
   };
 };
