@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Download, Share2, AlertTriangle } from 'lucide-react';
@@ -42,7 +43,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   
   // -- App States --
   const [activeMode, setActiveMode] = useState<CreationMode>('SINGLE');
-  const [activeTab, setActiveTab] = useState<'SESSION' | 'LIBRARY'>('SESSION');
+  const [activeTab, setActiveTab] = useState<'SESSION' | 'HISTORY'>('SESSION');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState<string | null>(null);

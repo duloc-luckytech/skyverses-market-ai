@@ -3,14 +3,15 @@ import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calendar, Download, LayoutGrid, Film, Bot, Activity, 
-  Sparkles, Loader2, AlertCircle, ImageIcon, Eye, Heart, Maximize2, Zap, Play
+  Sparkles, Loader2, AlertCircle, ImageIcon, Eye, Heart, Maximize2, Zap, Play, History as HistoryIcon, Search, Filter, RefreshCw
 } from 'lucide-react';
 import { VideoCard, VideoResult } from './VideoCard';
 import ExplorerDetailModal, { ExplorerItem } from '../ExplorerDetailModal';
+import { videosApi } from '../../apis/videos';
 
 interface ResultsMainProps {
-  activeTab: 'SESSION' | 'LIBRARY';
-  setActiveTab: (tab: 'SESSION' | 'LIBRARY') => void;
+  activeTab: 'SESSION' | 'HISTORY';
+  setActiveTab: (tab: 'SESSION' | 'HISTORY') => void;
   autoDownload: boolean;
   setAutoDownload: (val: boolean) => void;
   zoomLevel: number;
@@ -52,6 +53,13 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
   const [hasMore, setHasMore] = useState(true);
   const [selectedDetailItem, setSelectedDetailItem] = useState<ExplorerItem | null>(null);
 
+  // --- HISTORY STATES ---
+  const [historyItems, setHistoryItems] = useState<VideoResult[]>([]);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [hasMoreHistory, setHasMoreHistory] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [historySearch, setHistorySearch] = useState('');
+
   const observer = useRef<IntersectionObserver | null>(null);
 
   const fetchExplorer = async (pageNum: number, isInitial: boolean = false) => {
@@ -83,11 +91,57 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
     }
   };
 
+  const fetchHistory = async (pageNum: number, isInitial: boolean = false) => {
+    if (pageNum === 1) setLoadingHistory(true);
+    
+    try {
+      const res = await videosApi.getJobs({
+        page: pageNum,
+        limit: 15,
+        status: 'done',
+        q: historySearch || undefined
+      });
+
+      if (res.success && res.data) {
+        const mapped: VideoResult[] = res.data.map(item => {
+          const date = new Date(item.createdAt);
+          return {
+            id: item.jobId,
+            url: item.videoUrl || null,
+            prompt: item.prompt || 'Untitled',
+            fullTimestamp: date.toLocaleString('vi-VN'),
+            dateKey: date.toISOString().split('T')[0],
+            displayDate: date.toLocaleDateString('vi-VN'),
+            model: item.model || 'Unknown',
+            mode: 'standard',
+            duration: '8s',
+            status: item.status === 'done' ? 'done' : 'error',
+            hasSound: false,
+            aspectRatio: '16:9',
+            cost: 0 
+          };
+        });
+
+        if (isInitial) setHistoryItems(mapped);
+        else setHistoryItems(prev => [...prev, ...mapped]);
+
+        setHasMoreHistory(res.meta.page < res.meta.totalPages);
+      }
+    } catch (err) {
+      console.error("History fetch error:", err);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
   useEffect(() => {
     if (results.length === 0 && explorerItems.length === 0 && activeTab === 'SESSION') {
       fetchExplorer(1, true);
     }
-  }, [results.length, activeTab]);
+    if (activeTab === 'HISTORY') {
+      fetchHistory(1, true);
+    }
+  }, [results.length, activeTab, historySearch]);
 
   const lastItemRef = useCallback((node: HTMLDivElement | null) => {
     if (loadingExplorer || isFetchingMore) return;
@@ -106,6 +160,23 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
     if (node) observer.current.observe(node);
   }, [loadingExplorer, isFetchingMore, hasMore]);
 
+  const lastHistoryRef = useCallback((node: HTMLDivElement | null) => {
+    if (loadingHistory) return;
+    if (observer.current) observer.current.disconnect();
+    
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMoreHistory) {
+        setHistoryPage(prev => {
+          const next = prev + 1;
+          fetchHistory(next);
+          return next;
+        });
+      }
+    });
+
+    if (node) observer.current.observe(node);
+  }, [loadingHistory, hasMoreHistory]);
+
   const groupedResults = useMemo(() => {
     return results.reduce((acc, res) => {
       const key = res.dateKey || todayKey;
@@ -115,7 +186,18 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
     }, {} as Record<string, VideoResult[]>);
   }, [results, todayKey]);
 
+  const groupedHistory = useMemo(() => {
+    return historyItems.reduce((acc, res) => {
+      const key = res.dateKey;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(res);
+      return acc;
+    }, {} as Record<string, VideoResult[]>);
+  }, [historyItems]);
+
   const sortedDateKeys = useMemo(() => Object.keys(groupedResults).sort((a, b) => b.localeCompare(a)), [groupedResults]);
+  const sortedHistoryKeys = useMemo(() => Object.keys(groupedHistory).sort((a, b) => b.localeCompare(a)), [groupedHistory]);
+  
   const processingCount = results.filter(r => r.status === 'processing').length;
 
   return (
@@ -131,17 +213,17 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
                  Phiên hiện tại
                </button>
                <button 
-                 onClick={() => setActiveTab('LIBRARY')}
-                 className={`px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'LIBRARY' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-lg' : 'text-slate-400'}`}
+                 onClick={() => setActiveTab('HISTORY')}
+                 className={`px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'HISTORY' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-lg' : 'text-slate-400'}`}
                >
-                 Thư viện
+                 Lịch sử
                </button>
             </div>
             
             {processingCount > 0 && (
               <div className="flex items-center gap-2 px-3 py-1 bg-brand-blue/10 border border-brand-blue/20 rounded-full">
                 <div className="w-1 h-1 bg-brand-blue rounded-full animate-ping"></div>
-                <span className="text-[8px] font-black uppercase text-brand-blue animate-pulse">{processingCount} ĐANG TẠO...</span>
+                <span className="text-[8px] font-black uppercase text-brand-blue animate-pulse">{processingCount} ĐANG TỔNG HỢP...</span>
               </div>
             )}
          </div>
@@ -209,7 +291,6 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
                                   />
                                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-transparent z-10 opacity-80" />
                                   
-                                  {/* Play Action Overlay */}
                                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 z-20">
                                      <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white shadow-3xl hover:scale-110 transition-transform">
                                         <Play size={32} fill="white" className="ml-1" />
@@ -279,6 +360,80 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
                   </div>
                 )}
               </motion.div>
+            ) : activeTab === 'HISTORY' ? (
+              <motion.div 
+                key="history-view" 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }}
+                className="space-y-12 pb-32"
+              >
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
+                  <div className="space-y-4">
+                     <div className="flex items-center gap-3 text-brand-blue">
+                        <HistoryIcon size={20} />
+                     </div>
+                     <h2 className="text-4xl lg:text-7xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Lịch sử <br /> <span className="text-brand-blue">lưu trữ.</span></h2>
+                  </div>
+
+                  <div className="relative group w-full md:w-80">
+                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue transition-colors" size={16} />
+                     <input 
+                       type="text" 
+                       value={historySearch}
+                       onChange={e => setHistorySearch(e.target.value)}
+                       placeholder="Tìm kịch bản..." 
+                       className="w-full bg-white dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-full pl-11 pr-4 py-3 text-xs font-bold outline-none focus:border-brand-blue shadow-inner"
+                     />
+                  </div>
+                </div>
+
+                {loadingHistory && historyItems.length === 0 ? (
+                   <div className="py-40 flex flex-col items-center justify-center gap-4 opacity-40">
+                      <Loader2 className="animate-spin text-brand-blue" size={48} />
+                      <p className="text-[10px] font-black uppercase tracking-[0.4em]">Đang đồng bộ kịch bản cũ...</p>
+                   </div>
+                ) : historyItems.length > 0 ? (
+                  <div className="space-y-16">
+                    {sortedHistoryKeys.map(date => (
+                      <div key={date} className="space-y-8">
+                        <div className="flex items-center gap-6 px-1">
+                          <div className="p-2.5 bg-brand-blue/10 rounded-xl text-brand-blue">
+                            <Calendar size={18} />
+                          </div>
+                          <h3 className="text-xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">
+                             {date === todayKey ? 'Hôm nay' : groupedHistory[date][0].displayDate}
+                          </h3>
+                          <div className="h-px flex-grow bg-black/5 dark:border-white/5"></div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                          {groupedHistory[date].map((res, idx) => {
+                            const isLast = historyItems.length === idx + 1;
+                            return (
+                              <div key={res.id} ref={isLast ? lastHistoryRef : null}>
+                                <VideoCard 
+                                  res={res} 
+                                  isSelected={selectedVideoIds.includes(res.id)} 
+                                  onToggleSelect={() => toggleSelect(res.id)} 
+                                  onFullscreen={(url, hasSound, id) => setFullscreenVideo({ url, hasSound, id })} 
+                                  onDelete={deleteResult} 
+                                  onRetry={handleRetry} 
+                                  onDownload={triggerDownload} 
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-40 text-center opacity-20 flex flex-col items-center gap-6">
+                     <HistoryIcon size={100} strokeWidth={1} />
+                     <p className="text-sm font-black uppercase tracking-[0.5em]">No History Detected</p>
+                  </div>
+                )}
+              </motion.div>
             ) : (
               <motion.div key="grid-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-16 pb-32">
                 {sortedDateKeys.map(date => (
@@ -287,7 +442,7 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
                       <div className="p-2.5 bg-brand-blue/10 rounded-xl text-brand-blue">
                         <Calendar size={18} />
                       </div>
-                      <h3 className="text-xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">{date}</h3>
+                      <h3 className="text-xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">{date === todayKey ? 'Hôm nay' : groupedResults[date][0].displayDate}</h3>
                       <div className="h-px flex-grow bg-black/5 dark:border-white/5"></div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">

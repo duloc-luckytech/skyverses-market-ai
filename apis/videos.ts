@@ -27,10 +27,10 @@ export interface VideoJobRequest {
 }
 
 export interface VideoJobResponse {
-  success?: boolean; // Root success flag seen in live responses
-  status?: string; // The root status can be "success" or "error"
+  success?: boolean; 
+  status?: string; 
   data: {
-    status: string; // The job status can be "done", "failed", "processing", "pending", "queued"
+    status: string; 
     jobId: string;
     result?: {
       videoUrl: string;
@@ -40,10 +40,34 @@ export interface VideoJobResponse {
   message?: string;
 }
 
+export interface VideoHistoryResponse {
+  success: boolean;
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  data: Array<{
+    jobId: string;
+    status: string;
+    type: string;
+    provider: string;
+    model: string;
+    prompt: string;
+    thumbnail?: string;
+    videoUrl?: string;
+    createdAt: string;
+    error?: {
+      message: string;
+      userMessage: string;
+    } | null;
+  }>;
+}
+
 export const videosApi = {
   /**
    * Create a video generation job using credits
-   * POST /video-jobs
    */
   createJob: async (payload: VideoJobRequest): Promise<VideoJobResponse> => {
     try {
@@ -64,7 +88,6 @@ export const videosApi = {
 
   /**
    * Poll video job status
-   * GET /video-jobs/:id
    */
   getJobStatus: async (jobId: string): Promise<VideoJobResponse> => {
     try {
@@ -79,6 +102,35 @@ export const videosApi = {
     } catch (error) {
       console.error('Video Job Status Error:', error);
       return { success: false, status: 'error', data: { status: 'failed', jobId }, message: 'Status check failed' };
+    }
+  },
+
+  /**
+   * Get list of video jobs (History)
+   */
+  getJobs: async (params: { 
+    status?: string, 
+    type?: string, 
+    provider?: string, 
+    model?: string, 
+    q?: string, 
+    page?: number, 
+    limit?: number 
+  }): Promise<VideoHistoryResponse> => {
+    try {
+      const query = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) query.append(key, String(value));
+      });
+
+      const response = await fetch(`${API_BASE_URL}/video-jobs?${query.toString()}`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Video Jobs List Error:', error);
+      throw error;
     }
   }
 };
