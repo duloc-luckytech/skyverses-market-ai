@@ -36,6 +36,10 @@ export interface VideoJobResponse {
       videoUrl: string;
       thumbnailUrl?: string;
     };
+    error?: {
+      message: string;
+      userMessage: string;
+    } | null;
   };
   message?: string;
 }

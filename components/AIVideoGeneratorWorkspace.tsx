@@ -81,7 +81,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [duration, setDuration] = useState('8s'); 
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [resolution, setResolution] = useState('720p');
-  const [quantity, setQuantity] = useState(1); // Added quantity state
+  const [quantity, setQuantity] = useState(1); 
 
   // -- Reference Selection Target Ref (Fix race condition) --
   const uploadTargetRef = useRef<string | null>(null);
@@ -110,6 +110,12 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   // -- Results & Selection --
   const [results, setResults] = useState<VideoResult[]>([]);
   const [selectedVideoIds, setSelectedVideoIds] = useState<string[]>([]);
+
+  // Result Ref to avoid stale closure during polling
+  const resultsRef = useRef<VideoResult[]>([]);
+  useEffect(() => {
+    resultsRef.current = results;
+  }, [results]);
 
   // Define hasJobs to check if results are present
   const hasJobs = results.length > 0;
@@ -182,7 +188,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const currentTotalCost = useMemo(() => {
     if (activeMode === 'AUTO') return autoTasks.filter(t => t.prompt.trim() !== '').length * currentUnitCost;
     if (activeMode === 'MULTI') return (multiFrames.length - 1) * currentUnitCost;
-    return currentUnitCost * quantity; // Single mode uses quantity
+    return currentUnitCost * quantity; 
   }, [activeMode, autoTasks, multiFrames, currentUnitCost, quantity]);
 
   useEffect(() => {
@@ -349,10 +355,21 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     try {
       const response: VideoJobResponse = await videosApi.getJobStatus(jobId);
       
-      // Root check: either success: true or status: "success"
       const isSuccess = response.success === true || response.status?.toLowerCase() === 'success';
       const jobStatus = response.data?.status?.toLowerCase();
       
+      // AUTO-RETRY ON reCAPTCHA FAILURES
+      const errorMsg = response.data?.error?.message || response.data?.error?.userMessage || "";
+      if (errorMsg.includes("reCAPTCHA")) {
+         console.warn(`reCAPTCHA failure detected for jobId: ${jobId}. Initiating auto-retry for resultId: ${resultId}`);
+         const taskToRetry = resultsRef.current.find(r => r.id === resultId);
+         if (taskToRetry) {
+            // Re-perform inference for this specific card without adding it again to the results list
+            performInference(usagePreference || 'credits', taskToRetry, true);
+            return; // Terminate this polling branch
+         }
+      }
+
       if (!isSuccess || jobStatus === 'failed' || jobStatus === 'error') {
         setResults(prev => prev.map(r => {
            if (r.id === resultId) {
@@ -373,17 +390,15 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         refreshUserInfo();
         if (autoDownloadRef.current) triggerDownload(videoUrl, `video_${resultId}.mp4`);
       } else {
-        // If not done and not failed, keep polling (handles pending, processing, queued, etc.)
         setTimeout(() => pollVideoJobStatus(jobId, resultId, cost), 5000);
       }
     } catch (e) {
       console.error("Polling error for job:", jobId, e);
-      // Don't mark as error immediately on network glitch, try one more time or wait
       setTimeout(() => pollVideoJobStatus(jobId, resultId, cost), 10000);
     }
   };
 
-  const performInference = async (currentPreference: 'credits' | 'key', retryTask?: VideoResult) => {
+  const performInference = async (currentPreference: 'credits' | 'key', retryTask?: VideoResult, isAutoRetry: boolean = false) => {
     if (!selectedModelObj) return;
     const now = new Date();
     const timestamp = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')} ${now.toLocaleDateString('vi-VN')}`;
@@ -392,7 +407,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       if (!personalKey) { navigate('/settings'); return; }
     } else {
       const costToPay = retryTask ? retryTask.cost : currentTotalCost;
-      if (credits < costToPay) { setShowLowCreditAlert(true); return; }
+      // Skip credit check if it's an auto-retry (usually due to tech error like reCAPTCHA)
+      if (!isAutoRetry && credits < costToPay) { setShowLowCreditAlert(true); return; }
     }
 
     setIsGenerating(true);
@@ -405,7 +421,6 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             let type: "text-to-video" | "image-to-video" | "start-end-image" = "text-to-video";
             if (startFrame && endFrame) type = "start-end-image";
             else if (startFrame) type = "image-to-video";
-            // Create quantity clones of the single task
             return Array(quantity).fill(null).map((_, i) => ({ 
               id: `single-${Date.now()}-${i}`, 
               type, 
@@ -431,7 +446,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         dateKey: todayKey, 
         displayDate: now.toLocaleDateString('vi-VN'), 
         model: selectedModelObj.name, 
-        mode: selectedMode, // Save current mode
+        mode: selectedMode,
         duration, 
         status: 'processing', 
         hasSound: soundEnabled, 
@@ -442,6 +457,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       }));
       setResults(prev => [...newResults, ...prev]);
     } else {
+      // Keep existing task in the list but set its status to processing
       setResults(prev => prev.map(r => r.id === retryTask.id ? { ...r, status: 'processing', isRefunded: false } : r));
     }
 
@@ -454,7 +470,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             const res = await videosApi.createJob(payload);
             const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
             if (isSuccess && res.data.jobId) {
-              useCredits(task.cost);
+              // Only charge if it's NOT an auto-retry from server error
+              if (!isAutoRetry) useCredits(task.cost);
               pollVideoJobStatus(res.data.jobId, task.id, task.cost);
             } else {
               setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
@@ -480,9 +497,9 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     performInference(usagePreference);
   };
 
-  const handleRetry = (res: VideoResult) => {
+  const handleRetry = (res: VideoResult, isAutoRetry: boolean = false) => {
     if (!usagePreference) return;
-    performInference(usagePreference, res);
+    performInference(usagePreference, res, isAutoRetry);
   };
 
   const deleteResult = (id: string) => setResults(prev => prev.filter(r => r.id !== id));
@@ -495,7 +512,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const generateTooltip = useMemo(() => {
     if (!isAuthenticated) return "Vui lòng đăng nhập để sử dụng";
     if (!usagePreference) return "Vui lòng chọn Nguồn tài nguyên";
-    if (processingCount >= 4) return "Đã đạt giới hạn 4 luồng xử lý đồng thời"; // Limit check
+    if (processingCount >= 4) return "Đã đạt giới hạn 4 luồng xử lý đồng thời"; 
     if (usagePreference === 'credits' && credits < currentTotalCost) return `Số dư không đủ (Cần ${currentTotalCost} CR)`;
     if (activeMode === 'SINGLE' && !prompt.trim()) return "Vui lòng nhập kịch bản";
     if (activeMode === 'MULTI') {
@@ -593,7 +610,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         {fullscreenVideo && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/95 flex flex-col items-center justify-center p-6 md:p-12">
             <button onClick={() => setFullscreenVideo(null)} className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors"><X size={32} /></button>
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-6xl aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-6xl aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative">
               {isDownloading === `video_${fullscreenVideo.id}.mp4` && (
                 <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center gap-4">
                   <Loader2 size={48} className="text-white animate-spin" />
@@ -629,8 +646,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 <p className="text-sm text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight">Video synthesis requires ít nhất **{currentUnitCost} credits** per take. <br />Your current node balance is too low.</p>
               </div>
               <div className="flex flex-col gap-4">
-                <Link to="/credits" className="bg-purple-600 text-white py-5 rounded-2xl text-[12px] font-black uppercase tracking-[0.4em] shadow-xl hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
-                <button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest underline underline-offset-8">Để sau</button>
+                <Link to="/credits" className="bg-purple-600 text-white py-5 rounded-2xl font-black uppercase tracking-[0.4em] shadow-xl hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
+                <button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest underline underline-offset-8">Để sau</button>
               </div>
             </motion.div>
           </motion.div>
