@@ -80,6 +80,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [duration, setDuration] = useState('8s'); 
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [resolution, setResolution] = useState('720p');
+  const [quantity, setQuantity] = useState(1); // Added quantity state
 
   // -- Reference Selection Target Ref (Fix race condition) --
   const uploadTargetRef = useRef<string | null>(null);
@@ -114,6 +115,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const todayKey = useMemo(() => new Date().toISOString().split('T')[0], []);
+
+  const processingCount = useMemo(() => results.filter(r => r.status === 'processing').length, [results]);
 
   // Fetch Pricing Models
   useEffect(() => {
@@ -178,8 +181,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const currentTotalCost = useMemo(() => {
     if (activeMode === 'AUTO') return autoTasks.filter(t => t.prompt.trim() !== '').length * currentUnitCost;
     if (activeMode === 'MULTI') return (multiFrames.length - 1) * currentUnitCost;
-    return currentUnitCost;
-  }, [activeMode, autoTasks, multiFrames, currentUnitCost]);
+    return currentUnitCost * quantity; // Single mode uses quantity
+  }, [activeMode, autoTasks, multiFrames, currentUnitCost, quantity]);
 
   useEffect(() => {
     const vault = localStorage.getItem('skyverses_model_vault');
@@ -319,7 +322,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       const response = await fetch(url);
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.body.appendChild(document.createElement('a'));
       link.href = blobUrl;
       link.download = filename;
       document.body.appendChild(link);
@@ -401,7 +404,18 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             let type: "text-to-video" | "image-to-video" | "start-end-image" = "text-to-video";
             if (startFrame && endFrame) type = "start-end-image";
             else if (startFrame) type = "image-to-video";
-            return [{ id: `single-${Date.now()}`, type, prompt, startUrl: startFrame, startMediaId: startFrameId, endUrl: endFrame, endMediaId: endFrameId, cost: currentUnitCost, ratio }];
+            // Create quantity clones of the single task
+            return Array(quantity).fill(null).map((_, i) => ({ 
+              id: `single-${Date.now()}-${i}`, 
+              type, 
+              prompt, 
+              startUrl: startFrame, 
+              startMediaId: startFrameId, 
+              endUrl: endFrame, 
+              endMediaId: endFrameId, 
+              cost: currentUnitCost, 
+              ratio 
+            }));
           })()
         : activeMode === 'MULTI'
           ? Array.from({ length: multiFrames.length - 1 }).map((_, i) => ({ id: `batch-${Date.now()}-${i}`, type: "image-to-video" as const, prompt: multiFrames[i].prompt, startUrl: multiFrames[i].url, startMediaId: multiFrames[i].mediaId, endUrl: multiFrames[i+1].url, endMediaId: multiFrames[i+1].mediaId, cost: currentUnitCost, ratio }))
@@ -480,6 +494,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const generateTooltip = useMemo(() => {
     if (!isAuthenticated) return "Vui lòng đăng nhập để sử dụng";
     if (!usagePreference) return "Vui lòng chọn Nguồn tài nguyên";
+    if (processingCount >= 4) return "Đã đạt giới hạn 4 luồng xử lý đồng thời"; // Limit check
     if (usagePreference === 'credits' && credits < currentTotalCost) return `Số dư không đủ (Cần ${currentTotalCost} CR)`;
     if (activeMode === 'SINGLE' && !prompt.trim()) return "Vui lòng nhập kịch bản";
     if (activeMode === 'MULTI') {
@@ -488,7 +503,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     }
     if (activeMode === 'AUTO' && autoTasks.filter(t => t.prompt.trim()).length === 0) return "Vui lòng nhập ít nhất một kịch bản";
     return null;
-  }, [isAuthenticated, usagePreference, credits, currentTotalCost, activeMode, prompt, multiFrames, autoTasks]);
+  }, [isAuthenticated, usagePreference, credits, currentTotalCost, activeMode, prompt, multiFrames, autoTasks, processingCount]);
 
   const isGenerateDisabled = isGenerating || !!generateTooltip || !selectedModelObj;
 
@@ -557,6 +572,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         isGenerating={isGenerating}
         isGenerateDisabled={isGenerateDisabled}
         generateTooltip={generateTooltip}
+        quantity={quantity}
+        setQuantity={setQuantity}
       />
 
       <ResultsMain 

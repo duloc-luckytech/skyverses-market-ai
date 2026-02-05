@@ -76,6 +76,8 @@ interface SidebarLeftProps {
   isGenerating: boolean;
   isGenerateDisabled: boolean;
   generateTooltip: string | null;
+  quantity: number;
+  setQuantity: (val: number) => void;
 }
 
 const RefPickerSlot = ({ 
@@ -207,9 +209,9 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
                          
                          <div className="absolute top-2 left-2 w-5 h-5 bg-purple-600 rounded-md flex items-center justify-center text-[9px] font-black shadow-xl text-white">{idx + 1}</div>
                          
-                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
-                            <button onClick={(e) => { e.stopPropagation(); props.handleFrameClick(frame.id, 'UPLOAD'); }} className="p-2 bg-white text-black rounded-full hover:bg-brand-blue hover:text-white transition-all"><Upload size={12}/></button>
-                            <button onClick={(e) => { e.stopPropagation(); props.handleFrameClick(frame.id, 'LIBRARY'); }} className="p-2 bg-white text-black rounded-full hover:bg-brand-blue hover:text-white transition-all"><FolderOpen size={12}/></button>
+                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-4 z-40">
+                            <button onClick={(e) => { e.stopPropagation(); props.handleFrameClick(frame.id, 'UPLOAD'); }} className="p-2.5 bg-white text-black rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-xl"><Upload size={12}/></button>
+                            <button onClick={(e) => { e.stopPropagation(); props.handleFrameClick(frame.id, 'LIBRARY'); }} className="p-2.5 bg-white text-black rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-xl"><FolderOpen size={12}/></button>
                          </div>
 
                          {props.multiFrames.length > 2 && <button onClick={(e) => { e.stopPropagation(); props.removeFrame(frame.id); }} className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white/40 hover:text-red-500 transition-all"><Trash2 size={12} /></button>}
@@ -305,6 +307,8 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
         autoTasksCount={props.autoTasks.filter(t => t.prompt.trim() !== '').length}
         multiFramesCount={props.multiFrames.length - 1}
         isMobileExpanded={props.isMobileExpanded}
+        quantity={props.quantity}
+        setQuantity={props.setQuantity}
       />
     </aside>
   );
