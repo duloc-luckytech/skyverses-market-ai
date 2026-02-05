@@ -95,10 +95,13 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   };
 
   useEffect(() => {
-    if (results.length === 0 && explorerItems.length === 0) {
+    if (results.length === 0 && explorerItems.length === 0 && activeTab === 'RESULTS') {
       fetchExplorer(1, true);
     }
-  }, [results.length]);
+    if (activeTab === 'HISTORY' && serverResults.length === 0) {
+      onLoadMoreServer();
+    }
+  }, [results.length, activeTab]);
 
   const lastItemRef = useCallback((node: HTMLDivElement | null) => {
     if (loadingExplorer || isFetchingMore) return;

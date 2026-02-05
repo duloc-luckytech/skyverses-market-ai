@@ -144,7 +144,7 @@ export const useImageGenerator = () => {
   const fetchServerResults = useCallback(async (page: number = 1, isInitial: boolean = false) => {
     if (isInitial) setIsFetchingHistory(true);
     try {
-      const response = await imagesApi.getJobs({ status: 'done', page, limit: 20 });
+      const response = await imagesApi.getJobs({ page, limit: 20 });
       const mapped: ImageResult[] = (response.data || []).map(job => {
         const date = new Date(job.createdAt);
         return {
@@ -155,7 +155,7 @@ export const useImageGenerator = () => {
           dateKey: date.toISOString().split('T')[0],
           displayDate: date.toLocaleDateString('vi-VN'),
           model: job.engine?.model || 'AI Model',
-          status: job.status === 'done' ? 'done' : 'error',
+          status: job.status === 'done' ? 'done' : job.status === 'failed' || job.status === 'error' ? 'error' : 'processing',
           aspectRatio: job.config?.aspectRatio || '1:1',
           resolution: job.result?.width ? `${job.result.width}x${job.result.height}` : '1024x1024',
           cost: job.creditsUsed || 0,
@@ -167,7 +167,9 @@ export const useImageGenerator = () => {
       else setServerResults(prev => [...prev, ...mapped]);
 
       const pagination = response.pagination;
-      setHasMoreHistory(page < (pagination?.total / pagination?.limit || 0));
+      if (pagination) {
+        setHasMoreHistory(page < Math.ceil(pagination.total / pagination.limit));
+      }
       setHistoryPage(page);
     } catch (error) {
       console.error("Failed to fetch history:", error);
