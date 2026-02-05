@@ -1,9 +1,8 @@
-
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronLeft, Image as ImageIcon, Layers, Settings, 
-  Loader2, Zap, ChevronUp, SlidersHorizontal, ArrowRight 
+  Loader2, Zap, ChevronUp, SlidersHorizontal 
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { CreationMode, ReferenceItem } from '../../hooks/useImageGenerator';
@@ -70,6 +69,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
     <aside 
       className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] lg:shrink-0 bg-white dark:bg-[#111114] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-14 lg:h-full lg:rounded-none'}`}
     >
+      {/* Mobile Toggle Header */}
       <div 
         className="lg:hidden h-14 flex items-center justify-between px-6 shrink-0 cursor-pointer border-b border-black/5 dark:border-white/5"
         onClick={() => props.setIsMobileExpanded(!props.isMobileExpanded)}
@@ -109,7 +109,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            </button>
         </div>
 
-        {/* --- TÁCH COMPONENT: ẢNH THAM CHIẾU --- */}
+        {/* --- ẢNH THAM CHIẾU --- */}
         <ReferenceImageGrid 
           references={props.references}
           isUploading={!!props.isUploadingRef}
@@ -119,7 +119,6 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           onLibraryTrigger={() => props.setIsLibraryOpen(true)}
         />
 
-        {/* Hidden input for local file uploads */}
         <input 
           type="file" 
           ref={fileInputRef} 
@@ -132,12 +131,13 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           }} 
         />
 
-        {/* Prompt Section */}
-        <div className="hidden lg:block">
+        {/* --- DYNAMIC MODE CONTENT --- */}
+        <AnimatePresence mode="wait">
            {props.activeMode === 'SINGLE' ? (
-             <SidebarSingle prompt={props.prompt} setPrompt={props.setPrompt} />
+             <SidebarSingle key="single-tab" prompt={props.prompt} setPrompt={props.setPrompt} />
            ) : (
              <SidebarBatch 
+                key="batch-tab"
                 batchPrompts={props.batchPrompts} 
                 setBatchPrompts={props.setBatchPrompts} 
                 isBulk={props.isBulkImporting} 
@@ -147,9 +147,9 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
                 onBulkImport={props.handleBulkImport} 
               />
            )}
-        </div>
+        </AnimatePresence>
 
-        {/* Configurations */}
+        {/* --- CONFIGURATIONS --- */}
         <ModelEngineSettings 
           availableModels={props.availableModels}
           selectedModel={props.selectedModel}
@@ -168,7 +168,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
       </div>
 
       {/* Credit Footer */}
-      <div className={`shrink-0 p-6 bg-white dark:bg-[#111114] border-t border-black/5 dark:border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] space-y-4 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+      <div className={`shrink-0 p-6 bg-white dark:bg-[#111114] border-t border-black/5 dark:border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] space-y-4 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         <div className="flex items-center justify-between px-1">
            <div className="flex items-center gap-3">
               <div className="flex flex-col">

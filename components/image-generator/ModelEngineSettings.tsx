@@ -1,7 +1,6 @@
-
 import React from 'react';
-import { ChevronDown } from 'lucide-react';
-import { ASPECT_RATIOS } from '../../constants/media-presets';
+import { ChevronDown, Globe, Cpu } from 'lucide-react';
+import { ASPECT_RATIOS, DEFAULT_ASPECT_RATIO } from '../../constants/media-presets';
 import { getResolutionsFromPricing } from '../../utils/pricing-helpers';
 import { UniversalModelSelector } from '../common/UniversalModelSelector';
 
@@ -19,6 +18,7 @@ interface ModelEngineSettingsProps {
   onSelectEngine?: (val: string) => void;
   selectedMode: string;
   setSelectedMode: (val: string) => void;
+  activeMode?: 'SINGLE' | 'BATCH'; // Added to handle conditional quantity display
 }
 
 export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
@@ -34,19 +34,18 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
   selectedEngine = 'fxlab',
   onSelectEngine = () => {},
   selectedMode,
-  setSelectedMode
+  setSelectedMode,
+  activeMode = 'SINGLE'
 }) => {
-  // Lấy resolutions động từ model đang chọn
   const dynamicResolutions = React.useMemo(() => {
     return getResolutionsFromPricing(selectedModel?.raw?.pricing);
   }, [selectedModel]);
 
-  // Lấy danh sách tỷ lệ khung hình động từ model đang chọn
   const dynamicRatios = React.useMemo(() => {
     if (selectedModel?.raw?.aspectRatios && selectedModel.raw.aspectRatios.length > 0) {
       return selectedModel.raw.aspectRatios;
     }
-    return ASPECT_RATIOS; // Fallback to static list
+    return ASPECT_RATIOS;
   }, [selectedModel]);
 
   return (
@@ -77,9 +76,9 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
         }
       />
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className={`grid ${activeMode === 'SINGLE' ? 'grid-cols-3' : 'grid-cols-2'} gap-3`}>
         <div className="space-y-2">
-          <label className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1">
+          <label className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1 italic">
             Tỷ lệ
           </label>
           <div className="relative">
@@ -95,7 +94,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
         </div>
 
         <div className="space-y-2">
-          <label className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1">
+          <label className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1 italic">
             Độ phân giải
           </label>
           <div className="relative">
@@ -114,19 +113,21 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1">
-            Số lượng
-          </label>
-          <div className="relative">
-            <input 
-              type="number" min="1" max="4"
-              value={quantity} 
-              onChange={e => setQuantity(Math.max(1, Math.min(4, parseInt(e.target.value) || 1)))}
-              className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 p-2 rounded-lg text-[10px] font-black text-center outline-none focus:border-brand-blue transition-colors text-slate-800 dark:text-white shadow-sm"
-            />
+        {activeMode === 'SINGLE' && (
+          <div className="space-y-2 animate-in fade-in duration-300">
+            <label className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1 italic">
+              Số lượng
+            </label>
+            <div className="relative">
+              <input 
+                type="number" min="1" max="4"
+                value={quantity} 
+                onChange={e => setQuantity(Math.max(1, Math.min(4, parseInt(e.target.value) || 1)))}
+                className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 p-2 rounded-lg text-[10px] font-black text-center outline-none focus:border-brand-blue transition-colors text-slate-800 dark:text-white shadow-sm"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
