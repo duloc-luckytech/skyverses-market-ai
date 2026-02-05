@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Zap, Edit3, ChevronDown, Monitor, Clock, 
   Loader2, Trash2, Search, Filter as FilterIcon,
-  X, DollarSign, Settings2, Info, RefreshCw, Plus, Check, Copy, Globe
+  X, DollarSign, Settings2, Info, RefreshCw, Plus, Check, Copy, Globe, Maximize2
 } from 'lucide-react';
 import { pricingApi, PricingModel, PricingFilters, CreatePricingRequest } from '../../apis/pricing';
 
@@ -23,9 +24,10 @@ export const PricingTab: React.FC = () => {
   const [newModeInput, setNewModeInput] = useState('');
   const [resInput, setResInput] = useState('720p:1, 1080p:1.5');
   const [durInput, setDurInput] = useState('5, 8, 10');
+  const [aspectRatioInput, setAspectRatioInput] = useState('1:1, 16:9, 9:16, 4:3, 3:4');
   const [payload, setPayload] = useState<CreatePricingRequest>({
     tool: 'video', engine: 'gommo', modelKey: 'veo_3_1', version: '3.1', name: '', modes: ['relaxed'],
-    baseCredits: 20, perSecond: 2, defaultDuration: 4, resolutions: {}, durations: [5, 8, 10],
+    baseCredits: 20, perSecond: 2, defaultDuration: 4, resolutions: {}, durations: [5, 8, 10], aspectRatios: [],
     description: '', status: 'active'
   });
 
@@ -58,10 +60,11 @@ export const PricingTab: React.FC = () => {
     setEditingId(null);
     setResInput('720p:1, 1080p:1.5');
     setDurInput('5, 8, 10');
+    setAspectRatioInput('1:1, 16:9, 9:16, 4:3, 3:4');
     setPayload({
       tool: 'video', engine: 'gommo', modelKey: 'veo_3_1', version: '3.1',
       name: '', modes: ['relaxed'], baseCredits: 20, perSecond: 2, defaultDuration: 5,
-      resolutions: {}, durations: [5, 8, 10], description: '', status: 'active'
+      resolutions: {}, durations: [5, 8, 10], aspectRatios: [], description: '', status: 'active'
     });
     setIsDrawerOpen(true);
   };
@@ -73,10 +76,11 @@ export const PricingTab: React.FC = () => {
     const durations = firstRes ? Object.keys(model.pricing[firstRes]).map(Number) : [];
     setResInput(resolutions.map(r => `${r}:1`).join(', '));
     setDurInput(durations.join(', '));
+    setAspectRatioInput(model.aspectRatios?.join(', ') || '1:1, 16:9, 9:16, 4:3, 3:4');
     setPayload({
       tool: model.tool, engine: model.engine, modelKey: model.modelKey, version: model.version,
       name: model.name, modes: model.modes || [model.mode || 'relaxed'], baseCredits: 20, perSecond: 2, defaultDuration: 5,
-      resolutions: {}, durations: durations, description: model.description, status: model.status
+      resolutions: {}, durations: durations, aspectRatios: model.aspectRatios || [], description: model.description, status: model.status
     });
     setIsDrawerOpen(true);
   };
@@ -88,6 +92,7 @@ export const PricingTab: React.FC = () => {
     const durations = firstRes ? Object.keys(model.pricing[firstRes]).map(Number) : [];
     setResInput(resolutions.map(r => `${r}:1`).join(', '));
     setDurInput(durations.join(', '));
+    setAspectRatioInput(model.aspectRatios?.join(', ') || '1:1, 16:9, 9:16, 4:3, 3:4');
     setPayload({
       tool: model.tool, engine: model.engine, modelKey: `${model.modelKey}_copy`,
       version: model.version,
@@ -98,6 +103,7 @@ export const PricingTab: React.FC = () => {
       defaultDuration: 5,
       resolutions: {}, 
       durations: durations, 
+      aspectRatios: model.aspectRatios || [],
       description: model.description, 
       status: 'active'
     });
@@ -113,10 +119,12 @@ export const PricingTab: React.FC = () => {
         if (key && val) resObj[key.trim()] = parseFloat(val.trim()) || 1;
       });
       const finalDurations = durInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      const finalAspectRatios = aspectRatioInput.split(',').map(s => s.trim()).filter(Boolean);
       const body: any = {
         ...payload,
         resolutions: resObj,
         durations: finalDurations,
+        aspectRatios: finalAspectRatios,
         mode: payload.modes?.[0] || '' 
       };
       let res;
@@ -159,11 +167,6 @@ export const PricingTab: React.FC = () => {
       ...payload,
       modes: payload.modes?.filter(m => m !== mode) || []
     });
-  };
-
-  // Added fix for undefined settings and setSettings - using local payload state instead
-  const handleChange = (key: string, value: any) => {
-    setPayload({ ...payload, [key]: value });
   };
 
   return (
@@ -391,6 +394,19 @@ export const PricingTab: React.FC = () => {
                       </div>
                       <EditInput label="Multipliers (Res:Mul, e.g. 720p:1, 1080p:1.5)" value={resInput} onChange={(v: string) => setResInput(v)} />
                       <EditInput label="Durations (e.g. 5, 8, 10)" value={durInput} onChange={(v: string) => setDurInput(v)} />
+                      <div className="space-y-2">
+                         <div className="flex items-center gap-2 px-2">
+                            <Maximize2 size={12} className="text-brand-blue" />
+                            <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest">Aspect Ratios</label>
+                         </div>
+                         <input 
+                           value={aspectRatioInput} 
+                           onChange={e => setAspectRatioInput(e.target.value)} 
+                           className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white"
+                           placeholder="e.g. 1:1, 16:9, 9:16, 4:3, 3:4"
+                         />
+                         <p className="text-[8px] text-gray-500 uppercase font-bold italic px-2">Ví dụ: 1:1, 16:9, 9:16, 4:3, 3:4</p>
+                      </div>
                    </div>
                 </div>
 

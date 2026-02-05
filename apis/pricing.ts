@@ -12,6 +12,7 @@ export interface PricingModel {
   mode: string;
   modes?: string[];
   status: string;
+  aspectRatios?: string[];
   pricing: {
     [resolution: string]: {
       [duration: string]: number;
@@ -41,6 +42,7 @@ export interface CreatePricingRequest {
   perSecond: number;
   resolutions: Record<string, number>;
   durations: number[];
+  aspectRatios?: string[];
   description?: string;
   status?: string;
 }
@@ -128,7 +130,6 @@ export const pricingApi = {
     }
   },
 
-  // Fix: Added missing deletePricing method to satisfy AdminCmsProPage.tsx requirement
   /**
    * Delete pricing config
    * DELETE /pricing/:id

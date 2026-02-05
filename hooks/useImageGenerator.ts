@@ -103,6 +103,11 @@ export const useImageGenerator = () => {
           if (resOptions.length > 0) {
             setSelectedRes(resOptions[0]);
           }
+          
+          // Cập nhật tỷ lệ mặc định từ model
+          if (defaultModel.raw.aspectRatios && defaultModel.raw.aspectRatios.length > 0) {
+            setSelectedRatio(defaultModel.raw.aspectRatios[0]);
+          }
         } else {
           setAvailableModels([]);
           setSelectedModel(null);
@@ -127,6 +132,11 @@ export const useImageGenerator = () => {
       const resOptions = getResolutionsFromPricing(m.pricing);
       if (resOptions.length > 0 && !resOptions.includes(selectedRes)) {
         setSelectedRes(resOptions[0]);
+      }
+
+      // Đảm bảo selectedRatio hợp lệ với model mới
+      if (m.aspectRatios && m.aspectRatios.length > 0 && !m.aspectRatios.includes(selectedRatio)) {
+        setSelectedRatio(m.aspectRatios[0]);
       }
     }
   }, [selectedModel]);
@@ -173,7 +183,7 @@ export const useImageGenerator = () => {
     }
   };
 
-  const pollJobStatus = async (jobId: string, resultId: string, cost: number) => {
+  const pollVideoJobStatus = async (jobId: string, resultId: string, cost: number) => {
     try {
       const response: ImageJobResponse = await imagesApi.getJobStatus(jobId);
       const isError = response.status === 'error' || response.data?.status === 'error' || response.data?.status === 'failed';
@@ -198,11 +208,11 @@ export const useImageGenerator = () => {
         setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done' } : r));
         refreshUserInfo();
       } else {
-        setTimeout(() => pollJobStatus(jobId, resultId, cost), 5000);
+        setTimeout(() => pollVideoJobStatus(jobId, resultId, cost), 5000);
       }
     } catch (e) {
       console.error("Polling Network Error:", e);
-      setTimeout(() => pollJobStatus(jobId, resultId, cost), 10000);
+      setTimeout(() => pollVideoJobStatus(jobId, resultId, cost), 10000);
     }
   };
 
@@ -272,7 +282,7 @@ export const useImageGenerator = () => {
           const apiRes = await imagesApi.createJob(payload);
           if (apiRes.success && apiRes.data.jobId) {
             useCredits(unitCost);
-            pollJobStatus(apiRes.data.jobId, task.id, unitCost);
+            pollVideoJobStatus(apiRes.data.jobId, task.id, unitCost);
           } else {
             setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
           }
