@@ -1,5 +1,4 @@
-
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { marketApi } from '../apis/market';
 import { Solution } from '../types';
@@ -44,15 +43,19 @@ const MarketPage = () => {
   const imageRef = useRef<HTMLDivElement>(null);
   const othersRef = useRef<HTMLDivElement>(null);
 
-  const scroll = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
-    if (ref.current) {
-      const scrollAmount = ref.current.clientWidth * 0.8;
-      ref.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
+  const scroll = useCallback((ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
+    const el = ref.current;
+    if (el) {
+      // Tăng khoảng cách cuộn lên 85% chiều rộng container để đảm bảo vượt qua snap point
+      const scrollAmount = el.offsetWidth * 0.85;
+      const targetScrollLeft = el.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
+      
+      el.scrollTo({
+        left: targetScrollLeft,
         behavior: 'smooth'
       });
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated) {
