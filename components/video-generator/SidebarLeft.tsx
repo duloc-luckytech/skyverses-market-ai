@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -7,6 +8,8 @@ import {
 } from 'lucide-react';
 import { ConfigurationPanel } from './ConfigurationPanel';
 import { PricingModel } from '../../apis/pricing';
+import { MobileGeneratorBar } from '../common/MobileGeneratorBar';
+import { useAuth } from '../../context/AuthContext';
 
 interface MultiFrameNode {
   id: string;
@@ -120,29 +123,34 @@ const RefPickerSlot = ({
 );
 
 export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
+  const { credits } = useAuth();
+  
+  const onGenerateClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    props.handleGenerate();
+    if (window.innerWidth < 1024) {
+      props.setIsMobileExpanded(false);
+    }
+  };
+
   return (
-    <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] shrink-0 bg-white dark:bg-[#141416] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-20 lg:h-full lg:rounded-none'}`}>
-      {/* Mobile Toggle Header */}
-      <div 
-        className="lg:hidden h-20 flex flex-col items-center justify-center shrink-0 cursor-pointer relative"
-        onClick={() => props.setIsMobileExpanded(!props.isMobileExpanded)}
-      >
-        <div className="w-10 h-1.5 bg-slate-300 dark:bg-white/10 rounded-full mb-3"></div>
-        <div className="flex items-center justify-between w-full px-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400">
-              <SlidersHorizontal size={18} />
-            </div>
-            <div className="space-y-0.5">
-              <h2 className="text-sm font-black uppercase tracking-tight">Cấu hình video</h2>
-              <p className="text-[9px] font-bold text-slate-400 dark:text-gray-600 uppercase">Nhấn để {props.isMobileExpanded ? 'thu gọn' : 'mở rộng'}</p>
-            </div>
-          </div>
-          <div className={`p-2 rounded-full bg-slate-100 dark:bg-white/5 transition-transform duration-500 ${props.isMobileExpanded ? 'rotate-180' : ''}`}>
-            <ChevronUp size={20} />
-          </div>
-        </div>
-      </div>
+    <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] shrink-0 bg-white dark:bg-[#141416] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-32 lg:h-full lg:rounded-none'}`}>
+      
+      {/* --- CỤM ĐIỀU KHIỂN MOBILE DÙNG CHUNG --- */}
+      <MobileGeneratorBar 
+        isExpanded={props.isMobileExpanded}
+        setIsExpanded={props.setIsMobileExpanded}
+        prompt={props.prompt}
+        setPrompt={props.setPrompt}
+        credits={credits}
+        totalCost={props.currentTotalCost}
+        isGenerating={props.isGenerating}
+        isGenerateDisabled={props.isGenerateDisabled}
+        onGenerate={onGenerateClick}
+        onOpenLibrary={() => props.handleSingleFrameClick('START', 'LIBRARY')}
+        generateLabel="TẠO VIDEO"
+        type="video"
+      />
 
       <div className={`p-6 border-b border-slate-200 dark:border-white/5 shrink-0 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         <div className="hidden lg:flex items-center gap-3">

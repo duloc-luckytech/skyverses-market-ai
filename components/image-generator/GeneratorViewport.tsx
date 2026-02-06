@@ -156,18 +156,20 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                 <ChevronLeft size={20} />
               </button>
               
-              <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-[#1a1a1a] p-1 rounded-full border border-black/5 dark:border-white/10 shadow-inner">
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#1a1a1a] p-1 rounded-full border border-black/5 dark:border-white/10 shadow-inner">
                 <button 
                   onClick={() => setActiveTab('RESULTS')}
-                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'RESULTS' ? 'bg-white dark:bg-[#2a2a2e] text-brand-blue shadow-md' : 'text-slate-500'}`}
+                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'RESULTS' ? 'bg-white dark:bg-[#2a2a2e] text-brand-blue shadow-md' : 'text-slate-500'}`}
                 >
-                  Kết quả
+                  <LayoutGrid size={14} className="md:hidden" />
+                  <span className="hidden md:inline">Kết quả</span>
                 </button>
                 <button 
                   onClick={() => setActiveTab('HISTORY')}
-                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'HISTORY' ? 'bg-white dark:bg-[#2a2a2e] text-brand-blue shadow-md' : 'text-slate-500'}`}
+                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'HISTORY' ? 'bg-white dark:bg-[#2a2a2e] text-brand-blue shadow-md' : 'text-slate-500'}`}
                 >
-                  Lịch sử
+                  <HistoryIcon size={14} className="md:hidden" />
+                  <span className="hidden md:inline">Lịch sử</span>
                 </button>
               </div>
             </div>
@@ -187,8 +189,8 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
             ) : (
               <div className="flex items-center gap-2 md:gap-4">
                  {/* Auto Download Toggle */}
-                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-4 py-1.5 rounded-full border border-black/5 dark:border-white/10">
-                    <span className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400">TỰ ĐỘNG TẢI</span>
+                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 md:px-4 py-1.5 rounded-full border border-black/5 dark:border-white/10">
+                    <span className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 hidden xs:inline">TỰ ĐỘNG TẢI</span>
                     <button 
                       onClick={() => setAutoDownload(!autoDownload)}
                       className={`w-8 h-4 rounded-full relative transition-colors ${autoDownload ? 'bg-brand-blue' : 'bg-gray-300 dark:bg-gray-700'}`}
@@ -203,13 +205,13 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                  {/* Manual Download Button */}
                  <button 
                    onClick={handleManualDownload}
-                   className="flex items-center gap-2 px-4 py-1.5 bg-brand-blue text-white rounded-full text-[9px] font-black uppercase hover:brightness-110 shadow-lg"
+                   className="flex items-center gap-2 px-3 md:px-4 py-1.5 bg-brand-blue text-white rounded-full text-[9px] font-black uppercase hover:brightness-110 shadow-lg"
                  >
-                    <Download size={14} /> <span>TẢI XUỐNG</span>
+                    <Download size={14} /> <span className="hidden md:inline">TẢI XUỐNG</span>
                  </button>
 
-                 <div className="h-6 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
-                 <div className="flex items-center gap-3 pl-2">
+                 {/* Zoom Slider - Hidden on Mobile */}
+                 <div className="hidden md:flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-white/10">
                     <ImageIcon size={14} className="text-slate-400" />
                     <input 
                       type="range" min="1" max="10" 
@@ -390,7 +392,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-transparent z-10 opacity-80" />
 
                                   <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-8 z-20">
-                                     <div className="space-y-3 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                                     <div className="space-y-3 translate-y-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
                                         <p className="text-[10px] md:text-[11px] text-white/60 font-medium italic line-clamp-2 pr-6 leading-relaxed uppercase">
                                           "{item.prompt}"
                                         </p>

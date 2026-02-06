@@ -1,8 +1,10 @@
+
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronLeft, Image as ImageIcon, Layers, Settings, 
-  Loader2, Zap, ChevronUp, SlidersHorizontal 
+  Loader2, Zap, SlidersHorizontal, Plus, 
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { CreationMode, ReferenceItem } from '../../hooks/useImageGenerator';
@@ -10,6 +12,7 @@ import { SidebarSingle } from './SidebarSingle';
 import { SidebarBatch } from './SidebarBatch';
 import { ModelEngineSettings } from './ModelEngineSettings';
 import { ReferenceImageGrid } from './ReferenceImageGrid';
+import { MobileGeneratorBar } from '../common/MobileGeneratorBar';
 
 interface GeneratorSidebarProps {
   onClose: () => void;
@@ -58,7 +61,8 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
   const { credits } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onGenerateClick = () => {
+  const onGenerateClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     props.handleGenerate();
     if (window.innerWidth < 1024) {
       props.setIsMobileExpanded(false);
@@ -67,24 +71,25 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
 
   return (
     <aside 
-      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] lg:shrink-0 bg-white dark:bg-[#111114] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-14 lg:h-full lg:rounded-none'}`}
+      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] lg:shrink-0 bg-white dark:bg-[#111114] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-32 lg:h-full lg:rounded-none'}`}
     >
-      {/* Mobile Toggle Header */}
-      <div 
-        className="lg:hidden h-14 flex items-center justify-between px-6 shrink-0 cursor-pointer border-b border-black/5 dark:border-white/5"
-        onClick={() => props.setIsMobileExpanded(!props.isMobileExpanded)}
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue">
-            <SlidersHorizontal size={18} />
-          </div>
-          <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Thiết lập AI</h2>
-        </div>
-        <div className={`p-1.5 rounded-full bg-slate-100 dark:bg-white/5 transition-transform duration-500 ${props.isMobileExpanded ? 'rotate-180' : ''}`}>
-          <ChevronUp size={16} />
-        </div>
-      </div>
+      {/* --- CỤM ĐIỀU KHIỂN MOBILE DÙNG CHUNG --- */}
+      <MobileGeneratorBar 
+        isExpanded={props.isMobileExpanded}
+        setIsExpanded={props.setIsMobileExpanded}
+        prompt={props.prompt}
+        setPrompt={props.setPrompt}
+        credits={credits}
+        totalCost={props.totalCost}
+        isGenerating={props.isGenerating}
+        isGenerateDisabled={props.isGenerateDisabled}
+        onGenerate={onGenerateClick}
+        onOpenLibrary={() => props.setIsLibraryOpen(true)}
+        generateLabel="TẠO HÌNH ẢNH"
+        type="image"
+      />
 
+      {/* Main Content Area (Hidden on mobile if not expanded) */}
       <div className={`flex-grow overflow-y-auto no-scrollbar p-6 space-y-8 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         <div className="hidden lg:flex items-center gap-4">
            <button onClick={props.onClose} className="p-1 text-slate-400 hover:text-brand-blue transition-colors">
@@ -93,7 +98,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
            <h2 className="text-lg font-black uppercase tracking-tight italic text-slate-900 dark:text-white">Image Studio</h2>
         </div>
 
-        {/* Tab Selection: ĐƠN LẺ / HÀNG LOẠT */}
+        {/* Tab Selection */}
         <div className="grid grid-cols-2 bg-slate-100 dark:bg-black/40 p-1 rounded-lg border border-black/5 dark:border-white/10">
            <button 
              onClick={() => props.setActiveMode('SINGLE')}
@@ -164,10 +169,11 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           setSelectedMode={props.setSelectedMode}
           selectedEngine={props.selectedEngine}
           onSelectEngine={props.setSelectedEngine}
+          activeMode={props.activeMode}
         />
       </div>
 
-      {/* Credit Footer */}
+      {/* Credit Footer (Hidden on mobile if not expanded) */}
       <div className={`shrink-0 p-6 bg-white dark:bg-[#111114] border-t border-black/5 dark:border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] space-y-4 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         <div className="flex items-center justify-between px-1">
            <div className="flex items-center gap-3">
@@ -187,7 +193,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           onClick={onGenerateClick} disabled={props.isGenerateDisabled}
           className={`w-full py-4 rounded-xl font-black uppercase text-[11px] tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all ${props.isGenerateDisabled ? 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-600 cursor-not-allowed grayscale' : 'bg-brand-blue text-white hover:brightness-110 active:scale-[0.98]'}`}
         >
-           {props.isGenerating ? <Loader2 className="animate-spin" size={16} /> : <ImageIcon size={16} />}
+           {props.isGenerating ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
            <span>{props.isGenerating ? 'Đang tạo...' : 'TẠO HÌNH ẢNH'}</span>
         </button>
       </div>

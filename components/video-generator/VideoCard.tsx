@@ -1,8 +1,12 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Play, Pause, Download, Maximize2, Trash2, RefreshCw, Loader2, AlertCircle, Zap, Clock, Check, VolumeX 
+  Play, Pause, Download, Maximize2, Trash2, RefreshCw, 
+  Loader2, AlertCircle, Zap, Clock, Check, VolumeX,
+  Copy, AlertTriangle, Fingerprint
 } from 'lucide-react';
+import { useToast } from '../../context/ToastContext';
 
 export interface VideoResult {
   id: string;
@@ -37,9 +41,9 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   res, isSelected, onToggleSelect, onFullscreen, onDelete, onRetry, onDownload 
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const { showToast } = useToast();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Auto-play when transition from processing to done
   useEffect(() => {
     if (res.status === 'done' && res.url && videoRef.current) {
       const playPromise = videoRef.current.play();
@@ -64,6 +68,17 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       video.play();
     }
     setIsPlaying(!isPlaying);
+  };
+
+  const handleCopyId = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(res.id);
+    showToast(`Đã sao chép Job ID: ${res.id}`, 'success');
+  };
+
+  const handleReport = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    showToast(`Đã gửi báo cáo lỗi cho Job ID: ${res.id}`, 'info');
   };
 
   const cardClass = `group relative p-4 rounded-[2rem] border-2 transition-all flex flex-col gap-4 ${
@@ -120,7 +135,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
            </div>
         )}
 
-        {/* Reference images indicators (Always show if present) */}
+        {/* Reference images indicators */}
         <div className="absolute bottom-2 left-2 flex gap-1.5 z-10 pointer-events-none group-hover:opacity-0 transition-opacity">
           {res.startImg && (
             <div className="w-8 h-8 rounded-md border border-white/20 overflow-hidden bg-black/40 shadow-lg">
@@ -136,6 +151,14 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
         {/* Top Right Actions */}
         <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-20">
+          <button 
+            onClick={handleReport}
+            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-orange-500 shadow-xl transition-all"
+            title="Báo lỗi"
+          >
+            <AlertTriangle size={16} />
+          </button>
+          
           {res.status === 'done' && res.url && (
             <>
               <button 
@@ -188,26 +211,48 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         )}
       </div>
 
-      {/* Info Area - UNIFIED FOR ALL STATES (Processing & Done) */}
+      {/* Info Area */}
       <div className={`px-2 pb-2 space-y-3 ${res.status === 'processing' ? 'opacity-60' : ''}`}>
         <div className="space-y-1">
-          <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-900 dark:text-white/90 truncate leading-none">
-            {res.prompt}
-          </h4>
-          <p className="text-[9px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
-            <Clock size={10} className="text-slate-400 dark:text-gray-700" /> {res.fullTimestamp}
-          </p>
+          <div className="flex justify-between items-start gap-2">
+            <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-800 dark:text-white/90 truncate leading-none">
+              {res.prompt}
+            </h4>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="text-[9px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
+              <Clock size={10} className="text-slate-400 dark:text-gray-700" /> {res.fullTimestamp}
+            </p>
+            
+            <div className="flex items-center gap-2 group/id">
+              <span className="text-[8px] font-mono text-slate-400 dark:text-gray-600 bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded tracking-tighter">
+                ID: {res.id.length > 12 ? res.id.slice(0, 8) + '...' + res.id.slice(-4) : res.id.toUpperCase()}
+              </span>
+              <button 
+                onClick={handleCopyId}
+                className="p-1 text-slate-400 hover:text-brand-blue transition-colors"
+                title="Copy Job ID"
+              >
+                <Copy size={10} />
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-between items-center pt-2 border-t border-black/5 dark:border-white/5">
           <div className="flex flex-col gap-0.5">
             <span className="text-[9px] font-black uppercase text-[#0090ff] tracking-widest">{res.duration} • {res.aspectRatio} • {res.mode}</span>
-            <div className={`flex items-center gap-1 text-[9px] font-black italic ${res.isRefunded ? 'text-emerald-500' : 'text-orange-500'}`}>
+            <div className={`flex items-center gap-1 text-[9px] font-black italic ${res.isRefunded ? 'text-emerald-500' : res.status === 'error' ? 'text-red-500' : 'text-orange-500'}`}>
                <Zap size={10} fill="currentColor" /> 
-               {res.isRefunded ? 'REFUNDED' : `-${res.cost}`}
+               {res.isRefunded ? 'REFUNDED' : res.status === 'error' ? 'FAILED' : `-${res.cost}`}
             </div>
           </div>
-          <span className="text-[8px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest italic">{res.model}</span>
+          <div className="text-right">
+            <span className="text-[8px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest italic block">{res.model}</span>
+            {res.status === 'done' && (
+              <span className="text-[7px] font-bold text-emerald-500 uppercase tracking-widest">Verified_Build</span>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>

@@ -469,10 +469,16 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             const payload: VideoJobRequest = { type: task.type, input: { images: inputImages }, config: { duration: parseInt(duration), aspectRatio: task.ratio, resolution: resolution }, engine: { provider: selectedEngine as any, model: selectedModelObj.modelKey as any }, enginePayload: { accessToken: "YOUR_GOMMO_ACCESS_TOKEN", prompt: task.prompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: selectedMode as any } };
             const res = await videosApi.createJob(payload);
             const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
+            
             if (isSuccess && res.data.jobId) {
+              const serverJobId = res.data.jobId;
+              
+              // MAPPING: Thay thế ID tạm thời bằng Job ID thực từ server
+              setResults(prev => prev.map(r => r.id === task.id ? { ...r, id: serverJobId } : r));
+              
               // Only charge if it's NOT an auto-retry from server error
               if (!isAutoRetry) useCredits(task.cost);
-              pollVideoJobStatus(res.data.jobId, task.id, task.cost);
+              pollVideoJobStatus(serverJobId, serverJobId, task.cost);
             } else {
               setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
             }
