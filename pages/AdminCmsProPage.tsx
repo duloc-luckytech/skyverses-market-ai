@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -20,6 +21,7 @@ import { Solution } from '../types';
 import { SOLUTIONS as LOCAL_SOLUTIONS } from '../data';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 // Import Sub-components
 import { DashboardTab } from '../components/admin-pro/DashboardTab';
@@ -40,6 +42,7 @@ type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' 
 const AdminCmsProPage = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
+  const { showToast } = useToast();
 
   const [activeTab, setActiveTab] = useState<ProAdminTab>('DASHBOARD');
   const [remoteSolutions, setRemoteSolutions] = useState<Solution[]>([]);
@@ -107,8 +110,11 @@ const AdminCmsProPage = () => {
         setRemoteSolutions(prev => prev.map(item => 
           (item._id === targetId || item.id === targetId) ? { ...item, isActive: newStatus } : item
         ));
+        showToast(`Đã ${newStatus ? 'hiển thị' : 'ẩn'} giải pháp thành công`, 'success');
       }
-    } catch (err) {}
+    } catch (err) {
+      showToast("Lỗi khi thay đổi trạng thái hiển thị", "error");
+    }
     finally { setTogglingId(null); }
   };
 
@@ -121,9 +127,11 @@ const AdminCmsProPage = () => {
         setRemoteSolutions(prev => prev.map(item => 
           (item._id === targetId || item.id === targetId) ? { ...item, homeBlocks: newBlocks } : item
         ));
+        showToast("Cập nhật vị trí hiển thị thành công", "success");
       }
     } catch (err) {
       console.error("Quick sync failed:", err);
+      showToast("Cập nhật vị trí thất bại", "error");
     } finally {
       setTogglingId(null);
     }
@@ -135,19 +143,26 @@ const AdminCmsProPage = () => {
     const existingRemote = remoteSolutions.find(r => r.slug.toLowerCase().trim() === editedItem.slug.toLowerCase().trim());
     let res;
     
-    if (existingRemote && editingId !== 'NEW') {
-      res = await marketApi.updateSolution(existingRemote._id || existingRemote.id, editedItem);
-    } else {
-      res = await marketApi.createSolution(editedItem);
-    }
+    try {
+      if (existingRemote && editingId !== 'NEW') {
+        res = await marketApi.updateSolution(existingRemote._id || existingRemote.id, editedItem);
+      } else {
+        res = await marketApi.createSolution(editedItem);
+      }
 
-    if (res.success || (res && (res as any).data)) {
-      await fetchData();
-      setEditingId(null);
-      setEditedItem(null);
-      alert("Hệ thống đã đồng bộ thành công với Registry.");
+      if (res.success || (res && (res as any).data)) {
+        await fetchData();
+        setEditingId(null);
+        setEditedItem(null);
+        showToast("Hệ thống đã đồng bộ thành công với Registry.", "success");
+      } else {
+        showToast(res.message || "Đồng bộ thất bại, vui lòng kiểm tra lại thông số", "error");
+      }
+    } catch (error) {
+      showToast("Lỗi kết nối máy chủ Registry", "error");
+    } finally {
+      setIsSaving(false);
     }
-    setIsSaving(false);
   };
 
   const sidebarItems = [
