@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Terminal, Activity, Loader2, Cpu, ShieldCheck, Database, Clock, Copy, Check } from 'lucide-react';
+import { X, Terminal, Activity, Loader2, Cpu, ShieldCheck, Database, Clock, Copy, Check, AlertTriangle } from 'lucide-react';
+import { useToast } from '../../context/ToastContext';
 
 interface JobLogsModalProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
+  const { showToast } = useToast();
 
   // Auto-scroll to bottom when new logs arrive
   useEffect(() => {
@@ -36,6 +38,11 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
     navigator.clipboard.writeText(jobId);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleReport = () => {
+    if (!jobId) return;
+    showToast(`Báo cáo lỗi đã được gửi cho Job ID: ${jobId.toUpperCase()}. Đội ngũ kỹ thuật sẽ kiểm tra ngay lập tức.`, 'warning');
   };
 
   if (!isOpen) return null;
@@ -207,23 +214,32 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
         </div>
 
         {/* Footer HUD */}
-        <div className="p-8 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 shrink-0 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="p-6 md:p-8 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 shrink-0 flex flex-col md:flex-row items-center justify-between gap-6">
            <div className="flex items-center gap-6">
               <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-500/60">
                  <ShieldCheck size={16} />
                  <span className="text-[10px] font-black uppercase tracking-widest italic">Privacy_VPC: SECURE</span>
               </div>
-              <div className="flex items-center gap-2 text-slate-400 dark:text-gray-600">
+              <div className="hidden sm:flex items-center gap-2 text-slate-400 dark:text-gray-600">
                  <Clock size={16} />
                  <span className="text-[10px] font-black uppercase tracking-widest italic">Syncing: {getCurrentTime()}</span>
               </div>
            </div>
-           <button 
-             onClick={onClose}
-             className="w-full md:w-auto px-10 py-3 bg-slate-900 dark:bg-white text-white dark:text-black rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-brand-blue hover:text-white transition-all shadow-xl"
-           >
-              TERMINATE MONITOR
-           </button>
+
+           <div className="flex gap-3 w-full md:w-auto">
+              <button 
+                onClick={handleReport}
+                className="flex-1 md:flex-none px-6 py-3 border border-red-500/20 text-red-500 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2"
+              >
+                 <AlertTriangle size={14} /> BÁO LỖI
+              </button>
+              <button 
+                onClick={onClose}
+                className="flex-1 md:flex-none px-10 py-3 bg-slate-900 dark:bg-white text-white dark:text-black rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-brand-blue hover:text-white transition-all shadow-xl"
+              >
+                 TERMINATE MONITOR
+              </button>
+           </div>
         </div>
       </motion.div>
       <style>{`
