@@ -8,11 +8,13 @@ import ResourceAuthModal from './common/ResourceAuthModal';
 import ProductImageWorkspace from './ProductImageWorkspace';
 import { GeneratorSidebar } from './image-generator/GeneratorSidebar';
 import { GeneratorViewport } from './image-generator/GeneratorViewport';
-import { useImageGenerator } from '../hooks/useImageGenerator';
+import { useImageGenerator, ImageResult } from '../hooks/useImageGenerator';
+import { JobLogsModal } from './common/JobLogsModal';
 
 const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const g = useImageGenerator();
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
+  const [selectedLogTask, setSelectedLogTask] = useState<ImageResult | null>(null);
 
   return (
     <div className="h-full w-full flex flex-col lg:flex-row bg-[#fcfcfd] dark:bg-[#0c0c0e] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
@@ -99,6 +101,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         toggleSelect={g.toggleSelect}
         deleteResult={g.deleteResult}
         onRetry={g.handleRetry}
+        onViewLogs={(res) => setSelectedLogTask(res)}
       />
 
       <ImageLibraryModal 
@@ -138,6 +141,20 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 </div>
              </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {selectedLogTask && (
+           <JobLogsModal 
+             isOpen={true}
+             logs={selectedLogTask.logs || []}
+             status={selectedLogTask.status}
+             title="Image Production Trace"
+             subtitle="Node Process Trace"
+             jobId={selectedLogTask.id}
+             onClose={() => setSelectedLogTask(null)}
+           />
         )}
       </AnimatePresence>
 

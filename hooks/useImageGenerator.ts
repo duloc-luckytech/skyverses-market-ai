@@ -31,6 +31,7 @@ export interface ImageResult {
   cost: number;
   references: ReferenceItem[];
   isRefunded?: boolean;
+  logs?: string[];
 }
 
 export const useImageGenerator = () => {
@@ -86,6 +87,10 @@ export const useImageGenerator = () => {
   const setSelectedEngine = (val: string) => {
     _setSelectedEngine(val);
     setReferences([]);
+  };
+
+  const addLogToTask = (taskId: string, message: string) => {
+    setResults(prev => prev.map(r => r.id === taskId ? { ...r, logs: [...(r.logs || []), message] } : r));
   };
 
   useEffect(() => {
@@ -159,7 +164,8 @@ export const useImageGenerator = () => {
           aspectRatio: job.config?.aspectRatio || '1:1',
           resolution: job.result?.width ? `${job.result.width}x${job.result.height}` : '1024x1024',
           cost: job.creditsUsed || 0,
-          references: []
+          references: [],
+          logs: [`[SYSTEM] Loaded from archive registry.`]
         };
       });
 
@@ -220,12 +226,15 @@ export const useImageGenerator = () => {
     }
   };
 
-  const pollVideoJobStatus = async (jobId: string, resultId: string, cost: number) => {
+  const pollImageJobStatus = async (jobId: string, resultId: string, cost: number) => {
     try {
+      addLogToTask(resultId, `[POLLING] Requesting status update for node cluster...`);
       const response: ImageJobResponse = await imagesApi.getJobStatus(jobId);
       const isError = response.status === 'error' || response.data?.status === 'error' || response.data?.status === 'failed';
 
       if (isError) {
+        const errorMsg = (response.data as any)?.error?.message || "Inference failed";
+        addLogToTask(resultId, `[ERROR] Synthesis aborted: ${errorMsg}`);
         if (usagePreference === 'credits') {
           setResults(prev => prev.map(r => {
             if (r.id === resultId && !r.isRefunded) {
@@ -241,17 +250,18 @@ export const useImageGenerator = () => {
       }
 
       if (response.data && response.data.status === 'done' && response.data.result?.images?.length) {
+        addLogToTask(resultId, `[SUCCESS] Synthesis complete. Delivering asset to CDN...`);
         const imageUrl = response.data.result.images[0];
         setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done' } : r));
         refreshUserInfo();
-        // Cập nhật lại lịch sử server khi có ảnh mới xong
         fetchServerResults(1, true);
       } else {
-        setTimeout(() => pollVideoJobStatus(jobId, resultId, cost), 5000);
+        addLogToTask(resultId, `[STATUS] Pipeline state: ${response.data?.status?.toUpperCase() || 'SYNTHESIZING'}`);
+        setTimeout(() => pollImageJobStatus(jobId, resultId, cost), 5000);
       }
     } catch (e) {
-      console.error("Polling Network Error:", e);
-      setTimeout(() => pollVideoJobStatus(jobId, resultId, cost), 10000);
+      addLogToTask(resultId, `[NETWORK] Connectivity drift. Retrying telemetry uplink...`);
+      setTimeout(() => pollImageJobStatus(jobId, resultId, cost), 10000);
     }
   };
 
@@ -285,11 +295,12 @@ export const useImageGenerator = () => {
           aspectRatio: selectedRatio,
           resolution: selectedRes,
           cost: currentPreference === 'credits' ? unitCost : 0,
-          references: currentRefs
+          references: currentRefs,
+          logs: [`[SYSTEM] Production pipeline initialized.`]
         }));
     
     if (retryItem) {
-      setResults(prev => prev.map(r => r.id === retryItem.id ? { ...r, status: 'processing', isRefunded: false } : r));
+      setResults(prev => prev.map(r => r.id === retryItem.id ? { ...r, status: 'processing', isRefunded: false, logs: [`[SYSTEM] Re-initializing production node for manual retry.`] } : r));
     } else {
       setResults(prev => [...newTasks, ...prev]);
     }
@@ -298,6 +309,7 @@ export const useImageGenerator = () => {
 
     try {
       await Promise.all(targetTasks.map(async (task) => {
+        addLogToTask(task.id, `[UPLINK] Authenticating resource pool: ${currentPreference.toUpperCase()}`);
         if (currentPreference === 'credits') {
           const processedRefs = selectedEngine === 'fxlab' 
             ? task.references.map(r => r.mediaId).filter(Boolean) as string[]
@@ -321,14 +333,20 @@ export const useImageGenerator = () => {
               mode: selectedMode 
             }
           };
+          addLogToTask(task.id, `[NODE_INIT] Provisioning H100 GPU cluster...`);
           const apiRes = await imagesApi.createJob(payload);
           if (apiRes.success && apiRes.data.jobId) {
+            const serverJobId = apiRes.data.jobId;
+            addLogToTask(task.id, `[API_READY] Remote job recognized. ID: ${serverJobId}`);
+            setResults(prev => prev.map(r => r.id === task.id ? { ...r, id: serverJobId } : r));
             useCredits(unitCost);
-            pollVideoJobStatus(apiRes.data.jobId, task.id, unitCost);
+            pollImageJobStatus(serverJobId, serverJobId, unitCost);
           } else {
+            addLogToTask(task.id, `[ERROR] Resource handshake rejected: ${apiRes.message || 'Generic refusal'}`);
             setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
           }
         } else {
+          addLogToTask(task.id, `[DIRECT_INFERENCE] Bypassing internal pool. Using personal SDK Uplink.`);
           const url = await generateDemoImage({ 
             prompt: task.prompt, 
             images: task.references.map(r => r.url), 
@@ -338,8 +356,10 @@ export const useImageGenerator = () => {
             apiKey: personalKey 
           });
           if (url) {
+            addLogToTask(task.id, `[SUCCESS] Direct synthesis complete. Asset loaded.`);
             setResults(prev => prev.map(r => r.id === task.id ? { ...r, url, status: 'done' } : r));
           } else {
+            addLogToTask(task.id, `[ERROR] Personal SDK node returned zero-byte manifest.`);
             setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
           }
         }

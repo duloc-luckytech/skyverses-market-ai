@@ -30,6 +30,7 @@ interface GeneratorViewportProps {
   toggleSelect: (id: string) => void;
   deleteResult: (id: string) => void;
   onRetry: (res: ImageResult) => void;
+  onViewLogs?: (res: ImageResult) => void;
 }
 
 const CATEGORY_TAGS = [
@@ -50,7 +51,7 @@ const getFakeStats = (seedId: string) => {
 
 export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({ 
   onClose, activePreviewUrl, setActivePreviewUrl, zoomLevel, setZoomLevel, onApplyExample, onEdit, onDownload,
-  results, serverResults, isFetchingServer, hasMoreServer, onLoadMoreServer, selectedIds, toggleSelect, deleteResult, onRetry
+  results, serverResults, isFetchingServer, hasMoreServer, onLoadMoreServer, selectedIds, toggleSelect, deleteResult, onRetry, onViewLogs
 }) => {
   const [activeTab, setActiveTab] = useState<'RESULTS' | 'HISTORY'>('RESULTS');
   const [explorerItems, setExplorerItems] = useState<ExplorerItem[]>([]);
@@ -87,7 +88,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
       }
     } catch (err) {
       console.error("Explorer fetch error:", err);
-      setError("Lỗi kết nối máy chủ kịch bản.");
+      setError("Lỗi kịch bản kết nối.");
     } finally {
       setLoadingExplorer(false);
       setIsFetchingMore(false);
@@ -188,7 +189,6 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               </button>
             ) : (
               <div className="flex items-center gap-2 md:gap-4">
-                 {/* Auto Download Toggle */}
                  <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 md:px-4 py-1.5 rounded-full border border-black/5 dark:border-white/10">
                     <span className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 hidden xs:inline">TỰ ĐỘNG TẢI</span>
                     <button 
@@ -202,7 +202,6 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                     </button>
                  </div>
 
-                 {/* Manual Download Button */}
                  <button 
                    onClick={handleManualDownload}
                    className="flex items-center gap-2 px-3 md:px-4 py-1.5 bg-brand-blue text-white rounded-full text-[9px] font-black uppercase hover:brightness-110 shadow-lg"
@@ -210,7 +209,6 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                     <Download size={14} /> <span className="hidden md:inline">TẢI XUỐNG</span>
                  </button>
 
-                 {/* Zoom Slider - Hidden on Mobile */}
                  <div className="hidden md:flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-white/10">
                     <ImageIcon size={14} className="text-slate-400" />
                     <input 
@@ -224,7 +222,6 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
          </div>
       </div>
 
-      {/* Tags Filter Strip */}
       {!activePreviewUrl && (
         <div className="bg-white/50 dark:bg-[#0c0c0e]/50 backdrop-blur-sm border-b border-black/5 dark:border-white/5 px-4 md:px-8 py-3 flex items-center gap-3 overflow-x-auto no-scrollbar shrink-0">
           <Tag size={14} className="text-slate-400 shrink-0" />
@@ -294,6 +291,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                       onDelete={deleteResult}
                       onDownload={onDownload}
                       onRetry={() => onRetry(res)}
+                      onViewLogs={onViewLogs}
                     />
                   ))}
                 </div>
@@ -328,6 +326,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                           onDelete={deleteResult}
                           onDownload={onDownload}
                           onRetry={() => onRetry(res)}
+                          onViewLogs={onViewLogs}
                         />
                       </div>
                     ))}
@@ -350,9 +349,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                 <div className="space-y-12">
                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
                       <div className="space-y-4">
-                         <div className="flex items-center gap-3 text-brand-blue">
-                            <Sparkles size={20} />
-                         </div>
+                         <div className="flex items-center gap-3 text-brand-blue"><Sparkles size={20} /></div>
                          <div className="space-y-2">
                            <h2 className="text-[64px] lg:text-[110px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-[0.8] italic">
                              KỊCH BẢN <br />

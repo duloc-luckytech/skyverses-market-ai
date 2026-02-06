@@ -1,7 +1,12 @@
 
 import React from 'react';
-import { Loader2, Check, Maximize2, Trash2, Edit3, Download, Zap, Box, Monitor, AlertCircle, Clock, RefreshCw } from 'lucide-react';
+import { 
+  Loader2, Check, Maximize2, Trash2, Edit3, 
+  Download, Zap, Box, Monitor, AlertCircle, 
+  Clock, RefreshCw, Terminal, Copy
+} from 'lucide-react';
 import { ImageResult } from '../../hooks/useImageGenerator';
+import { useToast } from '../../context/ToastContext';
 
 interface ImageResultCardProps {
   res: ImageResult;
@@ -12,13 +17,21 @@ interface ImageResultCardProps {
   onDelete: (id: string) => void;
   onDownload: (url: string, filename: string) => void;
   onRetry: () => void;
+  onViewLogs?: (res: ImageResult) => void;
 }
 
 export const ImageResultCard: React.FC<ImageResultCardProps> = ({ 
-  res, isSelected, onToggleSelect, onFullscreen, onEdit, onDelete, onDownload, onRetry 
+  res, isSelected, onToggleSelect, onFullscreen, onEdit, onDelete, onDownload, onRetry, onViewLogs 
 }) => {
   const isProcessing = res.status === 'processing';
   const isError = res.status === 'error';
+  const { showToast } = useToast();
+
+  const handleCopyId = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(res.id);
+    showToast(`Đã sao chép Job ID: ${res.id}`, 'success');
+  };
 
   return (
     <div 
@@ -31,10 +44,9 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
       }`}
       onClick={() => res.url ? onFullscreen(res.url) : null}
     >
-      {/* Visual Area - Fixed Aspect Container (Changed to aspect-video for landscape) */}
+      {/* Visual Area */}
       <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-100 dark:bg-black border border-black/5 dark:border-white/5 flex items-center justify-center shadow-inner">
         
-        {/* Background Blurred Image (For aspect ratio gaps) */}
         {res.url && !isProcessing && !isError && (
           <div className="absolute inset-0 z-0">
              <img src={res.url} className="w-full h-full object-cover blur-2xl opacity-30 scale-110" alt="" />
@@ -70,7 +82,6 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           </div>
         )}
 
-        {/* HUD: Reference Thumbnails Overlay (Bottom Left) */}
         {!isError && !isProcessing && res.references.length > 0 && (
           <div className="absolute bottom-3 left-3 flex gap-1.5 z-20 pointer-events-none group-hover:opacity-0 transition-opacity">
             {res.references.slice(0, 2).map((ref, i) => (
@@ -86,7 +97,6 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           </div>
         )}
 
-        {/* HUD: Aspect Ratio Badge (Top Center) */}
         {!isProcessing && !isError && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
             <span className="bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[8px] font-black text-white/80 border border-white/10 uppercase tracking-widest">
@@ -96,13 +106,43 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         )}
 
         {/* Hover Actions */}
-        {!isProcessing && !isError && res.url && (
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2.5 z-40">
-             <button onClick={(e) => { e.stopPropagation(); onFullscreen(res.url!); }} className="p-3 bg-white text-black rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-brand-blue hover:text-white"><Maximize2 size={18}/></button>
-             <button onClick={(e) => { e.stopPropagation(); onEdit(res.url!); }} className="p-3 bg-white text-brand-blue rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-brand-blue hover:text-white"><Edit3 size={18}/></button>
-             <button onClick={(e) => { e.stopPropagation(); onDownload(res.url!, `image_${res.id}.png`); }} className="p-3 bg-white text-emerald-600 rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-emerald-600 hover:text-white"><Download size={18}/></button>
-          </div>
-        )}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2.5 z-40">
+           {!isError && !isProcessing && res.url && (
+             <>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onFullscreen(res.url!); }} 
+                  className="p-3 bg-white text-black rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-brand-blue hover:text-white"
+                  title="Xem toàn màn hình"
+                >
+                  <Maximize2 size={18}/>
+                </button>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onEdit(res.url!); }} 
+                  className="p-3 bg-white text-brand-blue rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-brand-blue hover:text-white"
+                  title="Chỉnh sửa"
+                >
+                  <Edit3 size={18}/>
+                </button>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onDownload(res.url!, `image_${res.id}.png`); }} 
+                  className="p-3 bg-white text-emerald-600 rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-emerald-600 hover:text-white"
+                  title="Tải xuống"
+                >
+                  <Download size={18}/>
+                </button>
+             </>
+           )}
+           
+           {(isError || isProcessing || res.url) && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); onViewLogs?.(res); }}
+                className="p-3 bg-white text-indigo-600 rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-indigo-600 hover:text-white"
+                title="Xem nhật ký tiến trình"
+              >
+                <Terminal size={18} />
+              </button>
+           )}
+        </div>
 
         {isError && (
           <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 z-40 p-4">
@@ -123,7 +163,6 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           </div>
         )}
         
-        {/* Selection Checkbox */}
         {!isError && (
           <div 
             onClick={(e) => { e.stopPropagation(); onToggleSelect(); }}
@@ -134,7 +173,6 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         )}
       </div>
 
-      {/* Info Area - Fixed Height for alignment */}
       <div className={`px-1 space-y-3 mt-auto ${isProcessing ? 'opacity-60' : ''}`}>
         <div className="space-y-1.5">
           <h4 className="text-[12px] font-black uppercase italic tracking-tighter text-slate-800 dark:text-white/90 truncate leading-tight">
@@ -142,11 +180,17 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           </h4>
           <div className="flex justify-between items-center text-[8px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest">
              <span className="flex items-center gap-1.5"><Clock size={10} /> {res.fullTimestamp}</span>
-             <span className={isError ? 'text-red-500' : 'text-brand-blue'}>{res.model}</span>
+             <div className="flex items-center gap-2">
+                <span className="bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded font-mono">
+                  ID: {res.id.length > 10 ? `${res.id.slice(0, 6)}...` : res.id.toUpperCase()}
+                </span>
+                <button onClick={handleCopyId} className="hover:text-brand-blue transition-colors">
+                   <Copy size={10} />
+                </button>
+             </div>
           </div>
         </div>
 
-        {/* Technical Specs & Economic Hub */}
         <div className="pt-3 border-t border-black/5 dark:border-white/5 flex items-center justify-between">
            <div className="flex flex-wrap gap-1.5">
               <div className="px-1.5 py-0.5 bg-slate-100 dark:bg-white/5 rounded text-[7px] font-black text-slate-500 dark:text-gray-500 uppercase tracking-widest border border-black/5 dark:border-white/10">
