@@ -14,6 +14,26 @@ export interface NeuralStackItem {
   capability: LocalizedString;
 }
 
+export interface HomeBlock {
+  key: string;
+  title: LocalizedString;
+  subtitle: LocalizedString;
+  limit: number;
+  order: number;
+}
+
+export interface SystemConfig {
+  plans: any[];
+  resolutions: any[];
+  aspectRatios: { label: string; value: string }[];
+  defaultMaxPrompt: number;
+  defaultMaxDuration: number;
+  projectExpireHours: number;
+  videoExpireHours: number;
+  imageExpireHours: number;
+  marketHomeBlock: HomeBlock[];
+}
+
 export interface Solution {
   _id?: string; // MongoDB Internal ID
   id: string;   // Business ID
@@ -39,7 +59,6 @@ export interface Solution {
   order?: number; // Thêm trường thứ tự sắp xếp
   featured?: boolean; // Thêm trường nổi bật
   status?: string; // Thêm trường trạng thái hệ thống
-  // fix: Added homeBlocks property to Solution interface
   homeBlocks?: string[]; // Vị trí hiển thị tại trang chủ
 }
 

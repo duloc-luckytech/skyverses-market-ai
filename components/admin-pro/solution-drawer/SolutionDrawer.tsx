@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   X, Box, Fingerprint, Languages, Layout, Tag, 
-  Cpu, AlertTriangle, Briefcase, DollarSign, 
-  Zap, Loader2, Trash2, LayoutGrid, ToggleRight, ToggleLeft, ShieldCheck, Check
+  Cpu, DollarSign, Zap, Loader2, Trash2, LayoutGrid, 
+  ToggleRight, ToggleLeft, ShieldCheck, Check,
+  Flame, Video, ImageIcon, Bot, Gift
 } from 'lucide-react';
 import { EditInput } from './EditInput';
 import { EditArray } from './EditArray';
-import { HOME_BLOCK_OPTIONS } from '../../../constants/market-config';
+import { systemConfigApi } from '../../../apis/config';
+import { HomeBlock, Language } from '../../../types';
+
+const BLOCK_ICONS: Record<string, any> = {
+  top_trending: <Flame size={12}/>,
+  video_studio: <Video size={12}/>,
+  image_studio: <ImageIcon size={12}/>,
+  ai_agents: <Bot size={12}/>,
+  festivals: <Gift size={12}/>,
+  others: <LayoutGrid size={12}/>
+};
 
 interface SolutionDrawerProps {
   editingId: string | null;
@@ -26,6 +38,25 @@ export const SolutionDrawer: React.FC<SolutionDrawerProps> = ({
   onClose,
   onSave
 }) => {
+  const [homeBlocks, setHomeBlocks] = useState<HomeBlock[]>([]);
+  const [loadingConfig, setLoadingConfig] = useState(true);
+
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const res = await systemConfigApi.getSystemConfig();
+        if (res.success && res.data.marketHomeBlock) {
+          setHomeBlocks(res.data.marketHomeBlock.sort((a, b) => a.order - b.order));
+        }
+      } catch (e) {
+        console.error("Load home blocks failed", e);
+      } finally {
+        setLoadingConfig(false);
+      }
+    };
+    loadConfig();
+  }, []);
+
   const handleAddStringToList = (listKey: string, value: string) => {
     if (!value.trim()) return;
     setEditedItem({
@@ -149,32 +180,37 @@ export const SolutionDrawer: React.FC<SolutionDrawerProps> = ({
             <EditInput label="Đường dẫn ảnh bìa chính (URL) *" value={editedItem.imageUrl} onChange={(v) => setEditedItem({...editedItem, imageUrl: v})} />
             
             <div className="grid grid-cols-1 gap-10">
-              {/* HOME BLOCKS SELECTOR */}
+              {/* HOME BLOCKS SELECTOR FROM API */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 px-2">
                   <LayoutGrid size={16} className="text-brand-blue" />
                   <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-widest italic">Vị trí hiển thị (Trang chủ)</label>
                 </div>
                 <div className="flex flex-wrap gap-2 p-4 bg-slate-50 dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-[1.5rem] shadow-inner">
-                  {HOME_BLOCK_OPTIONS.map((opt) => {
-                    const isSelected = (editedItem.homeBlocks || []).includes(opt.id);
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => toggleHomeBlock(opt.id)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${
-                          isSelected 
-                            ? 'bg-brand-blue border-brand-blue text-white shadow-lg' 
-                            : 'bg-white dark:bg-white/5 border-black/5 dark:border-white/10 text-slate-500 hover:border-brand-blue/30'
-                        }`}
-                        title={opt.subtitle}
-                      >
-                        {isSelected ? <Check size={12} strokeWidth={4} /> : React.cloneElement(opt.icon, { size: 12 })}
-                        {opt.label}
-                      </button>
-                    );
-                  })}
+                  {loadingConfig ? (
+                    <Loader2 size={16} className="animate-spin text-brand-blue" />
+                  ) : (
+                    homeBlocks.map((block) => {
+                      const isSelected = (editedItem.homeBlocks || []).includes(block.key);
+                      const Icon = BLOCK_ICONS[block.key] || <LayoutGrid size={12} />;
+                      return (
+                        <button
+                          key={block.key}
+                          type="button"
+                          onClick={() => toggleHomeBlock(block.key)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${
+                            isSelected 
+                              ? 'bg-brand-blue border-brand-blue text-white shadow-lg' 
+                              : 'bg-white dark:bg-white/5 border-black/5 dark:border-white/10 text-slate-500 hover:border-brand-blue/30'
+                          }`}
+                          title={block.subtitle.en}
+                        >
+                          {isSelected ? <Check size={12} strokeWidth={4} /> : React.cloneElement(Icon as React.ReactElement<any>, { size: 12 })}
+                          {block.title.en}
+                        </button>
+                      );
+                    })
+                  )}
                 </div>
               </div>
 

@@ -1,9 +1,11 @@
+
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { marketApi } from '../apis/market';
-import { Solution } from '../types';
+import { systemConfigApi } from '../apis/config';
+import { Solution, HomeBlock, Language } from '../types';
 import { 
-  X, SearchX, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow, Sparkles
+  X, SearchX, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow, Sparkles, LucideIcon
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -19,6 +21,15 @@ import { MarketSectionHeader } from '../components/market/MarketSectionHeader';
 import { SolutionCard } from '../components/market/SolutionCard';
 import { FeaturedSection } from '../components/market/FeaturedSection';
 
+const BLOCK_ICONS: Record<string, LucideIcon> = {
+  top_trending: Flame,
+  video_studio: Video,
+  image_studio: ImageIcon,
+  ai_agents: Workflow,
+  festivals: Gift,
+  others: LayoutGrid
+};
+
 const MarketPage = () => {
   const { lang, t } = useLanguage();
   const { isAuthenticated, loginWithEmail } = useAuth();
@@ -26,6 +37,7 @@ const MarketPage = () => {
   
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [featuredSolutions, setFeaturedSolutions] = useState<Solution[]>([]);
+  const [homeBlocks, setHomeBlocks] = useState<HomeBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [primary, setPrimary] = useState("ALL");
@@ -36,20 +48,13 @@ const MarketPage = () => {
   const [isDemoOpen, setIsDemoOpen] = useState(false);
 
   // Refs for horizontal scrolling
-  const topHotRef = useRef<HTMLDivElement>(null);
-  const agentWorkflowRef = useRef<HTMLDivElement>(null);
-  const festivalRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-  const othersRef = useRef<HTMLDivElement>(null);
+  const scrollRefs = useRef<Record<string, React.RefObject<HTMLDivElement | null>>>({});
 
-  const scroll = useCallback((ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
-    const el = ref.current;
+  const scroll = useCallback((key: string, direction: 'left' | 'right') => {
+    const el = scrollRefs.current[key]?.current;
     if (el) {
-      // Tăng khoảng cách cuộn lên 85% chiều rộng container để đảm bảo vượt qua snap point
       const scrollAmount = el.offsetWidth * 0.85;
       const targetScrollLeft = el.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
-      
       el.scrollTo({
         left: targetScrollLeft,
         behavior: 'smooth'
@@ -74,17 +79,32 @@ const MarketPage = () => {
   }, []);
 
   useEffect(() => {
-    const loadFeatured = async () => {
+    const initData = async () => {
       try {
-        const featuredRes = await marketApi.getRandomFeatured();
+        const [configRes, featuredRes] = await Promise.all([
+          systemConfigApi.getSystemConfig(),
+          marketApi.getRandomFeatured()
+        ]);
+
+        if (configRes?.success && configRes.data.marketHomeBlock) {
+          const sortedBlocks = configRes.data.marketHomeBlock.sort((a, b) => a.order - b.order);
+          setHomeBlocks(sortedBlocks);
+          // Initialize refs for each block
+          sortedBlocks.forEach(block => {
+            if (!scrollRefs.current[block.key]) {
+              scrollRefs.current[block.key] = React.createRef<HTMLDivElement>();
+            }
+          });
+        }
+
         if (featuredRes && featuredRes.data) {
           setFeaturedSolutions(featuredRes.data);
         }
       } catch (error) {
-        console.error("Market Featured Error:", error);
+        console.error("Market Init Error:", error);
       }
     };
-    loadFeatured();
+    initData();
   }, []);
 
   useEffect(() => {
@@ -97,7 +117,7 @@ const MarketPage = () => {
         const res = await marketApi.getSolutions({
           q: cleanQuery || undefined,
           category: primary !== 'ALL' ? primary : undefined,
-          lang: lang
+          lang: lang as Language
         });
         
         if (res && res.data) {
@@ -154,17 +174,6 @@ const MarketPage = () => {
     });
   }, [solutions, secondary]);
 
-  const sectionedSolutions = useMemo(() => {
-    return {
-      topChoice: filteredSolutions.filter(s => s.featured),
-      agentWorkflow: filteredSolutions.filter(s => s.demoType === 'automation' || s.category.en === 'Automation'),
-      festivals: filteredSolutions.filter(s => s.category.en === 'Festivals' || s.tags?.includes('Noel')),
-      video: filteredSolutions.filter(s => s.demoType === 'video'),
-      image: filteredSolutions.filter(s => s.demoType === 'image'),
-      others: filteredSolutions.filter(s => s.demoType !== 'video' && s.demoType !== 'image' && s.demoType !== 'automation' && !s.featured && s.category.en !== 'Festivals')
-    };
-  }, [filteredSolutions]);
-
   const logoUrl = "https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268";
 
   return (
@@ -201,182 +210,41 @@ const MarketPage = () => {
             </div>
           ) : filteredSolutions.length > 0 ? (
             <>
-              {/* TOP CHOICE BLOCK */}
-              {sectionedSolutions.topChoice.length > 0 && (
-                <section>
-                  <MarketSectionHeader 
-                    icon={Flame} 
-                    title="Top Choice" 
-                    subtitle="Lựa chọn hàng đầu cho hiệu suất sáng tạo vượt trội" 
-                    count={sectionedSolutions.topChoice.length} 
-                    colorClass="text-orange-500" 
-                    onScrollLeft={() => scroll(topHotRef, 'left')} 
-                    onScrollRight={() => scroll(topHotRef, 'right')}
-                    onSeeAll={() => navigate('/category/topChoice')}
-                  />
-                  <div ref={topHotRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
-                    {sectionedSolutions.topChoice.map((sol, idx) => (
-                      <SolutionCard 
-                        key={sol.id} sol={sol} idx={idx} lang={lang} 
-                        isLiked={likedItems.includes(sol._id || sol.id)}
-                        isFavorited={favorites.includes(sol.id)}
-                        onToggleFavorite={toggleFavorite}
-                        onToggleLike={toggleLike}
-                        onClick={handleNavigate}
-                        stats={getFakeStats(sol._id || sol.id)}
-                      />
-                    ))}
-                  </div>
-                </section>
-              )}
+              {homeBlocks.map((block) => {
+                const blockSolutions = filteredSolutions.filter(s => s.homeBlocks?.includes(block.key));
+                if (blockSolutions.length === 0) return null;
+                
+                const Icon = BLOCK_ICONS[block.key] || LayoutGrid;
+                const currentLang = lang as Language;
 
-              {/* IMAGE STUDIO BLOCK */}
-              {sectionedSolutions.image.length > 0 && (
-                <section className="relative">
-                  {/* Background Aura for Image Studio */}
-                  <div className="absolute -inset-10 bg-brand-blue/5 blur-[120px] pointer-events-none rounded-full"></div>
-                  
-                  <MarketSectionHeader 
-                    icon={ImageIcon} 
-                    title="Image Studio" 
-                    subtitle="Tổng hợp thị giác độ trung thực cao cho hệ thống thiết kế"
-                    count={sectionedSolutions.image.length} 
-                    colorClass="text-brand-blue" 
-                    onScrollLeft={() => scroll(imageRef, 'left')} 
-                    onScrollRight={() => scroll(imageRef, 'right')}
-                    onSeeAll={() => navigate('/category/image')}
-                  />
-                  <div ref={imageRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4 relative z-10">
-                    {sectionedSolutions.image.map((sol, idx) => (
-                      <SolutionCard 
-                        key={sol.id} sol={sol} idx={idx} lang={lang} 
-                        isLiked={likedItems.includes(sol._id || sol.id)}
-                        isFavorited={favorites.includes(sol.id)}
-                        onToggleFavorite={toggleFavorite}
-                        onToggleLike={toggleLike}
-                        onClick={handleNavigate}
-                        stats={getFakeStats(sol._id || sol.id)}
-                      />
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* VIDEO STUDIO BLOCK */}
-              {sectionedSolutions.video.length > 0 && (
-                <section>
-                  <MarketSectionHeader 
-                    icon={Video} 
-                    title="Video Studio" 
-                    subtitle="Công cụ kiến tạo chuyển động AI cho sản xuất điện ảnh"
-                    count={sectionedSolutions.video.length} 
-                    colorClass="text-purple-500" 
-                    onScrollLeft={() => scroll(videoRef, 'left')} 
-                    onScrollRight={() => scroll(videoRef, 'right')}
-                    onSeeAll={() => navigate('/category/video')}
-                  />
-                  <div ref={videoRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
-                    {sectionedSolutions.video.map((sol, idx) => (
-                      <SolutionCard 
-                        key={sol.id} sol={sol} idx={idx} lang={lang} 
-                        isLiked={likedItems.includes(sol._id || sol.id)}
-                        isFavorited={favorites.includes(sol.id)}
-                        onToggleFavorite={toggleFavorite}
-                        onToggleLike={toggleLike}
-                        onClick={handleNavigate}
-                        stats={getFakeStats(sol._id || sol.id)}
-                      />
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* AI AGENT WORKFLOW BLOCK */}
-              {sectionedSolutions.agentWorkflow.length > 0 && (
-                <section>
-                  <MarketSectionHeader 
-                    icon={Workflow} 
-                    title="AI Agent Workflow" 
-                    subtitle="Tự động hóa quy trình sáng tạo đa kênh với hệ thống AI Agent thông minh" 
-                    count={sectionedSolutions.agentWorkflow.length} 
-                    colorClass="text-indigo-600" 
-                    onScrollLeft={() => scroll(agentWorkflowRef, 'left')} 
-                    onScrollRight={() => scroll(agentWorkflowRef, 'right')}
-                    onSeeAll={() => navigate('/category/others')}
-                  />
-                  <div ref={agentWorkflowRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
-                    {sectionedSolutions.agentWorkflow.map((sol, idx) => (
-                      <SolutionCard 
-                        key={sol.id} sol={sol} idx={idx} lang={lang} 
-                        isLiked={likedItems.includes(sol._id || sol.id)}
-                        isFavorited={favorites.includes(sol.id)}
-                        onToggleFavorite={toggleFavorite}
-                        onToggleLike={toggleLike}
-                        onClick={handleNavigate}
-                        stats={getFakeStats(sol._id || sol.id)}
-                      />
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* UTILITY LAB BLOCK */}
-              {sectionedSolutions.others.length > 0 && (
-                <section>
-                  <MarketSectionHeader 
-                    icon={LayoutGrid} 
-                    title="App khác" 
-                    subtitle="Khám phá các ứng dụng hỗ trợ và tiện ích AI đa dạng"
-                    count={sectionedSolutions.others.length} 
-                    colorClass="text-emerald-500" 
-                    onScrollLeft={() => scroll(othersRef, 'left')} 
-                    onScrollRight={() => scroll(othersRef, 'right')}
-                    onSeeAll={() => navigate('/category/others')}
-                  />
-                  <div ref={othersRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
-                    {sectionedSolutions.others.map((sol, idx) => (
-                      <SolutionCard 
-                        key={sol.id} sol={sol} idx={idx} lang={lang} 
-                        isLiked={likedItems.includes(sol._id || sol.id)}
-                        isFavorited={favorites.includes(sol.id)}
-                        onToggleFavorite={toggleFavorite}
-                        onToggleLike={toggleLike}
-                        onClick={handleNavigate}
-                        stats={getFakeStats(sol._id || sol.id)}
-                      />
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* FESTIVAL BLOCK */}
-              {sectionedSolutions.festivals.length > 0 && (
-                <section>
-                  <MarketSectionHeader 
-                    icon={Gift} 
-                    title="Lễ hội & Sự kiện" 
-                    subtitle="Tài nguyên AI cho những khoảnh khắc lễ hội kỳ ảo" 
-                    count={sectionedSolutions.festivals.length} 
-                    colorClass="text-rose-500" 
-                    onScrollLeft={() => scroll(festivalRef, 'left')} 
-                    onScrollRight={() => scroll(festivalRef, 'right')}
-                    onSeeAll={() => navigate('/category/festivals')}
-                  />
-                  <div ref={festivalRef} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4">
-                    {sectionedSolutions.festivals.map((sol, idx) => (
-                      <SolutionCard 
-                        key={sol.id} sol={sol} idx={idx} lang={lang} 
-                        isLiked={likedItems.includes(sol._id || sol.id)}
-                        isFavorited={favorites.includes(sol.id)}
-                        onToggleFavorite={toggleFavorite}
-                        onToggleLike={toggleLike}
-                        onClick={handleNavigate}
-                        stats={getFakeStats(sol._id || sol.id)}
-                      />
-                    ))}
-                  </div>
-                </section>
-              )}
+                return (
+                  <section key={block.key} className="relative">
+                    <MarketSectionHeader 
+                      icon={Icon} 
+                      title={block.title[currentLang] || block.title.en} 
+                      subtitle={block.subtitle[currentLang] || block.subtitle.en} 
+                      count={blockSolutions.length} 
+                      colorClass={block.key === 'top_trending' ? 'text-orange-500' : 'text-brand-blue'} 
+                      onScrollLeft={() => scroll(block.key, 'left')} 
+                      onScrollRight={() => scroll(block.key, 'right')}
+                      onSeeAll={() => navigate(`/category/${block.key}`)}
+                    />
+                    <div ref={scrollRefs.current[block.key]} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4 relative z-10">
+                      {blockSolutions.slice(0, block.limit || 8).map((sol, idx) => (
+                        <SolutionCard 
+                          key={sol._id || sol.id} sol={sol} idx={idx} lang={lang} 
+                          isLiked={likedItems.includes(sol._id || sol.id)}
+                          isFavorited={favorites.includes(sol.id)}
+                          onToggleFavorite={toggleFavorite}
+                          onToggleLike={toggleLike}
+                          onClick={handleNavigate}
+                          stats={getFakeStats(sol._id || sol.id)}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
             </>
           ) : (
             <div className="py-40 text-center space-y-6 opacity-30">

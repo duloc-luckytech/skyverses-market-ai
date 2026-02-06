@@ -4,6 +4,7 @@ import { Flame, ImageIcon, Video, Bot, Gift, LayoutGrid } from 'lucide-react';
 export interface HomeBlockOption {
   id: string;
   label: string;
+  title: string;
   subtitle: string;
   icon: React.ReactElement;
   color: string;
@@ -13,6 +14,7 @@ export const HOME_BLOCK_OPTIONS: HomeBlockOption[] = [
   { 
     id: 'top-choice', 
     label: 'Top Choice', 
+    title: 'Top Choice',
     subtitle: 'Lựa chọn hàng đầu cho hiệu suất sáng tạo vượt trội',
     icon: <Flame size={14}/>, 
     color: 'text-orange-500' 
@@ -20,6 +22,7 @@ export const HOME_BLOCK_OPTIONS: HomeBlockOption[] = [
   { 
     id: 'top-image', 
     label: 'Image Studio', 
+    title: 'Image Studio',
     subtitle: 'Tổng hợp thị giác độ trung thực cao cho hệ thống thiết kế',
     icon: <ImageIcon size={14}/>, 
     color: 'text-brand-blue' 
@@ -27,6 +30,7 @@ export const HOME_BLOCK_OPTIONS: HomeBlockOption[] = [
   { 
     id: 'top-video', 
     label: 'Video Studio', 
+    title: 'Video Studio',
     subtitle: 'Công cụ kiến tạo chuyển động AI cho sản xuất điện ảnh',
     icon: <Video size={14}/>, 
     color: 'text-purple-500' 
@@ -34,6 +38,7 @@ export const HOME_BLOCK_OPTIONS: HomeBlockOption[] = [
   { 
     id: 'top-ai-agent', 
     label: 'AI Agent Workflow', 
+    title: 'AI Agent Workflow',
     subtitle: 'Tự động hóa quy trình sáng tạo đa kênh với hệ thống AI Agent thông minh',
     icon: <Bot size={14}/>, 
     color: 'text-emerald-500' 
@@ -41,6 +46,7 @@ export const HOME_BLOCK_OPTIONS: HomeBlockOption[] = [
   { 
     id: 'events', 
     label: 'Lễ hội & Sự kiện', 
+    title: 'Lễ hội & Sự kiện',
     subtitle: 'Tài nguyên AI cho những khoảnh khắc lễ hội kỳ ảo',
     icon: <Gift size={14}/>, 
     color: 'text-rose-500' 
@@ -48,6 +54,7 @@ export const HOME_BLOCK_OPTIONS: HomeBlockOption[] = [
   { 
     id: 'app-other', 
     label: 'App khác', 
+    title: 'Ứng dụng khác',
     subtitle: 'Khám phá các ứng dụng hỗ trợ và tiện ích AI đa dạng',
     icon: <LayoutGrid size={14}/>, 
     color: 'text-slate-500' 

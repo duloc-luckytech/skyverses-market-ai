@@ -2,13 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   CloudUpload, Check, Eye, EyeOff, Edit3, Trash2, Zap, Monitor, 
-  LayoutGrid, Video, Braces, Terminal, Flame, ImageIcon, Bot, Gift 
+  Video, Braces, Terminal, Hash
 } from 'lucide-react';
 import { Solution } from '../../types';
-import { HOME_BLOCK_OPTIONS } from '../../constants/market-config';
 
 interface NodeRegistryTabProps {
-  // fix: simplified solutions prop type now that Solution interface includes homeBlocks
   solutions: Array<Solution>;
   isSyncedOnCloud: (slug: string) => boolean;
   onEdit: (sol: Solution) => void;
@@ -19,7 +17,7 @@ interface NodeRegistryTabProps {
 }
 
 export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({ 
-  solutions, isSyncedOnCloud, onEdit, onDelete, onToggleActive, onUpdateHomeBlocks, activeTab 
+  solutions, isSyncedOnCloud, onEdit, onDelete, onToggleActive, activeTab 
 }) => {
   const getDemoIcon = (type: string) => {
     switch (type) {
@@ -30,17 +28,6 @@ export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({
     }
   };
 
-  const handleToggleBlock = (sol: Solution, blockId: string) => {
-    const currentBlocks = sol.homeBlocks || [];
-    let newBlocks;
-    if (currentBlocks.includes(blockId)) {
-      newBlocks = currentBlocks.filter(id => id !== blockId);
-    } else {
-      newBlocks = [...currentBlocks, blockId];
-    }
-    onUpdateHomeBlocks(sol, newBlocks);
-  };
-
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-0 overflow-x-auto no-scrollbar">
       <table className="w-full text-left border-collapse font-mono">
@@ -49,7 +36,7 @@ export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({
             <th className="px-8 py-6">Định danh Node (Slug)</th>
             <th className="px-8 py-6">Trạng thái Registry</th>
             {activeTab === 'CLOUD' && <th className="px-8 py-6 text-center">Hiển thị</th>}
-            <th className="px-8 py-6">Phân phối Trang chủ</th>
+            <th className="px-8 py-6">Vị trí Trang chủ (Home Keys)</th>
             <th className="px-8 py-6">Kinh tế & Protocol</th>
             <th className="px-8 py-6">Metadata (EN)</th>
             <th className="px-8 py-6 text-right">Thao tác</th>
@@ -95,29 +82,21 @@ export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({
                   </button>
                 </td>
               )}
-              {/* HOME BLOCKS MULTI-SELECTOR */}
+              {/* RENDER LIST OF HOME BLOCK KEYS AS MONO BADGES */}
               <td className="px-8 py-6">
-                <div className="flex items-center gap-1.5">
-                   {HOME_BLOCK_OPTIONS.map((opt) => {
-                     const isSelected = (sol.homeBlocks || []).includes(opt.id);
-                     return (
-                       <button
-                         key={opt.id}
-                         title={opt.label}
-                         onClick={() => handleToggleBlock(sol, opt.id)}
-                         className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all ${
-                           isSelected 
-                            ? `bg-black dark:bg-white ${opt.color} border-current shadow-lg shadow-black/20` 
-                            : 'bg-transparent border-black/5 dark:border-white/5 text-gray-300 dark:text-gray-800 hover:border-brand-blue/20'
-                         }`}
+                <div className="flex flex-wrap gap-1.5 max-w-[220px]">
+                   {sol.homeBlocks && sol.homeBlocks.length > 0 ? (
+                     sol.homeBlocks.map((blockKey) => (
+                       <div
+                         key={blockKey}
+                         className="px-2 py-0.5 bg-indigo-500/5 dark:bg-white/5 border border-indigo-500/10 dark:border-white/10 rounded text-[8px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-tighter italic"
                        >
-                         {React.cloneElement(opt.icon, { 
-                           size: 14, 
-                           strokeWidth: isSelected ? 3 : 2
-                         })}
-                       </button>
-                     );
-                   })}
+                         {blockKey}
+                       </div>
+                     ))
+                   ) : (
+                     <span className="text-[8px] font-bold text-gray-300 dark:text-gray-800 uppercase italic">Unassigned</span>
+                   )}
                 </div>
               </td>
               <td className="px-8 py-6">
