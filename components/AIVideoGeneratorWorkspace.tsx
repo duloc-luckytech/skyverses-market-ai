@@ -668,7 +668,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
              logs={selectedLogTask.logs || []}
              status={selectedLogTask.status}
              title="Video Production Trace"
-             subtitle={`Job_ID: ${selectedLogTask.id.toUpperCase()}`}
+             subtitle="Node Process Trace"
+             jobId={selectedLogTask.id}
              onClose={() => setSelectedLogTask(null)}
            />
         )}

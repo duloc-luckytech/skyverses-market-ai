@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Terminal, Activity, Loader2, Cpu, ShieldCheck, Database, Clock } from 'lucide-react';
+import { X, Terminal, Activity, Loader2, Cpu, ShieldCheck, Database, Clock, Copy, Check } from 'lucide-react';
 
 interface JobLogsModalProps {
   isOpen: boolean;
@@ -9,6 +9,7 @@ interface JobLogsModalProps {
   subtitle?: string;
   status?: 'processing' | 'done' | 'error' | string;
   logs: string[];
+  jobId?: string;
 }
 
 export const JobLogsModal: React.FC<JobLogsModalProps> = ({ 
@@ -17,9 +18,11 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
   title = "Production Telemetry", 
   subtitle = "Node Process Trace",
   status = "idle",
-  logs 
+  logs,
+  jobId
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
 
   // Auto-scroll to bottom when new logs arrive
   useEffect(() => {
@@ -27,6 +30,13 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [logs]);
+
+  const handleCopyId = () => {
+    if (!jobId) return;
+    navigator.clipboard.writeText(jobId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   if (!isOpen) return null;
 
@@ -88,18 +98,34 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
       >
         {/* Terminal Header */}
         <div className="p-6 md:p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-indigo-600/10 rounded-xl flex items-center justify-center text-indigo-600 shadow-inner">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-10 h-10 bg-indigo-600/10 rounded-xl flex items-center justify-center text-indigo-600 shadow-inner shrink-0">
                <Terminal size={20} />
             </div>
-            <div className="space-y-1">
-               <h3 className="text-xl font-black uppercase italic tracking-tight text-slate-900 dark:text-white leading-none">{title}</h3>
-               <p className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest italic">{subtitle}</p>
+            <div className="space-y-1 min-w-0">
+               <h3 className="text-xl font-black uppercase italic tracking-tight text-slate-900 dark:text-white leading-none truncate">{title}</h3>
+               <div className="flex items-center gap-2">
+                  <p className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest italic truncate">{subtitle}</p>
+                  {jobId && (
+                    <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                      <span className="text-[8px] font-mono text-indigo-500 dark:text-indigo-400 bg-indigo-500/5 px-2 py-0.5 rounded border border-indigo-500/10">
+                        ID: {jobId.length > 12 ? `${jobId.slice(0, 8)}...` : jobId.toUpperCase()}
+                      </span>
+                      <button 
+                        onClick={handleCopyId}
+                        className="p-1 text-slate-400 hover:text-indigo-500 transition-colors"
+                        title="Copy Job ID"
+                      >
+                        {copied ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} />}
+                      </button>
+                    </div>
+                  )}
+               </div>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-black/5 dark:bg-white/5 rounded-full"
+            className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-black/5 dark:bg-white/5 rounded-full shrink-0 ml-4"
           >
             <X size={24} />
           </button>
@@ -114,7 +140,7 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
               </div>
               <div className="flex items-center gap-2">
                  <Cpu size={12} className="text-indigo-500 dark:text-indigo-400" />
-                 <span className="text-[8px] font-black uppercase text-slate-500 dark:text-gray-400 tracking-[0.2em]">H100_CLUSTER_A</span>
+                 <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-[0.2em]">H100_CLUSTER_A</span>
               </div>
            </div>
            <div className="flex items-center gap-2">
