@@ -10,8 +10,13 @@ import {
 } from 'lucide-react';
 import { deployApi, DeployLog } from '../../apis/deploy';
 import { useToast } from '../../context/ToastContext';
+import { Solution } from '../../types';
 
-export const LogsTab: React.FC = () => {
+interface LogsTabProps {
+  remoteSolutions: Solution[];
+}
+
+export const LogsTab: React.FC<LogsTabProps> = ({ remoteSolutions }) => {
   const { showToast } = useToast();
   const [logs, setLogs] = useState<DeployLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +57,7 @@ export const LogsTab: React.FC = () => {
     switch (status) {
       case 'SUCCESS': return <CheckCircle2 className="text-emerald-500" size={16} />;
       case 'FAILED': return <XCircle className="text-rose-500" size={16} />;
-      case 'RUNNING': return <Loader2 className="text-indigo-500 animate-spin" size={16} />;
+      case 'RUNNING': return <Loader2 className="text-brand-blue animate-spin" size={16} />;
       default: return <Activity className="text-gray-400" size={16} />;
     }
   };
@@ -71,7 +76,7 @@ export const LogsTab: React.FC = () => {
   };
 
   return (
-    <div className="p-0 flex flex-col h-full animate-in fade-in duration-700">
+    <div className="p-0 flex flex-col h-full animate-in fade-in duration-700 bg-white dark:bg-[#050507]">
       
       {/* INTERNAL TOOLBAR */}
       <div className="px-12 py-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-white dark:bg-[#08080a] shrink-0">
@@ -85,7 +90,15 @@ export const LogsTab: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-6">
-           <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+           {/* Cloud Stats - Using remoteSolutions prop */}
+           <div className="hidden lg:flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <div className="flex items-center gap-2">
+                 <div className="w-1.5 h-1.5 rounded-full bg-brand-blue shadow-[0_0_8px_#0090ff]"></div>
+                 <span>Cloud Nodes: {remoteSolutions.length}</span>
+              </div>
+           </div>
+           
+           <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-gray-400 border-l border-white/10 pl-6">
               <div className="flex items-center gap-2">
                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
                  <span>Succeeded: {logs.filter(l => l.status === 'SUCCESS').length}</span>
@@ -105,7 +118,7 @@ export const LogsTab: React.FC = () => {
       <div className="flex-grow overflow-y-auto no-scrollbar">
         <table className="w-full text-left border-collapse font-mono">
           <thead>
-            <tr className="bg-black/5 dark:bg-white/5 text-[9px] font-black uppercase tracking-widest text-gray-500 sticky top-0 z-20">
+            <tr className="bg-black/5 dark:bg-white/5 text-[9px] font-black uppercase tracking-widest text-gray-500 sticky top-0 z-20 backdrop-blur-md">
               <th className="px-12 py-6">Status / Protocol</th>
               <th className="px-12 py-6">Commit Manifest</th>
               <th className="px-12 py-6">Branch</th>
