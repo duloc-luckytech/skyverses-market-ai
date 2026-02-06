@@ -1,20 +1,34 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CloudUpload, Check, Eye, EyeOff, Edit3, Trash2, Zap, Monitor, LayoutGrid, Video, Braces, Terminal } from 'lucide-react';
+import { 
+  CloudUpload, Check, Eye, EyeOff, Edit3, Trash2, Zap, Monitor, 
+  LayoutGrid, Video, Braces, Terminal, Flame, ImageIcon, Bot, Gift 
+} from 'lucide-react';
 import { Solution } from '../../types';
 
 interface NodeRegistryTabProps {
-  solutions: Solution[];
+  // fix: simplified solutions prop type now that Solution interface includes homeBlocks
+  solutions: Array<Solution>;
   isSyncedOnCloud: (slug: string) => boolean;
   onEdit: (sol: Solution) => void;
   onDelete: (sol: Solution) => void;
   onToggleActive: (sol: Solution) => void;
+  onUpdateHomeBlocks: (sol: Solution, newBlocks: string[]) => void;
   activeTab: 'CLOUD' | 'LOCAL';
 }
 
+const HOME_BLOCK_OPTIONS = [
+  { id: 'top-choice', label: 'Top Choice', icon: <Flame size={12}/>, color: 'text-orange-500' },
+  { id: 'top-image', label: 'Top Image', icon: <ImageIcon size={12}/>, color: 'text-brand-blue' },
+  { id: 'top-video', label: 'Top Video', icon: <Video size={12}/>, color: 'text-purple-500' },
+  { id: 'top-ai-agent', label: 'Top AI Agent', icon: <Bot size={12}/>, color: 'text-emerald-500' },
+  { id: 'events', label: 'Events', icon: <Gift size={12}/>, color: 'text-rose-500' },
+  { id: 'app-other', label: 'App Other', icon: <LayoutGrid size={12}/>, color: 'text-slate-500' }
+];
+
 export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({ 
-  solutions, isSyncedOnCloud, onEdit, onDelete, onToggleActive, activeTab 
+  solutions, isSyncedOnCloud, onEdit, onDelete, onToggleActive, onUpdateHomeBlocks, activeTab 
 }) => {
   const getDemoIcon = (type: string) => {
     switch (type) {
@@ -25,6 +39,18 @@ export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({
     }
   };
 
+  const handleToggleBlock = (sol: Solution, blockId: string) => {
+    // fix: sol.homeBlocks is now recognized as a valid property of Solution
+    const currentBlocks = sol.homeBlocks || [];
+    let newBlocks;
+    if (currentBlocks.includes(blockId)) {
+      newBlocks = currentBlocks.filter(id => id !== blockId);
+    } else {
+      newBlocks = [...currentBlocks, blockId];
+    }
+    onUpdateHomeBlocks(sol, newBlocks);
+  };
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-0 overflow-x-auto no-scrollbar">
       <table className="w-full text-left border-collapse font-mono">
@@ -33,6 +59,7 @@ export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({
             <th className="px-8 py-6">Định danh Node (Slug)</th>
             <th className="px-8 py-6">Trạng thái Registry</th>
             {activeTab === 'CLOUD' && <th className="px-8 py-6 text-center">Hiển thị</th>}
+            <th className="px-8 py-6">Phân phối Trang chủ</th>
             <th className="px-8 py-6">Kinh tế & Protocol</th>
             <th className="px-8 py-6">Metadata (EN)</th>
             <th className="px-8 py-6 text-right">Thao tác</th>
@@ -78,6 +105,31 @@ export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({
                   </button>
                 </td>
               )}
+              {/* HOME BLOCKS MULTI-SELECTOR */}
+              <td className="px-8 py-6">
+                <div className="flex items-center gap-1.5">
+                   {HOME_BLOCK_OPTIONS.map((opt) => {
+                     const isSelected = (sol.homeBlocks || []).includes(opt.id);
+                     return (
+                       <button
+                         key={opt.id}
+                         title={opt.label}
+                         onClick={() => handleToggleBlock(sol, opt.id)}
+                         className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all ${
+                           isSelected 
+                            ? `bg-black dark:bg-white ${opt.color} border-current shadow-lg shadow-black/20` 
+                            : 'bg-transparent border-black/5 dark:border-white/5 text-gray-300 dark:text-gray-800 hover:border-brand-blue/20'
+                         }`}
+                       >
+                         {React.cloneElement(opt.icon as React.ReactElement<any>, { 
+                           size: 14, 
+                           strokeWidth: isSelected ? 3 : 2
+                         })}
+                       </button>
+                     );
+                   })}
+                </div>
+              </td>
               <td className="px-8 py-6">
                  <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-3">

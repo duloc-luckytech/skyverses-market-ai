@@ -112,6 +112,23 @@ const AdminCmsProPage = () => {
     finally { setTogglingId(null); }
   };
 
+  const handleQuickUpdateHomeBlocks = async (sol: Solution, newBlocks: string[]) => {
+    const targetId = sol._id || sol.id;
+    setTogglingId(targetId);
+    try {
+      const res = await marketApi.updateSolution(targetId, { homeBlocks: newBlocks });
+      if (res.success) {
+        setRemoteSolutions(prev => prev.map(item => 
+          (item._id === targetId || item.id === targetId) ? { ...item, homeBlocks: newBlocks } : item
+        ));
+      }
+    } catch (err) {
+      console.error("Quick sync failed:", err);
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
   const handleSaveSolution = async () => {
     if (!editedItem) return;
     setIsSaving(true);
@@ -190,7 +207,16 @@ const AdminCmsProPage = () => {
              {activeTab === 'USERS' && <UsersTab key="users" loading={loading} response={null} onParamsChange={()=>{}} />}
              {activeTab === 'CONFIG' && <ConfigurationTab key="config" />}
              {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
-               <NodeRegistryTab key={activeTab} activeTab={activeTab} solutions={activeTab === 'CLOUD' ? remoteSolutions : LOCAL_SOLUTIONS} onEdit={handleEdit} onDelete={()=>{}} onToggleActive={handleToggleActive} isSyncedOnCloud={isSyncedOnCloud} />
+               <NodeRegistryTab 
+                 key={activeTab} 
+                 activeTab={activeTab} 
+                 solutions={activeTab === 'CLOUD' ? remoteSolutions : LOCAL_SOLUTIONS} 
+                 onEdit={handleEdit} 
+                 onDelete={()=>{}} 
+                 onToggleActive={handleToggleActive} 
+                 onUpdateHomeBlocks={handleQuickUpdateHomeBlocks}
+                 isSyncedOnCloud={isSyncedOnCloud} 
+               />
              )}
            </AnimatePresence>
         </div>

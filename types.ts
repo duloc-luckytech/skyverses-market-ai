@@ -39,6 +39,8 @@ export interface Solution {
   order?: number; // Thêm trường thứ tự sắp xếp
   featured?: boolean; // Thêm trường nổi bật
   status?: string; // Thêm trường trạng thái hệ thống
+  // fix: Added homeBlocks property to Solution interface
+  homeBlocks?: string[]; // Vị trí hiển thị tại trang chủ
 }
 
 export interface UseCase {
