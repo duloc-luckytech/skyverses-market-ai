@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -6,6 +5,7 @@ import {
   LayoutGrid, Video, Braces, Terminal, Flame, ImageIcon, Bot, Gift 
 } from 'lucide-react';
 import { Solution } from '../../types';
+import { HOME_BLOCK_OPTIONS } from '../../constants/market-config';
 
 interface NodeRegistryTabProps {
   // fix: simplified solutions prop type now that Solution interface includes homeBlocks
@@ -17,15 +17,6 @@ interface NodeRegistryTabProps {
   onUpdateHomeBlocks: (sol: Solution, newBlocks: string[]) => void;
   activeTab: 'CLOUD' | 'LOCAL';
 }
-
-const HOME_BLOCK_OPTIONS = [
-  { id: 'top-choice', label: 'Top Choice', icon: <Flame size={12}/>, color: 'text-orange-500' },
-  { id: 'top-image', label: 'Top Image', icon: <ImageIcon size={12}/>, color: 'text-brand-blue' },
-  { id: 'top-video', label: 'Top Video', icon: <Video size={12}/>, color: 'text-purple-500' },
-  { id: 'top-ai-agent', label: 'Top AI Agent', icon: <Bot size={12}/>, color: 'text-emerald-500' },
-  { id: 'events', label: 'Events', icon: <Gift size={12}/>, color: 'text-rose-500' },
-  { id: 'app-other', label: 'App Other', icon: <LayoutGrid size={12}/>, color: 'text-slate-500' }
-];
 
 export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({ 
   solutions, isSyncedOnCloud, onEdit, onDelete, onToggleActive, onUpdateHomeBlocks, activeTab 
@@ -40,7 +31,6 @@ export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({
   };
 
   const handleToggleBlock = (sol: Solution, blockId: string) => {
-    // fix: sol.homeBlocks is now recognized as a valid property of Solution
     const currentBlocks = sol.homeBlocks || [];
     let newBlocks;
     if (currentBlocks.includes(blockId)) {
@@ -121,7 +111,7 @@ export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({
                             : 'bg-transparent border-black/5 dark:border-white/5 text-gray-300 dark:text-gray-800 hover:border-brand-blue/20'
                          }`}
                        >
-                         {React.cloneElement(opt.icon as React.ReactElement<any>, { 
+                         {React.cloneElement(opt.icon, { 
                            size: 14, 
                            strokeWidth: isSelected ? 3 : 2
                          })}

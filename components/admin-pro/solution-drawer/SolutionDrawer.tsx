@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { EditInput } from './EditInput';
 import { EditArray } from './EditArray';
+import { HOME_BLOCK_OPTIONS } from '../../../constants/market-config';
 
 interface SolutionDrawerProps {
   editingId: string | null;
@@ -16,15 +17,6 @@ interface SolutionDrawerProps {
   onClose: () => void;
   onSave: () => void;
 }
-
-const HOME_BLOCK_OPTIONS = [
-  { id: 'top-choice', label: 'Top Choice' },
-  { id: 'top-image', label: 'Top Image' },
-  { id: 'top-video', label: 'Top Video' },
-  { id: 'top-ai-agent', label: 'Top AI Agent' },
-  { id: 'events', label: 'Events' },
-  { id: 'app-other', label: 'App Other' }
-];
 
 export const SolutionDrawer: React.FC<SolutionDrawerProps> = ({
   editingId,
@@ -176,8 +168,9 @@ export const SolutionDrawer: React.FC<SolutionDrawerProps> = ({
                             ? 'bg-brand-blue border-brand-blue text-white shadow-lg' 
                             : 'bg-white dark:bg-white/5 border-black/5 dark:border-white/10 text-slate-500 hover:border-brand-blue/30'
                         }`}
+                        title={opt.subtitle}
                       >
-                        {isSelected && <Check size={12} strokeWidth={4} />}
+                        {isSelected ? <Check size={12} strokeWidth={4} /> : React.cloneElement(opt.icon, { size: 12 })}
                         {opt.label}
                       </button>
                     );
