@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   Play, Pause, Download, Maximize2, Trash2, RefreshCw, 
   Loader2, AlertCircle, Zap, Clock, Check, VolumeX,
-  Copy, AlertTriangle, Fingerprint
+  Copy, AlertTriangle, Fingerprint, Terminal
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 
@@ -25,6 +25,7 @@ export interface VideoResult {
   isRefunded?: boolean;
   startImg?: string | null;
   endImg?: string | null;
+  logs?: string[]; // Added logs array
 }
 
 interface VideoCardProps {
@@ -35,10 +36,11 @@ interface VideoCardProps {
   onDelete: (id: string) => void;
   onRetry: (res: VideoResult) => void;
   onDownload: (url: string, filename: string) => void;
+  onViewLogs?: (res: VideoResult) => void; // Added onViewLogs prop
 }
 
 export const VideoCard: React.FC<VideoCardProps> = ({ 
-  res, isSelected, onToggleSelect, onFullscreen, onDelete, onRetry, onDownload 
+  res, isSelected, onToggleSelect, onFullscreen, onDelete, onRetry, onDownload, onViewLogs 
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const { showToast } = useToast();
@@ -151,6 +153,14 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
         {/* Top Right Actions */}
         <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-20">
+          <button 
+            onClick={(e) => { e.stopPropagation(); onViewLogs?.(res); }}
+            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-brand-blue shadow-xl transition-all"
+            title="Xem nhật ký tiến trình"
+          >
+            <Terminal size={16} />
+          </button>
+
           <button 
             onClick={handleReport}
             className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-orange-500 shadow-xl transition-all"

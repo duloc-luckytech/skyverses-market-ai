@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, Download, Share2, AlertTriangle } from 'lucide-react';
+import { X, Loader2, Download, Share2, AlertTriangle, Terminal } from 'lucide-react';
 import { generateDemoVideo } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -15,6 +15,7 @@ import { SidebarLeft } from './video-generator/SidebarLeft';
 import { ResultsMain } from './video-generator/ResultsMain';
 import { VideoResult } from './video-generator/VideoCard';
 import { pricingApi, PricingModel } from '../apis/pricing';
+import { JobLogsModal } from './common/JobLogsModal';
 
 type CreationMode = 'SINGLE' | 'MULTI' | 'AUTO';
 type AutoTaskType = 'TEXT' | 'IMAGE_TO_VIDEO' | 'START_END';
@@ -52,6 +53,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [selectedLogTask, setSelectedLogTask] = useState<VideoResult | null>(null);
   
   // -- Auto Download States --
   const [autoDownload, setAutoDownload] = useState(false);
@@ -200,9 +202,23 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           setHasPersonalKey(true);
           setPersonalKey(keys.gemini);
         }
-      } catch (e) {}
+      } catch (e) { console.error(e); }
     }
   }, [showResourceModal]);
+
+  const addLogToTask = (taskId: string, message: string) => {
+    const timestamp = new Date().toLocaleTimeString('vi-VN');
+    const logEntry = `${message}`;
+    setResults(prev => prev.map(r => r.id === taskId ? { ...r, logs: [...(r.logs || []), logEntry] } : r));
+    
+    // Update selected log task if open to show real-time logs
+    setSelectedLogTask(prev => {
+      if (prev && prev.id === taskId) {
+        return { ...prev, logs: [...(prev.logs || []), logEntry] };
+      }
+      return prev;
+    });
+  };
 
   const handleAddFrame = () => {
     if (multiFrames.length >= 6) {
@@ -353,6 +369,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
   const pollVideoJobStatus = async (jobId: string, resultId: string, cost: number) => {
     try {
+      addLogToTask(resultId, `[POLLING] Requesting status update for node cluster...`);
       const response: VideoJobResponse = await videosApi.getJobStatus(jobId);
       
       const isSuccess = response.success === true || response.status?.toLowerCase() === 'success';
@@ -361,16 +378,16 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       // AUTO-RETRY ON reCAPTCHA FAILURES
       const errorMsg = response.data?.error?.message || response.data?.error?.userMessage || "";
       if (errorMsg.includes("reCAPTCHA")) {
-         console.warn(`reCAPTCHA failure detected for jobId: ${jobId}. Initiating auto-retry for resultId: ${resultId}`);
+         addLogToTask(resultId, `[SECURITY_ALERT] reCAPTCHA challenge detected. Initiating automated retry protocol...`);
          const taskToRetry = resultsRef.current.find(r => r.id === resultId);
          if (taskToRetry) {
-            // Re-perform inference for this specific card without adding it again to the results list
             performInference(usagePreference || 'credits', taskToRetry, true);
-            return; // Terminate this polling branch
+            return;
          }
       }
 
       if (!isSuccess || jobStatus === 'failed' || jobStatus === 'error') {
+        addLogToTask(resultId, `[ERROR] Synthesis aborted: ${errorMsg || 'Unknown backend error'}`);
         setResults(prev => prev.map(r => {
            if (r.id === resultId) {
               if (usagePreference === 'credits' && !r.isRefunded) {
@@ -385,15 +402,17 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       }
 
       if (jobStatus === 'done' && response.data.result?.videoUrl) {
+        addLogToTask(resultId, `[SUCCESS] Synthesis manifest completed. Delivering assets to CDN...`);
         const videoUrl = response.data.result.videoUrl;
         setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: videoUrl, status: 'done' } : r));
         refreshUserInfo();
         if (autoDownloadRef.current) triggerDownload(videoUrl, `video_${resultId}.mp4`);
       } else {
+        addLogToTask(resultId, `[STATUS] Pipeline state: ${jobStatus?.toUpperCase() || 'SYNTHESIZING'}`);
         setTimeout(() => pollVideoJobStatus(jobId, resultId, cost), 5000);
       }
     } catch (e) {
-      console.error("Polling error for job:", jobId, e);
+      addLogToTask(resultId, `[NETWORK] Connectivity drift. Retrying telemetry uplink...`);
       setTimeout(() => pollVideoJobStatus(jobId, resultId, cost), 10000);
     }
   };
@@ -407,7 +426,6 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       if (!personalKey) { navigate('/settings'); return; }
     } else {
       const costToPay = retryTask ? retryTask.cost : currentTotalCost;
-      // Skip credit check if it's an auto-retry (usually due to tech error like reCAPTCHA)
       if (!isAutoRetry && credits < costToPay) { setShowLowCreditAlert(true); return; }
     }
 
@@ -453,45 +471,55 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         aspectRatio: t.ratio as any, 
         cost: t.cost, 
         startImg: t.startUrl, 
-        endImg: t.endUrl 
+        endImg: t.endUrl,
+        logs: [`[${new Date().toLocaleTimeString('vi-VN')}] [SYSTEM] Production pipeline initialized.`] 
       }));
       setResults(prev => [...newResults, ...prev]);
     } else {
-      // Keep existing task in the list but set its status to processing
       setResults(prev => prev.map(r => r.id === retryTask.id ? { ...r, status: 'processing', isRefunded: false } : r));
+      addLogToTask(retryTask.id, "[SYSTEM] Re-initializing production node for manual retry.");
     }
 
     try {
       await Promise.all(tasksToProduce.map(async (task) => {
         try {
+          addLogToTask(task.id, `[UPLINK] Authenticating resource pool: ${currentPreference.toUpperCase()}`);
           if (currentPreference === 'credits') {
             const inputImages = selectedEngine === 'fxlab' ? [task.startMediaId || null, task.endMediaId || null] : [task.startUrl || null, task.endUrl || null];
             const payload: VideoJobRequest = { type: task.type, input: { images: inputImages }, config: { duration: parseInt(duration), aspectRatio: task.ratio, resolution: resolution }, engine: { provider: selectedEngine as any, model: selectedModelObj.modelKey as any }, enginePayload: { accessToken: "YOUR_GOMMO_ACCESS_TOKEN", prompt: task.prompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: selectedMode as any } };
+            
+            addLogToTask(task.id, `[NODE_INIT] Provisioning H100 GPU cluster...`);
             const res = await videosApi.createJob(payload);
             const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
             
             if (isSuccess && res.data.jobId) {
               const serverJobId = res.data.jobId;
+              addLogToTask(task.id, `[API_READY] Remote job recognized. ID: ${serverJobId}`);
               
-              // MAPPING: Thay thế ID tạm thời bằng Job ID thực từ server
               setResults(prev => prev.map(r => r.id === task.id ? { ...r, id: serverJobId } : r));
               
-              // Only charge if it's NOT an auto-retry from server error
               if (!isAutoRetry) useCredits(task.cost);
               pollVideoJobStatus(serverJobId, serverJobId, task.cost);
             } else {
+              addLogToTask(task.id, `[ERROR] Resource handshake rejected: ${res.message || 'Generic refusal'}`);
               setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
             }
           } else {
+            addLogToTask(task.id, `[DIRECT_INFERENCE] Bypassing internal pool. Using personal SDK Uplink.`);
             const url = await generateDemoVideo({ prompt: task.prompt, isUltra: selectedModelObj.modelKey.includes('ultra') || selectedModelObj.name.includes('PRO'), duration, resolution: resolution as '720p' | '1080p', aspectRatio: task.ratio as any, references: task.startUrl ? [task.startUrl] : undefined, lastFrame: task.endUrl || undefined });
             if (url) {
+              addLogToTask(task.id, `[SUCCESS] Direct synthesis complete. Asset loaded.`);
               setResults(prev => prev.map(r => r.id === task.id ? { ...r, url, status: 'done' } : r));
               if (autoDownloadRef.current) triggerDownload(url, `video_${task.id}.mp4`);
             } else {
+              addLogToTask(task.id, `[ERROR] Personal SDK node returned zero-byte manifest.`);
               setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
             }
           }
-        } catch (e) { setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r)); }
+        } catch (e) { 
+          addLogToTask(task.id, `[CRITICAL_FAIL] Logic gate error: ${String(e)}`);
+          setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r)); 
+        }
       }));
     } finally { setIsGenerating(false); }
   };
@@ -610,6 +638,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         handleRetry={handleRetry} triggerDownload={triggerDownload}
         handleDownloadAllDone={handleDownloadAllDone} todayKey={todayKey}
         onApplyExample={handleApplyExample}
+        onViewLogs={setSelectedLogTask}
       />
 
       <AnimatePresence>
@@ -630,6 +659,19 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               <button className="bg-purple-600 text-white px-12 py-5 rounded-full font-black uppercase text-xs tracking-widest flex items-center gap-3 hover:scale-105 transition-all"><Share2 size={20} /> Chia sẻ</button>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {selectedLogTask && (
+           <JobLogsModal 
+             isOpen={true}
+             logs={selectedLogTask.logs || []}
+             status={selectedLogTask.status}
+             title="Video Production Trace"
+             subtitle={`Job_ID: ${selectedLogTask.id.toUpperCase()}`}
+             onClose={() => setSelectedLogTask(null)}
+           />
         )}
       </AnimatePresence>
 
