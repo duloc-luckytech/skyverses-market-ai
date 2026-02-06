@@ -5,7 +5,7 @@ import {
   Ticket, Plus, Search, Filter, Edit3, Trash2, Check, X, 
   Loader2, Zap, ShieldCheck, Mail, Key, Database, Globe,
   Activity, AlertCircle, Clock, ToggleLeft, ToggleRight, 
-  ChevronDown, Server, Cloud, Cpu, Terminal, Copy
+  ChevronDown, Server, Cloud, Cpu, Terminal, Copy, Calendar
 } from 'lucide-react';
 import { providerTokensApi, ProviderToken, ProviderTokenRequest } from '../../apis/provider-tokens';
 import { useToast } from '../../context/ToastContext';
@@ -29,7 +29,9 @@ export const ProviderTokensTab: React.FC = () => {
     cookieToken: '',
     apiKey: '',
     plan: 'Premium',
-    note: ''
+    note: '',
+    credits: 0,
+    expires: ''
   });
 
   const fetchData = async () => {
@@ -45,6 +47,42 @@ export const ProviderTokensTab: React.FC = () => {
     fetchData();
   }, [filterProvider]);
 
+  // Countdown and UTC+7 logic
+  const formatCountdown = (dateStr?: string) => {
+    if (!dateStr) return { label: 'Infinite', color: 'text-gray-400', date: '---' };
+    
+    const target = new Date(dateStr);
+    const targetMs = target.getTime();
+    const nowMs = new Date().getTime();
+    const diff = targetMs - nowMs;
+
+    const formattedDate = target.toLocaleString('vi-VN', { 
+      timeZone: 'Asia/Ho_Chi_Minh',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    if (diff <= 0) return { label: 'EXPIRED', color: 'text-rose-500', date: formattedDate };
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    let label = '';
+    let color = 'text-emerald-500';
+
+    if (days > 0) label = `${days}d ${hours}h`;
+    else label = `${hours}h ${mins}m`;
+
+    if (days < 3) color = 'text-amber-500';
+    if (days < 1) color = 'text-orange-500 animate-pulse';
+
+    return { label, color, date: formattedDate };
+  };
+
   const handleEdit = (token: ProviderToken) => {
     setEditingId(token._id);
     setPayload({
@@ -55,7 +93,9 @@ export const ProviderTokensTab: React.FC = () => {
       cookieToken: token.cookieToken || '',
       apiKey: token.apiKey || '',
       plan: token.plan || '',
-      note: token.note || ''
+      note: token.note || '',
+      credits: token.credits || 0,
+      expires: token.expires || ''
     });
     setIsDrawerOpen(true);
   };
@@ -70,7 +110,9 @@ export const ProviderTokensTab: React.FC = () => {
       cookieToken: '',
       apiKey: '',
       plan: 'Premium',
-      note: ''
+      note: '',
+      credits: 0,
+      expires: ''
     });
     setIsDrawerOpen(true);
   };
@@ -148,7 +190,7 @@ export const ProviderTokensTab: React.FC = () => {
 
         <div className="flex items-center gap-4 w-full md:w-auto">
           <div className="relative flex-grow md:w-64 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue" size={16} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue transition-colors" size={16} />
             <input 
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Tìm kiếm token..."
@@ -168,9 +210,9 @@ export const ProviderTokensTab: React.FC = () => {
               <tr className="bg-black/5 dark:bg-white/5 text-[9px] font-black uppercase tracking-widest text-gray-500">
                 <th className="px-8 py-6">Provider / Identity</th>
                 <th className="px-8 py-6">Status</th>
+                <th className="px-8 py-6">Credits</th>
+                <th className="px-8 py-6">Expires (UTC+7)</th>
                 <th className="px-8 py-6">Access Token</th>
-                <th className="px-8 py-6">Cookie Token</th>
-                <th className="px-8 py-6">Economic Class</th>
                 <th className="px-8 py-6 text-center">Runtime Stats</th>
                 <th className="px-8 py-6 text-right">Operations</th>
               </tr>
@@ -180,7 +222,9 @@ export const ProviderTokensTab: React.FC = () => {
                 <tr><td colSpan={7} className="py-40 text-center"><Loader2 className="animate-spin mx-auto text-brand-blue" /></td></tr>
               ) : filteredTokens.length === 0 ? (
                 <tr><td colSpan={7} className="py-32 text-center opacity-30 text-xs font-black uppercase italic tracking-[0.4em]">No tokens found in registry</td></tr>
-              ) : filteredTokens.map((t) => (
+              ) : filteredTokens.map((t) => {
+                const countdown = formatCountdown(t.expires);
+                return (
                 <tr key={t._id} className="group hover:bg-brand-blue/[0.01] transition-colors">
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
@@ -205,18 +249,23 @@ export const ProviderTokensTab: React.FC = () => {
                      </span>
                   </td>
                   <td className="px-8 py-6">
+                    <div className="flex items-center gap-1.5 text-orange-500">
+                      <Zap size={10} fill="currentColor" />
+                      <span className="text-[11px] font-black italic">{(t.credits || 0).toLocaleString()}</span>
+                    </div>
+                  </td>
+                  <td className="px-8 py-6">
+                    <div className="space-y-1">
+                      <div className={`text-[11px] font-black uppercase italic ${countdown.color}`}>
+                        {countdown.label}
+                      </div>
+                      <p className="text-[8px] text-gray-400 font-bold tracking-widest">{countdown.date}</p>
+                    </div>
+                  </td>
+                  <td className="px-8 py-6">
                     <TokenCell value={t.accessToken} label="Access Token" />
                   </td>
-                  <td className="px-8 py-6">
-                    <TokenCell value={t.cookieToken} label="Cookie Token" />
-                  </td>
-                  <td className="px-8 py-6">
-                     <div className="space-y-1">
-                        <p className="text-[10px] font-black text-slate-700 dark:text-gray-300 uppercase italic tracking-tighter">{t.plan || 'Standard'}</p>
-                        <p className="text-[8px] text-gray-400 font-bold uppercase truncate max-w-[120px]">{t.note || 'No notes'}</p>
-                     </div>
-                  </td>
-                  <td className="px-8 py-6">
+                  <td className="px-8 py-6 text-center">
                      <div className="flex flex-col items-center gap-1">
                         <div className="flex items-center gap-2">
                            <div className={`w-1.5 h-1.5 rounded-full ${t.errorCount > 10 ? 'bg-red-500' : t.errorCount > 0 ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
@@ -233,7 +282,7 @@ export const ProviderTokensTab: React.FC = () => {
                      </button>
                   </td>
                 </tr>
-              ))}
+              )})}
             </tbody>
           </table>
         </div>
@@ -265,6 +314,24 @@ export const ProviderTokensTab: React.FC = () => {
                             {p}
                          </button>
                        ))}
+                    </div>
+                 </div>
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <EditInput 
+                      label="CREDITS" 
+                      type="number"
+                      value={payload.credits?.toString() || '0'} 
+                      onChange={v => setPayload({...payload, credits: parseInt(v) || 0})} 
+                    />
+                    <div className="space-y-2">
+                       <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">EXPIRES (UTC)</label>
+                       <input 
+                         type="datetime-local"
+                         value={payload.expires ? new Date(payload.expires).toISOString().slice(0, 16) : ''}
+                         onChange={e => setPayload({...payload, expires: e.target.value ? new Date(e.target.value).toISOString() : ''})}
+                         className="w-full bg-slate-100 dark:bg-white/5 border border-black/5 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white shadow-inner"
+                       />
                     </div>
                  </div>
 
@@ -328,9 +395,9 @@ export const ProviderTokensTab: React.FC = () => {
   );
 };
 
-const EditInput = ({ label, value, onChange }: { label: string; value?: string; onChange: (v: string) => void }) => (
+const EditInput = ({ label, value, onChange, type = "text" }: { label: string; value?: string; onChange: (v: string) => void; type?: string }) => (
   <div className="space-y-2">
      <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">{label}</label>
-     <input value={value || ''} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-black/5 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white shadow-inner" />
+     <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-black/5 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white shadow-inner" />
   </div>
 );

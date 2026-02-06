@@ -17,6 +17,8 @@ export interface ProviderToken {
   cooldownUntil?: string;
   createdAt: string;
   updatedAt: string;
+  credits?: number;
+  expires?: string;
 }
 
 export interface ProviderTokenRequest {
@@ -29,6 +31,8 @@ export interface ProviderTokenRequest {
   accessToken?: string;
   cookieToken?: string;
   apiKey?: string;
+  credits?: number;
+  expires?: string;
 }
 
 export const providerTokensApi = {
