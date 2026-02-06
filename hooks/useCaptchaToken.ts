@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -296,6 +297,18 @@ export const useCaptchaToken = () => {
     }
   };
 
+  const fetchCaptchaResult = async (jobId: string) => {
+    try {
+      const response = await fetch(`${CAPTCHA_API_BASE}/captcha/result/${jobId}`, {
+        headers: getCaptchaHeaders()
+      });
+      return await response.json();
+    } catch (err) {
+      console.error("Fetch Result Error:", err);
+      return { status: "ERROR", message: "Kết nối thất bại" };
+    }
+  };
+
   return {
     activeTab, setActiveTab,
     loading, loadingPlans, loadingHistory, isGeneratingKey, isLinking,
@@ -305,6 +318,6 @@ export const useCaptchaToken = () => {
     activePayment, setActivePayment,
     isCreatingPayment,
     handleLinkAccount, handleGenerateKey, handleCreatePayment, pollPaymentStatus,
-    fetchAccountInfo // Added this to return object
+    fetchAccountInfo, fetchCaptchaResult
   };
 };
