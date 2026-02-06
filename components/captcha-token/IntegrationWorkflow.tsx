@@ -17,10 +17,11 @@ export const IntegrationWorkflow: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [lastResponse, setLastResponse] = useState<any>(null);
 
-  // Input States - Các tham số người dùng nhập vào
+  // Input States - Các tham số định danh người dùng cần nhập
   const [jwtToken, setJwtToken] = useState('YOUR_GOOGLE_JWT_TOKEN');
   const [captchaToken, setCaptchaToken] = useState('CAPTCHA_TOKEN_FROM_SKYVERSES');
 
+  // Kịch bản cURL cập nhật theo format Google VEO3
   const integrationCurlVideo = `curl 'https://aisandbox-pa.googleapis.com/v1/video:batchAsyncGenerateVideoText' \\
   -H 'accept: */*' \\
   -H 'authorization: Bearer ${jwtToken}' \\
@@ -64,7 +65,7 @@ export const IntegrationWorkflow: React.FC = () => {
   };
 
   const handleRunRequest = async () => {
-    // Validation
+    // Validation sơ bộ
     if (!jwtToken || jwtToken === 'YOUR_GOOGLE_JWT_TOKEN') {
       showToast("Vui lòng nhập Google Access Token (JWT)", "error");
       return;
@@ -109,6 +110,8 @@ export const IntegrationWorkflow: React.FC = () => {
     };
 
     try {
+      // Thực hiện gọi API trực tiếp từ trình duyệt
+      // Lưu ý: Trong môi trường thực tế cần xử lý CORS nếu Google chặn gọi trực tiếp từ domain khác
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -136,7 +139,7 @@ export const IntegrationWorkflow: React.FC = () => {
       setLastResponse({ 
         error: "CONNECTION_FAILED", 
         message: err.message || "Failed to reach Google APIs. Possible CORS restriction or network issue.",
-        hint: "Trong môi trường Production, hãy gọi lệnh này từ Backend của bạn để tránh lỗi CORS Browser."
+        hint: "Nếu chạy trên Browser bị chặn CORS, hãy sử dụng Proxy hoặc chạy từ Backend của bạn."
       });
       setShowResponse(true);
       showToast("Lỗi kết nối tới Endpoint", "error");
@@ -158,7 +161,7 @@ export const IntegrationWorkflow: React.FC = () => {
           </div>
           <div className="space-y-1">
             <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Integration Demo</h3>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Xác thực 2 yếu tố: JWT + Captcha Token</p>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Xác thực API: Google JWT + Skyverses Captcha</p>
           </div>
         </div>
         <div className="flex items-center gap-4 pr-2">
@@ -183,7 +186,7 @@ export const IntegrationWorkflow: React.FC = () => {
                 <div className="space-y-10">
                   <div className="flex flex-col md:flex-row md:items-center gap-8">
                     <div className="flex items-center bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20">
-                       <Video size={14} className="mr-3" /> VEO3 Google Implementation
+                       <Video size={14} className="mr-3" /> VEO3 Implementation
                     </div>
                     <div className="flex-grow h-px bg-gradient-to-r from-indigo-500/20 to-transparent hidden md:block"></div>
                     <div className="flex items-center gap-3">
@@ -244,7 +247,7 @@ export const IntegrationWorkflow: React.FC = () => {
                           <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">Security Protocol</span>
                         </div>
                         <p className="text-[11px] text-slate-500 dark:text-gray-400 italic leading-relaxed bg-black/5 dark:bg-white/5 p-4 rounded-xl border border-black/5 dark:border-white/5">
-                          "Hệ thống sẽ thực hiện lệnh POST tới Endpoint của Google kèm theo token đã giải mã. Đảm bảo bạn đã whitelist IP hoặc cấu hình CORS nếu chạy trực tiếp trên Browser."
+                          "Hệ thống thực hiện lệnh POST trực tiếp tới Endpoint của Google. Đảm bảo bạn đã whitelist IP hoặc cấu hình CORS nếu chạy từ trình duyệt."
                         </p>
                       </div>
                     </div>
@@ -322,7 +325,7 @@ export const IntegrationWorkflow: React.FC = () => {
                       <div className="p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl flex gap-4 items-start">
                          <Info className="text-indigo-500 shrink-0 mt-0.5" size={16} />
                          <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-tight italic leading-relaxed">
-                            "Lệnh này khởi chạy tiến trình render video tại cụm Cloud của Google. Nếu thành công, bạn sẽ nhận được một operationId để poll kết quả video cuối cùng."
+                            "Lệnh này khởi chạy tiến trình render video tại cụm Cloud của Google. Nếu thành công, bạn sẽ nhận được một jobId để poll kết quả video cuối cùng."
                          </p>
                       </div>
                     </div>
