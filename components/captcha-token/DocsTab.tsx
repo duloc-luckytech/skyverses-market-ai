@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -8,14 +7,14 @@ import {
   ChevronDown, Braces, Book, ShieldCheck,
   Zap, Command, Play, Loader2, ArrowRight,
   Database, Share2, Sparkles, Info, RefreshCw,
-  Search
+  Search, X
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import { IntegrationWorkflow } from './IntegrationWorkflow';
 import { useCaptchaToken } from '../../hooks/useCaptchaToken';
 
 type CodeLang = 'CURL' | 'PYTHON' | 'NODEJS';
-type CaptchaAction = 'IMAGE' | 'VIDEO';
+type CaptchaAction = 'VIDEO';
 type DocEndpoint = 'REQUEST' | 'POLL';
 
 interface DocsTabProps {
@@ -45,10 +44,11 @@ export const DocsTab: React.FC<DocsTabProps> = ({ apiKey: accountApiKey, onRefre
     if (accountApiKey) setDisplayApiKey(accountApiKey);
   }, [accountApiKey]);
 
-  // Cleanup polling on unmount or tab change
+  // Cleanup polling on unmount or endpoint change
   useEffect(() => {
     return () => {
       pollingRef.current = false;
+      setIsRunning(false);
     };
   }, [docEndpoint]);
 
@@ -146,17 +146,16 @@ console.log(data);`;
         pollingRef.current = false;
         setIsRunning(false);
       } else if (data.status === 'FAILED' || data.status === 'ERROR') {
-        showToast("Tác vụ thất bại.", "error");
+        showToast(`Tác vụ thất bại: ${data.message || 'Lỗi không xác định'}`, "error");
         pollingRef.current = false;
         setIsRunning(false);
       } else if (pollingRef.current) {
-        // Continue polling after 5 seconds if still in polling mode
         setTimeout(() => startPolling(jobId), 5000);
       }
     } catch (err) {
       console.error("Polling Error:", err);
       if (pollingRef.current) {
-        setTimeout(() => startPolling(jobId), 10000);
+        setTimeout(() => startPolling(jobId), 5000);
       }
     }
   };
@@ -167,12 +166,19 @@ console.log(data);`;
       return;
     }
 
+    if (isRunning) {
+      pollingRef.current = false;
+      setIsRunning(false);
+      showToast("Đã dừng tiến trình Polling", "info");
+      return;
+    }
+
     setIsRunning(true);
     setLiveResponse(null);
 
     try {
       if (docEndpoint === 'REQUEST') {
-        showToast("Khởi tạo Job...", "info");
+        showToast("Đang gửi yêu cầu khởi tạo...", "info");
         const response = await fetch('https://captcha.skyverses.com/captcha/request', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -183,34 +189,33 @@ console.log(data);`;
         });
         const data = await response.json();
         setLiveResponse(data);
+
         if (data.success && data.jobId) {
-          showToast("Khởi tạo Job thành công. Chuyển sang chế độ Polling...", "success");
+          showToast("Khởi tạo thành công. Bắt đầu Polling 5s/lần...", "success");
           setTestJobId(data.jobId);
           if (onRefreshAccount) onRefreshAccount();
           
-          // AUTO FOCUS TO POLL TAB AND START POLLING
           setTimeout(() => {
             setDocEndpoint('POLL');
             pollingRef.current = true;
             startPolling(data.jobId);
           }, 1000);
         } else {
-          showToast(data.message || "Yêu cầu bị từ chối", "error");
+          showToast(data.message || "Yêu cầu bị từ chối bởi máy chủ", "error");
           setIsRunning(false);
         }
       } else {
-        // START POLLING MANUALLY
-        if (testJobId === 'JOB_ID_FROM_REQUEST' || !testJobId) {
+        if (testJobId === 'JOB_ID_FROM_REQUEST' || !testJobId || testJobId.length < 5) {
           showToast("Vui lòng nhập Job ID hợp lệ", "warning");
           setIsRunning(false);
           return;
         }
-        showToast("Bắt đầu Polling kết quả (5s/lần)...", "info");
+        showToast("Bắt đầu truy vấn kết quả (Chu kỳ 5s)...", "info");
         pollingRef.current = true;
         startPolling(testJobId);
       }
     } catch (err) {
-      setLiveResponse({ error: "CONNECTION_FAILED", message: "Lỗi kết nối máy chủ." });
+      setLiveResponse({ error: "CONNECTION_FAILED", message: "Lỗi kết nối tới hệ thống." });
       showToast("Lỗi kết nối máy chủ", "error");
       setIsRunning(false);
       pollingRef.current = false;
@@ -221,12 +226,12 @@ console.log(data);`;
     "success": true,
     "jobId": "67972758169188686629910a",
     "status": "PENDING",
-    "timestamp": "2025-05-14T08:32:01.420Z"
+    "timestamp": "${new Date().toISOString()}"
 }` : `{
-    "status": "READY",
-    "captchaToken": "cap_token_87dd7a9edb5c...",
-    "sessionId": "session_v3_xyz",
-    "timestamp": "2025-05-14T08:35:12.110Z"
+    "status": "PROCESSING",
+    "message": "Đang chờ giải mã Captcha...",
+    "retry_after": 5,
+    "timestamp": "${new Date().toISOString()}"
 }`;
 
   return (
@@ -247,20 +252,20 @@ console.log(data);`;
                   <div className="w-2 h-6 bg-indigo-600 rounded-full"></div>
                   <h3 className="text-3xl lg:text-4xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">API Reference</h3>
                </div>
-               <p className="text-sm text-gray-500 font-medium max-w-xl italic">
-                 Giao thức tích hợp Captcha Token Service dành cho Developer.
+               <p className="text-sm text-gray-500 font-medium max-w-xl italic leading-relaxed">
+                 Tích hợp giải pháp giải mã Captcha vào ứng dụng của bạn chỉ với 2 bước kịch bản.
                </p>
             </div>
             
             <div className="flex bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/10 shrink-0">
                <button 
-                 onClick={() => { setDocEndpoint('REQUEST'); setLiveResponse(null); pollingRef.current = false; }}
+                 onClick={() => { setDocEndpoint('REQUEST'); setLiveResponse(null); pollingRef.current = false; setIsRunning(false); }}
                  className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docEndpoint === 'REQUEST' ? 'bg-white dark:bg-[#1a1a1e] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
                >
                  1. REQUEST TOKEN
                </button>
                <button 
-                 onClick={() => { setDocEndpoint('POLL'); setLiveResponse(null); }}
+                 onClick={() => { setDocEndpoint('POLL'); setLiveResponse(null); pollingRef.current = false; setIsRunning(false); }}
                  className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docEndpoint === 'POLL' ? 'bg-white dark:bg-[#1a1a1e] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
                >
                  2. POLL RESULT
@@ -291,12 +296,11 @@ console.log(data);`;
                                onChange={(e) => setAction(e.target.value as CaptchaAction)}
                                className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-xs font-black uppercase italic outline-none focus:border-indigo-500/40 appearance-none cursor-pointer text-slate-800 dark:text-white shadow-inner transition-all"
                              >
-                                <option value="IMAGE">IMAGE</option>
-                                <option value="VIDEO">VIDEO</option>
+                                <option value="VIDEO">VIDEO (Veo3)</option>
                              </select>
                              <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover:text-indigo-500 transition-colors" />
                           </div>
-                          <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed italic px-1 opacity-70 leading-loose">Loại Captcha cần giải mã.</p>
+                          <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed italic px-1 opacity-70 leading-loose">Loại captcha tương ứng với hệ thống bạn muốn bẻ khóa.</p>
                        </div>
                      ) : (
                        <div className="space-y-3 animate-in fade-in slide-in-from-left-2">
@@ -318,7 +322,7 @@ console.log(data);`;
                                placeholder="Nhập Job ID..."
                              />
                           </div>
-                          <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed italic px-1 opacity-70 leading-loose">Mã định danh tác vụ nhận được từ bước REQUEST.</p>
+                          <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed italic px-1 opacity-70 leading-loose">Sử dụng Job ID nhận được từ API Request để truy vấn Token kết quả.</p>
                        </div>
                      )}
 
@@ -338,10 +342,10 @@ console.log(data);`;
                              value={displayApiKey}
                              onChange={(e) => setDisplayApiKey(e.target.value)}
                              className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 py-4 pl-12 pr-4 rounded-2xl text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 outline-none focus:border-indigo-500/40 shadow-inner transition-all"
-                             placeholder="Your Secret API Key..."
+                             placeholder="Khóa bảo mật của bạn..."
                            />
                         </div>
-                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed italic px-1 opacity-70 leading-loose">Khóa bảo mật dùng để xác thực và trừ hạn ngạch Token.</p>
+                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed italic px-1 opacity-70 leading-loose">Xác thực quyền truy cập hạ tầng. Token sẽ được trừ vào số dư account của bạn.</p>
                      </div>
                   </div>
                </div>
@@ -352,7 +356,7 @@ console.log(data);`;
                   <div className="flex items-center gap-3">
                      <Code2 size={16} className="text-indigo-500" />
                      <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 flex items-center gap-3 italic leading-none">
-                       {docEndpoint === 'REQUEST' ? 'POST /request' : 'GET /result/:jobId'}
+                       {docEndpoint === 'REQUEST' ? 'POST /captcha/request' : 'GET /captcha/result/:jobId'}
                      </h4>
                   </div>
                   
@@ -388,11 +392,23 @@ console.log(data);`;
                   <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
                     <button 
                       onClick={handleRunRequest}
-                      disabled={isRunning}
-                      className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 disabled:opacity-50"
+                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl transition-all active:scale-95 ${
+                        isRunning 
+                          ? 'bg-rose-600 text-white shadow-rose-500/20' 
+                          : 'bg-indigo-600 text-white shadow-indigo-600/20 hover:scale-105'
+                      }`}
                     >
-                       {isRunning ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} fill="currentColor" />}
-                       {docEndpoint === 'REQUEST' ? 'INITIATE_JOB' : 'START_POLLING'}
+                       {isRunning ? (
+                         <>
+                           <Loader2 size={14} className="animate-spin" />
+                           <span>STOP POLLING</span>
+                         </>
+                       ) : (
+                         <>
+                           <Play size={14} fill="currentColor" />
+                           <span>{docEndpoint === 'REQUEST' ? 'INITIATE_JOB' : 'START_POLLING'}</span>
+                         </>
+                       )}
                     </button>
                     <button 
                       onClick={() => handleCopy(getCodeContent(activeLang)!, activeLang)}
@@ -412,20 +428,31 @@ console.log(data);`;
                        </h4>
                     </div>
                     <div className="flex gap-4">
-                      {liveResponse && (
-                        <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/10 rounded-full">
-                           <div className="w-1 h-1 rounded-full bg-indigo-500 animate-ping"></div>
-                           <span className="text-[8px] font-black uppercase text-indigo-500">Live Feedback Active</span>
+                      {isRunning && (
+                        <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/10 rounded-full border border-indigo-500/20">
+                           <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_8px_#6366f1]"></div>
+                           <span className="text-[8px] font-black uppercase text-indigo-500 tracking-widest">Polling Node active (5s cycle)</span>
                         </div>
                       )}
-                      <button onClick={() => handleCopy(liveResponse ? JSON.stringify(liveResponse, null, 4) : responseSchemaExample, 'JSON Response')} className="text-[9px] font-black uppercase text-emerald-500 hover:underline tracking-widest italic flex items-center gap-2 transition-all">
+                      {liveResponse?.captchaToken && (
+                        <button 
+                          onClick={() => handleCopy(liveResponse.captchaToken, 'Captcha Token')}
+                          className="px-4 py-1 bg-emerald-500 text-white rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg hover:brightness-110 active:scale-95 transition-all animate-in zoom-in duration-300"
+                        >
+                           <Check size={12} strokeWidth={3} /> COPY_CAPTCHA_TOKEN
+                        </button>
+                      )}
+                      <button 
+                        onClick={() => handleCopy(liveResponse ? JSON.stringify(liveResponse, null, 4) : responseSchemaExample, 'JSON Response')} 
+                        className="text-[9px] font-black uppercase text-emerald-500 hover:underline tracking-widest italic flex items-center gap-2 transition-all"
+                      >
                          <Copy size={12} /> COPY_JSON
                       </button>
                     </div>
                   </div>
                   <div className="relative group">
                     <AnimatePresence>
-                      {isRunning && (
+                      {isRunning && !liveResponse && (
                         <motion.div 
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
@@ -433,14 +460,20 @@ console.log(data);`;
                           className="absolute inset-0 z-20 bg-white/60 dark:bg-black/60 backdrop-blur-md flex flex-col items-center justify-center gap-4 rounded-[2.5rem]"
                         >
                            <Loader2 size={32} className="text-indigo-600 animate-spin" />
-                           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600 animate-pulse italic">Đang truy vấn dữ liệu...</p>
+                           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600 animate-pulse italic">Đang truy vấn dữ liệu theo chu kỳ 5 giây...</p>
                         </motion.div>
                       )}
                     </AnimatePresence>
                     
-                    <pre className={`p-8 rounded-[2.5rem] border border-white/5 text-[12px] font-mono overflow-x-auto shadow-inner leading-relaxed transition-all duration-700 ${liveResponse ? "bg-black text-indigo-400" : "bg-[#08080a] text-emerald-500/80"}`}>
+                    <pre className={`p-8 rounded-[2.5rem] border border-white/5 text-[12px] font-mono overflow-x-auto shadow-inner leading-relaxed transition-all duration-700 min-h-[160px] ${liveResponse ? "bg-black text-indigo-400 shadow-[0_0_50px_rgba(99,102,241,0.1)]" : "bg-[#08080a] text-emerald-500/80"}`}>
                        {liveResponse ? JSON.stringify(liveResponse, null, 4) : responseSchemaExample}
                     </pre>
+                    
+                    {isRunning && liveResponse && !liveResponse.captchaToken && (
+                      <div className="absolute bottom-6 right-8 flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-slate-500 italic animate-pulse">
+                         Retrying in 5 seconds...
+                      </div>
+                    )}
                   </div>
                </div>
             </div>

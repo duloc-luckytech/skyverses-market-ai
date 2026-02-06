@@ -1,12 +1,11 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Sparkles, Zap, ArrowRight, Database, 
+  Zap, Database, 
   Info, Copy, Check, Terminal, Cpu, Network,
   ShieldCheck, Code2, Loader2, Play, RefreshCw,
-  Braces, Globe, Activity, Sliders, Video, ImageIcon,
-  ChevronDown, AlertTriangle
+  Braces, Activity, Sliders, Video,
+  ChevronDown, ExternalLink
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 
@@ -15,17 +14,22 @@ export const IntegrationWorkflow: React.FC = () => {
   const [isCopied, setIsCopied] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [showResponse, setShowResponse] = useState(false);
-  const [activeWorkflowTab, setActiveWorkflowTab] = useState<'IMAGE' | 'VIDEO'>('IMAGE');
   const [isExpanded, setIsExpanded] = useState(true);
   const [lastResponse, setLastResponse] = useState<any>(null);
 
-  // Input States
-  const [jwtToken, setJwtToken] = useState('ACCESS_TOKEN_JWT');
-  const [captchaToken, setCaptchaToken] = useState('CAPTCHA_TOKEN_FROM_SKYVERSES_API');
+  // Input States - Các tham số người dùng nhập vào
+  const [jwtToken, setJwtToken] = useState('YOUR_GOOGLE_JWT_TOKEN');
+  const [captchaToken, setCaptchaToken] = useState('CAPTCHA_TOKEN_FROM_SKYVERSES');
 
-  const integrationCurlImage = `curl 'https://aisandbox-pa.googleapis.com/v1/projects/f7243b70-4b22-4222-9ac5-8cf9f6660e12/flowMedia:batchGenerateImages' \\
-  -H 'Content-Type: text/plain;charset=UTF-8' \\
-  -H 'Authorization: Bearer ${jwtToken}' \\
+  const integrationCurlVideo = `curl 'https://aisandbox-pa.googleapis.com/v1/video:batchAsyncGenerateVideoText' \\
+  -H 'accept: */*' \\
+  -H 'authorization: Bearer ${jwtToken}' \\
+  -H 'content-type: text/plain;charset=UTF-8' \\
+  -H 'origin: https://labs.google' \\
+  -H 'referer: https://labs.google/' \\
+  -H 'x-browser-channel: stable' \\
+  -H 'x-browser-copyright: Copyright 2026 Google LLC. All Rights reserved.' \\
+  -H 'x-browser-year: 2026' \\
   --data-raw '{
     "clientContext": {
         "recaptchaContext": {
@@ -33,103 +37,87 @@ export const IntegrationWorkflow: React.FC = () => {
             "applicationType": "RECAPTCHA_APPLICATION_TYPE_WEB"
         },
         "sessionId": ";${Date.now()}",
-        "projectId": "f7243b70-4b22-4222-9ac5-8cf9f6660e12",
-        "tool": "PINHOLE"
+        "projectId": "855d107c-ead0-4272-b56e-b2fbee336197",
+        "tool": "PINHOLE",
+        "userPaygateTier": "PAYGATE_TIER_TWO"
     },
     "requests": [
         {
-            "seed": 861454,
-            "imageModelName": "GEM_PIX_2",
-            "imageAspectRatio": "IMAGE_ASPECT_RATIO_LANDSCAPE",
-            "prompt": "A futuristic jade citadel floating above clouds, cinematic lighting, hyper-detailed",
-            "imageInputs": []
+            "aspectRatio": "VIDEO_ASPECT_RATIO_LANDSCAPE",
+            "seed": ${Math.floor(Math.random() * 9999)},
+            "textInput": {
+                "prompt": "Cinematic orbit shot of a floating neon garden in a purple nebula"
+            },
+            "videoModelKey": "veo_3_1_t2v_fast_ultra",
+            "metadata": {
+                "sceneId": "${crypto.randomUUID()}"
+            }
         }
     ]
 }'`;
 
-  const integrationCurlVideo = `curl 'https://generativelanguage.googleapis.com/v1beta/models/veo-3.1-generate-preview:generateVideo' \\
-  -H 'Content-Type: application/json' \\
-  -H 'Authorization: Bearer ${jwtToken}' \\
-  --data-raw '{
-    "prompt": "Cinematic orbit shot of the jade citadel in a storm",
-    "clientContext": {
-        "recaptchaContext": {
-            "token": "${captchaToken}"
-        }
-    },
-    "config": {
-        "resolution": "1080p",
-        "aspectRatio": "16:9"
-    }
-}'`;
-
-  const activeCurl = activeWorkflowTab === 'IMAGE' ? integrationCurlImage : integrationCurlVideo;
-
   const handleCopy = () => {
-    navigator.clipboard.writeText(activeCurl);
+    navigator.clipboard.writeText(integrationCurlVideo);
     setIsCopied(true);
-    showToast(`Đã sao chép kịch bản ${activeWorkflowTab}`, "success");
+    showToast(`Đã sao chép kịch bản cURL`, "success");
     setTimeout(() => setIsCopied(false), 2000);
   };
 
   const handleRunRequest = async () => {
-    // 1. Validation logic
-    if (jwtToken === 'ACCESS_TOKEN_JWT' || !jwtToken.trim()) {
-      showToast("Vui lòng nhập ACCESS_TOKEN_JWT hợp lệ", "error");
+    // Validation
+    if (!jwtToken || jwtToken === 'YOUR_GOOGLE_JWT_TOKEN') {
+      showToast("Vui lòng nhập Google Access Token (JWT)", "error");
       return;
     }
-    if (captchaToken === 'CAPTCHA_TOKEN_FROM_SKYVERSES_API' || !captchaToken.trim()) {
-      showToast("Vui lòng nhập CAPTCHA_TOKEN hợp lệ", "error");
+    if (!captchaToken || captchaToken === 'CAPTCHA_TOKEN_FROM_SKYVERSES') {
+      showToast("Vui lòng nhập Captcha Token đã giải mã", "error");
       return;
     }
 
     setIsRunning(true);
     setShowResponse(false);
     setLastResponse(null);
-    showToast(`Đang thực thi lệnh ${activeWorkflowTab} tới Google Cloud...`, "info");
+    showToast(`Đang uplink tới Google Neural Node...`, "info");
     
-    const url = activeWorkflowTab === 'IMAGE' 
-      ? 'https://aisandbox-pa.googleapis.com/v1/projects/f7243b70-4b22-4222-9ac5-8cf9f6660e12/flowMedia:batchGenerateImages'
-      : 'https://generativelanguage.googleapis.com/v1beta/models/veo-3.1-generate-preview:generateVideo';
+    // Endpoint thực tế của Google VEO3 Sandbox
+    const url = 'https://aisandbox-pa.googleapis.com/v1/video:batchAsyncGenerateVideoText';
 
-    const body = activeWorkflowTab === 'IMAGE' ? {
+    const body = {
       clientContext: {
         recaptchaContext: {
           token: captchaToken,
           applicationType: "RECAPTCHA_APPLICATION_TYPE_WEB"
         },
         sessionId: `;${Date.now()}`,
-        projectId: "f7243b70-4b22-4222-9ac5-8cf9f6660e12",
-        tool: "PINHOLE"
+        projectId: "855d107c-ead0-4272-b56e-b2fbee336197",
+        tool: "PINHOLE",
+        userPaygateTier: "PAYGATE_TIER_TWO"
       },
       requests: [
         {
-          seed: Math.floor(Math.random() * 999999),
-          imageModelName: "GEM_PIX_2",
-          imageAspectRatio: "IMAGE_ASPECT_RATIO_LANDSCAPE",
-          prompt: "A futuristic jade citadel floating above clouds, cinematic lighting, hyper-detailed",
-          imageInputs: []
+          aspectRatio: "VIDEO_ASPECT_RATIO_LANDSCAPE",
+          seed: Math.floor(Math.random() * 9999),
+          textInput: {
+            prompt: "Cinematic orbit shot of a floating neon garden in a purple nebula"
+          },
+          videoModelKey: "veo_3_1_t2v_fast_ultra",
+          metadata: {
+            sceneId: crypto.randomUUID()
+          }
         }
       ]
-    } : {
-      prompt: "Cinematic orbit shot of the jade citadel in a storm",
-      clientContext: {
-        recaptchaContext: {
-          token: captchaToken
-        }
-      },
-      config: {
-        resolution: "1080p",
-        aspectRatio: "16:9"
-      }
     };
 
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwtToken}`
+          'accept': '*/*',
+          'content-type': 'text/plain;charset=UTF-8',
+          'Authorization': `Bearer ${jwtToken}`,
+          'x-browser-channel': 'stable',
+          'x-browser-copyright': 'Copyright 2026 Google LLC. All Rights reserved.',
+          'x-browser-year': '2026'
         },
         body: JSON.stringify(body)
       });
@@ -139,13 +127,17 @@ export const IntegrationWorkflow: React.FC = () => {
       setShowResponse(true);
 
       if (response.ok) {
-        showToast("Yêu cầu được thực thi thành công", "success");
+        showToast("Tác vụ khởi tạo thành công!", "success");
       } else {
-        showToast(`Lỗi Server: ${data.error?.message || response.statusText}`, "error");
+        showToast(`Google API Error: ${data.error?.message || response.statusText}`, "error");
       }
     } catch (err: any) {
       console.error("Uplink Error:", err);
-      setLastResponse({ error: "CONNECTION_FAILED", message: err.message || "Failed to reach Google APIs" });
+      setLastResponse({ 
+        error: "CONNECTION_FAILED", 
+        message: err.message || "Failed to reach Google APIs. Possible CORS restriction or network issue.",
+        hint: "Trong môi trường Production, hãy gọi lệnh này từ Backend của bạn để tránh lỗi CORS Browser."
+      });
       setShowResponse(true);
       showToast("Lỗi kết nối tới Endpoint", "error");
     } finally {
@@ -165,12 +157,12 @@ export const IntegrationWorkflow: React.FC = () => {
             <Network size={28} />
           </div>
           <div className="space-y-1">
-            <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">List examples</h3>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Các api của fx lab google veo3</p>
+            <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Integration Demo</h3>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Xác thực 2 yếu tố: JWT + Captcha Token</p>
           </div>
         </div>
         <div className="flex items-center gap-4 pr-2">
-           <p className="hidden sm:block text-[9px] font-bold text-gray-400 uppercase tracking-widest italic">{isExpanded ? 'Nhấn để thu gọn' : 'Nhấn để xem các kịch bản mẫu'}</p>
+           <p className="hidden sm:block text-[9px] font-bold text-gray-400 uppercase tracking-widest italic">{isExpanded ? 'Nhấn để thu gọn' : 'Nhấn để xem kịch bản tích hợp'}</p>
            <div className={`w-10 h-10 rounded-full border border-black/5 dark:border-white/10 flex items-center justify-center text-gray-400 transition-all duration-500 ${isExpanded ? 'rotate-180 bg-black dark:bg-white text-white dark:text-black' : ''}`}>
               <ChevronDown size={20} />
            </div>
@@ -189,32 +181,19 @@ export const IntegrationWorkflow: React.FC = () => {
             <div className="space-y-16 pb-10">
               <div className="grid grid-cols-1 gap-16">
                 <div className="space-y-10">
-                  {/* TAB SELECTION */}
                   <div className="flex flex-col md:flex-row md:items-center gap-8">
-                    <div className="flex items-center bg-slate-100 dark:bg-black/40 p-1.5 rounded-2xl border border-black/5 dark:border-white/10 shadow-inner shrink-0">
-                       <button 
-                         onClick={(e) => { e.stopPropagation(); setActiveWorkflowTab('IMAGE'); setShowResponse(false); }}
-                         className={`flex items-center gap-3 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${activeWorkflowTab === 'IMAGE' ? 'bg-white dark:bg-[#1a1a1e] text-indigo-600 shadow-xl' : 'text-gray-500 hover:text-indigo-600'}`}
-                       >
-                         <ImageIcon size={14} /> Tạo Image
-                       </button>
-                       <button 
-                         onClick={(e) => { e.stopPropagation(); setActiveWorkflowTab('VIDEO'); setShowResponse(false); }}
-                         className={`flex items-center gap-3 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${activeWorkflowTab === 'VIDEO' ? 'bg-white dark:bg-[#1a1a1e] text-indigo-600 shadow-xl' : 'text-gray-500 hover:text-indigo-600'}`}
-                       >
-                         <Video size={14} /> Tạo Video
-                       </button>
+                    <div className="flex items-center bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20">
+                       <Video size={14} className="mr-3" /> VEO3 Google Implementation
                     </div>
-                    
                     <div className="flex-grow h-px bg-gradient-to-r from-indigo-500/20 to-transparent hidden md:block"></div>
                     <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-black uppercase text-emerald-500 bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-500/20 shadow-sm">Protocol: V3_ENTERPRISE</span>
+                      <span className="text-[10px] font-black uppercase text-emerald-500 bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-500/20 shadow-sm italic">Direct_Uplink_Node</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 lg:gap-16 items-start">
                     
-                    {/* BODY PARAMS INPUTS */}
+                    {/* INPUTS PANEL */}
                     <div className="space-y-8 bg-slate-50/50 dark:bg-white/[0.01] p-10 rounded-[2.5rem] border border-black/5 dark:border-white/5 shadow-2xl relative overflow-hidden group">
                       <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-[5s]">
                          <Braces size={200} />
@@ -223,43 +202,23 @@ export const IntegrationWorkflow: React.FC = () => {
                       <div className="space-y-8 relative z-10">
                         <div className="flex items-center gap-3 text-brand-blue mb-4">
                           <Sliders size={18} />
-                          <span className="text-[11px] font-black uppercase tracking-[0.4em] italic">Body Params Schema</span>
+                          <span className="text-[11px] font-black uppercase tracking-[0.4em] italic">Injection Parameters</span>
                         </div>
 
                         <div className="space-y-6">
                           <div className="space-y-2">
-                            <div className="flex justify-between items-center px-1">
-                               <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">ACCESS_TOKEN_JWT</label>
-                               <button 
-                                 onClick={async () => {
-                                    const text = await navigator.clipboard.readText();
-                                    setJwtToken(text);
-                                 }}
-                                 className="text-[9px] font-black text-brand-blue uppercase hover:underline"
-                               >
-                                  Paste
-                               </button>
+                            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 italic">Google Access Token (JWT)</label>
+                            <div className="relative group">
+                               <input 
+                                value={jwtToken}
+                                onChange={(e) => setJwtToken(e.target.value)}
+                                className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 p-4 rounded-xl text-[12px] font-mono text-indigo-600 dark:text-indigo-400 outline-none focus:ring-1 focus:ring-brand-blue/30 transition-all shadow-inner"
+                              />
                             </div>
-                            <input 
-                              value={jwtToken}
-                              onChange={(e) => setJwtToken(e.target.value)}
-                              className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/10 p-4 rounded-xl text-[12px] font-mono text-indigo-600 dark:text-indigo-400 outline-none focus:ring-1 focus:ring-brand-blue/30 transition-all shadow-inner"
-                            />
                           </div>
 
                           <div className="space-y-2">
-                            <div className="flex justify-between items-center px-1">
-                               <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">CAPTCHA_TOKEN</label>
-                               <button 
-                                 onClick={async () => {
-                                    const text = await navigator.clipboard.readText();
-                                    setCaptchaToken(text);
-                                 }}
-                                 className="text-[9px] font-black text-brand-blue uppercase hover:underline"
-                               >
-                                  Paste
-                               </button>
-                            </div>
+                            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 italic">Skyverses Captcha Token</label>
                             <input 
                               value={captchaToken}
                               onChange={(e) => setCaptchaToken(e.target.value)}
@@ -273,8 +232,8 @@ export const IntegrationWorkflow: React.FC = () => {
                             className="w-full py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.4em] shadow-xl shadow-indigo-600/20 hover:scale-102 active:scale-95 transition-all flex items-center justify-center gap-4 relative overflow-hidden group"
                           >
                             <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                            {isRunning ? <Loader2 className="animate-spin" size={20} /> : <Play size={20} fill="currentColor" />}
-                            {isRunning ? 'ĐANG KHỞI CHẠY...' : `RUN REAL ${activeWorkflowTab} REQUEST`}
+                            {isRunning ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} fill="currentColor" />}
+                            {isRunning ? 'EXECUTING...' : `RUN VEO3 API REQUEST`}
                           </button>
                         </div>
                       </div>
@@ -282,38 +241,38 @@ export const IntegrationWorkflow: React.FC = () => {
                       <div className="pt-8 border-t border-black/5 dark:border-white/5 relative z-10">
                         <div className="flex items-center gap-3 text-brand-blue mb-3">
                           <ShieldCheck size={16} />
-                          <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">Real API Integration</span>
+                          <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">Security Protocol</span>
                         </div>
                         <p className="text-[11px] text-slate-500 dark:text-gray-400 italic leading-relaxed bg-black/5 dark:bg-white/5 p-4 rounded-xl border border-black/5 dark:border-white/5">
-                          Hệ thống sẽ thực hiện gọi API thực tế tới máy chủ Google. Vui lòng đảm bảo <code className="text-indigo-600 dark:text-indigo-400 font-black">ACCESS_TOKEN_JWT</code> còn hiệu lực.
+                          "Hệ thống sẽ thực hiện lệnh POST tới Endpoint của Google kèm theo token đã giải mã. Đảm bảo bạn đã whitelist IP hoặc cấu hình CORS nếu chạy trực tiếp trên Browser."
                         </p>
                       </div>
                     </div>
 
-                    {/* RESPONSE VIEWPORT */}
+                    {/* RESPONSE TERMINAL */}
                     <div className="space-y-6">
                       <div className="flex justify-between items-center px-2">
                         <div className="flex items-center gap-3">
                           <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_#6366f1] animate-pulse"></div>
-                          <span className="text-[11px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest italic">
-                            {showResponse ? 'LIVE_RESPONSE_MANIFEST' : 'IMPLEMENTATION_CURL'}
+                          <span className="text-[11px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest italic">
+                            {showResponse ? 'UPLINK_RESPONSE_TRACE' : 'INTEGRATION_CURL_SCRIPT'}
                           </span>
                         </div>
                         <div className="flex gap-2">
                           {showResponse && (
                             <button 
                               onClick={() => setShowResponse(false)}
-                              className="px-4 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-full text-[9px] font-black uppercase tracking-widest transition-all border border-black/5 dark:border-white/10 flex items-center gap-2"
+                              className="px-4 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-full text-[9px] font-black uppercase tracking-widest transition-all border border-black/5 dark:border-white/10 flex items-center gap-2 shadow-sm"
                             >
                               <RefreshCw size={12} /> RESET
                             </button>
                           )}
                           <button 
                             onClick={handleCopy}
-                            className="px-4 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all border border-black/5 dark:border-white/10"
+                            className="px-4 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all border border-black/5 dark:border-white/10 shadow-sm"
                           >
                             {isCopied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />} 
-                            {isCopied ? 'ĐÃ CHÉP' : 'COPY'}
+                            {isCopied ? 'COPIED' : 'COPY'}
                           </button>
                         </div>
                       </div>
@@ -334,11 +293,11 @@ export const IntegrationWorkflow: React.FC = () => {
                                 </motion.div>
                               ) : (
                                 <motion.div
-                                  key={`code-${activeWorkflowTab}`}
+                                  key="code-script"
                                   initial={{ opacity: 0, y: -10 }}
                                   animate={{ opacity: 1, y: 0 }}
                                 >
-                                  {activeCurl.split('\n').map((line, i) => {
+                                  {integrationCurlVideo.split('\n').map((line, i) => {
                                     if (line.includes(captchaToken) || line.includes(jwtToken)) {
                                       return (
                                         <span key={i} className="text-indigo-400 font-black underline decoration-indigo-500/50 italic">
@@ -354,10 +313,17 @@ export const IntegrationWorkflow: React.FC = () => {
                           </code>
                         </pre>
                         
-                        {/* Visual Indicator */}
-                        <div className="absolute -bottom-2 -right-2 bg-indigo-600 text-white p-3 rounded-xl shadow-2xl z-20 transition-all rotate-12 flex items-center gap-2">
+                        {/* Status Overlay */}
+                        <div className="absolute -bottom-2 -right-2 bg-indigo-600 text-white p-3 rounded-xl shadow-2xl z-20 transition-all rotate-12 flex items-center gap-2 group-hover:rotate-0">
                            <Code2 size={24} />
                         </div>
+                      </div>
+
+                      <div className="p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl flex gap-4 items-start">
+                         <Info className="text-indigo-500 shrink-0 mt-0.5" size={16} />
+                         <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-tight italic leading-relaxed">
+                            "Lệnh này khởi chạy tiến trình render video tại cụm Cloud của Google. Nếu thành công, bạn sẽ nhận được một operationId để poll kết quả video cuối cùng."
+                         </p>
                       </div>
                     </div>
                   </div>
@@ -368,13 +334,14 @@ export const IntegrationWorkflow: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* COMPLIANCE FOOTER - MODIFIED TO SHOW ONLY CONTACT BUTTON */}
-      <div className="p-10 bg-slate-900 dark:bg-black rounded-[3rem] border border-white/10 flex flex-col items-center justify-center gap-6 shadow-3xl">
-         <button className="px-16 py-6 bg-white text-black rounded-xl text-[12px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-xl active:scale-95 whitespace-nowrap">
-            Liên hệ đội ngũ kỹ sư
+      {/* CONTACT/SUPPORT CARD */}
+      <div className="p-10 bg-slate-900 dark:bg-black rounded-[3rem] border border-white/10 flex flex-col items-center justify-center gap-6 shadow-3xl relative overflow-hidden group">
+         <div className="absolute inset-0 bg-brand-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+         <button className="px-16 py-6 bg-white text-black rounded-xl text-[12px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-xl active:scale-95 whitespace-nowrap relative z-10 flex items-center gap-3">
+            LIÊN HỆ TƯ VẤN KỸ THUẬT <ExternalLink size={14} />
          </button>
-         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest italic text-center">
-            Mọi yêu cầu hỗ trợ kỹ thuật và tích hợp hệ thống sẽ được phản hồi trong vòng 24h.
+         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic text-center relative z-10">
+            Hệ thống hỗ trợ các doanh nghiệp quy mô lớn triển khai Pipeline AI tự động hóa.
          </p>
       </div>
     </div>
