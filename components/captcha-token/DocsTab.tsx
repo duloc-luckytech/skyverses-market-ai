@@ -147,19 +147,16 @@ console.log(data);`;
         showToast("Tác vụ thất bại.", "error");
         pollingRef.current = false;
         setIsRunning(false);
-      } else {
-        // Continue polling after 5 seconds
-        addLog(`Status: ${data.status}. Retrying in 5s...`);
+      } else if (pollingRef.current) {
+        // Continue polling after 5 seconds if still in polling mode
         setTimeout(() => startPolling(jobId), 5000);
       }
     } catch (err) {
       console.error("Polling Error:", err);
-      setTimeout(() => startPolling(jobId), 5000);
+      if (pollingRef.current) {
+        setTimeout(() => startPolling(jobId), 10000);
+      }
     }
-  };
-
-  const addLog = (msg: string) => {
-    console.log(`[API_POLLING] ${msg}`);
   };
 
   const handleRunRequest = async () => {
@@ -184,18 +181,24 @@ console.log(data);`;
         });
         const data = await response.json();
         setLiveResponse(data);
-        if (data.success) {
-          showToast("Khởi tạo Job thành công", "success");
-          if (data.jobId) setTestJobId(data.jobId);
+        if (data.success && data.jobId) {
+          showToast("Khởi tạo Job thành công. Chuyển sang chế độ Polling...", "success");
+          setTestJobId(data.jobId);
           if (onRefreshAccount) onRefreshAccount();
-          setIsRunning(false);
+          
+          // AUTO FOCUS TO POLL TAB AND START POLLING
+          setTimeout(() => {
+            setDocEndpoint('POLL');
+            pollingRef.current = true;
+            startPolling(data.jobId);
+          }, 1000);
         } else {
           showToast(data.message || "Yêu cầu bị từ chối", "error");
           setIsRunning(false);
         }
       } else {
-        // START POLLING SEQUENCE
-        if (testJobId === 'JOB_ID_FROM_REQUEST') {
+        // START POLLING MANUALLY
+        if (testJobId === 'JOB_ID_FROM_REQUEST' || !testJobId) {
           showToast("Vui lòng nhập Job ID hợp lệ", "warning");
           setIsRunning(false);
           return;
