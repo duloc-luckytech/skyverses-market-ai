@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Settings, Database, Zap, Fingerprint, Box, Cpu, 
@@ -13,11 +12,12 @@ import {
   PlusCircle, Layout, AlignLeft, Globe, List, Code2, Layers,
   CheckCircle2, AlertTriangle, ToggleLeft, ToggleRight,
   Sparkles, Compass, Search, RefreshCw, Bot, Filter, Cog,
-  Key, Languages, Briefcase, HelpCircle, LayoutGrid, Tag
+  Key, Languages, Briefcase, HelpCircle, LayoutGrid, Tag, Video, ImageIcon, Gift
 } from 'lucide-react';
 import { marketApi } from '../apis/market';
+import { systemConfigApi } from '../apis/config';
 import { authApi, UserListResponse, UserListParams } from '../apis/auth';
-import { Solution } from '../types';
+import { Solution, HomeBlock, Language } from '../types';
 import { SOLUTIONS as LOCAL_SOLUTIONS } from '../data';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -45,9 +45,15 @@ const AdminCmsProPage = () => {
   const { showToast } = useToast();
 
   const [activeTab, setActiveTab] = useState<ProAdminTab>('DASHBOARD');
+  const [viewMode, setViewMode] = useState<'CARD' | 'LIST'>('LIST');
   const [remoteSolutions, setRemoteSolutions] = useState<Solution[]>([]);
+  const [homeBlocks, setHomeBlocks] = useState<HomeBlock[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  
+  // Cloud Filter States
+  const [cloudSearchText, setCloudSearchText] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'HIDDEN'>('ALL');
+  const [homeBlockFilter, setHomeBlockFilter] = useState<string>('ALL');
   
   // Solution Editing State
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -58,8 +64,14 @@ const AdminCmsProPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const solRes = await marketApi.getSolutions();
+      const [solRes, configRes] = await Promise.all([
+        marketApi.getSolutions(),
+        systemConfigApi.getSystemConfig()
+      ]);
       if (solRes && solRes.data) setRemoteSolutions(solRes.data);
+      if (configRes?.success && configRes.data.marketHomeBlock) {
+        setHomeBlocks(configRes.data.marketHomeBlock.sort((a, b) => a.order - b.order));
+      }
     } catch (error) {
       console.error("Uplink Error:", error);
     }
@@ -165,6 +177,30 @@ const AdminCmsProPage = () => {
     }
   };
 
+  const filteredSolutions = useMemo(() => {
+    const base = activeTab === 'CLOUD' ? remoteSolutions : LOCAL_SOLUTIONS;
+    return base.filter(sol => {
+      // Search
+      const s = cloudSearchText.toLowerCase();
+      const matchesSearch = !s || 
+        sol.name.en.toLowerCase().includes(s) || 
+        sol.name.vi.toLowerCase().includes(s) || 
+        sol.slug.toLowerCase().includes(s) || 
+        sol.id.toLowerCase().includes(s);
+      
+      // Status
+      const matchesStatus = statusFilter === 'ALL' || 
+        (statusFilter === 'ACTIVE' && sol.isActive) || 
+        (statusFilter === 'HIDDEN' && !sol.isActive);
+      
+      // Home Block
+      const matchesBlock = homeBlockFilter === 'ALL' || 
+        (sol.homeBlocks && sol.homeBlocks.includes(homeBlockFilter));
+
+      return matchesSearch && matchesStatus && matchesBlock;
+    });
+  }, [activeTab, remoteSolutions, cloudSearchText, statusFilter, homeBlockFilter]);
+
   const sidebarItems = [
     { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart3 size={20} /> },
     { id: 'CLOUD', label: 'Thị trường Cloud', icon: <Cloud size={20} /> },
@@ -209,6 +245,80 @@ const AdminCmsProPage = () => {
            )}
         </header>
 
+        {/* LỌC DỮ LIỆU THỊ TRƯỜNG CLOUD */}
+        {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
+           <div className="px-8 lg:px-12 py-6 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#08080a] flex flex-col lg:flex-row items-center gap-6 z-[80]">
+              <div className="relative w-full lg:w-96 group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue transition-all" size={18} />
+                <input 
+                  type="text" 
+                  value={cloudSearchText}
+                  onChange={(e) => setCloudSearchText(e.target.value)}
+                  placeholder="Tìm theo tên, slug, ID..."
+                  className="w-full bg-white dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm font-bold outline-none focus:border-brand-blue transition-all"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+                {/* Trạng thái hiển thị */}
+                <div className="flex items-center gap-2 px-4 py-2 border border-black/5 dark:border-white/10 rounded-xl bg-white dark:bg-black/40">
+                  <Activity size={16} className="text-gray-400" />
+                  <select 
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value as any)}
+                    className="bg-transparent border-none text-[11px] font-black uppercase tracking-widest outline-none cursor-pointer"
+                  >
+                    <option value="ALL">Tất cả Trạng thái</option>
+                    <option value="ACTIVE">Hoạt động (Active)</option>
+                    <option value="HIDDEN">Đã ẩn (Hidden)</option>
+                  </select>
+                </div>
+
+                {/* Vị trí trang chủ */}
+                <div className="flex items-center gap-2 px-4 py-2 border border-black/5 dark:border-white/10 rounded-xl bg-white dark:bg-black/40">
+                  <LayoutGrid size={16} className="text-gray-400" />
+                  <select 
+                    value={homeBlockFilter}
+                    onChange={(e) => setHomeBlockFilter(e.target.value)}
+                    className="bg-transparent border-none text-[11px] font-black uppercase tracking-widest outline-none cursor-pointer max-w-[150px]"
+                  >
+                    <option value="ALL">Tất cả Home Blocks</option>
+                    {homeBlocks.map(block => (
+                      <option key={block.key} value={block.key}>{block.title.en}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-xl border border-black/5 dark:border-white/10 shadow-inner">
+                   <button 
+                     onClick={() => setViewMode('LIST')}
+                     className={`p-2 rounded-lg transition-all ${viewMode === 'LIST' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-lg' : 'text-gray-400'}`}
+                   >
+                     <List size={16} />
+                   </button>
+                   <button 
+                     onClick={() => setViewMode('CARD')}
+                     className={`p-2 rounded-lg transition-all ${viewMode === 'CARD' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-lg' : 'text-gray-400'}`}
+                   >
+                     <LayoutGrid size={16} />
+                   </button>
+                </div>
+
+                <button 
+                  onClick={() => { setCloudSearchText(''); setStatusFilter('ALL'); setHomeBlockFilter('ALL'); }}
+                  className="p-3 text-gray-400 hover:text-red-500 transition-colors"
+                  title="Reset bộ lọc"
+                >
+                  <RefreshCw size={18} />
+                </button>
+              </div>
+              
+              <div className="lg:ml-auto flex items-center gap-3">
+                 <span className="text-[10px] font-black uppercase text-gray-400 italic">Kết quả: {filteredSolutions.length}</span>
+              </div>
+           </div>
+        )}
+
         <div className="flex-grow">
            <AnimatePresence mode="wait">
              {activeTab === 'DASHBOARD' && <DashboardTab key="dashboard" />}
@@ -223,9 +333,10 @@ const AdminCmsProPage = () => {
              {activeTab === 'CONFIG' && <ConfigurationTab key="config" />}
              {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
                <NodeRegistryTab 
-                 key={activeTab} 
+                 key={`${activeTab}-${viewMode}`} 
                  activeTab={activeTab} 
-                 solutions={activeTab === 'CLOUD' ? remoteSolutions : LOCAL_SOLUTIONS} 
+                 viewMode={viewMode}
+                 solutions={filteredSolutions} 
                  onEdit={handleEdit} 
                  onDelete={()=>{}} 
                  onToggleActive={handleToggleActive} 

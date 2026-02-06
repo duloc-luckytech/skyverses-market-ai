@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   CloudUpload, Check, Eye, EyeOff, Edit3, Trash2, Zap, Monitor, 
-  Video, Braces, Terminal, Hash
+  Video, Braces, Terminal, Hash, LayoutGrid, Star, Globe, ShieldCheck
 } from 'lucide-react';
 import { Solution } from '../../types';
 
@@ -14,10 +14,11 @@ interface NodeRegistryTabProps {
   onToggleActive: (sol: Solution) => void;
   onUpdateHomeBlocks: (sol: Solution, newBlocks: string[]) => void;
   activeTab: 'CLOUD' | 'LOCAL';
+  viewMode?: 'CARD' | 'LIST';
 }
 
 export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({ 
-  solutions, isSyncedOnCloud, onEdit, onDelete, onToggleActive, activeTab 
+  solutions, isSyncedOnCloud, onEdit, onDelete, onToggleActive, activeTab, viewMode = 'LIST' 
 }) => {
   const getDemoIcon = (type: string) => {
     switch (type) {
@@ -27,6 +28,104 @@ export const NodeRegistryTab: React.FC<NodeRegistryTabProps> = ({
       default: return <Terminal size={14} />;
     }
   };
+
+  if (viewMode === 'CARD') {
+    return (
+      <div className="p-8 lg:p-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {solutions.map((sol, idx) => {
+          const asynced = isSyncedOnCloud(sol.slug);
+          return (
+            <motion.div
+              key={sol._id || sol.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05 }}
+              className={`group relative flex flex-col bg-white dark:bg-[#0d0d0f] border rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 ${
+                !sol.isActive ? 'opacity-60 grayscale' : 'border-black/5 dark:border-white/5 hover:border-brand-blue/30'
+              }`}
+            >
+              <div className="relative aspect-[16/10] overflow-hidden bg-black">
+                <img src={sol.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" alt="" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                
+                <div className="absolute top-4 left-4 flex flex-col gap-2">
+                   <div className="flex items-center gap-2 px-3 py-1 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-[8px] font-black text-white uppercase tracking-widest">
+                      {getDemoIcon(sol.demoType)} <span className="ml-1">{sol.demoType}</span>
+                   </div>
+                   {sol.featured && (
+                      <div className="flex items-center gap-2 px-3 py-1 bg-orange-500/80 backdrop-blur-md text-white text-[8px] font-black uppercase rounded-full shadow-lg">
+                        <Star size={10} fill="currentColor" /> Featured
+                      </div>
+                   )}
+                </div>
+
+                <div className="absolute top-4 right-4">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onToggleActive(sol); }}
+                    className={`p-2 rounded-full backdrop-blur-md border transition-all ${sol.isActive ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500 hover:bg-emerald-500 hover:text-white' : 'bg-slate-500/20 border-slate-500/40 text-white hover:bg-white hover:text-black'}`}
+                  >
+                    {sol.isActive ? <Eye size={14}/> : <EyeOff size={14}/>}
+                  </button>
+                </div>
+
+                <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+                   <div className="space-y-1">
+                      <p className="text-[10px] font-black text-brand-blue uppercase tracking-widest leading-none">{sol.category.en}</p>
+                      <h4 className="text-xl font-black uppercase italic tracking-tighter text-white leading-none truncate pr-10">{sol.name.en}</h4>
+                   </div>
+                   {asynced ? (
+                      <div className="flex items-center gap-1.5 text-emerald-500" title="Synced with Cloud Registry">
+                         <ShieldCheck size={14} />
+                      </div>
+                   ) : (
+                      <div className="flex items-center gap-1.5 text-orange-500" title="Local Only">
+                         <Globe size={14} />
+                      </div>
+                   )}
+                </div>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="space-y-2">
+                   <p className="text-[9px] font-mono text-gray-500 dark:text-gray-600 uppercase tracking-widest">ID: {sol.id}</p>
+                   <p className="text-[11px] text-slate-500 dark:text-gray-400 font-medium italic line-clamp-2">"{sol.description.en}"</p>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5">
+                   {sol.homeBlocks?.map(block => (
+                      <span key={block} className="px-2 py-0.5 bg-indigo-500/10 text-indigo-500 rounded text-[7px] font-black uppercase tracking-tighter italic border border-indigo-500/20">
+                         {block}
+                      </span>
+                   ))}
+                </div>
+
+                <div className="pt-4 border-t border-black/5 dark:border-white/5 flex justify-between items-center">
+                   <div className="flex items-center gap-1.5 text-orange-500">
+                      <Zap size={12} fill="currentColor" />
+                      <span className="text-[12px] font-black italic">{sol.priceCredits} CR</span>
+                   </div>
+                   <div className="flex gap-2">
+                      <button 
+                        onClick={() => onEdit(sol)}
+                        className="p-2.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-xl transition-all shadow-sm"
+                      >
+                         <Edit3 size={14} />
+                      </button>
+                      <button 
+                        onClick={() => onDelete(sol)}
+                        className="p-2.5 bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-sm"
+                      >
+                         <Trash2 size={14} />
+                      </button>
+                   </div>
+                </div>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
+    );
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-0 overflow-x-auto no-scrollbar">
