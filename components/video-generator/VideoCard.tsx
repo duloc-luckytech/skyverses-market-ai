@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -25,7 +24,7 @@ export interface VideoResult {
   isRefunded?: boolean;
   startImg?: string | null;
   endImg?: string | null;
-  logs?: string[]; // Added logs array
+  logs?: string[];
 }
 
 interface VideoCardProps {
@@ -36,7 +35,7 @@ interface VideoCardProps {
   onDelete: (id: string) => void;
   onRetry: (res: VideoResult) => void;
   onDownload: (url: string, filename: string) => void;
-  onViewLogs?: (res: VideoResult) => void; // Added onViewLogs prop
+  onViewLogs?: (res: VideoResult) => void;
 }
 
 export const VideoCard: React.FC<VideoCardProps> = ({ 
@@ -97,7 +96,6 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       className={cardClass}
       onClick={() => onToggleSelect()}
     >
-      {/* Visual Area */}
       <div className={`relative aspect-video rounded-2xl overflow-hidden bg-slate-200 dark:bg-black border border-black/5 dark:border-white/5 flex items-center justify-center`}>
         {res.status === 'processing' ? (
           <div className="w-full h-full flex flex-col items-center justify-center relative bg-slate-200 dark:bg-black/60">
@@ -123,7 +121,6 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           />
         )}
         
-        {/* Done Overlays */}
         {res.status === 'done' && res.url && (
            <div 
              onClick={togglePlay}
@@ -137,21 +134,6 @@ export const VideoCard: React.FC<VideoCardProps> = ({
            </div>
         )}
 
-        {/* Reference images indicators */}
-        <div className="absolute bottom-2 left-2 flex gap-1.5 z-10 pointer-events-none group-hover:opacity-0 transition-opacity">
-          {res.startImg && (
-            <div className="w-8 h-8 rounded-md border border-white/20 overflow-hidden bg-black/40 shadow-lg">
-              <img src={res.startImg} className="w-full h-full object-cover" alt="" />
-            </div>
-          )}
-          {res.endImg && (
-            <div className="w-8 h-8 rounded-md border border-white/20 overflow-hidden bg-black/40 shadow-lg">
-              <img src={res.endImg} className="w-full h-full object-cover" alt="" />
-            </div>
-          )}
-        </div>
-
-        {/* Top Right Actions */}
         <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-20">
           <button 
             onClick={(e) => { e.stopPropagation(); onViewLogs?.(res); }}
@@ -207,7 +189,6 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           )}
         </div>
 
-        {/* Select indicator */}
         <div 
           className={`absolute top-3 left-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-purple-600 border-purple-500 shadow-xl scale-110' : 'border-white/20 bg-black/40 hover:bg-black/60'}`}
         >
@@ -221,7 +202,6 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         )}
       </div>
 
-      {/* Info Area */}
       <div className={`px-2 pb-2 space-y-3 ${res.status === 'processing' ? 'opacity-60' : ''}`}>
         <div className="space-y-1">
           <div className="flex justify-between items-start gap-2">
@@ -259,9 +239,6 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           </div>
           <div className="text-right">
             <span className="text-[8px] font-black text-slate-400 dark:text-white/20 uppercase tracking-widest italic block">{res.model}</span>
-            {res.status === 'done' && (
-              <span className="text-[7px] font-bold text-emerald-500 uppercase tracking-widest">Verified_Build</span>
-            )}
           </div>
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Download, Share2, AlertTriangle, Terminal } from 'lucide-react';
@@ -638,7 +637,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         handleRetry={handleRetry} triggerDownload={triggerDownload}
         handleDownloadAllDone={handleDownloadAllDone} todayKey={todayKey}
         onApplyExample={handleApplyExample}
-        onViewLogs={setSelectedLogTask}
+        onViewLogs={(res) => setSelectedLogTask(res)}
       />
 
       <AnimatePresence>
