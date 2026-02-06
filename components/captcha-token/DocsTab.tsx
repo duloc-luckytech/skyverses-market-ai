@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -31,7 +32,7 @@ export const DocsTab: React.FC<DocsTabProps> = ({ apiKey: accountApiKey, onRefre
   
   // Interactive States
   const [action, setAction] = useState<CaptchaAction>('VIDEO');
-  const [testJobId, setTestJobId] = useState('JOB_ID_FROM_REQUEST');
+  const [testJobId, setTestJobId] = useState('67972758169188686629910a');
   const [displayApiKey, setDisplayApiKey] = useState(accountApiKey || 'YOUR_API_KEY');
 
   // Live Execution State
@@ -52,6 +53,7 @@ export const DocsTab: React.FC<DocsTabProps> = ({ apiKey: accountApiKey, onRefre
   }, [docEndpoint]);
 
   const handleCopy = (text: string, section: string) => {
+    if (!text) return;
     navigator.clipboard.writeText(text);
     setCopiedSection(section);
     showToast(`Đã sao chép ${section}`, 'success');
@@ -422,6 +424,20 @@ console.log(data);`;
                     </div>
                   </div>
                   <div className="relative group">
+                    <AnimatePresence>
+                      {isRunning && (
+                        <motion.div 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="absolute inset-0 z-20 bg-white/60 dark:bg-black/60 backdrop-blur-md flex flex-col items-center justify-center gap-4 rounded-[2.5rem]"
+                        >
+                           <Loader2 size={32} className="text-indigo-600 animate-spin" />
+                           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600 animate-pulse italic">Đang truy vấn dữ liệu...</p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    
                     <pre className={`p-8 rounded-[2.5rem] border border-white/5 text-[12px] font-mono overflow-x-auto shadow-inner leading-relaxed transition-all duration-700 ${liveResponse ? "bg-black text-indigo-400" : "bg-[#08080a] text-emerald-500/80"}`}>
                        {liveResponse ? JSON.stringify(liveResponse, null, 4) : responseSchemaExample}
                     </pre>
