@@ -141,7 +141,7 @@ const AdminCmsProPage = () => {
     if (!editedItem) return;
     setIsSaving(true);
     const existingRemote = remoteSolutions.find(r => r.slug.toLowerCase().trim() === editedItem.slug.toLowerCase().trim());
-    let res;
+    let res: any;
     
     try {
       if (existingRemote && editingId !== 'NEW') {
@@ -150,7 +150,7 @@ const AdminCmsProPage = () => {
         res = await marketApi.createSolution(editedItem);
       }
 
-      if (res.success || (res && (res as any).data)) {
+      if (res.success || (res && res.data)) {
         await fetchData();
         setEditingId(null);
         setEditedItem(null);
