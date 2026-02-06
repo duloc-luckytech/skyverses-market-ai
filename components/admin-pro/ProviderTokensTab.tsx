@@ -5,11 +5,13 @@ import {
   Ticket, Plus, Search, Filter, Edit3, Trash2, Check, X, 
   Loader2, Zap, ShieldCheck, Mail, Key, Database, Globe,
   Activity, AlertCircle, Clock, ToggleLeft, ToggleRight, 
-  ChevronDown, Server, Cloud, Cpu, Terminal
+  ChevronDown, Server, Cloud, Cpu, Terminal, Copy
 } from 'lucide-react';
 import { providerTokensApi, ProviderToken, ProviderTokenRequest } from '../../apis/provider-tokens';
+import { useToast } from '../../context/ToastContext';
 
 export const ProviderTokensTab: React.FC = () => {
+  const { showToast } = useToast();
   const [tokens, setTokens] = useState<ProviderToken[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -83,21 +85,52 @@ export const ProviderTokensTab: React.FC = () => {
       if (res.success) {
         setIsDrawerOpen(false);
         fetchData();
+        showToast(editingId ? "Cập nhật token thành công" : "Đăng ký token thành công", "success");
       } else {
-        alert(res.message || "Thao tác thất bại");
+        showToast(res.message || "Thao tác thất bại", "error");
       }
     } catch (e) {
       console.error(e);
+      showToast("Lỗi hệ thống", "error");
     } finally {
       setIsSaving(false);
     }
   };
 
+  const handleCopy = (text: string, label: string) => {
+    if (!text) {
+      showToast(`${label} trống`, "warning");
+      return;
+    }
+    navigator.clipboard.writeText(text);
+    showToast(`Đã sao chép ${label}`, "success");
+  };
+
   const filteredTokens = tokens.filter(t => 
     !search || 
     t.email?.toLowerCase().includes(search.toLowerCase()) ||
-    t.note?.toLowerCase().includes(search.toLowerCase())
+    t.note?.toLowerCase().includes(search.toLowerCase()) ||
+    t.accessToken?.toLowerCase().includes(search.toLowerCase()) ||
+    t.cookieToken?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const TokenCell = ({ value, label }: { value?: string, label: string }) => {
+    if (!value) return <span className="text-slate-300 dark:text-gray-800 italic">None</span>;
+    return (
+      <div className="flex items-center gap-2 max-w-[150px]">
+        <span className="text-[10px] font-mono text-gray-400 truncate flex-grow">
+          {value.slice(0, 8)}...{value.slice(-4)}
+        </span>
+        <button 
+          onClick={() => handleCopy(value, label)}
+          className="p-1.5 hover:bg-indigo-500/10 hover:text-indigo-500 rounded transition-all shrink-0"
+          title={`Copy ${label}`}
+        >
+          <Copy size={12} />
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div className="p-8 lg:p-12 space-y-10 animate-in fade-in duration-700 h-full flex flex-col">
@@ -135,6 +168,8 @@ export const ProviderTokensTab: React.FC = () => {
               <tr className="bg-black/5 dark:bg-white/5 text-[9px] font-black uppercase tracking-widest text-gray-500">
                 <th className="px-8 py-6">Provider / Identity</th>
                 <th className="px-8 py-6">Status</th>
+                <th className="px-8 py-6">Access Token</th>
+                <th className="px-8 py-6">Cookie Token</th>
                 <th className="px-8 py-6">Economic Class</th>
                 <th className="px-8 py-6 text-center">Runtime Stats</th>
                 <th className="px-8 py-6 text-right">Operations</th>
@@ -142,9 +177,9 @@ export const ProviderTokensTab: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-black/5 dark:divide-white/5">
               {loading ? (
-                <tr><td colSpan={5} className="py-40 text-center"><Loader2 className="animate-spin mx-auto text-brand-blue" /></td></tr>
+                <tr><td colSpan={7} className="py-40 text-center"><Loader2 className="animate-spin mx-auto text-brand-blue" /></td></tr>
               ) : filteredTokens.length === 0 ? (
-                <tr><td colSpan={5} className="py-32 text-center opacity-30 text-xs font-black uppercase italic tracking-[0.4em]">No tokens found in registry</td></tr>
+                <tr><td colSpan={7} className="py-32 text-center opacity-30 text-xs font-black uppercase italic tracking-[0.4em]">No tokens found in registry</td></tr>
               ) : filteredTokens.map((t) => (
                 <tr key={t._id} className="group hover:bg-brand-blue/[0.01] transition-colors">
                   <td className="px-8 py-6">
@@ -158,7 +193,7 @@ export const ProviderTokensTab: React.FC = () => {
                       </div>
                       <div className="space-y-0.5">
                         <p className="text-[11px] font-black text-black dark:text-white uppercase italic">{t.provider}</p>
-                        <p className="text-[9px] font-medium text-gray-500 truncate max-w-[200px]">{t.email || t.apiKey || 'No identity'}</p>
+                        <p className="text-[9px] font-medium text-gray-500 truncate max-w-[150px]">{t.email || t.apiKey || 'No identity'}</p>
                       </div>
                     </div>
                   </td>
@@ -170,9 +205,15 @@ export const ProviderTokensTab: React.FC = () => {
                      </span>
                   </td>
                   <td className="px-8 py-6">
+                    <TokenCell value={t.accessToken} label="Access Token" />
+                  </td>
+                  <td className="px-8 py-6">
+                    <TokenCell value={t.cookieToken} label="Cookie Token" />
+                  </td>
+                  <td className="px-8 py-6">
                      <div className="space-y-1">
                         <p className="text-[10px] font-black text-slate-700 dark:text-gray-300 uppercase italic tracking-tighter">{t.plan || 'Standard'}</p>
-                        <p className="text-[8px] text-gray-400 font-bold uppercase truncate max-w-[150px]">{t.note || 'No notes'}</p>
+                        <p className="text-[8px] text-gray-400 font-bold uppercase truncate max-w-[120px]">{t.note || 'No notes'}</p>
                      </div>
                   </td>
                   <td className="px-8 py-6">
@@ -230,7 +271,15 @@ export const ProviderTokensTab: React.FC = () => {
                  {payload.provider === 'labs' && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                        <EditInput label="EMAIL" value={payload.email} onChange={v => setPayload({...payload, email: v})} />
-                       <EditInput label="ACCESS TOKEN" value={payload.accessToken} onChange={v => setPayload({...payload, accessToken: v})} />
+                       <div className="space-y-2">
+                          <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">ACCESS TOKEN</label>
+                          <textarea 
+                            value={payload.accessToken} 
+                            onChange={e => setPayload({...payload, accessToken: e.target.value})}
+                            className="w-full bg-slate-50 dark:bg-black/40 border border-black/5 p-4 rounded-xl text-xs font-mono text-indigo-400 resize-none h-24"
+                            placeholder="Dán access token tại đây..."
+                          />
+                       </div>
                        <div className="space-y-2">
                           <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2">COOKIE TOKEN</label>
                           <textarea 
