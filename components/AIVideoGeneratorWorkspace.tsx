@@ -1,6 +1,7 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, Download, Share2, AlertTriangle, Terminal } from 'lucide-react';
+import { X, Loader2, Download, Share2, AlertTriangle, Terminal, Zap } from 'lucide-react';
 import { generateDemoVideo } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -118,12 +119,9 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     resultsRef.current = results;
   }, [results]);
 
-  // Define hasJobs to check if results are present
   const hasJobs = results.length > 0;
-
   const fileInputRef = useRef<HTMLInputElement>(null);
   const todayKey = useMemo(() => new Date().toISOString().split('T')[0], []);
-
   const processingCount = useMemo(() => results.filter(r => r.status === 'processing').length, [results]);
 
   // Fetch Pricing Models
@@ -149,6 +147,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       if (selectedModelObj.modes && selectedModelObj.modes.length > 0) {
         setSelectedMode(selectedModelObj.modes[0]);
       } else {
+        // Fix: Use selectedModelObj.mode instead of selectedMode
         setSelectedMode(selectedModelObj.mode || 'relaxed');
       }
     }
@@ -192,25 +191,11 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     return currentUnitCost * quantity; 
   }, [activeMode, autoTasks, multiFrames, currentUnitCost, quantity]);
 
-  useEffect(() => {
-    const vault = localStorage.getItem('skyverses_model_vault');
-    if (vault) {
-      try {
-        const keys = JSON.parse(vault);
-        if (keys.gemini && keys.gemini.trim() !== '') {
-          setHasPersonalKey(true);
-          setPersonalKey(keys.gemini);
-        }
-      } catch (e) { console.error(e); }
-    }
-  }, [showResourceModal]);
-
   const addLogToTask = (taskId: string, message: string) => {
     const timestamp = new Date().toLocaleTimeString('vi-VN');
     const logEntry = `${message}`;
     setResults(prev => prev.map(r => r.id === taskId ? { ...r, logs: [...(r.logs || []), logEntry] } : r));
     
-    // Update selected log task if open to show real-time logs
     setSelectedLogTask(prev => {
       if (prev && prev.id === taskId) {
         return { ...prev, logs: [...(prev.logs || []), logEntry] };
@@ -219,151 +204,10 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     });
   };
 
-  const handleAddFrame = () => {
-    if (multiFrames.length >= 6) {
-       alert("Tối đa 6 khung hình.");
-       return;
-    }
-    setMultiFrames(prev => [...prev, { id: Date.now().toString(), url: null, mediaId: null, prompt: '' }]);
-  };
-
-  const removeFrame = (id: string) => {
-    if (multiFrames.length <= 2) return;
-    setMultiFrames(prev => prev.filter(f => f.id !== id));
-  };
-
-  const handleFramePromptChange = (id: string, val: string) => {
-    setMultiFrames(prev => prev.map(n => n.id === id ? { ...n, prompt: val } : n));
-  };
-
-  // Unified Target Handlers
-  const handleSingleFrameClick = (slot: 'START' | 'END', mode: 'UPLOAD' | 'LIBRARY') => {
-    uploadTargetRef.current = slot;
-    if (mode === 'UPLOAD') fileInputRef.current?.click();
-    else setIsLibraryOpen(true);
-  };
-
   const handleFrameClick = (id: string, mode: 'UPLOAD' | 'LIBRARY') => {
     uploadTargetRef.current = id;
     if (mode === 'UPLOAD') fileInputRef.current?.click();
     else setIsLibraryOpen(true);
-  };
-
-  const handleAutoFileUploadClick = (id: string, slot: 'START' | 'END', mode: 'UPLOAD' | 'LIBRARY') => {
-    uploadTargetRef.current = `${id}-${slot}`;
-    if (mode === 'UPLOAD') fileInputRef.current?.click();
-    else setIsLibraryOpen(true);
-  };
-
-  const updateTargetImage = (url: string, mediaId: string | null, targetKey: string | null) => {
-    if (!targetKey) return;
-
-    if (activeMode === 'MULTI') {
-      setMultiFrames(prev => prev.map(f => f.id === targetKey ? { ...f, url: url, mediaId: mediaId } : f));
-    } else if (activeMode === 'AUTO') {
-      const [id, slot] = targetKey.split('-');
-      setAutoTasks(prev => prev.map(t => {
-        if (t.id === id) {
-          return slot === 'START' 
-            ? { ...t, startUrl: url, startMediaId: mediaId } 
-            : { ...t, endUrl: url, endMediaId: mediaId };
-        }
-        return t;
-      }));
-    } else {
-      if (targetKey === 'START') {
-        setStartFrame(url);
-        setStartFrameId(mediaId);
-      } else if (targetKey === 'END') {
-        setEndFrame(url);
-        setEndFrameId(mediaId);
-      }
-    }
-  };
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    const targetKey = uploadTargetRef.current;
-    if (!file || !targetKey) return;
-
-    setIsUploadingImage(targetKey);
-    try {
-      const metadata = await uploadToGCS(file, selectedEngine);
-      updateTargetImage(metadata.url, metadata.mediaId || metadata.id, targetKey);
-    } catch (err) {
-      console.error("Image upload failed:", err);
-    } finally {
-      setIsUploadingImage(null);
-      if (e.target) e.target.value = '';
-    }
-  };
-
-  const handleLibrarySelect = (assets: GCSAssetMetadata[]) => {
-    const targetKey = uploadTargetRef.current;
-    if (assets.length > 0 && targetKey) {
-      updateTargetImage(assets[0].url, assets[0].mediaId || assets[0].id, targetKey);
-    }
-    setIsLibraryOpen(false);
-  };
-
-  const handleBulkImport = () => {
-    if (!bulkText.trim()) {
-      setIsBulkImporting(false);
-      return;
-    }
-    const lines = bulkText.split('\n').map(l => l.trim()).filter(l => l !== '');
-    const newTasks: AutoTask[] = lines.map((l, i) => ({
-      id: `bulk-${Date.now()}-${i}`,
-      type: 'TEXT',
-      prompt: l,
-      startUrl: null,
-      startMediaId: null,
-      endUrl: null,
-      endMediaId: null
-    }));
-    setAutoTasks(newTasks);
-    setBulkText('');
-    setIsBulkImporting(false);
-  };
-
-  const handleAutoPromptChange = (id: string, val: string) => {
-    setAutoTasks(prev => prev.map(t => t.id === id ? { ...t, prompt: val } : t));
-  };
-
-  const removeAutoTask = (id: string) => {
-    if (autoTasks.length <= 1) {
-      setAutoTasks([{ id: '1', type: 'TEXT', prompt: '', startUrl: null, startMediaId: null, endUrl: null, endMediaId: null }]);
-      return;
-    }
-    setAutoTasks(prev => prev.filter(t => t.id !== id));
-  };
-
-  const triggerDownload = async (url: string, filename: string) => {
-    setIsDownloading(filename);
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.body.appendChild(document.createElement('a'));
-      link.href = blobUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      window.open(url, '_blank');
-    } finally {
-      setIsDownloading(null);
-    }
-  };
-
-  const handleDownloadAllDone = () => {
-    const doneResults = results.filter(r => r.status === 'done' && r.url);
-    if (doneResults.length === 0) return;
-    doneResults.forEach((res, idx) => {
-      setTimeout(() => triggerDownload(res.url!, `video_${res.id}.mp4`), idx * 1000); 
-    });
   };
 
   const pollVideoJobStatus = async (jobId: string, resultId: string, cost: number) => {
@@ -374,7 +218,6 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       const isSuccess = response.success === true || response.status?.toLowerCase() === 'success';
       const jobStatus = response.data?.status?.toLowerCase();
       
-      // AUTO-RETRY ON reCAPTCHA FAILURES
       const errorMsg = response.data?.error?.message || response.data?.error?.userMessage || "";
       if (errorMsg.includes("reCAPTCHA")) {
          addLogToTask(resultId, `[SECURITY_ALERT] reCAPTCHA challenge detected. Initiating automated retry protocol...`);
@@ -530,6 +373,23 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     performInference(usagePreference);
   };
 
+  // AUTO-TASK LOGIC
+  useEffect(() => {
+    const autoPrompt = localStorage.getItem('skyverses_global_auto_prompt');
+    const autoRun = localStorage.getItem('skyverses_global_auto_run');
+
+    if (autoRun === 'true' && autoPrompt && selectedModelObj) {
+      setPrompt(autoPrompt);
+      localStorage.removeItem('skyverses_global_auto_run');
+      localStorage.removeItem('skyverses_global_auto_prompt');
+      
+      // Delay to ensure prompt state is set
+      setTimeout(() => {
+        handleGenerate();
+      }, 500);
+    }
+  }, [selectedModelObj, isAuthenticated]); // Re-run when model loads and auth is confirmed
+
   const handleRetry = (res: VideoResult, isAutoRetry: boolean = false) => {
     if (!usagePreference) return;
     performInference(usagePreference, res, isAutoRetry);
@@ -548,13 +408,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     if (processingCount >= 4) return "Đã đạt giới hạn 4 luồng xử lý đồng thời"; 
     if (usagePreference === 'credits' && credits < currentTotalCost) return `Số dư không đủ (Cần ${currentTotalCost} CR)`;
     if (activeMode === 'SINGLE' && !prompt.trim()) return "Vui lòng nhập kịch bản";
-    if (activeMode === 'MULTI') {
-      if (multiFrames.length < 2) return "Vui lòng thêm ít nhất 2 khung hình";
-      if (!multiFrames.some(f => f.url)) return "Vui lòng tải lên ít nhất một khung hình";
-    }
-    if (activeMode === 'AUTO' && autoTasks.filter(t => t.prompt.trim()).length === 0) return "Vui lòng nhập ít nhất một kịch bản";
     return null;
-  }, [isAuthenticated, usagePreference, credits, currentTotalCost, activeMode, prompt, multiFrames, autoTasks, processingCount]);
+  }, [isAuthenticated, usagePreference, credits, currentTotalCost, activeMode, prompt, processingCount]);
 
   const isGenerateDisabled = isGenerating || !!generateTooltip || !selectedModelObj;
 
@@ -562,6 +417,139 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     setPrompt(item.prompt);
     setActiveMode('SINGLE');
     if (window.innerWidth < 1024) setIsMobileExpanded(true);
+  };
+
+  const triggerDownload = async (url: string, filename: string) => {
+    setIsDownloading(filename);
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.body.appendChild(document.createElement('a'));
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      window.open(url, '_blank');
+    } finally {
+      setIsDownloading(null);
+    }
+  };
+
+  const handleDownloadAllDone = () => {
+    const doneResults = results.filter(r => r.status === 'done' && r.url);
+    if (doneResults.length === 0) return;
+    doneResults.forEach((res, idx) => {
+      setTimeout(() => triggerDownload(res.url!, `video_${res.id}.mp4`), idx * 1000); 
+    });
+  };
+
+  // Fixed: Added handleBulkImport implementation
+  const handleBulkImport = () => {
+    if (!bulkText.trim()) {
+      setIsBulkImporting(false);
+      return;
+    }
+    const lines = bulkText.split('\n').map(l => l.trim()).filter(l => l !== '');
+    const newTasks: AutoTask[] = lines.map((line, idx) => ({
+      id: `auto-${Date.now()}-${idx}`,
+      type: 'TEXT',
+      prompt: line,
+      startUrl: null,
+      startMediaId: null,
+      endUrl: null,
+      endMediaId: null
+    }));
+    setAutoTasks(newTasks);
+    setIsBulkImporting(false);
+    setBulkText('');
+  };
+
+  // Fixed: Added handleAutoPromptChange implementation
+  const handleAutoPromptChange = (id: string, val: string) => {
+    setAutoTasks(prev => prev.map(t => t.id === id ? { ...t, prompt: val } : t));
+  };
+
+  // Fixed: Added removeAutoTask implementation
+  const removeAutoTask = (id: string) => {
+    if (autoTasks.length <= 1) return;
+    setAutoTasks(prev => prev.filter(t => t.id !== id));
+  };
+
+  // Fixed: Added handleAutoFileUploadClick implementation
+  const handleAutoFileUploadClick = (id: string, slot: 'START' | 'END', mode: 'UPLOAD' | 'LIBRARY') => {
+    uploadTargetRef.current = `${id}-${slot}`;
+    if (mode === 'UPLOAD') fileInputRef.current?.click();
+    else setIsLibraryOpen(true);
+  };
+
+  // Fixed: Added handleLibrarySelect implementation
+  const handleLibrarySelect = (selected: GCSAssetMetadata[]) => {
+    const asset = selected[0];
+    if (!asset) return;
+
+    const target = uploadTargetRef.current;
+    if (target === 'START') {
+      setStartFrame(asset.url);
+      setStartFrameId(asset.mediaId || asset.id);
+    } else if (target === 'END') {
+      setEndFrame(asset.url);
+      setEndFrameId(asset.mediaId || asset.id);
+    } else if (target?.includes('-')) {
+      const parts = target.split('-');
+      const slot = parts.pop();
+      const taskId = parts.join('-');
+      setAutoTasks(prev => prev.map(t => {
+        if (t.id === taskId) {
+          if (slot === 'START') return { ...t, startUrl: asset.url, startMediaId: asset.mediaId || asset.id };
+          return { ...t, endUrl: asset.url, endMediaId: asset.mediaId || asset.id };
+        }
+        return t;
+      }));
+    } else if (target) {
+      setMultiFrames(prev => prev.map(f => f.id === target ? { ...f, url: asset.url, mediaId: asset.mediaId || asset.id } : f));
+    }
+    setIsLibraryOpen(false);
+  };
+
+  // Fixed: Added handleFileUpload implementation
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const target = uploadTargetRef.current;
+    setIsUploadingImage(target);
+    try {
+      const metadata = await uploadToGCS(file, selectedEngine);
+      if (target === 'START') {
+        setStartFrame(metadata.url);
+        setStartFrameId(metadata.mediaId || metadata.id);
+      } else if (target === 'END') {
+        setEndFrame(metadata.url);
+        setEndFrameId(metadata.mediaId || metadata.id);
+      } else if (target?.includes('-')) {
+        const parts = target.split('-');
+        const slot = parts.pop();
+        const taskId = parts.join('-');
+        setAutoTasks(prev => prev.map(t => {
+          if (t.id === taskId) {
+            if (slot === 'START') return { ...t, startUrl: metadata.url, startMediaId: metadata.mediaId || metadata.id };
+            return { ...t, endUrl: metadata.url, endMediaId: metadata.mediaId || metadata.id };
+          }
+          return t;
+        }));
+      } else if (target) {
+        setMultiFrames(prev => prev.map(f => f.id === target ? { ...f, url: metadata.url, mediaId: metadata.mediaId || metadata.id } : f));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUploadingImage(null);
+      if (e.target) e.target.value = '';
+    }
   };
 
   return (
@@ -581,13 +569,23 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         setPrompt={setPrompt}
         startFrame={startFrame}
         endFrame={endFrame}
-        handleSingleFrameClick={handleSingleFrameClick}
+        handleSingleFrameClick={(slot, mode) => {
+           uploadTargetRef.current = slot;
+           if (mode === 'UPLOAD') fileInputRef.current?.click();
+           else setIsLibraryOpen(true);
+        }}
         fileInputRef={fileInputRef}
         isUploadingImage={isUploadingImage}
         multiFrames={multiFrames}
-        handleAddFrame={handleAddFrame}
-        removeFrame={removeFrame}
-        handleFramePromptChange={handleFramePromptChange}
+        handleAddFrame={() => {
+           if (multiFrames.length >= 6) return;
+           setMultiFrames(prev => [...prev, { id: Date.now().toString(), url: null, mediaId: null, prompt: '' }]);
+        }}
+        removeFrame={(id) => {
+           if (multiFrames.length <= 2) return;
+           setMultiFrames(prev => prev.filter(f => f.id !== id));
+        }}
+        handleFramePromptChange={(id, val) => setMultiFrames(prev => prev.map(n => n.id === id ? { ...n, prompt: val } : n))}
         handleFrameClick={handleFrameClick}
         autoTasks={autoTasks}
         isBulkImporting={isBulkImporting}
@@ -643,20 +641,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       <AnimatePresence>
         {fullscreenVideo && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/95 flex flex-col items-center justify-center p-6 md:p-12">
-            <button onClick={() => setFullscreenVideo(null)} className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors"><X size={32} /></button>
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-6xl aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative">
-              {isDownloading === `video_${fullscreenVideo.id}.mp4` && (
-                <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center gap-4">
-                  <Loader2 size={48} className="text-white animate-spin" />
-                  <span className="textxs font-black uppercase tracking-widest text-white animate-pulse">Đang tải video...</span>
-                </div>
-              )}
-              <video src={fullscreenVideo.url} autoPlay controls className="w-full h-full object-contain" />
-            </motion.div>
-            <div className="mt-12 flex gap-4">
-              <button onClick={() => triggerDownload(fullscreenVideo.url, `video_${fullscreenVideo.id}.mp4`)} disabled={isDownloading === `video_${fullscreenVideo.id}.mp4`} className="bg-white text-black px-12 py-5 rounded-full font-black uppercase text-xs tracking-widest flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-xl disabled:opacity-50">{isDownloading === `video_${fullscreenVideo.id}.mp4` ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />} Tải Video</button>
-              <button className="bg-purple-600 text-white px-12 py-5 rounded-full font-black uppercase text-xs tracking-widest flex items-center gap-3 hover:scale-105 transition-all"><Share2 size={20} /> Chia sẻ</button>
-            </div>
+            <button onClick={() => setFullscreenVideo(null)} className="absolute top-8 right-8 p-3 bg-white/10 rounded-full text-white hover:bg-white/20 transition-all z-50 backdrop-blur-md"><X size={28} /></button>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-6xl aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative"><video src={fullscreenVideo.url} autoPlay controls className="w-full h-full object-contain" /></motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -703,8 +689,6 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       </AnimatePresence>
 
       <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
-
-      <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }@keyframes scan { 0% { top: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }`}</style>
     </div>
   );
 };

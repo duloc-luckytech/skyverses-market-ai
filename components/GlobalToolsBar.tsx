@@ -5,11 +5,12 @@ import {
   Plus, ChevronDown, ChevronUp, 
   Video, SlidersHorizontal, Sparkles,
   Zap, Loader2, X, Image as ImageIcon,
-  Move
+  Move, Activity
 } from 'lucide-react';
 import { useGlobalTools } from '../hooks/useGlobalTools';
 import AIVideoGeneratorWorkspace from './AIVideoGeneratorWorkspace';
 import AIImageGeneratorWorkspace from './AIImageGeneratorWorkspace';
+import VideoAnimateWorkspace from './VideoAnimateWorkspace';
 
 const GlobalToolsBar: React.FC = () => {
   const {
@@ -17,6 +18,7 @@ const GlobalToolsBar: React.FC = () => {
     modality, setModality,
     isVideoModalOpen, setIsVideoModalOpen,
     isImageModalOpen, setIsImageModalOpen,
+    isAnimateModalOpen, setIsAnimateModalOpen,
     textareaRef, handleGenerate, handleClear, onKeyDown, credits
   } = useGlobalTools();
 
@@ -36,7 +38,7 @@ const GlobalToolsBar: React.FC = () => {
 
   return (
     <>
-      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[300] w-full max-w-4xl px-4 pointer-events-none">
+      <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-[300] w-full max-w-4xl px-4 pointer-events-none">
         <motion.div 
           layout
           initial={false}
@@ -45,7 +47,7 @@ const GlobalToolsBar: React.FC = () => {
             width: isExpanded ? '100%' : '240px',
           }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="mx-auto pointer-events-auto bg-white/80 dark:bg-[#0d0d0f]/90 backdrop-blur-2xl border border-black/5 dark:border-white/10 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] overflow-hidden transition-colors"
+          className="mx-auto pointer-events-auto bg-white/80 dark:bg-[#0d0d0f]/90 backdrop-blur-2xl border border-black/5 dark:border-white/10 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] transition-colors"
         >
           <AnimatePresence mode="wait">
             {isExpanded ? (
@@ -56,11 +58,9 @@ const GlobalToolsBar: React.FC = () => {
                 exit={{ opacity: 0, y: 10 }}
                 className="p-2 lg:p-3"
               >
-                {/* TOP ROW: Input & Controls */}
                 <div className="flex items-start gap-3">
                   <button 
                     className="w-9 h-9 shrink-0 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full flex items-center justify-center text-slate-400 dark:text-gray-400 transition-all active:scale-95"
-                    title="Add assets"
                   >
                     <Plus size={16} />
                   </button>
@@ -71,7 +71,7 @@ const GlobalToolsBar: React.FC = () => {
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
                       onKeyDown={onKeyDown}
-                      placeholder="Describe the action and atmosphere..."
+                      placeholder="Describe your creative vision..."
                       className="w-full bg-transparent border-none outline-none text-[11px] font-bold text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-gray-600 resize-none max-h-48 min-h-[32px] no-scrollbar leading-relaxed"
                       rows={1}
                     />
@@ -95,17 +95,14 @@ const GlobalToolsBar: React.FC = () => {
                   </div>
                 </div>
 
-                {/* BOTTOM ROW: Actions */}
                 <div className="flex items-center justify-between mt-2 pl-1">
                   <div className="flex items-center gap-2">
-                    {/* Modality Selector */}
                     <div className="relative" ref={menuRef}>
                       <button 
                         onClick={() => setShowModalityMenu(!showModalityMenu)}
                         className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${showModalityMenu ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/30' : 'bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-gray-500 hover:text-brand-blue'}`}
-                        title="Chuyển chế độ Video/Image"
                       >
-                        {modality === 'video' ? <Move size={16} /> : <ImageIcon size={16} />}
+                        {modality === 'video' ? <Video size={16} /> : modality === 'image' ? <ImageIcon size={16} /> : <Activity size={16} />}
                       </button>
 
                       <AnimatePresence>
@@ -120,13 +117,19 @@ const GlobalToolsBar: React.FC = () => {
                                onClick={() => { setModality('video'); setShowModalityMenu(false); }}
                                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${modality === 'video' ? 'bg-brand-blue text-white' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
                              >
-                               <Move size={14} /> Video AI
+                               <Video size={14} /> Video AI
                              </button>
                              <button 
                                onClick={() => { setModality('image'); setShowModalityMenu(false); }}
                                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${modality === 'image' ? 'bg-brand-blue text-white' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
                              >
                                <ImageIcon size={14} /> Image AI
+                             </button>
+                             <button 
+                               onClick={() => { setModality('animate'); setShowModalityMenu(false); }}
+                               className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${modality === 'animate' ? 'bg-brand-blue text-white' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                             >
+                               <Activity size={14} /> Animate AI
                              </button>
                           </motion.div>
                         )}
@@ -192,6 +195,11 @@ const GlobalToolsBar: React.FC = () => {
         {isImageModalOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[500] bg-black">
              <AIImageGeneratorWorkspace onClose={() => setIsImageModalOpen(false)} />
+          </motion.div>
+        )}
+        {isAnimateModalOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[500] bg-black">
+             <VideoAnimateWorkspace onClose={() => setIsAnimateModalOpen(false)} />
           </motion.div>
         )}
       </AnimatePresence>

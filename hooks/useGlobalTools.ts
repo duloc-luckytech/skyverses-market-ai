@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
-export type GlobalModality = 'video' | 'image';
+export type GlobalModality = 'video' | 'image' | 'animate';
 
 export const useGlobalTools = () => {
   const [prompt, setPrompt] = useState('');
@@ -11,6 +11,7 @@ export const useGlobalTools = () => {
   const [modality, setModality] = useState<GlobalModality>('video');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isAnimateModalOpen, setIsAnimateModalOpen] = useState(false);
   
   const { credits, isAuthenticated, login } = useAuth();
   const { showToast } = useToast();
@@ -43,10 +44,17 @@ export const useGlobalTools = () => {
       return;
     }
 
+    // Đánh dấu auto_run và modality cho modal tương ứng
+    localStorage.setItem('skyverses_global_auto_prompt', prompt);
+    localStorage.setItem('skyverses_global_auto_modality', modality);
+    localStorage.setItem('skyverses_global_auto_run', 'true');
+
     if (modality === 'video') {
       setIsVideoModalOpen(true);
-    } else {
+    } else if (modality === 'image') {
       setIsImageModalOpen(true);
+    } else if (modality === 'animate') {
+      setIsAnimateModalOpen(true);
     }
     
     setIsExpanded(false);
@@ -73,6 +81,8 @@ export const useGlobalTools = () => {
     setIsVideoModalOpen,
     isImageModalOpen,
     setIsImageModalOpen,
+    isAnimateModalOpen,
+    setIsAnimateModalOpen,
     textareaRef,
     handleGenerate,
     handleClear,

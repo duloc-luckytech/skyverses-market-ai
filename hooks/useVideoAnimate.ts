@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { generateDemoVideo } from '../services/gemini';
@@ -14,6 +15,7 @@ export interface RenderTask {
   thumb: string | null;
   timestamp: string;
   model: string;
+  prompt?: string;
 }
 
 export const RATIOS = ['Auto', '16:9', '9:16', '1:1', '4:3'];
@@ -23,6 +25,7 @@ export const useVideoAnimate = () => {
   const { credits, useCredits, addCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
   
   const [mode, setMode] = useState<AnimateMode>('MOTION');
+  const [prompt, setPrompt] = useState(''); // Thêm state prompt
   
   // Dynamic Model States
   const [availableModels, setAvailableModels] = useState<PricingModel[]>([]);
@@ -122,7 +125,8 @@ export const useVideoAnimate = () => {
       type: mode,
       thumb: sourceImg,
       model: selectedModel.name,
-      timestamp: new Date().toLocaleTimeString()
+      timestamp: new Date().toLocaleTimeString(),
+      prompt: prompt // Gán prompt hiện tại
     };
 
     setTasks(prev => [newTask, ...prev]);
@@ -131,7 +135,7 @@ export const useVideoAnimate = () => {
 
     try {
       if (usagePreference === 'key') {
-        const directive = `${mode === 'MOTION' ? 'Motion Transfer' : 'Face Swap'} using ${selectedModel.modelKey}. Ratio: ${selectedRatio}.`;
+        const directive = `${mode === 'MOTION' ? 'Motion Transfer' : 'Face Swap'} using ${selectedModel.modelKey}. Prompt: ${prompt}. Ratio: ${selectedRatio}.`;
         const url = await generateDemoVideo({
           prompt: directive,
           references: [sourceImg],
@@ -161,7 +165,7 @@ export const useVideoAnimate = () => {
             model: selectedModel.modelKey as any
           },
           enginePayload: {
-            prompt: mode === 'MOTION' ? "Animate the person in the image following the movements in the video precisely" : "Swap the face of the person in the video with the face in the image",
+            prompt: prompt || (mode === 'MOTION' ? "Animate the person in the image following the movements in the video precisely" : "Swap the face of the person in the video with the face in the image"),
             privacy: "PRIVATE",
             translateToEn: true,
             projectId: "default",
@@ -198,7 +202,6 @@ export const useVideoAnimate = () => {
       };
       reader.readAsDataURL(file);
     } else {
-      // Tải lên video qua API multipart/form-data
       setIsGenerating(true);
       try {
         const res = await videosApi.uploadVideo(file);
@@ -218,6 +221,7 @@ export const useVideoAnimate = () => {
 
   return {
     mode, setMode,
+    prompt, setPrompt, // Export prompt control
     selectedModel, setSelectedModel,
     selectedEngine, setSelectedEngine,
     availableModels,

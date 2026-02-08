@@ -54,7 +54,7 @@ export const useImageGenerator = () => {
   const [availableModels, setAvailableModels] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
   const [selectedMode, setSelectedMode] = useState<string>('relaxed');
-  const [selectedEngine, _setSelectedEngine] = useState<string>('fxlab');
+  const [selectedEngine, _setSelectedEngine] = useState<string>('fxlab'); // Mặc định là fxlab
 
   const [prompt, setPrompt] = useState('');
   const [batchPrompts, setBatchPrompts] = useState<string[]>(['', '', '']);
@@ -125,6 +125,23 @@ export const useImageGenerator = () => {
     };
     fetchPricing();
   }, [selectedEngine]);
+
+  // AUTO-TASK LOGIC
+  useEffect(() => {
+    const autoPrompt = localStorage.getItem('skyverses_global_auto_prompt');
+    const autoRun = localStorage.getItem('skyverses_global_auto_run');
+
+    if (autoRun === 'true' && autoPrompt && selectedModel) {
+      setPrompt(autoPrompt);
+      localStorage.removeItem('skyverses_global_auto_run');
+      localStorage.removeItem('skyverses_global_auto_prompt');
+      
+      // Delay to ensure model and prompt are fully set before auto-generating
+      setTimeout(() => {
+        handleGenerate();
+      }, 800);
+    }
+  }, [selectedModel, isAuthenticated]);
 
   useEffect(() => {
     if (selectedModel?.raw) {

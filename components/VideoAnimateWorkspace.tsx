@@ -12,8 +12,9 @@ import {
   Link as LinkIcon, FolderOpen, Monitor,
   Maximize2, AlertCircle, Trash2, Info,
   Film, ChevronLeft, Move, Globe, Server,
-  // Added CheckCircle2 to imports from lucide-react to avoid name-finding errors
-  Clipboard, Search as SearchIcon, CheckCircle2
+  Clipboard, Search as SearchIcon, CheckCircle2,
+  // Add Terminal icon to fix "Cannot find name 'Terminal'" error
+  Terminal
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -290,7 +291,24 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const imgInputRef = useRef<HTMLInputElement>(null);
   const vidInputRef = useRef<HTMLInputElement>(null);
 
-  // Define hasJobs to check if there are active tasks
+  // AUTO-RUN LOGIC FROM GLOBAL BAR
+  useEffect(() => {
+    const autoPrompt = localStorage.getItem('skyverses_global_auto_prompt');
+    const autoRun = localStorage.getItem('skyverses_global_auto_run');
+    const autoModality = localStorage.getItem('skyverses_global_auto_modality');
+
+    if (autoRun === 'true' && autoModality === 'animate' && autoPrompt && v.selectedModel) {
+      v.setPrompt(autoPrompt);
+      localStorage.removeItem('skyverses_global_auto_run');
+      localStorage.removeItem('skyverses_global_auto_prompt');
+      localStorage.removeItem('skyverses_global_auto_modality');
+      
+      // Note: This workspace requires images. If auto-run is triggered without a source image,
+      // it just fills the prompt but won't synthesize.
+      // In a more advanced version, we could use the prompt to auto-generate a source image.
+    }
+  }, [v.selectedModel]);
+
   const hasJobs = v.tasks.length > 0;
 
   const activeGradient = v.mode === 'MOTION' 
@@ -363,7 +381,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               <img src={v.sourceImg} className="w-full h-full object-cover" alt="Identity" />
               <button 
                 onClick={(e) => { e.stopPropagation(); v.setSourceImg(null); }}
-                className="absolute top-3 right-3 p-1 bg-red-500 rounded-full hover:scale-110 transition-transform shadow-xl text-white z-50"
+                className="absolute top-3 right-3 p-1.5 bg-red-500 rounded-full hover:scale-110 transition-transform shadow-xl text-white z-50"
               >
                 <X size={12} strokeWidth={3} />
               </button>
@@ -528,6 +546,19 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         
         <div className="w-[400px] xl:w-[480px] shrink-0 border-r border-black/5 dark:border-white/5 bg-white dark:bg-[#0d0d0f] flex flex-col transition-all duration-500">
            <div className="flex-grow overflow-y-auto no-scrollbar p-8 lg:p-10 space-y-10">
+              {/* PROMPT INPUT SECTION */}
+              <div className="space-y-4">
+                <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                  <Terminal size={14} className="text-brand-blue" /> Kịch bản / Prompt
+                </label>
+                <textarea 
+                  value={v.prompt}
+                  onChange={(e) => v.setPrompt(e.target.value)}
+                  className="w-full h-32 bg-slate-50 dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-[12px] font-bold text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-brand-blue transition-all placeholder:text-slate-300 dark:placeholder:text-gray-700 shadow-inner"
+                  placeholder="Mô tả bối cảnh hoặc cảm xúc..."
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-6 relative z-10">
                  {renderInputs()}
               </div>
@@ -538,7 +569,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* SOURCE SELECTOR */}
                   <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 italic flex items-center gap-2">
+                    <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-1 italic flex items-center gap-2">
                       <Globe size={12} className="text-brand-blue" /> Infrastructure
                     </label>
                     <select 

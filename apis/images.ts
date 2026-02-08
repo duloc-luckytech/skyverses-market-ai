@@ -17,8 +17,8 @@ export interface ImageJobRequest {
     style: string;
   };
   engine: {
-    provider: "gommo";
-    model: "google_image_gen_4_5" | "google_image_gen_banana_pro";
+    provider: "gommo" | "fxlab";
+    model: string;
   };
   enginePayload: {
     prompt: string;
