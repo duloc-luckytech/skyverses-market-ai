@@ -32,10 +32,7 @@ import AdminMarketCMS from './pages/AdminMarketCMS';
 // Product Page Imports
 import AIImageGenerator from './pages/images/AIImageGenerator';
 import AIVideoGenerator from './pages/videos/AIVideoGenerator';
-import AINoelGenerator from './pages/images/AINoelGenerator';
-import AITetGenerator from './pages/images/AITetGenerator';
-import AIWeddingGenerator from './pages/images/AIWeddingGenerator';
-import AIBirthdayGenerator from './pages/images/AIBirthdayGenerator';
+import EventStudioPage from './pages/images/EventStudioPage'; // Generic Page
 import GenyuProduct from './pages/videos/GenyuProduct';
 import AvatarLipsyncAI from './pages/videos/AvatarLipsyncAI';
 import VideoAnimateAI from './pages/videos/VideoAnimateAI';
@@ -101,10 +98,13 @@ const App: React.FC = () => {
                       <Route path="/product/background-removal-ai" element={<BackgroundRemovalAI />} />
                       <Route path="/product/ai-agent-workflow" element={<ProductAIAgentWorkflow />} />
                       <Route path="/product/captcha-veo3" element={<ProductCaptchaToken />} />
-                      <Route path="/product/ai-birthday-generator" element={<AIBirthdayGenerator />} />
-                      <Route path="/product/ai-wedding-generator" element={<AIWeddingGenerator />} />
-                      <Route path="/product/ai-noel-generator" element={<AINoelGenerator />} />
-                      <Route path="/product/ai-tet-generator" element={<AITetGenerator />} />
+                      
+                      {/* GENERIC EVENT PAGES */}
+                      <Route path="/product/ai-birthday-generator" element={<EventStudioPage type="birthday" />} />
+                      <Route path="/product/ai-wedding-generator" element={<EventStudioPage type="wedding" />} />
+                      <Route path="/product/ai-noel-generator" element={<EventStudioPage type="noel" />} />
+                      <Route path="/product/ai-tet-generator" element={<EventStudioPage type="tet" />} />
+
                       <Route path="/product/bat-dong-san-ai" element={<RealEstateAI />} />
                       <Route path="/product/ai-music-generator" element={<MusicGenerator />} />
                       <Route path="/product/ai-image-restorer" element={<AIImageRestoration />} />
