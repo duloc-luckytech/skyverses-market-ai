@@ -148,15 +148,15 @@ export const generateMultiSpeakerAudio = async (
   }
 };
 
-export const generateDemoText = async (prompt: string): Promise<string> => {
+export const generateDemoText = async (prompt: string, model: string = 'gemini-3-flash-preview', systemInstruction?: string): Promise<string> => {
   const apiKey = await getActiveApiKey();
   const ai = new GoogleGenAI({ apiKey });
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: model,
       contents: prompt,
       config: {
-        systemInstruction: "You are an AI Architectural Strategist. Provide concise, high-level technical responses for enterprise B2B contexts."
+        systemInstruction: systemInstruction || "You are an AI Architectural Strategist. Provide concise, high-level technical responses for enterprise B2B contexts."
       }
     });
     return response.text || "NO_DATA_RETURNED";

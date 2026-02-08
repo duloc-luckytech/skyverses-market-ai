@@ -109,7 +109,6 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
     const currentIdea = script.trim() || "Một ý tưởng ngẫu nhiên thú vị";
     
     try {
-      // Logic centralized in generateDemoText handles keys automatically
       const promptPayload = `
         Based on this idea: "${currentIdea}", create a professional and fluid narrative script for a video.
         The video has a TOTAL duration of ${totalDuration}s.
@@ -132,20 +131,29 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
         Return ONLY a JSON object with these keys. No markdown.
       `;
 
-      const res = await generateDemoText(promptPayload);
+      const res = await generateDemoText(
+        promptPayload, 
+        'gemini-3-flash-preview', 
+        "You are a professional Storyboard Assistant. Help the user refine their creative ideas into structured narrative scripts."
+      );
+      
       if (res && res !== "CONNECTION_TERMINATED") {
-        const result = JSON.parse(res);
-        if (result.refined_idea) setScript(result.refined_idea);
-        setSettings(prev => ({
-          ...prev,
-          format: result.format || prev.format,
-          style: result.style || prev.style,
-          culture: result.culture || prev.culture,
-          background: result.background || prev.background,
-          cinematic: result.cinematic || prev.cinematic,
-          bgm: result.bgm || prev.bgm,
-          voiceOver: result['voice-over'] || prev.voiceOver
-        }));
+        try {
+          const result = JSON.parse(res);
+          if (result.refined_idea) setScript(result.refined_idea);
+          setSettings(prev => ({
+            ...prev,
+            format: result.format || prev.format,
+            style: result.style || prev.style,
+            culture: result.culture || prev.culture,
+            background: result.background || prev.background,
+            cinematic: result.cinematic || prev.cinematic,
+            bgm: result.bgm || prev.bgm,
+            voiceOver: result['voice-over'] || prev.voiceOver
+          }));
+        } catch (e) {
+          console.error("JSON parse error on suggestion", e);
+        }
       }
     } catch (e) {
       console.error("Suggestion generation error", e);
@@ -294,7 +302,7 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
         - Ensure visualPrompts are detailed and descriptive.
       `;
       
-      const res = await generateDemoText(promptPayload);
+      const res = await generateDemoText(promptPayload, 'gemini-3-pro-preview', systemPrompt);
       if (res && res !== "CONNECTION_TERMINATED") {
         const data = JSON.parse(res);
         const extractedCharacters = data.characters || [];
