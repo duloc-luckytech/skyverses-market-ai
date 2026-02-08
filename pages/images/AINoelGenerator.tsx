@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-// Changed to named import to match the updated export in components/NoelStudioWorkspace.tsx
-import { NoelStudioWorkspace } from '../../components/NoelStudioWorkspace';
+import { EventStudioWorkspace } from '../../components/NoelStudioWorkspace';
 import { NoelHero } from '../../components/noel-generator/NoelHero';
 import { NoelShowcase } from '../../components/noel-generator/NoelShowcase';
 import { NoelBenefits } from '../../components/noel-generator/NoelBenefits';
+import { EVENT_CONFIGS } from '../../constants/event-configs';
 
 const AINoelGenerator = () => {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
@@ -29,7 +29,7 @@ const AINoelGenerator = () => {
   if (isStudioOpen) {
     return (
       <div className="fixed inset-0 z-[500] bg-white dark:bg-black animate-in fade-in duration-500">
-        <NoelStudioWorkspace onClose={() => setIsStudioOpen(false)} />
+        <EventStudioWorkspace config={EVENT_CONFIGS.noel} onClose={() => setIsStudioOpen(false)} />
       </div>
     );
   }
@@ -44,7 +44,7 @@ const AINoelGenerator = () => {
            <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-emerald-600/10 rounded-full blur-[200px]"></div>
         </div>
 
-        <div className="max-w-[1500px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center relative z-10">
+        <div className="max-w-[1500px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center relative z-10">
           <NoelHero onStartStudio={() => setIsStudioOpen(true)} />
           <NoelShowcase images={images} loading={loading} />
         </div>

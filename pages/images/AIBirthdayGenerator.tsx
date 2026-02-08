@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import BirthdayStudioWorkspace from '../../components/BirthdayStudioWorkspace';
+import { EventStudioWorkspace } from '../../components/NoelStudioWorkspace';
 import { BirthdayHero } from '../../components/birthday-generator/BirthdayHero';
 import { BirthdayShowcase } from '../../components/birthday-generator/BirthdayShowcase';
 import { BirthdayBenefits } from '../../components/birthday-generator/BirthdayBenefits';
+import { EVENT_CONFIGS } from '../../constants/event-configs';
 
 const AIBirthdayGenerator = () => {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
@@ -28,7 +29,7 @@ const AIBirthdayGenerator = () => {
   if (isStudioOpen) {
     return (
       <div className="fixed inset-0 z-[500] bg-white dark:bg-black animate-in fade-in duration-500">
-        <BirthdayStudioWorkspace onClose={() => setIsStudioOpen(false)} />
+        <EventStudioWorkspace config={EVENT_CONFIGS.birthday} onClose={() => setIsStudioOpen(false)} />
       </div>
     );
   }

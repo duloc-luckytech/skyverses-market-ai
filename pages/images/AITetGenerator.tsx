@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import TetStudioWorkspace from '../../components/TetStudioWorkspace';
+import { EventStudioWorkspace } from '../../components/NoelStudioWorkspace';
 import { TetHero } from '../../components/tet-generator/TetHero';
 import { TetShowcase } from '../../components/tet-generator/TetShowcase';
 import { TetBenefits } from '../../components/tet-generator/TetBenefits';
+import { EVENT_CONFIGS } from '../../constants/event-configs';
 
 const AITetGenerator = () => {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
@@ -28,7 +29,7 @@ const AITetGenerator = () => {
   if (isStudioOpen) {
     return (
       <div className="fixed inset-0 z-[500] bg-white dark:bg-black animate-in fade-in duration-500">
-        <TetStudioWorkspace onClose={() => setIsStudioOpen(false)} />
+        <EventStudioWorkspace config={EVENT_CONFIGS.tet} onClose={() => setIsStudioOpen(false)} />
       </div>
     );
   }
@@ -40,7 +41,7 @@ const AITetGenerator = () => {
            <div className="absolute top-0 right-0 w-[1000px] h-[1000px] bg-red-500/10 rounded-full blur-[200px]"></div>
            <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-amber-600/10 rounded-full blur-[200px]"></div>
         </div>
-        <div className="max-w-[1500px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center relative z-10">
+        <div className="max-w-[1500px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center relative z-10">
           <TetHero onStartStudio={() => setIsStudioOpen(true)} />
           <TetShowcase images={images} loading={loading} />
         </div>

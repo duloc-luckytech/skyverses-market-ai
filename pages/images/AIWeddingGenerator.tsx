@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import WeddingStudioWorkspace from '../../components/WeddingStudioWorkspace';
+import { EventStudioWorkspace } from '../../components/NoelStudioWorkspace';
 import { WeddingHero } from '../../components/wedding-generator/WeddingHero';
 import { WeddingShowcase } from '../../components/wedding-generator/WeddingShowcase';
 import { WeddingBenefits } from '../../components/wedding-generator/WeddingBenefits';
+import { EVENT_CONFIGS } from '../../constants/event-configs';
 
 const AIWeddingGenerator = () => {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
@@ -28,7 +29,7 @@ const AIWeddingGenerator = () => {
   if (isStudioOpen) {
     return (
       <div className="fixed inset-0 z-[500] bg-white dark:bg-black animate-in fade-in duration-500">
-        <WeddingStudioWorkspace onClose={() => setIsStudioOpen(false)} />
+        <EventStudioWorkspace config={EVENT_CONFIGS.wedding} onClose={() => setIsStudioOpen(false)} />
       </div>
     );
   }
