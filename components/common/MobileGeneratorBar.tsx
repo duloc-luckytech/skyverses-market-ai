@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -43,7 +44,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
       className={`lg:hidden flex flex-col items-center shrink-0 cursor-pointer relative transition-all duration-500 ease-in-out ${
         isExpanded 
           ? 'h-14 border-b border-black/5 dark:border-white/5 justify-center bg-white dark:bg-[#0d0d0f]' 
-          : 'h-[130px] justify-start bg-white/70 dark:bg-black/70 backdrop-blur-xl'
+          : 'h-[150px] justify-start bg-white/70 dark:bg-black/70 backdrop-blur-xl border-t border-black/5 dark:border-white/10 pb-6'
       }`}
       onClick={() => !isExpanded && setIsExpanded(true)}
     >
@@ -51,7 +52,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
       <div className="w-10 h-1 bg-slate-300 dark:bg-white/10 rounded-full mb-3 mt-2 opacity-50"></div>
       
       {!isExpanded ? (
-        <div className="w-full px-5 space-y-3">
+        <div className="w-full px-5 space-y-3 pb-8">
           {/* LINE 1: PREMIUM INPUT PILL */}
           <div className="flex items-center gap-2">
             <button 

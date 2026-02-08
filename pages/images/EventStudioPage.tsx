@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { EventStudioWorkspace } from '../../components/EventStudioWorkspace';
+// Fix: Import EventStudioWorkspace as a default export
+import EventStudioWorkspace from '../../components/EventStudioWorkspace';
 import { EVENT_CONFIGS } from '../../constants/event-configs';
 import { Loader2, Zap } from 'lucide-react';
 

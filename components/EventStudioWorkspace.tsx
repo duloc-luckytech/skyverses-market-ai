@@ -1,313 +1,270 @@
-
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Zap, Upload, Sparkles, Loader2, 
-  Coins, Image as ImageIcon, RefreshCw, 
-  Share2, Download, History as HistoryIcon,
-  ChevronDown
-} from 'lucide-react';
-import { generateDemoImage } from '../services/gemini';
-import { useAuth } from '../context/AuthContext';
-import { uploadToGCS } from '../services/storage';
+import { AlertTriangle, Loader2, Zap, X, RefreshCw, History as HistoryIcon, Clock, Edit3, Download, Database } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { MobileGeneratorBar } from './common/MobileGeneratorBar';
-import { EventConfig, COMMON_STUDIO_CONSTANTS } from '../constants/event-configs';
+import ResourceAuthModal from './common/ResourceAuthModal';
+import ProductImageWorkspace from './ProductImageWorkspace';
+import ImageLibraryModal from './ImageLibraryModal';
+
+// Sub-components
+import { EventSidebar } from './event-studio/EventSidebar';
+import { EventViewport } from './event-studio/EventViewport';
+import { EventHistory } from './event-studio/EventHistory';
+import { EventConfiguration } from './event-studio/EventConfiguration';
+
+// Types & Hook
+import { EventConfig } from '../constants/event-configs';
+import { useEventStudio } from '../hooks/useEventStudio';
 
 interface EventStudioWorkspaceProps {
   config: EventConfig;
   onClose: () => void;
 }
 
-const ACCENT_MAP: Record<string, string> = {
-  rose: 'rose', red: 'red', pink: 'pink', purple: 'purple'
-};
-
-export const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onClose }) => {
-  const { credits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
-  
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [history, setHistory] = useState<{id: string, url: string, prompt: string}[]>([]);
-  const [activeHistoryIndex, setActiveHistoryIndex] = useState<number | null>(null);
-  const [sourceImg, setSourceImg] = useState<string | null>(null);
-  const [faceLock, setFaceLock] = useState(true);
-  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
-
-  // Dynamic States from config
-  const [selectedSubject, setSelectedSubject] = useState(config.subjects[0]);
-  const [selectedModel, setSelectedModel] = useState(COMMON_STUDIO_CONSTANTS.AI_MODELS[0]);
-  const [selectedRatio, setSelectedRatio] = useState(COMMON_STUDIO_CONSTANTS.RATIOS[0]);
-  const [selectedQuality, setSelectedQuality] = useState(COMMON_STUDIO_CONSTANTS.QUALITY_MODES[0]);
-  const [selectedScenes, setSelectedScenes] = useState<string[]>([]);
-  const [extraRequest, setExtraRequest] = useState('');
-
+const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onClose }) => {
+  const s = useEventStudio(config);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const accent = ACCENT_MAP[config.accentColor] || 'blue';
 
-  const toggleTag = (tag: string, list: string[], setList: (l: string[]) => void) => {
-    if (list.includes(tag)) setList(list.filter(t => t !== tag));
-    else if (list.length < 3) setList([...list, tag]);
+  // Fixed: handleDownload implementation for cross-browser file saving
+  const handleDownload = (url: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `event_${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
-
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setIsUploading(true);
-      try {
-        const metadata = await uploadToGCS(file);
-        setSourceImg(metadata.url);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsUploading(false);
-      }
-    }
-  };
-
-  const handleGenerate = async () => {
-    if (!isAuthenticated) { login(); return; }
-    if (credits < selectedModel.cost) { alert("Số dư credits không đủ."); return; }
-    
-    setIsGenerating(true);
-    if (window.innerWidth < 1024) setIsMobileExpanded(false);
-
-    try {
-      const successful = useCredits(selectedModel.cost);
-      if (!successful) return;
-
-      const fullPrompt = `${config.basePrompt} Subject Style: ${selectedSubject}. 
-        Environment Elements: ${selectedScenes.join(', ')}. 
-        Additional Request: ${extraRequest}. 
-        ${config.atmosphere}`;
-
-      const res = await generateDemoImage({
-        prompt: fullPrompt,
-        images: sourceImg ? [sourceImg] : [],
-        model: selectedModel.id,
-        aspectRatio: selectedRatio
-      });
-      
-      if (res) {
-        const newEntry = { id: Date.now().toString(), url: res, prompt: extraRequest || selectedSubject };
-        setHistory(prev => [newEntry, ...prev]);
-        setActiveHistoryIndex(0);
-        refreshUserInfo();
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const activeResult = activeHistoryIndex !== null ? history[activeHistoryIndex] : null;
 
   return (
-    <div className="h-full w-full flex bg-white dark:bg-[#0d0e12] text-slate-900 dark:text-white font-sans overflow-hidden transition-all duration-500 relative">
-      <div className="flex-grow flex flex-col-reverse lg:flex-row overflow-hidden relative">
+    <div className="h-full w-full flex bg-[#fcfcfd] dark:bg-[#08080a] text-slate-900 dark:text-white font-sans overflow-hidden transition-all duration-500 relative">
+      <div className="flex-grow flex flex-col-reverse lg:flex-row overflow-hidden relative h-full">
+        
+        {/* Mobile Backdrop */}
         <AnimatePresence>
-          {isMobileExpanded && (
+          {s.isMobileExpanded && (
             <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
-              onClick={() => setIsMobileExpanded(false)} 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              onClick={() => s.setIsMobileExpanded(false)} 
               className="lg:hidden fixed inset-0 bg-black/60 z-[140] backdrop-blur-sm" 
             />
           )}
         </AnimatePresence>
 
-        <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] shrink-0 bg-white dark:bg-[#0d0e12] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-32 lg:h-full lg:rounded-none'}`}>
+        {/* SIDEBAR */}
+        <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] shrink-0 bg-white dark:bg-[#0d0e12] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-2xl transition-all duration-500 ease-in-out ${s.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-14 lg:h-full lg:rounded-none'}`}>
           <MobileGeneratorBar 
-            isExpanded={isMobileExpanded}
-            setIsExpanded={setIsMobileExpanded}
-            prompt={extraRequest}
-            setPrompt={setExtraRequest}
-            credits={credits}
-            totalCost={selectedModel.cost}
-            isGenerating={isGenerating}
-            isGenerateDisabled={isGenerating || !sourceImg}
-            onGenerate={handleGenerate}
-            onOpenLibrary={() => {}} 
-            generateLabel="KHỞI TẠO"
+            isExpanded={s.isMobileExpanded} 
+            setIsExpanded={s.setIsMobileExpanded}
+            prompt={s.prompt} 
+            setPrompt={s.setPrompt} 
+            credits={s.credits} 
+            totalCost={s.selectedModel.cost}
+            isGenerating={s.isGenerating} 
+            isGenerateDisabled={s.isGenerateDisabled}
+            onGenerate={s.handleGenerate} 
+            onOpenLibrary={() => s.setIsLibraryOpen(true)}
+            generateLabel="KHỞI CHẠY" 
             type="image"
+            tooltip={s.generateTooltip}
           />
 
-          <div className={`flex-grow overflow-y-auto no-scrollbar p-6 space-y-8 pb-48 ${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
-            <div className="hidden lg:flex justify-between items-start">
-              <div className="flex items-center gap-4">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shadow-sm transition-colors bg-${accent}-500/10 border-${accent}-500/20 text-${accent}-500`}>
-                  <config.icon size={20} />
-                </div>
-                <div>
-                  <h2 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">{config.name}</h2>
-                  <p className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest mt-1 italic">{config.version}</p>
-                </div>
-              </div>
-              <div className="flex flex-col items-end gap-1">
-                <div 
-                  className={`w-10 h-5 rounded-full relative transition-colors cursor-pointer border ${faceLock ? `bg-${accent}-600 border-${accent}-400` : `bg-slate-200 dark:bg-gray-800 border-slate-300 dark:border-white/10`}`} 
-                  onClick={() => setFaceLock(!faceLock)}
-                >
-                  <motion.div animate={{ x: faceLock ? 20 : 2 }} className="absolute top-0.5 w-3.5 h-3.5 bg-white rounded-full shadow-lg" />
-                </div>
-                <span className="text-[7px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest">KHÓA MẶT</span>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest italic px-1">Ảnh chân dung gốc</label>
-              <div 
-                onClick={() => fileInputRef.current?.click()}
-                className={`aspect-video rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all group overflow-hidden relative shadow-inner hover:border-${accent}-500/40`}
-              >
-                {isUploading ? (
-                  <Loader2 className={`animate-spin text-${accent}-500`} size={32} />
-                ) : sourceImg ? (
-                  <img src={sourceImg} className="w-full h-full object-cover" alt="Anchor" />
-                ) : (
-                  <>
-                    <div className={`p-4 rounded-full group-hover:scale-110 transition-transform bg-${accent}-500/5 dark:bg-${accent}-500/10`}>
-                      <Upload size={32} className={`opacity-40 text-${accent}-500`} />
-                    </div>
-                    <span className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest italic text-center px-6">Tải ảnh chân dung của bạn</span>
-                  </>
-                )}
-                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleUpload} />
-              </div>
-            </div>
-
-            <section className="space-y-6">
-               <div className="flex items-center gap-3">
-                  <div className={`w-7 h-7 rounded-lg bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 flex items-center justify-center text-xs font-black italic text-${accent}-500`}>01</div>
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-white italic">CHỦ ĐỀ & PHONG CÁCH</h3>
-               </div>
-               <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest px-1 italic">Vui lòng chọn phong cách</label>
-                    <select 
-                        value={selectedSubject} 
-                        onChange={(e) => setSelectedSubject(e.target.value)}
-                        className={`w-full bg-slate-50 dark:bg-[#1a1b26] border border-slate-200 dark:border-white/10 rounded-lg p-3 text-[11px] font-bold text-slate-700 dark:text-slate-300 outline-none appearance-none cursor-pointer transition-colors focus:border-${accent}-500/50`}
-                      >
-                        {config.subjects.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {config.scenes.map(tag => (
-                       <button 
-                         key={tag} 
-                         onClick={() => toggleTag(tag, selectedScenes, setSelectedScenes)}
-                         className={`px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase transition-all border ${selectedScenes.includes(tag) ? `bg-${accent}-600 border-transparent text-white shadow-md` : `bg-white dark:bg-white/5 text-slate-400 border-slate-200 dark:border-white/5 hover:border-${accent}-500/30`}`}
-                       >
-                          + {tag}
-                       </button>
-                    ))}
-                  </div>
-               </div>
-            </section>
-
-            <section className="space-y-4 pt-4">
-                <div className="flex justify-between items-center px-1">
-                    <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">MÔ TẢ CHI TIẾT</label>
-                    <div className="flex items-center gap-1 text-brand-blue text-[9px] font-black italic"><Sparkles size={10} /> Smart Prompt</div>
-                </div>
-                <textarea 
-                  value={extraRequest} onChange={e => setExtraRequest(e.target.value)} 
-                  className={`w-full h-24 bg-white dark:bg-[#1a1b26] border border-slate-200 dark:border-white/5 p-4 text-[11px] font-medium outline-none rounded-xl text-slate-800 dark:text-white shadow-inner focus:border-${accent}-500/50 transition-all`} 
-                  placeholder="Ví dụ: Ánh sáng Studio, bối cảnh sang trọng, sắc nét..." 
-                />
-            </section>
+          <div className={`flex-grow overflow-y-auto no-scrollbar p-6 space-y-8 pb-48 ${!s.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+            <EventSidebar 
+              config={config} 
+              sourceImg={s.sourceImg} 
+              onUpload={() => fileInputRef.current?.click()}
+              isUploading={s.isUploading}
+              selectedSubject={s.selectedSubject}
+              setSelectedSubject={s.setSelectedSubject}
+              selectedScenes={s.selectedScenes}
+              setSelectedScenes={s.setSelectedScenes}
+              prompt={s.prompt}
+              setPrompt={s.setPrompt}
+            />
+            
+            <EventConfiguration 
+              selectedModel={s.selectedModel}
+              setSelectedModel={s.setSelectedModel}
+              selectedRatio={s.selectedRatio}
+              setSelectedRatio={s.setSelectedRatio}
+              selectedRes={s.selectedRes}
+              setSelectedRes={s.setSelectedRes}
+              usagePreference={s.usagePreference}
+              credits={s.credits}
+              onShowResource={() => s.setShowResourceModal(true)}
+            />
           </div>
 
-          <div className="hidden lg:block shrink-0 p-6 space-y-4 bg-white/95 dark:bg-[#0d0e12]/95 backdrop-blur-xl border-t border-slate-200 dark:border-white/5 shadow-2xl transition-colors">
-               <div className="flex justify-between items-center px-2">
-                  <div className="flex flex-col">
-                    <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-1 italic">Ví của bạn</span>
-                    <div className="flex items-center gap-2 text-brand-blue leading-none">
-                      <Coins size={14} className="text-yellow-500" fill="currentColor" />
-                      <span className="text-[14px] font-black italic">{credits.toLocaleString()} CR</span>
-                    </div>
-                  </div>
-                  <div className="text-right flex flex-col items-end">
-                    <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-1 italic">Chi phí</span>
-                    <div className="flex items-center gap-1 text-orange-500 leading-none">
-                      <Zap size={12} fill="currentColor" />
-                      <span className="text-[14px] font-black italic">{selectedModel.cost} CR</span>
-                    </div>
-                  </div>
-               </div>
-               <button 
-                 onClick={handleGenerate}
-                 disabled={isGenerating || !sourceImg}
-                 className={`w-full py-5 rounded-2xl flex items-center justify-center gap-4 text-xs font-black uppercase tracking-[0.4em] shadow-xl transition-all active:scale-[0.98] group relative overflow-hidden ${isGenerating || !sourceImg ? 'opacity-50 grayscale cursor-not-allowed bg-slate-200 dark:bg-gray-800' : `bg-${accent}-600 text-white hover:brightness-110 shadow-lg`}`}
-               >
-                  <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                  {isGenerating ? <Loader2 className="animate-spin" size={18}/> : <Sparkles size={18} fill="currentColor" />}
-                  KHỞI TẠO STUDIO
-               </button>
+          <div className={`p-6 pb-12 lg:pb-6 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-black/20 shrink-0 ${!s.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+             <button 
+               onClick={s.handleGenerate} 
+               disabled={s.isGenerateDisabled}
+               className={`w-full py-5 rounded-2xl flex items-center justify-center gap-4 text-xs font-black uppercase tracking-[0.4em] shadow-xl transition-all active:scale-[0.98] group relative overflow-hidden ${s.isGenerateDisabled ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 grayscale' : `bg-${config.accentColor}-600 text-white shadow-${config.accentColor}-500/20`}`}
+             >
+                <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                {s.isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={18} fill="currentColor" />}
+                TỔNG HỢP {config.id.toUpperCase()}
+             </button>
           </div>
         </aside>
 
-        <main className="flex-grow flex flex-col relative bg-slate-50 dark:bg-[#020205] transition-colors duration-500 overflow-hidden">
-           <header className="h-14 border-b border-slate-200 dark:border-white/5 bg-white/80 dark:bg-black/40 backdrop-blur-xl flex items-center justify-between px-8 z-30 shrink-0 transition-colors">
-              <div className="flex items-center gap-4">
-                 <div className={`w-1.5 h-1.5 rounded-full animate-pulse shadow-lg bg-${accent}-500 shadow-${accent}-500/50`}></div>
-                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-gray-500 italic uppercase">KẾT QUẢ TỔNG HỢP</span>
-              </div>
-              <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors bg-black/5 dark:bg-white/5 rounded-full"><X size={18} /></button>
-           </header>
-           <div className="flex-grow flex items-center justify-center p-6 md:p-12 relative overflow-hidden">
-              <AnimatePresence mode="wait">
-                 {activeResult ? (
-                   <motion.div key={activeResult.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="relative group max-w-4xl w-full aspect-[4/3] bg-white dark:bg-black rounded-sm overflow-hidden shadow-3xl border border-slate-200 dark:border-white/10">
-                      <img src={activeResult.url} className="w-full h-full object-cover" alt="Result" />
-                      <div className="absolute top-6 right-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                         <button className={`p-4 bg-white/90 dark:bg-black/80 backdrop-blur-md rounded-full shadow-2xl text-slate-800 dark:text-white hover:text-white transition-all bg-${accent}-600`}><Share2 size={20}/></button>
-                         <a href={activeResult.url} download={`${config.id}_ai_${activeResult.id}.png`} className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center"><Download size={20}/></a>
-                      </div>
-                   </motion.div>
-                 ) : (
-                   <div className="text-center space-y-10 opacity-20 flex flex-col items-center select-none transition-opacity">
-                      <config.icon size={140} strokeWidth={1} className={`text-slate-900 dark:text-white ${config.id === 'noel' ? 'animate-spin-slow' : 'animate-pulse'}`} />
-                      <div className="space-y-2">
-                         <h3 className="text-4xl font-black uppercase tracking-[0.5em] italic text-slate-900 dark:text-white leading-none uppercase">Studio Ready</h3>
-                         <p className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 italic">HỆ THỐNG SẴN SÀNG KHỞI TẠO</p>
-                      </div>
+        {/* VIEWPORT */}
+        <main className="flex-grow flex flex-col relative bg-[#f8f9fb] dark:bg-[#020205] transition-colors duration-500 overflow-hidden h-full">
+           {/* Viewport Header with Tabs */}
+           <div className="h-16 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-6 bg-white/80 dark:bg-black/40 backdrop-blur-xl z-40 shrink-0">
+             <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-full border border-black/5 dark:border-white/10">
+               <button 
+                 onClick={() => s.setActiveTab('CURRENT')}
+                 className={`px-4 md:px-6 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'CURRENT' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-lg' : 'text-slate-400 dark:text-gray-600 hover:text-slate-900 dark:hover:text-white'}`}
+               >
+                 Phòng Lab
+               </button>
+               <button 
+                 onClick={() => s.setActiveTab('HISTORY')}
+                 className={`px-4 md:px-6 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'HISTORY' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-lg' : 'text-slate-400 dark:text-gray-600 hover:text-slate-900 dark:hover:text-white'}`}
+               >
+                 Lịch sử
+               </button>
+             </div>
+             
+             <div className="flex items-center gap-3">
+               {s.activeTab === 'HISTORY' && (
+                 <button onClick={s.fetchHistory} className="p-2 text-slate-400 hover:text-brand-blue transition-colors">
+                   <RefreshCw size={16} className={s.isFetchingHistory ? 'animate-spin' : ''} />
+                 </button>
+               )}
+               <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                 <X size={20} />
+               </button>
+             </div>
+           </div>
+
+           <div className="flex-grow overflow-y-auto no-scrollbar relative p-6 md:p-12 flex flex-col items-center">
+             <AnimatePresence mode="wait">
+               {s.activeTab === 'CURRENT' ? (
+                 <motion.div key="viewport-current" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full flex justify-center h-full">
+                   <EventViewport 
+                     config={config}
+                     activeResult={s.activeResultId ? s.results.find(r => r.id === s.activeResultId) || null : null}
+                     isGenerating={s.isGenerating}
+                     onClose={onClose}
+                     accentColor={config.accentColor}
+                     onEdit={(url) => { s.setEditorImage(url); s.setIsEditorOpen(true); }}
+                     onDownload={handleDownload}
+                   />
+                 </motion.div>
+               ) : (
+                 <motion.div key="viewport-history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full max-w-6xl space-y-12">
+                   <div className="space-y-4 px-1">
+                      <div className="flex items-center gap-3 text-brand-blue"><HistoryIcon size={20} /></div>
+                      <h2 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Kho lưu trữ <span className="text-brand-blue">Cloud.</span></h2>
+                      <p className="text-sm text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest italic opacity-60">Toàn bộ tác phẩm của bạn được lưu trữ an toàn trong sổ cái sáng tạo.</p>
                    </div>
-                 )}
-              </AnimatePresence>
+
+                   {s.isFetchingHistory ? (
+                     <div className="py-40 flex flex-col items-center justify-center gap-4 opacity-40">
+                        <Loader2 className="animate-spin text-brand-blue" size={48} />
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em]">Đang đồng bộ dữ liệu...</p>
+                     </div>
+                   ) : s.historyResults.length > 0 ? (
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-32">
+                        {s.historyResults.map((res) => (
+                           <div key={res.id} className="bg-white dark:bg-[#111] border border-black/5 dark:border-white/5 rounded-[2rem] overflow-hidden shadow-xl group transition-all hover:border-brand-blue/30">
+                              <div className="aspect-[3/4] relative overflow-hidden bg-black cursor-pointer" onClick={() => { s.setActiveResultId(res.id); s.setResults(prev => [...prev, res]); s.setActiveTab('CURRENT'); }}>
+                                 <img src={res.url!} className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000" alt="" />
+                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                                 <div className="absolute top-4 left-4 bg-brand-blue text-white text-[8px] font-black px-2 py-0.5 rounded shadow-lg uppercase">8K MASTER</div>
+                              </div>
+                              <div className="p-6 space-y-4">
+                                 <div className="space-y-1">
+                                    <h4 className="text-[11px] font-black uppercase text-slate-800 dark:text-white truncate italic">"{res.prompt}"</h4>
+                                    <div className="flex items-center gap-2 text-[8px] font-bold text-slate-400 uppercase tracking-widest"><Clock size={10} /> {res.timestamp}</div>
+                                 </div>
+                                 <div className="flex gap-2 pt-2 border-t border-black/5 dark:border-white/5">
+                                    <button onClick={() => { s.setEditorImage(res.url!); s.setIsEditorOpen(true); }} className="flex-grow bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-gray-300 py-2 rounded-lg text-[9px] font-black uppercase transition-all flex items-center justify-center gap-2"><Edit3 size={12}/> Edit</button>
+                                    <button onClick={() => res.url && handleDownload(res.url)} className="p-2 bg-brand-blue/10 text-brand-blue hover:bg-brand-blue hover:text-white transition-all rounded-lg"><Download size={14}/></button>
+                                 </div>
+                              </div>
+                           </div>
+                        ))}
+                     </div>
+                   ) : (
+                     <div className="py-40 text-center opacity-10 flex flex-col items-center gap-6 select-none grayscale">
+                        <Database size={100} strokeWidth={1} />
+                        <p className="text-xl font-black uppercase tracking-[0.5em]">Lịch sử trống</p>
+                     </div>
+                   )}
+                 </motion.div>
+               )}
+             </AnimatePresence>
            </div>
         </main>
+
+        {/* HISTORY SIDEBAR (DESKTOP) */}
+        {s.activeTab === 'CURRENT' && (
+          <EventHistory 
+            results={s.results} 
+            activeId={s.activeResultId} 
+            onSelect={s.setActiveResultId} 
+          />
+        )}
       </div>
 
-      <aside className="hidden lg:flex w-24 md:w-28 xl:w-32 border-l border-slate-200 dark:border-white/5 bg-white/40 dark:bg-[#0d0e12]/40 backdrop-blur-xl flex flex-col items-center py-6 gap-4 overflow-y-auto no-scrollbar z-50 transition-colors">
-          <div className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest flex flex-col items-center gap-1 mb-2 text-center shrink-0 italic">
-            <HistoryIcon size={14} /> Tệp tin
-          </div>
-          {history.map((asset, idx) => (
-            <button 
-              key={asset.id} 
-              onClick={() => setActiveHistoryIndex(idx)}
-              className={`relative w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden border-2 transition-all shrink-0 hover:scale-105 ${activeHistoryIndex === idx ? `border-${accent}-500 shadow-xl shadow-${accent}-500/20` : 'border-black/5 dark:border-white/10 opacity-60 hover:opacity-100'}`}
-            >
-              <img src={asset.url} className="w-full h-full object-cover" alt={`History ${idx}`} />
-              <div className="absolute bottom-0 inset-x-0 bg-black/60 py-0.5">
-                 <span className="text-[6px] font-black text-white uppercase text-center block tracking-tighter">0{history.length - idx}</span>
-              </div>
-            </button>
-          ))}
-      </aside>
+      <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={s.handleUpload} />
 
-      <style dangerouslySetInnerHTML={{ __html: `
-        .animate-spin-slow {
-          animation: spin 12s linear infinite;
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      ` }} />
+      <ImageLibraryModal 
+        isOpen={s.isLibraryOpen} 
+        onClose={() => s.setIsLibraryOpen(false)} 
+        onConfirm={(assets) => {
+          if (assets.length > 0) {
+            s.setSourceImg(assets[0].url);
+            s.setSourceMediaId(assets[0].mediaId || assets[0].id);
+          }
+          s.setIsLibraryOpen(false);
+        }}
+      />
+
+      <ProductImageWorkspace 
+        isOpen={s.isEditorOpen} 
+        onClose={() => s.setIsEditorOpen(false)} 
+        initialImage={s.editorImage} 
+        onApply={(url) => {
+          s.setResults(prev => [{ id: `edit-${Date.now()}`, url, status: 'done', prompt: 'Edited', timestamp: 'Vừa xong', cost: 0 }, ...prev]);
+          s.setActiveResultId(`edit-${Date.now()}`);
+          s.setIsEditorOpen(false);
+        }}
+      />
+
+      <ResourceAuthModal 
+        isOpen={s.showResourceModal} 
+        onClose={() => s.setShowResourceModal(false)} 
+        onConfirm={(pref) => { s.setUsagePreference(pref); s.setShowResourceModal(false); }} 
+        hasPersonalKey={!!localStorage.getItem('skyverses_model_vault')}
+      />
+
+      <AnimatePresence>
+        {s.showLowCreditAlert && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[#111114] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors">
+              <div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]"><AlertTriangle size={48} /></div>
+              <div className="space-y-4">
+                <h3 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3>
+                <p className="text-sm text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight">Bạn cần ít nhất **{s.selectedModel.cost} credits** để bắt đầu chu trình này.</p>
+              </div>
+              <div className="flex flex-col gap-4">
+                <Link to="/credits" className="bg-brand-blue text-white py-5 rounded-full text-[12px] font-black uppercase tracking-[0.4em] shadow-xl hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
+                {/* Fixed: Added missing s. prefix to setShowLowCreditAlert */}
+                <button onClick={() => s.setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest underline underline-offset-8 decoration-white/20">Bỏ qua</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
+
+export default EventStudioWorkspace;
