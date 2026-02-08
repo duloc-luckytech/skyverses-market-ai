@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import NoelStudioWorkspace from '../../components/NoelStudioWorkspace';
+// Changed to named import to match the updated export in components/NoelStudioWorkspace.tsx
+import { NoelStudioWorkspace } from '../../components/NoelStudioWorkspace';
 import { NoelHero } from '../../components/noel-generator/NoelHero';
 import { NoelShowcase } from '../../components/noel-generator/NoelShowcase';
 import { NoelBenefits } from '../../components/noel-generator/NoelBenefits';
