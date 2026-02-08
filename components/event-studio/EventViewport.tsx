@@ -19,24 +19,9 @@ interface EventViewportProps {
 export const EventViewport: React.FC<EventViewportProps> = ({ 
   config, activeResult, isGenerating, onClose, accentColor, onEdit, onDownload 
 }) => {
-  const EvIcon = config.icon;
-
   return (
     <div className="h-full w-full flex flex-col relative overflow-hidden">
-      {/* HUD Bar */}
-      <header className="h-16 border-b border-slate-200 dark:border-white/5 bg-white/80 dark:bg-black/40 backdrop-blur-xl flex items-center justify-between px-8 shrink-0 z-30 transition-colors">
-        <div className="flex items-center gap-6">
-           <div className="flex items-center gap-3">
-              <div className={`w-1.5 h-1.5 rounded-full animate-pulse bg-${accentColor}-500 shadow-lg shadow-${accentColor}-500/50`}></div>
-              <span className={`text-sm font-black uppercase italic tracking-tighter text-slate-900 dark:text-white`}>
-                {config.name}
-              </span>
-           </div>
-           <div className="h-4 w-px bg-black/10 dark:border-white/10 hidden sm:block"></div>
-           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-gray-500 italic hidden sm:block">VIRTUAL_STUDIO_NODE</span>
-        </div>
-        <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-black/5 dark:bg-white/5 rounded-full"><X size={20} /></button>
-      </header>
+      {/* Internal header removed as it is now part of the parent workspace header */}
 
       {/* Main Canvas Area */}
       <div className="flex-grow flex items-center justify-center p-6 md:p-12 relative overflow-hidden">

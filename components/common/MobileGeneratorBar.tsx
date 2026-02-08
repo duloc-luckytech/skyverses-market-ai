@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -44,15 +43,15 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
       className={`lg:hidden flex flex-col items-center shrink-0 cursor-pointer relative transition-all duration-500 ease-in-out ${
         isExpanded 
           ? 'h-14 border-b border-black/5 dark:border-white/5 justify-center bg-white dark:bg-[#0d0d0f]' 
-          : 'h-[150px] justify-start bg-white/70 dark:bg-black/70 backdrop-blur-xl border-t border-black/5 dark:border-white/10 pb-6'
+          : 'h-[160px] justify-start bg-white/70 dark:bg-black/70 backdrop-blur-xl border-t border-black/5 dark:border-white/10 pb-10 shadow-[0_-8px_30px_rgba(0,0,0,0.1)]'
       }`}
       onClick={() => !isExpanded && setIsExpanded(true)}
     >
       {/* Drag Handle Indicator */}
-      <div className="w-10 h-1 bg-slate-300 dark:bg-white/10 rounded-full mb-3 mt-2 opacity-50"></div>
+      <div className="w-10 h-1 bg-slate-300 dark:bg-white/10 rounded-full mb-4 mt-2 opacity-50"></div>
       
       {!isExpanded ? (
-        <div className="w-full px-5 space-y-3 pb-8">
+        <div className="w-full px-5 space-y-4 pb-12">
           {/* LINE 1: PREMIUM INPUT PILL */}
           <div className="flex items-center gap-2">
             <button 
@@ -83,7 +82,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
           {/* LINE 2: COMPACT STATUS & GENERATE ACTION */}
           <div className="flex items-center justify-between gap-3">
              {/* Resource Telemetry */}
-             <div className="flex items-center gap-3 bg-black/5 dark:bg-white/5 px-3 h-10 rounded-xl border border-black/5 dark:border-white/10 shadow-inner">
+             <div className="flex items-center gap-3 bg-black/5 dark:bg-white/5 px-3 h-10 rounded-xl border border-black/5 dark:border-white/10 shadow-inner shrink-0">
                 <div className="flex flex-col items-start leading-none gap-0.5">
                    <span className="text-[6px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">Ví</span>
                    <div className="flex items-center gap-1">
@@ -102,11 +101,11 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
              </div>
 
              {/* Main Action Button */}
-             <div className="relative flex-grow group/mobilebtn">
+             <div className="relative flex-grow group/mobilebtn h-10">
                <button 
                  onClick={onGenerate}
                  disabled={isGenerateDisabled}
-                 className={`w-full h-10 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 relative overflow-hidden ${
+                 className={`w-full h-full rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 relative overflow-hidden ${
                    isGenerateDisabled 
                     ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 grayscale cursor-not-allowed' 
                     : 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20 hover:brightness-110 active:scale-95'

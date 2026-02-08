@@ -1,3 +1,4 @@
+
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Loader2, Zap, X, RefreshCw, History as HistoryIcon, Clock, Edit3, Download, Database } from 'lucide-react';
@@ -26,7 +27,6 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
   const s = useEventStudio(config);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Fixed: handleDownload implementation for cross-browser file saving
   const handleDownload = (url: string) => {
     const link = document.createElement('a');
     link.href = url;
@@ -54,15 +54,15 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
         </AnimatePresence>
 
         {/* SIDEBAR */}
-        <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] shrink-0 bg-white dark:bg-[#0d0e12] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-2xl transition-all duration-500 ease-in-out ${s.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-14 lg:h-full lg:rounded-none'}`}>
+        <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] shrink-0 bg-white dark:bg-[#0d0e12] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-2xl transition-all duration-500 ease-in-out ${s.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-[150px] lg:h-full lg:rounded-none'}`}>
           <MobileGeneratorBar 
             isExpanded={s.isMobileExpanded} 
             setIsExpanded={s.setIsMobileExpanded}
             prompt={s.prompt} 
             setPrompt={s.setPrompt} 
             credits={s.credits} 
-            totalCost={s.selectedModel.cost}
-            isGenerating={s.isGenerating} 
+            totalCost={s.selectedModel.cost * s.quantity}
+            isGenerating={s.isRequesting} // Use short-lived requesting state for button feedback
             isGenerateDisabled={s.isGenerateDisabled}
             onGenerate={s.handleGenerate} 
             onOpenLibrary={() => s.setIsLibraryOpen(true)}
@@ -74,8 +74,10 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
           <div className={`flex-grow overflow-y-auto no-scrollbar p-6 space-y-8 pb-48 ${!s.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
             <EventSidebar 
               config={config} 
-              sourceImg={s.sourceImg} 
+              sourceImages={s.sourceImages} 
+              removeSourceImage={s.removeSourceImage}
               onUpload={() => fileInputRef.current?.click()}
+              onOpenLibrary={() => s.setIsLibraryOpen(true)}
               isUploading={s.isUploading}
               selectedSubject={s.selectedSubject}
               setSelectedSubject={s.setSelectedSubject}
@@ -92,6 +94,8 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
               setSelectedRatio={s.setSelectedRatio}
               selectedRes={s.selectedRes}
               setSelectedRes={s.setSelectedRes}
+              quantity={s.quantity}
+              setQuantity={s.setQuantity}
               usagePreference={s.usagePreference}
               credits={s.credits}
               onShowResource={() => s.setShowResourceModal(true)}
@@ -105,7 +109,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
                className={`w-full py-5 rounded-2xl flex items-center justify-center gap-4 text-xs font-black uppercase tracking-[0.4em] shadow-xl transition-all active:scale-[0.98] group relative overflow-hidden ${s.isGenerateDisabled ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 grayscale' : `bg-${config.accentColor}-600 text-white shadow-${config.accentColor}-500/20`}`}
              >
                 <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                {s.isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={18} fill="currentColor" />}
+                {s.isRequesting ? <Loader2 className="animate-spin" size={20} /> : <Zap size={18} fill="currentColor" />}
                 TỔNG HỢP {config.id.toUpperCase()}
              </button>
           </div>
@@ -113,30 +117,46 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
 
         {/* VIEWPORT */}
         <main className="flex-grow flex flex-col relative bg-[#f8f9fb] dark:bg-[#020205] transition-colors duration-500 overflow-hidden h-full">
-           {/* Viewport Header with Tabs */}
-           <div className="h-16 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-6 bg-white/80 dark:bg-black/40 backdrop-blur-xl z-40 shrink-0">
-             <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-full border border-black/5 dark:border-white/10">
+           {/* Unified Header: Title + Tabs */}
+           <div className="h-16 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-8 bg-white/80 dark:bg-black/40 backdrop-blur-xl z-40 shrink-0">
+             {/* Title on left */}
+             <div className="flex items-center gap-4">
+                <div className={`w-1.5 h-6 rounded-full bg-${config.accentColor}-500 shadow-[0_0_10px_rgba(var(--tw-color-${config.accentColor}-500),0.5)]`}></div>
+                <h2 className="text-sm font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none whitespace-nowrap">
+                  {config.name} <span className="text-[10px] opacity-40 font-bold ml-2 hidden sm:inline tracking-[0.2em]">NODE_042</span>
+                </h2>
+             </div>
+
+             {/* Tabs in center */}
+             <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex bg-slate-100 dark:bg-white/5 p-1 rounded-full border border-black/5 dark:border-white/10">
                <button 
                  onClick={() => s.setActiveTab('CURRENT')}
-                 className={`px-4 md:px-6 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'CURRENT' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-lg' : 'text-slate-400 dark:text-gray-600 hover:text-slate-900 dark:hover:text-white'}`}
+                 className={`px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'CURRENT' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-lg' : 'text-slate-400 dark:text-gray-600 hover:text-slate-900 dark:hover:text-white'}`}
                >
                  Phòng Lab
                </button>
                <button 
                  onClick={() => s.setActiveTab('HISTORY')}
-                 className={`px-4 md:px-6 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'HISTORY' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-lg' : 'text-slate-400 dark:text-gray-600 hover:text-slate-900 dark:hover:text-white'}`}
+                 className={`px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${s.activeTab === 'HISTORY' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-lg' : 'text-slate-400 dark:text-gray-600 hover:text-slate-900 dark:hover:text-white'}`}
                >
                  Lịch sử
                </button>
              </div>
+
+             {/* Small tabs for mobile */}
+             <div className="md:hidden flex bg-slate-100 dark:bg-white/5 p-0.5 rounded-full border border-black/5 dark:border-white/10 mr-4">
+               <button onClick={() => s.setActiveTab('CURRENT')} className={`px-3 py-1 rounded-full text-[8px] font-black uppercase transition-all ${s.activeTab === 'CURRENT' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-sm' : 'text-slate-400'}`}>Lab</button>
+               <button onClick={() => s.setActiveTab('HISTORY')} className={`px-3 py-1 rounded-full text-[8px] font-black uppercase transition-all ${s.activeTab === 'HISTORY' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-sm' : 'text-slate-400'}`}>History</button>
+             </div>
              
-             <div className="flex items-center gap-3">
+             {/* Actions on right */}
+             <div className="flex items-center gap-2">
                {s.activeTab === 'HISTORY' && (
-                 <button onClick={s.fetchHistory} className="p-2 text-slate-400 hover:text-brand-blue transition-colors">
+                 <button onClick={s.fetchHistory} className="p-2 text-slate-400 hover:text-brand-blue transition-colors rounded-full hover:bg-black/5 dark:hover:bg-white/5">
                    <RefreshCw size={16} className={s.isFetchingHistory ? 'animate-spin' : ''} />
                  </button>
                )}
-               <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+               <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-black/5 dark:bg-white/5 rounded-full">
                  <X size={20} />
                </button>
              </div>
@@ -194,7 +214,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
                    ) : (
                      <div className="py-40 text-center opacity-10 flex flex-col items-center gap-6 select-none grayscale">
                         <Database size={100} strokeWidth={1} />
-                        <p className="text-xl font-black uppercase tracking-[0.5em]">Lịch sử trống</p>
+                        <p className="textxl font-black uppercase tracking-[0.5em]">Lịch sử trống</p>
                      </div>
                    )}
                  </motion.div>
@@ -213,16 +233,13 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
         )}
       </div>
 
-      <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={s.handleUpload} />
+      <input type="file" ref={fileInputRef} className="hidden" multiple accept="image/*" onChange={s.handleUpload} />
 
       <ImageLibraryModal 
         isOpen={s.isLibraryOpen} 
         onClose={() => s.setIsLibraryOpen(false)} 
         onConfirm={(assets) => {
-          if (assets.length > 0) {
-            s.setSourceImg(assets[0].url);
-            s.setSourceMediaId(assets[0].mediaId || assets[0].id);
-          }
+          s.addLibraryImages(assets);
           s.setIsLibraryOpen(false);
         }}
       />
@@ -252,11 +269,10 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
               <div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]"><AlertTriangle size={48} /></div>
               <div className="space-y-4">
                 <h3 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3>
-                <p className="text-sm text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight">Bạn cần ít nhất **{s.selectedModel.cost} credits** để bắt đầu chu trình này.</p>
+                <p className="text-sm text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight">Bạn cần ít nhất **{s.selectedModel.cost * s.quantity} credits** để bắt đầu chu trình này.</p>
               </div>
               <div className="flex flex-col gap-4">
                 <Link to="/credits" className="bg-brand-blue text-white py-5 rounded-full text-[12px] font-black uppercase tracking-[0.4em] shadow-xl hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
-                {/* Fixed: Added missing s. prefix to setShowLowCreditAlert */}
                 <button onClick={() => s.setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest underline underline-offset-8 decoration-white/20">Bỏ qua</button>
               </div>
             </motion.div>

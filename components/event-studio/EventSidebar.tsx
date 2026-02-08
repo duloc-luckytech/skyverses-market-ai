@@ -1,12 +1,15 @@
 
 import React from 'react';
-import { Upload, User, Palette, Target, Sparkles, Loader2, Settings2 } from 'lucide-react';
+import { Upload, User, Palette, Target, Sparkles, Loader2, X, Plus, FolderOpen } from 'lucide-react';
 import { EventConfig } from '../../constants/event-configs';
+import { SourceImage } from '../../hooks/useEventStudio';
 
 interface EventSidebarProps {
   config: EventConfig;
-  sourceImg: string | null;
+  sourceImages: SourceImage[];
   onUpload: () => void;
+  removeSourceImage: (id: string) => void;
+  onOpenLibrary: () => void;
   isUploading: boolean;
   selectedSubject: string;
   setSelectedSubject: (val: string) => void;
@@ -17,7 +20,7 @@ interface EventSidebarProps {
 }
 
 export const EventSidebar: React.FC<EventSidebarProps> = ({
-  config, sourceImg, onUpload, isUploading, selectedSubject, setSelectedSubject,
+  config, sourceImages, onUpload, removeSourceImage, onOpenLibrary, isUploading, selectedSubject, setSelectedSubject,
   selectedScenes, setSelectedScenes, prompt, setPrompt
 }) => {
   const toggleScene = (scene: string) => {
@@ -49,25 +52,53 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
          </div>
       </section>
 
-      {/* Anchor Image Section */}
+      {/* Anchor Image Section - Multiple Support */}
       <section className="space-y-4">
-        <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest italic px-1">Chân dung mỏ neo</label>
-        <div 
-          onClick={onUpload}
-          className={`aspect-video rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-4 cursor-pointer transition-all group overflow-hidden relative shadow-inner ${sourceImg ? 'border-brand-blue bg-brand-blue/5' : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/40 hover:border-brand-blue/40'}`}
-        >
-          {isUploading ? (
-            <Loader2 className="animate-spin text-brand-blue" size={32} />
-          ) : sourceImg ? (
-            <img src={sourceImg} className="w-full h-full object-cover" alt="Anchor" />
-          ) : (
-            <>
-              <div className="p-4 rounded-full bg-brand-blue/5 group-hover:scale-110 transition-transform">
-                <User size={32} className="opacity-40 text-brand-blue" />
-              </div>
-              <span className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest text-center px-6 leading-relaxed">Tải ảnh mẫu của bạn (Full body/Portrait)</span>
-            </>
-          )}
+        <div className="flex justify-between items-center px-1">
+          <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest italic">Chân dung mỏ neo</label>
+          <span className="text-[10px] font-bold text-slate-300">{sourceImages.length} tệp</span>
+        </div>
+        
+        <div className="grid grid-cols-3 gap-3">
+          {sourceImages.map((img) => (
+            <div key={img.id} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 group">
+              <img src={img.url} className={`w-full h-full object-cover ${img.status === 'uploading' ? 'opacity-40 blur-[2px]' : ''}`} alt="" />
+              
+              {img.status === 'uploading' && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Loader2 size={16} className="animate-spin text-brand-blue" />
+                </div>
+              )}
+
+              <button 
+                onClick={() => removeSourceImage(img.id)}
+                className="absolute top-1 right-1 p-1 bg-black/60 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <X size={10} strokeWidth={3} />
+              </button>
+            </div>
+          ))}
+
+          {/* Add Actions */}
+          <div className="aspect-square rounded-xl border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center justify-center gap-1 group relative overflow-hidden transition-all hover:border-brand-blue/40">
+             <Plus size={16} className="text-slate-300 dark:text-gray-600" />
+             <div className="absolute inset-0 bg-white dark:bg-black flex flex-col opacity-0 group-hover:opacity-100 transition-opacity">
+                <button 
+                  onClick={onUpload}
+                  className="flex-1 flex items-center justify-center hover:bg-brand-blue/10 text-brand-blue border-b border-black/5 dark:border-white/5"
+                  title="Tải lên từ máy"
+                >
+                  <Upload size={14} />
+                </button>
+                <button 
+                  onClick={onOpenLibrary}
+                  className="flex-1 flex items-center justify-center hover:bg-purple-500/10 text-purple-500"
+                  title="Chọn từ thư viện"
+                >
+                  <FolderOpen size={14} />
+                </button>
+             </div>
+          </div>
         </div>
       </section>
 

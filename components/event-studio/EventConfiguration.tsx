@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Settings, ChevronDown, Cpu, Maximize2, Zap } from 'lucide-react';
+import { Settings, ChevronDown, Cpu, Maximize2, Zap, Layers } from 'lucide-react';
 import { COMMON_STUDIO_CONSTANTS } from '../../constants/event-configs';
 
 interface EventConfigurationProps {
@@ -10,6 +10,8 @@ interface EventConfigurationProps {
   setSelectedRatio: (r: string) => void;
   selectedRes: string;
   setSelectedRes: (r: string) => void;
+  quantity: number;
+  setQuantity: (q: number) => void;
   usagePreference: string | null;
   credits: number;
   onShowResource: () => void;
@@ -17,9 +19,9 @@ interface EventConfigurationProps {
 
 export const EventConfiguration: React.FC<EventConfigurationProps> = ({
   selectedModel, setSelectedModel, selectedRatio, setSelectedRatio,
-  selectedRes, setSelectedRes, usagePreference, credits, onShowResource
+  selectedRes, setSelectedRes, quantity, setQuantity, usagePreference, credits, onShowResource
 }) => {
-  const selectStyle = "w-full bg-slate-50 dark:bg-[#1a1b26] border border-slate-200 dark:border-white/10 rounded-xl p-3 text-[10px] font-black uppercase outline-none appearance-none cursor-pointer transition-colors focus:border-brand-blue";
+  const selectStyle = "w-full bg-slate-50 dark:bg-[#1a1b26] border border-slate-200 dark:border-white/10 rounded-xl p-3 text-[10px] font-black uppercase outline-none appearance-none cursor-pointer transition-colors focus:border-brand-blue text-slate-800 dark:text-white";
   const labelStyle = "text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1 italic flex items-center gap-2";
 
   return (
@@ -49,14 +51,27 @@ export const EventConfiguration: React.FC<EventConfigurationProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className={labelStyle}><Zap size={12} className="text-brand-blue"/> Chất lượng kết xuất</label>
+          <label className={labelStyle}><Zap size={12} className="text-brand-blue"/> Độ phân giải</label>
           <div className="relative">
             <select value={selectedRes} onChange={e => setSelectedRes(e.target.value)} className={selectStyle}>
               {COMMON_STUDIO_CONSTANTS.QUALITY_MODES.map(q => <option key={q} value={q}>{q}</option>)}
             </select>
             <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <label className={labelStyle}><Layers size={12} className="text-brand-blue"/> Số lượng</label>
+          <div className="relative">
+             <input 
+               type="number" 
+               min="1" 
+               max="4" 
+               value={quantity} 
+               onChange={e => setQuantity(Math.max(1, Math.min(4, parseInt(e.target.value) || 1)))}
+               className="w-full bg-slate-50 dark:bg-[#1a1b26] border border-slate-200 dark:border-white/10 rounded-xl p-3 text-[10px] font-black uppercase outline-none focus:border-brand-blue text-slate-800 dark:text-white"
+             />
           </div>
         </div>
       </div>

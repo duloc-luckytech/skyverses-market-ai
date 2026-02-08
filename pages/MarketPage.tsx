@@ -12,6 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import MarketSearchTerminal from '../components/MarketSearchTerminal';
 import AIModelsMarquee from '../components/AIModelsMarquee';
 import ExploreMoreAI from '../components/ExploreMoreAI';
+import GlobalToolsBar from '../components/GlobalToolsBar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { handleAdminQuickLogin } from '../utils/adminAuth';
 
@@ -257,6 +258,8 @@ const MarketPage = () => {
 
         {!loading && filteredSolutions.length > 0 && <ExploreMoreAI />}
       </div>
+
+      <GlobalToolsBar />
 
       <AnimatePresence>
         {isDemoOpen && (
