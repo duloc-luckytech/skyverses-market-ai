@@ -23,7 +23,7 @@ export const STORYBOARD_SAMPLES = [
   {
     id: 's-naruto',
     title: 'Naruto: Final Valley Clash',
-    script: 'Dưới cơn mưa tầm tã tại Thung lũng Tận cùng, Naruto trong trạng thái Lục đạo và Sasuke với Susanoo hoàn mỹ lao vào nhau. Rasengan và Chidori va chạm tạo ra một hố đen năng lượng khổng lồ, phản chiếu ký ức tuổi thơ của cả hai.'
+    script: 'Dưới cơn mưa tầm tã tại Thung lũng Tận cùng, Naruto trong trạng thái Lục đạo và Sasuke với Susanoo hoàn mỹ lao vào nhau. Rasengan và Chidori va chạm tạo ra một hố đen năng lượng khổng lồ, phản chiếu ký ước tuổi thơ của cả hai.'
   },
   {
     id: 's-onepiece',
@@ -43,6 +43,42 @@ export const STORYBOARD_SAMPLES = [
 ];
 
 export const SOLUTIONS: Solution[] = [
+  {
+    id: 'BACKGROUND-REMOVE-AI',
+    slug: 'background-removal-ai',
+    name: { 
+      en: 'AI Background Remover', 
+      vi: 'Xóa Nền AI Pro', 
+      ko: 'AI 배경 제거기', 
+      ja: 'AI背景削除' 
+    },
+    category: { en: 'Enhancement', vi: 'Tối ưu & Phục chế', ko: '강화', ja: '強化' },
+    description: { 
+      en: 'Professional high-precision background removal using neural edge detection for clean PNG assets.', 
+      vi: 'Giải pháp xóa nền chuyên nghiệp với độ chính xác cực cao, hỗ trợ tách tóc và các chi tiết phức tạp cho tài sản PNG sạch.', 
+      ko: '깔끔한 PNG 자산을 위한 신경망 에지 감지를 사용한 전문 고정밀 배경 제거.', 
+      ja: 'クリーンなPNGアセットのための神経エッジ検出を使用したプロフェッショナルな高精度背景削除。' 
+    },
+    problems: ['Manual clipping path struggle', 'Poor edge quality around hair', 'Slow processing for batch assets', 'Green screen requirements'],
+    industries: ['E-commerce', 'Graphic Design', 'Marketing Agencies', 'Fashion Photography'],
+    imageUrl: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'image',
+    tags: ['Remove BG', 'PNG', 'Masking', 'Product'],
+    features: [
+      { en: 'Neural Edge Detection', vi: 'Nhận diện biên Neural', ko: '신경망 에지 감지', ja: '神経エッジ検出' },
+      { en: 'Hair & Fiber Separation', vi: 'Tách tóc và sợi vải chuyên sâu', ko: '머리카락 및 섬유 분리', ja: '髪と繊維の分離' },
+      { en: 'Batch Processing', vi: 'Xử lý hàng loạt tốc độ cao', ko: '일괄 처리', ja: 'バッチ処理' }
+    ],
+    complexity: 'Standard',
+    priceReference: '50 CR / image',
+    isActive: true,
+    priceCredits: 50,
+    featured: true,
+    neuralStack: [
+      { name: 'Segment Edge v4', version: 'v4.2', capability: { en: 'Precise Masking', vi: 'Tách nền chính xác', ko: '정밀 마스킹', ja: '精密なマスキング' } },
+      { name: 'Detail Recovery Node', version: 'v1.0', capability: { en: 'Hair Reconstruction', vi: 'Tái tạo chi tiết tóc', ko: '머리카락 재구성', ja: '髪の再構成' } }
+    ]
+  },
   {
     id: 'AI-AGENT-WORKFLOW',
     slug: 'ai-agent-workflow',
@@ -75,7 +111,7 @@ export const SOLUTIONS: Solution[] = [
     priceCredits: 500,
     featured: true,
     neuralStack: [
-      { name: 'Flow Kernel v1.0', version: 'v1.0.4', capability: { en: 'Logic Orchestration', vi: 'Điều phối Logic', ko: '로직 오케스트레이션', ja: 'ロジックオーケストレーション' } },
+      { name: 'Flow Kernel v1.0', version: 'v1.0.4', capability: { en: 'Logic Orchestration', vi: 'Điều phối Logic', ko: '로직 오케스트레이션', ja: 'ロジックオー케스트레이션' } },
       { name: 'Vision Edge v7', version: 'v7.2', capability: { en: 'High-Fidelity Synthesis', vi: 'Tổng hợp độ trung thực cao', ko: '고충실도 합성', ja: '高忠実度合成' } }
     ]
   },

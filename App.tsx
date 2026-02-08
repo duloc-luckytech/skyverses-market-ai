@@ -56,6 +56,7 @@ import AIImageRestoration from './pages/images/AIImageRestoration';
 import RealEstateAI from './pages/images/RealEstateAI';
 import ProductAIAgentWorkflow from './pages/ProductAIAgentWorkflow';
 import ProductCaptchaToken from './pages/ProductCaptchaToken';
+import BackgroundRemovalAI from './pages/images/BackgroundRemovalAI';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -94,6 +95,7 @@ const App: React.FC = () => {
                       <Route path="/referral" element={<ReferralPage />} />
                       <Route path="/policy" element={<PolicyPage />} />
                       
+                      <Route path="/product/background-removal-ai" element={<BackgroundRemovalAI />} />
                       <Route path="/product/ai-agent-workflow" element={<ProductAIAgentWorkflow />} />
                       <Route path="/product/captcha-veo3" element={<ProductCaptchaToken />} />
                       <Route path="/product/ai-birthday-generator" element={<AIBirthdayGenerator />} />
