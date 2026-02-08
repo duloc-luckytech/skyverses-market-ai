@@ -1,4 +1,3 @@
-
 import { API_BASE_URL, getHeaders } from './config';
 
 export interface VideoJobRequest {
@@ -70,6 +69,31 @@ export interface VideoHistoryResponse {
 }
 
 export const videosApi = {
+  /**
+   * Upload video file via multipart/form-data
+   * POST /video/video-upload
+   */
+  uploadVideo: async (file: File): Promise<{ success: boolean; videoUrl?: string; message?: string }> => {
+    try {
+      const formData = new FormData();
+      formData.append('video', file);
+
+      const token = localStorage.getItem('skyverses_auth_token');
+      const headers: any = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const response = await fetch(`${API_BASE_URL}/video/video-upload`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Video Upload Error:', error);
+      return { success: false, message: 'Network connection failed' };
+    }
+  },
+
   /**
    * Create a video generation job using credits
    */

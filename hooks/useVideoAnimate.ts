@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { generateDemoVideo } from '../services/gemini';
@@ -144,8 +143,6 @@ export const useVideoAnimate = () => {
           throw new Error("Empty result");
         }
       } else {
-        // CALLING REAL API WITH CREDITS
-        // Cập nhật type dựa trên mode: MOTION -> image-to-animation, SWAP -> swap-character
         const payloadType = mode === 'MOTION' ? "image-to-animation" : "swap-character";
 
         const payload: any = {
@@ -190,15 +187,32 @@ export const useVideoAnimate = () => {
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'IMG' | 'VID') => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'IMG' | 'VID') => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    if (type === 'IMG') {
       const reader = new FileReader();
       reader.onloadend = () => {
-        if (type === 'IMG') setSourceImg(reader.result as string);
-        else setRefVideo(reader.result as string);
+        setSourceImg(reader.result as string);
       };
       reader.readAsDataURL(file);
+    } else {
+      // Tải lên video qua API multipart/form-data
+      setIsGenerating(true);
+      try {
+        const res = await videosApi.uploadVideo(file);
+        if (res.success && res.videoUrl) {
+          setRefVideo(res.videoUrl);
+        } else {
+          alert(res.message || "Không thể tải lên video.");
+        }
+      } catch (err) {
+        console.error("Video Upload Failed", err);
+      } finally {
+        setIsGenerating(false);
+        if (e.target) e.target.value = '';
+      }
     }
   };
 
