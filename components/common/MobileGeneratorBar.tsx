@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -20,6 +19,7 @@ interface MobileGeneratorBarProps {
   generateLabel?: string;
   processingLabel?: string;
   type?: 'image' | 'video';
+  tooltip?: string | null;
 }
 
 export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
@@ -35,7 +35,8 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
   onOpenLibrary,
   generateLabel = "TẠO HÌNH ẢNH",
   processingLabel = "ĐANG TẠO...",
-  type = 'image'
+  type = 'image',
+  tooltip = null
 }) => {
   return (
     <div 
@@ -100,25 +101,36 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
              </div>
 
              {/* Main Action Button */}
-             <button 
-               onClick={onGenerate}
-               disabled={isGenerateDisabled}
-               className={`flex-grow h-10 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 relative overflow-hidden ${
-                 isGenerateDisabled 
-                  ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 grayscale cursor-not-allowed' 
-                  : 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20 hover:brightness-110 active:scale-95'
-               }`}
-             >
-               {!isGenerateDisabled && (
-                 <div className="absolute inset-0 bg-white/20 -translate-x-full animate-[progress_3s_infinite_linear]"></div>
+             <div className="relative flex-grow group/mobilebtn">
+               <button 
+                 onClick={onGenerate}
+                 disabled={isGenerateDisabled}
+                 className={`w-full h-10 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 relative overflow-hidden ${
+                   isGenerateDisabled 
+                    ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 grayscale cursor-not-allowed' 
+                    : 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20 hover:brightness-110 active:scale-95'
+                 }`}
+               >
+                 {!isGenerateDisabled && (
+                   <div className="absolute inset-0 bg-white/20 -translate-x-full animate-[progress_3s_infinite_linear]"></div>
+                 )}
+                 {isGenerating ? (
+                   <Loader2 size={14} className="animate-spin" />
+                 ) : (
+                   type === 'image' ? <Sparkles size={14} fill="currentColor" className="opacity-80" /> : <Video size={14} fill="currentColor" className="opacity-80" />
+                 )}
+                 <span>{isGenerating ? processingLabel : generateLabel}</span>
+               </button>
+
+               {tooltip && (
+                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 opacity-0 group-hover/mobilebtn:opacity-100 pointer-events-none transition-all duration-300 translate-y-2 group-hover/mobilebtn:translate-y-0 z-[160]">
+                    <div className="bg-slate-800 dark:bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest px-3 py-2 rounded-lg shadow-2xl whitespace-nowrap border border-white/10 relative">
+                       {tooltip}
+                       <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 dark:bg-slate-900 rotate-45 -mb-1 border-r border-b border-white/10"></div>
+                    </div>
+                 </div>
                )}
-               {isGenerating ? (
-                 <Loader2 size={14} className="animate-spin" />
-               ) : (
-                 type === 'image' ? <Sparkles size={14} fill="currentColor" className="opacity-80" /> : <Video size={14} fill="currentColor" className="opacity-80" />
-               )}
-               <span>{isGenerating ? processingLabel : generateLabel}</span>
-             </button>
+             </div>
           </div>
         </div>
       ) : (

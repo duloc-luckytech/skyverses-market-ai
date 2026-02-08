@@ -151,7 +151,8 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   const [isResumingGenerate, setIsResumingGenerate] = useState(false);
   const [hasPersonalKey, setHasPersonalKey] = useState(false);
   const [autoDownload, setAutoDownload] = useState(false);
-  const [fullscreenUrl, setFullscreenUrl] = useState<string | null>(null);
+  // Fix: setFullscreenVideo name mismatch and incorrect state type
+  const [fullscreenVideo, setFullscreenVideo] = useState<{url: string, hasSound: boolean, id: string} | null>(null);
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
 
   // Editor States
@@ -167,8 +168,8 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   // Auto Download Trigger
   useEffect(() => {
     if (autoDownload && api.history.length > prevHistoryLength.current) {
-      const newItems = api.history.slice(0, api.history.length - prevHistoryLength.current);
-      newItems.forEach(item => {
+      const iItems = api.history.slice(0, api.history.length - prevHistoryLength.current);
+      iItems.forEach(item => {
         if (item.url) handleDownload(item.url, `sync_${item.id}.mp4`);
       });
     }
@@ -299,6 +300,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
              }}
              generateLabel="TẠO"
              type="video"
+             tooltip={disabledReason}
            />
 
            {/* Sidebar Header (Desktop Only) */}
@@ -432,10 +434,10 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         {api.jobs.map(job => (
-                          <ProductionCard key={job.id} job={job} onDownload={handleDownload} onDelete={handleDeleteJob} onFullscreen={(url) => setFullscreenUrl(url)} onEdit={openEditor} />
+                          <ProductionCard key={job.id} job={job} onDownload={handleDownload} onDelete={handleDeleteJob} onFullscreen={(url) => setFullscreenVideo({url, hasSound: false, id: job.id})} onEdit={openEditor} />
                         ))}
                         {api.history.filter(h => h.dateKey === todayKey).map(job => (
-                          <ProductionCard key={job.id} job={job} onDownload={handleDownload} onDelete={handleDeleteJob} onFullscreen={(url) => setFullscreenUrl(url)} onEdit={openEditor} />
+                          <ProductionCard key={job.id} job={job} onDownload={handleDownload} onDelete={handleDeleteJob} onFullscreen={(url) => setFullscreenVideo({url, hasSound: false, id: job.id})} onEdit={openEditor} />
                         ))}
                       </div>
                     )}
@@ -448,7 +450,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                       (Object.entries(groupedHistory) as [string, ProductionJob[]][]).map(([date, items]) => (
                         <div key={date} className="space-y-6">
                            <div className="flex items-center gap-4"><div className="p-2 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/5"><Calendar size={12} className="text-brand-blue" /></div><h5 className="text-[11px] font-black uppercase italic tracking-tighter text-slate-800 dark:text-white/80">{date}</h5><div className="h-px flex-grow bg-black/5 dark:border-white/10 opacity-40"></div></div>
-                           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">{items.map(job => (<ProductionCard key={job.id} job={job} onDownload={handleDownload} onDelete={handleDeleteJob} onFullscreen={(url) => setFullscreenUrl(url)} onEdit={openEditor} />))}</div>
+                           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">{items.map(job => (<ProductionCard key={job.id} job={job} onDownload={handleDownload} onDelete={handleDeleteJob} onFullscreen={(url) => setFullscreenVideo({url, hasSound: false, id: job.id})} onEdit={openEditor} />))}</div>
                         </div>
                       ))
                     )}
@@ -460,10 +462,10 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       </div>
 
       <AnimatePresence>
-        {fullscreenUrl && (
+        {fullscreenVideo && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/95 flex flex-col items-center justify-center p-4 md:p-12">
-            <button onClick={() => setFullscreenUrl(null)} className="absolute top-8 right-8 p-3 bg-white/10 rounded-full text-white hover:bg-white/20 transition-all z-50 backdrop-blur-md"><X size={28} /></button>
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-6xl aspect-video bg-black rounded-[2rem] overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative"><video src={fullscreenUrl} autoPlay controls className="w-full h-full object-contain" /></motion.div>
+            <button onClick={() => setFullscreenVideo(null)} className="absolute top-8 right-8 p-3 bg-white/10 rounded-full text-white hover:bg-white/20 transition-all z-50 backdrop-blur-md"><X size={28} /></button>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-6xl aspect-video bg-black rounded-[2rem] overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative"><video src={fullscreenVideo.url} autoPlay controls className="w-full h-full object-contain" /></motion.div>
           </motion.div>
         )}
       </AnimatePresence>
