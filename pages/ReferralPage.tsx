@@ -7,7 +7,6 @@ import {
   Facebook, Mail, Send as Telegram,
   Twitter, Globe, Activity, Palette,
   Coins, Camera, Film, Info, Users,
-  // Added missing MonitorPlay import
   MonitorPlay
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -221,7 +220,6 @@ const ReferralPage: React.FC = () => {
         </section>
 
       </div>
-      <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
     </div>
   );
 };

@@ -7,7 +7,6 @@ import {
   AlertTriangle, CheckCircle2, ChevronRight,
   ImageIcon, Video, BrainCircuit, LayoutGrid,
   TrendingUp, Wallet, ArrowRight, CornerDownRight,
-  // Added ShieldCheck and Lock to imports
   ShieldCheck, Lock
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -103,7 +102,7 @@ const CreditUsagePage: React.FC = () => {
                <button className="flex items-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-sm text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
                  <Download size={14} /> Export CSV
                </button>
-               <Link to="/credits" className="flex items-center gap-2 px-6 py-3 border border-black/10 dark:border-white/10 rounded-sm text-[10px] font-black uppercase tracking-widest hover:text-brand-blue transition-all">
+               <Link to="/credits" className="flex items-center gap-2 px-3 py-1.5 border border-black/10 dark:border-white/10 rounded-sm text-[10px] font-black uppercase tracking-widest hover:text-brand-blue transition-all">
                  <Zap size={14} fill="currentColor" /> Buy Credits
                </Link>
             </div>

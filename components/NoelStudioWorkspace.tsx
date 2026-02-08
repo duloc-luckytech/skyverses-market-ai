@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Zap, Upload, Snowflake, ChevronDown, Sparkles, 
   User, Palette, Maximize2, 
-  Star, Image as ImageIcon, Loader2,
+  Image as ImageIcon, Loader2,
   Trash2, Check, RefreshCw, Layers, Sliders,
   Gift, LayoutGrid, Share2, Download, AlertTriangle,
   Coins, Terminal, Settings2, Cpu, Globe, ShieldCheck,
@@ -32,7 +32,6 @@ interface NoelStudioWorkspaceProps {
 export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClose }) => {
   const { credits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
   
-  // App Logic States
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [history, setHistory] = useState<{id: string, url: string, prompt: string}[]>([]);
@@ -41,7 +40,6 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
   const [faceLock, setFaceLock] = useState(true);
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
 
-  // Configuration States
   const [selectedSubject, setSelectedSubject] = useState(SUBJECT_OPTIONS[0]);
   const [selectedModel, setSelectedModel] = useState(AI_MODELS[0]);
   const [selectedRatio, setSelectedRatio] = useState(RATIOS[0]);
@@ -116,8 +114,6 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
 
   return (
     <div className="h-full w-full flex bg-white dark:bg-[#0d0e12] text-slate-900 dark:text-white font-sans overflow-hidden transition-all duration-500 relative">
-      
-      {/* Container flex-col-reverse on mobile */}
       <div className="flex-grow flex flex-col-reverse lg:flex-row overflow-hidden relative">
         <AnimatePresence>
           {isMobileExpanded && (
@@ -129,11 +125,7 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
           )}
         </AnimatePresence>
 
-        {/* SIDEBAR TRÁI: BOTTOM SHEET TRÊN MOBILE */}
-        <aside 
-          className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] shrink-0 bg-white dark:bg-[#0d0e12] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-32 lg:h-full lg:rounded-none'}`}
-        >
-          {/* MOBILE BAR */}
+        <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] shrink-0 bg-white dark:bg-[#0d0e12] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-32 lg:h-full lg:rounded-none'}`}>
           <MobileGeneratorBar 
             isExpanded={isMobileExpanded}
             setIsExpanded={setIsMobileExpanded}
@@ -150,7 +142,6 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
           />
 
           <div className={`flex-grow overflow-y-auto no-scrollbar p-6 space-y-8 pb-48 ${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
-            {/* Header (Desktop only) */}
             <div className="hidden lg:flex justify-between items-start">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-rose-500/10 border border-rose-500/20 rounded-xl flex items-center justify-center text-rose-500 shadow-sm transition-colors">
@@ -172,24 +163,6 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
               </div>
             </div>
 
-            {/* Mobile Title Strip when expanded */}
-            <div className="lg:hidden flex justify-between items-center mb-6">
-              <div className="flex items-center gap-3">
-                <Snowflake size={20} className="text-rose-500" />
-                <h2 className="text-sm font-black uppercase tracking-widest italic">Cấu hình kịch bản Noel</h2>
-              </div>
-              <div className="flex items-center gap-1">
-                   <div 
-                    className={`w-10 h-5 rounded-full relative transition-colors cursor-pointer border ${faceLock ? 'bg-rose-500 border-rose-400' : 'bg-slate-200 dark:bg-gray-800 border-slate-300 dark:border-white/10'}`} 
-                    onClick={() => setFaceLock(!faceLock)}
-                  >
-                    <motion.div animate={{ x: faceLock ? 20 : 2 }} className="absolute top-0.5 w-3.5 h-3.5 bg-white rounded-full shadow-lg" />
-                  </div>
-                  <span className="text-[8px] font-black text-gray-500">FACE LOCK</span>
-                </div>
-            </div>
-
-            {/* Upload Section */}
             <div className="space-y-4">
               <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest italic px-1">Ảnh chân dung mẫu</label>
               <div 
@@ -212,11 +185,10 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
               </div>
             </div>
 
-            {/* Config Sections */}
             <section className="space-y-6">
                <div className="flex items-center gap-3">
                   <div className="w-7 h-7 rounded-lg bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 flex items-center justify-center text-xs font-black italic text-rose-500">01</div>
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-white italic">CHỦ ĐỀ & PHONG CÁST</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-white italic">CHỦ ĐỀ & PHONG CÁCH</h3>
                </div>
                <div className="space-y-4">
                   <div className="space-y-2">
@@ -242,30 +214,8 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
                   </div>
                </div>
             </section>
-
-            <section className="space-y-6 pt-4 border-t border-slate-200 dark:border-white/5">
-               <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-lg bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 flex items-center justify-center text-xs font-black italic text-rose-500">02</div>
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-white italic">CẤU HÌNH AI</h3>
-               </div>
-               <div className="grid grid-cols-2 gap-4">
-                 <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1">MODEL</label>
-                    <select value={selectedModel.id} onChange={e => setSelectedModel(AI_MODELS.find(m => m.id === e.target.value)!)} className="w-full bg-slate-50 dark:bg-[#1a1b26] border border-slate-200 dark:border-white/10 rounded-lg p-2.5 text-[10px] font-bold outline-none text-brand-blue appearance-none">
-                       {AI_MODELS.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                    </select>
-                 </div>
-                 <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1">TỈ LỆ</label>
-                    <select value={selectedRatio} onChange={e => setSelectedRatio(e.target.value)} className="w-full bg-slate-50 dark:bg-[#1a1b26] border border-slate-200 dark:border-white/10 rounded-lg p-2.5 text-[10px] font-bold outline-none text-slate-700 dark:text-white appearance-none">
-                       {RATIOS.map(r => <option key={r} value={r}>{r}</option>)}
-                    </select>
-                 </div>
-               </div>
-            </section>
           </div>
 
-          {/* STICKY FOOTER (Desktop only) */}
           <div className="hidden lg:block shrink-0 p-6 space-y-4 bg-white/95 dark:bg-[#0d0e12]/95 backdrop-blur-xl border-t border-slate-200 dark:border-white/5 shadow-2xl transition-colors">
                <div className="flex justify-between items-center px-2">
                   <div className="flex flex-col">
@@ -283,7 +233,6 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
                     </div>
                   </div>
                </div>
-
                <button 
                  onClick={handleGenerate}
                  disabled={isGenerating || !sourceImg}
@@ -296,7 +245,6 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
           </div>
         </aside>
 
-        {/* VIEWPORT CHÍNH (GIỮA) */}
         <main className="flex-grow flex flex-col relative bg-slate-50 dark:bg-[#020205] transition-colors duration-500 overflow-hidden">
            <header className="h-14 border-b border-slate-200 dark:border-white/5 bg-white/80 dark:bg-black/40 backdrop-blur-xl flex items-center justify-between px-8 z-30 shrink-0 transition-colors">
               <div className="flex items-center gap-4">
@@ -304,66 +252,31 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-gray-500 italic uppercase">Kết quả tổng hợp</span>
               </div>
               <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors bg-black/5 dark:bg-white/5 rounded-full"><X size={18} /></button>
-         </header>
+           </header>
+           <div className="flex-grow flex items-center justify-center p-12 relative overflow-hidden">
+              <AnimatePresence mode="wait">
+                 {activeResult ? (
+                   <motion.div key={activeResult.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="relative group max-w-4xl w-full aspect-[4/3] bg-white dark:bg-black rounded-sm overflow-hidden shadow-3xl border border-slate-200 dark:border-white/10">
+                      <img src={activeResult.url} className="w-full h-full object-cover" alt="Noel Result" />
+                      <div className="absolute top-6 right-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
+                         <button className="p-4 bg-white/90 dark:bg-black/80 backdrop-blur-md rounded-full shadow-2xl text-slate-800 dark:text-white hover:bg-rose-600 hover:text-white transition-all"><Share2 size={20}/></button>
+                         <a href={activeResult.url} download={`noel_ai_${activeResult.id}.png`} className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center"><Download size={20}/></a>
+                      </div>
+                   </motion.div>
+                 ) : (
+                   <div className="text-center space-y-10 opacity-20 flex flex-col items-center select-none transition-opacity">
+                      <Snowflake size={140} strokeWidth={1} className="text-slate-900 dark:text-white animate-spin-slow" />
+                      <div className="space-y-2">
+                         <h3 className="text-4xl font-black uppercase tracking-[0.5em] italic text-slate-900 dark:text-white leading-none uppercase">Studio Ready</h3>
+                         <p className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 italic">HỆ THỐNG SẴN SÀNG KHỞI TẠO</p>
+                      </div>
+                   </div>
+                 )}
+              </AnimatePresence>
+           </div>
+        </main>
+      </div>
 
-         <div className="flex-grow flex items-center justify-center p-12 relative overflow-hidden">
-            <div className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #f43f5e 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-
-            <AnimatePresence mode="wait">
-               {activeResult ? (
-                 <motion.div key={activeResult.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="relative group max-w-5xl w-full aspect-[4/3] bg-white dark:bg-black rounded-sm overflow-hidden shadow-3xl border border-slate-200 dark:border-white/10">
-                    {isGenerating && activeHistoryIndex === 0 ? (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-8 bg-slate-100/80 dark:bg-black/60 backdrop-blur-sm z-20">
-                            <div className="relative">
-                                <Loader2 size={100} className="text-rose-500 animate-spin" strokeWidth={1} />
-                                <Snowflake size={32} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-rose-400 animate-pulse" />
-                            </div>
-                            <p className="text-sm font-black uppercase tracking-[0.5em] text-rose-600 animate-pulse">Synthesizing...</p>
-                        </div>
-                    ) : (
-                        <>
-                            <img src={activeResult.url} className="w-full h-full object-cover" alt="Noel Result" />
-                            <div className="absolute top-6 right-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                                <button className="p-4 bg-white/90 dark:bg-black/80 backdrop-blur-md rounded-full shadow-2xl text-slate-800 dark:text-white hover:bg-rose-600 hover:text-white transition-all"><Share2 size={20}/></button>
-                                <a href={activeResult.url} download={`noel_ai_${activeResult.id}.png`} className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center"><Download size={20}/></a>
-                            </div>
-                        </>
-                    )}
-                 </motion.div>
-               ) : isGenerating ? (
-                 <motion.div key="gen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-12 text-center">
-                    <div className="relative">
-                       <Loader2 size={120} className="text-rose-500 animate-spin" strokeWidth={1} />
-                       <Snowflake size={40} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-rose-400 animate-pulse" />
-                    </div>
-                    <div className="space-y-4">
-                       <p className="text-xl font-black uppercase tracking-[0.6em] animate-pulse italic text-slate-900 dark:text-white">ĐANG XỬ LÝ HÌNH ẢNH...</p>
-                       <p className="text-[10px] font-bold text-slate-400 dark:text-gray-600 uppercase tracking-widest italic">Hệ thống AI đang thực thi</p>
-                    </div>
-                 </motion.div>
-               ) : (
-                 <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-10 opacity-20 flex flex-col items-center select-none transition-opacity">
-                    <Snowflake size={140} strokeWidth={1} className="text-slate-900 dark:text-white animate-spin-slow" />
-                    <div className="space-y-2">
-                       <h3 className="text-4xl font-black uppercase tracking-[0.5em] italic text-slate-900 dark:text-white leading-none uppercase">Studio Ready</h3>
-                       <p className="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 italic">HỆ THỐNG SẴN SÀNG KHỞI TẠO</p>
-                    </div>
-                 </motion.div>
-               )}
-            </AnimatePresence>
-         </div>
-
-         {/* Bottom Status Bar */}
-         <div className="h-10 bg-white/60 dark:bg-black/60 border-t border-slate-200 dark:border-white/5 flex items-center justify-between px-8 shrink-0 transition-colors">
-            <div className="flex items-center gap-6 text-[8px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest">
-               <span className="flex items-center gap-1.5"><ShieldCheck size={10} className="text-emerald-500" /> KẾT NỐI BẢO MẬT</span>
-               <span className="flex items-center gap-1.5"><Terminal size={10} className="text-rose-500" /> ĐỘ TRỄ: 0.42s</span>
-            </div>
-            <span className="text-[8px] font-black text-slate-400 dark:text-gray-700 uppercase tracking-tighter italic">Skyverses Soul Production Network</span>
-         </div>
-      </main>
-
-      {/* SIDEBAR PHẢI: LỊCH SỬ (HISTORY) TRÊN DESKTOP */}
       <aside className="hidden lg:flex w-24 md:w-28 xl:w-32 border-l border-slate-200 dark:border-white/5 bg-white/40 dark:bg-[#0d0e12]/40 backdrop-blur-xl flex flex-col items-center py-6 gap-4 overflow-y-auto no-scrollbar z-50 transition-colors">
           <div className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest flex flex-col items-center gap-1 mb-2 text-center shrink-0 italic">
             <HistoryIcon size={14} /> Tệp tin
@@ -380,12 +293,6 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
               </div>
             </button>
           ))}
-          {history.length === 0 && !isGenerating && (
-            <div className="flex flex-col items-center gap-2 opacity-10 py-10">
-              <ImageIcon size={24} />
-              <span className="text-[8px] font-black uppercase">Trống</span>
-            </div>
-          )}
       </aside>
 
       <style dangerouslySetInnerHTML={{ __html: `

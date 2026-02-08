@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SOLUTIONS } from '../data';
@@ -8,7 +7,6 @@ import {
   ChevronLeft, Star, Zap, Cpu, ShieldCheck, 
   Layers, Sparkles, CheckCircle2,
   X, ZoomIn, Play, Share2, Heart, ArrowRight,
-  // Fix: Added missing BrainCircuit import from lucide-react
   Info, Activity, Braces, Terminal, Command,
   Bot, Target, Workflow, Lock, BrainCircuit
 } from 'lucide-react';

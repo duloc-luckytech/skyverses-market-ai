@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -6,7 +5,8 @@ import {
   Activity, MonitorPlay, UserCircle, Film,
   Layers, Lock, ExternalLink, Cpu, ChevronLeft,
   Scan, Maximize2, Mic2, Music, UserCheck, 
-  Target, Globe, Zap as ZapIcon, Database
+  Target, Globe, Zap as ZapIcon, Database,
+  CheckCircle2
 } from 'lucide-react';
 import VideoAnimateWorkspace from '../../components/VideoAnimateWorkspace';
 import { Link } from 'react-router-dom';
@@ -147,7 +147,7 @@ const VideoAnimateAI: React.FC = () => {
                 </motion.h1>
                 <motion.p 
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                  className="text-xl lg:text-3xl text-slate-500 dark:text-gray-400 font-medium max-w-xl leading-tight border-l-4 border-cyan-500 pl-8"
+                  className="text-xl lg:text-3xl text-slate-500 dark:text-gray-400 font-medium max-xl leading-tight border-l-4 border-cyan-500 pl-8"
                 >
                   “Hệ thống diễn hoạt hình ảnh và video chuyên nghiệp. Khóa định danh nhân vật (Identity Lock) và tái cấu trúc chuyển động chuẩn điện ảnh bằng trí tuệ nhân tạo.”
                 </motion.p>
@@ -327,7 +327,5 @@ const VideoAnimateAI: React.FC = () => {
     </div>
   );
 };
-
-const CheckCircle2 = ({ size, className }: { size?: number, className?: string }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>;
 
 export default VideoAnimateAI;
