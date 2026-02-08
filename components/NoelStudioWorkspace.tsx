@@ -216,7 +216,7 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
             <section className="space-y-6">
                <div className="flex items-center gap-3">
                   <div className="w-7 h-7 rounded-lg bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 flex items-center justify-center text-xs font-black italic text-rose-500">01</div>
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-white italic">CHỦ ĐỀ & PHONG CÁCH</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-white italic">CHỦ ĐỀ & PHONG CÁST</h3>
                </div>
                <div className="space-y-4">
                   <div className="space-y-2">
@@ -322,7 +322,7 @@ export const NoelStudioWorkspace: React.FC<NoelStudioWorkspaceProps> = ({ onClos
                         </div>
                     ) : (
                         <>
-                            <img src={activeResult.url} className="w-full h-full object-contain" alt="Noel Result" />
+                            <img src={activeResult.url} className="w-full h-full object-cover" alt="Noel Result" />
                             <div className="absolute top-6 right-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
                                 <button className="p-4 bg-white/90 dark:bg-black/80 backdrop-blur-md rounded-full shadow-2xl text-slate-800 dark:text-white hover:bg-rose-600 hover:text-white transition-all"><Share2 size={20}/></button>
                                 <a href={activeResult.url} download={`noel_ai_${activeResult.id}.png`} className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center"><Download size={20}/></a>

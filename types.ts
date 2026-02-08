@@ -22,6 +22,11 @@ export interface HomeBlock {
   order: number;
 }
 
+export interface GeminiKey {
+  key: string;
+  isActive: boolean;
+}
+
 export interface SystemConfig {
   plans: any[];
   resolutions: any[];
@@ -32,6 +37,7 @@ export interface SystemConfig {
   videoExpireHours: number;
   imageExpireHours: number;
   marketHomeBlock: HomeBlock[];
+  listKeyGommoGenmini?: GeminiKey[];
 }
 
 export interface Solution {

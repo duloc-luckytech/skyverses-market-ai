@@ -1,5 +1,41 @@
-
 import { GoogleGenAI, Modality } from "@google/genai";
+import { systemConfigApi } from "../apis/config";
+
+// --- KEY MANAGEMENT LOGIC ---
+let cachedGeminiKeys: string[] = [];
+let lastFetchTime = 0;
+const CACHE_DURATION = 1000 * 60 * 5; // 5 minutes
+
+const getActiveApiKey = async (): Promise<string> => {
+  const now = Date.now();
+  
+  // Refresh cache if empty or expired
+  if (cachedGeminiKeys.length === 0 || (now - lastFetchTime) > CACHE_DURATION) {
+    try {
+      const res = await systemConfigApi.getSystemConfig();
+      if (res?.success && res.data?.listKeyGommoGenmini) {
+        const activeKeys = res.data.listKeyGommoGenmini
+          .filter(k => k.isActive && k.key)
+          .map(k => k.key);
+        
+        if (activeKeys.length > 0) {
+          cachedGeminiKeys = activeKeys;
+          lastFetchTime = now;
+        }
+      }
+    } catch (err) {
+      console.error("[GEMINI_SERVICE] Failed to sync dynamic keys, falling back to env.", err);
+    }
+  }
+
+  // Pick random key from pool or fallback to process.env.API_KEY
+  if (cachedGeminiKeys.length > 0) {
+    const randomIndex = Math.floor(Math.random() * cachedGeminiKeys.length);
+    return cachedGeminiKeys[randomIndex];
+  }
+  
+  return process.env.API_KEY || '';
+};
 
 // Base64 helper for raw audio data
 const decodeBase64 = (base64: string) => {
@@ -42,7 +78,8 @@ const getDecodeCtx = () => {
 };
 
 export const generateDemoAudio = async (prompt: string, voiceName: string = 'Kore'): Promise<AudioBuffer | null> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = await getActiveApiKey();
+  const ai = new GoogleGenAI({ apiKey });
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
@@ -74,7 +111,8 @@ export const generateMultiSpeakerAudio = async (
   speakerA: { name: string, voice: string }, 
   speakerB: { name: string, voice: string }
 ): Promise<AudioBuffer | null> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = await getActiveApiKey();
+  const ai = new GoogleGenAI({ apiKey });
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
@@ -111,7 +149,8 @@ export const generateMultiSpeakerAudio = async (
 };
 
 export const generateDemoText = async (prompt: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = await getActiveApiKey();
+  const ai = new GoogleGenAI({ apiKey });
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -136,9 +175,6 @@ export interface ImageSynthesisParams {
   apiKey?: string;
 }
 
-/**
- * Helper to fetch a URL and convert it to base64 for Gemini SDK
- */
 const imageUrlToBase64 = async (url: string): Promise<{ data: string, mimeType: string } | null> => {
   try {
     const response = await fetch(url);
@@ -190,7 +226,8 @@ export const generateDemoImage = async (params: ImageSynthesisParams | string, i
     modelId = 'gemini-2.5-flash-image';
   }
 
-  const ai = new GoogleGenAI({ apiKey: userApiKey || process.env.API_KEY });
+  const apiKey = userApiKey || await getActiveApiKey();
+  const ai = new GoogleGenAI({ apiKey });
   try {
     const parts: any[] = [{ text: promptText }];
 
@@ -203,7 +240,6 @@ export const generateDemoImage = async (params: ImageSynthesisParams | string, i
           const data = img.substring(img.indexOf(",") + 1);
           parts.push({ inlineData: { data, mimeType } });
         } else if (img.startsWith('http')) {
-          // Handle URLs by fetching them and converting to base64 for the SDK
           const b64 = await imageUrlToBase64(img);
           if (b64) {
             parts.push({ inlineData: { data: b64.data, mimeType: b64.mimeType } });
@@ -249,7 +285,8 @@ export interface VideoProductionParams {
 }
 
 export const generateDemoVideo = async (params: VideoProductionParams): Promise<string | null> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = await getActiveApiKey();
+  const ai = new GoogleGenAI({ apiKey });
   try {
     const modelName = params.isUltra 
       ? 'veo-3.1-generate-preview' 
@@ -276,7 +313,6 @@ export const generateDemoVideo = async (params: VideoProductionParams): Promise<
     }
 
     if (params.references && params.references.length > 0) {
-      // For Veo, we might still need base64 if passing via SDK "image" property
       const base64Data = params.references[0].includes(',') 
         ? params.references[0].split(',')[1] 
         : params.references[0];
@@ -315,7 +351,7 @@ export const generateDemoVideo = async (params: VideoProductionParams): Promise<
     const downloadLink = videoData?.uri;
 
     if (downloadLink) {
-      const response = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
+      const response = await fetch(`${downloadLink}&key=${apiKey}`);
       if (!response.ok) throw new Error(`Failed to download video: ${response.statusText}`);
       const blob = await response.blob();
       return URL.createObjectURL(blob);

@@ -1,7 +1,6 @@
-// Added React import to fix "Cannot find namespace 'React'" error on line 519
 import React, { useState, useCallback, useRef } from 'react';
 import { GoogleGenAI } from "@google/genai";
-import { generateDemoImage } from '../services/gemini';
+import { generateDemoImage, generateDemoText } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
 import { imagesApi } from '../apis/images';
 import { videosApi, VideoJobRequest, VideoJobResponse } from '../apis/videos';
@@ -19,7 +18,7 @@ export interface Scene {
   audioUrl?: string | null;
   status: 'idle' | 'analyzing' | 'generating' | 'done' | 'error';
   jobId?: string;
-  characterIds?: string[]; // Danh sách ID các asset xuất hiện trong cảnh
+  characterIds?: string[];
 }
 
 export type AssetType = 'CHARACTER' | 'LOCATION' | 'OBJECT';
@@ -62,8 +61,6 @@ export const useStoryboardStudio = () => {
   const [scriptRefAudio, setScriptRefAudio] = useState<string | null>(null);
 
   const [assets, setAssets] = useState<ReferenceAsset[]>([]);
-
-  // Added assetUploadRef and setActiveUploadAssetId state to manage asset uploads from the sidebar/tab
   const assetUploadRef = useRef<HTMLInputElement>(null);
   const [activeUploadAssetId, setActiveUploadAssetId] = useState<string | null>(null);
 
@@ -112,7 +109,7 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
     const currentIdea = script.trim() || "Một ý tưởng ngẫu nhiên thú vị";
     
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      // Logic centralized in generateDemoText handles keys automatically
       const promptPayload = `
         Based on this idea: "${currentIdea}", create a professional and fluid narrative script for a video.
         The video has a TOTAL duration of ${totalDuration}s.
@@ -135,19 +132,10 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
         Return ONLY a JSON object with these keys. No markdown.
       `;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [{ parts: [{ text: promptPayload }], role: "user" }],
-        config: {
-          responseMimeType: "application/json",
-        },
-      });
-
-      if (response.text) {
-        const result = JSON.parse(response.text);
-        
+      const res = await generateDemoText(promptPayload);
+      if (res && res !== "CONNECTION_TERMINATED") {
+        const result = JSON.parse(res);
         if (result.refined_idea) setScript(result.refined_idea);
-        
         setSettings(prev => ({
           ...prev,
           format: result.format || prev.format,
@@ -160,7 +148,7 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
         }));
       }
     } catch (e) {
-      console.error("Gemini Suggestion Error:", e);
+      console.error("Suggestion generation error", e);
     } finally {
       setIsEnhancing(false);
     }
@@ -223,7 +211,6 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
       const jobStatus = response.data?.status?.toLowerCase();
 
       if (jobStatus === 'done' && response.data.result?.videoUrl) {
-        const videoUrl = response.data.result.videoUrl;
         updateScene(sceneId, { videoUrl: response.data.result.videoUrl, status: 'done' });
         addLog(`KẾT QUẢ: Phân cảnh #${sceneId.slice(-4)} kết xuất thành công.`);
         refreshUserInfo();
@@ -275,8 +262,6 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
     const numScenes = Math.ceil(totalDuration / sceneDuration);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      
       const aestheticContext = `
         AESTHETIC SPECIFICATIONS:
         - Format: ${settings.format}
@@ -309,68 +294,61 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
         - Ensure visualPrompts are detailed and descriptive.
       `;
       
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [{ parts: [{ text: promptPayload }], role: "user" }],
-        config: { 
-          responseMimeType: "application/json",
-          systemInstruction: systemPrompt
+      const res = await generateDemoText(promptPayload);
+      if (res && res !== "CONNECTION_TERMINATED") {
+        const data = JSON.parse(res);
+        const extractedCharacters = data.characters || [];
+        const extractedLocations = data.locations || [];
+        const extractedScenes = data.scenes || [];
+        
+        addLog(`Xử lý thành công: Trích xuất ${extractedCharacters.length} nhân vật, ${extractedLocations.length} bối cảnh.`);
+        
+        const visualStyle = settings.style.includes('--') ? 'Cinematic, hyper-detailed' : settings.style;
+        const idMap: Record<string, string> = {};
+
+        const charAssets: ReferenceAsset[] = extractedCharacters.map((c: any, i: number) => {
+          const realId = `char-${Date.now()}-${i}`;
+          idMap[c.temp_id] = realId;
+          return {
+            id: realId,
+            name: c.name,
+            url: null,
+            mediaId: null,
+            type: 'CHARACTER',
+            status: 'idle',
+            designPrompt: `Design sheet of ${c.name}, ${c.description}, ${visualStyle} style, white background, detailed character design, consistent with ${settings.culture}`
+          };
+        });
+
+        const locAssets: ReferenceAsset[] = extractedLocations.map((l: any, i: number) => {
+          const realId = `loc-${Date.now()}-${i}`;
+          idMap[l.temp_id] = realId;
+          return {
+            id: realId,
+            name: l.name,
+            url: null,
+            mediaId: null,
+            type: 'LOCATION',
+            status: 'idle',
+            designPrompt: `Concept environment sheet of ${l.name}, ${l.description}, ${visualStyle} style, detailed background design, consistent with ${settings.background}`
+          };
+        });
+        
+        const allExtractedAssets = [...charAssets, ...locAssets].slice(0, 5);
+        setAssets(allExtractedAssets);
+
+        setScenes(extractedScenes.map((s: any, i: number) => ({
+          id: `scene-${Date.now()}-${i}`,
+          order: s.order || (i + 1),
+          duration: sceneDuration,
+          prompt: s.visualPrompt || s.title || "Cinematic scene",
+          status: 'idle',
+          characterIds: (s.appears || []).map((tid: string) => idMap[tid]).filter(Boolean)
+        })));
+
+        for (const asset of allExtractedAssets) {
+          triggerImageGeneration(asset);
         }
-      });
-      
-      const data = JSON.parse(response.text || '{}');
-      const extractedCharacters = data.characters || [];
-      const extractedLocations = data.locations || [];
-      const extractedScenes = data.scenes || [];
-      
-      addLog(`Xử lý thành công: Trích xuất ${extractedCharacters.length} nhân vật, ${extractedLocations.length} bối cảnh.`);
-      
-      const visualStyle = settings.style.includes('--') ? 'Cinematic, hyper-detailed' : settings.style;
-
-      const idMap: Record<string, string> = {};
-
-      const charAssets: ReferenceAsset[] = extractedCharacters.map((c: any, i: number) => {
-        const realId = `char-${Date.now()}-${i}`;
-        idMap[c.temp_id] = realId;
-        return {
-          id: realId,
-          name: c.name,
-          url: null,
-          mediaId: null,
-          type: 'CHARACTER',
-          status: 'idle',
-          designPrompt: `Design sheet of ${c.name}, ${c.description}, ${visualStyle} style, white background, detailed character design, consistent with ${settings.culture}`
-        };
-      });
-
-      const locAssets: ReferenceAsset[] = extractedLocations.map((l: any, i: number) => {
-        const realId = `loc-${Date.now()}-${i}`;
-        idMap[l.temp_id] = realId;
-        return {
-          id: realId,
-          name: l.name,
-          url: null,
-          mediaId: null,
-          type: 'LOCATION',
-          status: 'idle',
-          designPrompt: `Concept environment sheet of ${l.name}, ${l.description}, ${visualStyle} style, detailed background design, consistent with ${settings.background}`
-        };
-      });
-      
-      const allExtractedAssets = [...charAssets, ...locAssets].slice(0, 5);
-      setAssets(allExtractedAssets);
-
-      setScenes(extractedScenes.map((s: any, i: number) => ({
-        id: `scene-${Date.now()}-${i}`,
-        order: s.order || (i + 1),
-        duration: sceneDuration,
-        prompt: s.visualPrompt || s.title || "Cinematic scene",
-        status: 'idle',
-        characterIds: (s.appears || []).map((tid: string) => idMap[tid]).filter(Boolean)
-      })));
-
-      for (const asset of allExtractedAssets) {
-        triggerImageGeneration(asset);
       }
     } catch (error) {
       addLog("LỖI HỆ THỐNG: Không thể phân tách kịch bản.");
@@ -515,7 +493,6 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
     }
   }, [assets, triggerImageGeneration, updateAsset]);
 
-  // handleAssetUpload handler to process file selection for individual assets
   const handleAssetUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && activeUploadAssetId) {

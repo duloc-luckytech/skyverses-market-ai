@@ -26,7 +26,7 @@ const RealEstateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => 
   return (
     <div className="h-full w-full flex bg-[#fcfcfd] dark:bg-[#0c0c0e] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
       
-      <div className="flex-grow flex flex-col-reverse lg:flex-row overflow-hidden relative">
+      <div className="flex-grow flex flex-col-reverse lg:flex-row overflow-hidden relative h-full">
         
         {/* Mobile Backdrop */}
         <AnimatePresence>
