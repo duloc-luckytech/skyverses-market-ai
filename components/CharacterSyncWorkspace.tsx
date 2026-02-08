@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -24,6 +23,7 @@ import { ParameterSettings } from './character-sync/ParameterSettings';
 import { TutorialModal } from './character-sync/TutorialModal';
 import { TemplateModal } from './character-sync/TemplateModal';
 import { GuideSlider } from './character-sync/GuideSlider';
+import { MobileGeneratorBar } from './common/MobileGeneratorBar';
 
 const ProductionCard: React.FC<{ 
   job: ProductionJob;
@@ -141,7 +141,7 @@ const ProductionCard: React.FC<{
 };
 
 const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const { credits } = useAuth();
+  const { credits, login, isAuthenticated } = useAuth();
   const api = useCharacterSync();
   
   // UI Specific States
@@ -186,6 +186,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   }, [showResourceModal]);
 
   const handleSynthesizeClick = async () => {
+    if (!isAuthenticated) { login(); return; }
     // Tự động thu gọn sidebar trên mobile khi bắt đầu tạo
     if (window.innerWidth < 1024) setIsMobileExpanded(false);
     
@@ -260,6 +261,12 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
     return null;
   }, [api.isGenerating, api.slots, api.sequences, api.hasValidSequence, api.usagePreference, credits, api.totalCostEstimate]);
 
+  // Sync the first sequence text with the mobile quick bar
+  const primaryPrompt = api.sequences[0]?.text || '';
+  const setPrimaryPrompt = (val: string) => {
+    api.setSequences(prev => prev.map((s, i) => i === 0 ? { ...s, text: val } : s));
+  };
+
   return (
     <div className="h-full w-full flex flex-col bg-white dark:bg-[#050506] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
       
@@ -271,32 +278,36 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           )}
         </AnimatePresence>
 
-        <section className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[400px] bg-white dark:bg-[#08080a] lg:bg-slate-50 lg:dark:bg-[#020203] border-t lg:border-t-0 lg:border-r border-black/10 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-20 lg:h-full lg:rounded-none'}`}>
+        <section className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[400px] bg-white dark:bg-[#08080a] lg:bg-slate-50 lg:dark:bg-[#020203] border-t lg:border-t-0 lg:border-r border-black/10 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-32 lg:h-full lg:rounded-none'}`}>
            
-           {/* Mobile Handle Bar & Header */}
-           <header 
-             className="h-20 lg:h-12 border-b border-black/5 dark:border-white/5 bg-white dark:bg-[#0c0c0e] flex flex-col lg:flex-row items-center justify-between px-6 shrink-0 z-160 cursor-pointer lg:cursor-default"
-             onClick={() => window.innerWidth < 1024 && setIsMobileExpanded(!isMobileExpanded)}
-           >
-              {/* Mobile Handle Indicator */}
-              <div className="lg:hidden w-12 h-1.5 bg-slate-300 dark:bg-white/10 rounded-full mt-2 mb-3"></div>
+           {/* MOBILE QUICK BAR */}
+           <MobileGeneratorBar 
+             isExpanded={isMobileExpanded}
+             setIsExpanded={setIsMobileExpanded}
+             prompt={primaryPrompt}
+             setPrompt={setPrimaryPrompt}
+             credits={credits}
+             totalCost={api.currentUnitCost}
+             isGenerating={api.isGenerating}
+             isGenerateDisabled={!!disabledReason || api.isGenerating}
+             onGenerate={handleSynthesizeClick}
+             onOpenLibrary={() => {
+                const firstEmptyIdx = api.slots.findIndex(s => !s.url);
+                const targetIdx = firstEmptyIdx >= 0 ? firstEmptyIdx : 0;
+                setActiveSlotIdx(targetIdx);
+                setIsLibraryOpen(true);
+             }}
+             generateLabel="TẠO"
+             type="video"
+           />
 
-              <div className="flex items-center justify-between w-full lg:w-auto">
-                <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 lg:w-6 lg:h-6 bg-brand-blue rounded flex items-center justify-center text-white shadow-lg"><Monitor size={12} /></div>
-                  <div className="flex flex-col lg:flex-row lg:items-center">
-                    <h1 className="text-sm lg:text-xs font-black uppercase tracking-tight lg:tracking-[0.4em] italic leading-tight">Character Sync <span className="text-brand-blue">Studio</span></h1>
-                    <p className="lg:hidden text-[8px] font-bold text-slate-400 uppercase tracking-widest">{isMobileExpanded ? 'Chạm để thu gọn' : 'Chạm để cấu hình'}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="p-2 text-slate-400 hover:text-red-500 transition-colors"><X size={20} /></button>
-                  <div className="lg:hidden p-2 rounded-full bg-slate-100 dark:bg-white/5 transition-transform duration-500">
-                    {isMobileExpanded ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
-                  </div>
-                </div>
+           {/* Sidebar Header (Desktop Only) */}
+           <header className="hidden lg:flex h-12 border-b border-black/5 dark:border-white/5 bg-white dark:bg-[#0c0c0e] items-center justify-between px-6 shrink-0 z-160">
+              <div className="flex items-center gap-3">
+                <div className="w-6 h-6 bg-brand-blue rounded flex items-center justify-center text-white shadow-lg"><Monitor size={12} /></div>
+                <h1 className="text-xs font-black uppercase tracking-[0.4em] italic leading-tight">Character Sync <span className="text-brand-blue">Studio</span></h1>
               </div>
+              <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors"><X size={20} /></button>
            </header>
 
            {/* Sidebar Body - Hidden when collapsed on mobile */}
@@ -452,7 +463,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
         {fullscreenUrl && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/95 flex flex-col items-center justify-center p-4 md:p-12">
             <button onClick={() => setFullscreenUrl(null)} className="absolute top-8 right-8 p-3 bg-white/10 rounded-full text-white hover:bg-white/20 transition-all z-50 backdrop-blur-md"><X size={28} /></button>
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="w-full max-w-6xl aspect-video bg-black rounded-[2rem] overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative"><video src={fullscreenUrl} autoPlay controls className="w-full h-full object-contain" /></motion.div>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-6xl aspect-video bg-black rounded-[2rem] overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative"><video src={fullscreenUrl} autoPlay controls className="w-full h-full object-contain" /></motion.div>
           </motion.div>
         )}
       </AnimatePresence>
