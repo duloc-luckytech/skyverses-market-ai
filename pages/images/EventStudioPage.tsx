@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { EventStudioWorkspace } from '../../components/EventStudioWorkspace';
-import { EVENT_CONFIGS, EventConfig } from '../../constants/event-configs';
-import { Loader2, Zap, ArrowRight, Play } from 'lucide-react';
+import { EVENT_CONFIGS } from '../../constants/event-configs';
+import { Loader2, Zap } from 'lucide-react';
 
 interface EventStudioPageProps {
   type: 'noel' | 'tet' | 'wedding' | 'birthday';
@@ -19,7 +19,6 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
     const fetchSamples = async () => {
       setLoading(true);
       try {
-        // Tìm kiếm theo id của sự kiện (noel, tet, wedding...)
         const response = await fetch(`https://api.skyverses.com/explorer?page=1&limit=10&search=${type}`);
         const result = await response.json();
         if (result.data) setImages(result.data);
@@ -30,7 +29,6 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       }
     };
     fetchSamples();
-    // Reset studio state when type changes
     setIsStudioOpen(false);
   }, [type]);
 
@@ -47,7 +45,6 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
   const accentColorClass = `text-${config.accentColor}-500`;
   const accentBgClass = `bg-${config.accentColor}-500/10`;
   const accentBorderClass = `border-${config.accentColor}-500/20`;
-  const shadowClass = `shadow-${config.accentColor}-500/40`;
 
   return (
     <div className="bg-[#fdfdfe] dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-20 transition-colors duration-500">
@@ -94,7 +91,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
               {loading ? (
                 <div className="h-full flex flex-col items-center justify-center gap-4 opacity-20">
                   <Loader2 className={`w-10 h-10 animate-spin ${accentColorClass}`} />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Đang tải dữ liệu...</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Đang tải mẫu...</span>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-6 animate-marquee-vertical">
@@ -110,7 +107,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-60"></div>
                       <div className="absolute bottom-6 left-6 right-6">
-                         <span className={`text-[8px] font-black uppercase ${accentColorClass} tracking-widest block mb-2`}>Ảnh tạo bởi AI</span>
+                         <span className={`text-[8px] font-black uppercase ${accentColorClass} tracking-widest block mb-2`}>Studio AI Creation</span>
                          <h3 className="text-lg font-black italic uppercase tracking-tighter text-white line-clamp-2 drop-shadow-lg">
                            {img.title}
                          </h3>
@@ -128,7 +125,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       <section className="py-40 bg-slate-50 dark:bg-[#08080a] border-y border-slate-100 dark:border-white/5 transition-colors">
         <div className="max-w-4xl mx-auto px-6 text-center space-y-12">
           <h2 className="text-4xl lg:text-7xl font-black uppercase italic tracking-tighter leading-none text-slate-900 dark:text-white">
-            Trải nghiệm <br /><span className={accentColorClass}>Với Công Nghệ AI.</span>
+            Kiến tạo <br /><span className={accentColorClass}>Bằng Công Nghệ AI.</span>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
             {config.benefits.map((item, i) => (

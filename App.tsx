@@ -32,7 +32,7 @@ import AdminMarketCMS from './pages/AdminMarketCMS';
 // Product Page Imports
 import AIImageGenerator from './pages/images/AIImageGenerator';
 import AIVideoGenerator from './pages/videos/AIVideoGenerator';
-import EventStudioPage from './pages/images/EventStudioPage'; // Generic Page
+import EventStudioPage from './pages/images/EventStudioPage'; 
 import GenyuProduct from './pages/videos/GenyuProduct';
 import AvatarLipsyncAI from './pages/videos/AvatarLipsyncAI';
 import VideoAnimateAI from './pages/videos/VideoAnimateAI';
@@ -99,7 +99,7 @@ const App: React.FC = () => {
                       <Route path="/product/ai-agent-workflow" element={<ProductAIAgentWorkflow />} />
                       <Route path="/product/captcha-veo3" element={<ProductCaptchaToken />} />
                       
-                      {/* GENERIC EVENT PAGES */}
+                      {/* CÁC TUYẾN ĐƯỜNG SỰ KIỆN HỢP NHẤT */}
                       <Route path="/product/ai-birthday-generator" element={<EventStudioPage type="birthday" />} />
                       <Route path="/product/ai-wedding-generator" element={<EventStudioPage type="wedding" />} />
                       <Route path="/product/ai-noel-generator" element={<EventStudioPage type="noel" />} />

@@ -1,5 +1,5 @@
 
-import { Snowflake, Flower2, Heart, Cake, Gift, LucideIcon } from 'lucide-react';
+import { Snowflake, Flower2, Heart, Cake, LucideIcon } from 'lucide-react';
 
 export interface EventConfig {
   id: string;
@@ -9,7 +9,7 @@ export interface EventConfig {
   heroSubtitle: string;
   subjects: string[];
   scenes: string[];
-  accentColor: string; // Tailwind base color
+  accentColor: string; 
   icon: LucideIcon;
   basePrompt: string;
   atmosphere: string;
@@ -28,8 +28,8 @@ export const EVENT_CONFIGS: Record<string, EventConfig> = {
     scenes: ['Tuyết rơi', 'Lò sưởi', 'Đường phố neon', 'Rừng thông', 'Bữa tiệc tối'],
     accentColor: 'rose',
     icon: Snowflake,
-    basePrompt: 'Noel Studio Design',
-    atmosphere: 'Beautiful Christmas atmosphere, 4K, high fidelity.',
+    basePrompt: 'Professional high-quality Christmas/Noel themed photo synthesis.',
+    atmosphere: 'Beautiful Christmas atmosphere, falling snow, bokeh warm lights, 4K resolution.',
     costBase: 150,
     benefits: [
       { t: 'Tốc độ', d: 'Tạo hàng chục concept thiệp và banner Noel chỉ trong vài phút.' },
@@ -43,13 +43,13 @@ export const EVENT_CONFIGS: Record<string, EventConfig> = {
     name: 'TẾT STUDIO',
     version: 'AI Engine v4.0',
     heroTitle: ['AI', 'Tết', 'Studio.'],
-    heroSubtitle: 'Kỷ niệm ngày Tết truyền thống trong không gian nghệ thuật AI hiện đại. Biến mọi khoảnh khắc thành tác phẩm sắc xuân rực rỡ.',
+    heroSubtitle: 'Kỷ niệm ngày Tết truyền thống trong không gian nghệ thuật AI hiện đại. Biến mọi khoảnh khắc thành tác phẩm rực rỡ.',
     subjects: ['Tết cổ truyền', 'Sắc xuân rạng rỡ', 'Chợ Tết phố thị', 'Gia đình sum vầy', 'Lễ hội hoa'],
     scenes: ['Hoa mai hoa đào', 'Câu đối đỏ', 'Bánh chưng xanh', 'Phố ông đồ', 'Múa lân'],
     accentColor: 'red',
     icon: Flower2,
-    basePrompt: 'Lunar New Year Tet Holiday Design',
-    atmosphere: 'Vibrant Vietnamese Lunar New Year atmosphere, traditional colors, 8K resolution.',
+    basePrompt: 'Traditional Vietnamese Lunar New Year (Tet) themed professional photography.',
+    atmosphere: 'Vibrant spring colors, warm sunlight, traditional Tet decorations, 8K hyper-realistic.',
     costBase: 150,
     benefits: [
       { t: 'Trang phục', d: 'Thử mọi loại Áo dài, Việt phục truyền thống chỉ với 1 tấm ảnh.' },
@@ -68,9 +68,9 @@ export const EVENT_CONFIGS: Record<string, EventConfig> = {
     scenes: ['Hoa cưới lộng lẫy', 'Ánh sáng trong trẻo', 'Kiến trúc sang trọng', 'Hoàng hôn', 'Tối giản'],
     accentColor: 'pink',
     icon: Heart,
-    basePrompt: 'Professional Wedding Photo Production',
-    atmosphere: 'Hyper-realistic wedding atmosphere, high-end bridal photography, 8K resolution.',
-    costBase: 150,
+    basePrompt: 'Professional cinematic wedding photography production.',
+    atmosphere: 'Hyper-realistic wedding atmosphere, high-end bridal photography, romantic soft lighting, 8K.',
+    costBase: 250,
     benefits: [
       { t: 'Đa dạng', d: 'Từ châu Âu cổ kính đến bờ biển Maldives hay studio Hàn Quốc.' },
       { t: 'Tùy biến', d: 'Thử hàng trăm mẫu váy cưới, veston cao cấp nhất không cần may đo.' },
@@ -83,13 +83,13 @@ export const EVENT_CONFIGS: Record<string, EventConfig> = {
     name: 'BIRTHDAY STUDIO',
     version: 'Birthday AI v4.2',
     heroTitle: ['ẢNH SINH', 'NHẬT', 'AI.'],
-    heroSubtitle: 'Kỷ niệm ngày đặc biệt của bạn theo cách chưa từng có. Biến mọi ý tưởng tiệc tùng thành tác phẩm nghệ thuật đỉnh cao.',
+    heroSubtitle: 'Kỷ niệm ngày đặc biệt của bạn theo cách chưa từng có. Biến mọi ý tưởng tiệc tùng thành tác phẩm nghệ thuật.',
     subjects: ['Tiệc trà cổ điển', 'Neon Cyber Party', 'Outdoor Picnic', 'Luxury Ballroom', 'Manga Fantasy'],
     scenes: ['Bóng bay rực rỡ', 'Bánh kem tầng', 'Hộp quà khổng lồ', 'Pháo hoa', 'Nến lung linh'],
     accentColor: 'purple',
     icon: Cake,
-    basePrompt: 'Professional Birthday Photo Production',
-    atmosphere: 'Joyful and cinematic birthday atmosphere, vibrant celebrations, high quality 8K.',
+    basePrompt: 'Joyful professional birthday celebration photography.',
+    atmosphere: 'Festive and cinematic birthday atmosphere, vibrant colors, celebratory lighting, high quality 8K.',
     costBase: 150,
     benefits: [
       { t: 'Chủ đề', d: 'Từ tiệc trà cổ điển đến không gian Cyberpunk rực rỡ sắc màu.' },
