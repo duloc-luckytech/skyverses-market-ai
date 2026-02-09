@@ -219,8 +219,11 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       const jobStatus = response.data?.status?.toLowerCase();
       
       const errorMsg = response.data?.error?.message || response.data?.error?.userMessage || "";
-      if (errorMsg.includes("reCAPTCHA")) {
-         addLogToTask(resultId, `[SECURITY_ALERT] reCAPTCHA challenge detected. Initiating automated retry protocol...`);
+
+      // Auto-retry on captcha errors or CAPTCHA_REQUEST_FAILED
+      if (errorMsg.includes("reCAPTCHA") || errorMsg === "CAPTCHA_REQUEST_FAILED") {
+         const alertMsg = errorMsg === "CAPTCHA_REQUEST_FAILED" ? "Captcha request failed" : "reCAPTCHA challenge detected";
+         addLogToTask(resultId, `[SECURITY_ALERT] ${alertMsg}. Initiating automated retry protocol...`);
          const taskToRetry = resultsRef.current.find(r => r.id === resultId);
          if (taskToRetry) {
             performInference(usagePreference || 'credits', taskToRetry, true);
