@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -9,9 +8,11 @@ export const useGlobalTools = () => {
   const [prompt, setPrompt] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [modality, setModality] = useState<GlobalModality>('video');
+  const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isAnimateModalOpen, setIsAnimateModalOpen] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   
   const { credits, isAuthenticated, login } = useAuth();
   const { showToast } = useToast();
@@ -27,6 +28,7 @@ export const useGlobalTools = () => {
 
   const handleClear = useCallback(() => {
     setPrompt('');
+    setSelectedAsset(null);
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
   }, []);
 
@@ -48,6 +50,12 @@ export const useGlobalTools = () => {
     localStorage.setItem('skyverses_global_auto_prompt', prompt);
     localStorage.setItem('skyverses_global_auto_modality', modality);
     localStorage.setItem('skyverses_global_auto_run', 'true');
+    
+    if (selectedAsset) {
+      localStorage.setItem('skyverses_global_auto_image', selectedAsset);
+    } else {
+      localStorage.removeItem('skyverses_global_auto_image');
+    }
 
     if (modality === 'video') {
       setIsVideoModalOpen(true);
@@ -58,7 +66,7 @@ export const useGlobalTools = () => {
     }
     
     setIsExpanded(false);
-  }, [prompt, modality, isAuthenticated, credits, login, showToast]);
+  }, [prompt, modality, isAuthenticated, credits, login, showToast, selectedAsset]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -77,12 +85,16 @@ export const useGlobalTools = () => {
     setIsExpanded,
     modality,
     setModality,
+    selectedAsset,
+    setSelectedAsset,
     isVideoModalOpen,
     setIsVideoModalOpen,
     isImageModalOpen,
     setIsImageModalOpen,
     isAnimateModalOpen,
     setIsAnimateModalOpen,
+    isLibraryOpen,
+    setIsLibraryOpen,
     textareaRef,
     handleGenerate,
     handleClear,

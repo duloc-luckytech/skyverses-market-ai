@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import { 
@@ -38,14 +39,8 @@ const AISupportChat: React.FC = () => {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const buttonConstraintsRef = useRef(null);
 
   const logoUrl = "https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268";
-
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 300, damping: 30 });
-  const springY = useSpring(y, { stiffness: 300, damping: 30 });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -186,55 +181,45 @@ const AISupportChat: React.FC = () => {
     }
   };
 
-  const onDragEnd = (_: any, info: any) => {
-    const threshold = window.innerWidth / 2;
-    const currentX = info.point.x;
-    if (currentX < threshold) {
-      x.set(-window.innerWidth + 80);
-    } else {
-      x.set(0);
-    }
-  };
-
   return (
     <>
-      <div ref={buttonConstraintsRef} className="fixed inset-0 pointer-events-none z-[600]" />
-      <motion.div 
-        style={{ x: springX, y: springY }}
-        drag
-        dragConstraints={buttonConstraintsRef}
-        dragElastic={0.1}
-        dragMomentum={false}
-        onDragEnd={onDragEnd}
-        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-[600] pointer-events-auto"
-      >
+      <div className="fixed top-1/2 right-0 -translate-y-1/2 z-[600] pointer-events-auto">
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.05, x: -4 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Support Assistant"
-          className="relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center overflow-hidden group shadow-[0_0_40px_rgba(0,144,255,0.15)] transition-all duration-500"
+          className={`relative w-14 h-16 md:w-16 md:h-20 rounded-l-[1.8rem] rounded-r-none flex items-center justify-center overflow-hidden group shadow-[-10px_0_40px_rgba(0,144,255,0.15)] transition-all duration-500 border-y border-l ${
+            isOpen 
+            ? 'bg-black dark:bg-white text-white dark:text-black border-transparent' 
+            : 'bg-white/90 dark:bg-[#0d0d10]/90 backdrop-blur-md border-black/5 dark:border-white/10'
+          }`}
         >
           {!isOpen && (
             <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_270deg,#0090ff_360deg)] animate-[spin_3s_linear_infinite] opacity-60 group-hover:opacity-100 transition-opacity"></div>
           )}
-          <div className={`relative w-[calc(100%-4px)] h-[calc(100%-4px)] rounded-full flex items-center justify-center transition-all duration-500 z-10 ${
-            isOpen 
-            ? 'bg-black dark:bg-white text-white dark:text-black' 
-            : 'bg-white/90 dark:bg-[#0d0d10]/90 backdrop-blur-md shadow-inner border border-white/10'
+          <div className={`relative flex flex-col items-center justify-center transition-all duration-500 z-10 ${
+            isOpen ? 'text-white dark:text-black' : 'text-brand-blue'
           }`}>
-            {isOpen ? <X size={24} /> : <img src={logoUrl} alt="Skyverses Assistant" className="w-7 h-7 md:w-9 md:h-9 object-contain relative z-10" />}
+            {isOpen ? (
+              <X size={24} />
+            ) : (
+              <div className="flex flex-col items-center gap-1">
+                <img src={logoUrl} alt="Skyverses Assistant" className="w-7 h-7 md:w-8 md:h-8 object-contain" />
+                <span className="text-[7px] font-black uppercase tracking-tighter opacity-60 group-hover:opacity-100">AI</span>
+              </div>
+            )}
           </div>
         </motion.button>
-      </motion.div>
+      </div>
 
       <AnimatePresence>
         {isOpen && !isFull && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-24 right-4 left-4 md:left-auto md:right-8 w-[calc(100vw-2rem)] md:w-[400px] h-[550px] md:h-[600px] max-h-[calc(100dvh-120px)] flex flex-col overflow-hidden bg-white dark:bg-[#0c0c0e] border border-black/5 dark:border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.2)] rounded-2xl md:rounded-lg z-[700]"
+            initial={{ opacity: 0, x: 20, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 20, scale: 0.95 }}
+            className="fixed top-1/2 -translate-y-1/2 right-4 md:right-8 w-[calc(100vw-2rem)] md:w-[400px] h-[600px] max-h-[85dvh] flex flex-col overflow-hidden bg-white dark:bg-[#0c0c0e] border border-black/5 dark:border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.2)] rounded-[2rem] md:rounded-lg z-[700]"
           >
             <div className="px-6 py-5 border-b border-black/5 dark:border-white/5 bg-[#fafafa] dark:bg-[#111114] flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">

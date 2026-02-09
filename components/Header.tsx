@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
@@ -93,9 +92,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (langRef.current && !langRef.current.contains(e.target as Node)) setShowDesktopLang(false);
-      if (userRef.current && !userRef.current.contains(e.target as Node)) setShowUserMenu(false);
-      if (exploreRef.current && !exploreRef.current.contains(e.target as Node)) setShowExploreMenu(false);
+      if (langRef.current && !langRef.current.contains(event.target as Node)) setShowDesktopLang(false);
+      if (userRef.current && !userRef.current.contains(event.target as Node)) setShowUserMenu(false);
+      if (exploreRef.current && !exploreRef.current.contains(event.target as Node)) setShowExploreMenu(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -158,11 +157,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
             <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2.5 shrink-0 group">
               <img src={logoUrl} alt="Logo" className="w-7 h-7 md:w-9 md:h-9 object-contain" />
               <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg md:text-xl font-black tracking-tighter italic text-black dark:text-white transition-colors">Skyverses</span>
-                  <span className="px-1.5 py-0.5 bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[8px] font-black rounded-sm tracking-widest leading-none">BETA</span>
-                </div>
-                <span className="text-[7px] font-black tracking-[0.4em] uppercase text-brand-blue/70">Market</span>
+                <span className="text-lg md:text-xl font-black tracking-tighter italic text-black dark:text-white transition-colors">Skyverses</span>
+                <span className="text-[7px] font-black tracking-[0.4em] uppercase text-brand-blue/70 leading-none">Market</span>
               </div>
             </Link>
 
@@ -264,10 +260,34 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                       </button>
                     )}
                     
-                    <Link to="/credits" className="flex items-center gap-2 px-3 md:px-4 py-1.5 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full hover:border-brand-blue/30 transition-all">
-                      <Zap size={10} className="text-yellow-500" fill="currentColor" />
-                      <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-white">{(credits || 0).toLocaleString()}</span>
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      {/* Desktop: Standard Credit Link */}
+                      <Link 
+                        to="/credits" 
+                        className="hidden md:flex items-center gap-2 px-4 py-1.5 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full hover:border-brand-blue/30 transition-all"
+                      >
+                        <Zap size={10} className="text-yellow-500" fill="currentColor" />
+                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-white">
+                          {(credits || 0).toLocaleString()}
+                        </span>
+                      </Link>
+                      
+                      {/* Mobile: Unified High-Emphasis Upgrade Button (Wrapped Balance) */}
+                      <button 
+                        onClick={() => setIsPurchaseModalOpen(true)}
+                        className="md:hidden flex items-center bg-brand-blue text-white rounded-full transition-all active:scale-95 shadow-[0_4px_20px_rgba(0,144,255,0.4)] overflow-hidden"
+                      >
+                        <div className="flex items-center gap-1.5 pl-3.5 pr-2.5 py-2 border-r border-white/20">
+                          <Zap size={10} className="text-yellow-400" fill="currentColor" />
+                          <span className="text-[10px] font-black italic tracking-tighter leading-none">
+                            {(credits || 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="px-3.5 py-2 bg-brand-blue">
+                          <span className="text-[9px] font-black uppercase tracking-[0.1em]">UPGRADE</span>
+                        </div>
+                      </button>
+                    </div>
                   </div>
                 )}
                 

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -11,14 +10,17 @@ import { useGlobalTools } from '../hooks/useGlobalTools';
 import AIVideoGeneratorWorkspace from './AIVideoGeneratorWorkspace';
 import AIImageGeneratorWorkspace from './AIImageGeneratorWorkspace';
 import VideoAnimateWorkspace from './VideoAnimateWorkspace';
+import ImageLibraryModal from './ImageLibraryModal';
 
 const GlobalToolsBar: React.FC = () => {
   const {
     prompt, setPrompt, isExpanded, setIsExpanded,
     modality, setModality,
+    selectedAsset, setSelectedAsset,
     isVideoModalOpen, setIsVideoModalOpen,
     isImageModalOpen, setIsImageModalOpen,
     isAnimateModalOpen, setIsAnimateModalOpen,
+    isLibraryOpen, setIsLibraryOpen,
     textareaRef, handleGenerate, handleClear, onKeyDown, credits
   } = useGlobalTools();
 
@@ -38,7 +40,7 @@ const GlobalToolsBar: React.FC = () => {
 
   return (
     <>
-      <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-[300] w-full max-w-4xl px-4 pointer-events-none">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-[300] w-full max-w-4xl px-4 pb-4 pointer-events-none">
         <motion.div 
           layout
           initial={false}
@@ -59,11 +61,26 @@ const GlobalToolsBar: React.FC = () => {
                 className="p-2 lg:p-3"
               >
                 <div className="flex items-start gap-3">
-                  <button 
-                    className="w-9 h-9 shrink-0 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full flex items-center justify-center text-slate-400 dark:text-gray-400 transition-all active:scale-95"
-                  >
-                    <Plus size={16} />
-                  </button>
+                  <div className="relative shrink-0">
+                    <button 
+                      onClick={() => setIsLibraryOpen(true)}
+                      className="w-9 h-9 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full flex items-center justify-center text-slate-400 dark:text-gray-400 transition-all active:scale-95 overflow-hidden border border-black/5 dark:border-white/10"
+                    >
+                      {selectedAsset ? (
+                        <img src={selectedAsset} className="w-full h-full object-cover" alt="Selected" />
+                      ) : (
+                        <Plus size={16} />
+                      )}
+                    </button>
+                    {selectedAsset && (
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setSelectedAsset(null); }}
+                        className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors z-10"
+                      >
+                        <X size={10} strokeWidth={4} />
+                      </button>
+                    )}
+                  </div>
                   
                   <div className="flex-grow pt-1 px-1">
                     <textarea 
@@ -139,9 +156,9 @@ const GlobalToolsBar: React.FC = () => {
                     <button 
                       onClick={handleGenerate}
                       disabled={!prompt.trim()}
-                      className={`relative overflow-hidden px-8 h-9 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-lg ${
+                      className={`relative overflow-hidden px-8 h-9 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-[0.95] shadow-lg ${
                         !prompt.trim()
-                          ? 'bg-slate-100 dark:bg-zinc-800 text-slate-400 cursor-not-allowed'
+                          ? 'bg-slate-100 dark:bg-zinc-800 text-slate-400 grayscale cursor-not-allowed'
                           : 'bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-black dark:hover:brightness-110'
                       }`}
                     >
@@ -201,6 +218,18 @@ const GlobalToolsBar: React.FC = () => {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[500] bg-black">
              <VideoAnimateWorkspace onClose={() => setIsAnimateModalOpen(false)} />
           </motion.div>
+        )}
+        {isLibraryOpen && (
+          <ImageLibraryModal 
+            isOpen={isLibraryOpen}
+            onClose={() => setIsLibraryOpen(false)}
+            onConfirm={(assets) => {
+              if (assets.length > 0) {
+                 setSelectedAsset(assets[0].url);
+              }
+              setIsLibraryOpen(false);
+            }}
+          />
         )}
       </AnimatePresence>
     </>

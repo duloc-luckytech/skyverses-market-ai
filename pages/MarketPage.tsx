@@ -5,7 +5,7 @@ import { marketApi } from '../apis/market';
 import { systemConfigApi } from '../apis/config';
 import { Solution, HomeBlock, Language } from '../types';
 import { 
-  X, SearchX, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow, Sparkles, LucideIcon
+  X, SearchX, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow, Sparkles, LucideIcon, ArrowRight, ChevronRight
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -196,7 +196,7 @@ const MarketPage = () => {
 
         <AIModelsMarquee />
 
-        <div className="sticky top-16 md:relative md:top-0 z-[140] transform-gpu bg-white/95 dark:bg-[#030304]/95 backdrop-blur-xl -mx-4 px-4 py-3 md:mx-0 md:px-0 md:py-0 md:bg-transparent md:backdrop-blur-none border-b border-black/5 dark:border-white/5 md:border-none transition-all duration-500">
+        <div className="hidden md:block sticky top-16 md:relative md:top-0 z-[140] transform-gpu bg-white/95 dark:bg-[#030304]/95 backdrop-blur-xl -mx-4 px-4 py-3 md:mx-0 md:px-0 md:py-0 md:bg-transparent md:backdrop-blur-none border-b border-black/5 dark:border-white/5 md:border-none transition-all duration-500">
           <MarketSearchTerminal 
             query={query} setQuery={setQuery}
             primary={primary} setPrimary={setPrimary}
@@ -204,7 +204,7 @@ const MarketPage = () => {
           />
         </div>
 
-        <div className="space-y-24 relative z-10 md:border-t border-black/5 dark:border-white/5 pt-8">
+        <div className="space-y-16 md:space-y-24 relative z-10 md:border-t border-black/5 dark:border-white/5 pt-8">
           {(loading || isSearching) ? (
             <div className="flex gap-4 md:gap-8 overflow-x-hidden">
               {[1,2,3,4,5].map(i => <CardSkeleton key={i} />)}
@@ -242,6 +242,20 @@ const MarketPage = () => {
                           stats={getFakeStats(sol._id || sol.id)}
                         />
                       ))}
+                      
+                      {/* View All Card for Mobile */}
+                      <div 
+                        onClick={() => navigate(`/category/${block.key}`)}
+                        className="flex-shrink-0 snap-start w-[180px] md:hidden flex flex-col items-center justify-center bg-slate-50 dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] rounded-xl group cursor-pointer hover:border-brand-blue/40 transition-all p-6 text-center space-y-4"
+                      >
+                         <div className="w-12 h-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
+                            <ArrowRight size={24} />
+                         </div>
+                         <div className="space-y-1">
+                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-800 dark:text-white">Xem tất cả</p>
+                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tight">{blockSolutions.length} giải pháp</p>
+                         </div>
+                      </div>
                     </div>
                   </section>
                 );

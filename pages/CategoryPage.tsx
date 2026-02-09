@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { marketApi } from '../apis/market';
@@ -177,7 +176,7 @@ const CategoryPage = () => {
                  </div>
               </div>
 
-              <div className="relative w-full md:w-[450px] group">
+              <div className="hidden md:block relative w-full md:w-[450px] group">
                  <div className="absolute inset-[-2px] bg-gradient-to-r from-brand-blue/20 to-transparent blur-md rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity"></div>
                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue transition-colors" size={20} />
                  <input 
