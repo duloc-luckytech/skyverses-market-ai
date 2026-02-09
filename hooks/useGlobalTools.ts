@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -13,6 +14,7 @@ export const useGlobalTools = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isAnimateModalOpen, setIsAnimateModalOpen] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
   const { credits, isAuthenticated, login } = useAuth();
   const { showToast } = useToast();
@@ -95,6 +97,8 @@ export const useGlobalTools = () => {
     setIsAnimateModalOpen,
     isLibraryOpen,
     setIsLibraryOpen,
+    isSettingsOpen,
+    setIsSettingsOpen,
     textareaRef,
     handleGenerate,
     handleClear,
