@@ -31,7 +31,7 @@ const GlobalToolsBar: React.FC = () => {
         const res = await pricingApi.getPricing({ tool: g.modality });
         if (res.success && res.data) {
           setAvailableModels(res.data);
-          // Auto select first model if current one isn't in list
+          // Tự động chọn model đầu tiên nếu model hiện tại không có trong danh sách
           if (res.data.length > 0 && !res.data.find(m => m.modelKey === g.selectedModel)) {
             g.setSelectedModelId(res.data[0].modelKey);
           }
@@ -94,13 +94,16 @@ const GlobalToolsBar: React.FC = () => {
             width: g.isExpanded ? '100%' : '240px',
           }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="mx-auto pointer-events-auto relative rounded-[2rem] shadow-[0_40px_100px_rgba(0,0,0,0.15)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.7)] overflow-hidden p-[1px] transition-colors group"
+          className="mx-auto pointer-events-auto relative transition-all duration-300 group"
         >
-          {/* RUNNING BORDER ANIMATION LAYER */}
-          <div className="absolute inset-[-500%] animate-[spin_6s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_320deg,#0090ff_360deg)] opacity-30 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+          {/* LỚP NỀN VÀ BORDER CHẠY - ĐƯỢC CẮT BỞI OVERFLOW HIDDEN RIÊNG BIỆT */}
+          <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none">
+            <div className="absolute inset-[-500%] animate-[spin_6s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_320deg,#0090ff_360deg)] opacity-30 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute inset-[1px] bg-white/95 dark:bg-[#0d0d0f]/98 backdrop-blur-3xl rounded-[2rem]"></div>
+          </div>
           
-          {/* INNER CONTENT LAYER */}
-          <div className="relative w-full h-full bg-white/95 dark:bg-[#0d0d0f]/98 backdrop-blur-3xl rounded-[2rem] overflow-hidden transition-colors flex flex-col">
+          {/* LỚP NỘI DUNG - KHÔNG CÓ OVERFLOW HIDDEN ĐỂ DROPDOWN HIỂN THỊ ĐƯỢC RA NGOÀI */}
+          <div className="relative w-full h-full rounded-[2rem] flex flex-col z-10">
             <AnimatePresence mode="wait">
               {g.isExpanded ? (
                 <motion.div 
@@ -216,7 +219,7 @@ const GlobalToolsBar: React.FC = () => {
                             {/* Ratio & Switches */}
                             <div className="space-y-4">
                                <div className="space-y-2">
-                                  <label className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Aspect Ratio</label>
+                                  <label className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">Aspect Ratio</label>
                                   <div className="flex gap-1">
                                      {aspectRatios.map(r => (
                                        <button 
@@ -261,7 +264,7 @@ const GlobalToolsBar: React.FC = () => {
                               initial={{ opacity: 0, y: 10, scale: 0.9 }}
                               animate={{ opacity: 1, y: 0, scale: 1 }}
                               exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                              className="absolute bottom-full mb-3 left-0 bg-white dark:bg-[#1a1a1e] border border-black/10 dark:border-white/10 rounded-xl p-1 shadow-2xl z-[310] min-w-[120px]"
+                              className="absolute bottom-full mb-3 left-0 bg-white dark:bg-[#1a1a1e] border border-black/10 dark:border-white/10 rounded-xl p-1 shadow-2xl z-[310] min-w-[140px]"
                             >
                                <button 
                                  onClick={() => { g.setModality('video'); setShowModalityMenu(false); }}
@@ -309,9 +312,9 @@ const GlobalToolsBar: React.FC = () => {
                       </button>
                     </div>
 
-                    <div className="flex items-center gap-2 bg-slate-100 dark:bg-black/40 px-3 h-8 rounded-full border border-black/5 dark:border-white/5 shadow-inner transition-colors shrink-0">
+                    <div className="flex items-center gap-2 bg-slate-100 dark:bg-black/40 px-3 h-8 rounded-full border border-black/5 dark:border-white/5 shadow-inner transition-colors shrink-0 text-slate-800 dark:text-white">
                        <Sparkles size={10} className="text-brand-blue" fill="currentColor" />
-                       <span className="text-[10px] font-black italic text-slate-700 dark:text-white">{(g.credits || 0).toLocaleString()}</span>
+                       <span className="text-[10px] font-black italic">{(g.credits || 0).toLocaleString()}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -322,7 +325,7 @@ const GlobalToolsBar: React.FC = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => g.setIsExpanded(true)}
-                  className="flex-grow w-full h-full flex items-center justify-between px-6 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-all group"
+                  className="flex-grow w-full h-[56px] flex items-center justify-between px-6 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-all group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="relative">
