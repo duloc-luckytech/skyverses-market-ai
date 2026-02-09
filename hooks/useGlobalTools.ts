@@ -15,6 +15,17 @@ export const useGlobalTools = () => {
   const [isAnimateModalOpen, setIsAnimateModalOpen] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // Configuration States
+  const [selectedModel, setSelectedModelId] = useState('wan-2-6');
+  const [resolution, setResolution] = useState('720P');
+  const [aspectRatio, setAspectRatio] = useState('16:9');
+  const [duration, setDuration] = useState('5s');
+  const [switches, setSwitches] = useState({
+    credits: true,
+    enhance: true,
+    multiShot: false
+  });
   
   const { credits, isAuthenticated, login } = useAuth();
   const { showToast } = useToast();
@@ -68,6 +79,7 @@ export const useGlobalTools = () => {
     }
     
     setIsExpanded(false);
+    setIsSettingsOpen(false);
   }, [prompt, modality, isAuthenticated, credits, login, showToast, selectedAsset]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -77,32 +89,26 @@ export const useGlobalTools = () => {
     }
     if (e.key === 'Escape') {
       setIsExpanded(false);
+      setIsSettingsOpen(false);
     }
   };
 
   return {
-    prompt,
-    setPrompt,
-    isExpanded,
-    setIsExpanded,
-    modality,
-    setModality,
-    selectedAsset,
-    setSelectedAsset,
-    isVideoModalOpen,
-    setIsVideoModalOpen,
-    isImageModalOpen,
-    setIsImageModalOpen,
-    isAnimateModalOpen,
-    setIsAnimateModalOpen,
-    isLibraryOpen,
-    setIsLibraryOpen,
-    isSettingsOpen,
-    setIsSettingsOpen,
-    textareaRef,
-    handleGenerate,
-    handleClear,
-    onKeyDown,
-    credits
+    prompt, setPrompt,
+    isExpanded, setIsExpanded,
+    modality, setModality,
+    selectedAsset, setSelectedAsset,
+    isVideoModalOpen, setIsVideoModalOpen,
+    isImageModalOpen, setIsImageModalOpen,
+    isAnimateModalOpen, setIsAnimateModalOpen,
+    isLibraryOpen, setIsLibraryOpen,
+    isSettingsOpen, setIsSettingsOpen,
+    // Config states
+    selectedModel, setSelectedModelId,
+    resolution, setResolution,
+    aspectRatio, setAspectRatio,
+    duration, setDuration,
+    switches, setSwitches,
+    textareaRef, handleGenerate, handleClear, onKeyDown, credits
   };
 };

@@ -5,7 +5,7 @@ import {
   Plus, ChevronDown, ChevronUp, 
   Video, SlidersHorizontal, Sparkles,
   Zap, Loader2, X, Image as ImageIcon,
-  Move, Activity
+  Move, Activity, Monitor, Smartphone, Check
 } from 'lucide-react';
 import { useGlobalTools } from '../hooks/useGlobalTools';
 import AIVideoGeneratorWorkspace from './AIVideoGeneratorWorkspace';
@@ -15,18 +15,7 @@ import ImageLibraryModal from './ImageLibraryModal';
 import GlobalSettingsModal from './GlobalSettingsModal';
 
 const GlobalToolsBar: React.FC = () => {
-  const {
-    prompt, setPrompt, isExpanded, setIsExpanded,
-    modality, setModality,
-    selectedAsset, setSelectedAsset,
-    isVideoModalOpen, setIsVideoModalOpen,
-    isImageModalOpen, setIsImageModalOpen,
-    isAnimateModalOpen, setIsAnimateModalOpen,
-    isLibraryOpen, setIsLibraryOpen,
-    isSettingsOpen, setIsSettingsOpen,
-    textareaRef, handleGenerate, handleClear, onKeyDown, credits
-  } = useGlobalTools();
-
+  const g = useGlobalTools();
   const [showModalityMenu, setShowModalityMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +30,41 @@ const GlobalToolsBar: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleSettingsToggle = () => {
+    // Nếu là Mobile (< 1024px) thì mở Modal, Desktop thì toggle inline
+    if (window.innerWidth < 1024) {
+      g.setIsSettingsOpen(true);
+    } else {
+      g.setIsSettingsOpen(!g.isSettingsOpen);
+    }
+  };
+
+  const models = [
+    { id: 'wan-2-6', name: 'Wan 2.6' },
+    { id: 'wan-2-5', name: 'Wan 2.5' },
+    { id: 'wan-2-2', name: 'Wan 2.2' }
+  ];
+
+  const aspectRatios = [
+    { id: '16:9', icon: <Monitor size={12} /> },
+    { id: '4:3', icon: <div className="w-2.5 h-2 border border-current rounded-sm" /> },
+    { id: '1:1', icon: <div className="w-2.5 h-2.5 border border-current rounded-sm" /> },
+    { id: '3:4', icon: <div className="w-2 h-2.5 border border-current rounded-sm" /> },
+    { id: '9:16', icon: <Smartphone size={12} /> }
+  ];
+
+  const Switch = ({ active, onChange }: { active: boolean, onChange: () => void }) => (
+    <button 
+      onClick={onChange}
+      className={`w-8 h-4 rounded-full relative transition-all duration-300 ${active ? 'bg-[#0090ff] shadow-[0_0_8px_rgba(0,144,255,0.4)]' : 'bg-slate-200 dark:bg-zinc-800'}`}
+    >
+      <motion.div 
+        animate={{ x: active ? 18 : 2 }}
+        className="absolute top-0.5 left-0 w-3 h-3 bg-white rounded-full shadow-md"
+      />
+    </button>
+  );
+
   return (
     <>
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-[300] w-full max-w-2xl px-4 pb-6 pointer-events-none">
@@ -48,8 +72,8 @@ const GlobalToolsBar: React.FC = () => {
           layout
           initial={false}
           animate={{ 
-            height: isExpanded ? 'auto' : '60px',
-            width: isExpanded ? '100%' : '220px',
+            height: 'auto',
+            width: g.isExpanded ? '100%' : '220px',
           }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           className="mx-auto pointer-events-auto relative rounded-[2rem] shadow-[0_40px_100px_rgba(0,0,0,0.15)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.7)] overflow-hidden p-[1px] transition-colors group"
@@ -60,7 +84,7 @@ const GlobalToolsBar: React.FC = () => {
           {/* INNER CONTENT LAYER */}
           <div className="relative w-full h-full bg-white/95 dark:bg-[#0d0d0f]/98 backdrop-blur-3xl rounded-[2rem] overflow-hidden transition-colors">
             <AnimatePresence mode="wait">
-              {isExpanded ? (
+              {g.isExpanded ? (
                 <motion.div 
                   key="expanded"
                   initial={{ opacity: 0, y: 10 }}
@@ -71,18 +95,18 @@ const GlobalToolsBar: React.FC = () => {
                   <div className="flex items-start gap-3 p-2">
                     <div className="relative shrink-0 mt-1">
                       <button 
-                        onClick={() => setIsLibraryOpen(true)}
+                        onClick={() => g.setIsLibraryOpen(true)}
                         className="w-9 h-9 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl flex items-center justify-center text-slate-400 dark:text-gray-400 transition-all active:scale-95 overflow-hidden border border-black/5 dark:border-white/10"
                       >
-                        {selectedAsset ? (
-                          <img src={selectedAsset} className="w-full h-full object-cover" alt="Selected" />
+                        {g.selectedAsset ? (
+                          <img src={g.selectedAsset} className="w-full h-full object-cover" alt="Selected" />
                         ) : (
                           <Plus size={16} />
                         )}
                       </button>
-                      {selectedAsset && (
+                      {g.selectedAsset && (
                         <button 
-                          onClick={(e) => { e.stopPropagation(); setSelectedAsset(null); }}
+                          onClick={(e) => { e.stopPropagation(); g.setSelectedAsset(null); }}
                           className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors z-10"
                         >
                           <X size={10} strokeWidth={4} />
@@ -92,10 +116,10 @@ const GlobalToolsBar: React.FC = () => {
                     
                     <div className="flex-grow pt-1.5">
                       <textarea 
-                        ref={textareaRef}
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        onKeyDown={onKeyDown}
+                        ref={g.textareaRef}
+                        value={g.prompt}
+                        onChange={(e) => g.setPrompt(e.target.value)}
+                        onKeyDown={g.onKeyDown}
                         placeholder="Mô tả ý tưởng sáng tạo của bạn..."
                         className="w-full bg-transparent border-none outline-none text-[12px] font-bold text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-gray-600 resize-none max-h-48 min-h-[28px] no-scrollbar leading-relaxed"
                         rows={1}
@@ -103,22 +127,89 @@ const GlobalToolsBar: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col gap-0.5 shrink-0">
-                       {prompt && (
+                       {g.prompt && (
                          <button 
-                            onClick={handleClear}
+                            onClick={g.handleClear}
                             className="p-1.5 text-slate-300 hover:text-red-500 transition-colors"
                          >
                             <X size={14} />
                          </button>
                        )}
                        <button 
-                         onClick={() => setIsExpanded(false)}
+                         onClick={() => { g.setIsExpanded(false); g.setIsSettingsOpen(false); }}
                          className="p-1.5 text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors"
                        >
                          <ChevronDown size={18} />
                        </button>
                     </div>
                   </div>
+
+                  {/* DESKTOP INLINE SETTINGS EXTENSION */}
+                  <AnimatePresence>
+                    {g.isSettingsOpen && (
+                      <motion.div 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="hidden lg:block border-t border-black/5 dark:border-white/5 mt-2 pt-4 px-2 space-y-5 pb-4"
+                      >
+                         <div className="grid grid-cols-2 gap-6">
+                            {/* Models & Resolution */}
+                            <div className="space-y-4">
+                               <div className="space-y-2">
+                                  <label className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Model Engine</label>
+                                  <div className="flex gap-1.5">
+                                     {models.map(m => (
+                                       <button 
+                                         key={m.id} onClick={() => g.setSelectedModelId(m.id)}
+                                         className={`flex-1 py-1.5 rounded-lg text-[9px] font-black transition-all border ${g.selectedModel === m.id ? 'border-brand-blue bg-brand-blue/5 text-brand-blue' : 'border-black/5 dark:border-white/5 text-gray-500'}`}
+                                       >
+                                         {m.name}
+                                       </button>
+                                     ))}
+                                  </div>
+                               </div>
+                               <div className="flex items-center justify-between">
+                                  <label className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Resolution</label>
+                                  <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-lg">
+                                     {['1080P', '720P'].map(r => (
+                                       <button key={r} onClick={() => g.setResolution(r)} className={`px-3 py-1 rounded-md text-[8px] font-black transition-all ${g.resolution === r ? 'bg-white dark:bg-[#2a2a2e] text-brand-blue shadow-sm' : 'text-gray-500'}`}>{r}</button>
+                                     ))}
+                                  </div>
+                               </div>
+                            </div>
+
+                            {/* Ratio & Switches */}
+                            <div className="space-y-4">
+                               <div className="space-y-2">
+                                  <label className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Aspect Ratio</label>
+                                  <div className="flex gap-1">
+                                     {aspectRatios.map(r => (
+                                       <button 
+                                         key={r.id} onClick={() => g.setAspectRatio(r.id)}
+                                         className={`flex-1 flex flex-col items-center justify-center gap-1 py-1 border rounded-md transition-all ${g.aspectRatio === r.id ? 'border-brand-blue text-brand-blue bg-brand-blue/5' : 'border-black/5 dark:border-white/5 text-gray-500'}`}
+                                       >
+                                          {r.icon}
+                                          <span className="text-[7px] font-bold">{r.id}</span>
+                                       </button>
+                                     ))}
+                                  </div>
+                               </div>
+                               <div className="grid grid-cols-2 gap-4">
+                                  <div className="flex items-center justify-between gap-2">
+                                     <span className="text-[8px] font-black text-gray-500 uppercase truncate">Enhance</span>
+                                     <Switch active={g.switches.enhance} onChange={() => g.setSwitches({...g.switches, enhance: !g.switches.enhance})} />
+                                  </div>
+                                  <div className="flex items-center justify-between gap-2">
+                                     <span className="text-[8px] font-black text-gray-500 uppercase truncate">Credits</span>
+                                     <Switch active={g.switches.credits} onChange={() => g.setSwitches({...g.switches, credits: !g.switches.credits})} />
+                                  </div>
+                               </div>
+                            </div>
+                         </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   <div className="flex items-center justify-between mt-1 px-2 pb-1.5">
                     <div className="flex items-center gap-2">
@@ -127,7 +218,7 @@ const GlobalToolsBar: React.FC = () => {
                           onClick={() => setShowModalityMenu(!showModalityMenu)}
                           className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${showModalityMenu ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/30' : 'bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-gray-500 hover:text-brand-blue'}`}
                         >
-                          {modality === 'video' ? <Video size={14} /> : modality === 'image' ? <ImageIcon size={14} /> : <Activity size={14} />}
+                          {g.modality === 'video' ? <Video size={14} /> : g.modality === 'image' ? <ImageIcon size={14} /> : <Activity size={14} />}
                         </button>
 
                         <AnimatePresence>
@@ -139,20 +230,20 @@ const GlobalToolsBar: React.FC = () => {
                               className="absolute bottom-full mb-3 left-0 bg-white dark:bg-[#1a1a1e] border border-black/10 dark:border-white/10 rounded-xl p-1 shadow-2xl z-[310] min-w-[120px]"
                             >
                                <button 
-                                 onClick={() => { setModality('video'); setShowModalityMenu(false); }}
-                                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${modality === 'video' ? 'bg-brand-blue text-white' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                                 onClick={() => { g.setModality('video'); setShowModalityMenu(false); }}
+                                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${g.modality === 'video' ? 'bg-brand-blue text-white' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
                                >
                                  <Video size={12} /> Video AI
                                </button>
                                <button 
-                                 onClick={() => { setModality('image'); setShowModalityMenu(false); }}
-                                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${modality === 'image' ? 'bg-brand-blue text-white' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                                 onClick={() => { g.setModality('image'); setShowModalityMenu(false); }}
+                                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${g.modality === 'image' ? 'bg-brand-blue text-white' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
                                >
                                  <ImageIcon size={12} /> Image AI
                                </button>
                                <button 
-                                 onClick={() => { setModality('animate'); setShowModalityMenu(false); }}
-                                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${modality === 'animate' ? 'bg-brand-blue text-white' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                                 onClick={() => { g.setModality('animate'); setShowModalityMenu(false); }}
+                                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${g.modality === 'animate' ? 'bg-brand-blue text-white' : 'text-slate-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
                                >
                                  <Activity size={12} /> Animate AI
                                </button>
@@ -162,10 +253,10 @@ const GlobalToolsBar: React.FC = () => {
                       </div>
                       
                       <button 
-                        onClick={handleGenerate}
-                        disabled={!prompt.trim()}
+                        onClick={g.handleGenerate}
+                        disabled={!g.prompt.trim()}
                         className={`relative overflow-hidden px-6 h-8 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all active:scale-[0.95] shadow-md ${
-                          !prompt.trim()
+                          !g.prompt.trim()
                             ? 'bg-slate-100 dark:bg-zinc-800 text-slate-400 grayscale cursor-not-allowed'
                             : 'bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-black dark:hover:brightness-110'
                         }`}
@@ -177,8 +268,8 @@ const GlobalToolsBar: React.FC = () => {
                       </button>
 
                       <button 
-                        onClick={() => setIsSettingsOpen(true)}
-                        className="w-8 h-8 bg-slate-50 dark:bg-white/5 hover:bg-brand-blue/10 dark:hover:bg-brand-blue/10 rounded-full flex items-center justify-center text-slate-400 dark:text-gray-500 hover:text-brand-blue transition-all"
+                        onClick={handleSettingsToggle}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${g.isSettingsOpen ? 'bg-brand-blue text-white shadow-lg' : 'bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-gray-500 hover:text-brand-blue'}`}
                       >
                         <SlidersHorizontal size={14} />
                       </button>
@@ -186,7 +277,7 @@ const GlobalToolsBar: React.FC = () => {
 
                     <div className="flex items-center gap-2 bg-slate-100 dark:bg-black/40 px-3 h-8 rounded-full border border-black/5 dark:border-white/5 shadow-inner transition-colors shrink-0">
                        <Sparkles size={10} className="text-brand-blue" fill="currentColor" />
-                       <span className="text-[10px] font-black italic text-slate-700 dark:text-white">{(credits || 0).toLocaleString()}</span>
+                       <span className="text-[10px] font-black italic text-slate-700 dark:text-white">{(g.credits || 0).toLocaleString()}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -196,7 +287,7 @@ const GlobalToolsBar: React.FC = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  onClick={() => setIsExpanded(true)}
+                  onClick={() => g.setIsExpanded(true)}
                   className="w-full h-full flex items-center justify-between px-6 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-all group"
                 >
                   <div className="flex items-center gap-3">
@@ -216,37 +307,38 @@ const GlobalToolsBar: React.FC = () => {
 
       {/* FULLSCREEN WORKSPACE MODALS */}
       <AnimatePresence>
-        {isVideoModalOpen && (
+        {g.isVideoModalOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[500] bg-black">
-             <AIVideoGeneratorWorkspace onClose={() => setIsVideoModalOpen(false)} />
+             <AIVideoGeneratorWorkspace onClose={() => g.setIsVideoModalOpen(false)} />
           </motion.div>
         )}
-        {isImageModalOpen && (
+        {g.isImageModalOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[500] bg-black">
-             <AIImageGeneratorWorkspace onClose={() => setIsImageModalOpen(false)} />
+             <AIImageGeneratorWorkspace onClose={() => g.setIsImageModalOpen(false)} />
           </motion.div>
         )}
-        {isAnimateModalOpen && (
+        {g.isAnimateModalOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[500] bg-black">
-             <VideoAnimateWorkspace onClose={() => setIsAnimateModalOpen(false)} />
+             <VideoAnimateWorkspace onClose={() => g.setIsAnimateModalOpen(false)} />
           </motion.div>
         )}
-        {isLibraryOpen && (
+        {g.isLibraryOpen && (
           <ImageLibraryModal 
-            isOpen={isLibraryOpen}
-            onClose={() => setIsLibraryOpen(false)}
+            isOpen={g.isLibraryOpen}
+            onClose={() => g.setIsLibraryOpen(false)}
             onConfirm={(assets) => {
               if (assets.length > 0) {
-                 setSelectedAsset(assets[0].url);
+                 g.setSelectedAsset(assets[0].url);
               }
-              setIsLibraryOpen(false);
+              g.setIsLibraryOpen(false);
             }}
           />
         )}
-        {isSettingsOpen && (
+        {/* Render modal CHỈ trên mobile */}
+        {g.isSettingsOpen && typeof window !== 'undefined' && window.innerWidth < 1024 && (
           <GlobalSettingsModal 
-            isOpen={isSettingsOpen}
-            onClose={() => setIsSettingsOpen(false)}
+            isOpen={g.isSettingsOpen}
+            onClose={() => g.setIsSettingsOpen(false)}
           />
         )}
       </AnimatePresence>
