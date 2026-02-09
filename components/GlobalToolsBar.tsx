@@ -5,18 +5,45 @@ import {
   Plus, ChevronDown, ChevronUp, 
   Video, SlidersHorizontal, Sparkles,
   Zap, Loader2, X, Image as ImageIcon,
-  Move, Activity, Monitor, Smartphone, Check
+  Move, Activity, Monitor, Smartphone, Check,
+  ChevronRight, MoreHorizontal
 } from 'lucide-react';
 import { useGlobalTools } from '../hooks/useGlobalTools';
 import AIVideoGeneratorWorkspace from './AIVideoGeneratorWorkspace';
 import AIImageGeneratorWorkspace from './AIImageGeneratorWorkspace';
 import VideoAnimateWorkspace from './VideoAnimateWorkspace';
 import ImageLibraryModal from './ImageLibraryModal';
+import { pricingApi, PricingModel } from '../apis/pricing';
 
 const GlobalToolsBar: React.FC = () => {
   const g = useGlobalTools();
   const [showModalityMenu, setShowModalityMenu] = useState(false);
+  const [availableModels, setAvailableModels] = useState<PricingModel[]>([]);
+  const [showAllModels, setShowAllModels] = useState(false);
+  const [loadingModels, setLoadingModels] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Fetch models from pricing API based on modality
+  useEffect(() => {
+    const fetchModels = async () => {
+      setLoadingModels(true);
+      try {
+        const res = await pricingApi.getPricing({ tool: g.modality });
+        if (res.success && res.data) {
+          setAvailableModels(res.data);
+          // Auto select first model if current one isn't in list
+          if (res.data.length > 0 && !res.data.find(m => m.modelKey === g.selectedModel)) {
+            g.setSelectedModelId(res.data[0].modelKey);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch models:", error);
+      } finally {
+        setLoadingModels(false);
+      }
+    };
+    if (g.isExpanded) fetchModels();
+  }, [g.modality, g.isExpanded]);
 
   // Close modality menu when clicking outside
   useEffect(() => {
@@ -31,15 +58,8 @@ const GlobalToolsBar: React.FC = () => {
 
   const handleSettingsToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Luôn toggle inline cho mọi kích thước màn hình
     g.setIsSettingsOpen(!g.isSettingsOpen);
   };
-
-  const models = [
-    { id: 'wan-2-6', name: 'Wan 2.6' },
-    { id: 'wan-2-5', name: 'Wan 2.5' },
-    { id: 'wan-2-2', name: 'Wan 2.2' }
-  ];
 
   const aspectRatios = [
     { id: '16:9', icon: <Monitor size={12} /> },
@@ -60,6 +80,8 @@ const GlobalToolsBar: React.FC = () => {
       />
     </button>
   );
+
+  const visibleModels = showAllModels ? availableModels : availableModels.slice(0, 3);
 
   return (
     <>
@@ -140,7 +162,7 @@ const GlobalToolsBar: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* INLINE SETTINGS EXTENSION - UNIFIED FOR MOBILE & DESKTOP */}
+                  {/* INLINE SETTINGS EXTENSION */}
                   <AnimatePresence>
                     {g.isSettingsOpen && (
                       <motion.div 
@@ -153,16 +175,32 @@ const GlobalToolsBar: React.FC = () => {
                             {/* Models & Resolution */}
                             <div className="space-y-4">
                                <div className="space-y-2">
-                                  <label className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Model Engine</label>
-                                  <div className="flex gap-1.5">
-                                     {models.map(m => (
-                                       <button 
-                                         key={m.id} onClick={() => g.setSelectedModelId(m.id)}
-                                         className={`flex-1 py-1.5 rounded-lg text-[9px] font-black transition-all border ${g.selectedModel === m.id ? 'border-brand-blue bg-brand-blue/5 text-brand-blue' : 'border-black/5 dark:border-white/5 text-gray-500'}`}
-                                       >
-                                         {m.name}
-                                       </button>
-                                     ))}
+                                  <div className="flex items-center justify-between px-1">
+                                    <label className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Model Engine</label>
+                                    {availableModels.length > 3 && (
+                                      <button 
+                                        onClick={() => setShowAllModels(!showAllModels)}
+                                        className="text-[8px] font-black text-brand-blue uppercase hover:underline flex items-center gap-0.5"
+                                      >
+                                        {showAllModels ? 'Less' : `+${availableModels.length - 3} More`}
+                                      </button>
+                                    )}
+                                  </div>
+                                  <div className="flex flex-wrap gap-1.5">
+                                     {loadingModels ? (
+                                       <div className="w-full flex items-center justify-center py-2 opacity-20">
+                                         <Loader2 size={14} className="animate-spin" />
+                                       </div>
+                                     ) : (
+                                       visibleModels.map(m => (
+                                         <button 
+                                           key={m._id} onClick={() => g.setSelectedModelId(m.modelKey)}
+                                           className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all border ${g.selectedModel === m.modelKey ? 'border-brand-blue bg-brand-blue/5 text-brand-blue shadow-sm' : 'border-black/5 dark:border-white/5 text-gray-500'}`}
+                                         >
+                                           {m.name}
+                                         </button>
+                                       ))
+                                     )}
                                   </div>
                                </div>
                                <div className="flex items-center justify-between">
