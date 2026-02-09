@@ -12,7 +12,6 @@ import AIVideoGeneratorWorkspace from './AIVideoGeneratorWorkspace';
 import AIImageGeneratorWorkspace from './AIImageGeneratorWorkspace';
 import VideoAnimateWorkspace from './VideoAnimateWorkspace';
 import ImageLibraryModal from './ImageLibraryModal';
-import GlobalSettingsModal from './GlobalSettingsModal';
 
 const GlobalToolsBar: React.FC = () => {
   const g = useGlobalTools();
@@ -30,13 +29,10 @@ const GlobalToolsBar: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSettingsToggle = () => {
-    // Nếu là Mobile (< 1024px) thì mở Modal, Desktop thì toggle inline
-    if (window.innerWidth < 1024) {
-      g.setIsSettingsOpen(true);
-    } else {
-      g.setIsSettingsOpen(!g.isSettingsOpen);
-    }
+  const handleSettingsToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Luôn toggle inline cho mọi kích thước màn hình
+    g.setIsSettingsOpen(!g.isSettingsOpen);
   };
 
   const models = [
@@ -72,8 +68,8 @@ const GlobalToolsBar: React.FC = () => {
           layout
           initial={false}
           animate={{ 
-            height: 'auto',
-            width: g.isExpanded ? '100%' : '220px',
+            height: g.isExpanded ? 'auto' : '56px',
+            width: g.isExpanded ? '100%' : '240px',
           }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           className="mx-auto pointer-events-auto relative rounded-[2rem] shadow-[0_40px_100px_rgba(0,0,0,0.15)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.7)] overflow-hidden p-[1px] transition-colors group"
@@ -82,7 +78,7 @@ const GlobalToolsBar: React.FC = () => {
           <div className="absolute inset-[-500%] animate-[spin_6s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_320deg,#0090ff_360deg)] opacity-30 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
           
           {/* INNER CONTENT LAYER */}
-          <div className="relative w-full h-full bg-white/95 dark:bg-[#0d0d0f]/98 backdrop-blur-3xl rounded-[2rem] overflow-hidden transition-colors">
+          <div className="relative w-full h-full bg-white/95 dark:bg-[#0d0d0f]/98 backdrop-blur-3xl rounded-[2rem] overflow-hidden transition-colors flex flex-col">
             <AnimatePresence mode="wait">
               {g.isExpanded ? (
                 <motion.div 
@@ -144,16 +140,16 @@ const GlobalToolsBar: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* DESKTOP INLINE SETTINGS EXTENSION */}
+                  {/* INLINE SETTINGS EXTENSION - UNIFIED FOR MOBILE & DESKTOP */}
                   <AnimatePresence>
                     {g.isSettingsOpen && (
                       <motion.div 
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="hidden lg:block border-t border-black/5 dark:border-white/5 mt-2 pt-4 px-2 space-y-5 pb-4"
+                        className="block border-t border-black/5 dark:border-white/5 mt-2 pt-4 px-2 space-y-5 pb-4"
                       >
-                         <div className="grid grid-cols-2 gap-6">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                             {/* Models & Resolution */}
                             <div className="space-y-4">
                                <div className="space-y-2">
@@ -288,7 +284,7 @@ const GlobalToolsBar: React.FC = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => g.setIsExpanded(true)}
-                  className="w-full h-full flex items-center justify-between px-6 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-all group"
+                  className="flex-grow w-full h-full flex items-center justify-between px-6 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-all group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="relative">
@@ -332,13 +328,6 @@ const GlobalToolsBar: React.FC = () => {
               }
               g.setIsLibraryOpen(false);
             }}
-          />
-        )}
-        {/* Render modal CHỈ trên mobile */}
-        {g.isSettingsOpen && typeof window !== 'undefined' && window.innerWidth < 1024 && (
-          <GlobalSettingsModal 
-            isOpen={g.isSettingsOpen}
-            onClose={() => g.setIsSettingsOpen(false)}
           />
         )}
       </AnimatePresence>
