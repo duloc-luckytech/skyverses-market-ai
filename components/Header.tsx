@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
@@ -92,9 +93,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (langRef.current && !langRef.current.contains(event.target as Node)) setShowDesktopLang(false);
-      if (userRef.current && !userRef.current.contains(event.target as Node)) setShowUserMenu(false);
-      if (exploreRef.current && !exploreRef.current.contains(event.target as Node)) setShowExploreMenu(false);
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setShowDesktopLang(false);
+      if (userRef.current && !userRef.current.contains(e.target as Node)) setShowUserMenu(false);
+      if (exploreRef.current && !exploreRef.current.contains(e.target as Node)) setShowExploreMenu(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
