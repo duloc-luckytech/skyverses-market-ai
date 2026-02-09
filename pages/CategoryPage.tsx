@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { marketApi } from '../apis/market';
@@ -5,7 +6,6 @@ import { systemConfigApi } from '../apis/config';
 import { Solution, HomeBlock, Language } from '../types';
 import { 
   X, SearchX, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow, Sparkles, LucideIcon,
-  // Add missing icons
   ShieldCheck, Zap, ChevronLeft, Search, Activity
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -144,7 +144,7 @@ const CategoryPage = () => {
   const currentLang = lang as Language;
 
   return (
-    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#030304] font-sans transition-colors duration-500 pt-28 md:pt-40 pb-40 relative">
+    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#030304] font-sans transition-colors duration-500 pt-24 md:pt-32 pb-40 relative">
       {/* Dynamic Ambient Background */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className={`absolute top-[-5%] right-[-5%] w-[1000px] h-[1000px] rounded-full blur-[250px] opacity-10 dark:opacity-20 animate-pulse ${uiInfo.glow}`}></div>
@@ -152,39 +152,38 @@ const CategoryPage = () => {
 
       <div className="max-w-[1900px] mx-auto px-6 md:px-12 lg:px-20 relative z-10">
         
-        {/* BREADCRUMB & SEARCH HUD */}
-        <header className="mb-16 space-y-10">
-           <Link to="/" className="inline-flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors tracking-[0.2em] group">
-              <ChevronLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> {t('nav.browse')}
+        {/* REFINED BREADCRUMB & HEADER HUD */}
+        <header className="mb-10 space-y-6">
+           <Link to="/" className="inline-flex items-center gap-2 text-[9px] font-black uppercase text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors tracking-[0.3em] group">
+              <ChevronLeft size={12} className="group-hover:-translate-x-1 transition-transform" /> {t('nav.browse')}
            </Link>
            
-           <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-10">
-              <div className="flex items-center gap-6 md:gap-8">
-                 <div className={`p-6 rounded-[2rem] bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 shadow-2xl transition-all hover:scale-105 ${uiInfo.color}`}>
-                    <Icon size={48} strokeWidth={2.5} />
+           <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+              <div className="flex items-center gap-5 md:gap-6">
+                 <div className={`p-4 rounded-2xl bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 shadow-xl transition-all hover:scale-105 ${uiInfo.color}`}>
+                    <Icon size={32} strokeWidth={2.5} />
                  </div>
-                 <div className="space-y-1.5">
+                 <div className="space-y-0.5">
                     <div className="flex items-center gap-3">
-                       <h1 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter italic leading-none text-slate-900 dark:text-white">
+                       <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic leading-none text-slate-900 dark:text-white">
                          {currentBlock ? currentBlock.title[currentLang] : 'Loading...'}
                        </h1>
-                       <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
                     </div>
-                    <p className="text-sm md:text-lg text-gray-500 dark:text-gray-400 font-medium uppercase tracking-widest italic opacity-80">
+                    <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-[0.25em] italic opacity-60">
                       {currentBlock ? currentBlock.subtitle[currentLang] : 'Synchronizing registry nodes...'}
                     </p>
                  </div>
               </div>
 
-              <div className="hidden md:block relative w-full md:w-[450px] group">
-                 <div className="absolute inset-[-2px] bg-gradient-to-r from-brand-blue/20 to-transparent blur-md rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity"></div>
-                 <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue transition-colors" size={20} />
+              <div className="hidden md:block relative w-full md:w-[380px] group">
+                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-blue transition-colors" size={16} />
                  <input 
                    type="text" 
                    value={searchQuery}
                    onChange={(e) => setSearchQuery(e.target.value)}
-                   placeholder="Lọc kết quả trong danh mục này..."
-                   className="w-full bg-white dark:bg-[#0a0a0c] border border-black/5 dark:border-white/10 rounded-full pl-16 pr-8 py-5 text-sm md:text-base font-bold focus:border-brand-blue outline-none transition-all shadow-xl dark:shadow-none"
+                   placeholder="Tìm kiếm trong danh mục..."
+                   className="w-full bg-white dark:bg-[#0a0a0c] border border-black/5 dark:border-white/10 rounded-full pl-12 pr-6 py-3.5 text-xs md:text-sm font-bold focus:border-brand-blue outline-none transition-all shadow-lg dark:shadow-none"
                  />
               </div>
            </div>
@@ -197,13 +196,7 @@ const CategoryPage = () => {
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => <CardSkeleton key={i} />)}
             </div>
           ) : filteredSolutions.length > 0 ? (
-            <div className="space-y-12">
-               <div className="flex items-center gap-4 px-1">
-                  <Activity size={14} className="text-brand-blue animate-pulse" />
-                  <span className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest italic">Phát hiện {filteredSolutions.length} nút mạng nơ-ron phù hợp</span>
-                  <div className="h-px flex-grow bg-black/5 dark:border-white/5 opacity-40"></div>
-               </div>
-               
+            <div className="space-y-10">
                <SolutionList 
                 solutions={filteredSolutions}
                 lang={lang}
@@ -216,13 +209,13 @@ const CategoryPage = () => {
               />
             </div>
           ) : (
-            <div className="py-48 text-center flex flex-col items-center gap-8">
-               <div className="w-32 h-32 rounded-full border-2 border-dashed border-slate-200 dark:border-white/10 flex items-center justify-center opacity-20">
-                  <Search size={64} strokeWidth={1} className="text-slate-900 dark:text-white" />
+            <div className="py-32 text-center flex flex-col items-center gap-8">
+               <div className="w-24 h-24 rounded-full border-2 border-dashed border-slate-200 dark:border-white/10 flex items-center justify-center opacity-20">
+                  <Search size={48} strokeWidth={1} className="text-slate-900 dark:text-white" />
                </div>
-               <div className="space-y-3">
-                  <p className="text-xl md:text-2xl font-black uppercase tracking-[0.5em] italic text-slate-400 dark:text-gray-600">No nodes found</p>
-                  <button onClick={() => setSearchQuery('')} className="text-[10px] font-black text-brand-blue uppercase tracking-widest border-b border-brand-blue/30 pb-1 hover:border-brand-blue transition-all">Thiết lập lại bộ lọc</button>
+               <div className="space-y-2">
+                  <p className="text-lg md:text-xl font-black uppercase tracking-[0.4em] italic text-slate-400 dark:text-gray-600">No nodes found</p>
+                  <button onClick={() => setSearchQuery('')} className="text-[9px] font-black text-brand-blue uppercase tracking-widest border-b border-brand-blue/30 pb-1 hover:border-brand-blue transition-all">Thiết lập lại bộ lọc</button>
                </div>
             </div>
           )}
@@ -231,7 +224,6 @@ const CategoryPage = () => {
         {/* FOOTER STATS */}
         <div className="mt-40 pt-10 border-t border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 opacity-40">
            <div className="flex items-center gap-8 text-[9px] font-black uppercase tracking-widest italic">
-              {/* Fixed: Added missing icons to imports */}
               <span className="flex items-center gap-2"><ShieldCheck size={14}/> Security: Encrypted</span>
               <span className="flex items-center gap-2"><Zap size={14}/> Latency: 24ms</span>
            </div>

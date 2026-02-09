@@ -216,10 +216,10 @@ const AISupportChat: React.FC = () => {
       <AnimatePresence>
         {isOpen && !isFull && (
           <motion.div
-            initial={{ opacity: 0, x: 20, scale: 0.95 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 20, scale: 0.95 }}
-            className="fixed top-1/2 -translate-y-1/2 right-4 md:right-8 w-[calc(100vw-2rem)] md:w-[400px] h-[600px] max-h-[85dvh] flex flex-col overflow-hidden bg-white dark:bg-[#0c0c0e] border border-black/5 dark:border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.2)] rounded-[2rem] md:rounded-lg z-[700]"
+            initial={{ opacity: 0, y: "10%", x: "-50%", scale: 0.95 }}
+            animate={{ opacity: 1, y: "-50%", x: "-50%", scale: 1 }}
+            exit={{ opacity: 0, y: "10%", x: "-50%", scale: 0.95 }}
+            className="fixed top-1/2 left-1/2 md:left-auto md:right-8 md:translate-x-0 w-[calc(100vw-2rem)] md:w-[400px] h-[600px] max-h-[85dvh] flex flex-col overflow-hidden bg-white dark:bg-[#0c0c0e] border border-black/5 dark:border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.2)] rounded-[2rem] md:rounded-lg z-[700]"
           >
             <div className="px-6 py-5 border-b border-black/5 dark:border-white/5 bg-[#fafafa] dark:bg-[#111114] flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
