@@ -23,7 +23,7 @@ const GlobalToolsBar: React.FC = () => {
   const [loadingModels, setLoadingModels] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Fetch models from pricing API based on modality
+  // Fetch models from pricing API
   useEffect(() => {
     const fetchModels = async () => {
       setLoadingModels(true);
@@ -31,7 +31,6 @@ const GlobalToolsBar: React.FC = () => {
         const res = await pricingApi.getPricing({ tool: g.modality });
         if (res.success && res.data) {
           setAvailableModels(res.data);
-          // Tự động chọn model đầu tiên nếu model hiện tại không có trong danh sách
           if (res.data.length > 0 && !res.data.find(m => m.modelKey === g.selectedModel)) {
             g.setSelectedModelId(res.data[0].modelKey);
           }
@@ -45,7 +44,6 @@ const GlobalToolsBar: React.FC = () => {
     if (g.isExpanded) fetchModels();
   }, [g.modality, g.isExpanded]);
 
-  // Close modality menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -96,13 +94,13 @@ const GlobalToolsBar: React.FC = () => {
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           className="mx-auto pointer-events-auto relative transition-all duration-300 group"
         >
-          {/* LỚP NỀN VÀ BORDER CHẠY - ĐƯỢC CẮT BỞI OVERFLOW HIDDEN RIÊNG BIỆT */}
+          {/* BACKGROUND & BORDER ANIMATION */}
           <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none">
             <div className="absolute inset-[-500%] animate-[spin_6s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_320deg,#0090ff_360deg)] opacity-30 group-hover:opacity-100 transition-opacity"></div>
             <div className="absolute inset-[1px] bg-white/95 dark:bg-[#0d0d0f]/98 backdrop-blur-3xl rounded-[2rem]"></div>
           </div>
           
-          {/* LỚP NỘI DUNG - KHÔNG CÓ OVERFLOW HIDDEN ĐỂ DROPDOWN HIỂN THỊ ĐƯỢC RA NGOÀI */}
+          {/* CONTENT LAYER */}
           <div className="relative w-full h-full rounded-[2rem] flex flex-col z-10">
             <AnimatePresence mode="wait">
               {g.isExpanded ? (
@@ -172,7 +170,7 @@ const GlobalToolsBar: React.FC = () => {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="block border-t border-black/5 dark:border-white/5 mt-2 pt-4 px-2 space-y-5 pb-4"
+                        className="block border-t border-black/5 dark:border-white/5 mt-2 pt-4 px-2 space-y-5 pb-4 overflow-hidden"
                       >
                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                             {/* Models & Resolution */}
@@ -219,12 +217,12 @@ const GlobalToolsBar: React.FC = () => {
                             {/* Ratio & Switches */}
                             <div className="space-y-4">
                                <div className="space-y-2">
-                                  <label className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">Aspect Ratio</label>
-                                  <div className="flex gap-1">
+                                  <label className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Aspect Ratio</label>
+                                  <div className="flex gap-1 overflow-x-auto no-scrollbar">
                                      {aspectRatios.map(r => (
                                        <button 
                                          key={r.id} onClick={() => g.setAspectRatio(r.id)}
-                                         className={`flex-1 flex flex-col items-center justify-center gap-1 py-1 border rounded-md transition-all ${g.aspectRatio === r.id ? 'border-brand-blue text-brand-blue bg-brand-blue/5' : 'border-black/5 dark:border-white/5 text-gray-500'}`}
+                                         className={`flex-1 flex flex-col items-center justify-center gap-1 py-1 px-3 border rounded-md transition-all ${g.aspectRatio === r.id ? 'border-brand-blue text-brand-blue bg-brand-blue/5' : 'border-black/5 dark:border-white/5 text-gray-500'}`}
                                        >
                                           {r.icon}
                                           <span className="text-[7px] font-bold">{r.id}</span>
