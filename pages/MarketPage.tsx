@@ -142,30 +142,32 @@ const MarketPage = () => {
     if (saved) setFavorites(JSON.parse(saved));
   }, []);
 
-  const toggleFavorite = (e: React.MouseEvent, id: string) => {
+  const toggleFavorite = useCallback((e: React.MouseEvent, id: string) => {
     e.preventDefault(); e.stopPropagation();
-    const newFavs = favorites.includes(id) ? favorites.filter(favId => favId !== id) : [...favorites, id];
-    setFavorites(newFavs);
-    localStorage.setItem('skyverses_favorites', JSON.stringify(newFavs));
-  };
+    setFavorites(prev => {
+      const newFavs = prev.includes(id) ? prev.filter(favId => favId !== id) : [...prev, id];
+      localStorage.setItem('skyverses_favorites', JSON.stringify(newFavs));
+      return newFavs;
+    });
+  }, []);
 
-  const toggleLike = (e: React.MouseEvent, id: string) => {
+  const toggleLike = useCallback((e: React.MouseEvent, id: string) => {
     e.preventDefault(); e.stopPropagation();
     setLikedItems(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-  };
+  }, []);
 
-  const getFakeStats = (id: string) => {
+  const getFakeStats = useCallback((id: string) => {
     const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return {
       users: ((hash % 850 + 120) > 999 ? ((hash % 850 + 120) / 1000).toFixed(1) + 'k' : (hash % 850 + 120).toString()),
       likes: ((hash % 400 + 45) > 999 ? ((hash % 400 + 45) / 1000).toFixed(1) + 'k' : (hash % 400 + 45).toString())
     };
-  };
+  }, []);
 
-  const handleNavigate = (slug: string) => {
+  const handleNavigate = useCallback((slug: string) => {
     if (!isAuthenticated) navigate('/login');
     else navigate(`/product/${slug}`);
-  };
+  }, [isAuthenticated, navigate]);
 
   const filteredSolutions = useMemo(() => {
     return solutions.filter(sol => {
@@ -243,7 +245,6 @@ const MarketPage = () => {
                         />
                       ))}
                       
-                      {/* View All Card for Mobile */}
                       <div 
                         onClick={() => navigate(`/category/${block.key}`)}
                         className="flex-shrink-0 snap-start w-[180px] md:hidden flex flex-col items-center justify-center bg-slate-50 dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] rounded-xl group cursor-pointer hover:border-brand-blue/40 transition-all p-6 text-center space-y-4"

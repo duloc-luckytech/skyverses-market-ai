@@ -16,7 +16,7 @@ interface SolutionCardProps {
   isGrid?: boolean;
 }
 
-export const SolutionCard: React.FC<SolutionCardProps> = ({ 
+const SolutionCardComponent: React.FC<SolutionCardProps> = ({ 
   sol, idx, lang, isLiked, isFavorited, onToggleFavorite, onToggleLike, onClick, stats, isGrid = false 
 }) => {
   const targetId = sol._id || sol.id;
@@ -25,13 +25,17 @@ export const SolutionCard: React.FC<SolutionCardProps> = ({
   return (
     <div 
       onClick={() => onClick(sol.slug)}
-      className={`flex-shrink-0 snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] hover:border-brand-blue/40 transition-all duration-500 shadow-sm hover:shadow-2xl rounded-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 cursor-pointer ${
+      className={`flex-shrink-0 snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] hover:border-brand-blue/40 transition-all duration-500 shadow-sm hover:shadow-2xl rounded-xl overflow-hidden cursor-pointer ${
         isGrid ? 'w-full' : 'w-[280px] md:w-[320px]'
       }`}
-      style={{ animationDelay: `${idx * 40}ms` }}
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-black">
-        <img src={sol.imageUrl} alt={sol.name[currentLang]} className="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-30 transition-all duration-1000" />
+        <img 
+          src={sol.imageUrl} 
+          alt={sol.name[currentLang]} 
+          loading="lazy"
+          className="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-30 transition-all duration-1000" 
+        />
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 z-40">
            <div className="px-5 py-2.5 bg-black/60 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2.5 shadow-2xl scale-90 group-hover:scale-100 transition-all duration-500">
               <Sparkles size={14} className="text-brand-blue" fill="currentColor" />
@@ -64,3 +68,5 @@ export const SolutionCard: React.FC<SolutionCardProps> = ({
     </div>
   );
 };
+
+export const SolutionCard = React.memo(SolutionCardComponent);

@@ -1,12 +1,12 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, ChevronDown, ChevronUp, 
   Video, SlidersHorizontal, Sparkles,
   Zap, Loader2, X, Image as ImageIcon,
   Move, Activity, Monitor, Smartphone, Check,
-  ChevronRight, MoreHorizontal
+  ChevronRight, MoreHorizontal, FolderOpen
 } from 'lucide-react';
 import { useGlobalTools } from '../hooks/useGlobalTools';
 import AIVideoGeneratorWorkspace from './AIVideoGeneratorWorkspace';
@@ -14,6 +14,16 @@ import AIImageGeneratorWorkspace from './AIImageGeneratorWorkspace';
 import VideoAnimateWorkspace from './VideoAnimateWorkspace';
 import ImageLibraryModal from './ImageLibraryModal';
 import { pricingApi, PricingModel } from '../apis/pricing';
+
+// Memoized Model Button để tránh re-render khi gõ prompt
+const ModelButton = React.memo(({ model, isSelected, onSelect }: { model: PricingModel, isSelected: boolean, onSelect: (id: string) => void }) => (
+  <button 
+    onClick={() => onSelect(model.modelKey)}
+    className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all border ${isSelected ? 'border-brand-blue bg-brand-blue/5 text-brand-blue shadow-sm' : 'border-black/5 dark:border-white/5 text-gray-500'}`}
+  >
+    {model.name}
+  </button>
+));
 
 const GlobalToolsBar: React.FC = () => {
   const g = useGlobalTools();
@@ -23,7 +33,6 @@ const GlobalToolsBar: React.FC = () => {
   const [loadingModels, setLoadingModels] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Fetch models from pricing API
   useEffect(() => {
     const fetchModels = async () => {
       setLoadingModels(true);
@@ -59,13 +68,13 @@ const GlobalToolsBar: React.FC = () => {
     g.setIsSettingsOpen(!g.isSettingsOpen);
   };
 
-  const aspectRatios = [
+  const aspectRatios = useMemo(() => [
     { id: '16:9', icon: <Monitor size={12} /> },
     { id: '4:3', icon: <div className="w-2.5 h-2 border border-current rounded-sm" /> },
     { id: '1:1', icon: <div className="w-2.5 h-2.5 border border-current rounded-sm" /> },
     { id: '3:4', icon: <div className="w-2 h-2.5 border border-current rounded-sm" /> },
     { id: '9:16', icon: <Smartphone size={12} /> }
-  ];
+  ], []);
 
   const Switch = ({ active, onChange }: { active: boolean, onChange: () => void }) => (
     <button 
@@ -74,41 +83,45 @@ const GlobalToolsBar: React.FC = () => {
     >
       <motion.div 
         animate={{ x: active ? 18 : 2 }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
         className="absolute top-0.5 left-0 w-3 h-3 bg-white rounded-full shadow-md"
       />
     </button>
   );
 
-  const visibleModels = showAllModels ? availableModels : availableModels.slice(0, 3);
+  const visibleModels = useMemo(() => 
+    showAllModels ? availableModels : availableModels.slice(0, 3)
+  , [showAllModels, availableModels]);
 
   return (
     <>
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-[300] w-full max-w-2xl px-4 pb-6 pointer-events-none">
         <motion.div 
           layout
+          style={{ willChange: 'transform, height, width' }}
           initial={false}
           animate={{ 
             height: g.isExpanded ? 'auto' : '56px',
             width: g.isExpanded ? '100%' : '240px',
           }}
-          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="mx-auto pointer-events-auto relative transition-all duration-300 group"
+          transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+          className="mx-auto pointer-events-auto relative transition-all duration-300 group shadow-2xl"
         >
           {/* BACKGROUND & BORDER ANIMATION */}
           <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none">
-            <div className="absolute inset-[-500%] animate-[spin_6s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_320deg,#0090ff_360deg)] opacity-30 group-hover:opacity-100 transition-opacity"></div>
-            <div className="absolute inset-[1px] bg-white/95 dark:bg-[#0d0d0f]/98 backdrop-blur-3xl rounded-[2rem]"></div>
+            <div className="absolute inset-[-200%] animate-[spin_8s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_300deg,#0090ff_360deg)] opacity-20 group-hover:opacity-60 transition-opacity"></div>
+            <div className="absolute inset-[1.5px] bg-white/95 dark:bg-[#0d0d0f]/98 backdrop-blur-3xl rounded-[2rem]"></div>
           </div>
           
           {/* CONTENT LAYER */}
-          <div className="relative w-full h-full rounded-[2rem] flex flex-col z-10">
+          <div className="relative w-full h-full rounded-[2rem] flex flex-col z-10 overflow-visible">
             <AnimatePresence mode="wait">
               {g.isExpanded ? (
                 <motion.div 
                   key="expanded"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   className="p-1.5 lg:p-2"
                 >
                   <div className="flex items-start gap-3 p-2">
@@ -172,7 +185,7 @@ const GlobalToolsBar: React.FC = () => {
                         exit={{ height: 0, opacity: 0 }}
                         className="block border-t border-black/5 dark:border-white/5 mt-2 pt-4 px-2 space-y-5 pb-4 overflow-hidden"
                       >
-                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8">
                             {/* Models & Resolution */}
                             <div className="space-y-4">
                                <div className="space-y-2">
@@ -187,19 +200,19 @@ const GlobalToolsBar: React.FC = () => {
                                       </button>
                                     )}
                                   </div>
-                                  <div className="flex flex-wrap gap-1.5">
+                                  <div className="flex flex-wrap gap-1.5 min-h-[32px]">
                                      {loadingModels ? (
-                                       <div className="w-full flex items-center justify-center py-2 opacity-20">
+                                       <div className="w-full flex items-center justify-start py-2 opacity-20">
                                          <Loader2 size={14} className="animate-spin" />
                                        </div>
                                      ) : (
                                        visibleModels.map(m => (
-                                         <button 
-                                           key={m._id} onClick={() => g.setSelectedModelId(m.modelKey)}
-                                           className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all border ${g.selectedModel === m.modelKey ? 'border-brand-blue bg-brand-blue/5 text-brand-blue shadow-sm' : 'border-black/5 dark:border-white/5 text-gray-500'}`}
-                                         >
-                                           {m.name}
-                                         </button>
+                                         <ModelButton 
+                                           key={m._id} 
+                                           model={m} 
+                                           isSelected={g.selectedModel === m.modelKey} 
+                                           onSelect={g.setSelectedModelId} 
+                                         />
                                        ))
                                      )}
                                   </div>
@@ -217,12 +230,12 @@ const GlobalToolsBar: React.FC = () => {
                             {/* Ratio & Switches */}
                             <div className="space-y-4">
                                <div className="space-y-2">
-                                  <label className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Aspect Ratio</label>
-                                  <div className="flex gap-1 overflow-x-auto no-scrollbar">
+                                  <label className="text-[8px] font-black uppercase text-slate-400 tracking-widest px-1">Aspect Ratio</label>
+                                  <div className="flex gap-1 overflow-x-auto no-scrollbar pb-1 px-1">
                                      {aspectRatios.map(r => (
                                        <button 
                                          key={r.id} onClick={() => g.setAspectRatio(r.id)}
-                                         className={`flex-1 flex flex-col items-center justify-center gap-1 py-1 px-3 border rounded-md transition-all ${g.aspectRatio === r.id ? 'border-brand-blue text-brand-blue bg-brand-blue/5' : 'border-black/5 dark:border-white/5 text-gray-500'}`}
+                                         className={`min-w-[54px] flex flex-col items-center justify-center gap-1.5 py-2 px-1 border rounded-xl transition-all ${g.aspectRatio === r.id ? 'border-brand-blue text-brand-blue bg-brand-blue/5' : 'border-black/5 dark:border-white/5 text-gray-400 bg-white dark:bg-transparent'}`}
                                        >
                                           {r.icon}
                                           <span className="text-[7px] font-bold">{r.id}</span>
@@ -231,11 +244,11 @@ const GlobalToolsBar: React.FC = () => {
                                   </div>
                                </div>
                                <div className="grid grid-cols-2 gap-4">
-                                  <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center justify-between gap-2 px-1">
                                      <span className="text-[8px] font-black text-gray-500 uppercase truncate">Enhance</span>
                                      <Switch active={g.switches.enhance} onChange={() => g.setSwitches({...g.switches, enhance: !g.switches.enhance})} />
                                   </div>
-                                  <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center justify-between gap-2 px-1">
                                      <span className="text-[8px] font-black text-gray-500 uppercase truncate">Credits</span>
                                      <Switch active={g.switches.credits} onChange={() => g.setSwitches({...g.switches, credits: !g.switches.credits})} />
                                   </div>
@@ -246,7 +259,7 @@ const GlobalToolsBar: React.FC = () => {
                     )}
                   </AnimatePresence>
 
-                  <div className="flex items-center justify-between mt-1 px-2 pb-1.5">
+                  <div className="flex items-center justify-between mt-1 px-2 pb-2">
                     <div className="flex items-center gap-2">
                       <div className="relative" ref={menuRef}>
                         <button 
@@ -259,9 +272,9 @@ const GlobalToolsBar: React.FC = () => {
                         <AnimatePresence>
                           {showModalityMenu && (
                             <motion.div 
-                              initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                              animate={{ opacity: 1, y: 0, scale: 1 }}
-                              exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                              initial={{ opacity: 0, y: 5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: 5 }}
                               className="absolute bottom-full mb-3 left-0 bg-white dark:bg-[#1a1a1e] border border-black/10 dark:border-white/10 rounded-xl p-1 shadow-2xl z-[310] min-w-[140px]"
                             >
                                <button 
@@ -310,7 +323,7 @@ const GlobalToolsBar: React.FC = () => {
                       </button>
                     </div>
 
-                    <div className="flex items-center gap-2 bg-slate-100 dark:bg-black/40 px-3 h-8 rounded-full border border-black/5 dark:border-white/5 shadow-inner transition-colors shrink-0 text-slate-800 dark:text-white">
+                    <div className="flex items-center gap-2 bg-slate-100 dark:bg-black/40 px-3 h-8 rounded-full border border-black/5 dark:border-white/10 shadow-inner transition-colors shrink-0 text-slate-800 dark:text-white">
                        <Sparkles size={10} className="text-brand-blue" fill="currentColor" />
                        <span className="text-[10px] font-black italic">{(g.credits || 0).toLocaleString()}</span>
                     </div>

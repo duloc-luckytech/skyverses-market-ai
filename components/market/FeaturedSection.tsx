@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wand2, MonitorPlay } from 'lucide-react';
-import { Solution, LocalizedString, Language } from '../../types';
+import { Solution, Language } from '../../types';
 
 interface FeaturedSectionProps {
   solutions: Solution[];
@@ -11,7 +11,7 @@ interface FeaturedSectionProps {
   onOpenDemo: () => void;
 }
 
-export const FeaturedSection: React.FC<FeaturedSectionProps> = ({ 
+const FeaturedSectionComponent: React.FC<FeaturedSectionProps> = ({ 
   solutions, lang, onNavigate, onOpenDemo 
 }) => {
   const [index, setIndex] = useState(0);
@@ -72,7 +72,7 @@ export const FeaturedSection: React.FC<FeaturedSectionProps> = ({
                     className={`absolute inset-0 rounded-2xl md:rounded-[2rem] overflow-hidden border-2 md:border-4 bg-black shadow-3xl cursor-pointer ${offset === 0 ? 'border-brand-blue' : 'border-white/10'}`}
                     onClick={() => onNavigate(sol.slug)}
                   >
-                    <img src={sol.imageUrl} className="w-full h-full object-cover" alt="" />
+                    <img src={sol.imageUrl} loading="lazy" className="w-full h-full object-cover" alt="" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
                   </motion.div>
                 );
@@ -83,3 +83,5 @@ export const FeaturedSection: React.FC<FeaturedSectionProps> = ({
     </section>
   );
 };
+
+export const FeaturedSection = React.memo(FeaturedSectionComponent);

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -15,6 +15,31 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const g = useImageGenerator();
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [selectedLogTask, setSelectedLogTask] = useState<ImageResult | null>(null);
+
+  // --- SAFE NAVIGATION & REFRESH PROTECTION ---
+  const isAnyTaskProcessing = useMemo(() => g.results.some(r => r.status === 'processing'), [g.results]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isAnyTaskProcessing) {
+        e.preventDefault();
+        e.returnValue = ''; 
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isAnyTaskProcessing]);
+
+  const handleSafeClose = useCallback(() => {
+    if (isAnyTaskProcessing) {
+      const confirmed = window.confirm(
+        "Tiến trình tạo hình ảnh đang được thực hiện. Nếu bạn thoát bây giờ, bạn sẽ không thể theo dõi trực tiếp kết quả. Bạn có chắc chắn muốn thoát?"
+      );
+      if (confirmed) onClose();
+    } else {
+      onClose();
+    }
+  }, [isAnyTaskProcessing, onClose]);
 
   return (
     <div className="h-full w-full flex flex-col lg:flex-row bg-[#fcfcfd] dark:bg-[#0c0c0e] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
@@ -34,7 +59,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
       {/* Cột 1: Sidebar Điều khiển (Trái) */}
       <GeneratorSidebar 
-        onClose={onClose}
+        onClose={handleSafeClose}
         activeMode={g.activeMode}
         setActiveMode={g.setActiveMode}
         usagePreference={g.usagePreference}
@@ -81,7 +106,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
       {/* Cột 2: Viewport Hiển thị (Giữa) */}
       <GeneratorViewport 
-        onClose={onClose}
+        onClose={handleSafeClose}
         activePreviewUrl={g.activePreviewUrl}
         setActivePreviewUrl={g.setActivePreviewUrl}
         zoomLevel={g.zoomLevel}

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Terminal, Activity, Loader2, Cpu, ShieldCheck, Database, Clock, Copy, Check, AlertTriangle } from 'lucide-react';
@@ -138,24 +139,6 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
           </button>
         </div>
 
-        {/* System Bar */}
-        <div className="px-8 py-3 bg-slate-100/50 dark:bg-indigo-600/5 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0">
-           <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                 <div className={`w-1.5 h-1.5 rounded-full ${status === 'processing' ? 'bg-orange-500 animate-pulse' : status === 'done' ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
-                 <span className="text-[8px] font-black uppercase text-slate-500 dark:text-gray-400 tracking-[0.2em]">NODE_{status.toUpperCase()}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                 <Cpu size={12} className="text-indigo-500 dark:text-indigo-400" />
-                 <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-[0.2em]">H100_CLUSTER_A</span>
-              </div>
-           </div>
-           <div className="flex items-center gap-2">
-              <Activity size={12} className="text-brand-blue animate-pulse" />
-              <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest">REAL-TIME MONITOR</span>
-           </div>
-        </div>
-
         {/* Logs Feed */}
         <div ref={scrollRef} className="flex-grow overflow-y-auto p-8 font-mono text-[13px] leading-relaxed relative bg-slate-50/30 dark:bg-black/20 scroll-smooth">
            {/* Scanning line effect */}
@@ -214,24 +197,15 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
         </div>
 
         {/* Footer HUD */}
-        <div className="p-6 md:p-8 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 shrink-0 flex flex-col md:flex-row items-center justify-between gap-6">
-           <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-500/60">
-                 <ShieldCheck size={16} />
-                 <span className="text-[10px] font-black uppercase tracking-widest italic">Privacy_VPC: SECURE</span>
-              </div>
-              <div className="hidden sm:flex items-center gap-2 text-slate-400 dark:text-gray-600">
-                 <Clock size={16} />
-                 <span className="text-[10px] font-black uppercase tracking-widest italic">Syncing: {getCurrentTime()}</span>
-              </div>
-           </div>
-
+        <div className="p-6 md:p-8 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 shrink-0 flex flex-col md:flex-row items-center justify-end gap-6">
            <div className="flex gap-3 w-full md:w-auto">
               <button 
                 onClick={handleReport}
                 className="flex-1 md:flex-none px-6 py-3 border border-red-500/20 text-red-500 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2"
               >
-                 <AlertTriangle size={14} /> BÁO LỖI
+                 <div className="flex items-center gap-2">
+                   <AlertTriangle size={14} /> BÁO LỖI
+                 </div>
               </button>
               <button 
                 onClick={onClose}

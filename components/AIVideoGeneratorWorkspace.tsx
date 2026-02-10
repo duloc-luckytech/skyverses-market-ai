@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Download, Share2, AlertTriangle, Terminal, Zap } from 'lucide-react';
 import { generateDemoVideo } from '../services/gemini';
@@ -124,6 +124,29 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const todayKey = useMemo(() => new Date().toISOString().split('T')[0], []);
   const processingCount = useMemo(() => results.filter(r => r.status === 'processing').length, [results]);
 
+  // --- SAFE NAVIGATION & REFRESH PROTECTION ---
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (processingCount > 0) {
+        e.preventDefault();
+        e.returnValue = ''; // Hiển thị cảnh báo trình duyệt khi F5 hoặc đóng Tab
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [processingCount]);
+
+  const handleSafeClose = useCallback(() => {
+    if (processingCount > 0) {
+      const confirmed = window.confirm(
+        "Tiến trình tạo video đang được thực hiện. Nếu bạn thoát bây giờ, bạn sẽ không thể theo dõi trực tiếp kết quả (tuy nhiên video vẫn sẽ xuất hiện trong Lịch sử sau khi hoàn tất). Bạn có chắc chắn muốn thoát?"
+      );
+      if (confirmed) onClose();
+    } else {
+      onClose();
+    }
+  }, [processingCount, onClose]);
+
   // Fetch Pricing Models
   useEffect(() => {
     const fetchPricing = async () => {
@@ -147,7 +170,6 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       if (selectedModelObj.modes && selectedModelObj.modes.length > 0) {
         setSelectedMode(selectedModelObj.modes[0]);
       } else {
-        // Fix: Use selectedModelObj.mode instead of selectedMode
         setSelectedMode(selectedModelObj.mode || 'relaxed');
       }
     }
@@ -220,7 +242,6 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       
       const errorMsg = response.data?.error?.message || response.data?.error?.userMessage || "";
 
-      // Auto-retry on captcha errors or CAPTCHA_REQUEST_FAILED
       if (errorMsg.includes("reCAPTCHA") || errorMsg === "CAPTCHA_REQUEST_FAILED") {
          const alertMsg = errorMsg === "CAPTCHA_REQUEST_FAILED" ? "Captcha request failed" : "reCAPTCHA challenge detected";
          addLogToTask(resultId, `[SECURITY_ALERT] ${alertMsg}. Initiating automated retry protocol...`);
@@ -450,7 +471,6 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     });
   };
 
-  // Fixed: Added handleBulkImport implementation
   const handleBulkImport = () => {
     if (!bulkText.trim()) {
       setIsBulkImporting(false);
@@ -471,25 +491,21 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     setBulkText('');
   };
 
-  // Fixed: Added handleAutoPromptChange implementation
   const handleAutoPromptChange = (id: string, val: string) => {
     setAutoTasks(prev => prev.map(t => t.id === id ? { ...t, prompt: val } : t));
   };
 
-  // Fixed: Added removeAutoTask implementation
   const removeAutoTask = (id: string) => {
     if (autoTasks.length <= 1) return;
     setAutoTasks(prev => prev.filter(t => t.id !== id));
   };
 
-  // Fixed: Added handleAutoFileUploadClick implementation
   const handleAutoFileUploadClick = (id: string, slot: 'START' | 'END', mode: 'UPLOAD' | 'LIBRARY') => {
     uploadTargetRef.current = `${id}-${slot}`;
     if (mode === 'UPLOAD') fileInputRef.current?.click();
     else setIsLibraryOpen(true);
   };
 
-  // Fixed: Added handleLibrarySelect implementation
   const handleLibrarySelect = (selected: GCSAssetMetadata[]) => {
     const asset = selected[0];
     if (!asset) return;
@@ -518,7 +534,6 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     setIsLibraryOpen(false);
   };
 
-  // Fixed: Added handleFileUpload implementation
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -565,7 +580,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       </AnimatePresence>
 
       <SidebarLeft 
-        onClose={onClose}
+        onClose={handleSafeClose}
         activeMode={activeMode}
         setActiveMode={setActiveMode}
         prompt={prompt}
@@ -629,6 +644,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       />
 
       <ResultsMain 
+        onClose={handleSafeClose}
         activeTab={activeTab} setActiveTab={setActiveTab} 
         autoDownload={autoDownload} setAutoDownload={setAutoDownload} 
         zoomLevel={zoomLevel} setZoomLevel={setZoomLevel}

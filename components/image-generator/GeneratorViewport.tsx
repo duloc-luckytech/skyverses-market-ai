@@ -147,15 +147,18 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   return (
     <main className="flex-grow min-w-0 flex flex-col relative bg-[#fcfcfd] dark:bg-[#030304] transition-colors duration-500 overflow-hidden">
       {/* Viewport Header */}
-      <div className="h-14 border-b border-slate-200 dark:border-white/5 bg-white/80 dark:bg-[#0c0c0e]/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 shrink-0 z-40">
+      <div className="h-14 md:h-16 border-b border-slate-200 dark:border-white/5 bg-white/80 dark:bg-[#0c0c0e]/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 shrink-0 z-40">
          <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
             <div className="flex items-center gap-1">
-              <button 
-                onClick={onClose}
-                className="lg:hidden p-2 -ml-2 text-slate-400 hover:text-brand-blue transition-colors"
-              >
-                <ChevronLeft size={20} />
-              </button>
+              {onClose && (
+                <button 
+                  onClick={onClose}
+                  className="lg:hidden p-2 -ml-2 text-slate-400 hover:text-brand-blue transition-colors flex items-center gap-1"
+                >
+                  <ChevronLeft size={20} />
+                  <span className="text-[10px] font-black uppercase tracking-widest hidden xs:block">Back</span>
+                </button>
+              )}
               
               <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#1a1a1a] p-1 rounded-full border border-black/5 dark:border-white/10 shadow-inner">
                 <button 
@@ -189,24 +192,25 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               </button>
             ) : (
               <div className="flex items-center gap-2 md:gap-4">
-                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 md:px-4 py-1.5 rounded-full border border-black/5 dark:border-white/10">
-                    <span className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 hidden xs:inline">TỰ ĐỘNG TẢI</span>
+                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 md:px-4 py-1.5 rounded-full border border-black/5 dark:border-white/10 shadow-inner">
+                    <span className="text-[8px] md:text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 hidden xs:inline">Auto Download</span>
+                    <span className="text-[8px] md:text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 xs:hidden">Auto</span>
                     <button 
                       onClick={() => setAutoDownload(!autoDownload)}
-                      className={`w-8 h-4 rounded-full relative transition-colors ${autoDownload ? 'bg-brand-blue' : 'bg-gray-300 dark:bg-gray-700'}`}
+                      className={`w-7 md:w-8 h-3.5 md:h-4 rounded-full relative transition-colors ${autoDownload ? 'bg-brand-blue' : 'bg-gray-300 dark:bg-gray-700'}`}
                     >
                       <motion.div 
-                        animate={{ left: autoDownload ? 18 : 2 }}
-                        className="absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm" 
+                        animate={{ left: autoDownload ? (window.innerWidth < 768 ? 16 : 18) : 2 }}
+                        className="absolute top-0.5 w-2.5 md:w-3 h-2.5 md:h-3 bg-white rounded-full shadow-sm" 
                       />
                     </button>
                  </div>
 
                  <button 
                    onClick={handleManualDownload}
-                   className="flex items-center gap-2 px-3 md:px-4 py-1.5 bg-brand-blue text-white rounded-full text-[9px] font-black uppercase hover:brightness-110 shadow-lg"
+                   className="p-2 bg-brand-blue text-white rounded-full hover:brightness-110 shadow-lg flex items-center justify-center"
                  >
-                    <Download size={14} /> <span className="hidden md:inline">TẢI XUỐNG</span>
+                    <Download size={16} />
                  </button>
 
                  <div className="hidden md:flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-white/10">
