@@ -129,7 +129,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (processingCount > 0) {
         e.preventDefault();
-        e.returnValue = ''; // Hiển thị cảnh báo trình duyệt khi F5 hoặc đóng Tab
+        e.returnValue = ''; 
       }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -241,16 +241,6 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       const jobStatus = response.data?.status?.toLowerCase();
       
       const errorMsg = response.data?.error?.message || response.data?.error?.userMessage || "";
-
-      if (errorMsg.includes("reCAPTCHA") || errorMsg === "CAPTCHA_REQUEST_FAILED") {
-         const alertMsg = errorMsg === "CAPTCHA_REQUEST_FAILED" ? "Captcha request failed" : "reCAPTCHA challenge detected";
-         addLogToTask(resultId, `[SECURITY_ALERT] ${alertMsg}. Initiating automated retry protocol...`);
-         const taskToRetry = resultsRef.current.find(r => r.id === resultId);
-         if (taskToRetry) {
-            performInference(usagePreference || 'credits', taskToRetry, true);
-            return;
-         }
-      }
 
       if (!isSuccess || jobStatus === 'failed' || jobStatus === 'error') {
         addLogToTask(resultId, `[ERROR] Synthesis aborted: ${errorMsg || 'Unknown backend error'}`);
