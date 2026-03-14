@@ -348,6 +348,106 @@ const MarketPage = () => {
           </section>
         )}
 
+        {/* ═══════════════════ CREDITS SYSTEM ═══════════════════ */}
+        {!query && (
+          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-12 md:py-20">
+            <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
+              {/* Background glows */}
+              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-brand-blue/8 rounded-full blur-[100px] pointer-events-none" />
+              
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                  <div className="space-y-3">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full">
+                      <Zap size={12} className="text-amber-400" fill="currentColor" />
+                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-400">Universal Credits</span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
+                      1 loại Credit,{' '}
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
+                        dùng cho tất cả sản phẩm
+                      </span>
+                    </h2>
+                    <p className="text-sm text-white/40 max-w-lg leading-relaxed">
+                      Không cần đăng ký riêng cho từng sản phẩm. Mua Credits một lần — sử dụng cho Video AI, Image AI, Voice, Music, Workflow và hơn 30 sản phẩm khác.
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => navigate(isAuthenticated ? '/credits' : '/pricing')}
+                    className="shrink-0 inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  >
+                    <Zap size={14} fill="currentColor" />
+                    {isAuthenticated ? 'Nạp Credits' : 'Xem bảng giá'}
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
+
+                {/* Credit Flow Steps */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12">
+                  {[
+                    { step: '01', title: 'Mua Credits', desc: 'Chọn gói phù hợp hoặc nạp tuỳ ý. Nhận bonus khi mua gói lớn.', icon: '💳' },
+                    { step: '02', title: 'Sử dụng mọi nơi', desc: 'Dùng Credits cho bất kỳ sản phẩm nào — Video, Image, Voice, Music, Workflow...', icon: '⚡' },
+                    { step: '03', title: 'Nạp thêm khi cần', desc: 'Credits không hết hạn. Nạp thêm bất cứ lúc nào, chỉ trả cho những gì bạn dùng.', icon: '🔄' },
+                  ].map((item, idx) => (
+                    <motion.div
+                      key={item.step}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.15 }}
+                      className="relative p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.1] transition-all group"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="text-2xl">{item.icon}</div>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[9px] font-black text-amber-400/60 uppercase tracking-widest">Step {item.step}</span>
+                          </div>
+                          <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                          <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
+                        </div>
+                      </div>
+                      {idx < 2 && (
+                        <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
+                          <ChevronRight size={16} className="text-white/10" />
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Credit Usage Examples */}
+                <div className="pt-8 border-t border-white/[0.06]">
+                  <p className="text-[10px] font-bold text-white/25 uppercase tracking-wider mb-5">Ví dụ chi phí Credits</p>
+                  <div className="flex flex-wrap gap-3">
+                    {[
+                      { name: 'Tạo 1 ảnh AI', credits: '2-10', color: 'from-purple-500/20 to-purple-500/5' },
+                      { name: 'Video 5s', credits: '20-80', color: 'from-blue-500/20 to-blue-500/5' },
+                      { name: 'Xoá phông ảnh', credits: '3-5', color: 'from-emerald-500/20 to-emerald-500/5' },
+                      { name: 'Tạo giọng nói', credits: '5-15', color: 'from-pink-500/20 to-pink-500/5' },
+                      { name: 'Tạo nhạc AI', credits: '10-30', color: 'from-amber-500/20 to-amber-500/5' },
+                      { name: 'AI Workflow', credits: '5-50', color: 'from-cyan-500/20 to-cyan-500/5' },
+                    ].map((item) => (
+                      <div 
+                        key={item.name}
+                        className={`inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gradient-to-r ${item.color} border border-white/[0.06]`}
+                      >
+                        <span className="text-[11px] font-medium text-white/60">{item.name}</span>
+                        <div className="flex items-center gap-1">
+                          <Zap size={10} className="text-amber-400" fill="currentColor" />
+                          <span className="text-[11px] font-bold text-amber-400">{item.credits}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* ═══════════════════ ACTIVE FILTER BAR ═══════════════════ */}
         <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
           {(query || primary !== 'ALL') && (
