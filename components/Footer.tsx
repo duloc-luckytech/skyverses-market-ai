@@ -30,11 +30,12 @@ const Footer: React.FC = () => {
             <p className="text-gray-500 dark:text-gray-400 text-sm font-medium leading-relaxed max-sm:max-w-none max-w-sm uppercase tracking-tight transition-colors">
               {t('footer.description')}
             </p>
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-3">
               <a href="https://skyverses.com/" target="_blank" rel="noopener noreferrer" className="p-3 bg-black/5 dark:bg-white/5 rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-sm" title="Fanpage"><Facebook size={18} /></a>
               <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer" className="p-3 bg-black/5 dark:bg-white/5 rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-sm"><Twitter size={18} /></a>
               <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="p-3 bg-black/5 dark:bg-white/5 rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-sm"><Linkedin size={18} /></a>
               <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="p-3 bg-black/5 dark:bg-white/5 rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-sm"><Github size={18} /></a>
+              <a href="mailto:hello@skyverses.com" className="p-3 bg-black/5 dark:bg-white/5 rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-sm"><Mail size={18} /></a>
             </div>
           </div>
 
@@ -65,6 +66,8 @@ const Footer: React.FC = () => {
               <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-blue italic">Policy & Rules</h4>
               <ul className="space-y-4 text-[11px] md:text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">
                 <li><Link to="/policy" className="hover:text-brand-blue transition-colors">Terms of Service</Link></li>
+                <li><Link to="/policy" className="hover:text-brand-blue transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/pricing" className="hover:text-brand-blue transition-colors">Pricing</Link></li>
               </ul>
             </div>
           </div>
@@ -74,7 +77,7 @@ const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="pt-12 border-t border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 transition-colors">
           <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-600">
-            {t('footer.copyright')} <span className="mx-4 italic hidden sm:inline">{t('footer.version')}</span>
+            © 2026 Skyverses. All rights reserved. <span className="mx-4 italic hidden sm:inline">{t('footer.version')}</span>
           </p>
         </div>
       </div>

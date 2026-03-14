@@ -25,8 +25,8 @@ const SolutionCardComponent: React.FC<SolutionCardProps> = ({
   return (
     <div 
       onClick={() => onClick(sol.slug)}
-      className={`flex-shrink-0 snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] hover:border-brand-blue/40 transition-all duration-500 shadow-sm hover:shadow-2xl rounded-xl overflow-hidden cursor-pointer ${
-        isGrid ? 'w-full' : 'w-[280px] md:w-[320px]'
+      className={`flex-shrink-0 snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/40 dark:hover:border-brand-blue/30 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-brand-blue/5 rounded-2xl overflow-hidden cursor-pointer ${
+        isGrid ? 'w-full' : 'w-[280px] md:w-[320px] xl:w-[360px]'
       }`}
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-black">
