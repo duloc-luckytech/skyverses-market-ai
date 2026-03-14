@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { marketApi } from '../apis/market';
 import { systemConfigApi } from '../apis/config';
 import { Solution, HomeBlock, Language } from '../types';
-import { 
-  X, SearchX, Search, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow, 
+import {
+  X, SearchX, Search, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow,
   Sparkles, LucideIcon, ArrowRight, ChevronRight, Play, Zap, Shield, Globe2, Cpu
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -57,7 +57,7 @@ const MarketPage = () => {
   const { lang, t } = useLanguage();
   const { isAuthenticated, loginWithEmail } = useAuth();
   const navigate = useNavigate();
-  
+
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [featuredSolutions, setFeaturedSolutions] = useState<Solution[]>([]);
   const [homeBlocks, setHomeBlocks] = useState<HomeBlock[]>([]);
@@ -164,8 +164,8 @@ const MarketPage = () => {
   const filteredSolutions = useMemo(() => {
     return solutions.filter(sol => {
       if (secondary === 'ALL') return true;
-      return sol.tags?.some(t => t.toLowerCase() === secondary.toLowerCase()) || 
-             sol.id?.toLowerCase().includes(secondary.toLowerCase());
+      return sol.tags?.some(t => t.toLowerCase() === secondary.toLowerCase()) ||
+        sol.id?.toLowerCase().includes(secondary.toLowerCase());
     });
   }, [solutions, secondary]);
 
@@ -213,21 +213,21 @@ const MarketPage = () => {
                     cho mọi nhu cầu sáng tạo
                   </h1>
                   <p className="text-base md:text-lg text-slate-500 dark:text-gray-400 leading-relaxed max-w-xl">
-                    Hệ sinh thái hơn 30 sản phẩm AI — từ Video, Hình ảnh, Giọng nói, Nhạc đến Workflow tự động hoá. 
+                    Hệ sinh thái hơn 30 sản phẩm AI — từ Video, Hình ảnh, Giọng nói, Nhạc đến Workflow tự động hoá.
                     Được phát triển bởi đội ngũ Skyverses.
                   </p>
                 </div>
 
                 {/* CTAs */}
                 <div className="flex flex-wrap gap-3 pt-2">
-                  <button 
+                  <button
                     onClick={() => navigate(isAuthenticated ? '/explorer' : '/login')}
                     className="group inline-flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-7 py-4 rounded-2xl text-sm font-bold shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
                   >
                     Khám phá sản phẩm
                     <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                   </button>
-                  <button 
+                  <button
                     onClick={() => navigate('/pricing')}
                     className="inline-flex items-center gap-3 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-7 py-4 rounded-2xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/10 transition-all duration-300"
                   >
@@ -264,7 +264,7 @@ const MarketPage = () => {
                   <div className="relative">
                     {/* Glow behind card */}
                     <div className="absolute inset-0 bg-brand-blue/10 dark:bg-brand-blue/20 blur-[80px] rounded-full scale-75" />
-                    
+
                     {/* Main featured card */}
                     <AnimatePresence mode="wait">
                       <motion.div
@@ -278,7 +278,7 @@ const MarketPage = () => {
                       >
                         <img src={activeFeatured.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                        
+
                         {/* Overlay content */}
                         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                           <div className="flex items-center gap-2 mb-3">
@@ -287,7 +287,7 @@ const MarketPage = () => {
                           </div>
                           <h3 className="text-xl md:text-2xl font-black text-white tracking-tight mb-2">{activeFeatured.name[currentLang]}</h3>
                           <p className="text-white/60 text-sm line-clamp-2 max-w-md">{activeFeatured.description[currentLang]}</p>
-                          
+
                           <div className="flex items-center gap-4 mt-4">
                             <button className="inline-flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-white/90 transition-all active:scale-95 shadow-lg">
                               Khám phá <ArrowRight size={12} />
@@ -350,90 +350,73 @@ const MarketPage = () => {
 
         {/* ═══════════════════ CREDITS SYSTEM ═══════════════════ */}
         {!query && (
-          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-16 md:py-24">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
-              
-              {/* Left: Headline + CTA (2 cols) */}
-              <div className="lg:col-span-2 space-y-8 lg:sticky lg:top-32">
-                {/* Animated Credit Coin */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 flex items-center justify-center shadow-xl shadow-amber-500/20"
-                >
-                  <Zap size={32} className="text-white" fill="currentColor" />
-                </motion.div>
-                
-                <div className="space-y-4">
-                  <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1]">
-                    1 Credit,<br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">
-                      mọi sản phẩm
-                    </span>
-                  </h2>
-                  <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed max-w-sm">
-                    Mua Credits một lần — sử dụng xuyên suốt hơn 30 sản phẩm AI. Không subscription, không ẩn phí, credits không hết hạn.
-                  </p>
-                </div>
+          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-12 md:py-20">
+            <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
+              {/* Background glows */}
+              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-brand-blue/8 rounded-full blur-[100px] pointer-events-none" />
 
-                <div className="flex flex-wrap gap-3">
-                  <button 
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                  <div className="space-y-3">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full">
+                      <Zap size={12} className="text-amber-400" fill="currentColor" />
+                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-400">Universal Credits</span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
+                      1 loại Credit,{' '}
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
+                        dùng cho tất cả sản phẩm
+                      </span>
+                    </h2>
+                    <p className="text-sm text-white/40 max-w-lg leading-relaxed">
+                      Không cần đăng ký riêng cho từng sản phẩm. Mua Credits một lần — sử dụng cho Video AI, Image AI, Voice, Music, Workflow và hơn 30 sản phẩm khác.
+                    </p>
+                  </div>
+                  <button
                     onClick={() => navigate(isAuthenticated ? '/credits' : '/pricing')}
-                    className="inline-flex items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-3.5 rounded-xl text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
+                    className="shrink-0 inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
                   >
-                    <Zap size={14} className="text-amber-400 dark:text-amber-500" fill="currentColor" />
+                    <Zap size={14} fill="currentColor" />
                     {isAuthenticated ? 'Nạp Credits' : 'Xem bảng giá'}
                     <ArrowRight size={14} />
                   </button>
-                  <button 
-                    onClick={() => navigate('/pricing')}
-                    className="inline-flex items-center gap-2 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 border border-black/[0.06] dark:border-white/[0.06] px-6 py-3.5 rounded-xl text-xs font-bold hover:border-amber-500/30 transition-all"
-                  >
-                    So sánh gói
-                  </button>
                 </div>
 
-                {/* Trust line */}
-                <div className="flex items-center gap-4 pt-2">
-                  <div className="flex -space-x-2">
-                    {['🎬', '🎨', '🎵', '🤖', '✍️'].map((e, i) => (
-                      <div key={i} className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 border-2 border-white dark:border-[#030304] flex items-center justify-center text-sm">{e}</div>
-                    ))}
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500">Dùng chung cho 30+ sản phẩm</span>
+                {/* Credit Flow Steps */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12">
+                  {[
+                    { step: '01', title: 'Mua Credits', desc: 'Chọn gói phù hợp hoặc nạp tuỳ ý. Nhận bonus khi mua gói lớn.', icon: '💳' },
+                    { step: '02', title: 'Sử dụng mọi nơi', desc: 'Dùng Credits cho bất kỳ sản phẩm nào — Video, Image, Voice, Music, Workflow...', icon: '⚡' },
+                    { step: '03', title: 'Nạp thêm khi cần', desc: 'Credits không hết hạn. Nạp thêm bất cứ lúc nào, chỉ trả cho những gì bạn dùng.', icon: '🔄' },
+                  ].map((item, idx) => (
+                    <motion.div
+                      key={item.step}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.15 }}
+                      className="relative p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.1] transition-all group"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="text-2xl">{item.icon}</div>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[9px] font-black text-amber-400/60 uppercase tracking-widest">Step {item.step}</span>
+                          </div>
+                          <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                          <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
+                        </div>
+                      </div>
+                      {idx < 2 && (
+                        <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
+                          <ChevronRight size={16} className="text-white/10" />
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
                 </div>
-              </div>
-
-              {/* Right: Bento Grid of usage cards (3 cols) */}
-              <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-                {[
-                  { name: 'Tạo ảnh AI', credits: '2–10', icon: <ImageIcon size={20} />, color: 'text-purple-500', bg: 'bg-purple-500/8 dark:bg-purple-500/10', desc: 'Midjourney, DALL·E, Flux' },
-                  { name: 'Video AI', credits: '20–80', icon: <Video size={20} />, color: 'text-blue-500', bg: 'bg-blue-500/8 dark:bg-blue-500/10', desc: 'Veo, Wan, Hailuo' },
-                  { name: 'Xoá/nâng cấp ảnh', credits: '3–5', icon: <Sparkles size={20} />, color: 'text-emerald-500', bg: 'bg-emerald-500/8 dark:bg-emerald-500/10', desc: 'Upscale, Remove BG' },
-                  { name: 'Giọng nói AI', credits: '5–15', icon: <Workflow size={20} />, color: 'text-pink-500', bg: 'bg-pink-500/8 dark:bg-pink-500/10', desc: 'TTS, Voice Clone' },
-                  { name: 'Nhạc AI', credits: '10–30', icon: <Gift size={20} />, color: 'text-amber-500', bg: 'bg-amber-500/8 dark:bg-amber-500/10', desc: 'Suno, Udio' },
-                  { name: 'AI Workflow', credits: '5–50', icon: <Cpu size={20} />, color: 'text-cyan-500', bg: 'bg-cyan-500/8 dark:bg-cyan-500/10', desc: 'ComfyUI, Pipelines' },
-                ].map((item, idx) => (
-                  <motion.div
-                    key={item.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.08 }}
-                    className="group p-5 md:p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.05] hover:border-amber-500/20 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300 cursor-default"
-                  >
-                    <div className={`w-10 h-10 rounded-xl ${item.bg} ${item.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                      {item.icon}
-                    </div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-0.5">{item.name}</h4>
-                    <p className="text-[10px] text-slate-400 dark:text-gray-600 font-medium mb-3">{item.desc}</p>
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-500/10 border border-amber-200/50 dark:border-amber-500/20 rounded-lg">
-                      <Zap size={10} className="text-amber-500" fill="currentColor" />
-                      <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400">{item.credits} CR</span>
-                    </div>
-                  </motion.div>
-                ))}
               </div>
             </div>
           </section>
@@ -442,7 +425,7 @@ const MarketPage = () => {
         {/* ═══════════════════ ACTIVE FILTER BAR ═══════════════════ */}
         <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
           {(query || primary !== 'ALL') && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
               className="flex items-center gap-3 py-4 mb-2"
             >
@@ -452,7 +435,7 @@ const MarketPage = () => {
                 {query && primary !== 'ALL' && ' trong '}
                 {primary !== 'ALL' && <span className="font-bold text-brand-blue">{primary}</span>}
               </span>
-              <button 
+              <button
                 onClick={resetSearch}
                 className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-white/5 rounded-lg text-[10px] font-bold text-slate-400 hover:text-red-500 transition-colors"
               >
@@ -465,33 +448,33 @@ const MarketPage = () => {
           <div className="space-y-16 md:space-y-24 relative z-10 pt-8">
             {(loading || isSearching) ? (
               <div className="flex gap-4 md:gap-8 overflow-x-hidden">
-                {[1,2,3,4,5].map(i => <CardSkeleton key={i} />)}
+                {[1, 2, 3, 4, 5].map(i => <CardSkeleton key={i} />)}
               </div>
             ) : filteredSolutions.length > 0 ? (
               <>
                 {homeBlocks.map((block) => {
                   const blockSolutions = filteredSolutions.filter(s => s.homeBlocks?.includes(block.key));
                   if (blockSolutions.length === 0) return null;
-                  
+
                   const Icon = BLOCK_ICONS[block.key] || LayoutGrid;
                   const currentLang = lang as Language;
 
                   return (
                     <section key={block.key} className="relative">
-                      <MarketSectionHeader 
-                        icon={Icon} 
-                        title={block.title[currentLang] || block.title.en} 
-                        subtitle={block.subtitle[currentLang] || block.subtitle.en} 
-                        count={blockSolutions.length} 
-                        colorClass={block.key === 'top_trending' ? 'text-orange-500' : 'text-brand-blue'} 
-                        onScrollLeft={() => scroll(block.key, 'left')} 
+                      <MarketSectionHeader
+                        icon={Icon}
+                        title={block.title[currentLang] || block.title.en}
+                        subtitle={block.subtitle[currentLang] || block.subtitle.en}
+                        count={blockSolutions.length}
+                        colorClass={block.key === 'top_trending' ? 'text-orange-500' : 'text-brand-blue'}
+                        onScrollLeft={() => scroll(block.key, 'left')}
                         onScrollRight={() => scroll(block.key, 'right')}
                         onSeeAll={() => navigate(`/category/${block.key}`)}
                       />
                       <div ref={scrollRefs.current[block.key]} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4 relative z-10">
                         {blockSolutions.slice(0, block.limit || 8).map((sol, idx) => (
-                          <SolutionCard 
-                            key={sol._id || sol.id} sol={sol} idx={idx} lang={lang} 
+                          <SolutionCard
+                            key={sol._id || sol.id} sol={sol} idx={idx} lang={lang}
                             isLiked={likedItems.includes(sol._id || sol.id)}
                             isFavorited={favorites.includes(sol.id)}
                             onToggleFavorite={toggleFavorite}
@@ -500,18 +483,18 @@ const MarketPage = () => {
                             stats={getFakeStats(sol._id || sol.id)}
                           />
                         ))}
-                        
-                        <div 
+
+                        <div
                           onClick={() => navigate(`/category/${block.key}`)}
                           className="flex-shrink-0 snap-start w-[180px] md:hidden flex flex-col items-center justify-center bg-slate-50 dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] rounded-xl group cursor-pointer hover:border-brand-blue/40 transition-all p-6 text-center space-y-4"
                         >
-                           <div className="w-12 h-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
-                              <ArrowRight size={24} />
-                           </div>
-                           <div className="space-y-1">
-                              <p className="text-[11px] font-black uppercase tracking-widest text-slate-800 dark:text-white">Xem tất cả</p>
-                              <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tight">{blockSolutions.length} giải pháp</p>
-                           </div>
+                          <div className="w-12 h-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
+                            <ArrowRight size={24} />
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-800 dark:text-white">Xem tất cả</p>
+                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tight">{blockSolutions.length} giải pháp</p>
+                          </div>
                         </div>
                       </div>
                     </section>
@@ -520,9 +503,9 @@ const MarketPage = () => {
               </>
             ) : (
               <div className="py-40 text-center space-y-6 opacity-30">
-                 <SearchX size={48} className="mx-auto mb-4" />
-                 <p className="text-sm font-black uppercase tracking-widest">{t('market.search.no_matches')}</p>
-                 <button onClick={() => { setQuery(''); setPrimary('ALL'); setSecondary('ALL'); }} className="text-[10px] font-black uppercase tracking-widest text-brand-blue hover:underline">{t('market.search.reset')}</button>
+                <SearchX size={48} className="mx-auto mb-4" />
+                <p className="text-sm font-black uppercase tracking-widest">{t('market.search.no_matches')}</p>
+                <button onClick={() => { setQuery(''); setPrimary('ALL'); setSecondary('ALL'); }} className="text-[10px] font-black uppercase tracking-widest text-brand-blue hover:underline">{t('market.search.reset')}</button>
               </div>
             )}
           </div>
@@ -541,10 +524,10 @@ const MarketPage = () => {
             <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="relative w-full max-w-5xl bg-[#0a0a0c] border border-white/10 rounded-[2rem] overflow-hidden shadow-3xl aspect-video flex flex-col">
               <div className="absolute top-6 right-6 z-50"><button onClick={() => setIsDemoOpen(false)} className="p-2 bg-black/40 hover:bg-red-500 rounded-full text-white transition-colors"><X size={24} /></button></div>
               <div className="flex-grow relative flex items-center justify-center overflow-hidden bg-black">
-                 <div className="text-center space-y-8 z-10 p-12">
-                    <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }} className="relative"><div className="absolute inset-0 bg-brand-blue blur-[80px] opacity-20 rounded-full animate-pulse"></div><img src={logoUrl} className="w-32 h-32 md:w-48 md:h-48 object-contain mx-auto relative drop-shadow-[0_0_30px_rgba(0,144,255,0.2)]" alt="Skyverses Logo" /></motion.div>
-                    <div className="space-y-2"><h3 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white">Coming <span className="text-brand-blue">Soon.</span></h3></div>
-                 </div>
+                <div className="text-center space-y-8 z-10 p-12">
+                  <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }} className="relative"><div className="absolute inset-0 bg-brand-blue blur-[80px] opacity-20 rounded-full animate-pulse"></div><img src={logoUrl} className="w-32 h-32 md:w-48 md:h-48 object-contain mx-auto relative drop-shadow-[0_0_30px_rgba(0,144,255,0.2)]" alt="Skyverses Logo" /></motion.div>
+                  <div className="space-y-2"><h3 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white">Coming <span className="text-brand-blue">Soon.</span></h3></div>
+                </div>
               </div>
             </motion.div>
           </div>
