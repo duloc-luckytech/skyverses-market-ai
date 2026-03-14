@@ -350,99 +350,90 @@ const MarketPage = () => {
 
         {/* ═══════════════════ CREDITS SYSTEM ═══════════════════ */}
         {!query && (
-          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-12 md:py-20">
-            <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
-              {/* Background glows */}
-              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-brand-blue/8 rounded-full blur-[100px] pointer-events-none" />
+          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-16 md:py-24">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
               
-              <div className="relative z-10">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-                  <div className="space-y-3">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full">
-                      <Zap size={12} className="text-amber-400" fill="currentColor" />
-                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-400">Universal Credits</span>
-                    </div>
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
-                      1 loại Credit,{' '}
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
-                        dùng cho tất cả sản phẩm
-                      </span>
-                    </h2>
-                    <p className="text-sm text-white/40 max-w-lg leading-relaxed">
-                      Không cần đăng ký riêng cho từng sản phẩm. Mua Credits một lần — sử dụng cho Video AI, Image AI, Voice, Music, Workflow và hơn 30 sản phẩm khác.
-                    </p>
-                  </div>
+              {/* Left: Headline + CTA (2 cols) */}
+              <div className="lg:col-span-2 space-y-8 lg:sticky lg:top-32">
+                {/* Animated Credit Coin */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 flex items-center justify-center shadow-xl shadow-amber-500/20"
+                >
+                  <Zap size={32} className="text-white" fill="currentColor" />
+                </motion.div>
+                
+                <div className="space-y-4">
+                  <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1]">
+                    1 Credit,<br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">
+                      mọi sản phẩm
+                    </span>
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed max-w-sm">
+                    Mua Credits một lần — sử dụng xuyên suốt hơn 30 sản phẩm AI. Không subscription, không ẩn phí, credits không hết hạn.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
                   <button 
                     onClick={() => navigate(isAuthenticated ? '/credits' : '/pricing')}
-                    className="shrink-0 inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="inline-flex items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-3.5 rounded-xl text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
                   >
-                    <Zap size={14} fill="currentColor" />
+                    <Zap size={14} className="text-amber-400 dark:text-amber-500" fill="currentColor" />
                     {isAuthenticated ? 'Nạp Credits' : 'Xem bảng giá'}
                     <ArrowRight size={14} />
                   </button>
+                  <button 
+                    onClick={() => navigate('/pricing')}
+                    className="inline-flex items-center gap-2 bg-white dark:bg-white/5 text-slate-600 dark:text-gray-300 border border-black/[0.06] dark:border-white/[0.06] px-6 py-3.5 rounded-xl text-xs font-bold hover:border-amber-500/30 transition-all"
+                  >
+                    So sánh gói
+                  </button>
                 </div>
 
-                {/* Credit Flow Steps */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12">
-                  {[
-                    { step: '01', title: 'Mua Credits', desc: 'Chọn gói phù hợp hoặc nạp tuỳ ý. Nhận bonus khi mua gói lớn.', icon: '💳' },
-                    { step: '02', title: 'Sử dụng mọi nơi', desc: 'Dùng Credits cho bất kỳ sản phẩm nào — Video, Image, Voice, Music, Workflow...', icon: '⚡' },
-                    { step: '03', title: 'Nạp thêm khi cần', desc: 'Credits không hết hạn. Nạp thêm bất cứ lúc nào, chỉ trả cho những gì bạn dùng.', icon: '🔄' },
-                  ].map((item, idx) => (
-                    <motion.div
-                      key={item.step}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.15 }}
-                      className="relative p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.1] transition-all group"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="text-2xl">{item.icon}</div>
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-black text-amber-400/60 uppercase tracking-widest">Step {item.step}</span>
-                          </div>
-                          <h4 className="text-sm font-bold text-white">{item.title}</h4>
-                          <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
-                        </div>
-                      </div>
-                      {idx < 2 && (
-                        <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                          <ChevronRight size={16} className="text-white/10" />
-                        </div>
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Credit Usage Examples */}
-                <div className="pt-8 border-t border-white/[0.06]">
-                  <p className="text-[10px] font-bold text-white/25 uppercase tracking-wider mb-5">Ví dụ chi phí Credits</p>
-                  <div className="flex flex-wrap gap-3">
-                    {[
-                      { name: 'Tạo 1 ảnh AI', credits: '2-10', color: 'from-purple-500/20 to-purple-500/5' },
-                      { name: 'Video 5s', credits: '20-80', color: 'from-blue-500/20 to-blue-500/5' },
-                      { name: 'Xoá phông ảnh', credits: '3-5', color: 'from-emerald-500/20 to-emerald-500/5' },
-                      { name: 'Tạo giọng nói', credits: '5-15', color: 'from-pink-500/20 to-pink-500/5' },
-                      { name: 'Tạo nhạc AI', credits: '10-30', color: 'from-amber-500/20 to-amber-500/5' },
-                      { name: 'AI Workflow', credits: '5-50', color: 'from-cyan-500/20 to-cyan-500/5' },
-                    ].map((item) => (
-                      <div 
-                        key={item.name}
-                        className={`inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gradient-to-r ${item.color} border border-white/[0.06]`}
-                      >
-                        <span className="text-[11px] font-medium text-white/60">{item.name}</span>
-                        <div className="flex items-center gap-1">
-                          <Zap size={10} className="text-amber-400" fill="currentColor" />
-                          <span className="text-[11px] font-bold text-amber-400">{item.credits}</span>
-                        </div>
-                      </div>
+                {/* Trust line */}
+                <div className="flex items-center gap-4 pt-2">
+                  <div className="flex -space-x-2">
+                    {['🎬', '🎨', '🎵', '🤖', '✍️'].map((e, i) => (
+                      <div key={i} className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 border-2 border-white dark:border-[#030304] flex items-center justify-center text-sm">{e}</div>
                     ))}
                   </div>
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500">Dùng chung cho 30+ sản phẩm</span>
                 </div>
+              </div>
+
+              {/* Right: Bento Grid of usage cards (3 cols) */}
+              <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                {[
+                  { name: 'Tạo ảnh AI', credits: '2–10', icon: <ImageIcon size={20} />, color: 'text-purple-500', bg: 'bg-purple-500/8 dark:bg-purple-500/10', desc: 'Midjourney, DALL·E, Flux' },
+                  { name: 'Video AI', credits: '20–80', icon: <Video size={20} />, color: 'text-blue-500', bg: 'bg-blue-500/8 dark:bg-blue-500/10', desc: 'Veo, Wan, Hailuo' },
+                  { name: 'Xoá/nâng cấp ảnh', credits: '3–5', icon: <Sparkles size={20} />, color: 'text-emerald-500', bg: 'bg-emerald-500/8 dark:bg-emerald-500/10', desc: 'Upscale, Remove BG' },
+                  { name: 'Giọng nói AI', credits: '5–15', icon: <Workflow size={20} />, color: 'text-pink-500', bg: 'bg-pink-500/8 dark:bg-pink-500/10', desc: 'TTS, Voice Clone' },
+                  { name: 'Nhạc AI', credits: '10–30', icon: <Gift size={20} />, color: 'text-amber-500', bg: 'bg-amber-500/8 dark:bg-amber-500/10', desc: 'Suno, Udio' },
+                  { name: 'AI Workflow', credits: '5–50', icon: <Cpu size={20} />, color: 'text-cyan-500', bg: 'bg-cyan-500/8 dark:bg-cyan-500/10', desc: 'ComfyUI, Pipelines' },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.08 }}
+                    className="group p-5 md:p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.05] hover:border-amber-500/20 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300 cursor-default"
+                  >
+                    <div className={`w-10 h-10 rounded-xl ${item.bg} ${item.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                      {item.icon}
+                    </div>
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-0.5">{item.name}</h4>
+                    <p className="text-[10px] text-slate-400 dark:text-gray-600 font-medium mb-3">{item.desc}</p>
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-500/10 border border-amber-200/50 dark:border-amber-500/20 rounded-lg">
+                      <Zap size={10} className="text-amber-500" fill="currentColor" />
+                      <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400">{item.credits} CR</span>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </section>
