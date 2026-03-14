@@ -189,50 +189,92 @@ const MarketPage = () => {
 
       <div className="relative z-10 pt-20 md:pt-28 max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
         
-        {/* ─── Hero Headline ─── */}
+        {/* ─── Hero: Headline + Featured (Combined) ─── */}
         {!query && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-10 md:mb-16"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 mb-6">
-              <Sparkles size={12} className="text-brand-blue" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-blue">Skyverses AI Products</span>
-            </div>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter italic leading-[0.95] text-black dark:text-white mb-4">
-              One Studio for{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">
-                Every Kind
-              </span>
-              <br className="hidden md:block" />
-              {' '}of Build
-            </h1>
-            <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 font-medium max-w-2xl mx-auto leading-relaxed">
-              Khám phá hệ sinh thái sản phẩm AI do Skyverses phát triển — từ tạo hình ảnh, video, giọng nói đến các giải pháp AI chuyên biệt cho doanh nghiệp.
-            </p>
-            {!isAuthenticated && (
-              <div className="flex gap-3 justify-center mt-8">
-                <button 
-                  onClick={() => navigate('/login')}
-                  className="inline-flex items-center gap-3 bg-brand-blue text-white px-8 py-4 rounded-full text-sm font-black uppercase tracking-widest shadow-2xl shadow-brand-blue/30 hover:scale-105 active:scale-95 transition-all"
-                >
-                  Bắt đầu miễn phí
-                  <ArrowRight size={16} />
-                </button>
+          <section className="mb-8 md:mb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16 items-center border-b border-black/5 dark:border-white/5 pb-12 md:pb-20">
+            {/* Left: Brand + Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="lg:col-span-5 space-y-6 md:space-y-8"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-ping"></div>
+                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-brand-blue italic">Skyverses AI Ecosystem</span>
               </div>
-            )}
-          </motion.div>
-        )}
 
-        {loading && featuredSolutions.length === 0 ? <FeaturedSkeleton /> : featuredSolutions.length > 0 && !query && (
-          <FeaturedSection 
-            solutions={featuredSolutions} 
-            lang={lang} 
-            onNavigate={handleNavigate} 
-            onOpenDemo={() => setIsDemoOpen(true)} 
-          />
+              <div className="space-y-4">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter italic leading-[0.92] text-black dark:text-white">
+                  One Studio for{' '}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">
+                    Every Kind
+                  </span>
+                  {' '}of Build
+                </h1>
+                <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 font-medium leading-relaxed max-w-lg">
+                  Hệ sinh thái sản phẩm AI do Skyverses phát triển — Video, Hình ảnh, Giọng nói, Agent AI & hơn thế nữa.
+                </p>
+              </div>
+
+              {/* Stats bar */}
+              <div className="flex items-center gap-4 md:gap-6 py-4 border-y border-black/5 dark:border-white/5">
+                {[
+                  { value: `${solutions.length || '30'}+`, label: 'Sản phẩm' },
+                  { value: '50+', label: 'AI Models' },
+                  { value: '24/7', label: 'Hỗ trợ' },
+                ].map((stat) => (
+                  <div key={stat.label} className="flex flex-col">
+                    <span className="text-lg md:text-2xl font-black italic text-brand-blue">{stat.value}</span>
+                    <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest">{stat.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-3">
+                {!isAuthenticated ? (
+                  <>
+                    <button 
+                      onClick={() => navigate('/login')}
+                      className="inline-flex items-center gap-3 bg-brand-blue text-white px-7 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-brand-blue/30 hover:scale-105 active:scale-95 transition-all"
+                    >
+                      Khám phá ngay
+                      <ArrowRight size={14} />
+                    </button>
+                    <button 
+                      onClick={() => navigate('/pricing')}
+                      className="inline-flex items-center gap-3 bg-white dark:bg-white/5 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 px-7 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-50 dark:hover:bg-white/10 transition-all"
+                    >
+                      Bảng giá
+                    </button>
+                  </>
+                ) : (
+                  <button 
+                    onClick={() => navigate('/explorer')}
+                    className="inline-flex items-center gap-3 bg-brand-blue text-white px-7 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-brand-blue/30 hover:scale-105 active:scale-95 transition-all"
+                  >
+                    Khám phá sản phẩm
+                    <ArrowRight size={14} />
+                  </button>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Right: Featured Carousel */}
+            <div className="lg:col-span-7">
+              {loading && featuredSolutions.length === 0 ? (
+                <div className="relative w-full max-w-[450px] mx-auto aspect-[4/3] bg-slate-200 dark:bg-white/5 rounded-[2rem] animate-pulse"></div>
+              ) : featuredSolutions.length > 0 && (
+                <FeaturedSection 
+                  solutions={featuredSolutions} 
+                  lang={lang} 
+                  onNavigate={handleNavigate} 
+                  onOpenDemo={() => setIsDemoOpen(true)} 
+                />
+              )}
+            </div>
+          </section>
         )}
 
         <AIModelsMarquee />
