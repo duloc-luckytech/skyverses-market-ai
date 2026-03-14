@@ -1,31 +1,24 @@
-
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 
-interface FinalCTAProps {
-  onStartStudio: () => void;
-}
+interface FinalCTAProps { onStartStudio: () => void; }
 
-export const FinalCTA: React.FC<FinalCTAProps> = ({ onStartStudio }) => {
-  return (
-    <section className="py-60 text-center relative overflow-hidden bg-brand-blue text-white group transition-all duration-700">
-      <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-black text-white leading-none tracking-tighter select-none italic">
-        VISUAL VISUAL VISUAL VISUAL
-      </div>
-      <div className="max-w-4xl mx-auto space-y-12 relative z-10 px-6">
-        <h2 className="text-7xl lg:text-[140px] font-black uppercase tracking-tighter leading-[0.8] italic">Start <br /> <span className="text-slate-900">Synthesizing.</span></h2>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-10">
-          <button 
-            onClick={onStartStudio}
-            className="bg-black text-white px-20 py-8 rounded-sm text-sm font-black uppercase tracking-widest hover:scale-110 transition-all shadow-2xl w-full sm:w-auto"
-          >
-            VÀO STUDIO NGAY
-          </button>
-          <Link to="/market" className="bg-white/10 text-white border border-white/20 px-20 py-8 rounded-sm text-sm font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all backdrop-blur-md w-full sm:w-auto">
-            XEM GIẢI PHÁP KHÁC
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-};
+export const FinalCTA: React.FC<FinalCTAProps> = ({ onStartStudio }) => (
+  <section className="px-6 lg:px-16 py-20 border-t border-black/[0.06] dark:border-white/[0.04]">
+    <div className="max-w-3xl mx-auto text-center">
+      <h2 className="text-2xl lg:text-4xl font-bold mb-4">
+        Sẵn sàng tạo hình ảnh AI?
+      </h2>
+      <p className="text-sm text-slate-500 dark:text-white/30 mb-8 max-w-lg mx-auto leading-relaxed">
+        22+ model · Lên tới 12K · 11 tỷ lệ · Single & Batch mode · Auto Refund · Cloud History
+      </p>
+      <button
+        onClick={onStartStudio}
+        className="px-10 py-4 bg-gradient-to-r from-rose-600 to-fuchsia-600 text-white rounded-xl font-semibold text-sm shadow-lg shadow-rose-500/20 hover:brightness-110 active:scale-[0.98] transition-all inline-flex items-center gap-3"
+      >
+        <Sparkles size={18} />
+        Bắt đầu ngay
+      </button>
+    </div>
+  </section>
+);

@@ -1,63 +1,49 @@
-
 import React from 'react';
-import { Megaphone, Palette, ShoppingBag, FileText, ChevronRight } from 'lucide-react';
+import { Boxes, SlidersHorizontal, CreditCard, Shield, ArrowDownToLine, ScrollText } from 'lucide-react';
 
-const USE_CASES = [
-  { 
-    t: 'Marketing', 
-    d: 'Ads images, Banner, Social visuals.', 
-    img: 'https://images.unsplash.com/photo-1551033406-611cf9a28f67?auto=format&fit=crop&q=80&w=800',
-    icon: <Megaphone className="text-brand-blue" />
+const FEATURES = [
+  {
+    icon: Boxes, title: 'Model Family Selector',
+    desc: '10+ nhóm model — chọn Family, hệ thống tự chọn phiên bản tối ưu theo mode + resolution. Hỗ trợ 3 engine: Gommo, FxLab, Running.'
   },
-  { 
-    t: 'Design / Creative', 
-    d: 'Concept art, Key visual, Style exploration.', 
-    img: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=800',
-    icon: <Palette className="text-purple-500" />
+  {
+    icon: SlidersHorizontal, title: 'Cấu hình linh hoạt',
+    desc: '11 tỷ lệ (1:1, 16:9, 21:9, 4:5...), 6 cấp phân giải (1K→12K), 5+ chế độ speed (vip3, vip, fast, relaxed, turbo), số lượng 1–4 bản.'
   },
-  { 
-    t: 'E-commerce', 
-    d: 'Product images, Background variations.', 
-    img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800',
-    icon: <ShoppingBag className="text-emerald-500" />
+  {
+    icon: CreditCard, title: 'Credits & API Key',
+    desc: 'Thanh toán bằng Credits (tính theo resolution + mode) hoặc API Key cá nhân cho UNLIMITED. Hiển thị chi phí trước khi tạo.'
   },
-  { 
-    t: 'Content Creator', 
-    d: 'Thumbnail, Illustration, Storytelling.', 
-    img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800',
-    icon: <FileText className="text-orange-500" />
-  }
+  {
+    icon: Shield, title: 'Auto Refund lỗi',
+    desc: 'Khi engine trả lỗi, hệ thống tự động hoàn Credits. Card hiện trạng thái REFUNDED rõ ràng. Retry 1-click không mất thêm phí.'
+  },
+  {
+    icon: ArrowDownToLine, title: 'Auto Download',
+    desc: 'Bật Auto Download — ảnh tự tải ngay khi hoàn thành. Manual Download hỗ trợ chọn nhiều bản tải đồng thời.'
+  },
+  {
+    icon: ScrollText, title: 'Production Log',
+    desc: 'Mỗi tác vụ tạo ảnh có nhật ký chi tiết: Pipeline init, Resource auth, Polling status, Error trace — hỗ trợ debug nhanh.'
+  },
 ];
 
-export const UseCasesSection: React.FC = () => {
-  return (
-    <section className="py-40 bg-slate-50 dark:bg-[#050507] transition-colors duration-500">
-      <div className="max-w-[1600px] mx-auto px-6 lg:px-12 space-y-24">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-8">
-          <div className="space-y-4">
-            <h2 className="text-5xl lg:text-[100px] font-black uppercase tracking-tighter italic leading-none text-slate-900 dark:text-white transition-colors">Mọi biên giới <br /><span className="text-brand-blue">thị giác.</span></h2>
-          </div>
-          <p className="text-slate-400 dark:text-gray-500 font-bold uppercase text-xs tracking-widest max-w-xs text-right italic border-r-4 border-brand-blue pr-6 transition-colors">"Giải pháp visual đầu-cuối cho cá nhân và doanh nghiệp dẫn đầu."</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {USE_CASES.map((item, i) => (
-            <div key={i} className="group relative overflow-hidden aspect-[3/4] bg-black rounded-sm shadow-2xl transition-all hover:scale-[1.02]">
-              <img src={item.img} className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" alt={item.t} />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-10 flex flex-col justify-end">
-                <div className="space-y-4 translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
-                  <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/10">{item.icon}</div>
-                  <h4 className="text-3xl font-black uppercase italic tracking-tighter text-white leading-none">{item.t}</h4>
-                  <p className="text-xs text-white/60 font-bold uppercase tracking-widest leading-relaxed">"{item.d}"</p>
-                  <div className="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="flex items-center gap-2 text-brand-blue text-[10px] font-black uppercase tracking-[0.2em]">Khám phá ngay <ChevronRight size={14}/></button>
-                  </div>
-                </div>
-              </div>
+export const UseCasesSection: React.FC = () => (
+  <section className="px-6 lg:px-16 py-16 border-t border-black/[0.06] dark:border-white/[0.04]">
+    <div className="max-w-6xl mx-auto">
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-rose-500/60 dark:text-rose-400/60 mb-2">TÍNH NĂNG</p>
+      <h2 className="text-2xl lg:text-3xl font-bold mb-10">Công cụ chuyên nghiệp</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {FEATURES.map(f => (
+          <div key={f.title} className="p-5 rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.015] hover:border-black/[0.1] dark:hover:border-white/[0.08] transition-all">
+            <div className="flex items-center gap-2.5 mb-3">
+              <f.icon size={14} className="text-rose-500 dark:text-rose-400" />
+              <h3 className="text-sm font-semibold">{f.title}</h3>
             </div>
-          ))}
-        </div>
+            <p className="text-[11px] text-slate-500 dark:text-white/30 leading-relaxed">{f.desc}</p>
+          </div>
+        ))}
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);

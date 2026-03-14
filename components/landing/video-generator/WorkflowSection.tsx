@@ -1,92 +1,82 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Terminal, ImageIcon, Cpu, Film, Sparkles } from 'lucide-react';
+import { PenLine, Image, SlidersHorizontal, Sparkles, Mic, Move3d } from 'lucide-react';
 
-const VIDEO_WORKFLOW = [
-  { 
-    step: '01', 
-    title: 'Xây dựng kịch bản', 
-    desc: 'Nhập nội dung câu chuyện bằng ngôn ngữ tự nhiên. AI sẽ phân tích ngữ nghĩa để chuẩn bị cho việc bóc tách phân cảnh điện ảnh.',
-    icon: <Terminal size={32} />,
-    img: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=800',
-    tags: ['Natural Language', 'Auto-Parsing']
+const STEPS = [
+  {
+    step: '01', title: 'Nhập kịch bản', icon: <PenLine size={18} />,
+    desc: 'Viết prompt bằng tiếng Việt hoặc tiếng Anh. Hệ thống tự động dịch và tối ưu prompt cho từng model engine.',
+    tags: ['Tự động dịch', 'Prompt Optimize'],
   },
-  { 
-    step: '02', 
-    title: 'Khóa định danh nhân vật', 
-    desc: 'Tải lên ảnh nhân vật mỏ neo. Hệ thống sử dụng Identity Lock để đảm bảo nhân vật luôn đồng nhất 100% qua mọi cảnh quay.',
-    icon: <ImageIcon size={32} />,
-    img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800',
-    tags: ['Zero-Drift', 'Identity Sync']
+  {
+    step: '02', title: 'Tải ảnh tham chiếu', icon: <Image size={18} />,
+    desc: 'Hỗ trợ Start Frame & End Frame để kiểm soát chính xác điểm bắt đầu và kết thúc video. Upload hoặc chọn từ thư viện.',
+    tags: ['Start Frame', 'End Frame', 'Image Library'],
   },
-  { 
-    step: '03', 
-    title: 'Cấu hình Production', 
-    desc: 'Lựa chọn Model Engine (VEO 3.1 Pro), thiết lập tỷ lệ khung hình và độ phân giải 1080p hoặc 4K cho thành phẩm.',
-    icon: <Cpu size={32} />,
-    img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc48?auto=format&fit=crop&q=80&w=800',
-    tags: ['VEO 3.1', 'H100 Node']
+  {
+    step: '03', title: 'Chọn Model & Cấu hình', icon: <SlidersHorizontal size={18} />,
+    desc: 'Chọn từ 30+ models: VEO 3.1 (4K), Kling 3.0 (Motion Control), Sora 2, Hailuo 2.3... Tùy chỉnh chế độ, tỷ lệ, độ phân giải.',
+    tags: ['30+ Models', 'Relaxed/Fast/Quality', '480p→4K'],
   },
-  { 
-    step: '04', 
-    title: 'Kết xuất Master', 
-    desc: 'Kích hoạt chu trình tổng hợp. AI kết hợp kịch bản, nhân vật và vật lý chuyển động để tạo ra video master sẵn sàng công chiếu.',
-    icon: <Sparkles size={32} />,
-    img: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=800',
-    tags: ['4K Render', 'Cinematic Motion']
-  }
+  {
+    step: '04', title: 'Tạo & Nhận video', icon: <Sparkles size={18} />,
+    desc: 'Theo dõi tiến trình real-time qua Production Log. Video hoàn thành tự động giao tới thư viện, hỗ trợ auto-download.',
+    tags: ['Real-time Log', 'Auto Download', 'Credit Refund'],
+  },
 ];
 
-export const WorkflowSection: React.FC = () => {
-  return (
-    <section className="py-40 bg-slate-50 dark:bg-[#08080a] border-y border-slate-100 dark:border-white/5 relative overflow-hidden transition-colors duration-500">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="text-center space-y-4 mb-32">
-          <span className="text-indigo-600 font-black uppercase tracking-[0.6em] text-[11px]">Industrial Pipeline</span>
-          <h2 className="text-5xl lg:text-8xl font-black uppercase tracking-tighter italic leading-tight text-slate-900 dark:text-white transition-colors">Dây chuyền <span className="text-indigo-600">sản xuất.</span></h2>
-          <p className="text-slate-500 dark:text-gray-400 font-medium max-w-xl mx-auto italic">“Tự động hóa từ ý tưởng đến khung hình điện ảnh cuối cùng.”</p>
-        </div>
+const EXTRAS = [
+  { icon: <Mic size={16} />, title: 'LipSync', desc: 'Kling LipSync đồng bộ khẩu hình với audio.' },
+  { icon: <Move3d size={16} />, title: 'Motion Control', desc: 'Kling Motion Control điều khiển chuyển động camera.' },
+];
 
-        <div className="space-y-40">
-          {VIDEO_WORKFLOW.map((item, idx) => (
-            <motion.div 
-              key={item.step}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              className={`flex flex-col lg:flex-row items-center gap-16 lg:gap-32 ${idx % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}
-            >
-              <div className="lg:w-1/2 relative group">
-                <div className="absolute -inset-4 bg-indigo-600/5 rounded-[3rem] blur-2xl group-hover:bg-indigo-600/10 transition-all"></div>
-                <div className="relative aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl border border-black/5 dark:border-white/5 bg-black">
-                  <img src={item.img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70" alt={item.title} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                </div>
-              </div>
-              <div className="lg:w-1/2 space-y-8">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                      {item.icon}
-                    </div>
-                    <span className="text-4xl font-black italic text-indigo-600/40">PHASE_{item.step}</span>
-                  </div>
-                  <h3 className="text-3xl lg:text-5xl font-black uppercase italic tracking-tighter leading-none text-slate-900 dark:text-white transition-colors">{item.title}</h3>
-                </div>
-                <p className="text-lg lg:text-xl text-slate-500 dark:text-gray-400 font-medium leading-relaxed italic border-l-4 border-indigo-600 pl-6 transition-colors">
-                  "{item.desc}"
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {item.tags.map(tag => (
-                    <span key={tag} className="px-3 py-1 bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-500 rounded-lg text-[9px] font-black uppercase tracking-widest border border-black/5 dark:border-white/10">#{tag}</span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+export const WorkflowSection: React.FC = () => (
+  <section className="py-24 border-y border-black/[0.06] dark:border-white/[0.04] relative overflow-hidden">
+    <div className="max-w-6xl mx-auto px-6 lg:px-12">
+      <div className="text-center space-y-3 mb-16">
+        <span className="text-indigo-500/60 dark:text-indigo-400 font-semibold uppercase tracking-wider text-[9px]">How It Works</span>
+        <h2 className="text-3xl lg:text-5xl font-bold tracking-tight">4 bước <span className="text-indigo-500 dark:text-indigo-400">tạo video</span></h2>
+        <p className="text-slate-500 dark:text-[#555] font-medium text-sm max-w-lg mx-auto">Từ kịch bản đến video hoàn thiện, mọi thứ đều tự động.</p>
       </div>
-    </section>
-  );
-};
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {STEPS.map((s, i) => (
+          <motion.div
+            key={s.step}
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: i * 0.08 }}
+            className="p-5 bg-black/[0.01] dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-2xl flex gap-4 group hover:border-indigo-500/20 transition-all"
+          >
+            <div className="shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 dark:text-indigo-400 group-hover:scale-110 transition-transform">{s.icon}</div>
+              <p className="text-[7px] font-medium text-slate-300 dark:text-[#333] text-center mt-1">{s.step}</p>
+            </div>
+            <div className="space-y-2 min-w-0">
+              <h3 className="text-sm font-semibold">{s.title}</h3>
+              <p className="text-[10px] text-slate-500 dark:text-[#555] font-medium leading-relaxed">{s.desc}</p>
+              <div className="flex flex-wrap gap-1">
+                {s.tags.map(t => (
+                  <span key={t} className="px-1.5 py-0.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.04] rounded text-[7px] font-medium text-slate-400 dark:text-[#444]">{t}</span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Extra features */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {EXTRAS.map(e => (
+          <div key={e.title} className="p-4 bg-violet-500/5 border border-violet-500/10 rounded-xl flex items-start gap-3">
+            <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center text-violet-500 dark:text-violet-400 shrink-0">{e.icon}</div>
+            <div>
+              <p className="text-[10px] font-semibold text-violet-600 dark:text-violet-300">{e.title}</p>
+              <p className="text-[9px] text-slate-500 dark:text-[#555] font-medium">{e.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);

@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings2, ChevronDown, Settings, Zap, Loader2, Activity } from 'lucide-react';
-import { UniversalModelSelector } from '../common/UniversalModelSelector';
-import { DurationSelector } from './DurationSelector';
+import { Settings2, ChevronDown, Settings, Zap, Loader2, Activity, List, ChevronRight } from 'lucide-react';
 import { PricingModel } from '../../apis/pricing';
+import { ModelSelectorModal } from '../common/ModelSelectorModal';
 
 interface ConfigurationPanelProps {
   availableModels: PricingModel[];
@@ -13,7 +12,7 @@ interface ConfigurationPanelProps {
   setSelectedEngine: (val: string) => void;
   selectedMode: string;
   setSelectedMode: (val: string) => void;
-  ratio: '16:9' | '9:16';
+  ratio: string;
   cycleRatio: () => void;
   duration: string;
   cycleDuration: () => void;
@@ -35,144 +34,227 @@ interface ConfigurationPanelProps {
   isMobileExpanded: boolean;
   quantity: number;
   setQuantity: (val: number) => void;
+  isModeBased?: boolean;
+  familyList?: string[];
+  selectedFamily?: string;
+  setSelectedFamily?: (val: string) => void;
+  familyModes?: string[];
+  familyResolutions?: string[];
+  familyRatios?: string[];
+  setRatio?: (val: string) => void;
+  setResolution?: (val: string) => void;
+  familyModels?: PricingModel[];
 }
 
+/* ─── PILL BUTTON ─── */
+const Pill = ({ label, active, onClick, disabled }: { label: string; active: boolean; onClick: () => void; disabled?: boolean }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={`px-2 py-1 rounded-md text-[8px] font-semibold transition-all border ${active
+      ? 'bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border-indigo-500/25'
+      : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-500 dark:text-[#666] hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
+      }`}
+  >
+    {label}
+  </button>
+);
+
 export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => {
-  const [isConfigCollapsed, setIsConfigCollapsed] = useState(true);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [showAllVariants, setShowAllVariants] = useState(false);
+
+  const modes = props.familyModes?.length ? props.familyModes : (props.selectedModelObj?.modes || []);
+  const resolutions = props.familyResolutions?.length ? props.familyResolutions : ['720p', '1080p'];
+  const ratios = props.familyRatios?.length ? props.familyRatios : ['16:9', '9:16'];
+
+  const MAX_VARIANTS = 4;
+  const allVariants = props.familyModels || [];
+  const hasMoreVariants = allVariants.length > MAX_VARIANTS;
+  const visibleVariants = showAllVariants ? allVariants : allVariants.slice(0, MAX_VARIANTS);
+  const selectedInVisible = visibleVariants.some(m => m._id === props.selectedModelObj?._id);
+  const extraSelected = !showAllVariants && !selectedInVisible ? allVariants.find(m => m._id === props.selectedModelObj?._id) : null;
+
+  const stripFamily = (name: string) => name.replace(/^(VEO|Kling|Hailuo|Grok|Sora|WAN|Wan|V-Fuse|OmniHuman|Seedance)\s*/i, '').trim() || name;
 
   return (
-    <div className={`shrink-0 bg-slate-50 dark:bg-black/40 border-t border-slate-200 dark:border-white/5 backdrop-blur-md ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
-      <button 
-        onClick={() => setIsConfigCollapsed(!isConfigCollapsed)}
-        className="lg:hidden w-full flex items-center justify-between px-6 py-4 border-b border-black/5 dark:border-white/5"
-      >
-        <div className="flex items-center gap-3">
-          <Settings2 size={16} className="text-brand-blue" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-gray-400">Tùy chọn cấu hình</span>
-        </div>
-        <ChevronDown size={18} className={`text-slate-400 transition-transform duration-300 ${!isConfigCollapsed ? 'rotate-180' : ''}`} />
-      </button>
+    <>
+      <div className={`shrink-0 border-t border-black/[0.06] dark:border-white/[0.04] ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+        <div className="px-3 py-3 space-y-2.5">
 
-      <AnimatePresence>
-        {(!isConfigCollapsed || window.innerWidth >= 1024) && (
-          <motion.div 
-            initial={window.innerWidth < 1024 ? { height: 0, opacity: 0 } : undefined}
-            animate={window.innerWidth < 1024 ? { height: 'auto', opacity: 1 } : undefined}
-            exit={window.innerWidth < 1024 ? { height: 0, opacity: 0 } : undefined}
-            className="overflow-hidden p-6 space-y-6"
-          >
-            <UniversalModelSelector 
-              availableModels={props.availableModels}
-              selectedModelId={props.selectedModelObj?._id || ''}
-              onModelChange={(id) => props.setSelectedModelObj(props.availableModels.find(m => m._id === id) || null)}
-              selectedEngine={props.selectedEngine}
-              onEngineChange={props.setSelectedEngine}
-              disabled={props.isGenerating}
-              modeSelector={
-                <div className="relative">
-                  <select 
-                    value={props.selectedMode} 
-                    onChange={e => props.setSelectedMode(e.target.value)} 
-                    className="w-full bg-slate-50 dark:bg-[#16161a] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-800 dark:text-white shadow-sm"
+          {/* ─── MODEL FAMILY ─── */}
+          {props.familyList && props.familyList.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-[8px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider px-0.5">Model</p>
+              <div className="flex gap-1.5">
+                <div className="relative flex-grow">
+                  <select
+                    value={props.selectedFamily || ''}
+                    onChange={e => props.setSelectedFamily?.(e.target.value)}
+                    disabled={props.isGenerating}
+                    className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] px-2.5 py-1.5 rounded-lg text-[10px] font-medium outline-none appearance-none focus:border-indigo-500/40 transition-all cursor-pointer text-slate-800 dark:text-white/80"
                   >
-                    {props.selectedModelObj?.modes && props.selectedModelObj.modes.length > 0 ? (
-                      props.selectedModelObj.modes.map(m => (
-                        <option key={m} value={m}>{m.toUpperCase()}</option>
-                      ))
-                    ) : (
-                      <option value={props.selectedModelObj?.mode}>{props.selectedModelObj?.mode?.toUpperCase() || 'STANDARD'}</option>
-                    )}
+                    {props.familyList.map(f => <option key={f} value={f}>{f}</option>)}
                   </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-[#555] pointer-events-none" size={11} />
                 </div>
-              }
-            />
-
-            <div className="grid grid-cols-4 gap-2">
-              <div className="space-y-1.5 text-center">
-                <p className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600">Tỉ lệ</p>
-                <button onClick={props.cycleRatio} className="w-full py-2 border rounded-sm text-[8px] font-black uppercase transition-all bg-white dark:bg-[#1c1c1e] border-slate-200 dark:border-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue">{props.ratio}</button>
-              </div>
-
-              <DurationSelector value={props.duration} onClick={props.cycleDuration} />
-
-              <div className="space-y-1.5 text-center">
-                <p className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600">Âm thanh</p>
-                <button onClick={props.cycleSound} className={`w-full py-2 border rounded-sm text-[8px] font-black uppercase transition-all ${props.soundEnabled ? 'bg-purple-500 text-white border-purple-400 shadow-lg shadow-purple-500/20' : 'bg-white dark:bg-[#1c1c1e] border-slate-200 dark:border-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue'}`}>{props.soundEnabled ? 'Bật' : 'Tắt'}</button>
-              </div>
-
-              <div className="space-y-1.5 text-center">
-                <p className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600">P.Giải</p>
-                <button onClick={props.cycleResolution} className="w-full py-2 border rounded-sm text-[8px] font-black uppercase transition-all bg-white dark:bg-[#1c1c1e] border-slate-200 dark:border-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue">{props.resolution}</button>
+                <button
+                  onClick={() => setIsDetailModalOpen(true)}
+                  disabled={props.isGenerating}
+                  className="shrink-0 px-2 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-[8px] font-medium text-slate-500 dark:text-[#666] hover:text-indigo-500 dark:hover:text-indigo-400 hover:border-indigo-500/30 transition-all flex items-center gap-1"
+                  title="Xem chi tiết"
+                >
+                  <List size={10} />
+                </button>
               </div>
             </div>
+          )}
 
-            {/* QUANTITY ROW */}
-            {props.activeMode === 'SINGLE' && (
-              <div className="space-y-2 animate-in fade-in duration-300">
-                <label className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-[0.2em] px-1 italic">Số lượng tác vụ (Tối đa 4)</label>
-                <div className="flex bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/10">
-                   {[1, 2, 3, 4].map(num => (
-                     <button
-                       key={num}
-                       onClick={() => props.setQuantity(num)}
-                       className={`flex-1 py-2 text-[10px] font-black uppercase rounded-lg transition-all ${props.quantity === num ? 'bg-white dark:bg-white/10 text-brand-blue shadow-md' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
-                     >
-                       {num}
-                     </button>
-                   ))}
+          {/* ─── VARIANTS ─── */}
+          {allVariants.length > 1 && (
+            <div className="space-y-1">
+              <p className="text-[8px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider px-0.5 flex items-center gap-1">
+                Phiên bản {hasMoreVariants && <span className="text-[7px] text-slate-400 dark:text-[#444] normal-case not-italic font-normal">({allVariants.length})</span>}
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {visibleVariants.map(m => (
+                  <Pill key={m._id} label={stripFamily(m.name)} active={props.selectedModelObj?._id === m._id} onClick={() => props.setSelectedModelObj(m)} disabled={props.isGenerating} />
+                ))}
+                {extraSelected && (
+                  <Pill key={extraSelected._id} label={stripFamily(extraSelected.name)} active={true} onClick={() => props.setSelectedModelObj(extraSelected)} />
+                )}
+                {hasMoreVariants && (
+                  <button onClick={() => setShowAllVariants(!showAllVariants)} className="px-1.5 py-1 text-[7px] font-medium text-[#555] hover:text-indigo-400 transition-colors">
+                    {showAllVariants ? '↑ Thu gọn' : `+${allVariants.length - MAX_VARIANTS}`}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ─── MODES ─── */}
+          {modes.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-[8px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider px-0.5">Chế độ</p>
+              <div className="flex flex-wrap gap-1">
+                {modes.map(m => <Pill key={m} label={m} active={props.selectedMode === m} onClick={() => props.setSelectedMode(m)} disabled={props.isGenerating} />)}
+              </div>
+            </div>
+          )}
+
+          {/* ─── CONFIG ROW ─── */}
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            {/* Ratio */}
+            <div className="space-y-0.5">
+              <p className="text-[7px] font-semibold uppercase text-slate-400 dark:text-[#444] tracking-wider px-0.5">Tỷ lệ</p>
+              <div className="flex gap-0.5">
+                {ratios.map(r => <Pill key={r} label={r} active={props.ratio === r} onClick={() => props.setRatio ? props.setRatio(r) : props.cycleRatio()} />)}
+              </div>
+            </div>
+            {/* Resolution */}
+            <div className="space-y-0.5">
+              <p className="text-[7px] font-semibold uppercase text-slate-400 dark:text-[#444] tracking-wider px-0.5">P.Giải</p>
+              <div className="flex gap-0.5">
+                {resolutions.map(r => <Pill key={r} label={r} active={props.resolution === r} onClick={() => props.setResolution ? props.setResolution(r) : props.cycleResolution()} />)}
+              </div>
+            </div>
+            {/* Sound */}
+            <div className="space-y-0.5">
+              <p className="text-[7px] font-semibold uppercase text-slate-400 dark:text-[#444] tracking-wider px-0.5">Âm thanh</p>
+              <Pill label={props.soundEnabled ? 'ON' : 'OFF'} active={props.soundEnabled} onClick={props.cycleSound} />
+            </div>
+            {/* Duration */}
+            {!props.isModeBased && (
+              <div className="space-y-0.5">
+                <p className="text-[7px] font-semibold uppercase text-slate-400 dark:text-[#444] tracking-wider px-0.5">Thời lượng</p>
+                <Pill label={props.duration} active={true} onClick={props.cycleDuration} />
+              </div>
+            )}
+          </div>
+
+          {/* ─── QUANTITY (SINGLE) ─── */}
+          {props.activeMode === 'SINGLE' && (
+            <div className="flex items-center gap-2">
+              <p className="text-[7px] font-semibold uppercase text-slate-400 dark:text-[#444] tracking-wider">SL</p>
+              <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-md border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+                {[1, 2, 3, 4].map(n => (
+                  <button key={n} onClick={() => props.setQuantity(n)} className={`w-7 py-1 text-[8px] font-semibold transition-all ${props.quantity === n ? 'bg-indigo-500/15 text-indigo-500 dark:text-indigo-400' : 'text-slate-400 dark:text-[#555] hover:text-slate-700 dark:hover:text-white/70'}`}>{n}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ─── COST BAR ─── */}
+          <div className="flex items-center justify-between pt-1 border-t border-black/[0.06] dark:border-white/[0.04]">
+            <div className="flex items-center gap-2">
+              <button onClick={() => props.setShowResourceModal(true)} className="text-[#555] hover:text-indigo-400 transition-colors"><Settings size={11} /></button>
+              <span className={`text-[9px] font-medium ${props.usagePreference === 'key' ? 'text-violet-500 dark:text-violet-400' : 'text-slate-500 dark:text-[#666]'}`}>
+                {props.usagePreference === 'credits' ? `${props.credits.toLocaleString()} CR` : props.usagePreference === 'key' ? 'API Key' : '—'}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 text-amber-500/80">
+              <Zap size={9} fill="currentColor" />
+              <span className="text-[9px] font-semibold">{props.usagePreference === 'key' ? '0' : props.currentTotalCost}</span>
+            </div>
+          </div>
+
+          {/* ─── AUTO MODEL INFO ─── */}
+          {props.selectedModelObj && (
+            <p className="text-[7px] text-[#444] truncate px-0.5">
+              → {props.selectedModelObj.name} <span className="text-[#333]">({props.selectedModelObj.modelKey})</span>
+            </p>
+          )}
+        </div>
+
+        {/* ─── GENERATE BUTTON ─── */}
+        <div className="px-3 pb-3">
+          <div className="relative group/btn">
+            <button
+              onClick={props.handleGenerate}
+              disabled={props.isGenerateDisabled}
+              className={`w-full py-3 rounded-xl text-white font-semibold uppercase text-[9px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2 ${props.isGenerateDisabled
+                ? 'bg-slate-100 dark:bg-white/[0.04] text-slate-400 dark:text-[#444] cursor-not-allowed'
+                : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:brightness-110 active:scale-[0.98] shadow-indigo-500/20'
+                }`}
+            >
+              {props.isGenerating ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} fill="currentColor" />}
+              {props.activeMode === 'AUTO' ? `Chạy ${props.autoTasksCount} tác vụ` : props.activeMode === 'MULTI' ? `Tạo ${props.multiFramesCount} video` : 'Tạo Video'}
+            </button>
+            {props.generateTooltip && (
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover/btn:opacity-100 pointer-events-none transition-all z-50">
+                <div className="bg-white dark:bg-[#1a1a1e] text-slate-700 dark:text-white/80 text-[8px] font-medium px-2.5 py-1 rounded-md shadow-xl whitespace-nowrap border border-black/[0.08] dark:border-white/10">
+                  {props.generateTooltip}
                 </div>
               </div>
             )}
-            
-            <div className="flex flex-col gap-4 border-t border-black/5 dark:border-white/5 pt-4">
-              <div className="flex items-center justify-between px-1">
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-col">
-                    <span className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest leading-none">Nguồn</span>
-                    <span className={`text-[10px] font-black uppercase tracking-tight leading-none ${props.usagePreference === 'key' ? 'text-purple-500' : 'text-brand-blue'}`}>
-                        {props.usagePreference === 'credits' ? `Credits (${props.credits.toLocaleString()} CR)` : props.usagePreference === 'key' ? 'API Key' : 'N/A'}
-                    </span>
-                  </div>
-                  <button onClick={() => props.setShowResourceModal(true)} className="p-1 text-slate-400 hover:text-brand-blue transition-all">
-                    <Settings size={14} />
-                  </button>
-                </div>
-
-                <div className="text-right flex flex-col items-end">
-                   <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest mb-1">Chi phí</span>
-                   <div className="flex items-center gap-1 text-orange-500 leading-none">
-                      <Zap size={10} fill="currentColor" />
-                      <span className="text-[11px] font-black italic">{props.usagePreference === 'key' ? '0' : props.currentTotalCost} credits</span>
-                   </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
-      <div className="p-6 pt-2">
-        <div className="relative group/genbtn">
-           <button 
-             onClick={props.handleGenerate} 
-             disabled={props.isGenerateDisabled} 
-             className={`w-full py-5 rounded-xl text-white font-black uppercase text-xs tracking-[0.3em] shadow-xl transition-all flex items-center justify-center gap-4 ${props.isGenerateDisabled ? 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400 cursor-not-allowed' : 'bg-purple-600 hover:brightness-110 active:scale-[0.97]'}`}
-           >
-              {props.isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} fill="currentColor" />}
-              {props.activeMode === 'AUTO' ? `KHỞI CHẠY ${props.autoTasksCount} TÁC VỤ` : props.activeMode === 'MULTI' ? `TẠO ${props.multiFramesCount} VIDEO` : 'TẠO VIDEO'}
-           </button>
-
-           {props.generateTooltip && (
-             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 opacity-0 group-hover/genbtn:opacity-100 pointer-events-none transition-all duration-300 translate-y-2 group-hover/genbtn:translate-y-0 z-[100]">
-                <div className="bg-slate-800 dark:bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded shadow-2xl whitespace-nowrap border border-white/10 relative">
-                   {props.generateTooltip}
-                   <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 dark:bg-slate-900 rotate-45 -mb-1 border-r border-b border-white/10"></div>
-                </div>
-             </div>
-           )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* ─── DETAIL MODAL ─── */}
+      <AnimatePresence>
+        {isDetailModalOpen && (
+          <ModelSelectorModal
+            isOpen={isDetailModalOpen}
+            onClose={() => setIsDetailModalOpen(false)}
+            models={props.availableModels}
+            selectedModelId={props.selectedModelObj?._id || ''}
+            onSelect={(id) => {
+              const model = props.availableModels.find(m => m._id === id);
+              if (model) {
+                props.setSelectedModelObj(model);
+                const KNOWN = ['VEO', 'Kling', 'Hailuo', 'Grok', 'Sora', 'WAN', 'Wan', 'V-Fuse', 'OmniHuman', 'Seedance'];
+                const name = model.name.trim();
+                let fam = name.split(/\s*-\s/)[0].split(/\s+/)[0] || 'Other';
+                for (const f of KNOWN) {
+                  if (name.toLowerCase().startsWith(f.toLowerCase())) { fam = f; break; }
+                }
+                props.setSelectedFamily?.(fam);
+              }
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 };

@@ -49,7 +49,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
           <div className="flex items-center gap-2">
             <button 
               onClick={(e) => { e.stopPropagation(); onOpenLibrary(); }}
-              className="w-11 h-11 flex items-center justify-center bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl text-slate-400 hover:text-brand-blue shadow-sm active:scale-90 transition-all"
+              className="w-11 h-11 flex items-center justify-center bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl text-slate-400 hover:text-rose-500 shadow-sm active:scale-90 transition-all"
             >
               <FolderOpen size={18} />
             </button>
@@ -66,7 +66,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
 
             <button 
               onClick={(e) => { e.stopPropagation(); setIsExpanded(true); }}
-              className="w-11 h-11 flex items-center justify-center bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl text-slate-400 hover:text-brand-blue shadow-sm active:scale-90 transition-all"
+              className="w-11 h-11 flex items-center justify-center bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl text-slate-400 hover:text-rose-500 shadow-sm active:scale-90 transition-all"
             >
               <SlidersHorizontal size={16} />
             </button>
@@ -79,7 +79,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
                 <div className="flex flex-col items-start leading-none gap-0.5">
                    <span className="text-[6px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">Ví</span>
                    <div className="flex items-center gap-1">
-                      <Sparkles size={8} className="text-brand-blue" />
+                      <Sparkles size={8} className="text-rose-500" />
                       <span className="text-[10px] font-black text-slate-700 dark:text-zinc-300 italic">{(credits || 0).toLocaleString()}</span>
                    </div>
                 </div>
@@ -100,7 +100,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
                className={`flex-grow h-10 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 relative overflow-hidden ${
                  isGenerateDisabled 
                   ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 grayscale cursor-not-allowed' 
-                  : 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20 hover:brightness-110 active:scale-95'
+                  : 'bg-rose-500 text-white shadow-lg shadow-rose-500/20 hover:brightness-110 active:scale-95'
                }`}
              >
                {!isGenerateDisabled && (
@@ -119,7 +119,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
         /* Expanded View Header */
         <div className="flex items-center justify-between w-full px-8">
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue">
+            <div className="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-500">
               <SlidersHorizontal size={14} />
             </div>
             <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white italic">Cấu hình thuật toán</h2>

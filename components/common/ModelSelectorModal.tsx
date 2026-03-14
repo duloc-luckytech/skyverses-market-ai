@@ -2,15 +2,15 @@
 import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Video, ImageIcon, Zap, MousePointer2, 
-  Terminal, Share2, Wand2, RefreshCw, Move, 
-  User, Clock, Monitor, Hash, Cpu, Globe,
-  LayoutGrid, ChevronRight, Activity, Scan,
-  Layers
+import {
+  X, Zap, Search, Check,
+  Video, Image as ImageIcon, Layers, ChevronRight, ChevronDown
 } from 'lucide-react';
 import { PricingModel } from '../../apis/pricing';
 
+/* =====================================================
+   TYPES & CONFIG
+===================================================== */
 interface ModelSelectorModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -19,199 +19,348 @@ interface ModelSelectorModalProps {
   onSelect: (id: string) => void;
 }
 
-// Cấu hình Icon và Mô tả cho các Động cơ (Engines)
-const ENGINE_ICONS: Record<string, any> = {
-  kling: { icon: Video, label: 'Kling', desc: 'Động lực học hoàn hảo, kiểm soát nâng cao' },
-  google: { icon: Globe, label: 'Google', desc: 'Video chính xác, tích hợp âm thanh' },
-  grok: { icon: Terminal, label: 'Grok', desc: 'Kiến tạo video thế hệ mới' },
-  auto: { icon: Cpu, label: 'Auto', desc: 'Luồng tổng hợp kịch bản tự động' },
-  bytedance: { icon: Activity, label: 'Bytedance', desc: 'Chuyển động điện ảnh đa chiều' },
-  hailuo: { icon: Activity, label: 'Hailuo', desc: 'Động lực cao, sẵn sàng cho kỹ xảo' },
-  sora: { icon: Zap, label: 'Sora', desc: 'Khởi tạo video đa phân cảnh' },
+const ENGINE_META: Record<string, { label: string; color: string }> = {
+  gommo: { label: 'Gommo', color: 'bg-violet-500/10 text-violet-500 border-violet-500/20' },
+  fxlab: { label: 'FxLab', color: 'bg-sky-500/10 text-sky-500 border-sky-500/20' },
+  wan: { label: 'Wan', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
 };
 
+/** Trích xuất tên family từ model name.
+ *  "Kling - 1.6 - 10s" → "Kling"
+ *  "VEO 3.1 - HOT" → "VEO"
+ *  "Hailuo 2.3" → "Hailuo"
+ *  "Grok Video - Heavy" → "Grok"
+ *  "Sora 2" → "Sora"
+ *  "V-Fuse  - 1.0" → "V-Fuse"
+ *  "OmniHuman 1.5" → "OmniHuman"
+ *  "Seedance 2.0 - Omni" → "Seedance"
+ *  "Wan 2.2 Animate" → "Wan"
+ */
+function extractFamily(name: string): string {
+  // Normalize: trim and unify separators
+  const n = name.trim();
+  // Try matching known patterns: "Word" or "Word-Word" before a separator like " - ", digit, space+digit
+  // Split by " - " first
+  const dashParts = n.split(/\s*-\s*/);
+  const first = dashParts[0].trim();
+  // Take the first word(s) that form the family name
+  // Handle "V-Fuse" → starts with V- then next segment already split. Actually "V-Fuse" splits into ["V", "Fuse", ...]
+  // So we need a different approach for hyphenated names
+
+  // Known family prefixes to match exactly
+  const KNOWN_FAMILIES = [
+    'VEO', 'Kling', 'Hailuo', 'Grok', 'Sora', 'WAN', 'Wan',
+    'V-Fuse', 'OmniHuman', 'Seedance', 'Bytedance'
+  ];
+
+  for (const fam of KNOWN_FAMILIES) {
+    if (n.toLowerCase().startsWith(fam.toLowerCase())) {
+      return fam;
+    }
+  }
+
+  // Fallback: take first word
+  const firstWord = first.split(/\s+/)[0];
+  return firstWord || 'Other';
+}
+
+const FAMILY_COLORS: Record<string, string> = {
+  'VEO': 'bg-blue-500',
+  'Kling': 'bg-purple-500',
+  'Hailuo': 'bg-orange-500',
+  'Grok': 'bg-red-500',
+  'Sora': 'bg-pink-500',
+  'WAN': 'bg-teal-500',
+  'Wan': 'bg-teal-500',
+  'V-Fuse': 'bg-cyan-500',
+  'OmniHuman': 'bg-amber-500',
+  'Seedance': 'bg-lime-500',
+};
+
+/* =====================================================
+   MAIN COMPONENT
+===================================================== */
 export const ModelSelectorModal: React.FC<ModelSelectorModalProps> = ({
-  isOpen,
-  onClose,
-  models,
-  selectedModelId,
-  onSelect
+  isOpen, onClose, models, selectedModelId, onSelect
 }) => {
-  // Nhóm các model theo Engine
+  const [searchQuery, setSearchQuery] = useState('');
+  // All families start collapsed; we track which are EXPANDED
+  const [expandedFamilies, setExpandedFamilies] = useState<Set<string>>(new Set());
+
+  // Group models by engine
   const engineGroups = useMemo(() => {
     const groups: Record<string, PricingModel[]> = {};
     models.forEach(m => {
-      const engineKey = m.name.split(' ')[0].toLowerCase().replace(/[^a-z]/g, '');
-      if (!groups[engineKey]) groups[engineKey] = [];
-      groups[engineKey].push(m);
+      const key = (m.engine || 'other').toLowerCase();
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(m);
     });
     return groups;
   }, [models]);
 
   const sortedEngines = useMemo(() => Object.keys(engineGroups).sort(), [engineGroups]);
 
-  // Xác định engine mặc định dựa trên model đang được chọn
   const initialEngine = useMemo(() => {
     if (selectedModelId) {
-      const currentModel = models.find(m => m._id === selectedModelId);
-      if (currentModel) {
-        return currentModel.name.split(' ')[0].toLowerCase().replace(/[^a-z]/g, '');
-      }
+      const current = models.find(m => m._id === selectedModelId);
+      if (current) return (current.engine || 'other').toLowerCase();
     }
     return sortedEngines[0] || '';
   }, [selectedModelId, models, sortedEngines]);
 
   const [activeEngine, setActiveEngine] = useState<string>(initialEngine);
 
+  // Filter + group by family
+  const familyGroups = useMemo(() => {
+    let result = engineGroups[activeEngine] || [];
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(m =>
+        m.name.toLowerCase().includes(q) ||
+        m.modelKey.toLowerCase().includes(q) ||
+        (m.modes || []).some(mode => mode.toLowerCase().includes(q))
+      );
+    }
+    // Group by family
+    const families: Record<string, PricingModel[]> = {};
+    result.forEach(m => {
+      const fam = extractFamily(m.name);
+      if (!families[fam]) families[fam] = [];
+      families[fam].push(m);
+    });
+    // Sort families: larger groups first, then alphabetically
+    return Object.entries(families).sort(([a, aModels], [b, bModels]) => {
+      if (bModels.length !== aModels.length) return bModels.length - aModels.length;
+      return a.localeCompare(b);
+    });
+  }, [engineGroups, activeEngine, searchQuery]);
+
+  const totalFiltered = useMemo(() => familyGroups.reduce((sum, [, ms]) => sum + ms.length, 0), [familyGroups]);
+
+  // Auto-expand family of selected model on first render
+  React.useEffect(() => {
+    if (selectedModelId) {
+      const current = models.find(m => m._id === selectedModelId);
+      if (current) {
+        const fam = extractFamily(current.name);
+        setExpandedFamilies(new Set([fam]));
+      }
+    }
+  }, []);
+
+  const toggleFamily = (fam: string) => {
+    setExpandedFamilies(prev => {
+      const next = new Set(prev);
+      if (next.has(fam)) next.delete(fam); else next.add(fam);
+      return next;
+    });
+  };
+
   if (!isOpen) return null;
 
-  const currentModels = engineGroups[activeEngine] || [];
-
   return createPortal(
-    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 md:p-10 pointer-events-none">
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/90 backdrop-blur-xl pointer-events-auto" 
-        onClick={onClose} 
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 md:p-8">
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/80 backdrop-blur-lg"
+        onClick={onClose}
       />
-      
-      <motion.div 
-        initial={{ scale: 0.95, opacity: 0, y: 30 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0, y: 30 }}
-        className="relative w-full h-full max-h-[85vh] max-w-6xl bg-white dark:bg-[#0d0d0f] border border-black/10 dark:border-white/10 rounded-[2rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.5)] flex flex-col md:flex-row transition-all duration-500 pointer-events-auto"
-      >
-        {/* SIDEBAR: LỰA CHỌN ĐỘNG CƠ (ENGINE) */}
-        <aside className="w-full md:w-80 shrink-0 border-r border-slate-200 dark:border-white/5 flex flex-col bg-slate-50 dark:bg-black/40">
-           <div className="p-8 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
-              <div className="space-y-0.5">
-                 <h2 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Danh mục Model</h2>
-                 <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Lựa chọn công nghệ xử lý</p>
-              </div>
-              <button onClick={onClose} className="md:hidden text-gray-400"><X /></button>
-           </div>
 
-           <div className="flex-grow overflow-y-auto no-scrollbar p-3 space-y-2">
-              {sortedEngines.map(engKey => {
-                const info = ENGINE_ICONS[engKey] || { icon: Layers, label: engKey.toUpperCase(), desc: 'Nút mạng nơ-ron cục bộ' };
-                const Icon = info.icon;
-                const isActive = activeEngine === engKey;
-                return (
-                  <button 
-                    key={engKey}
-                    onClick={() => setActiveEngine(engKey)}
-                    className={`w-full p-5 rounded-2xl flex items-center justify-between transition-all group ${isActive ? 'bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow-xl' : 'hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'}`}
-                  >
-                    <div className="flex items-center gap-4">
-                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${isActive ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'bg-slate-100 dark:bg-white/5 text-gray-500 group-hover:text-slate-900 dark:group-hover:text-white'}`}>
-                          <Icon size={20} />
-                       </div>
-                       <div className="text-left space-y-0.5 overflow-hidden">
-                          <p className={`text-[13px] font-black uppercase tracking-tight ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white'}`}>{info.label}</p>
-                          <p className="text-[9px] font-bold text-gray-400 truncate max-w-[140px]">{info.desc}</p>
-                       </div>
-                    </div>
-                    {isActive && <ChevronRight size={16} className="text-brand-blue" />}
-                  </button>
-                );
-              })}
-           </div>
+      <motion.div
+        initial={{ scale: 0.96, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.96, opacity: 0, y: 20 }}
+        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+        className="relative w-full max-w-4xl max-h-[82vh] bg-white dark:bg-[#0e0e11] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row"
+      >
+        {/* ======= LEFT: ENGINE TABS ======= */}
+        <aside className="w-full md:w-48 shrink-0 border-b md:border-b-0 md:border-r border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-black/30 flex md:flex-col">
+          <div className="hidden md:flex items-center gap-2.5 px-4 py-3.5 border-b border-slate-200 dark:border-white/[0.06]">
+            <Layers size={14} className="text-violet-500" />
+            <span className="text-xs font-bold text-slate-900 dark:text-white">Chọn Model</span>
+          </div>
+          <div className="flex md:flex-col overflow-x-auto md:overflow-y-auto md:flex-grow no-scrollbar p-2 gap-1">
+            {sortedEngines.map(engKey => {
+              const meta = ENGINE_META[engKey] || { label: engKey.charAt(0).toUpperCase() + engKey.slice(1), color: 'bg-slate-500/10 text-slate-500 border-slate-500/20' };
+              const isActive = activeEngine === engKey;
+              const count = engineGroups[engKey]?.length || 0;
+              return (
+                <button
+                  key={engKey}
+                  onClick={() => { setActiveEngine(engKey); setSearchQuery(''); }}
+                  className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-all shrink-0 ${isActive
+                    ? 'bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow-md text-slate-900 dark:text-white'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5 border border-transparent'
+                    }`}
+                >
+                  <span className="text-[11px] font-bold">{meta.label}</span>
+                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${meta.color}`}>{count}</span>
+                  {isActive && <ChevronRight size={12} className="hidden md:block ml-auto text-violet-500" />}
+                </button>
+              );
+            })}
+          </div>
         </aside>
 
-        {/* MAIN: DANH SÁCH MÔ HÌNH */}
-        <main className="flex-grow flex flex-col overflow-hidden bg-white dark:bg-[#0d0d0f]">
-           <header className="h-20 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-10 shrink-0">
-              <div className="flex items-center gap-3">
-                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 italic">Hệ thống: {activeEngine.toUpperCase()} — Trạng thái: Sẵn sàng</span>
+        {/* ======= RIGHT: MODELS LIST ======= */}
+        <main className="flex-grow flex flex-col min-w-0 overflow-hidden">
+          {/* Search + Close */}
+          <div className="shrink-0 flex items-center gap-3 px-5 py-3 border-b border-slate-200 dark:border-white/[0.06]">
+            <div className="relative flex-grow">
+              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Tìm model, key..."
+                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg pl-9 pr-4 py-2 text-xs outline-none focus:border-violet-500 text-slate-800 dark:text-white transition-all"
+                autoFocus
+              />
+            </div>
+            <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"><X size={18} /></button>
+          </div>
+
+          {/* Model cards grouped by family */}
+          <div className="flex-grow overflow-y-auto no-scrollbar p-4 space-y-3">
+            {familyGroups.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 opacity-40">
+                <Search size={32} className="mb-3" />
+                <p className="text-sm font-medium">Không tìm thấy model</p>
               </div>
-              <button onClick={onClose} className="hidden md:block p-2 text-gray-400 hover:text-red-500 transition-colors">
-                <X size={24} />
-              </button>
-           </header>
-
-           <div className="flex-grow overflow-y-auto no-scrollbar p-10 space-y-12 bg-[#fcfcfd] dark:bg-[#0d0d0f]">
-              {currentModels.map((model) => {
-                const isMotion = model.name.toLowerCase().includes('motion');
-                const isEdit = model.name.toLowerCase().includes('o1') || model.name.toLowerCase().includes('edit');
-                const isLipsync = model.name.toLowerCase().includes('lipsync');
-                const isSelected = selectedModelId === model._id;
-                
-                // Tính toán dải giá
-                const prices: number[] = [];
-                Object.values(model.pricing || {}).forEach(res => {
-                  Object.values(res).forEach(p => prices.push(p as number));
-                });
-                const minPrice = Math.min(...prices);
-                const maxPrice = Math.max(...prices);
-
+            ) : (
+              familyGroups.map(([family, familyModels]) => {
+                const isExpanded = expandedFamilies.has(family);
+                const familyColor = FAMILY_COLORS[family] || 'bg-slate-500';
+                const hasSelected = familyModels.some(m => m._id === selectedModelId);
+                // Aggregate info for collapsed preview
+                const allModes = [...new Set(familyModels.flatMap(m => m.modes || []))];
+                const allResolutions = [...new Set(familyModels.flatMap(m => Object.keys(m.pricing || {})))];
+                const allPrices: number[] = [];
+                familyModels.forEach(m => Object.values(m.pricing || {}).forEach(res => Object.values(res).forEach(p => allPrices.push(p as number))));
+                const familyPriceRange = allPrices.length > 0 ? (Math.min(...allPrices) === Math.max(...allPrices) ? `${Math.min(...allPrices)} CR` : `${Math.min(...allPrices)}–${Math.max(...allPrices)} CR`) : null;
                 return (
-                  <div 
-                    key={model._id}
-                    onClick={() => { onSelect(model._id); onClose(); }}
-                    className={`p-8 border-2 rounded-[2.5rem] space-y-6 transition-all cursor-pointer group relative overflow-hidden ${isSelected ? 'bg-brand-blue/5 border-brand-blue shadow-2xl shadow-brand-blue/10' : 'bg-white dark:bg-white/[0.02] border-slate-200 dark:border-white/5 hover:border-brand-blue/20'}`}
-                  >
-                     <div className="flex justify-between items-start">
-                        <div className="space-y-4 flex-grow pr-8">
-                           <div className="flex items-center gap-4">
-                              <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">{model.name}</h3>
-                              {isSelected ? (
-                                <span className="px-3 py-1 bg-brand-blue text-white text-[9px] font-black rounded-lg uppercase tracking-widest shadow-lg">ĐANG CHỌN</span>
-                              ) : (
-                                <span className="px-3 py-1 bg-emerald-600 text-white text-[9px] font-black rounded-lg uppercase tracking-widest shadow-lg">MỚI</span>
-                              )}
-                           </div>
-                           <p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed italic max-w-2xl">
-                             {model.description || `Mô hình cao cấp từ hệ sinh thái ${model.engine.toUpperCase()}, tối ưu hóa ${model.tool} với độ trung thực tuyệt đối và tính nhất quán định danh.`}
-                           </p>
+                  <div key={family} className={`rounded-xl border overflow-hidden transition-all ${hasSelected ? 'border-violet-500/30 shadow-sm' : 'border-slate-200 dark:border-white/[0.06]'}`}>
+                    {/* Family header — shows summary info */}
+                    <button
+                      onClick={() => toggleFamily(family)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 transition-colors ${isExpanded ? 'bg-slate-100 dark:bg-white/[0.04]' : 'bg-slate-50 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.04]'}`}
+                    >
+                      <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${familyColor}`}></div>
+                      <div className="flex-grow min-w-0 text-left">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white">{family}</span>
+                          <span className="text-[9px] text-slate-400 font-medium">{familyModels.length} variants</span>
+                          {hasSelected && <span className="text-[8px] font-bold text-violet-500 bg-violet-500/10 px-2 py-0.5 rounded-full border border-violet-500/20">✓ Đang chọn</span>}
                         </div>
-                        <div className="shrink-0 pt-1">
-                           <div className="bg-orange-500/10 border border-orange-500/20 px-6 py-3 rounded-full flex items-center gap-3 shadow-xl">
-                              <Zap size={14} className="text-orange-500" fill="currentColor" />
-                              <span className="text-sm font-black italic text-orange-500">{minPrice} - {maxPrice} CR/Giây</span>
-                           </div>
-                        </div>
-                     </div>
+                        {/* Preview tags on collapsed state */}
+                        {!isExpanded && (
+                          <div className="flex flex-wrap gap-1">
+                            {allModes.slice(0, 4).map(m => (
+                              <span key={m} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">{m}</span>
+                            ))}
+                            {allResolutions.slice(0, 3).map(r => (
+                              <span key={r} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/5 text-slate-500 border border-slate-200 dark:border-white/10">{r}</span>
+                            ))}
+                            {familyPriceRange && (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[7px] font-bold bg-orange-500/10 text-orange-500 border border-orange-500/20">
+                                <Zap size={7} fill="currentColor" />{familyPriceRange}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <ChevronDown size={14} className={`shrink-0 text-slate-400 transition-transform ${isExpanded ? '' : '-rotate-90'}`} />
+                    </button>
 
-                     <div className="flex flex-wrap gap-3">
-                        <FeatureTag icon={<Wand2 />} label="Văn bản → Video" />
-                        {isEdit && <FeatureTag icon={<RefreshCw />} label="Tái cấu trúc (Remix)" color="bg-indigo-500/10 text-indigo-400" />}
-                        {isMotion && <FeatureTag icon={<Move />} label="Động lực học (Motion)" color="bg-cyan-500/10 text-cyan-400" />}
-                        {isLipsync && <FeatureTag icon={<Scan />} label="Đồng bộ môi (Lipsync)" color="bg-pink-500/10 text-pink-400" />}
-                        <FeatureTag icon={<ImageIcon />} label="Hình ảnh → Video" />
-                        <FeatureTag icon={<User />} label="Nhân vật (Character)" color="bg-orange-500/10 text-orange-400" />
-                     </div>
+                    {/* Family models — only when expanded */}
+                    {isExpanded && (
+                      <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                        {familyModels.map((model) => {
+                          const isSelected = selectedModelId === model._id;
+                          const prices: number[] = [];
+                          Object.values(model.pricing || {}).forEach(res => {
+                            Object.values(res).forEach(p => prices.push(p as number));
+                          });
+                          const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+                          const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+                          const resolutions = Object.keys(model.pricing || {});
 
-                     <div className="flex items-center gap-10 pt-4 border-t border-slate-100 dark:border-white/5 opacity-40">
-                        <div className="flex items-center gap-3">
-                           <Monitor size={14} className="text-gray-400" />
-                           <span className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white">TIÊU CHUẨN</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                           <Clock size={14} className="text-gray-400" />
-                           <span className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white">10 GIÂY</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                           <LayoutGrid size={14} className="text-gray-400" />
-                           <span className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white">TỶ LỆ 1:1</span>
-                        </div>
-                     </div>
+                          return (
+                            <button
+                              key={model._id}
+                              onClick={() => { onSelect(model._id); onClose(); }}
+                              className={`w-full text-left px-4 py-3 transition-all group ${isSelected
+                                ? 'bg-violet-50 dark:bg-violet-500/5'
+                                : 'hover:bg-slate-50/80 dark:hover:bg-white/[0.015]'
+                                }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                {/* Selected indicator */}
+                                {isSelected ? (
+                                  <div className="shrink-0 w-5 h-5 bg-violet-500 rounded-md flex items-center justify-center"><Check size={11} className="text-white" /></div>
+                                ) : (
+                                  <div className="shrink-0 w-5 h-5 border-2 border-slate-200 dark:border-white/10 rounded-md group-hover:border-violet-500/40 transition-colors"></div>
+                                )}
+
+                                {/* Info */}
+                                <div className="flex-grow min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-xs font-semibold text-slate-900 dark:text-white truncate">{model.name}</span>
+                                    <span className="text-[9px] text-slate-400 font-mono shrink-0">{model.modelKey}</span>
+                                  </div>
+                                  {/* Tags row */}
+                                  <div className="flex flex-wrap gap-1">
+                                    {/* Tool */}
+                                    <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[7px] font-bold uppercase border ${model.tool === 'video' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' : 'bg-sky-500/10 text-sky-500 border-sky-500/20'}`}>
+                                      {model.tool === 'video' ? <Video size={7} /> : <ImageIcon size={7} />}
+                                      {model.tool}
+                                    </span>
+                                    {/* Modes */}
+                                    {model.modes && model.modes.length > 0 && model.modes.slice(0, 3).map(m => (
+                                      <span key={m} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">{m}</span>
+                                    ))}
+                                    {model.modes && model.modes.length > 3 && (
+                                      <span className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/5 text-slate-400 border border-slate-200 dark:border-white/10">+{model.modes.length - 3}</span>
+                                    )}
+                                    {/* Resolutions */}
+                                    {resolutions.map(r => (
+                                      <span key={r} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/5 text-slate-500 border border-slate-200 dark:border-white/10">{r}</span>
+                                    ))}
+                                    {/* Aspect Ratios */}
+                                    {model.aspectRatios && model.aspectRatios.length > 0 && model.aspectRatios.slice(0, 3).map(ar => (
+                                      <span key={ar} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">{ar}</span>
+                                    ))}
+                                    {model.aspectRatios && model.aspectRatios.length > 3 && (
+                                      <span className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/5 text-slate-400 border border-slate-200 dark:border-white/10">+{model.aspectRatios.length - 3}</span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Price */}
+                                <div className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 bg-orange-500/10 rounded-lg border border-orange-500/20">
+                                  <Zap size={9} className="text-orange-500" fill="currentColor" />
+                                  <span className="text-[9px] font-bold text-orange-500 whitespace-nowrap">
+                                    {minPrice === maxPrice ? `${minPrice}` : `${minPrice}–${maxPrice}`}
+                                  </span>
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 );
-              })}
-           </div>
+              })
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="shrink-0 px-5 py-2 border-t border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-black/30 flex items-center justify-between">
+            <span className="text-[10px] text-slate-400 font-medium">{totalFiltered} models · {familyGroups.length} families</span>
+            <span className="text-[10px] text-slate-400 font-medium">{activeEngine.toUpperCase()}</span>
+          </div>
         </main>
       </motion.div>
     </div>,
     document.body
   );
 };
-
-const FeatureTag = ({ icon, label, color = "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-300" }: any) => (
-  <div className={`flex items-center gap-2.5 px-4 py-2 rounded-xl border border-black/5 dark:border-white/5 font-black text-[10px] uppercase tracking-wider italic transition-all ${color}`}>
-    {React.cloneElement(icon, { size: 14 })}
-    {label}
-  </div>
-);

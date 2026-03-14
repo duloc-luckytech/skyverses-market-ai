@@ -12,14 +12,14 @@ const AIImageGenerator = () => {
 
   if (isStudioOpen) {
     return (
-      <div className="fixed inset-0 z-[500] bg-white dark:bg-black animate-in fade-in duration-500">
+      <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0a0c] animate-in fade-in duration-500">
         <AIImageGeneratorWorkspace onClose={() => setIsStudioOpen(false)} />
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-white dark:bg-[#0a0a0c] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
       <HeroSection onStartStudio={() => setIsStudioOpen(true)} />
       <WorkflowSection />
       <ModesSection />

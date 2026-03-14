@@ -1,61 +1,45 @@
-
 import React from 'react';
-import { ImageIcon, LayoutGrid, CheckCircle2 } from 'lucide-react';
+import { Image as ImageIcon, Layers, ArrowUpCircle } from 'lucide-react';
 
-export const ModesSection: React.FC = () => {
-  return (
-    <section className="py-40 bg-white dark:bg-[#050507] relative z-10 transition-colors duration-500">
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
-        <div className="text-center space-y-4 mb-32">
-          <span className="text-brand-blue font-black uppercase tracking-[0.6em] text-[11px]">Operation Modes</span>
-          <h2 className="text-4xl lg:text-8xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white transition-colors">Single vs Batch <span className="text-brand-blue">Mode.</span></h2>
-          <p className="text-slate-500 dark:text-gray-400 font-medium max-w-2xl mx-auto italic">Chọn chế độ vận hành tối ưu cho mục đích sáng tạo hoặc sản xuất quy mô.</p>
-        </div>
+const MODES = [
+  {
+    icon: ImageIcon, title: 'Đơn lẻ (Single)',
+    features: ['Nhập 1 prompt → tạo 1–4 bản cùng lúc', 'Tải tối đa 6 ảnh tham chiếu hướng dẫn AI', 'Fullscreen preview + Edit trực tiếp', 'Auto Download & chọn nhiều bản để tải'],
+  },
+  {
+    icon: Layers, title: 'Hàng loạt (Batch)',
+    features: ['Tối đa 10 prompt song song', 'Nhập nhanh từ clipboard — mỗi dòng 1 prompt', 'Mỗi prompt tạo ảnh riêng biệt', 'Quản lý, retry, xóa từng bản ghi'],
+  },
+  {
+    icon: ArrowUpCircle, title: 'Nâng cấp ảnh (Upscale)',
+    features: ['Model: Nâng cấp ảnh AI', '3 chế độ: Professional, Standard, Generative Real', 'Upscale lên 2K / 4K / 8K / 10K / 12K', 'Giữ nguyên chi tiết, cải thiện độ sắc nét'],
+  },
+];
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-2xl rounded-sm overflow-hidden">
-          {/* Single Mode */}
-          <div className="p-16 lg:p-24 bg-white dark:bg-[#0d0d0f] space-y-12 transition-all hover:bg-brand-blue/[0.01] border-r border-black/5 dark:border-white/5">
-            <div className="flex justify-between items-start">
-              <div className="w-16 h-16 rounded-[2rem] bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner">
-                <ImageIcon size={32} />
+export const ModesSection: React.FC = () => (
+  <section className="px-6 lg:px-16 py-16 border-t border-black/[0.06] dark:border-white/[0.04]">
+    <div className="max-w-6xl mx-auto">
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-rose-500/60 dark:text-rose-400/60 mb-2">CHẾ ĐỘ TẠO ẢNH</p>
+      <h2 className="text-2xl lg:text-3xl font-bold mb-10">3 chế độ sáng tạo</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {MODES.map(m => (
+          <div key={m.title} className="p-5 rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.015] hover:border-rose-500/15 transition-all">
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center">
+                <m.icon size={14} className="text-rose-500 dark:text-rose-400" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 italic">Concept Testing</span>
+              <h3 className="text-sm font-semibold">{m.title}</h3>
             </div>
-            <div className="space-y-6">
-              <h3 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white transition-colors">Đơn lẻ (Single)</h3>
-              <p className="text-lg text-slate-500 dark:text-gray-400 font-medium leading-relaxed italic border-l-2 border-brand-blue pl-6">"Phù hợp để test ý tưởng, tinh chỉnh concept và hoàn thiện kịch bản chi tiết."</p>
-            </div>
-            <ul className="space-y-4">
-              {['Kiến tạo từng ảnh với độ tập trung cao', 'Tối ưu hóa prompt theo từng lượt render', 'Hoàn hảo cho giai đoạn lên Concept Art', 'Kiểm soát chi tiết nhân dạng chính xác'].map(f => (
-                <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-gray-400 italic">
-                  <CheckCircle2 size={16} className="text-emerald-500" /> {f}
+            <ul className="space-y-2">
+              {m.features.map((f, i) => (
+                <li key={i} className="text-[11px] text-slate-500 dark:text-white/30 leading-relaxed flex items-start gap-2">
+                  <span className="text-rose-500/50 mt-0.5">▸</span> {f}
                 </li>
               ))}
             </ul>
           </div>
-
-          {/* Batch Mode */}
-          <div className="p-16 lg:p-24 bg-white dark:bg-[#0d0d0f] space-y-12 transition-all hover:bg-purple-500/[0.01]">
-            <div className="flex justify-between items-start">
-              <div className="w-16 h-16 rounded-[2rem] bg-purple-500/10 flex items-center justify-center text-purple-500 shadow-inner">
-                <LayoutGrid size={32} />
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 italic">Production Scale</span>
-            </div>
-            <div className="space-y-6">
-              <h3 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white transition-colors">Hàng loạt (Batch)</h3>
-              <p className="text-lg text-slate-500 dark:text-gray-400 font-medium leading-relaxed italic border-l-2 border-purple-500 pl-6">"Hiệu suất quy mô lớn. Một kịch bản tạo ra hàng chục biến thể phục vụ marketing."</p>
-            </div>
-            <ul className="space-y-4">
-              {['Một kịch bản tạo ra nhiều biến thể cùng lúc', 'Phục vụ nhu cầu Content Scale đa nền tảng', 'Dùng cho các chiến dịch Marketing, Social', 'Tăng hiệu suất sản xuất lên 400%'].map(f => (
-                <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-gray-400 italic">
-                  <CheckCircle2 size={16} className="text-purple-500" /> {f}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        ))}
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);

@@ -1,42 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Terminal, Sparkles } from 'lucide-react';
+import { Sparkles, ChevronDown } from 'lucide-react';
 
 interface SidebarSingleProps {
   prompt: string;
   setPrompt: (v: string) => void;
 }
 
+const QUICK_PROMPTS = [
+  { emoji: '🏙️', text: 'A futuristic cyberpunk city at night, neon reflections, cinematic' },
+  { emoji: '🎨', text: 'Fashion portrait, golden hour, bokeh, studio quality, 8K' },
+  { emoji: '🌌', text: 'Dragon flying over mountains at sunset, epic fantasy, hyperrealistic' },
+  { emoji: '📦', text: 'Premium product on marble, studio lighting, white background' },
+];
+
 export const SidebarSingle: React.FC<SidebarSingleProps> = ({ prompt, setPrompt }) => {
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, x: -10 }} 
-      animate={{ opacity: 1, x: 0 }} 
-      className="space-y-6"
-    >
-      <div className="space-y-4">
-        <div className="flex justify-between items-center px-1">
-          <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-[0.3em] flex items-center gap-2">
-            <Terminal size={14} className="text-brand-blue" /> Kịch bản (Prompt)
-          </label>
-          <div className="flex items-center gap-1.5 text-[8px] font-mono text-brand-blue/60 uppercase">
-            <div className="w-1 h-1 rounded-full bg-brand-blue animate-pulse"></div>
-            Direct_Inference
-          </div>
-        </div>
-        
-        <div className="relative group">
-          <textarea 
-            value={prompt} 
-            onChange={e => setPrompt(e.target.value)}
-            className="w-full h-44 bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-2xl p-5 text-sm font-medium focus:border-brand-blue/40 outline-none transition-all resize-none text-slate-800 dark:text-white shadow-inner leading-relaxed"
-            placeholder="Mô tả hình ảnh bạn muốn kiến tạo... (Ví dụ: Một phi hành gia đứng giữa rừng hoa neon dưới ánh trăng tím)"
-          />
-          <div className="absolute bottom-4 right-4 opacity-10 pointer-events-none group-focus-within:opacity-30 transition-opacity">
-            <Sparkles size={24} />
-          </div>
-        </div>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-1.5">
+      <div className="flex justify-between items-center px-0.5">
+        <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">Prompt</p>
+        <button
+          onClick={() => setShowSuggestions(!showSuggestions)}
+          className="flex items-center gap-1 text-[9px] font-medium text-rose-400/60 hover:text-rose-400 transition-colors"
+        >
+          <Sparkles size={10} /> Gợi ý
+          <ChevronDown size={10} className={`transition-transform ${showSuggestions ? 'rotate-180' : ''}`} />
+        </button>
       </div>
+
+      {showSuggestions && (
+        <div className="grid grid-cols-2 gap-1.5">
+          {QUICK_PROMPTS.map((q, i) => (
+            <button
+              key={i}
+              onClick={() => { setPrompt(q.text); setShowSuggestions(false); }}
+              className="p-2 rounded-lg border border-black/[0.06] dark:border-white/[0.04] bg-slate-50 dark:bg-white/[0.015] hover:border-rose-500/20 text-left transition-all"
+            >
+              <span className="text-sm">{q.emoji}</span>
+              <p className="text-[8px] text-slate-400 dark:text-[#444] mt-1 line-clamp-2 leading-relaxed">{q.text}</p>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <textarea
+        value={prompt}
+        onChange={e => setPrompt(e.target.value)}
+        className="w-full min-h-[100px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-lg p-3 text-xs font-medium focus:border-rose-500/30 outline-none transition-all resize-y text-slate-800 dark:text-white/80 placeholder:text-slate-300 dark:placeholder:text-[#333] leading-relaxed"
+        placeholder="Mô tả hình ảnh bạn muốn tạo..."
+      />
     </motion.div>
   );
 };

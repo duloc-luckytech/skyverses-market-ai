@@ -1,10 +1,8 @@
-
 import React, { useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ChevronLeft, Image as ImageIcon, Layers, Settings, 
-  Loader2, Zap, SlidersHorizontal, Plus, 
-  Sparkles
+import { AnimatePresence } from 'framer-motion';
+import {
+  ChevronLeft, Image as ImageIcon, Layers, Settings,
+  Loader2, Zap
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { CreationMode, ReferenceItem } from '../../hooks/useImageGenerator';
@@ -55,6 +53,14 @@ interface GeneratorSidebarProps {
   setSelectedMode: (val: string) => void;
   selectedEngine: string;
   setSelectedEngine: (val: string) => void;
+  // Family-based props (same pattern as video)
+  familyList?: string[];
+  selectedFamily?: string;
+  setSelectedFamily?: (val: string) => void;
+  familyModels?: any[];
+  familyModes?: string[];
+  familyRatios?: string[];
+  familyResolutions?: string[];
 }
 
 export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
@@ -64,17 +70,15 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
   const onGenerateClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     props.handleGenerate();
-    if (window.innerWidth < 1024) {
-      props.setIsMobileExpanded(false);
-    }
+    if (window.innerWidth < 1024) props.setIsMobileExpanded(false);
   };
 
   return (
-    <aside 
-      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] lg:shrink-0 bg-white dark:bg-[#111114] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-32 lg:h-full lg:rounded-none'}`}
+    <aside
+      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[320px] lg:shrink-0 bg-white dark:bg-[#111114] border-t lg:border-t-0 lg:border-r border-black/[0.06] dark:border-white/[0.04] flex flex-col z-[150] lg:z-50 transition-all duration-500 ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-2xl' : 'h-32 lg:h-full'}`}
     >
-      {/* --- CỤM ĐIỀU KHIỂN MOBILE DÙNG CHUNG --- */}
-      <MobileGeneratorBar 
+      {/* ─── MOBILE BAR ─── */}
+      <MobileGeneratorBar
         isExpanded={props.isMobileExpanded}
         setIsExpanded={props.setIsMobileExpanded}
         prompt={props.prompt}
@@ -89,73 +93,72 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         type="image"
       />
 
-      {/* Main Content Area (Hidden on mobile if not expanded) */}
-      <div className={`flex-grow overflow-y-auto no-scrollbar p-6 space-y-8 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
-        <div className="hidden lg:flex items-center gap-4">
-           <button onClick={props.onClose} className="p-1 text-slate-400 hover:text-brand-blue transition-colors">
-              <ChevronLeft size={24} />
-           </button>
-           <h2 className="text-lg font-black uppercase tracking-tight italic text-slate-900 dark:text-white">Image Studio</h2>
+      {/* ─── HEADER ─── */}
+      <div className={`px-3 pt-2.5 pb-2 border-b border-black/[0.06] dark:border-white/[0.04] shrink-0 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+        <div className="hidden lg:flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <button onClick={props.onClose} className="p-0.5 text-slate-400 dark:text-[#555] hover:text-slate-900 dark:hover:text-white transition-colors"><ChevronLeft size={16} /></button>
+            <ImageIcon size={12} className="text-rose-400" />
+            <span className="text-xs font-semibold text-slate-600 dark:text-white/70">Image Studio</span>
+          </div>
         </div>
-
-        {/* Tab Selection */}
-        <div className="grid grid-cols-2 bg-slate-100 dark:bg-black/40 p-1 rounded-lg border border-black/5 dark:border-white/10">
-           <button 
-             onClick={() => props.setActiveMode('SINGLE')}
-             className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${props.activeMode === 'SINGLE' ? 'bg-white dark:bg-white/10 text-brand-blue shadow-sm' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
-           >
-              <ImageIcon size={12} /> ĐƠN LẺ
-           </button>
-           <button 
-             onClick={() => props.setActiveMode('BATCH')}
-             className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${props.activeMode === 'BATCH' ? 'bg-white dark:bg-white/10 text-brand-blue shadow-sm' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
-           >
-              <Layers size={12} /> HÀNG LOẠT
-           </button>
+        {/* MODE TABS */}
+        <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+          <button
+            onClick={() => props.setActiveMode('SINGLE')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === 'SINGLE' ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-400 dark:text-[#555] hover:text-slate-600 dark:hover:text-white/60'
+              }`}
+          >
+            <ImageIcon size={9} /> Đơn lẻ
+          </button>
+          <button
+            onClick={() => props.setActiveMode('BATCH')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === 'BATCH' ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-400 dark:text-[#555] hover:text-slate-600 dark:hover:text-white/60'
+              }`}
+          >
+            <Layers size={9} /> Batch
+          </button>
         </div>
+      </div>
 
-        {/* --- ẢNH THAM CHIẾU --- */}
-        <ReferenceImageGrid 
+      {/* ─── CONTENT ─── */}
+      <div className={`flex-grow overflow-y-auto no-scrollbar px-3 py-2.5 space-y-2.5 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+        {/* Reference Images */}
+        <ReferenceImageGrid
           references={props.references}
           isUploading={!!props.isUploadingRef}
           tempUrl={props.tempUploadUrl || null}
           onRemove={(idx) => props.setReferences((prev: ReferenceItem[]) => prev.filter((_, i) => i !== idx))}
           onUploadTrigger={() => fileInputRef.current?.click()}
           onLibraryTrigger={() => props.setIsLibraryOpen(true)}
+          onFileDrop={(file) => props.handleLocalFileUpload(file)}
         />
 
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          className="hidden" 
-          accept="image/png, image/jpeg" 
-          onChange={(e) => { 
-            const f = e.target.files?.[0]; 
-            if (f) props.handleLocalFileUpload(f); 
-            e.target.value = ''; 
-          }} 
+        <input
+          type="file" ref={fileInputRef} className="hidden" accept="image/png, image/jpeg"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) props.handleLocalFileUpload(f); e.target.value = ''; }}
         />
 
-        {/* --- DYNAMIC MODE CONTENT --- */}
+        {/* Mode Content */}
         <AnimatePresence mode="wait">
-           {props.activeMode === 'SINGLE' ? (
-             <SidebarSingle key="single-tab" prompt={props.prompt} setPrompt={props.setPrompt} />
-           ) : (
-             <SidebarBatch 
-                key="batch-tab"
-                batchPrompts={props.batchPrompts} 
-                setBatchPrompts={props.setBatchPrompts} 
-                isBulk={props.isBulkImporting} 
-                setIsBulk={props.setIsBulkImporting} 
-                bulkText={props.bulkText} 
-                setBulkText={props.setBulkText} 
-                onBulkImport={props.handleBulkImport} 
-              />
-           )}
+          {props.activeMode === 'SINGLE' ? (
+            <SidebarSingle key="single-tab" prompt={props.prompt} setPrompt={props.setPrompt} />
+          ) : (
+            <SidebarBatch
+              key="batch-tab"
+              batchPrompts={props.batchPrompts}
+              setBatchPrompts={props.setBatchPrompts}
+              isBulk={props.isBulkImporting}
+              setIsBulk={props.setIsBulkImporting}
+              bulkText={props.bulkText}
+              setBulkText={props.setBulkText}
+              onBulkImport={props.handleBulkImport}
+            />
+          )}
         </AnimatePresence>
 
-        {/* --- CONFIGURATIONS --- */}
-        <ModelEngineSettings 
+        {/* Model & Config — pass family props */}
+        <ModelEngineSettings
           availableModels={props.availableModels}
           selectedModel={props.selectedModel}
           setSelectedModel={props.setSelectedModel}
@@ -170,32 +173,58 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           selectedEngine={props.selectedEngine}
           onSelectEngine={props.setSelectedEngine}
           activeMode={props.activeMode}
+          isGenerating={props.isGenerating}
+          familyList={props.familyList}
+          selectedFamily={props.selectedFamily}
+          setSelectedFamily={props.setSelectedFamily}
+          familyModels={props.familyModels}
+          familyModes={props.familyModes}
+          familyRatios={props.familyRatios}
+          familyResolutions={props.familyResolutions}
         />
       </div>
 
-      {/* Credit Footer (Hidden on mobile if not expanded) */}
-      <div className={`shrink-0 p-6 bg-white dark:bg-[#111114] border-t border-black/5 dark:border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] space-y-4 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
-        <div className="flex items-center justify-between px-1">
-           <div className="flex items-center gap-3">
-              <div className="flex flex-col">
-                 <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest leading-none">RESOURCE</span>
-                 <span className="text-[10px] font-black text-slate-900 dark:text-white italic mt-1">{props.usagePreference === 'key' ? 'UNLIMITED' : `${credits.toLocaleString()} CR`}</span>
-              </div>
-              <button onClick={() => props.setShowResourceModal(true)} className="p-1.5 bg-slate-100 dark:bg-white/5 rounded-md text-slate-400 hover:text-brand-blue transition-all"><Settings size={14} /></button>
-           </div>
-           <div className="flex items-center gap-1.5 text-orange-500 font-black italic">
-              <Zap size={12} fill="currentColor" />
-              <span className="text-[11px]">-{props.totalCost}</span>
-           </div>
+      {/* ─── FOOTER ─── */}
+      <div className={`shrink-0 border-t border-black/[0.06] dark:border-white/[0.04] ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+        <div className="px-3 py-3 space-y-2.5">
+          {/* Cost bar */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <button onClick={() => props.setShowResourceModal(true)} className="text-[#555] hover:text-rose-400 transition-colors"><Settings size={11} /></button>
+              <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-fuchsia-500 dark:text-fuchsia-400' : 'text-slate-500 dark:text-[#666]'}`}>
+                {props.usagePreference === 'credits' ? `${credits.toLocaleString()} CR` : props.usagePreference === 'key' ? 'API Key' : '—'}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 text-amber-500/80">
+              <Zap size={9} fill="currentColor" />
+              <span className="text-[11px] font-semibold">{props.usagePreference === 'key' ? '0' : props.totalCost}</span>
+            </div>
+          </div>
         </div>
 
-        <button 
-          onClick={onGenerateClick} disabled={props.isGenerateDisabled}
-          className={`w-full py-4 rounded-xl font-black uppercase text-[11px] tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all ${props.isGenerateDisabled ? 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-600 cursor-not-allowed grayscale' : 'bg-brand-blue text-white hover:brightness-110 active:scale-[0.98]'}`}
-        >
-           {props.isGenerating ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
-           <span>{props.isGenerating ? 'Đang tạo...' : 'TẠO HÌNH ẢNH'}</span>
-        </button>
+        {/* Generate Button */}
+        <div className="px-3 pb-3">
+          <div className="relative group/btn">
+            <button
+              onClick={onGenerateClick}
+              disabled={props.isGenerateDisabled}
+              className={`w-full py-3.5 rounded-xl text-white font-semibold uppercase text-[11px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2 ${props.isGenerateDisabled
+                ? 'bg-slate-100 dark:bg-white/[0.04] text-slate-400 dark:text-[#444] cursor-not-allowed'
+                : 'bg-gradient-to-r from-rose-600 to-fuchsia-600 hover:brightness-110 active:scale-[0.98] shadow-rose-500/20'
+                }`}
+            >
+              {props.isGenerating ? <Loader2 className="animate-spin" size={14} /> : <ImageIcon size={14} />}
+              {props.isGenerating ? 'Đang tạo...' : 'Tạo hình ảnh'}
+            </button>
+            {props.generateTooltip && (
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover/btn:opacity-100 pointer-events-none transition-all z-50">
+                <div className="bg-[#1a1a1e] text-white/80 text-[10px] font-medium px-3 py-1.5 rounded-md shadow-xl whitespace-nowrap border border-white/10">
+                  {props.generateTooltip}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </aside>
   );

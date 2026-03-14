@@ -40,7 +40,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
       {variant === 'compact' ? (
         <div className="flex items-center gap-2">
           <div className="relative">
-            <select 
+            <select
               disabled={disabled}
               value={selectedEngine}
               onChange={(e) => onEngineChange(e.target.value)}
@@ -54,7 +54,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
             <Globe size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           </div>
 
-          <button 
+          <button
             disabled={disabled}
             onClick={() => setIsModalOpen(true)}
             className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all hover:border-brand-blue text-slate-700 dark:text-white flex items-center gap-2"
@@ -65,34 +65,13 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
         </div>
       ) : (
         <div className="space-y-6">
-          <div className={`grid ${modeSelector ? 'grid-cols-3' : 'grid-cols-2'} gap-2 lg:gap-3`}>
-            {/* SOURCE SELECTION */}
-            <div className="space-y-1">
-              <label className={labelClass}>
-                <Globe size={10} className="text-brand-blue" /> Source
-              </label>
-              <div className="relative">
-                <select 
-                  disabled={disabled}
-                  value={selectedEngine} 
-                  onChange={e => onEngineChange(e.target.value)} 
-                  className="w-full bg-slate-50 dark:bg-[#16161a] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-800 dark:text-white shadow-sm disabled:opacity-50"
-                >
-                   <option value="fxlab">FxLab</option>
-                   <option value="gommo">Gommo</option>
-                   <option value="wan">Wan</option>
-                   <option value="running">Running</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
-              </div>
-            </div>
-
+          <div className={`grid ${modeSelector ? 'grid-cols-2' : 'grid-cols-1'} gap-2 lg:gap-3`}>
             {/* MODELS SELECTION TRIGGER */}
             <div className="space-y-1">
               <label className={labelClass}>
                 <Cpu size={10} className="text-brand-blue" /> Models
               </label>
-              <button 
+              <button
                 disabled={disabled}
                 onClick={() => setIsModalOpen(true)}
                 className={triggerClass}
@@ -115,14 +94,14 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
 
           {showCost && (
             <div className="p-4 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl flex items-center justify-between">
-               <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></div>
-                  <span className="text-[9px] font-black uppercase text-gray-500 tracking-widest">Node Status: Optimal</span>
-               </div>
-               <div className="flex items-center gap-2 text-orange-500">
-                  <Zap size={12} fill="currentColor" />
-                  <span className="text-[11px] font-black italic">{currentCost} CR / Action</span>
-               </div>
+              <div className="flex items-center gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></div>
+                <span className="text-[9px] font-black uppercase text-gray-500 tracking-widest">Node Status: Optimal</span>
+              </div>
+              <div className="flex items-center gap-2 text-orange-500">
+                <Zap size={12} fill="currentColor" />
+                <span className="text-[11px] font-black italic">{currentCost} CR / Action</span>
+              </div>
             </div>
           )}
         </div>
@@ -131,7 +110,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
       {/* RENDER MODAL OUTSIDE TO AVOID POSITIONING ISSUES */}
       <AnimatePresence>
         {isModalOpen && (
-          <ModelSelectorModal 
+          <ModelSelectorModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             models={availableModels}

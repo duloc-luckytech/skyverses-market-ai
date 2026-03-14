@@ -23,21 +23,21 @@ export const QUALITY_MODES = ['Standard - 720p', 'High - 1080p', 'Ultra - 4K (Co
 
 export const useVideoAnimate = () => {
   const { credits, useCredits, addCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
-  
+
   const [mode, setMode] = useState<AnimateMode>('MOTION');
   const [prompt, setPrompt] = useState(''); // Thêm state prompt
-  
+
   // Dynamic Model States
   const [availableModels, setAvailableModels] = useState<PricingModel[]>([]);
   const [selectedModel, setSelectedModel] = useState<PricingModel | null>(null);
-  const [selectedEngine, setSelectedEngine] = useState('wan'); 
-  
+  const [selectedEngine, setSelectedEngine] = useState('gommo');
+
   const [selectedRatio, setSelectedRatio] = useState(RATIOS[0]);
   const [selectedQuality, setSelectedQuality] = useState(QUALITY_MODES[0]);
-  
+
   const [sourceImg, setSourceImg] = useState<string | null>(null);
   const [refVideo, setRefVideo] = useState<string | null>(null);
-  
+
   const [tasks, setTasks] = useState<RenderTask[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isHistoryExpanded, setIsHistoryExpanded] = useState(false);
@@ -111,10 +111,10 @@ export const useVideoAnimate = () => {
   const handleSynthesize = async () => {
     if (!sourceImg || isGenerating || !selectedModel) return;
     if (!isAuthenticated) { login(); return; }
-    
-    if (usagePreference === 'credits' && credits < estimatedCost) { 
+
+    if (usagePreference === 'credits' && credits < estimatedCost) {
       setShowLowCreditAlert(true);
-      return; 
+      return;
     }
 
     const taskId = Date.now().toString();

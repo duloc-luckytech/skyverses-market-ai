@@ -43,7 +43,7 @@ export const useImageGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploadingRef, setIsUploadingRef] = useState(false);
   const [tempUploadUrl, setTempUploadUrl] = useState<string | null>(null);
-  
+
   const [zoomLevel, setZoomLevel] = useState(5);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -54,15 +54,15 @@ export const useImageGenerator = () => {
   const [availableModels, setAvailableModels] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState<any>(null);
   const [selectedMode, setSelectedMode] = useState<string>('relaxed');
-  const [selectedEngine, _setSelectedEngine] = useState<string>('fxlab'); // Mặc định là fxlab
+  const [selectedEngine, _setSelectedEngine] = useState<string>('gommo'); // Mặc định là gommo
 
   const [prompt, setPrompt] = useState('');
   const [batchPrompts, setBatchPrompts] = useState<string[]>(['', '', '']);
   const [isBulkImporting, setIsBulkImporting] = useState(false);
   const [bulkText, setBulkText] = useState('');
-  
+
   const [selectedRatio, setSelectedRatio] = useState(DEFAULT_ASPECT_RATIO);
-  const [selectedRes, setSelectedRes] = useState(''); 
+  const [selectedRes, setSelectedRes] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [references, setReferences] = useState<ReferenceItem[]>([]);
   const [results, setResults] = useState<ImageResult[]>([]);
@@ -99,7 +99,7 @@ export const useImageGenerator = () => {
         const res = await pricingApi.getPricing({ tool: 'image', engine: selectedEngine });
         if (res.success && res.data.length > 0) {
           const mapped = res.data.map((m: PricingModel) => ({
-            id: m._id, 
+            id: m._id,
             name: m.name,
             raw: m
           }));
@@ -111,7 +111,7 @@ export const useImageGenerator = () => {
           if (resOptions.length > 0) {
             setSelectedRes(resOptions[0]);
           }
-          
+
           if (defaultModel.raw.aspectRatios && defaultModel.raw.aspectRatios.length > 0) {
             setSelectedRatio(defaultModel.raw.aspectRatios[0]);
           }
@@ -135,7 +135,7 @@ export const useImageGenerator = () => {
       setPrompt(autoPrompt);
       localStorage.removeItem('skyverses_global_auto_run');
       localStorage.removeItem('skyverses_global_auto_prompt');
-      
+
       // Delay to ensure model and prompt are fully set before auto-generating
       setTimeout(() => {
         handleGenerate();
@@ -151,7 +151,7 @@ export const useImageGenerator = () => {
       } else {
         setSelectedMode(m.mode || 'relaxed');
       }
-      
+
       const resOptions = getResolutionsFromPricing(m.pricing);
       if (resOptions.length > 0 && !resOptions.includes(selectedRes)) {
         setSelectedRes(resOptions[0]);
@@ -286,36 +286,36 @@ export const useImageGenerator = () => {
     if (!selectedModel) return;
     const unitCost = retryItem ? retryItem.cost : currentUnitCost;
     const currentRefs = retryItem ? retryItem.references : [...references];
-    const promptsToRun = retryItem 
+    const promptsToRun = retryItem
       ? [retryItem.prompt]
-      : (activeMode === 'SINGLE' 
-          ? Array(quantity).fill(prompt) 
-          : batchPrompts.filter(p => p.trim()));
-    
+      : (activeMode === 'SINGLE'
+        ? Array(quantity).fill(prompt)
+        : batchPrompts.filter(p => p.trim()));
+
     if (promptsToRun.length === 0) return;
     setIsGenerating(true);
 
     const now = new Date();
     const ts = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')} ${now.toLocaleDateString('vi-VN')}`;
 
-    const newTasks: ImageResult[] = retryItem 
-      ? [] 
+    const newTasks: ImageResult[] = retryItem
+      ? []
       : promptsToRun.map((p, idx) => ({
-          id: `img-${Date.now()}-${idx}`,
-          url: null,
-          prompt: p,
-          fullTimestamp: ts,
-          dateKey: todayKey,
-          displayDate: now.toLocaleDateString('vi-VN'),
-          model: selectedModel.name,
-          status: 'processing',
-          aspectRatio: selectedRatio,
-          resolution: selectedRes,
-          cost: currentPreference === 'credits' ? unitCost : 0,
-          references: currentRefs,
-          logs: [`[SYSTEM] Production pipeline initialized.`]
-        }));
-    
+        id: `img-${Date.now()}-${idx}`,
+        url: null,
+        prompt: p,
+        fullTimestamp: ts,
+        dateKey: todayKey,
+        displayDate: now.toLocaleDateString('vi-VN'),
+        model: selectedModel.name,
+        status: 'processing',
+        aspectRatio: selectedRatio,
+        resolution: selectedRes,
+        cost: currentPreference === 'credits' ? unitCost : 0,
+        references: currentRefs,
+        logs: [`[SYSTEM] Production pipeline initialized.`]
+      }));
+
     if (retryItem) {
       setResults(prev => prev.map(r => r.id === retryItem.id ? { ...r, status: 'processing', isRefunded: false, logs: [`[SYSTEM] Re-initializing production node for manual retry.`] } : r));
     } else {
@@ -328,26 +328,24 @@ export const useImageGenerator = () => {
       await Promise.all(targetTasks.map(async (task) => {
         addLogToTask(task.id, `[UPLINK] Authenticating resource pool: ${currentPreference.toUpperCase()}`);
         if (currentPreference === 'credits') {
-          const processedRefs = selectedEngine === 'fxlab' 
-            ? task.references.map(r => r.mediaId).filter(Boolean) as string[]
-            : task.references.map(r => r.url);
+          const processedRefs = task.references.map(r => r.url);
 
           const payload: ImageJobRequest = {
             type: processedRefs.length > 0 ? "image_to_image" : "text_to_image",
-            input: { 
-              prompt: task.prompt, 
-              images: processedRefs.length > 0 ? processedRefs : undefined 
+            input: {
+              prompt: task.prompt,
+              images: processedRefs.length > 0 ? processedRefs : undefined
             },
             config: { width: 1024, height: 1024, aspectRatio: task.aspectRatio || selectedRatio, seed: 0, style: "cinematic" },
-            engine: { 
-              provider: selectedEngine as any, 
-              model: selectedModel.raw.modelKey as any 
+            engine: {
+              provider: selectedEngine as any,
+              model: selectedModel.raw.modelKey as any
             },
-            enginePayload: { 
-              prompt: task.prompt, 
-              privacy: "PRIVATE", 
+            enginePayload: {
+              prompt: task.prompt,
+              privacy: "PRIVATE",
               projectId: "default",
-              mode: selectedMode 
+              mode: selectedMode
             }
           };
           addLogToTask(task.id, `[NODE_INIT] Provisioning H100 GPU cluster...`);
@@ -364,13 +362,13 @@ export const useImageGenerator = () => {
           }
         } else {
           addLogToTask(task.id, `[DIRECT_INFERENCE] Bypassing internal pool. Using personal SDK Uplink.`);
-          const url = await generateDemoImage({ 
-            prompt: task.prompt, 
-            images: task.references.map(r => r.url), 
-            model: selectedModel.raw.modelKey, 
-            aspectRatio: task.aspectRatio || selectedRatio, 
-            quality: task.resolution || selectedRes, 
-            apiKey: personalKey 
+          const url = await generateDemoImage({
+            prompt: task.prompt,
+            images: task.references.map(r => r.url),
+            model: selectedModel.raw.modelKey,
+            aspectRatio: task.aspectRatio || selectedRatio,
+            quality: task.resolution || selectedRes,
+            apiKey: personalKey
           });
           if (url) {
             addLogToTask(task.id, `[SUCCESS] Direct synthesis complete. Asset loaded.`);

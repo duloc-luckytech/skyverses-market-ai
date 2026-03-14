@@ -182,11 +182,50 @@ const MarketPage = () => {
   return (
     <div className="relative min-h-screen bg-[#fcfcfd] dark:bg-[#030304] font-sans transition-colors duration-500">
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[1000px] h-[1000px] bg-brand-blue/5 dark:bg-brand-blue/10 rounded-full blur-[250px] animate-pulse"></div>
+        <div className="absolute top-[-10%] right-[-10%] w-[1000px] h-[1000px] bg-brand-blue/5 dark:bg-brand-blue/8 rounded-full blur-[250px] animate-pulse"></div>
+        <div className="absolute top-[40%] left-[-15%] w-[600px] h-[600px] bg-purple-500/3 dark:bg-purple-500/5 rounded-full blur-[200px]"></div>
+        <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] bg-pink-500/3 dark:bg-pink-500/4 rounded-full blur-[150px]"></div>
       </div>
 
-      <div className="relative z-10 pt-28 md:pt-44 max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
+      <div className="relative z-10 pt-20 md:pt-28 max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
         
+        {/* ─── Hero Headline ─── */}
+        {!query && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-10 md:mb-16"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 mb-6">
+              <Sparkles size={12} className="text-brand-blue" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-blue">AI Creative Studio</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter italic leading-[0.95] text-black dark:text-white mb-4">
+              One Studio for{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">
+                Every Kind
+              </span>
+              <br className="hidden md:block" />
+              {' '}of Build
+            </h1>
+            <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 font-medium max-w-2xl mx-auto leading-relaxed">
+              Tạo hình ảnh, video, âm thanh và nội dung AI chuyên nghiệp — tất cả trong một nền tảng duy nhất.
+            </p>
+            {!isAuthenticated && (
+              <div className="flex gap-3 justify-center mt-8">
+                <button 
+                  onClick={() => navigate('/login')}
+                  className="inline-flex items-center gap-3 bg-brand-blue text-white px-8 py-4 rounded-full text-sm font-black uppercase tracking-widest shadow-2xl shadow-brand-blue/30 hover:scale-105 active:scale-95 transition-all"
+                >
+                  Bắt đầu miễn phí
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            )}
+          </motion.div>
+        )}
+
         {loading && featuredSolutions.length === 0 ? <FeaturedSkeleton /> : featuredSolutions.length > 0 && !query && (
           <FeaturedSection 
             solutions={featuredSolutions} 
@@ -198,7 +237,7 @@ const MarketPage = () => {
 
         <AIModelsMarquee />
 
-        <div className="hidden md:block sticky top-16 md:relative md:top-0 z-[140] transform-gpu bg-white/95 dark:bg-[#030304]/95 backdrop-blur-xl -mx-4 px-4 py-3 md:mx-0 md:px-0 md:py-0 md:bg-transparent md:backdrop-blur-none border-b border-black/5 dark:border-white/5 md:border-none transition-all duration-500">
+        <div className="sticky top-16 md:relative md:top-0 z-[140] transform-gpu bg-white/95 dark:bg-[#030304]/95 backdrop-blur-xl -mx-4 px-4 py-3 md:mx-0 md:px-0 md:py-0 md:bg-transparent md:backdrop-blur-none border-b border-black/5 dark:border-white/5 md:border-none transition-all duration-500">
           <MarketSearchTerminal 
             query={query} setQuery={setQuery}
             primary={primary} setPrimary={setPrimary}

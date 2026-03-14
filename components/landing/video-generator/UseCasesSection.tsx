@@ -1,63 +1,32 @@
-
 import React from 'react';
-import { Megaphone, Film, ShoppingBag, Clapperboard, ChevronRight } from 'lucide-react';
+import { Box, Settings, CreditCard, Shield, Download, Clock } from 'lucide-react';
 
-const VIDEO_USE_CASES = [
-  { 
-    t: 'Marketing Ads', 
-    d: 'Tạo video quảng cáo social thu hút, tăng tỷ lệ chuyển đổi.', 
-    img: 'https://images.unsplash.com/photo-1551033406-611cf9a28f67?auto=format&fit=crop&q=80&w=800',
-    icon: <Megaphone className="text-indigo-600" />
-  },
-  { 
-    t: 'Indie Film', 
-    d: 'Sản xuất kịch bản phim ngắn, trailer với diễn viên AI nhất quán.', 
-    img: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=800',
-    icon: <Film className="text-purple-500" />
-  },
-  { 
-    t: 'Product Demo', 
-    d: 'Review sản phẩm 3D sống động từ hình ảnh chụp thực tế.', 
-    img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800',
-    icon: <ShoppingBag className="text-emerald-500" />
-  },
-  { 
-    t: 'Storytelling', 
-    d: 'Kể chuyện visual đa kênh với phong cách nghệ thuật độc bản.', 
-    img: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=800',
-    icon: <Clapperboard className="text-orange-500" />
-  }
+const FEATURES = [
+  { icon: <Box size={16} />, title: 'Model Family Selector', desc: 'Chọn family (VEO, Kling, Hailuo...) rồi chọn phiên bản cụ thể. Modes, ratios, resolutions tự động load theo family.' },
+  { icon: <Settings size={16} />, title: 'Cấu hình linh hoạt', desc: 'Chế độ: Relaxed / Fast / Quality / Professional. Tỷ lệ: 16:9, 9:16, 1:1, 21:9. Resolution: 480p → 4K.' },
+  { icon: <CreditCard size={16} />, title: 'Credits hoặc API Key', desc: 'Sử dụng credits của hệ thống hoặc kết nối API Key cá nhân. Chi phí hiển thị trước khi tạo.' },
+  { icon: <Shield size={16} />, title: 'Auto Refund', desc: 'Nếu video lỗi do engine, credits tự động hoàn trả. Error message chi tiết hiển thị trên card.' },
+  { icon: <Download size={16} />, title: 'Auto Download', desc: 'Bật auto-download để video tự tải xuống khi hoàn thành. Hoặc tải thủ công từ thư viện kết quả.' },
+  { icon: <Clock size={16} />, title: 'Production Log', desc: 'Theo dõi toàn bộ pipeline real-time: từ API handshake, polling, đến CDN delivery với timestamps chính xác.' },
 ];
 
-export const UseCasesSection: React.FC = () => {
-  return (
-    <section className="py-40 bg-slate-50 dark:bg-[#050507] transition-colors duration-500">
-      <div className="max-w-[1600px] mx-auto px-6 lg:px-12 space-y-24">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-8">
-          <div className="space-y-4">
-            <h2 className="text-5xl lg:text-[100px] font-black uppercase tracking-tighter italic leading-none text-slate-900 dark:text-white transition-colors">Vận hành <br /><span className="text-indigo-600">đa kênh.</span></h2>
-          </div>
-          <p className="text-slate-400 dark:text-gray-500 font-bold uppercase text-xs tracking-widest max-w-xs text-right italic border-r-4 border-indigo-600 pr-6 transition-colors">"Dây chuyền sản xuất video vạn năng cho kỷ nguyên content 4.0."</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {VIDEO_USE_CASES.map((item, i) => (
-            <div key={i} className="group relative overflow-hidden aspect-[3/4] bg-black rounded-sm shadow-2xl transition-all hover:scale-[1.02]">
-              <img src={item.img} className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" alt={item.t} />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-10 flex flex-col justify-end">
-                <div className="space-y-4 translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
-                  <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/10">{item.icon}</div>
-                  <h4 className="text-3xl font-black uppercase italic tracking-tighter text-white leading-none">{item.t}</h4>
-                  <p className="text-xs text-white/60 font-bold uppercase tracking-widest leading-relaxed">"{item.d}"</p>
-                  <div className="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="flex items-center gap-2 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em]">Khám phá ngay <ChevronRight size={14}/></button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+export const UseCasesSection: React.FC = () => (
+  <section className="py-24 border-y border-black/[0.06] dark:border-white/[0.04]">
+    <div className="max-w-5xl mx-auto px-6 lg:px-12">
+      <div className="text-center space-y-3 mb-14">
+        <span className="text-indigo-500/60 dark:text-indigo-400 font-semibold uppercase tracking-wider text-[9px]">Features</span>
+        <h2 className="text-3xl lg:text-4xl font-bold tracking-tight">Tính năng <span className="text-indigo-500 dark:text-indigo-400">nổi bật</span></h2>
       </div>
-    </section>
-  );
-};
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {FEATURES.map(f => (
+          <div key={f.title} className="p-4 bg-black/[0.01] dark:bg-white/[0.015] border border-black/[0.06] dark:border-white/[0.04] rounded-2xl space-y-2.5 group hover:border-indigo-500/20 transition-all">
+            <div className="w-8 h-8 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-500 dark:text-indigo-400 group-hover:scale-110 transition-transform">{f.icon}</div>
+            <h4 className="text-[11px] font-semibold">{f.title}</h4>
+            <p className="text-[9px] text-slate-500 dark:text-[#555] font-medium leading-relaxed">{f.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);

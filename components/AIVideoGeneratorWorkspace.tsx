@@ -41,7 +41,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const { credits, addCredits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
-  
+
   // -- App States --
   const [activeMode, setActiveMode] = useState<CreationMode>('SINGLE');
   const [activeTab, setActiveTab] = useState<'SESSION' | 'HISTORY'>('SESSION');
@@ -49,12 +49,12 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState(5);
-  const [fullscreenVideo, setFullscreenVideo] = useState<{url: string, hasSound: boolean, id: string} | null>(null);
+  const [fullscreenVideo, setFullscreenVideo] = useState<{ url: string, hasSound: boolean, id: string } | null>(null);
   const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [selectedLogTask, setSelectedLogTask] = useState<VideoResult | null>(null);
-  
+
   // -- Auto Download States --
   const [autoDownload, setAutoDownload] = useState(false);
   const autoDownloadRef = useRef(false);
@@ -75,15 +75,16 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   // -- Dynamic Pricing Data --
   const [availableModels, setAvailableModels] = useState<PricingModel[]>([]);
   const [selectedModelObj, setSelectedModelObj] = useState<PricingModel | null>(null);
-  const [selectedEngine, setSelectedEngine] = useState('fxlab');
+  const [selectedEngine, setSelectedEngine] = useState('gommo');
   const [selectedMode, setSelectedMode] = useState<string>('relaxed');
+  const [selectedFamily, setSelectedFamily] = useState<string>('VEO');
 
   // -- Common Config --
-  const [ratio, setRatio] = useState<'16:9' | '9:16'>('16:9');
-  const [duration, setDuration] = useState('8s'); 
+  const [ratio, setRatio] = useState<string>('16:9');
+  const [duration, setDuration] = useState('8s');
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [resolution, setResolution] = useState('720p');
-  const [quantity, setQuantity] = useState(1); 
+  const [quantity, setQuantity] = useState(1);
 
   // -- Reference Selection Target Ref (Fix race condition) --
   const uploadTargetRef = useRef<string | null>(null);
@@ -129,7 +130,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (processingCount > 0) {
         e.preventDefault();
-        e.returnValue = ''; 
+        e.returnValue = '';
       }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -147,6 +148,16 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     }
   }, [processingCount, onClose]);
 
+  // ---- FAMILY HELPERS ----
+  const extractFamilyName = (name: string): string => {
+    const KNOWN = ['VEO', 'Kling', 'Hailuo', 'Grok', 'Sora', 'WAN', 'Wan', 'V-Fuse', 'OmniHuman', 'Seedance'];
+    const n = name.trim();
+    for (const fam of KNOWN) {
+      if (n.toLowerCase().startsWith(fam.toLowerCase())) return fam;
+    }
+    return n.split(/\s*-\s/)[0].split(/\s+/)[0] || 'Other';
+  };
+
   // Fetch Pricing Models
   useEffect(() => {
     const fetchPricing = async () => {
@@ -154,7 +165,10 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         const res = await pricingApi.getPricing({ tool: 'video', engine: selectedEngine });
         if (res.success && res.data.length > 0) {
           setAvailableModels(res.data);
+          // Set default family
           const defaultModel = res.data.find(m => m.modelKey === 'veo_3_1') || res.data[0];
+          const defaultFam = extractFamilyName(defaultModel.name);
+          setSelectedFamily(defaultFam);
           setSelectedModelObj(defaultModel);
         }
       } catch (error) {
@@ -164,24 +178,69 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     fetchPricing();
   }, [selectedEngine]);
 
-  // Sync selectedMode when selectedModelObj changes
+  // ---- FAMILY-DERIVED CONFIG ----
+  const families = useMemo(() => {
+    const groups: Record<string, PricingModel[]> = {};
+    availableModels.forEach(m => {
+      const fam = extractFamilyName(m.name);
+      if (!groups[fam]) groups[fam] = [];
+      groups[fam].push(m);
+    });
+    return groups;
+  }, [availableModels]);
+
+  const familyList = useMemo(() => Object.keys(families).sort(), [families]);
+  const familyModels = useMemo(() => families[selectedFamily] || [], [families, selectedFamily]);
+
+  // Aggregate config options from all models in this family
+  const familyModes = useMemo(() => [...new Set(familyModels.flatMap(m => m.modes || (m.mode ? [m.mode] : [])))], [familyModels]);
+  const familyResolutions = useMemo(() => [...new Set(familyModels.flatMap(m => Object.keys(m.pricing || {})))], [familyModels]);
+  const familyRatios = useMemo(() => [...new Set(familyModels.flatMap(m => m.aspectRatios || []))].filter(r => r && r !== 'auto'), [familyModels]);
+
+  // Auto-resolve best model from family based on selected mode + resolution
   useEffect(() => {
-    if (selectedModelObj) {
-      if (selectedModelObj.modes && selectedModelObj.modes.length > 0) {
-        setSelectedMode(selectedModelObj.modes[0]);
-      } else {
-        setSelectedMode(selectedModelObj.mode || 'relaxed');
-      }
-    }
-  }, [selectedModelObj]);
+    if (familyModels.length === 0) return;
+    // Try to find a model that has the selected mode AND resolution
+    let best = familyModels.find(m => {
+      const hasModeMatch = (m.modes || []).includes(selectedMode) || m.mode === selectedMode;
+      const hasResMatch = m.pricing && m.pricing[resolution.toLowerCase()];
+      return hasModeMatch && hasResMatch;
+    });
+    // Fallback: just mode match
+    if (!best) best = familyModels.find(m => (m.modes || []).includes(selectedMode) || m.mode === selectedMode);
+    // Fallback: just resolution match
+    if (!best) best = familyModels.find(m => m.pricing && m.pricing[resolution.toLowerCase()]);
+    // Fallback: first model in family
+    if (!best) best = familyModels[0];
+    if (best && best._id !== selectedModelObj?._id) setSelectedModelObj(best);
+  }, [selectedFamily, selectedMode, resolution, familyModels]);
+
+  // When family changes, reset mode/resolution to first available
+  useEffect(() => {
+    if (familyModes.length > 0 && !familyModes.includes(selectedMode)) setSelectedMode(familyModes[0]);
+    if (familyResolutions.length > 0 && !familyResolutions.includes(resolution)) setResolution(familyResolutions[0]);
+    if (familyRatios.length > 0 && !familyRatios.includes(ratio)) setRatio(familyRatios[0]);
+  }, [selectedFamily, familyModes, familyResolutions, familyRatios]);
+
+  // Detect if pricing is mode-based (keys like "fast","quality") vs duration-based (keys like "5","8")
+  const isModeBased = useMemo(() => {
+    if (!selectedModelObj?.pricing) return false;
+    const resKey = resolution.toLowerCase();
+    const resPricing = selectedModelObj.pricing[resKey];
+    if (!resPricing) return false;
+    const keys = Object.keys(resPricing);
+    return keys.length > 0 && keys.every(k => isNaN(Number(k)));
+  }, [selectedModelObj, resolution]);
 
   const availableDurations = useMemo(() => {
     if (!selectedModelObj || !selectedModelObj.pricing) return ['5s', '8s', '10s'];
     const resKey = resolution.toLowerCase();
     const resPricing = selectedModelObj.pricing[resKey];
     if (!resPricing) return ['5s', '8s', '10s'];
+    // If mode-based pricing, duration selector is not applicable — return default
+    if (isModeBased) return ['8s'];
     return Object.keys(resPricing).map(d => `${d}s`);
-  }, [selectedModelObj, resolution]);
+  }, [selectedModelObj, resolution, isModeBased]);
 
   useEffect(() => {
     if (availableDurations.length > 0 && !availableDurations.includes(duration)) {
@@ -195,29 +254,32 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     setDuration(sequence[(index + 1) % sequence.length]);
   };
 
-  const getUnitCost = (model: PricingModel | null, resKey: string, durStr: string) => {
+  const getUnitCost = (model: PricingModel | null, resKey: string, durStr: string, mode?: string) => {
     if (!model || !model.pricing) return 1500;
     const resMatrix = model.pricing[resKey.toLowerCase()];
     if (!resMatrix) return 1500;
+    // Try mode-based lookup first
+    if (mode && resMatrix[mode] != null) return resMatrix[mode];
+    // Fallback to duration-based
     const durKey = durStr.replace('s', '');
     return resMatrix[durKey] || 1500;
   };
 
   const currentUnitCost = useMemo(() => {
-    return getUnitCost(selectedModelObj, resolution, duration);
-  }, [selectedModelObj, resolution, duration]);
+    return getUnitCost(selectedModelObj, resolution, duration, selectedMode);
+  }, [selectedModelObj, resolution, duration, selectedMode]);
 
   const currentTotalCost = useMemo(() => {
     if (activeMode === 'AUTO') return autoTasks.filter(t => t.prompt.trim() !== '').length * currentUnitCost;
     if (activeMode === 'MULTI') return (multiFrames.length - 1) * currentUnitCost;
-    return currentUnitCost * quantity; 
+    return currentUnitCost * quantity;
   }, [activeMode, autoTasks, multiFrames, currentUnitCost, quantity]);
 
   const addLogToTask = (taskId: string, message: string) => {
     const timestamp = new Date().toLocaleTimeString('vi-VN');
     const logEntry = `${message}`;
     setResults(prev => prev.map(r => r.id === taskId ? { ...r, logs: [...(r.logs || []), logEntry] } : r));
-    
+
     setSelectedLogTask(prev => {
       if (prev && prev.id === taskId) {
         return { ...prev, logs: [...(prev.logs || []), logEntry] };
@@ -236,23 +298,23 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     try {
       addLogToTask(resultId, `[POLLING] Requesting status update for node cluster...`);
       const response: VideoJobResponse = await videosApi.getJobStatus(jobId);
-      
+
       const isSuccess = response.success === true || response.status?.toLowerCase() === 'success';
       const jobStatus = response.data?.status?.toLowerCase();
-      
+
       const errorMsg = response.data?.error?.message || response.data?.error?.userMessage || "";
 
       if (!isSuccess || jobStatus === 'failed' || jobStatus === 'error') {
         addLogToTask(resultId, `[ERROR] Synthesis aborted: ${errorMsg || 'Unknown backend error'}`);
         setResults(prev => prev.map(r => {
-           if (r.id === resultId) {
-              if (usagePreference === 'credits' && !r.isRefunded) {
-                addCredits(r.cost);
-                return { ...r, status: 'error', isRefunded: true };
-              }
-              return { ...r, status: 'error' };
-           }
-           return r;
+          if (r.id === resultId) {
+            if (usagePreference === 'credits' && !r.isRefunded) {
+              addCredits(r.cost);
+              return { ...r, status: 'error', isRefunded: true, errorMessage: errorMsg || 'Unknown error' };
+            }
+            return { ...r, status: 'error', errorMessage: errorMsg || 'Unknown error' };
+          }
+          return r;
         }));
         return;
       }
@@ -277,7 +339,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     if (!selectedModelObj) return;
     const now = new Date();
     const timestamp = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')} ${now.toLocaleDateString('vi-VN')}`;
-    
+
     if (currentPreference === 'key') {
       if (!personalKey) { navigate('/settings'); return; }
     } else {
@@ -288,47 +350,47 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     setIsGenerating(true);
     if (isMobileExpanded) setIsMobileExpanded(false);
 
-    const tasksToProduce = retryTask 
+    const tasksToProduce = retryTask
       ? [{ id: retryTask.id, type: "text-to-video" as const, prompt: retryTask.prompt, startUrl: retryTask.startImg || null, startMediaId: null, endUrl: retryTask.endImg || null, endMediaId: null, cost: retryTask.cost, ratio: retryTask.aspectRatio }]
-      : activeMode === 'SINGLE' 
+      : activeMode === 'SINGLE'
         ? (() => {
-            let type: "text-to-video" | "image-to-video" | "start-end-image" = "text-to-video";
-            if (startFrame && endFrame) type = "start-end-image";
-            else if (startFrame) type = "image-to-video";
-            return Array(quantity).fill(null).map((_, i) => ({ 
-              id: `single-${Date.now()}-${i}`, 
-              type, 
-              prompt, 
-              startUrl: startFrame, 
-              startMediaId: startFrameId, 
-              endUrl: endFrame, 
-              endMediaId: endFrameId, 
-              cost: currentUnitCost, 
-              ratio 
-            }));
-          })()
+          let type: "text-to-video" | "image-to-video" | "start-end-image" = "text-to-video";
+          if (startFrame && endFrame) type = "start-end-image";
+          else if (startFrame) type = "image-to-video";
+          return Array(quantity).fill(null).map((_, i) => ({
+            id: `single-${Date.now()}-${i}`,
+            type,
+            prompt,
+            startUrl: startFrame,
+            startMediaId: startFrameId,
+            endUrl: endFrame,
+            endMediaId: endFrameId,
+            cost: currentUnitCost,
+            ratio
+          }));
+        })()
         : activeMode === 'MULTI'
-          ? Array.from({ length: multiFrames.length - 1 }).map((_, i) => ({ id: `batch-${Date.now()}-${i}`, type: "image-to-video" as const, prompt: multiFrames[i].prompt, startUrl: multiFrames[i].url, startMediaId: multiFrames[i].mediaId, endUrl: multiFrames[i+1].url, endMediaId: multiFrames[i+1].mediaId, cost: currentUnitCost, ratio }))
+          ? Array.from({ length: multiFrames.length - 1 }).map((_, i) => ({ id: `batch-${Date.now()}-${i}`, type: "image-to-video" as const, prompt: multiFrames[i].prompt, startUrl: multiFrames[i].url, startMediaId: multiFrames[i].mediaId, endUrl: multiFrames[i + 1].url, endMediaId: multiFrames[i + 1].mediaId, cost: currentUnitCost, ratio }))
           : autoTasks.filter(t => t.prompt.trim() !== '').map((t, idx) => ({ id: `auto-${Date.now()}-${idx}`, type: t.startUrl && t.endUrl ? "start-end-image" as const : t.startUrl ? "image-to-video" as const : "text-to-video" as const, prompt: t.prompt, startUrl: t.startUrl, startMediaId: t.startMediaId, endUrl: t.endUrl, endMediaId: t.endMediaId, cost: currentUnitCost, ratio }));
 
     if (!retryTask) {
-      const newResults: VideoResult[] = tasksToProduce.map(t => ({ 
-        id: t.id, 
-        url: null, 
-        prompt: t.prompt, 
-        fullTimestamp: timestamp, 
-        dateKey: todayKey, 
-        displayDate: now.toLocaleDateString('vi-VN'), 
-        model: selectedModelObj.name, 
+      const newResults: VideoResult[] = tasksToProduce.map(t => ({
+        id: t.id,
+        url: null,
+        prompt: t.prompt,
+        fullTimestamp: timestamp,
+        dateKey: todayKey,
+        displayDate: now.toLocaleDateString('vi-VN'),
+        model: selectedModelObj.name,
         mode: selectedMode,
-        duration, 
-        status: 'processing', 
-        hasSound: soundEnabled, 
-        aspectRatio: t.ratio as any, 
-        cost: t.cost, 
-        startImg: t.startUrl, 
+        duration,
+        status: 'processing',
+        hasSound: soundEnabled,
+        aspectRatio: t.ratio as any,
+        cost: t.cost,
+        startImg: t.startUrl,
         endImg: t.endUrl,
-        logs: [`[${new Date().toLocaleTimeString('vi-VN')}] [SYSTEM] Production pipeline initialized.`] 
+        logs: [`[${new Date().toLocaleTimeString('vi-VN')}] [SYSTEM] Production pipeline initialized.`]
       }));
       setResults(prev => [...newResults, ...prev]);
     } else {
@@ -341,24 +403,24 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         try {
           addLogToTask(task.id, `[UPLINK] Authenticating resource pool: ${currentPreference.toUpperCase()}`);
           if (currentPreference === 'credits') {
-            const inputImages = selectedEngine === 'fxlab' ? [task.startMediaId || null, task.endMediaId || null] : [task.startUrl || null, task.endUrl || null];
+            const inputImages = [task.startUrl || null, task.endUrl || null];
             const payload: VideoJobRequest = { type: task.type, input: { images: inputImages }, config: { duration: parseInt(duration), aspectRatio: task.ratio, resolution: resolution }, engine: { provider: selectedEngine as any, model: selectedModelObj.modelKey as any }, enginePayload: { accessToken: "YOUR_GOMMO_ACCESS_TOKEN", prompt: task.prompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: selectedMode as any } };
-            
+
             addLogToTask(task.id, `[NODE_INIT] Provisioning H100 GPU cluster...`);
             const res = await videosApi.createJob(payload);
             const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
-            
+
             if (isSuccess && res.data.jobId) {
               const serverJobId = res.data.jobId;
               addLogToTask(task.id, `[API_READY] Remote job recognized. ID: ${serverJobId}`);
-              
+
               setResults(prev => prev.map(r => r.id === task.id ? { ...r, id: serverJobId } : r));
-              
+
               if (!isAutoRetry) useCredits(task.cost);
               pollVideoJobStatus(serverJobId, serverJobId, task.cost);
             } else {
               addLogToTask(task.id, `[ERROR] Resource handshake rejected: ${res.message || 'Generic refusal'}`);
-              setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
+              setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error', errorMessage: res.message || 'API handshake rejected' } : r));
             }
           } else {
             addLogToTask(task.id, `[DIRECT_INFERENCE] Bypassing internal pool. Using personal SDK Uplink.`);
@@ -369,12 +431,12 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               if (autoDownloadRef.current) triggerDownload(url, `video_${task.id}.mp4`);
             } else {
               addLogToTask(task.id, `[ERROR] Personal SDK node returned zero-byte manifest.`);
-              setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
+              setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error', errorMessage: 'Personal SDK returned empty result' } : r));
             }
           }
-        } catch (e) { 
+        } catch (e) {
           addLogToTask(task.id, `[CRITICAL_FAIL] Logic gate error: ${String(e)}`);
-          setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r)); 
+          setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error', errorMessage: String(e) } : r));
         }
       }));
     } finally { setIsGenerating(false); }
@@ -396,7 +458,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       setPrompt(autoPrompt);
       localStorage.removeItem('skyverses_global_auto_run');
       localStorage.removeItem('skyverses_global_auto_prompt');
-      
+
       // Delay to ensure prompt state is set
       setTimeout(() => {
         handleGenerate();
@@ -412,14 +474,28 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const deleteResult = (id: string) => setResults(prev => prev.filter(r => r.id !== id));
   const toggleSelect = (id: string) => setSelectedVideoIds(prev => prev.includes(id) ? prev.filter(vidId => vidId !== id) : [...prev, id]);
 
-  const cycleRatio = () => setRatio(r => r === '16:9' ? '9:16' : '16:9');
+  const cycleRatio = () => {
+    if (familyRatios.length > 0) {
+      const idx = familyRatios.indexOf(ratio);
+      setRatio(familyRatios[(idx + 1) % familyRatios.length]);
+    } else {
+      setRatio(r => r === '16:9' ? '9:16' : '16:9');
+    }
+  };
   const cycleSound = () => setSoundEnabled(s => !s);
-  const cycleResolution = () => setResolution(r => r === '720p' ? '1080p' : '720p');
+  const cycleResolution = () => {
+    if (familyResolutions.length > 0) {
+      const idx = familyResolutions.indexOf(resolution);
+      setResolution(familyResolutions[(idx + 1) % familyResolutions.length]);
+    } else {
+      setResolution(r => r === '720p' ? '1080p' : '720p');
+    }
+  };
 
   const generateTooltip = useMemo(() => {
     if (!isAuthenticated) return "Vui lòng đăng nhập để sử dụng";
     if (!usagePreference) return "Vui lòng chọn Nguồn tài nguyên";
-    if (processingCount >= 4) return "Đã đạt giới hạn 4 luồng xử lý đồng thời"; 
+    if (processingCount >= 4) return "Đã đạt giới hạn 4 luồng xử lý đồng thời";
     if (usagePreference === 'credits' && credits < currentTotalCost) return `Số dư không đủ (Cần ${currentTotalCost} CR)`;
     if (activeMode === 'SINGLE' && !prompt.trim()) return "Vui lòng nhập kịch bản";
     return null;
@@ -457,7 +533,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     const doneResults = results.filter(r => r.status === 'done' && r.url);
     if (doneResults.length === 0) return;
     doneResults.forEach((res, idx) => {
-      setTimeout(() => triggerDownload(res.url!, `video_${res.id}.mp4`), idx * 1000); 
+      setTimeout(() => triggerDownload(res.url!, `video_${res.id}.mp4`), idx * 1000);
     });
   };
 
@@ -561,15 +637,15 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   };
 
   return (
-    <div className="h-full w-full flex flex-col lg:flex-row bg-[#fcfcfd] dark:bg-[#0d0e12] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
-      
+    <div className="h-full w-full flex flex-col lg:flex-row bg-white dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300 relative">
+
       <AnimatePresence>
         {isMobileExpanded && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMobileExpanded(false)} className="lg:hidden fixed inset-0 bg-black/60 z-[140] backdrop-blur-sm" />
         )}
       </AnimatePresence>
 
-      <SidebarLeft 
+      <SidebarLeft
         onClose={handleSafeClose}
         activeMode={activeMode}
         setActiveMode={setActiveMode}
@@ -578,20 +654,20 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         startFrame={startFrame}
         endFrame={endFrame}
         handleSingleFrameClick={(slot, mode) => {
-           uploadTargetRef.current = slot;
-           if (mode === 'UPLOAD') fileInputRef.current?.click();
-           else setIsLibraryOpen(true);
+          uploadTargetRef.current = slot;
+          if (mode === 'UPLOAD') fileInputRef.current?.click();
+          else setIsLibraryOpen(true);
         }}
         fileInputRef={fileInputRef}
         isUploadingImage={isUploadingImage}
         multiFrames={multiFrames}
         handleAddFrame={() => {
-           if (multiFrames.length >= 6) return;
-           setMultiFrames(prev => [...prev, { id: Date.now().toString(), url: null, mediaId: null, prompt: '' }]);
+          if (multiFrames.length >= 6) return;
+          setMultiFrames(prev => [...prev, { id: Date.now().toString(), url: null, mediaId: null, prompt: '' }]);
         }}
         removeFrame={(id) => {
-           if (multiFrames.length <= 2) return;
-           setMultiFrames(prev => prev.filter(f => f.id !== id));
+          if (multiFrames.length <= 2) return;
+          setMultiFrames(prev => prev.filter(f => f.id !== id));
         }}
         handleFramePromptChange={(id, val) => setMultiFrames(prev => prev.map(n => n.id === id ? { ...n, prompt: val } : n))}
         handleFrameClick={handleFrameClick}
@@ -631,12 +707,22 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         generateTooltip={generateTooltip}
         quantity={quantity}
         setQuantity={setQuantity}
+        isModeBased={isModeBased}
+        familyList={familyList}
+        selectedFamily={selectedFamily}
+        setSelectedFamily={setSelectedFamily}
+        familyModes={familyModes}
+        familyResolutions={familyResolutions}
+        familyRatios={familyRatios}
+        setRatio={setRatio}
+        setResolution={setResolution}
+        familyModels={familyModels}
       />
 
-      <ResultsMain 
+      <ResultsMain
         onClose={handleSafeClose}
-        activeTab={activeTab} setActiveTab={setActiveTab} 
-        autoDownload={autoDownload} setAutoDownload={setAutoDownload} 
+        activeTab={activeTab} setActiveTab={setActiveTab}
+        autoDownload={autoDownload} setAutoDownload={setAutoDownload}
         zoomLevel={zoomLevel} setZoomLevel={setZoomLevel}
         results={results} isGenerating={isGenerating}
         selectedVideoIds={selectedVideoIds} toggleSelect={toggleSelect}
@@ -658,21 +744,21 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
       <AnimatePresence>
         {selectedLogTask && (
-           <JobLogsModal 
-             isOpen={true}
-             logs={selectedLogTask.logs || []}
-             status={selectedLogTask.status}
-             title="Video Production Trace"
-             subtitle="Node Process Trace"
-             jobId={selectedLogTask.id}
-             onClose={() => setSelectedLogTask(null)}
-           />
+          <JobLogsModal
+            isOpen={true}
+            logs={selectedLogTask.logs || []}
+            status={selectedLogTask.status}
+            title="Video Production Trace"
+            subtitle="Node Process Trace"
+            jobId={selectedLogTask.id}
+            onClose={() => setSelectedLogTask(null)}
+          />
         )}
       </AnimatePresence>
 
-      <ImageLibraryModal 
-        isOpen={isLibraryOpen} 
-        onClose={() => setIsLibraryOpen(false)} 
+      <ImageLibraryModal
+        isOpen={isLibraryOpen}
+        onClose={() => setIsLibraryOpen(false)}
         onConfirm={handleLibrarySelect}
         maxSelect={1}
       />

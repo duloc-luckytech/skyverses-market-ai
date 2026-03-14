@@ -41,27 +41,27 @@ export interface ProductionJob {
 
 export const useCharacterSync = () => {
   const { credits, useCredits, addCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
-  
+
   const [slots, setSlots] = useState<CharacterSlot[]>(
-    Array.from({ length: 10 }, (_, i) => ({ 
-      id: `slot-${i}`, 
-      url: null, 
+    Array.from({ length: 10 }, (_, i) => ({
+      id: `slot-${i}`,
+      url: null,
       mediaId: null,
-      name: `Nhân vật ${i + 1}`, 
-      role: 'NPC' 
+      name: `Nhân vật ${i + 1}`,
+      role: 'NPC'
     }))
   );
-  
+
   const [sequences, setSequences] = useState<PromptSequence[]>([
     { id: 'seq-1', text: '', duration: '8s', boundCharacterIds: [] }
   ]);
-  
+
   const [jobs, setJobs] = useState<ProductionJob[]>([]);
   const [history, setHistory] = useState<ProductionJob[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
   const [showTutorial, setShowTutorial] = useState(false);
-  
+
   // NEW: State for results terminal
   const [activeResultTab, setActiveResultTab] = useState<'CURRENT' | 'HISTORY'>('CURRENT');
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
@@ -110,7 +110,7 @@ export const useCharacterSync = () => {
 
   const availableDurations = useMemo(() => {
     if (!selectedModel || !selectedModel.pricing || !selectedModel.pricing[resolution]) {
-        return ['5s', '8s', '10s'];
+      return ['5s', '8s', '10s'];
     }
     return Object.keys(selectedModel.pricing[resolution]).map(d => `${d}s`);
   }, [selectedModel, resolution]);
@@ -139,9 +139,9 @@ export const useCharacterSync = () => {
     if (sequences.length > 1) setSequences(prev => prev.filter(s => s.id !== id));
   };
 
-  const activeCharacterNames = useMemo(() => 
-    slots.filter(s => s.url && s.name.trim()).map(s => s.name.toUpperCase()), 
-  [slots]);
+  const activeCharacterNames = useMemo(() =>
+    slots.filter(s => s.url && s.name.trim()).map(s => s.name.toUpperCase()),
+    [slots]);
 
   const hasValidSequence = useMemo(() => {
     const activeSeqs = sequences.filter(s => s.text.trim() !== '');
@@ -162,22 +162,22 @@ export const useCharacterSync = () => {
     return resMatrix[durKey] || 50;
   }, [selectedModel, resolution, duration]);
 
-  const totalCostEstimate = useMemo(() => 
-    sequences.filter(s => s.text.trim() !== '').length * currentUnitCost, 
-  [sequences, currentUnitCost]);
+  const totalCostEstimate = useMemo(() =>
+    sequences.filter(s => s.text.trim() !== '').length * currentUnitCost,
+    [sequences, currentUnitCost]);
 
   const pollJobStatus = async (jobId: string, resultId: string, cost: number) => {
     try {
       const response: VideoJobResponse = await videosApi.getJobStatus(jobId);
       const isSuccess = response.success === true || response.status?.toLowerCase() === 'success';
       const jobStatus = response.data?.status?.toUpperCase();
-      
+
       if (jobStatus === 'DONE' && response.data.result?.videoUrl) {
         const videoUrl = response.data.result.videoUrl;
         setJobs(prev => {
           const job = prev.find(j => j.id === resultId);
           if (job) {
-             setHistory(h => [{ ...job, status: 'COMPLETED', url: videoUrl, progress: 100 }, ...h]);
+            setHistory(h => [{ ...job, status: 'COMPLETED', url: videoUrl, progress: 100 }, ...h]);
           }
           return prev.filter(j => j.id !== resultId);
         });
@@ -185,7 +185,7 @@ export const useCharacterSync = () => {
       } else if (jobStatus === 'FAILED' || jobStatus === 'ERROR' || (!isSuccess && jobStatus !== 'PENDING' && jobStatus !== 'PROCESSING')) {
         const errorData = (response.data as any)?.error;
         const errorMsg = errorData?.userMessage || errorData?.message || 'Lỗi tạo video';
-        
+
         if (usagePreference === 'credits') addCredits(cost);
         setJobs(prev => prev.map(j => j.id === resultId ? { ...j, status: 'FAILED', error: errorMsg, isRefunded: true } : j));
       } else {
@@ -220,8 +220,8 @@ export const useCharacterSync = () => {
     const nameFromFileName = file.name.split('.')[0].replace(/[_-]/g, ' ').trim().toUpperCase();
 
     try {
-      // Gán cứng source là fxlab khi upload hình nhân vật
-      const metadata = await uploadToGCS(file, 'fxlab');
+      // Upload hình nhân vật qua gommo
+      const metadata = await uploadToGCS(file, 'gommo');
       updateSlot(activeIdx, { url: metadata.url, name: nameFromFileName, mediaId: metadata.mediaId });
     } catch (error) {
       console.error("Character image upload failed:", error);
@@ -248,7 +248,7 @@ export const useCharacterSync = () => {
     const charUrls = slots.filter(s => s.url).map(s => s.url!);
     // Ưu tiên sử dụng mediaId nếu có cho engine fxlab/gommo
     const charMediaIds = slots.filter(s => s.url).map(s => s.mediaId || s.url!);
-    
+
     const now = new Date();
     const dateKey = now.toISOString().split('T')[0];
     const timeStr = now.toLocaleTimeString();
@@ -262,13 +262,12 @@ export const useCharacterSync = () => {
 
       try {
         if (usagePreference === 'credits') {
-          const payload: VideoJobRequest = { 
-            type: "ingredient", 
-            // Chọn identifier dựa trên engine: fxlab -> mediaId, gommo -> url
-            input: { images: selectedEngine === 'fxlab' ? charMediaIds : charUrls }, 
-            config: { duration: parseInt(duration), aspectRatio, resolution }, 
-            engine: { provider: selectedEngine as any, model: selectedModel.modelKey as any }, 
-            enginePayload: { accessToken: "SECURE_GATEWAY_TOKEN", prompt: seq.text, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: selectedModel.mode as any } 
+          const payload: VideoJobRequest = {
+            type: "ingredient",
+            input: { images: charUrls },
+            config: { duration: parseInt(duration), aspectRatio, resolution },
+            engine: { provider: selectedEngine as any, model: selectedModel.modelKey as any },
+            enginePayload: { accessToken: "SECURE_GATEWAY_TOKEN", prompt: seq.text, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: selectedModel.mode as any }
           };
           const res = await videosApi.createJob(payload);
           const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';

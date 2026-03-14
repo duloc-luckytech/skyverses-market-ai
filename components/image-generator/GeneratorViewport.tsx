@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Activity, Download, Wand2, 
-  Edit3, ChevronLeft, 
+import {
+  Activity, Download, Wand2,
+  Edit3, ChevronLeft,
   Sparkles, X, LayoutGrid, ArrowLeft, Image as ImageIcon,
   Loader2, Zap, AlertCircle, Eye, Heart, Maximize2, Tag,
   History as HistoryIcon, Database
@@ -11,6 +11,7 @@ import {
 import { ImageResult } from '../../hooks/useImageGenerator';
 import { ImageResultCard } from './ImageResultCard';
 import ExplorerDetailModal, { ExplorerItem } from '../ExplorerDetailModal';
+import { getExplorerUrl } from '../../apis/config';
 
 interface GeneratorViewportProps {
   onClose?: () => void;
@@ -34,7 +35,7 @@ interface GeneratorViewportProps {
 }
 
 const CATEGORY_TAGS = [
-  'ALL', 'FEATURED', 'POSTER & AD', 'PRODUCT', 'SOCIAL MEDIA', 
+  'ALL', 'FEATURED', 'POSTER & AD', 'PRODUCT', 'SOCIAL MEDIA',
   'CARD', 'CHARACTER'
 ];
 
@@ -49,11 +50,22 @@ const getFakeStats = (seedId: string) => {
   };
 };
 
-export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({ 
+export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   onClose, activePreviewUrl, setActivePreviewUrl, zoomLevel, setZoomLevel, onApplyExample, onEdit, onDownload,
   results, serverResults, isFetchingServer, hasMoreServer, onLoadMoreServer, selectedIds, toggleSelect, deleteResult, onRetry, onViewLogs
 }) => {
   const [activeTab, setActiveTab] = useState<'RESULTS' | 'HISTORY'>('RESULTS');
+
+  const PROMPT_SUGGESTIONS = [
+    { emoji: '🏙️', label: 'Cityscape', prompt: 'A futuristic neon-lit cyberpunk city at night, rain-soaked streets reflecting holographic billboards, ultra detailed, cinematic lighting' },
+    { emoji: '🎨', label: 'Portrait', prompt: 'Professional fashion portrait of a woman with flowing hair, golden hour sunlight, bokeh background, studio quality, 8K' },
+    { emoji: '🌌', label: 'Fantasy', prompt: 'A majestic dragon flying over snow-capped mountains at sunset, epic fantasy landscape, volumetric lighting, hyperrealistic' },
+    { emoji: '🍃', label: 'Nature', prompt: 'Beautiful serene Japanese garden with koi pond, cherry blossoms falling, morning mist, zen atmosphere, photorealistic' },
+    { emoji: '🪐', label: 'Sci-Fi', prompt: 'Space station interior with panoramic view of Earth, astronaut floating weightlessly, lens flare, NASA-quality detail' },
+    { emoji: '🏠', label: 'Interior', prompt: 'Luxurious modern minimalist living room, floor-to-ceiling windows, ocean view, marble and wood accents, architectural digest' },
+    { emoji: '🎮', label: 'Game Art', prompt: 'Epic RPG warrior character, intricate armor design with glowing runes, dark atmospheric background, concept art style' },
+    { emoji: '📦', label: 'Product', prompt: 'Premium skincare bottle on marble surface with water droplets, soft studio lighting, white background, commercial photography' },
+  ];
   const [explorerItems, setExplorerItems] = useState<ExplorerItem[]>([]);
   const [loadingExplorer, setLoadingExplorer] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -69,13 +81,13 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   const fetchExplorer = async (pageNum: number, isInitial: boolean = false) => {
     if (pageNum === 1) setLoadingExplorer(true);
     else setIsFetchingMore(true);
-    
+
     setError(null);
     try {
-      const res = await fetch(`https://api.skyverses.com/explorer?page=${pageNum}&limit=20&type=image`);
+      const res = await fetch(getExplorerUrl('image', pageNum, 20));
       const json = await res.json();
       const items = json.data || (Array.isArray(json) ? json : []);
-      
+
       if (Array.isArray(items)) {
         if (isInitial) {
           setExplorerItems(items);
@@ -107,7 +119,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   const lastItemRef = useCallback((node: HTMLDivElement | null) => {
     if (loadingExplorer || isFetchingMore) return;
     if (observer.current) observer.current.disconnect();
-    
+
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore) {
         setPage(prev => {
@@ -145,100 +157,99 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   };
 
   return (
-    <main className="flex-grow min-w-0 flex flex-col relative bg-[#fcfcfd] dark:bg-[#030304] transition-colors duration-500 overflow-hidden">
+    <main className="flex-grow min-w-0 flex flex-col relative bg-slate-50 dark:bg-[#0a0a0c] overflow-hidden">
       {/* Viewport Header */}
-      <div className="h-14 md:h-16 border-b border-slate-200 dark:border-white/5 bg-white/80 dark:bg-[#0c0c0e]/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 shrink-0 z-40">
-         <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
-            <div className="flex items-center gap-1">
-              {onClose && (
-                <button 
-                  onClick={onClose}
-                  className="lg:hidden p-2 -ml-2 text-slate-400 hover:text-brand-blue transition-colors flex items-center gap-1"
+      <div className="h-11 border-b border-black/[0.06] dark:border-white/[0.04] bg-white/90 dark:bg-[#111114]/90 backdrop-blur-md flex items-center justify-between px-3 shrink-0 z-40">
+        <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
+          <div className="flex items-center gap-1">
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="lg:hidden p-2 -ml-2 text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1"
+              >
+                <ChevronLeft size={20} />
+                <span className="text-[10px] font-black uppercase tracking-widest hidden xs:block">Back</span>
+              </button>
+            )}
+
+            <div className="flex bg-black/[0.02] dark:bg-white/[0.03] rounded-md border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+              <button
+                onClick={() => setActiveTab('RESULTS')}
+                className={`px-3 py-1 text-[8px] font-semibold uppercase tracking-wider transition-all ${activeTab === 'RESULTS' ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-400 dark:text-[#555]'}`}
+              >
+                <LayoutGrid size={14} className="md:hidden" />
+                <span className="hidden md:inline">Kết quả</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('HISTORY')}
+                className={`px-3 py-1 text-[8px] font-semibold uppercase tracking-wider transition-all ${activeTab === 'HISTORY' ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-400 dark:text-[#555]'}`}
+              >
+                <HistoryIcon size={14} className="md:hidden" />
+                <span className="hidden md:inline">Lịch sử</span>
+              </button>
+            </div>
+          </div>
+
+          <Activity size={16} className="text-rose-400 shrink-0 hidden sm:inline" />
+        </div>
+
+        <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          {activePreviewUrl ? (
+            <button
+              onClick={() => setActivePreviewUrl(null)}
+              className="flex items-center gap-2 px-4 py-1.5 bg-black/5 dark:bg-white/5 border border-black/[0.06] dark:border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+            >
+              <ArrowLeft size={14} />
+              <span className="hidden sm:inline">Trở lại lưới</span>
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 md:gap-4">
+              <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 md:px-4 py-1.5 rounded-full border border-black/5 dark:border-white/10 shadow-inner">
+                <span className="text-[8px] md:text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 hidden xs:inline">Auto Download</span>
+                <span className="text-[8px] md:text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 xs:hidden">Auto</span>
+                <button
+                  onClick={() => setAutoDownload(!autoDownload)}
+                  className={`w-7 md:w-8 h-3.5 md:h-4 rounded-full relative transition-colors ${autoDownload ? 'bg-rose-500' : 'bg-gray-300 dark:bg-gray-700'}`}
                 >
-                  <ChevronLeft size={20} />
-                  <span className="text-[10px] font-black uppercase tracking-widest hidden xs:block">Back</span>
+                  <motion.div
+                    animate={{ left: autoDownload ? (window.innerWidth < 768 ? 16 : 18) : 2 }}
+                    className="absolute top-0.5 w-2.5 md:w-3 h-2.5 md:h-3 bg-white rounded-full shadow-sm"
+                  />
                 </button>
-              )}
-              
-              <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#1a1a1a] p-1 rounded-full border border-black/5 dark:border-white/10 shadow-inner">
-                <button 
-                  onClick={() => setActiveTab('RESULTS')}
-                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'RESULTS' ? 'bg-white dark:bg-[#2a2a2e] text-brand-blue shadow-md' : 'text-slate-500'}`}
-                >
-                  <LayoutGrid size={14} className="md:hidden" />
-                  <span className="hidden md:inline">Kết quả</span>
-                </button>
-                <button 
-                  onClick={() => setActiveTab('HISTORY')}
-                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'HISTORY' ? 'bg-white dark:bg-[#2a2a2e] text-brand-blue shadow-md' : 'text-slate-500'}`}
-                >
-                  <HistoryIcon size={14} className="md:hidden" />
-                  <span className="hidden md:inline">Lịch sử</span>
-                </button>
+              </div>
+
+              <button
+                onClick={handleManualDownload}
+                className="p-2 bg-rose-500 text-white rounded-full hover:brightness-110 shadow-lg flex items-center justify-center"
+              >
+                <Download size={16} />
+              </button>
+
+              <div className="hidden md:flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-white/10">
+                <ImageIcon size={14} className="text-slate-400" />
+                <input
+                  type="range" min="1" max="10"
+                  value={zoomLevel} onChange={e => setZoomLevel(parseInt(e.target.value))}
+                  className="w-16 md:w-28 h-1 bg-white/10 appearance-none rounded-full accent-rose-500 cursor-pointer"
+                />
               </div>
             </div>
-
-            <Activity size={16} className="text-brand-blue shrink-0 hidden sm:inline" />
-         </div>
-
-         <div className="flex items-center gap-2 md:gap-4 shrink-0">
-            {activePreviewUrl ? (
-              <button 
-                onClick={() => setActivePreviewUrl(null)}
-                className="flex items-center gap-2 px-4 py-1.5 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-brand-blue hover:text-white transition-all shadow-sm"
-              >
-                <ArrowLeft size={14} /> 
-                <span className="hidden sm:inline">Trở lại lưới</span>
-              </button>
-            ) : (
-              <div className="flex items-center gap-2 md:gap-4">
-                 <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-3 md:px-4 py-1.5 rounded-full border border-black/5 dark:border-white/10 shadow-inner">
-                    <span className="text-[8px] md:text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 hidden xs:inline">Auto Download</span>
-                    <span className="text-[8px] md:text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 xs:hidden">Auto</span>
-                    <button 
-                      onClick={() => setAutoDownload(!autoDownload)}
-                      className={`w-7 md:w-8 h-3.5 md:h-4 rounded-full relative transition-colors ${autoDownload ? 'bg-brand-blue' : 'bg-gray-300 dark:bg-gray-700'}`}
-                    >
-                      <motion.div 
-                        animate={{ left: autoDownload ? (window.innerWidth < 768 ? 16 : 18) : 2 }}
-                        className="absolute top-0.5 w-2.5 md:w-3 h-2.5 md:h-3 bg-white rounded-full shadow-sm" 
-                      />
-                    </button>
-                 </div>
-
-                 <button 
-                   onClick={handleManualDownload}
-                   className="p-2 bg-brand-blue text-white rounded-full hover:brightness-110 shadow-lg flex items-center justify-center"
-                 >
-                    <Download size={16} />
-                 </button>
-
-                 <div className="hidden md:flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-white/10">
-                    <ImageIcon size={14} className="text-slate-400" />
-                    <input 
-                      type="range" min="1" max="10" 
-                      value={zoomLevel} onChange={e => setZoomLevel(parseInt(e.target.value))}
-                      className="w-16 md:w-28 h-1 bg-slate-200 dark:bg-white/10 appearance-none rounded-full accent-brand-blue cursor-pointer"
-                    />
-                 </div>
-              </div>
-            )}
-         </div>
+          )}
+        </div>
       </div>
 
       {!activePreviewUrl && (
-        <div className="bg-white/50 dark:bg-[#0c0c0e]/50 backdrop-blur-sm border-b border-black/5 dark:border-white/5 px-4 md:px-8 py-3 flex items-center gap-3 overflow-x-auto no-scrollbar shrink-0">
+        <div className="bg-white/80 dark:bg-[#111114]/50 backdrop-blur-sm border-b border-black/[0.06] dark:border-white/[0.04] px-3 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
           <Tag size={14} className="text-slate-400 shrink-0" />
           <div className="flex gap-2">
             {CATEGORY_TAGS.map(tag => (
               <button
                 key={tag}
                 onClick={() => setActiveTag(tag)}
-                className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
-                  activeTag === tag 
-                  ? 'bg-brand-blue border-brand-blue text-white shadow-lg' 
-                  : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/5 text-slate-500 dark:text-gray-400 hover:border-brand-blue'
-                }`}
+                className={`px-2.5 py-1 rounded-md text-[8px] font-semibold whitespace-nowrap transition-all border ${activeTag === tag
+                  ? 'bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/25'
+                  : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-500 dark:text-[#666] hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
+                  }`}
               >
                 {tag}
               </button>
@@ -248,216 +259,231 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
       )}
 
       <div className="flex-grow p-4 md:p-8 lg:p-12 relative overflow-y-auto no-scrollbar">
-         <AnimatePresence mode="wait">
-            {activePreviewUrl ? (
-              <motion.div 
-                key="preview-view"
-                initial={{ opacity: 0, scale: 0.98 }} 
-                animate={{ opacity: 1, scale: 1 }} 
-                exit={{ opacity: 0, scale: 1.02 }}
-                className="flex items-center justify-center w-full h-full min-h-[60vh]"
-              >
-                 <div className="relative group max-w-full max-h-full rounded-sm overflow-hidden flex items-center justify-center" style={{ transform: `scale(${zoomLevel / 5})`, transition: 'transform 0.2s ease-out' }}>
-                    <img src={activePreviewUrl} className="max-w-full max-h-full object-contain shadow-3xl" alt="Preview" />
-                    <div className="absolute top-6 right-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                       <button 
-                         onClick={() => onEdit(activePreviewUrl)}
-                         className="p-4 bg-brand-blue text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
-                       >
-                         <Edit3 size={18} />
-                       </button>
-                       <button 
-                         onClick={() => onDownload(activePreviewUrl, `skyverses_${Date.now()}.png`)}
-                         className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
-                       >
-                         <Download size={18} />
-                    </button>
+        <AnimatePresence mode="wait">
+          {activePreviewUrl ? (
+            <motion.div
+              key="preview-view"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.02 }}
+              className="flex items-center justify-center w-full h-full min-h-[60vh]"
+            >
+              <div className="relative group max-w-full max-h-full rounded-sm overflow-hidden flex items-center justify-center" style={{ transform: `scale(${zoomLevel / 5})`, transition: 'transform 0.2s ease-out' }}>
+                <img src={activePreviewUrl} className="max-w-full max-h-full object-contain shadow-3xl" alt="Preview" />
+                <div className="absolute top-6 right-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
+                  <button
+                    onClick={() => onEdit(activePreviewUrl)}
+                    className="p-4 bg-rose-500 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
+                  >
+                    <Edit3 size={18} />
+                  </button>
+                  <button
+                    onClick={() => onDownload(activePreviewUrl, `skyverses_${Date.now()}.png`)}
+                    className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
+                  >
+                    <Download size={18} />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ) : activeTab === 'RESULTS' && results.length > 0 ? (
+            <motion.div
+              key="grid-view"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="w-full h-full pb-32 lg:pb-10"
+            >
+              <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8`}>
+                {results.map((res) => (
+                  <ImageResultCard
+                    key={res.id}
+                    res={res}
+                    isSelected={selectedIds.includes(res.id)}
+                    onToggleSelect={() => toggleSelect(res.id)}
+                    onFullscreen={(url) => setActivePreviewUrl(url)}
+                    onEdit={onEdit}
+                    onDelete={deleteResult}
+                    onDownload={onDownload}
+                    onRetry={() => onRetry(res)}
+                    onViewLogs={onViewLogs}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          ) : activeTab === 'HISTORY' ? (
+            <motion.div
+              key="history-view"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="w-full h-full pb-32 lg:pb-10"
+            >
+              <div className="flex items-center gap-3 mb-8">
+                <Database size={18} className="text-purple-500" />
+                <h4 className="text-sm font-black uppercase tracking-widest italic">Lịch sử từ Cloud</h4>
+              </div>
+              {serverResults.length === 0 && !isFetchingServer ? (
+                <div className="py-20 text-center opacity-10 flex flex-col items-center gap-6 select-none">
+                  <HistoryIcon size={80} strokeWidth={1} />
+                  <p className="text-sm font-black uppercase tracking-[0.5em]">No records found</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                  {serverResults.map((res, idx) => (
+                    <div key={res.id} ref={idx === serverResults.length - 1 ? lastHistoryRef : null}>
+                      <ImageResultCard
+                        res={res}
+                        isSelected={selectedIds.includes(res.id)}
+                        onToggleSelect={() => toggleSelect(res.id)}
+                        onFullscreen={setActivePreviewUrl}
+                        onEdit={onEdit}
+                        onDelete={deleteResult}
+                        onDownload={onDownload}
+                        onRetry={() => onRetry(res)}
+                        onViewLogs={onViewLogs}
+                      />
                     </div>
-                 </div>
-              </motion.div>
-            ) : activeTab === 'RESULTS' && results.length > 0 ? (
-              <motion.div 
-                key="grid-view"
-                initial={{ opacity: 0, y: 10 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                exit={{ opacity: 0, y: -10 }}
-                className="w-full h-full pb-32 lg:pb-10"
-              >
-                <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8`}>
-                  {results.map((res) => (
-                    <ImageResultCard 
-                      key={res.id} 
-                      res={res} 
-                      isSelected={selectedIds.includes(res.id)} 
-                      onToggleSelect={() => toggleSelect(res.id)} 
-                      onFullscreen={(url) => setActivePreviewUrl(url)}
-                      onEdit={onEdit}
-                      onDelete={deleteResult}
-                      onDownload={onDownload}
-                      onRetry={() => onRetry(res)}
-                      onViewLogs={onViewLogs}
-                    />
                   ))}
                 </div>
-              </motion.div>
-            ) : activeTab === 'HISTORY' ? (
-              <motion.div 
-                key="history-view"
-                initial={{ opacity: 0, y: 10 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                exit={{ opacity: 0, y: -10 }}
-                className="w-full h-full pb-32 lg:pb-10"
-              >
-                <div className="flex items-center gap-3 mb-8">
-                  <Database size={18} className="text-purple-500" />
-                  <h4 className="text-sm font-black uppercase tracking-widest italic">Lịch sử từ Cloud</h4>
+              )}
+              {isFetchingServer && (
+                <div className="py-10 flex justify-center">
+                  <Loader2 className="animate-spin text-rose-400" size={32} />
                 </div>
-                {serverResults.length === 0 && !isFetchingServer ? (
-                   <div className="py-20 text-center opacity-10 flex flex-col items-center gap-6 select-none">
-                      <HistoryIcon size={80} strokeWidth={1} />
-                      <p className="text-sm font-black uppercase tracking-[0.5em]">No records found</p>
-                   </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {serverResults.map((res, idx) => (
-                      <div key={res.id} ref={idx === serverResults.length - 1 ? lastHistoryRef : null}>
-                        <ImageResultCard 
-                          res={res} 
-                          isSelected={selectedIds.includes(res.id)} 
-                          onToggleSelect={() => toggleSelect(res.id)} 
-                          onFullscreen={setActivePreviewUrl}
-                          onEdit={onEdit}
-                          onDelete={deleteResult}
-                          onDownload={onDownload}
-                          onRetry={() => onRetry(res)}
-                          onViewLogs={onViewLogs}
-                        />
-                      </div>
-                    ))}
+              )}
+            </motion.div>
+          ) : activeTab === 'RESULTS' && (
+            <motion.div
+              key="standby-view"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="w-full h-full flex flex-col"
+            >
+              <div className="space-y-10">
+                {/* HERO + PROMPT SUGGESTIONS */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-rose-400"><Sparkles size={20} /></div>
+                    <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
+                      Bắt đầu <br /><span className="text-rose-400">sáng tạo</span>
+                    </h2>
+                    <p className="text-xs text-slate-500 dark:text-[#555] font-medium max-w-xl leading-relaxed">Chọn gợi ý prompt bên dưới hoặc nhập kịch bản riêng để bắt đầu tạo ảnh AI.</p>
                   </div>
-                )}
-                {isFetchingServer && (
-                  <div className="py-10 flex justify-center">
-                    <Loader2 className="animate-spin text-brand-blue" size={32} />
-                  </div>
-                )}
-              </motion.div>
-            ) : activeTab === 'RESULTS' && (
-              <motion.div 
-                key="standby-view"
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
-                exit={{ opacity: 0 }}
-                className="w-full h-full flex flex-col"
-              >
-                <div className="space-y-12">
-                   <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
-                      <div className="space-y-4">
-                         <div className="flex items-center gap-3 text-brand-blue"><Sparkles size={20} /></div>
-                         <div className="space-y-2">
-                           <h2 className="text-[64px] lg:text-[110px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-[0.8] italic">
-                             KỊCH BẢN <br />
-                             <span className="text-brand-blue">gợi ý.</span>
-                           </h2>
-                         </div>
-                         <p className="text-sm text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest italic leading-relaxed max-w-2xl pt-4">LỰA CHỌN CÁC TÁC PHẨM TIÊU BIỂU ĐỂ KẾ THỪA CẤU TRÚC KỊCH BẢN VÀ BẮT ĐẦU TIẾN TRÌNH TỔNG HỢP CÁ NHÂN.</p>
-                      </div>
-                      
-                      {loadingExplorer && (
-                         <div className="flex items-center gap-3 px-6 py-3 bg-brand-blue/10 rounded-full border border-brand-blue/20">
-                            <Loader2 className="animate-spin text-brand-blue" size={16} />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-brand-blue animate-pulse">Syncing_Nodes...</span>
-                         </div>
-                      )}
-                   </div>
+                  {loadingExplorer && (
+                    <div className="flex items-center gap-3 px-5 py-2.5 bg-rose-500/10 rounded-full border border-rose-500/20">
+                      <Loader2 className="animate-spin text-rose-400" size={14} />
+                      <span className="text-[9px] font-semibold uppercase tracking-widest text-rose-400 animate-pulse">Loading...</span>
+                    </div>
+                  )}
+                </div>
 
-                   {explorerItems.length > 0 ? (
-                      <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 md:gap-6 space-y-4 md:space-y-6 pb-40">
-                         {explorerItems.map((item, idx) => {
-                            const isLast = idx === explorerItems.length - 1;
-                            const stats = getFakeStats(item._id || item.id || idx.toString());
-                            return (
-                               <motion.div 
-                                  layout
-                                  key={item._id || item.id}
-                                  ref={isLast ? lastItemRef : null}
-                                  onClick={() => onApplyExample(item)}
-                                  className="break-inside-avoid relative overflow-hidden bg-slate-100 dark:bg-[#0d0d0f] group cursor-pointer border border-black/5 dark:border-white/5 transition-all duration-500 rounded-[1.5rem] md:rounded-[2rem] shadow-sm hover:shadow-2xl hover:border-brand-blue/30"
-                               >
-                                  <img 
-                                    src={item.thumbnailUrl} 
-                                    className="w-full h-auto object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000" 
-                                    alt={item.title} 
-                                  />
-                                  
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-transparent z-10 opacity-80" />
+                {/* PROMPT SUGGESTION TILES */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {PROMPT_SUGGESTIONS.map(s => (
+                    <button
+                      key={s.label}
+                      onClick={() => onApplyExample({ prompt: s.prompt })}
+                      className="p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-white/[0.015] hover:border-rose-500/20 hover:bg-rose-500/[0.03] transition-all text-left group shadow-sm dark:shadow-none"
+                    >
+                      <span className="text-lg">{s.emoji}</span>
+                      <p className="text-[10px] font-semibold text-slate-700 dark:text-white/70 mt-2">{s.label}</p>
+                      <p className="text-[8px] text-slate-400 dark:text-[#444] mt-1 line-clamp-2 leading-relaxed group-hover:text-slate-600 dark:group-hover:text-white/30 transition-colors">{s.prompt}</p>
+                    </button>
+                  ))}
+                </div>
 
-                                  <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-8 z-20">
-                                     <div className="space-y-3 translate-y-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                                        <p className="text-[10px] md:text-[11px] text-white/60 font-medium italic line-clamp-2 pr-6 leading-relaxed uppercase">
-                                          "{item.prompt}"
-                                        </p>
-                                        <div className="flex items-center gap-4 text-[8px] font-black text-white/30 uppercase tracking-widest">
-                                          <span className="flex items-center gap-1.5"><Eye size={12} className="text-brand-blue" /> {stats.views}</span>
-                                          <span className="flex items-center gap-1.5"><Heart size={12} className="text-brand-blue" /> {stats.likes}</span>
-                                        </div>
-                                        
-                                        <div className="flex gap-2 pt-2">
-                                          <button 
-                                            onClick={(e) => { e.stopPropagation(); onApplyExample(item); }}
-                                            className="flex-grow bg-brand-blue text-white px-4 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 scale-95 hover:scale-100 transition-transform"
-                                          >
-                                            <Zap size={12} fill="currentColor" /> Sử dụng kịch bản
-                                          </button>
-                                          <button 
-                                            onClick={(e) => { e.stopPropagation(); setSelectedDetailItem(item); }}
-                                            className="p-2.5 bg-white/10 backdrop-blur-md text-white rounded-full border border-white/10 hover:bg-white hover:text-black transition-all"
-                                          >
-                                            <Maximize2 size={12} />
-                                          </button>
-                                        </div>
-                                     </div>
-                                     <div className="mt-2 flex items-center gap-2 group-hover:opacity-0 transition-opacity">
-                                        <span className="text-[9px] font-black text-brand-blue uppercase tracking-widest italic">{item.title}</span>
-                                     </div>
-                                  </div>
-                               </motion.div>
-                            );
-                         })}
-                      </div>
-                   ) : !loadingExplorer && (
-                      <div className="flex flex-col items-center justify-center py-40 opacity-20 text-center gap-8">
-                         {error ? (
-                            <>
-                              <AlertCircle size={60} className="text-red-500" />
-                              <div className="space-y-2">
-                                <p className="text-sm font-black uppercase tracking-widest">{error}</p>
-                                <button onClick={() => fetchExplorer(1, true)} className="text-[10px] font-black text-brand-blue uppercase underline">Thử lại</button>
+                {/* EXPLORER GALLERY */}
+                {explorerItems.length > 0 && (
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#444] tracking-wider mb-4 px-1">Showcase Gallery</p>
+                    <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 md:gap-6 space-y-4 md:space-y-6 pb-40">
+                      {explorerItems.map((item, idx) => {
+                        const isLast = idx === explorerItems.length - 1;
+                        const stats = getFakeStats(item._id || item.id || idx.toString());
+                        return (
+                          <motion.div
+                            layout
+                            key={item._id || item.id}
+                            ref={isLast ? lastItemRef : null}
+                            onClick={() => onApplyExample(item)}
+                            className="break-inside-avoid relative overflow-hidden bg-white dark:bg-[#111114] group cursor-pointer border border-black/[0.06] dark:border-white/[0.04] transition-all duration-500 rounded-2xl hover:border-rose-500/20 shadow-sm dark:shadow-none"
+                          >
+                            <img
+                              src={item.thumbnailUrl}
+                              className="w-full h-auto object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000"
+                              alt={item.title}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-transparent z-10 opacity-80" />
+                            <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-8 z-20">
+                              <div className="space-y-3 translate-y-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                                <p className="text-[10px] md:text-[11px] text-white/60 font-medium italic line-clamp-2 pr-6 leading-relaxed uppercase">
+                                  "{item.prompt}"
+                                </p>
+                                <div className="flex items-center gap-4 text-[8px] font-black text-white/30 uppercase tracking-widest">
+                                  <span className="flex items-center gap-1.5"><Eye size={12} className="text-rose-400" /> {stats.views}</span>
+                                  <span className="flex items-center gap-1.5"><Heart size={12} className="text-rose-400" /> {stats.likes}</span>
+                                </div>
+                                <div className="flex gap-2 pt-2">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); onApplyExample(item); }}
+                                    className="flex-grow bg-rose-500 text-white px-4 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 scale-95 hover:scale-100 transition-transform"
+                                  >
+                                    <Zap size={12} fill="currentColor" /> Sử dụng kịch bản
+                                  </button>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); setSelectedDetailItem(item); }}
+                                    className="p-2.5 bg-white/10 backdrop-blur-md text-white rounded-full border border-white/10 hover:bg-white hover:text-black transition-all"
+                                  >
+                                    <Maximize2 size={12} />
+                                  </button>
+                                </div>
                               </div>
-                            </>
-                         ) : (
-                            <>
-                              <ImageIcon size={100} strokeWidth={1} />
-                              <p className="text-sm font-black uppercase tracking-[0.5em] mt-6">Registry_Offline</p>
-                            </>
-                         )}
-                      </div>
-                   )}
+                              <div className="mt-2 flex items-center gap-2 group-hover:opacity-0 transition-opacity">
+                                <span className="text-[9px] font-black text-rose-400 uppercase tracking-widest italic">{item.title}</span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
-                   {isFetchingMore && (
-                     <div className="flex justify-center py-10">
-                        <Loader2 className="animate-spin text-brand-blue" size={32} />
-                     </div>
-                   )}
-                </div>
-              </motion.div>
-            )}
-         </AnimatePresence>
+                {!loadingExplorer && explorerItems.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-20 opacity-20 text-center gap-8">
+                    {error ? (
+                      <>
+                        <AlertCircle size={60} className="text-red-500" />
+                        <div className="space-y-2">
+                          <p className="text-sm font-black uppercase tracking-widest">{error}</p>
+                          <button onClick={() => fetchExplorer(1, true)} className="text-[10px] font-black text-rose-400 uppercase underline">Thử lại</button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <ImageIcon size={100} strokeWidth={1} />
+                        <p className="text-sm font-black uppercase tracking-[0.5em] mt-6">Registry_Offline</p>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {isFetchingMore && (
+                  <div className="flex justify-center py-10">
+                    <Loader2 className="animate-spin text-rose-400" size={32} />
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      <ExplorerDetailModal 
-        item={selectedDetailItem} 
-        onClose={() => setSelectedDetailItem(null)} 
+      <ExplorerDetailModal
+        item={selectedDetailItem}
+        onClose={() => setSelectedDetailItem(null)}
       />
 
       <style>{`
