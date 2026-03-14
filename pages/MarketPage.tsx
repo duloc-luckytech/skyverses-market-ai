@@ -199,7 +199,7 @@ const MarketPage = () => {
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 mb-6">
               <Sparkles size={12} className="text-brand-blue" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-blue">AI Creative Studio</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-blue">Skyverses AI Products</span>
             </div>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter italic leading-[0.95] text-black dark:text-white mb-4">
               One Studio for{' '}
@@ -210,7 +210,7 @@ const MarketPage = () => {
               {' '}of Build
             </h1>
             <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 font-medium max-w-2xl mx-auto leading-relaxed">
-              Tạo hình ảnh, video, âm thanh và nội dung AI chuyên nghiệp — tất cả trong một nền tảng duy nhất.
+              Khám phá hệ sinh thái sản phẩm AI do Skyverses phát triển — từ tạo hình ảnh, video, giọng nói đến các giải pháp AI chuyên biệt cho doanh nghiệp.
             </p>
             {!isAuthenticated && (
               <div className="flex gap-3 justify-center mt-8">
