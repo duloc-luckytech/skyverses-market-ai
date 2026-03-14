@@ -58,9 +58,7 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const cleanQuery = query.replace(/\+/g, ' ').trim();
         const queryParams = new URLSearchParams();
-        if (cleanQuery) queryParams.append('q', cleanQuery);
         if (primary && primary !== 'ALL') queryParams.append('category', primary);
         
         const response = await fetch(`${API_BASE_URL}/category?${queryParams.toString()}`, {
@@ -75,7 +73,7 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
       }
     };
     fetchCategories();
-  }, [query, primary]);
+  }, [primary]);
 
   // Placeholder rotation
   useEffect(() => {
@@ -176,7 +174,7 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
           </AnimatePresence>
 
           {/* Input with animated placeholder */}
-          <div className="flex-grow relative h-full flex items-center">
+          <div className="flex-grow relative h-full flex items-center min-w-0">
             <input 
               ref={inputRef}
               type="text" 
@@ -184,7 +182,7 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full bg-transparent border-none text-sm font-medium text-slate-900 dark:text-white focus:outline-none tracking-tight"
+              className="w-full bg-transparent border-none text-sm font-medium text-slate-900 dark:text-white focus:outline-none tracking-tight relative z-10"
               placeholder=""
             />
             {!query && !isFocused && primary === 'ALL' && (
