@@ -5,12 +5,12 @@ import { marketApi } from '../apis/market';
 import { systemConfigApi } from '../apis/config';
 import { Solution, HomeBlock, Language } from '../types';
 import { 
-  X, SearchX, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow, 
+  X, SearchX, Search, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow, 
   Sparkles, LucideIcon, ArrowRight, ChevronRight, Play, Zap, Shield, Globe2, Cpu
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import MarketSearchTerminal from '../components/MarketSearchTerminal';
+import { useSearch } from '../context/SearchContext';
 import AIModelsMarquee from '../components/AIModelsMarquee';
 import ExploreMoreAI from '../components/ExploreMoreAI';
 import GlobalToolsBar from '../components/GlobalToolsBar';
@@ -63,9 +63,7 @@ const MarketPage = () => {
   const [homeBlocks, setHomeBlocks] = useState<HomeBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
-  const [primary, setPrimary] = useState("ALL");
-  const [secondary, setSecondary] = useState("ALL");
-  const [query, setQuery] = useState("");
+  const { query, setQuery, primary, setPrimary, secondary, setSecondary, reset: resetSearch, open: openSearch } = useSearch();
   const [favorites, setFavorites] = useState<string[]>([]);
   const [likedItems, setLikedItems] = useState<string[]>([]);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
@@ -86,10 +84,10 @@ const MarketPage = () => {
   }, [isAuthenticated, loginWithEmail, navigate]);
 
   useEffect(() => {
-    const handleResetSearch = () => { setQuery(""); setPrimary("ALL"); setSecondary("ALL"); };
+    const handleResetSearch = () => resetSearch();
     window.addEventListener('resetMarketSearch', handleResetSearch);
     return () => window.removeEventListener('resetMarketSearch', handleResetSearch);
-  }, []);
+  }, [resetSearch]);
 
   useEffect(() => {
     const initData = async () => {
@@ -350,15 +348,27 @@ const MarketPage = () => {
           </section>
         )}
 
-        {/* ═══════════════════ SEARCH ═══════════════════ */}
+        {/* ═══════════════════ ACTIVE FILTER BAR ═══════════════════ */}
         <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
-          <div className="sticky top-16 md:relative md:top-0 z-[140] transform-gpu bg-white/95 dark:bg-[#030304]/95 backdrop-blur-xl -mx-4 px-4 py-3 md:mx-0 md:px-0 md:py-0 md:bg-transparent md:backdrop-blur-none border-b border-black/5 dark:border-white/5 md:border-none transition-all duration-500">
-            <MarketSearchTerminal 
-              query={query} setQuery={setQuery}
-              primary={primary} setPrimary={setPrimary}
-              secondary={secondary} setSecondary={setSecondary}
-            />
-          </div>
+          {(query || primary !== 'ALL') && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-3 py-4 mb-2"
+            >
+              <Search size={14} className="text-brand-blue shrink-0" />
+              <span className="text-xs font-medium text-slate-500 dark:text-gray-400">
+                {query && <>Kết quả cho "<span className="font-bold text-slate-900 dark:text-white">{query}</span>"</>}
+                {query && primary !== 'ALL' && ' trong '}
+                {primary !== 'ALL' && <span className="font-bold text-brand-blue">{primary}</span>}
+              </span>
+              <button 
+                onClick={resetSearch}
+                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-white/5 rounded-lg text-[10px] font-bold text-slate-400 hover:text-red-500 transition-colors"
+              >
+                <X size={10} /> Xoá bộ lọc
+              </button>
+            </motion.div>
+          )}
 
           {/* ═══════════════════ PRODUCT GRID ═══════════════════ */}
           <div className="space-y-16 md:space-y-24 relative z-10 pt-8">

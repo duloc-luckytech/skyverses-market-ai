@@ -7,7 +7,7 @@ import {
   Zap, ArrowRight, BarChart3, Image as ImageIcon,
   ChevronDown, Bookmark, Loader2, Sparkles,
   Database, HelpCircle, Users, Gift, Plus,
-  Compass, Box
+  Compass, Box, Search, Command
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
@@ -16,6 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import { Language } from '../types';
 import CreditPurchaseModal from './CreditPurchaseModal';
 import { creditsApi } from '../apis/credits';
+import { useSearch } from '../context/SearchContext';
 
 const DEFAULT_AVATAR = "https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png";
 
@@ -80,6 +81,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const { user, logout, isAuthenticated, credits, claimWelcomeCredits, refreshUserInfo } = useAuth();
+  const search = useSearch();
   
   const langRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
@@ -100,6 +102,18 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Global ⌘K shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        search.toggle();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [search]);
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -214,6 +228,18 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 )
               ))}
             </div>
+
+            {/* Search Trigger Pill */}
+            <button 
+              onClick={() => search.open()}
+              className="hidden md:flex items-center gap-2.5 px-4 py-2 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl hover:border-brand-blue/30 hover:bg-brand-blue/5 transition-all group ml-auto"
+            >
+              <Search size={14} className="text-slate-300 dark:text-gray-600 group-hover:text-brand-blue transition-colors" />
+              <span className="text-[11px] font-medium text-slate-300 dark:text-gray-600 group-hover:text-slate-500 dark:group-hover:text-gray-400 transition-colors w-24 text-left">Tìm kiếm...</span>
+              <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-white dark:bg-white/5 rounded text-[9px] font-bold text-slate-300 dark:text-gray-600 border border-black/[0.04] dark:border-white/[0.06]">
+                <Command size={9} /> K
+              </div>
+            </button>
 
             <div className="flex items-center space-x-2 md:space-x-4 shrink-0">
               

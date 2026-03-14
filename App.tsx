@@ -4,6 +4,7 @@ import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'reac
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
+import { SearchProvider } from './context/SearchContext';
 import LoadingScreen from './components/LoadingScreen';
 import Layout from './components/Layout';
 import { ToastProvider } from './context/ToastContext';
@@ -74,6 +75,7 @@ const App: React.FC = () => {
           <ToastProvider>
             {isInitialLoading && <LoadingScreen onFinished={() => setIsInitialLoading(false)} />}
             <Router>
+              <SearchProvider>
               <ScrollToTop />
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
@@ -139,6 +141,7 @@ const App: React.FC = () => {
                   </Layout>
                 } />
               </Routes>
+              </SearchProvider>
             </Router>
           </ToastProvider>
         </AuthProvider>
