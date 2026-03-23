@@ -95,7 +95,7 @@ const GlobalToolsBar: React.FC = () => {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-[300] pointer-events-none">
+      <div className="fixed bottom-6 left-6 z-[300] pointer-events-none">
         <motion.div 
           layout
           style={{ willChange: 'transform, height, width' }}
@@ -105,7 +105,7 @@ const GlobalToolsBar: React.FC = () => {
             width: g.isExpanded ? 'min(520px, calc(100vw - 3rem))' : '48px',
           }}
           transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-          className="ml-auto pointer-events-auto relative"
+          className="mr-auto pointer-events-auto relative"
         >
           {/* Clean Background */}
           <div className="absolute inset-0 rounded-full bg-white/90 dark:bg-[#161618]/90 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-lg" style={{ borderRadius: g.isExpanded ? '1.25rem' : '9999px' }} />
@@ -329,13 +329,22 @@ const GlobalToolsBar: React.FC = () => {
               ) : (
                 <motion.div 
                   key="collapsed"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
                   onClick={() => g.setIsExpanded(true)}
-                  className="w-[48px] h-[48px] flex items-center justify-center cursor-pointer rounded-full transition-all hover:scale-105 active:scale-95"
+                  className="group w-[48px] h-[48px] flex items-center justify-center cursor-pointer rounded-full transition-all hover:scale-110 active:scale-95 relative"
                 >
-                  <Sparkles size={20} className="text-brand-blue" />
+                  {/* Pulse glow */}
+                  <div className="absolute inset-0 rounded-full bg-brand-blue/20 animate-ping opacity-30" />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-brand-blue to-purple-500 opacity-90" />
+                  <Sparkles size={20} className="text-white relative z-10 drop-shadow-sm" />
+                  
+                  {/* Tooltip */}
+                  <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 dark:bg-white text-white dark:text-black text-[9px] font-bold rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
+                    AI Studio
+                    <div className="absolute top-1/2 -translate-y-1/2 -left-1 w-2 h-2 bg-slate-900 dark:bg-white rotate-45" />
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

@@ -7,7 +7,7 @@ export type GlobalModality = 'video' | 'image' | 'animate';
 
 export const useGlobalTools = () => {
   const [prompt, setPrompt] = useState('');
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [modality, setModality] = useState<GlobalModality>('video');
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);

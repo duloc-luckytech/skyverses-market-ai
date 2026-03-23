@@ -506,8 +506,13 @@ const ModelCard: React.FC<{
   const resolutions = Object.keys(model.pricing || {});
   const firstRes = resolutions[0];
   const pricingKeys = firstRes ? Object.keys(model.pricing[firstRes]) : [];
-  const minPrice = Math.min(...Object.values(model.pricing || {}).flatMap(r => Object.values(r as any)));
-  const maxPrice = Math.max(...Object.values(model.pricing || {}).flatMap(r => Object.values(r as any)));
+  const sellPrices = Object.values(model.pricing || {}).flatMap(r => Object.values(r as Record<string, number>)) as number[];
+  const minSell = Math.min(...sellPrices);
+  const maxSell = Math.max(...sellPrices);
+  const basePrices = Object.values(model.basePricing || {}).flatMap(r => Object.values(r as Record<string, number>)) as number[];
+  const minBase = basePrices.length > 0 ? Math.min(...basePrices) : 0;
+  const maxBase = basePrices.length > 0 ? Math.max(...basePrices) : 0;
+  const multiplier = model.priceMultiplier || (minBase > 0 ? Math.round(minSell / minBase) : 5);
 
   return (
     <div className="group">
@@ -531,41 +536,41 @@ const ModelCard: React.FC<{
 
         {/* Info badges */}
         <div className="hidden lg:flex items-center gap-2 shrink-0">
-          {/* Modes */}
           {model.modes && model.modes.length > 0 && (
             <div className="flex items-center gap-1">
               {model.modes.slice(0, 3).map(m => (
                 <span key={m} className="px-2 py-0.5 text-[9px] font-semibold rounded bg-brand-blue/10 text-brand-blue border border-brand-blue/10">{m}</span>
               ))}
-              {model.modes.length > 3 && <span className="text-[9px] text-slate-400">+{model.modes.length - 3}</span>}
             </div>
           )}
 
-          {/* Resolutions */}
-          <div className="flex items-center gap-1">
-            {resolutions.slice(0, 3).map(r => (
-              <span key={r} className="px-2 py-0.5 text-[9px] font-semibold rounded bg-slate-100 dark:bg-white/5 text-slate-500 border border-black/[0.04] dark:border-white/[0.04]">{r}</span>
-            ))}
-          </div>
+          {resolutions.slice(0, 3).map(r => (
+            <span key={r} className="px-2 py-0.5 text-[9px] font-semibold rounded bg-slate-100 dark:bg-white/5 text-slate-500 border border-black/[0.04] dark:border-white/[0.04]">{r}</span>
+          ))}
 
-          {/* Ratios */}
-          {model.aspectRatios && model.aspectRatios.length > 0 && (
-            <div className="flex items-center gap-1">
-              {model.aspectRatios.slice(0, 2).map(r => (
-                <span key={r} className="px-1.5 py-0.5 text-[9px] font-semibold rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/10">{r}</span>
-              ))}
-              {model.aspectRatios.length > 2 && <span className="text-[9px] text-slate-400">+{model.aspectRatios.length - 2}</span>}
+          {/* Base price range */}
+          {minBase > 0 && (
+            <div className="flex items-center gap-1 px-2 py-1 rounded bg-emerald-500/10 border border-emerald-500/15">
+              <span className="text-[10px] font-bold text-emerald-500">
+                {minBase === maxBase ? `${minBase}` : `${minBase}–${maxBase}`}
+              </span>
+              <span className="text-[7px] text-emerald-400/60 uppercase">Gốc</span>
             </div>
           )}
 
-          {/* Price range */}
+          {/* Sell price range */}
           <div className="flex items-center gap-1 px-2 py-1 rounded bg-orange-500/10 border border-orange-500/10">
             <Zap size={10} className="text-orange-500" />
             <span className="text-[10px] font-bold text-orange-500">
-              {minPrice === maxPrice ? `${minPrice}` : `${minPrice}–${maxPrice}`}
+              {minSell === maxSell ? `${minSell}` : `${minSell}–${maxSell}`}
             </span>
-            <span className="text-[8px] text-orange-400/60">CR</span>
+            <span className="text-[7px] text-orange-400/60 uppercase">Bán</span>
           </div>
+
+          {/* Multiplier badge */}
+          <span className="px-1.5 py-0.5 text-[9px] font-black rounded bg-violet-500/10 text-violet-500 border border-violet-500/15">
+            ×{multiplier}
+          </span>
         </div>
 
         {/* Actions */}
@@ -575,16 +580,14 @@ const ModelCard: React.FC<{
           <button onClick={e => { e.stopPropagation(); onDelete(); }} title="Xóa" className="p-2 rounded-md hover:bg-red-500/10 text-slate-400 hover:text-red-500 transition-all"><Trash2 size={13} /></button>
         </div>
 
-        {/* Expand chevron */}
         <ChevronDown size={14} className={`shrink-0 text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
       </div>
 
-      {/* Expanded Pricing Detail */}
+      {/* Expanded Pricing Detail — DUAL PRICE VIEW */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
             <div className="px-6 pb-5 pt-2">
-              {/* Description */}
               {model.description && (
                 <p className="text-xs text-slate-500 mb-4 italic">{model.description}</p>
               )}
@@ -595,30 +598,89 @@ const ModelCard: React.FC<{
                 {model.aspectRatios?.map(r => <span key={r} className="px-2 py-0.5 text-[9px] font-semibold rounded bg-amber-500/10 text-amber-500">{r}</span>)}
               </div>
 
-              {/* Pricing matrix */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                {Object.entries(model.pricing || {}).map(([res, durMap]) => (
-                  <div key={res} className="p-3 bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.06] rounded-lg">
-                    <div className="flex items-center gap-2 mb-2.5 pb-2 border-b border-slate-100 dark:border-white/[0.06]">
-                      <Monitor size={11} className="text-brand-blue" />
-                      <span className="text-[10px] font-bold uppercase text-brand-blue tracking-wider">{res}</span>
+              {/* Legend */}
+              <div className="flex items-center gap-4 mb-3">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-sm bg-emerald-500/20 border border-emerald-500/30" />
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Giá gốc (Cost)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-sm bg-orange-500/20 border border-orange-500/30" />
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Giá bán (Sell) — Editable</span>
+                </div>
+                <span className="ml-auto px-2 py-0.5 text-[9px] font-black rounded bg-violet-500/10 text-violet-500 border border-violet-500/15">
+                  Multiplier: ×{multiplier}
+                </span>
+              </div>
+
+              {/* Pricing matrix — table per resolution */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
+                {Object.entries(model.pricing || {}).map(([res, sellMap]) => {
+                  const baseMap = model.basePricing?.[res] || {};
+                  return (
+                    <div key={res} className="rounded-xl border border-slate-100 dark:border-white/[0.06] overflow-hidden bg-white dark:bg-[#0c0c0e]">
+                      {/* Resolution header */}
+                      <div className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/[0.06]">
+                        <Monitor size={12} className="text-brand-blue" />
+                        <span className="text-[11px] font-bold uppercase text-brand-blue tracking-wider">{res}</span>
+                      </div>
+
+                      {/* Table */}
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-slate-100 dark:border-white/[0.04]">
+                            <th className="px-4 py-2 text-left text-[9px] font-bold uppercase text-slate-400 tracking-wider w-[30%]">
+                              <span className="flex items-center gap-1"><Clock size={9} /> Key</span>
+                            </th>
+                            <th className="px-3 py-2 text-right text-[9px] font-bold uppercase text-emerald-500 tracking-wider w-[30%]">
+                              Giá gốc
+                            </th>
+                            <th className="px-3 py-2 text-right text-[9px] font-bold uppercase text-orange-500 tracking-wider w-[40%]">
+                              Giá bán
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.entries(sellMap as any).map(([dur, sellCredits], idx) => {
+                            const baseCost = (baseMap as any)?.[dur] ?? '-';
+                            const ratio = typeof baseCost === 'number' && baseCost > 0
+                              ? ((sellCredits as number) / baseCost).toFixed(1)
+                              : '-';
+                            return (
+                              <tr key={dur} className={`${idx % 2 === 0 ? 'bg-transparent' : 'bg-slate-50/50 dark:bg-white/[0.01]'} hover:bg-brand-blue/[0.03] transition-colors`}>
+                                {/* Duration/Mode key */}
+                                <td className="px-4 py-2">
+                                  <span className="text-[11px] text-slate-600 dark:text-gray-400 font-medium">
+                                    {isNaN(Number(dur)) ? dur : `${dur}s`}
+                                  </span>
+                                </td>
+                                {/* Base cost (read-only) */}
+                                <td className="px-3 py-2 text-right">
+                                  <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                    {typeof baseCost === 'number' ? baseCost.toLocaleString() : baseCost}
+                                  </span>
+                                  <span className="text-[7px] ml-0.5 text-emerald-400/50 uppercase">cr</span>
+                                </td>
+                                {/* Sell price (editable) */}
+                                <td className="px-3 py-2 text-right">
+                                  <div className="flex items-center justify-end gap-1">
+                                    <EditableCell
+                                      modelId={model._id} res={res} dur={dur} initialValue={sellCredits as number}
+                                      onUpdate={onCellUpdate}
+                                    />
+                                    {ratio !== '-' && (
+                                      <span className="text-[8px] font-bold text-violet-500/60 ml-1">×{ratio}</span>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
                     </div>
-                    <div className="space-y-1.5">
-                      {Object.entries(durMap as any).map(([dur, cost]) => (
-                        <div key={dur} className="flex justify-between items-center">
-                          <span className="text-[10px] text-slate-500 font-medium flex items-center gap-1">
-                            <Clock size={9} className="text-slate-400" />
-                            {isNaN(Number(dur)) ? dur : `${dur}s`}
-                          </span>
-                          <EditableCell
-                            modelId={model._id} res={res} dur={dur} initialValue={cost as number}
-                            onUpdate={onCellUpdate}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </motion.div>

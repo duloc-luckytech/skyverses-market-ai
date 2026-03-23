@@ -66,6 +66,7 @@ export interface Solution {
   featured?: boolean; // Thêm trường nổi bật
   status?: string; // Thêm trường trạng thái hệ thống
   homeBlocks?: string[]; // Vị trí hiển thị tại trang chủ
+  platforms?: string[]; // Nền tảng hỗ trợ: 'web', 'ios', 'android'
 }
 
 export interface UseCase {

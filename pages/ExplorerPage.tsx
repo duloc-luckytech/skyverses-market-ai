@@ -22,6 +22,12 @@ const getFakeStats = (seedId: string) => {
   return { views: fmt(views), likes: fmt(likes) };
 };
 
+// Repeating aspect-ratio pattern for visual variety (no reflow)
+const ASPECT_CLASSES = [
+  'aspect-[3/4]', 'aspect-square', 'aspect-[4/5]', 'aspect-[3/4]', 'aspect-[4/5]',
+  'aspect-[4/5]', 'aspect-[3/4]', 'aspect-square', 'aspect-[3/4]', 'aspect-[4/5]',
+];
+
 // --- Skeleton ---
 const CardSkeleton: React.FC<{ index: number }> = ({ index }) => {
   const heights = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-[1/1]', 'aspect-[3/5]'];
@@ -94,6 +100,38 @@ const ThreeDAssetCard: React.FC<{
         <button onClick={onClick} className="p-2 bg-white text-black rounded-lg shadow-lg hover:scale-110 active:scale-95 transition-all"><Maximize2 size={12} /></button>
       </div>
     </motion.div>
+  );
+};
+
+// --- LazyImage with fixed container (no layout shift) ---
+const LazyImage: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [inView, setInView] = useState(false);
+  const imgRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = imgRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setInView(true); obs.disconnect(); }
+    }, { rootMargin: '400px' });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <div ref={imgRef} className="absolute inset-0">
+      {inView && (
+        <img
+          src={src} alt={alt}
+          onLoad={() => setLoaded(true)}
+          className={`w-full h-full object-cover transition-opacity duration-500 group-hover:scale-[1.03] group-hover:transition-transform group-hover:duration-700 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        />
+      )}
+      {!loaded && (
+        <div className="absolute inset-0 bg-slate-100 dark:bg-white/[0.04] animate-pulse" />
+      )}
+    </div>
   );
 };
 
@@ -262,22 +300,24 @@ const ExplorerPage = () => {
         {/* ═══════ CONTENT ═══════ */}
         <div className="min-h-[400px]">
           {isLoading && page === 1 ? (
-            <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
-              {[...Array(10)].map((_, i) => <CardSkeleton key={i} index={i} />)}
+            <div className="explorer-grid">
+              {[...Array(15)].map((_, i) => (
+                <div key={i} className={`rounded-xl bg-slate-100 dark:bg-white/[0.03] animate-pulse ${ASPECT_CLASSES[i % ASPECT_CLASSES.length]}`} />
+              ))}
             </div>
           ) : items.length > 0 ? (
             <>
-              <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3">
-                <AnimatePresence mode="popLayout">
+              <div className="explorer-grid">
                   {items.map((item, idx) => {
                     const isSelected = selectedIds.includes(item._id || item.id);
                     const modelKey = (item.modelKey || item.model || 'Native').replace(/_/g, ' ');
                     const isLast = items.length === idx + 1;
                     const stats = getFakeStats(item._id || item.id || item.title);
+                    const aspectClass = ASPECT_CLASSES[idx % ASPECT_CLASSES.length];
 
                     if (item.type === 'game_asset_3d') {
                       return (
-                        <div key={item._id || item.id} ref={isLast ? lastItemRef : null}>
+                        <div key={item._id || item.id} ref={isLast ? lastItemRef : null} className="aspect-[3/4]">
                           <ThreeDAssetCard item={item} isSelected={isSelected}
                             onToggleSelect={(e) => toggleSelection(e, item._id || item.id)}
                             onClick={() => setSelectedItem(item)}
@@ -287,11 +327,10 @@ const ExplorerPage = () => {
                     }
 
                     return (
-                      <motion.div 
+                      <div
                         key={item._id || item.id}
                         ref={isLast ? lastItemRef : null}
-                        layout initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97 }}
-                        className={`break-inside-avoid relative overflow-hidden group cursor-pointer rounded-2xl mb-3 transition-all duration-300 bg-white dark:bg-[#111114] border ${isSelected ? 'border-brand-blue shadow-lg shadow-brand-blue/10 scale-[0.98]' : 'border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg'}`}
+                        className={`relative overflow-hidden group cursor-pointer rounded-2xl transition-all duration-300 bg-white dark:bg-[#111114] border ${aspectClass} ${isSelected ? 'border-brand-blue shadow-lg shadow-brand-blue/10 scale-[0.98]' : 'border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg'}`}
                         onClick={() => setSelectedItem(item)}
                       >
                         {/* Select checkbox */}
@@ -304,9 +343,9 @@ const ExplorerPage = () => {
                           <span className="px-2 py-0.5 bg-black/50 backdrop-blur-sm text-[10px] font-medium text-white rounded-md">{modelKey}</span>
                         </div>
 
-                        {/* Image container */}
-                        <div className="relative overflow-hidden">
-                          <img src={item.thumbnailUrl || item.url || item.mediaUrl} className="w-full h-auto object-cover group-hover:scale-[1.03] transition-transform duration-700" alt={item.title} loading="lazy" />
+                        {/* Image container — fixed aspect, no reflow */}
+                        <div className="absolute inset-0 overflow-hidden bg-slate-100 dark:bg-white/[0.03]">
+                          <LazyImage src={item.thumbnailUrl || item.url || item.mediaUrl} alt={item.title} />
                           
                           {/* Gradient */}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -323,20 +362,19 @@ const ExplorerPage = () => {
                           </div>
                         </div>
 
-                        {/* Card footer — always visible */}
-                        <div className="px-3 py-2.5 flex items-center justify-between">
+                        {/* Card footer overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/30 to-transparent px-3 py-2.5 flex items-center justify-between z-20">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <div className="w-1.5 h-1.5 rounded-full bg-brand-blue shrink-0" />
-                            <span className="text-[11px] font-medium text-slate-500 dark:text-gray-400 truncate">{item.type?.replace(/_/g, ' ')}</span>
+                            <span className="text-[11px] font-medium text-white/70 truncate">{item.type?.replace(/_/g, ' ')}</span>
                           </div>
-                          <button onClick={(e) => { e.stopPropagation(); setSelectedItem(item); }} className="p-1 text-slate-300 dark:text-gray-600 hover:text-brand-blue transition-colors">
+                          <button onClick={(e) => { e.stopPropagation(); setSelectedItem(item); }} className="p-1 text-white/50 hover:text-white transition-colors">
                             <Maximize2 size={12} />
                           </button>
                         </div>
-                      </motion.div>
+                      </div>
                     );
                   })}
-                </AnimatePresence>
               </div>
               
               {/* Load more indicator */}
@@ -399,10 +437,14 @@ const ExplorerPage = () => {
       <ExplorerDetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
 
       <style>{`
-        .columns-2 { column-count: 2; }
-        @media (min-width: 768px) { .md\\:columns-3 { column-count: 3; } }
-        @media (min-width: 1024px) { .lg\\:columns-4 { column-count: 4; } }
-        @media (min-width: 1280px) { .xl\\:columns-5 { column-count: 5; } }
+        .explorer-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+        @media (min-width: 768px) { .explorer-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1024px) { .explorer-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (min-width: 1280px) { .explorer-grid { grid-template-columns: repeat(5, 1fr); } }
         input[type=range]::-webkit-slider-thumb {
           -webkit-appearance: none;
           height: 100%;

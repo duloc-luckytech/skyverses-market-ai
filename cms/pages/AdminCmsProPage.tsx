@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
   BarChart3, Cloud, HardDrive, DollarSign,
   Package, History, Users,
   Filter, Compass, Bot, Cog, Key,
   ShieldCheck, ChevronLeft, ChevronRight,
-  Sun, Moon, LogOut, Plus
+  Sun, Moon, LogOut, Plus, CreditCard
 } from 'lucide-react';
 import { marketApi } from '../apis/market';
 import { systemConfigApi } from '../apis/config';
@@ -14,6 +15,7 @@ import { Solution, HomeBlock } from '../types';
 import { SOLUTIONS as LOCAL_SOLUTIONS } from '../data';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 
 // Sub-components
 import { DashboardTab } from '../components/admin-pro/DashboardTab';
@@ -27,13 +29,14 @@ import { AIModelsTab } from '../components/admin-pro/AIModelsTab';
 import { MarketFiltersTab } from '../components/admin-pro/MarketFiltersTab';
 import { ConfigurationTab } from '../components/admin-pro/ConfigurationTab';
 import { ProviderTokensTab } from '../components/admin-pro/ProviderTokensTab';
+import { BankingTab } from '../components/admin-pro/BankingTab';
 import { SolutionDrawer } from '../components/admin-pro/solution-drawer/SolutionDrawer';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS';
 
 const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
   { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart3 size={16} />, group: 'MAIN' },
-  { id: 'CLOUD', label: 'Cloud Market', icon: <Cloud size={16} />, group: 'MARKET' },
+  { id: 'CLOUD', label: 'Sản phẩm', icon: <Cloud size={16} />, group: 'MARKET' },
   { id: 'LOCAL', label: 'Local Market', icon: <HardDrive size={16} />, group: 'MARKET' },
   { id: 'MARKET_FILTERS', label: 'Bộ lọc SP', icon: <Filter size={16} />, group: 'MARKET' },
   { id: 'EXPLORER', label: 'Thư viện mẫu', icon: <Compass size={16} />, group: 'CONTENT' },
@@ -41,6 +44,7 @@ const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; gro
   { id: 'PROVIDER_TOKENS', label: 'Provider Tokens', icon: <Key size={16} />, group: 'CONTENT' },
   { id: 'PRICING', label: 'Bảng giá', icon: <DollarSign size={16} />, group: 'FINANCE' },
   { id: 'CREDIT_PACKS', label: 'Gói Credits', icon: <Package size={16} />, group: 'FINANCE' },
+  { id: 'BANKING', label: 'Banking & QR', icon: <CreditCard size={16} />, group: 'FINANCE' },
   { id: 'USERS', label: 'Khách hàng', icon: <Users size={16} />, group: 'SYSTEM' },
   { id: 'LOGS', label: 'Nhật ký', icon: <History size={16} />, group: 'SYSTEM' },
   { id: 'CONFIG', label: 'Cấu hình', icon: <Cog size={16} />, group: 'SYSTEM' },
@@ -57,6 +61,18 @@ const GROUP_LABELS: Record<string, string> = {
 const AdminCmsProPage = () => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  // Auth guard: redirect to login if not authenticated
+  useEffect(() => {
+    if (!user) navigate('/login', { replace: true });
+  }, [user, navigate]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   const [activeTab, setActiveTab] = useState<ProAdminTab>('DASHBOARD');
   const [remoteSolutions, setRemoteSolutions] = useState<Solution[]>([]);
@@ -110,8 +126,11 @@ const AdminCmsProPage = () => {
     try {
       const newStatus = !sol.isActive;
       const res = await marketApi.toggleActive(targetId, newStatus);
-      if (res.success) setRemoteSolutions(prev => prev.map(item => (item._id === targetId || item.id === targetId) ? { ...item, isActive: newStatus } : item));
-    } catch (err) { }
+      if (res.success) {
+        setRemoteSolutions(prev => prev.map(item => (item._id === targetId || item.id === targetId) ? { ...item, isActive: newStatus } : item));
+        showToast(`${sol.name.en} → ${newStatus ? 'Active' : 'Hidden'}`, 'success');
+      }
+    } catch (err) { showToast('Lỗi cập nhật trạng thái', 'error'); }
     finally { setTogglingId(null); }
   };
 
@@ -120,19 +139,34 @@ const AdminCmsProPage = () => {
     setTogglingId(targetId);
     try {
       const res = await marketApi.updateSolution(targetId, { homeBlocks: newBlocks });
-      if (res.success) setRemoteSolutions(prev => prev.map(item => (item._id === targetId || item.id === targetId) ? { ...item, homeBlocks: newBlocks } : item));
-    } catch (err) { console.error(err); }
+      if (res.success) {
+        setRemoteSolutions(prev => prev.map(item => (item._id === targetId || item.id === targetId) ? { ...item, homeBlocks: newBlocks } : item));
+        showToast('Đã cập nhật vị trí hiển thị', 'success');
+      }
+    } catch (err) { showToast('Lỗi cập nhật home blocks', 'error'); }
     finally { setTogglingId(null); }
   };
 
   const handleSaveSolution = async () => {
     if (!editedItem) return;
     setIsSaving(true);
-    const existingRemote = remoteSolutions.find(r => r.slug.toLowerCase().trim() === editedItem.slug.toLowerCase().trim());
-    let res;
-    if (existingRemote && editingId !== 'NEW') res = await marketApi.updateSolution(existingRemote._id || existingRemote.id, editedItem);
-    else res = await marketApi.createSolution(editedItem);
-    if (res.success || (res as any)?.data) { await fetchData(); setEditingId(null); setEditedItem(null); }
+    try {
+      const existingRemote = remoteSolutions.find(r => r.slug.toLowerCase().trim() === editedItem.slug.toLowerCase().trim());
+      let res;
+      const isNew = !existingRemote || editingId === 'NEW';
+      if (!isNew) res = await marketApi.updateSolution(existingRemote._id || existingRemote.id, editedItem);
+      else res = await marketApi.createSolution(editedItem);
+      if (res.success || (res as any)?.data) {
+        await fetchData();
+        setEditingId(null);
+        setEditedItem(null);
+        showToast(isNew ? `Đã tạo sản phẩm "${editedItem.name.en}"` : `Đã cập nhật "${editedItem.name.en}"`, 'success');
+      } else {
+        showToast('Lưu thất bại, kiểm tra lại dữ liệu', 'error');
+      }
+    } catch (err) {
+      showToast('Lỗi kết nối server', 'error');
+    }
     setIsSaving(false);
   };
 
@@ -238,9 +272,14 @@ const AdminCmsProPage = () => {
                 <div className="w-6 h-6 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue text-[10px] font-bold">
                   {user.email?.[0]?.toUpperCase() || 'A'}
                 </div>
-                {!sidebarCollapsed && <span className="text-[10px] font-medium hidden lg:block">{user.email}</span>}
+                <span className="text-[10px] font-medium hidden lg:block">{user.email}</span>
               </div>
             )}
+            <button onClick={handleLogout} title="Đăng xuất"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-red-500 hover:bg-red-500/10 border border-red-500/20 rounded-lg transition-all text-[10px] font-bold">
+              <LogOut size={13} />
+              Logout
+            </button>
           </div>
         </header>
 
@@ -251,6 +290,7 @@ const AdminCmsProPage = () => {
             {activeTab === 'EXPLORER' && <ExplorerTab key="explorer" />}
             {activeTab === 'MARKET_FILTERS' && <MarketFiltersTab key="market_filters" />}
             {activeTab === 'CREDIT_PACKS' && <CreditPacksTab key="packs" />}
+            {activeTab === 'BANKING' && <BankingTab key="banking" />}
             {activeTab === 'PRICING' && <PricingTab key="pricing" />}
             {activeTab === 'AI_MODELS' && <AIModelsTab key="ai_models" />}
             {activeTab === 'PROVIDER_TOKENS' && <ProviderTokensTab key="provider_tokens" />}
@@ -266,6 +306,7 @@ const AdminCmsProPage = () => {
                 onToggleActive={handleToggleActive}
                 onUpdateHomeBlocks={handleQuickUpdateHomeBlocks}
                 isSyncedOnCloud={isSyncedOnCloud}
+                onRefresh={fetchData}
               />
             )}
           </AnimatePresence>

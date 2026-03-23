@@ -13,6 +13,12 @@ export interface PricingModel {
   modes?: string[];
   status: string;
   aspectRatios?: string[];
+  basePricing?: {
+    [resolution: string]: {
+      [duration: string]: number;
+    };
+  };
+  priceMultiplier?: number;
   pricing: {
     [resolution: string]: {
       [duration: string]: number;

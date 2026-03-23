@@ -181,33 +181,60 @@ const MarketPage = () => {
 
   return (
     <div className="relative min-h-screen bg-[#fcfcfd] dark:bg-[#030304] font-sans transition-colors duration-500">
-      {/* ═══ Background Mesh ═══ */}
+      {/* ═══ CINEMATIC BACKGROUND SYSTEM ═══ */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[1200px] h-[800px] bg-brand-blue/[0.04] dark:bg-brand-blue/[0.06] rounded-full blur-[200px]" />
-        <div className="absolute top-[60%] left-[-10%] w-[600px] h-[600px] bg-purple-500/[0.03] dark:bg-purple-500/[0.04] rounded-full blur-[180px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-pink-500/[0.02] dark:bg-pink-500/[0.03] rounded-full blur-[150px]" />
+        {/* Morphing blobs */}
+        <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[1200px] h-[800px] bg-brand-blue/[0.04] dark:bg-brand-blue/[0.06] rounded-full blur-[200px] animate-[morph_20s_ease-in-out_infinite]" />
+        <div className="absolute top-[60%] left-[-10%] w-[600px] h-[600px] bg-purple-500/[0.03] dark:bg-purple-500/[0.04] rounded-full blur-[180px] animate-[morph_25s_ease-in-out_infinite_reverse]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-pink-500/[0.02] dark:bg-pink-500/[0.03] rounded-full blur-[150px] animate-[morph_18s_ease-in-out_infinite]" />
+        {/* Aurora / Northern Lights bands */}
+        <div className="absolute top-0 left-0 right-0 h-[70vh] overflow-hidden opacity-40 dark:opacity-60">
+          <div className="absolute top-[10%] left-[-20%] w-[140%] h-[200px] bg-gradient-to-r from-transparent via-brand-blue/10 to-transparent blur-[60px] animate-[aurora_8s_ease-in-out_infinite] rotate-[-6deg]" />
+          <div className="absolute top-[25%] left-[-10%] w-[120%] h-[150px] bg-gradient-to-r from-transparent via-purple-500/8 to-transparent blur-[80px] animate-[aurora_12s_ease-in-out_infinite_reverse] rotate-[-3deg]" />
+          <div className="absolute top-[40%] left-[-15%] w-[130%] h-[120px] bg-gradient-to-r from-transparent via-pink-500/5 to-transparent blur-[70px] animate-[aurora_10s_ease-in-out_infinite_2s] rotate-[-8deg]" />
+        </div>
+        {/* Grid overlay */}
+        <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(0,144,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,144,255,0.3) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
+        {/* Radial spotlight (follows a slow orbit) */}
+        <div className="absolute w-[600px] h-[600px] rounded-full blur-[150px] animate-[spotlight_15s_linear_infinite]" style={{ background: 'radial-gradient(circle, rgba(0,144,255,0.06) 0%, transparent 70%)' }} />
       </div>
 
       <div className="relative z-10">
         {/* ═══════════════════ HERO ═══════════════════ */}
         {!query && (
-          <section className="pt-24 md:pt-32 pb-0 max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
+          <section className="pt-24 md:pt-32 pb-0 max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 relative">
+            {/* Enhanced floating particles */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {[...Array(12)].map((_, i) => (
+                <div key={i} className={`absolute rounded-full ${i % 3 === 0 ? 'w-1.5 h-1.5 bg-brand-blue/40 shadow-[0_0_6px_rgba(0,144,255,0.4)]' : i % 3 === 1 ? 'w-1 h-1 bg-purple-400/30' : 'w-0.5 h-0.5 bg-pink-400/25'}`} style={{
+                  left: `${8 + i * 7.5}%`, top: `${15 + ((i * 17) % 60)}%`,
+                  animation: `float ${2.5 + i * 0.5}s ease-in-out infinite ${i * 0.3}s`
+                }} />
+              ))}
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-0 items-center min-h-[60vh] lg:min-h-[70vh]">
-              {/* Left: Content */}
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="space-y-8 lg:pr-16"
-              >
+              {/* Left: Content — stagger children */}
+              <div className="space-y-8 lg:pr-16">
                 {/* Badge */}
-                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25">
-                  <div className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-pulse" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-blue">Skyverses AI Ecosystem</span>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                >
+                  <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25">
+                    <div className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-blue">Skyverses AI Ecosystem</span>
+                  </div>
+                </motion.div>
 
                 {/* Headline */}
-                <div className="space-y-3">
+                <motion.div
+                  initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                  className="space-y-3"
+                >
                   <h1 className="text-[2.5rem] md:text-[3.5rem] lg:text-[4.2rem] font-black tracking-[-0.04em] leading-[1.05] text-slate-900 dark:text-white">
                     Nền tảng{' '}
                     <span className="relative inline-block">
@@ -218,95 +245,127 @@ const MarketPage = () => {
                     <br />
                     cho mọi nhu cầu sáng tạo
                   </h1>
-                  <p className="text-base md:text-lg text-slate-500 dark:text-gray-400 leading-relaxed max-w-xl">
+                  <motion.p
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6, duration: 0.8 }}
+                    className="text-base md:text-lg text-slate-500 dark:text-gray-400 leading-relaxed max-w-xl"
+                  >
                     Hệ sinh thái hơn 30 sản phẩm AI — từ Video, Hình ảnh, Giọng nói, Nhạc đến Workflow tự động hoá.
                     Được phát triển bởi đội ngũ Skyverses.
-                  </p>
-                </div>
+                  </motion.p>
+                </motion.div>
 
                 {/* CTAs */}
-                <div className="flex flex-wrap gap-3 pt-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                  className="flex flex-wrap gap-3 pt-2"
+                >
                   <button
                     onClick={() => navigate(isAuthenticated ? '/explorer' : '/login')}
-                    className="group inline-flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-7 py-4 rounded-2xl text-sm font-bold shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                    className="group relative inline-flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-7 py-4 rounded-2xl text-sm font-bold shadow-xl hover:shadow-2xl hover:shadow-brand-blue/20 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
                   >
-                    Khám phá sản phẩm
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    <span className="absolute inset-0 bg-gradient-to-r from-brand-blue to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <span className="relative z-10 flex items-center gap-3 group-hover:text-white">
+                      Khám phá sản phẩm
+                      <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform duration-300" />
+                    </span>
                   </button>
                   <button
                     onClick={() => navigate('/pricing')}
-                    className="inline-flex items-center gap-3 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-7 py-4 rounded-2xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/10 transition-all duration-300"
+                    className="inline-flex items-center gap-3 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-7 py-4 rounded-2xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/10 hover:border-brand-blue/30 transition-all duration-300"
                   >
                     <Play size={14} className="text-brand-blue" fill="currentColor" />
                     Xem demo
                   </button>
-                </div>
+                </motion.div>
 
-                {/* Stats */}
-                <div className="flex items-center gap-8 pt-4">
+                {/* Stats — stagger in */}
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.7 }}
+                  className="flex items-center gap-8 pt-4"
+                >
                   {[
                     { value: 30, suffix: '+', label: 'AI Products' },
                     { value: 50, suffix: '+', label: 'AI Models' },
                     { value: 1000, suffix: '+', label: 'Users' },
-                  ].map((stat) => (
-                    <div key={stat.label} className="text-center">
+                  ].map((stat, si) => (
+                    <motion.div key={stat.label} className="text-center"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.9 + si * 0.15, type: 'spring', stiffness: 200 }}
+                    >
                       <div className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                         <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                       </div>
                       <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">{stat.label}</div>
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
-              </motion.div>
+                </motion.div>
+              </div>
 
               {/* Right: Featured Visual */}
               <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0, scale: 0.9, rotateY: -5 }}
+                animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 className="relative"
+                style={{ perspective: '1200px' }}
               >
                 {featuredSolutions.length > 0 && activeFeatured && (
                   <div className="relative">
-                    {/* Glow behind card */}
-                    <div className="absolute inset-0 bg-brand-blue/10 dark:bg-brand-blue/20 blur-[80px] rounded-full scale-75" />
+                    {/* Animated glow behind card */}
+                    <div className="absolute inset-0 bg-brand-blue/10 dark:bg-brand-blue/20 blur-[80px] rounded-full scale-75 animate-[pulse_3s_ease-in-out_infinite]" />
+                    <div className="absolute -top-8 -right-8 w-32 h-32 bg-purple-500/15 blur-[60px] rounded-full animate-[float_4s_ease-in-out_infinite]" />
+                    <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-pink-500/10 blur-[50px] rounded-full animate-[float_5s_ease-in-out_infinite_1s]" />
+                    {/* Orbit ring */}
+                    <div className="absolute inset-[-20px] border border-brand-blue/[0.08] dark:border-brand-blue/[0.12] rounded-[2rem] animate-[orbit_8s_linear_infinite] pointer-events-none">
+                      <div className="absolute -top-1 left-1/2 w-2 h-2 rounded-full bg-brand-blue/40 shadow-[0_0_10px_rgba(0,144,255,0.5)]" />
+                    </div>
 
                     {/* Main featured card */}
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeFeatured.id}
-                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                        transition={{ duration: 0.6 }}
+                        initial={{ opacity: 0, scale: 0.92, y: 20, rotateX: 3 }}
+                        animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
+                        exit={{ opacity: 0, scale: 0.92, y: -20, rotateX: -3 }}
+                        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                         onClick={() => handleNavigate(activeFeatured.slug)}
-                        className="relative rounded-3xl overflow-hidden cursor-pointer group aspect-[4/3] shadow-2xl border border-black/5 dark:border-white/5"
+                        className="relative rounded-3xl overflow-hidden cursor-pointer group aspect-[4/3] shadow-2xl shadow-brand-blue/10 border border-black/5 dark:border-white/5 hover:shadow-3xl hover:shadow-brand-blue/20 transition-shadow duration-700"
                       >
-                        <img src={activeFeatured.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="" />
+                        <img src={activeFeatured.imageUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" alt="" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                        {/* Shimmer overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-[shimmer_1.5s_ease-in-out] pointer-events-none" />
 
                         {/* Overlay content */}
                         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                          <div className="flex items-center gap-2 mb-3">
+                          <motion.div className="flex items-center gap-2 mb-3"
+                            initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
                             <span className="px-2.5 py-1 bg-brand-blue/90 text-white text-[8px] font-black uppercase tracking-widest rounded-md">{activeFeatured.category[currentLang]}</span>
                             <span className="px-2.5 py-1 bg-white/10 backdrop-blur-md text-white text-[8px] font-bold uppercase tracking-wider rounded-md border border-white/10">Featured</span>
-                          </div>
+                          </motion.div>
                           <h3 className="text-xl md:text-2xl font-black text-white tracking-tight mb-2">{activeFeatured.name[currentLang]}</h3>
                           <p className="text-white/60 text-sm line-clamp-2 max-w-md">{activeFeatured.description[currentLang]}</p>
 
                           <div className="flex items-center gap-4 mt-4">
-                            <button className="inline-flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-white/90 transition-all active:scale-95 shadow-lg">
-                              Khám phá <ArrowRight size={12} />
+                            <button className="group/btn inline-flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-white/90 transition-all active:scale-95 shadow-lg">
+                              Khám phá <ArrowRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
                             </button>
                           </div>
                         </div>
                       </motion.div>
                     </AnimatePresence>
 
-                    {/* Dots */}
+                    {/* Progress dots */}
                     <div className="flex justify-center gap-2 mt-6">
                       {featuredSolutions.map((_, i) => (
-                        <button key={i} onClick={() => setFeaturedIdx(i)} className={`h-1.5 rounded-full transition-all duration-500 ${i === featuredIdx ? 'w-8 bg-brand-blue' : 'w-1.5 bg-slate-300 dark:bg-white/15'}`} />
+                        <button key={i} onClick={() => setFeaturedIdx(i)}
+                          className={`h-1.5 rounded-full transition-all duration-500 ${i === featuredIdx ? 'w-8 bg-brand-blue shadow-md shadow-brand-blue/30' : 'w-1.5 bg-slate-300 dark:bg-white/15 hover:bg-brand-blue/40'}`} />
                       ))}
                     </div>
                   </div>
@@ -321,13 +380,13 @@ const MarketPage = () => {
         )}
 
         {/* ═══════════════════ AI MODELS MARQUEE ═══════════════════ */}
-        <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 mt-8">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 mt-4">
           <AIModelsMarquee />
         </div>
 
         {/* ═══════════════════ TRUST PILLARS ═══════════════════ */}
         {!query && (
-          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-16 md:py-24">
+          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-8 md:py-12">
             <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-r from-slate-50 via-white to-slate-50 dark:from-[#0a0c12] dark:via-[#0c0e16] dark:to-[#0a0c12] border border-black/[0.04] dark:border-white/[0.04] p-8 md:p-12 lg:p-14">
               {/* Subtle Background Glow */}
               <div className="absolute top-[-50%] left-[50%] -translate-x-1/2 w-[800px] h-[400px] bg-brand-blue/[0.03] dark:bg-brand-blue/[0.05] rounded-full blur-[100px] pointer-events-none" />
@@ -341,14 +400,15 @@ const MarketPage = () => {
                 ].map((item, idx) => (
                   <motion.div
                     key={item.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1, duration: 0.5 }}
+                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, margin: '-50px' }}
+                    transition={{ delay: idx * 0.12, duration: 0.6, type: 'spring', stiffness: 120 }}
+                    whileHover={{ y: -5, transition: { duration: 0.3 } }}
                     className={`relative group text-center md:text-left px-4 md:px-8 ${idx < 3 ? 'lg:border-r lg:border-black/[0.04] lg:dark:border-white/[0.04]' : ''}`}
                   >
                     {/* Icon */}
-                    <div className={`w-14 h-14 rounded-2xl ${item.bg} ${item.color} ring-1 ${item.ring} flex items-center justify-center mx-auto md:mx-0 mb-5 group-hover:scale-110 group-hover:shadow-lg transition-all duration-500`}>
+                    <div className={`w-14 h-14 rounded-2xl ${item.bg} ${item.color} ring-1 ${item.ring} flex items-center justify-center mx-auto md:mx-0 mb-5 group-hover:scale-110 group-hover:shadow-xl group-hover:rotate-3 transition-all duration-500`}>
                       {item.icon}
                     </div>
 
@@ -416,7 +476,7 @@ const MarketPage = () => {
                         colorClass={block.key === 'top_trending' ? 'text-orange-500' : 'text-brand-blue'}
                         onScrollLeft={() => scroll(block.key, 'left')}
                         onScrollRight={() => scroll(block.key, 'right')}
-                        onSeeAll={() => navigate(`/category/${block.key}`)}
+                        onSeeAll={() => navigate('/markets')}
                       />
                       <div ref={scrollRefs.current[block.key]} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4 relative z-10">
                         {blockSolutions.slice(0, block.limit || 8).map((sol, idx) => (
@@ -432,7 +492,7 @@ const MarketPage = () => {
                         ))}
 
                         <div
-                          onClick={() => navigate(`/category/${block.key}`)}
+                          onClick={() => navigate('/markets')}
                           className="flex-shrink-0 snap-start w-[180px] md:hidden flex flex-col items-center justify-center bg-slate-50 dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] rounded-xl group cursor-pointer hover:border-brand-blue/40 transition-all p-6 text-center space-y-4"
                         >
                           <div className="w-12 h-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
@@ -461,7 +521,7 @@ const MarketPage = () => {
           {!query && (
             <section className="py-20 md:py-28">
               <div className="text-center mb-14 md:mb-20">
-                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full mb-5">
                     <Sparkles size={12} className="text-brand-blue" />
                     <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">How It Works</span>
@@ -473,36 +533,50 @@ const MarketPage = () => {
                 </motion.div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                {[
-                  { step: '01', title: 'Chọn công cụ AI', desc: 'Duyệt qua 30+ sản phẩm AI — Video, Image, Voice, Music, Workflow — tìm đúng công cụ bạn cần.', icon: <MousePointerClick size={28} />, iconBg: 'bg-brand-blue/10 text-brand-blue', gradient: 'from-brand-blue/10 to-purple-500/10', border: 'hover:border-brand-blue/30' },
-                  { step: '02', title: 'Nhập nội dung của bạn', desc: 'Upload ảnh, nhập prompt, hoặc chọn template có sẵn. AI sẽ xử lý phần còn lại.', icon: <Wand2 size={28} />, iconBg: 'bg-purple-500/10 text-purple-500', gradient: 'from-purple-500/10 to-pink-500/10', border: 'hover:border-purple-500/30' },
-                  { step: '03', title: 'Nhận kết quả chuyên nghiệp', desc: 'Tải về ảnh, video, audio chất lượng cao trong vài giây. Chỉnh sửa và xuất bản ngay.', icon: <Rocket size={28} />, iconBg: 'bg-pink-500/10 text-pink-500', gradient: 'from-pink-500/10 to-amber-500/10', border: 'hover:border-pink-500/30' },
-                ].map((item, idx) => (
-                  <motion.div
-                    key={item.step}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.15, duration: 0.6 }}
-                    className={`relative p-8 md:p-10 rounded-3xl bg-gradient-to-br ${item.gradient} dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.05] dark:border-white/[0.05] ${item.border} transition-all duration-500 group`}
-                  >
-                    <div className="absolute top-6 right-6 text-[60px] md:text-[80px] font-black text-black/[0.03] dark:text-white/[0.03] leading-none select-none">{item.step}</div>
-                    <div className="relative z-10 space-y-5">
-                      <div className={`w-14 h-14 rounded-2xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform`}>{item.icon}</div>
-                      <div className="space-y-2">
-                        <span className="text-[9px] font-black text-brand-blue uppercase tracking-[0.3em]">Step {item.step}</span>
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
+              <div className="relative">
+
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                  {[
+                    { step: '01', title: 'Chọn công cụ AI', desc: 'Duyệt qua 30+ sản phẩm AI — Video, Image, Voice, Music, Workflow — tìm đúng công cụ bạn cần.', icon: <MousePointerClick size={28} />, iconBg: 'bg-brand-blue/10 text-brand-blue', gradient: 'from-brand-blue/10 to-purple-500/10', border: 'hover:border-brand-blue/30', pulse: 'brand-blue' },
+                    { step: '02', title: 'Nhập nội dung của bạn', desc: 'Upload ảnh, nhập prompt, hoặc chọn template có sẵn. AI sẽ xử lý phần còn lại.', icon: <Wand2 size={28} />, iconBg: 'bg-purple-500/10 text-purple-500', gradient: 'from-purple-500/10 to-pink-500/10', border: 'hover:border-purple-500/30', pulse: 'purple-500' },
+                    { step: '03', title: 'Nhận kết quả chuyên nghiệp', desc: 'Tải về ảnh, video, audio chất lượng cao trong vài giây. Chỉnh sửa và xuất bản ngay.', icon: <Rocket size={28} />, iconBg: 'bg-pink-500/10 text-pink-500', gradient: 'from-pink-500/10 to-amber-500/10', border: 'hover:border-pink-500/30', pulse: 'pink-500' },
+                  ].map((item, idx) => (
+                    <motion.div
+                      key={item.step}
+                      initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                      viewport={{ once: true, margin: '-50px' }}
+                      transition={{ delay: idx * 0.2, duration: 0.7, type: 'spring', stiffness: 100 }}
+                      whileHover={{ y: -8, rotateY: 3, transition: { duration: 0.4 } }}
+                      className={`relative p-8 md:p-10 rounded-3xl bg-gradient-to-br ${item.gradient} dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.05] dark:border-white/[0.05] ${item.border} transition-all duration-500 group`}
+                      style={{ perspective: '800px' }}
+                    >
+                      {/* Step number watermark */}
+                      <div className="absolute top-6 right-6 text-[60px] md:text-[80px] font-black text-black/[0.03] dark:text-white/[0.03] leading-none select-none">{item.step}</div>
+                      {/* Pulsing step indicator */}
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex">
+                        <div className={`w-10 h-10 rounded-full bg-white dark:bg-[#0a0a0c] border-2 border-${item.pulse}/30 flex items-center justify-center shadow-lg z-10`}>
+                          <span className={`text-[11px] font-black text-${item.pulse}`}>{item.step}</span>
+                        </div>
+                        <div className={`absolute inset-0 rounded-full bg-${item.pulse}/20 animate-ping`} />
                       </div>
-                      <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
-                    </div>
-                    {idx < 2 && (
-                      <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#0a0a0c] border border-black/[0.06] dark:border-white/[0.06] items-center justify-center shadow-lg">
-                        <ChevronRight size={14} className="text-brand-blue" />
+                      <div className="relative z-10 space-y-5">
+                        <div className={`w-14 h-14 rounded-2xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-xl transition-all duration-500`}>{item.icon}</div>
+                        <div className="space-y-2">
+                          <span className="text-[9px] font-black text-brand-blue uppercase tracking-[0.3em]">Step {item.step}</span>
+                          <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
+                        </div>
+                        <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
                       </div>
-                    )}
-                  </motion.div>
-                ))}
+                      {idx < 2 && (
+                        <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#0a0a0c] border border-black/[0.06] dark:border-white/[0.06] items-center justify-center shadow-lg">
+                          <ChevronRight size={14} className="text-brand-blue animate-[pulse_2s_ease-in-out_infinite]" />
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </section>
           )}
@@ -534,16 +608,19 @@ const MarketPage = () => {
                 ].map((img, idx) => (
                   <motion.div
                     key={idx}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.05 }}
+                    initial={{ opacity: 0, scale: 0.85, y: 30 }}
+                    whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-30px' }}
+                    transition={{ delay: idx * 0.08, duration: 0.6, type: 'spring', stiffness: 100 }}
+                    whileHover={{ scale: 1.03, y: -5, transition: { duration: 0.3 } }}
                     className={`mb-3 md:mb-4 break-inside-avoid rounded-2xl overflow-hidden group cursor-pointer relative ${img.h}`}
                   >
-                    <img src={img.url} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-                      <span className="px-2.5 py-1 bg-black/60 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-widest rounded-md border border-white/10">AI Generated</span>
+                    <img src={img.url} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-115 transition-transform duration-1000 ease-out" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    {/* Shimmer on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-[shimmer_1.5s_ease-in-out] pointer-events-none" />
+                    <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-3 group-hover:translate-y-0">
+                      <span className="px-2.5 py-1 bg-black/60 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-widest rounded-md border border-white/10 shadow-lg">AI Generated</span>
                     </div>
                   </motion.div>
                 ))}
@@ -560,7 +637,7 @@ const MarketPage = () => {
           {/* ═══════════════════ USE CASES BY INDUSTRY ═══════════════════ */}
           {!query && (
             <section className="py-16 md:py-24">
-              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
+              <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="text-center mb-14">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/8 dark:bg-emerald-500/15 border border-emerald-500/15 dark:border-emerald-500/25 rounded-full mb-5">
                   <Globe2 size={12} className="text-emerald-500" />
                   <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500">Use Cases</span>
@@ -582,19 +659,21 @@ const MarketPage = () => {
                 ].map((item, idx) => (
                   <motion.div
                     key={item.industry}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1 }}
+                    initial={{ opacity: 0, y: 30, scale: 0.92 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ delay: idx * 0.1, duration: 0.6, type: 'spring', stiffness: 120 }}
+                    whileHover={{ y: -6, scale: 1.02, rotateY: 2, transition: { duration: 0.35 } }}
                     className={`p-6 md:p-8 rounded-2xl bg-gradient-to-br ${item.color} dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.05] dark:border-white/[0.05] ${item.borderColor} transition-all duration-500 group`}
+                    style={{ perspective: '600px' }}
                   >
                     <div className="space-y-4">
-                      <div className={`w-12 h-12 rounded-xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform`}>{item.icon}</div>
+                      <div className={`w-12 h-12 rounded-xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-xl transition-all duration-500`}>{item.icon}</div>
                       <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.industry}</h3>
                       <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
                       <div className="flex flex-wrap gap-1.5 pt-2">
                         {item.tools.map(tool => (
-                          <span key={tool} className="px-2.5 py-1 bg-white dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.06] text-[9px] font-bold text-slate-500 dark:text-gray-400 rounded-lg uppercase tracking-wider">{tool}</span>
+                          <span key={tool} className="px-2.5 py-1 bg-white dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.06] text-[9px] font-bold text-slate-500 dark:text-gray-400 rounded-lg uppercase tracking-wider group-hover:border-brand-blue/20 group-hover:text-brand-blue transition-colors duration-300">{tool}</span>
                         ))}
                       </div>
                     </div>
@@ -625,21 +704,30 @@ const MarketPage = () => {
                 ].map((item, idx) => (
                   <motion.div
                     key={item.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.15 }}
-                    className="p-7 md:p-8 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-amber-500/20 transition-all duration-500 group"
+                    initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ delay: idx * 0.15, type: 'spring', stiffness: 120 }}
+                    whileHover={{ y: -5, scale: 1.02, transition: { duration: 0.3 } }}
+                    className="p-7 md:p-8 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 group"
                   >
                     <div className="space-y-5">
                       <div className="flex items-center gap-1">
                         {[...Array(item.rating)].map((_, i) => (
-                          <span key={i} className="text-amber-400 text-sm">★</span>
+                          <motion.span key={i} className="text-amber-400 text-sm"
+                            initial={{ opacity: 0, scale: 0 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 + idx * 0.15 + i * 0.05, type: 'spring', stiffness: 300 }}
+                          >★</motion.span>
                         ))}
                       </div>
                       <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed italic">"{item.quote}"</p>
                       <div className="flex items-center gap-3 pt-2 border-t border-black/[0.04] dark:border-white/[0.04]">
-                        <div className={`w-10 h-10 rounded-full ${item.avatarBg} flex items-center justify-center text-sm font-black`}>{item.initials}</div>
+                        <div className={`relative w-10 h-10 rounded-full ${item.avatarBg} flex items-center justify-center text-sm font-black`}>
+                          {item.initials}
+                          <div className={`absolute inset-[-2px] rounded-full border-2 border-transparent border-t-brand-blue/30 animate-[orbit_3s_linear_infinite]`} />
+                        </div>
                         <div>
                           <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</p>
                           <p className="text-[10px] font-medium text-slate-400 dark:text-gray-500 uppercase tracking-wider">{item.role}</p>
@@ -832,6 +920,37 @@ const MarketPage = () => {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) scale(1); opacity: 0.3; }
+          50% { transform: translateY(-25px) scale(1.8); opacity: 0.9; }
+        }
+        @keyframes morph {
+          0%, 100% { transform: translate(0, 0) scale(1); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+          25% { transform: translate(30px, -20px) scale(1.05); border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+          50% { transform: translate(-20px, 20px) scale(0.95); border-radius: 40% 60% 30% 70% / 40% 30% 60% 50%; }
+          75% { transform: translate(10px, 10px) scale(1.02); border-radius: 60% 30% 50% 40% / 30% 60% 40% 70%; }
+        }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        @keyframes aurora {
+          0%, 100% { transform: translateX(-10%) scaleY(1); opacity: 0.5; }
+          25% { transform: translateX(5%) scaleY(1.4); opacity: 0.8; }
+          50% { transform: translateX(10%) scaleY(0.8); opacity: 0.4; }
+          75% { transform: translateX(-5%) scaleY(1.2); opacity: 0.7; }
+        }
+        @keyframes spotlight {
+          0% { top: 10%; left: 20%; }
+          25% { top: 30%; left: 70%; }
+          50% { top: 60%; left: 50%; }
+          75% { top: 20%; left: 30%; }
+          100% { top: 10%; left: 20%; }
+        }
+        @keyframes orbit {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
       `}</style>
     </div>
