@@ -235,6 +235,99 @@ router.get("/admin/user-history/:userId", authenticate, async (req: any, res) =>
 });
 
 /* =====================================================
+   ADMIN: TOP-UP HISTORY (bank + crypto)
+===================================================== */
+router.get("/admin/top-up-history", authenticate, async (req: any, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "FORBIDDEN" });
+  }
+
+  const page = Number(req.query.page || 1);
+  const limit = Number(req.query.limit || 30);
+  const source = req.query.source as string;
+  const search = req.query.search as string;
+
+  const query: any = { type: "TOP_UP" };
+  if (source) query.source = source;
+  if (search) {
+    query.$or = [
+      { note: { $regex: search, $options: "i" } },
+      { source: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const [data, total] = await Promise.all([
+    CreditTransaction.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean(),
+    CreditTransaction.countDocuments(query),
+  ]);
+
+  const userIds = [...new Set(data.map((d: any) => d.userId?.toString()).filter(Boolean))];
+  const users = await User.find({ _id: { $in: userIds } }).select("email name avatar").lean();
+  const userMap: Record<string, any> = {};
+  users.forEach((u: any) => { userMap[u._id.toString()] = u; });
+
+  const enriched = data.map((tx: any) => ({
+    ...tx,
+    user: userMap[tx.userId?.toString()] || null,
+  }));
+
+  res.json({
+    success: true,
+    data: enriched,
+    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+  });
+});
+
+/* =====================================================
+   ADMIN: WEBHOOK LOGS (raw bank payloads)
+===================================================== */
+router.get("/admin/webhook-logs", authenticate, async (req: any, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "FORBIDDEN" });
+  }
+
+  const page = Number(req.query.page || 1);
+  const limit = Number(req.query.limit || 30);
+
+  const { BankTransactionTemp, BankTransaction } = await import("../models/BankTransactionModel");
+
+  const [tempLogs, totalTemp] = await Promise.all([
+    BankTransactionTemp.find()
+      .sort({ receivedAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean(),
+    BankTransactionTemp.countDocuments(),
+  ]);
+
+  const [bankTxns, totalBank] = await Promise.all([
+    BankTransaction.find()
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("userId", "email name")
+      .lean(),
+    BankTransaction.countDocuments(),
+  ]);
+
+  res.json({
+    success: true,
+    webhookLogs: tempLogs,
+    bankTransactions: bankTxns,
+    pagination: {
+      page, limit,
+      totalLogs: totalTemp,
+      totalBankTxns: totalBank,
+      totalPages: Math.ceil(Math.max(totalTemp, totalBank) / limit),
+    },
+  });
+});
+
+/* =====================================================
    CLAIM WELCOME CREDIT (ONE-TIME)
 ===================================================== */
 router.post("/claim-welcome", authenticate, async (req: any, res) => {

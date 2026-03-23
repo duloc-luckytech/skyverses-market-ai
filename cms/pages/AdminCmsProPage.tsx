@@ -4,7 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   BarChart3, Cloud, HardDrive, DollarSign,
-  Package, History, Users,
+  Package, History, Users, Banknote, Globe,
   Filter, Compass, Bot, Cog, Key,
   ShieldCheck, ChevronLeft, ChevronRight,
   Sun, Moon, LogOut, Plus, CreditCard
@@ -30,9 +30,11 @@ import { MarketFiltersTab } from '../components/admin-pro/MarketFiltersTab';
 import { ConfigurationTab } from '../components/admin-pro/ConfigurationTab';
 import { ProviderTokensTab } from '../components/admin-pro/ProviderTokensTab';
 import { BankingTab } from '../components/admin-pro/BankingTab';
+import { PaymentHistoryTab } from '../components/admin-pro/PaymentHistoryTab';
+import { WebhookLogsTab } from '../components/admin-pro/WebhookLogsTab';
 import { SolutionDrawer } from '../components/admin-pro/solution-drawer/SolutionDrawer';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS';
 
 const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
   { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart3 size={16} />, group: 'MAIN' },
@@ -45,8 +47,10 @@ const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; gro
   { id: 'PRICING', label: 'Bảng giá', icon: <DollarSign size={16} />, group: 'FINANCE' },
   { id: 'CREDIT_PACKS', label: 'Gói Credits', icon: <Package size={16} />, group: 'FINANCE' },
   { id: 'BANKING', label: 'Banking & QR', icon: <CreditCard size={16} />, group: 'FINANCE' },
+  { id: 'PAYMENT_HISTORY', label: 'Lịch sử nạp', icon: <Banknote size={16} />, group: 'FINANCE' },
   { id: 'USERS', label: 'Khách hàng', icon: <Users size={16} />, group: 'SYSTEM' },
   { id: 'LOGS', label: 'Nhật ký', icon: <History size={16} />, group: 'SYSTEM' },
+  { id: 'WEBHOOK_LOGS', label: 'Webhook Logs', icon: <Globe size={16} />, group: 'SYSTEM' },
   { id: 'CONFIG', label: 'Cấu hình', icon: <Cog size={16} />, group: 'SYSTEM' },
 ];
 
@@ -296,6 +300,8 @@ const AdminCmsProPage = () => {
             {activeTab === 'PROVIDER_TOKENS' && <ProviderTokensTab key="provider_tokens" />}
             {activeTab === 'LOGS' && <LogsTab key="logs" remoteSolutions={remoteSolutions} />}
             {activeTab === 'USERS' && <UsersTab key="users" loading={loading} response={null} onParamsChange={() => { }} />}
+            {activeTab === 'PAYMENT_HISTORY' && <PaymentHistoryTab key="payment_history" />}
+            {activeTab === 'WEBHOOK_LOGS' && <WebhookLogsTab key="webhook_logs" />}
             {activeTab === 'CONFIG' && <ConfigurationTab key="config" />}
             {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
               <NodeRegistryTab
