@@ -1,437 +1,512 @@
-import React, { useState, useMemo } from 'react';
+
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Zap, BarChart3, Activity, PieChart, 
   ArrowUpRight, ArrowDownRight, Clock,
-  Filter, Search, Download, Info,
-  AlertTriangle, CheckCircle2, ChevronRight,
-  ImageIcon, Video, BrainCircuit, LayoutGrid,
-  TrendingUp, Wallet, ArrowRight, CornerDownRight,
-  ShieldCheck, Lock
+  Filter, Search, Download, RefreshCw,
+  AlertTriangle, ChevronLeft, ChevronRight,
+  ImageIcon, Video, Music, Mic, Wand2,
+  TrendingUp, Wallet, ArrowRight, Lock,
+  Receipt, Loader2, Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Link } from 'react-router-dom';
-
-interface UsageEntry {
-  id: string;
-  date: string;
-  time: string;
-  tool: 'Image' | 'Video' | 'Character' | 'System';
-  action: string;
-  credits: number;
-  status: 'Success' | 'Failed';
-}
-
-const MOCK_USAGE: UsageEntry[] = [
-  { id: 'tx-001', date: '2025-05-14', time: '14:22', tool: 'Video', action: 'Cinematic Render', credits: 45, status: 'Success' },
-  { id: 'tx-002', date: '2025-05-14', time: '12:05', tool: 'Image', action: '8K Upscale', credits: 5, status: 'Success' },
-  { id: 'tx-003', date: '2025-05-13', time: '18:40', tool: 'Character', action: 'DNA Lock', credits: 15, status: 'Success' },
-  { id: 'tx-004', date: '2025-05-13', time: '11:15', tool: 'System', action: 'Logic Stress Test', credits: 20, status: 'Success' },
-  { id: 'tx-005', date: '2025-05-12', time: '09:30', tool: 'Video', action: 'Motion Synthesis', credits: 30, status: 'Failed' },
-  { id: 'tx-006', date: '2025-05-12', time: '08:12', tool: 'Image', action: 'Concept Gen', credits: 2, status: 'Success' },
-];
+import { creditsApi, CreditTransaction } from '../apis/credits';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const CreditUsagePage: React.FC = () => {
-  const { credits, login, isAuthenticated } = useAuth();
-  const { lang, t } = useLanguage();
+  const { credits, login, isAuthenticated, refreshUserInfo } = useAuth();
+  const { t } = useLanguage();
+
+  usePageMeta({
+    title: 'Lịch sử sử dụng Credits — Skyverses AI',
+    description: 'Theo dõi chi tiết lịch sử tiêu thụ và nạp Credits trên Skyverses.',
+    keywords: 'credits, usage, history, skyverses, AI',
+    canonical: '/usage'
+  });
+
+  // Data
+  const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const LIMIT = 20;
+
+  // Filters
   const [searchQuery, setSearchQuery] = useState('');
-  const [toolFilter, setToolFilter] = useState('All');
+  const [typeFilter, setTypeFilter] = useState('All');
 
-  const filteredUsage = useMemo(() => {
-    return MOCK_USAGE.filter(entry => {
-      const matchesSearch = entry.action.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          entry.id.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesTool = toolFilter === 'All' || entry.tool === toolFilter;
-      return matchesSearch && matchesTool;
+  const fetchHistory = useCallback(async (p: number = 1) => {
+    setLoading(true);
+    try {
+      const res = await creditsApi.getHistory(p, LIMIT);
+      setTransactions(res.data || []);
+      setTotal(res.pagination?.total || 0);
+      setPage(p);
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchHistory(1);
+      refreshUserInfo();
+    }
+  }, [isAuthenticated]);
+
+  // ─── COMPUTED STATS ───────────────────────────────
+  const stats = useMemo(() => {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    let todaySpent = 0;
+    let monthSpent = 0;
+    let totalConsumed = 0;
+    let totalTopUp = 0;
+    const sourceBreakdown: Record<string, number> = {};
+
+    transactions.forEach(tx => {
+      const txDate = new Date(tx.createdAt);
+      if (tx.amount < 0) {
+        const absAmount = Math.abs(tx.amount);
+        totalConsumed += absAmount;
+        if (tx.createdAt.startsWith(todayStr)) todaySpent += absAmount;
+        if (txDate >= monthStart) monthSpent += absAmount;
+
+        // Breakdown by source
+        const src = tx.source || 'other';
+        const label = src.includes('image') ? 'Image AI' : 
+                      src.includes('video') ? 'Video AI' : 
+                      src.includes('voice') ? 'Voice AI' :
+                      src.includes('music') ? 'Music AI' : 'Khác';
+        sourceBreakdown[label] = (sourceBreakdown[label] || 0) + absAmount;
+      } else {
+        totalTopUp += tx.amount;
+      }
     });
-  }, [searchQuery, toolFilter]);
 
-  const stats = {
-    today: 52,
-    month: 1240,
-    remainingActions: Math.floor(credits / 4), // Rough estimate
-    velocity: '+14% vs last week'
+    return { todaySpent, monthSpent, totalConsumed, totalTopUp, sourceBreakdown };
+  }, [transactions]);
+
+  const breakdowns = useMemo(() => {
+    const total = Object.values(stats.sourceBreakdown).reduce((a, b) => a + b, 0) || 1;
+    const colors: Record<string, { color: string; icon: React.ReactNode }> = {
+      'Video AI': { color: '#8b5cf6', icon: <Video size={14}/> },
+      'Image AI': { color: '#0090ff', icon: <ImageIcon size={14}/> },
+      'Voice AI': { color: '#f59e0b', icon: <Mic size={14}/> },
+      'Music AI': { color: '#ec4899', icon: <Music size={14}/> },
+      'Khác': { color: '#64748b', icon: <Wand2 size={14}/> },
+    };
+    return Object.entries(stats.sourceBreakdown)
+      .sort(([,a], [,b]) => b - a)
+      .map(([label, amount]) => ({
+        label,
+        percentage: Math.round((amount / total) * 100),
+        credits: amount,
+        ...(colors[label] || colors['Khác']),
+      }));
+  }, [stats]);
+
+  // ─── FILTERED TRANSACTIONS ───────────────────────
+  const filtered = useMemo(() => {
+    return transactions.filter(tx => {
+      const matchSearch = !searchQuery || 
+        (tx.note || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (tx.source || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tx._id.includes(searchQuery);
+      const matchType = typeFilter === 'All' || tx.type === typeFilter;
+      return matchSearch && matchType;
+    });
+  }, [transactions, searchQuery, typeFilter]);
+
+  // ─── TYPE CONFIG ─────────────────────────────────
+  const typeConfig: Record<string, { label: string; color: string; bg: string }> = {
+    'TOP_UP': { label: 'Nạp tiền', color: '#10b981', bg: '#10b98112' },
+    'CONSUME': { label: 'Sử dụng', color: '#ef4444', bg: '#ef444412' },
+    'REFUND': { label: 'Hoàn trả', color: '#f59e0b', bg: '#f59e0b12' },
+    'ADMIN_ADJUST': { label: 'Điều chỉnh', color: '#8b5cf6', bg: '#8b5cf612' },
+    'WELCOME': { label: 'Welcome', color: '#0090ff', bg: '#0090ff12' },
+    'DAILY': { label: 'Daily', color: '#06b6d4', bg: '#06b6d412' },
+    'REFERRAL': { label: 'Giới thiệu', color: '#ec4899', bg: '#ec489912' },
   };
-
-  const breakdowns = [
-    { label: 'Video Production', percentage: 65, color: 'bg-purple-500', icon: <Video size={14}/> },
-    { label: 'High-Res Imaging', percentage: 20, color: 'bg-cyan-500', icon: <ImageIcon size={14}/> },
-    { label: 'Neural Logic', percentage: 10, color: 'bg-emerald-500', icon: <BrainCircuit size={14}/> },
-    { label: 'Other Systems', percentage: 5, color: 'bg-gray-500', icon: <LayoutGrid size={14}/> }
-  ];
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fdfdfe] dark:bg-[#020203] px-6">
+      <div className="min-h-screen flex items-center justify-center bg-[#fafafa] dark:bg-[#030305] px-6">
         <div className="text-center space-y-8 max-w-md">
-           <div className="w-20 h-20 bg-brand-blue/10 rounded-full flex items-center justify-center mx-auto text-brand-blue">
-              <Lock size={40} />
-           </div>
-           <div className="space-y-3">
-              <h2 className="text-3xl font-black uppercase tracking-tighter italic">Auth Required</h2>
-              <p className="text-gray-500 dark:text-gray-400 font-medium">Please sign in to access your neural usage dashboard and credit management.</p>
-           </div>
-           <button onClick={login} className="btn-sky-primary px-12 py-5 text-xs font-black uppercase tracking-[0.4em] w-full">Sign In to Dashboard</button>
+          <div className="w-20 h-20 bg-brand-blue/10 rounded-2xl flex items-center justify-center mx-auto text-brand-blue">
+            <Lock size={36} />
+          </div>
+          <div className="space-y-3">
+            <h2 className="text-2xl font-black tracking-tight">Đăng nhập để xem</h2>
+            <p className="text-sm text-slate-400 dark:text-gray-500">Đăng nhập để theo dõi chi tiết lịch sử sử dụng Credits.</p>
+          </div>
+          <button onClick={login} className="px-8 py-4 bg-brand-blue text-white rounded-xl text-xs font-black uppercase tracking-widest hover:brightness-110 active:scale-[0.97] transition-all shadow-lg shadow-brand-blue/20">
+            Đăng nhập
+          </button>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="pt-32 pb-40 bg-[#fcfcfd] dark:bg-[#020203] min-h-screen transition-colors duration-500 font-sans selection:bg-brand-blue/30 overflow-x-hidden">
-      
-      {/* Background Decor */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)', backgroundSize: '60px 60px' }}></div>
+  const totalPages = Math.ceil(total / LIMIT);
 
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10">
+  return (
+    <div className="pt-28 pb-32 bg-[#fafafa] dark:bg-[#030305] min-h-screen transition-colors duration-500 selection:bg-brand-blue/30 overflow-x-hidden">
+      
+      {/* Background */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-20%] left-[40%] w-[1000px] h-[600px] bg-gradient-to-b from-brand-blue/[0.03] to-transparent dark:from-brand-blue/[0.06] rounded-full blur-[150px]" />
+        <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-gradient-to-tl from-violet-500/[0.02] to-transparent dark:from-violet-500/[0.04] rounded-full blur-[120px]" />
+      </div>
+
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
         
-        {/* --- HEADER --- */}
-        <header className="mb-16 space-y-6">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
-            <div className="space-y-4">
-               <div className="flex items-center gap-3 text-brand-blue">
-                  <BarChart3 size={24} />
-                  <span className="text-[12px] font-black uppercase tracking-[0.6em] italic">Telemetry_Center</span>
-               </div>
-               <h1 className="text-6xl lg:text-8xl font-black uppercase tracking-tighter italic leading-none">Credit <span className="text-brand-blue">Usage.</span></h1>
-               <p className="text-lg lg:text-xl text-gray-500 dark:text-gray-400 font-medium max-w-xl">“Detailed breakdown of your neural compute consumption.”</p>
+        {/* ════════════ HEADER ════════════ */}
+        <motion.header 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-12"
+        >
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-white dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.08] rounded-full">
+                <div className="w-4 h-4 rounded-full bg-brand-blue/15 flex items-center justify-center">
+                  <BarChart3 size={9} className="text-brand-blue" />
+                </div>
+                <span className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-500 dark:text-gray-400">Usage Dashboard</span>
+              </div>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.03em] leading-[1.1]">
+                Lịch sử <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-violet-500">sử dụng</span>
+              </h1>
+              <p className="text-sm text-slate-400 dark:text-gray-500 max-w-lg">
+                Theo dõi chi tiết mọi giao dịch Credits — nạp, tiêu thụ, và hoàn trả.
+              </p>
             </div>
             
-            <div className="flex gap-4">
-               <button className="flex items-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-sm text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
-                 <Download size={14} /> Export CSV
-               </button>
-               <Link to="/credits" className="flex items-center gap-2 px-3 py-1.5 border border-black/10 dark:border-white/10 rounded-sm text-[10px] font-black uppercase tracking-widest hover:text-brand-blue transition-all">
-                 <Zap size={14} fill="currentColor" /> Buy Credits
-               </Link>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => fetchHistory(page)} 
+                className="flex items-center gap-2 px-5 py-3 border border-black/[0.06] dark:border-white/[0.06] rounded-xl bg-white dark:bg-white/[0.03] text-xs font-bold hover:border-brand-blue/30 hover:text-brand-blue transition-all"
+              >
+                <RefreshCw size={13} /> Làm mới
+              </button>
+              <Link to="/credits" className="flex items-center gap-2 px-5 py-3 bg-brand-blue text-white rounded-xl text-xs font-bold hover:brightness-110 transition-all shadow-sm">
+                <Zap size={13} fill="currentColor" /> Mua Credits
+              </Link>
             </div>
           </div>
-        </header>
+        </motion.header>
 
-        {/* --- 1. SUMMARY CARDS --- */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-           <SummaryCard 
-              label="Live Balance" 
-              value={credits.toLocaleString()} 
-              unit="CREDITS" 
-              icon={<Zap fill="currentColor"/>}
-              trend="+0% (Stable)"
-              color="text-brand-blue"
-           />
-           <SummaryCard 
-              label="Used Today" 
-              value={stats.today.toString()} 
-              unit="CREDITS" 
-              icon={<TrendingUp />}
-              trend={stats.velocity}
-              color="text-purple-500"
-              isPositive={false}
-           />
-           <SummaryCard 
-              label="Mouthly Burn" 
-              value={stats.month.toLocaleString()} 
-              unit="CREDITS" 
-              icon={<Activity />}
-              trend="94.2% Stability"
-              color="text-emerald-500"
-           />
-           <SummaryCard 
-              label="Estimated Power" 
-              value={stats.remainingActions.toString()} 
-              unit="IMAGEN" 
-              icon={<Zap />}
-              trend="≈ 12 Video Renders"
-              color="text-amber-500"
-           />
-        </section>
+        {/* ════════════ SUMMARY CARDS ════════════ */}
+        <motion.section 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10"
+        >
+          <StatCard 
+            label="Số dư hiện tại" 
+            value={credits.toLocaleString()} 
+            unit="CR" 
+            icon={<Sparkles size={18} fill="currentColor" />} 
+            color="#0090ff" 
+          />
+          <StatCard 
+            label="Đã dùng hôm nay" 
+            value={stats.todaySpent.toLocaleString()} 
+            unit="CR" 
+            icon={<Activity size={18} />} 
+            color="#8b5cf6" 
+          />
+          <StatCard 
+            label="Đã dùng tháng này" 
+            value={stats.monthSpent.toLocaleString()} 
+            unit="CR" 
+            icon={<TrendingUp size={18} />} 
+            color="#ef4444" 
+          />
+          <StatCard 
+            label="Tổng giao dịch" 
+            value={total.toString()} 
+            unit="TXN" 
+            icon={<Receipt size={18} />} 
+            color="#10b981" 
+          />
+        </motion.section>
 
-        {/* --- 2. BREAKDOWN & CHART --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-           
-           {/* Breakdown List */}
-           <div className="lg:col-span-5 p-8 bg-white dark:bg-[#08080a] border border-black/5 dark:border-white/5 rounded-sm space-y-10 shadow-sm">
-              <div className="flex items-center justify-between">
-                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-3">
-                    <PieChart size={18} className="text-brand-blue" /> Consumption Breakdown
-                 </h3>
-                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Last 30 Days</span>
+        {/* ════════════ BREAKDOWN + BALANCE ════════════ */}
+        {breakdowns.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-10"
+          >
+            {/* Breakdown */}
+            <div className="lg:col-span-7 p-6 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                    <PieChart size={14} className="text-violet-500" />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">Phân bổ tiêu thụ</h3>
+                </div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Trang hiện tại</span>
               </div>
-
-              <div className="space-y-8">
-                 {breakdowns.map((b) => (
-                    <div key={b.label} className="space-y-3 group cursor-default">
-                       <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-tight">
-                          <div className="flex items-center gap-3">
-                             <div className={`w-8 h-8 rounded-sm ${b.color}/10 flex items-center justify-center ${b.color.replace('bg-', 'text-')}`}>
-                                {b.icon}
-                             </div>
-                             <span className="text-gray-600 dark:text-gray-300">{b.label}</span>
-                          </div>
-                          <span className="text-black dark:text-white">{b.percentage}%</span>
-                       </div>
-                       <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                          <motion.div 
-                            initial={{ width: 0 }}
-                            animate={{ width: `${b.percentage}%` }}
-                            transition={{ duration: 1, ease: "easeOut" }}
-                            className={`h-full ${b.color} shadow-[0_0_10px_rgba(0,0,0,0.1)]`}
-                          />
-                       </div>
+              <div className="space-y-5">
+                {breakdowns.map((b) => (
+                  <div key={b.label} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${b.color}12`, color: b.color }}>
+                          {b.icon}
+                        </div>
+                        <span className="text-xs font-bold text-slate-700 dark:text-gray-300">{b.label}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-bold text-slate-400">{b.credits.toLocaleString()} CR</span>
+                        <span className="text-xs font-black" style={{ color: b.color }}>{b.percentage}%</span>
+                      </div>
                     </div>
-                 ))}
+                    <div className="h-1.5 w-full bg-black/[0.03] dark:bg-white/[0.04] rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${b.percentage}%` }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: b.color }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-              
-              <div className="pt-6 border-t border-black/5 dark:border-white/5">
-                 <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
-                   * Usage is tracked in real-time. Failed generations are automatically refunded to your node.
-                 </p>
-              </div>
-           </div>
+            </div>
 
-           {/* Mock Timeline Chart */}
-           <div className="lg:col-span-7 p-8 bg-white dark:bg-[#08080a] border border-black/5 dark:border-white/5 rounded-sm flex flex-col shadow-sm">
-              <div className="flex items-center justify-between mb-12">
-                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-3">
-                    <TrendingUp size={18} className="text-brand-blue" /> Usage Timeline
-                 </h3>
-                 <div className="flex bg-black/5 dark:bg-white/5 p-1 rounded-full">
-                    {['D', 'W', 'M'].map(t => (
-                       <button key={t} className={`w-8 h-8 flex items-center justify-center rounded-full text-[10px] font-black transition-all ${t === 'W' ? 'bg-brand-blue text-white shadow-lg' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}>{t}</button>
-                    ))}
-                 </div>
-              </div>
-              
-              {/* SVG Mock Chart */}
-              <div className="flex-grow flex items-end justify-between gap-2 h-64 relative">
-                 <div className="absolute inset-0 grid grid-rows-4 opacity-[0.05]">
-                    {[1,2,3,4].map(i => <div key={i} className="border-t border-black dark:border-white"></div>)}
-                 </div>
-                 {[40, 20, 60, 45, 90, 30, 70, 85, 40, 55, 20, 95].map((h, i) => (
-                    <motion.div 
-                      key={i}
-                      initial={{ height: 0 }}
-                      animate={{ height: `${h}%` }}
-                      transition={{ delay: i * 0.05, duration: 1 }}
-                      className={`flex-grow rounded-t-sm transition-all hover:brightness-125 cursor-pointer relative group ${h > 80 ? 'bg-brand-blue' : 'bg-brand-blue/30 dark:bg-brand-blue/10'}`}
-                    >
-                       <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black dark:bg-white text-white dark:text-black px-2 py-1 rounded text-[8px] font-black opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                         {Math.round(h * 1.5)} CREDITS
-                       </div>
-                    </motion.div>
-                 ))}
-              </div>
-              <div className="flex justify-between pt-6 text-[8px] font-black text-gray-400 uppercase tracking-widest">
-                 <span>01 May</span>
-                 <span>15 May</span>
-                 <span>30 May</span>
-              </div>
-           </div>
-        </div>
-
-        {/* --- 3. FILTER & HISTORY TABLE --- */}
-        <section className="space-y-6">
-           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <h3 className="text-xl font-black uppercase tracking-tighter italic shrink-0">Usage History</h3>
-              
-              <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
-                 <div className="relative flex-grow md:min-w-[300px]">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                    <input 
-                      type="text" 
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      placeholder="Search ID or action..."
-                      className="w-full bg-white dark:bg-black border border-black/5 dark:border-white/10 pl-10 pr-4 py-3 rounded-full text-xs font-bold focus:border-brand-blue outline-none transition-all"
-                    />
-                 </div>
-                 <div className="flex items-center gap-2 px-4 py-3 border border-black/5 dark:border-white/10 rounded-full bg-white dark:bg-black">
-                    <Filter size={14} className="text-gray-400" />
-                    <select 
-                      value={toolFilter}
-                      onChange={e => setToolFilter(e.target.value)}
-                      className="bg-transparent border-none text-xs font-bold focus:outline-none uppercase tracking-widest cursor-pointer"
-                    >
-                       <option value="All">All Tools</option>
-                       <option value="Image">Image AI</option>
-                       <option value="Video">Video AI</option>
-                       <option value="Character">Character Sync</option>
-                       <option value="System">System Tools</option>
-                    </select>
-                 </div>
-              </div>
-           </div>
-
-           <div className="bg-white dark:bg-[#08080a] border border-black/5 dark:border-white/10 rounded-sm overflow-hidden shadow-sm">
-              <div className="overflow-x-auto">
-                 <table className="w-full text-left border-collapse">
-                    <thead>
-                       <tr className="bg-black/5 dark:bg-white/5 text-[9px] font-black uppercase tracking-widest text-gray-500">
-                          <th className="px-8 py-6">Timestamp</th>
-                          <th className="px-8 py-6">Transaction ID</th>
-                          <th className="px-8 py-6">Neural Node</th>
-                          <th className="px-8 py-6">Operational Task</th>
-                          <th className="px-8 py-6 text-right">Quota Spent</th>
-                          <th className="px-8 py-6 text-center">Status</th>
-                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-black/5 dark:divide-white/5">
-                       {filteredUsage.length > 0 ? filteredUsage.map((entry) => (
-                          <tr key={entry.id} className="text-[11px] font-medium group hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors">
-                             <td className="px-8 py-6">
-                                <div className="space-y-0.5">
-                                   <p className="font-bold text-black dark:text-white">{entry.date}</p>
-                                   <p className="text-[9px] text-gray-400 font-black">{entry.time}</p>
-                                </div>
-                             </td>
-                             <td className="px-8 py-6 font-mono text-gray-400 dark:text-gray-600 group-hover:text-brand-blue transition-colors">#{entry.id}</td>
-                             <td className="px-8 py-6">
-                                <span className={`px-2 py-1 rounded-sm text-[8px] font-black uppercase tracking-widest ${
-                                  entry.tool === 'Video' ? 'bg-purple-500/10 text-purple-500' :
-                                  entry.tool === 'Image' ? 'bg-cyan-500/10 text-cyan-500' :
-                                  'bg-emerald-500/10 text-emerald-500'
-                                }`}>
-                                  {entry.tool} AI
-                                </span>
-                             </td>
-                             <td className="px-8 py-6 uppercase font-black text-slate-700 dark:text-slate-300 tracking-tighter">{entry.action}</td>
-                             <td className="px-8 py-6 text-right">
-                                <div className="flex items-center justify-end gap-2">
-                                   <Zap size={10} className="text-brand-blue" fill="currentColor" />
-                                   <span className="font-black italic">-{entry.credits}</span>
-                                </div>
-                             </td>
-                             <td className="px-8 py-6 text-center">
-                                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${entry.status === 'Success' ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10'}`}>
-                                   <div className={`w-1 h-1 rounded-full ${entry.status === 'Success' ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                                   {entry.status}
-                                </div>
-                             </td>
-                          </tr>
-                       )) : (
-                          <tr>
-                             <td colSpan={6} className="px-8 py-20 text-center opacity-30">
-                                <Search size={40} className="mx-auto mb-4" />
-                                <p className="text-xs font-black uppercase tracking-widest italic">No matching telemetry found in local storage</p>
-                             </td>
-                          </tr>
-                       )}
-                    </tbody>
-                 </table>
-              </div>
-           </div>
-        </section>
-
-        {/* --- 4. CREDIT RULES & ESTIMATES --- */}
-        <section className="mt-32 grid grid-cols-1 lg:grid-cols-12 gap-12">
-           <div className="lg:col-span-8 p-12 bg-gray-50 dark:bg-[#08080a] border border-black/5 dark:border-white/5 rounded-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-8 opacity-5 text-brand-blue">
-                 <ShieldCheck size={200} />
-              </div>
-              <div className="relative z-10 space-y-10">
-                 <div className="space-y-4">
-                    <h3 className="text-3xl font-black uppercase tracking-tighter italic">Neural Price Matrix</h3>
-                    <p className="text-gray-500 font-medium">Standardized credit consumption protocol for all authorized nodes.</p>
-                 </div>
-                 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <PriceItem label="Image Synthesis" credits="2 - 5" detail="Varies by resolution (720p to 8K)" />
-                    <PriceItem label="Cinematic Video" credits="20 - 50" detail="Varies by duration (4s to 12s)" />
-                    <PriceItem label="Character DNA Sync" credits="15 - 30" detail="Per identity lock session" />
-                    <PriceItem label="Voice Performance" credits="1 / 100" detail="Credits per synthesized words" />
-                    <PriceItem label="System Stress Test" credits="10" detail="Automated logic diagnostic run" />
-                    <PriceItem label="Agent Autonomous Flow" credits="25" detail="Full chain execution protocol" />
-                 </div>
-              </div>
-           </div>
-
-           <div className="lg:col-span-4 flex flex-col gap-6">
-              {/* Conditional Low Credit Warning */}
-              {credits < 200 && (
-                <div className="p-8 bg-amber-500/10 border border-amber-500/20 rounded-sm space-y-4 animate-in fade-in slide-in-from-right-4 duration-500">
-                   <div className="flex items-center gap-3 text-amber-600 dark:text-amber-500">
-                      <AlertTriangle size={20} />
-                      <span className="text-[11px] font-black uppercase tracking-widest italic">Low_Quota_Warning</span>
-                   </div>
-                   <p className="text-[11px] font-bold text-amber-700 dark:text-amber-500/80 leading-relaxed uppercase">
-                     Node_042 reporting low compute balance. Replenish now to prevent production interruption during synthesis cycles.
-                   </p>
-                   <Link to="/credits" className="flex items-center justify-between w-full p-4 bg-amber-500 text-white rounded-sm text-[10px] font-black uppercase tracking-widest shadow-xl hover:scale-[1.02] transition-all">
-                      Replenish Node <ArrowRight size={14}/>
-                   </Link>
+            {/* Quick actions */}
+            <div className="lg:col-span-5 flex flex-col gap-4">
+              {credits < 500 && (
+                <div className="p-5 bg-amber-500/5 border border-amber-500/15 rounded-2xl flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <AlertTriangle size={16} className="text-amber-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-amber-700 dark:text-amber-400 mb-1">Số dư thấp</p>
+                    <p className="text-[11px] text-amber-600/70 dark:text-amber-500/60 leading-relaxed">Nạp thêm Credits để tiếp tục sử dụng.</p>
+                    <Link to="/credits" className="inline-flex items-center gap-1.5 mt-2 text-[10px] font-black text-amber-600 hover:underline uppercase tracking-wider">
+                      Nạp ngay <ArrowRight size={10} />
+                    </Link>
+                  </div>
                 </div>
               )}
-
-              <div className="p-8 bg-brand-blue/5 border border-brand-blue/20 rounded-sm space-y-6 flex-grow flex flex-col justify-center">
-                 <div className="space-y-2">
-                    <h4 className="text-xl font-black uppercase tracking-tighter">Ready for <br /> <span className="text-brand-blue italic">Full Scale?</span></h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
-                       Upgrade to Enterprise Node for unlimited credits, private VPC hosting, and dedicated support architects.
-                    </p>
-                 </div>
-                 <Link to="/booking" className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] text-brand-blue group">
-                    TALK TO SALES <ArrowRight size={12} className="group-hover:translate-x-2 transition-transform" />
-                 </Link>
+              <div className="p-5 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl flex-grow flex flex-col justify-center">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 rounded-xl bg-brand-blue/10 flex items-center justify-center">
+                    <Wallet size={16} className="text-brand-blue" />
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Số dư</p>
+                    <p className="text-2xl font-black text-brand-blue tracking-tight">{credits.toLocaleString()} <span className="text-xs font-bold text-slate-400">CR</span></p>
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-relaxed mb-4">Credits không hết hạn. Mua thêm bất cứ khi nào bạn cần.</p>
+                <Link to="/credits" className="inline-flex items-center justify-center gap-2 w-full py-3 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-sm">
+                  <Zap size={12} fill="currentColor" /> Mua thêm Credits
+                </Link>
               </div>
-           </div>
-        </section>
+            </div>
+          </motion.div>
+        )}
 
-        {/* --- 5. FINAL CALL TO ACTION --- */}
-        <section className="py-40 text-center relative overflow-hidden bg-white dark:bg-black border border-black/5 dark:border-white/5 rounded-sm shadow-3xl mt-20">
-           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-brand-blue/5 rounded-full blur-[200px] pointer-events-none"></div>
-           <div className="max-w-4xl mx-auto space-y-12 relative z-10">
-              <h2 className="text-7xl lg:text-[130px] font-black uppercase tracking-tighter leading-[0.8] italic text-black dark:text-white">
-                Never Stop <br /> <span className="text-brand-blue">Building.</span>
-              </h2>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-10">
-                 <Link to="/credits" className="bg-black dark:bg-white text-white dark:text-black px-24 py-8 rounded-full text-sm font-black uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(0,0,0,0.1)] hover:scale-110 active:scale-95 transition-all group">
-                    Top Up Credits <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
-                 </Link>
-                 <Link to="/" className="px-16 py-8 border-2 border-brand-blue text-brand-blue hover:bg-brand-blue hover:text-white text-sm font-black uppercase tracking-[0.6em] transition-all rounded-full italic">
-                    Explore Tools
-                 </Link>
+        {/* ════════════ FILTER BAR ════════════ */}
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4"
+        >
+          <h3 className="text-lg font-black tracking-tight shrink-0">
+            Chi tiết giao dịch <span className="text-slate-300 dark:text-gray-600 text-sm font-bold">({total})</span>
+          </h3>
+          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <div className="relative flex-grow md:min-w-[260px]">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300 dark:text-gray-600" size={13} />
+              <input 
+                type="text" 
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Tìm theo ghi chú, ID..."
+                className="w-full bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] pl-9 pr-4 py-2.5 rounded-xl text-xs font-medium focus:border-brand-blue/40 outline-none transition-all"
+              />
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2.5 border border-black/[0.06] dark:border-white/[0.06] rounded-xl bg-white dark:bg-white/[0.03]">
+              <Filter size={13} className="text-slate-400" />
+              <select 
+                value={typeFilter}
+                onChange={e => setTypeFilter(e.target.value)}
+                className="bg-transparent border-none text-xs font-bold focus:outline-none cursor-pointer text-slate-600 dark:text-gray-400"
+              >
+                <option value="All">Tất cả</option>
+                <option value="CONSUME">Sử dụng</option>
+                <option value="TOP_UP">Nạp tiền</option>
+                <option value="REFUND">Hoàn trả</option>
+                <option value="WELCOME">Welcome</option>
+                <option value="DAILY">Daily</option>
+                <option value="REFERRAL">Giới thiệu</option>
+              </select>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ════════════ TRANSACTION TABLE ════════════ */}
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl overflow-hidden shadow-sm"
+        >
+          {loading ? (
+            <div className="py-24 flex flex-col items-center gap-3">
+              <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Đang tải lịch sử...</p>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="py-24 text-center">
+              <Receipt size={40} className="text-slate-200 dark:text-gray-700 mx-auto mb-4" />
+              <p className="text-sm font-bold text-slate-400 dark:text-gray-500">
+                {searchQuery || typeFilter !== 'All' ? 'Không tìm thấy giao dịch phù hợp' : 'Chưa có giao dịch nào'}
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Table header */}
+              <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3.5 text-[8px] font-black uppercase tracking-[0.25em] text-slate-400 dark:text-gray-600 border-b border-black/[0.03] dark:border-white/[0.03] bg-slate-50/50 dark:bg-white/[0.01]">
+                <div className="col-span-2">Loại</div>
+                <div className="col-span-2 text-right">Số lượng</div>
+                <div className="col-span-2 text-right">Số dư sau</div>
+                <div className="col-span-1">Nguồn</div>
+                <div className="col-span-3">Ghi chú</div>
+                <div className="col-span-2 text-right">Thời gian</div>
               </div>
-           </div>
-        </section>
+
+              {/* Rows */}
+              {filtered.map((tx) => {
+                const isPositive = tx.amount > 0;
+                const cfg = typeConfig[tx.type] || { label: tx.type, color: '#64748b', bg: '#64748b12' };
+                const date = new Date(tx.createdAt);
+
+                return (
+                  <div key={tx._id} className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-6 py-3.5 border-b border-black/[0.02] dark:border-white/[0.02] hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors items-center">
+                    {/* Type */}
+                    <div className="col-span-2">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider" style={{ backgroundColor: cfg.bg, color: cfg.color }}>
+                        {isPositive ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
+                        {cfg.label}
+                      </span>
+                    </div>
+                    {/* Amount */}
+                    <div className="col-span-2 text-right">
+                      <span className={`text-sm font-black tabular-nums ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+                        {isPositive ? '+' : ''}{tx.amount.toLocaleString()}
+                      </span>
+                      <span className="text-[9px] text-slate-400 ml-1">CR</span>
+                    </div>
+                    {/* Balance after */}
+                    <div className="col-span-2 text-right">
+                      <span className="text-xs font-bold text-slate-500 dark:text-gray-400 tabular-nums">{(tx.balanceAfter || 0).toLocaleString()}</span>
+                      <span className="text-[9px] text-slate-300 dark:text-gray-600 ml-1">CR</span>
+                    </div>
+                    {/* Source */}
+                    <div className="col-span-1">
+                      <span className="text-[10px] text-slate-400 dark:text-gray-500 truncate block">
+                        {(tx.source || '—').replace('_generation', '').replace('_cancel', '')}
+                      </span>
+                    </div>
+                    {/* Note */}
+                    <div className="col-span-3">
+                      <p className="text-[11px] text-slate-400 dark:text-gray-500 truncate" title={tx.note || ''}>
+                        {tx.note || '—'}
+                      </p>
+                    </div>
+                    {/* Time */}
+                    <div className="col-span-2 text-right">
+                      <p className="text-[11px] text-slate-400 dark:text-gray-500 tabular-nums">
+                        {date.toLocaleDateString('vi-VN')} · {date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="px-6 py-4 flex items-center justify-between border-t border-black/[0.03] dark:border-white/[0.03] bg-slate-50/30 dark:bg-white/[0.005]">
+                  <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500">
+                    Trang {page} / {totalPages} · {total} giao dịch
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => fetchHistory(page - 1)} 
+                      disabled={page <= 1}
+                      className="w-8 h-8 rounded-lg border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-slate-400 hover:text-brand-blue hover:border-brand-blue/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all"
+                    >
+                      <ChevronLeft size={14} />
+                    </button>
+                    {/* Page numbers */}
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      const startPage = Math.max(1, Math.min(page - 2, totalPages - 4));
+                      const p = startPage + i;
+                      if (p > totalPages) return null;
+                      return (
+                        <button 
+                          key={p}
+                          onClick={() => fetchHistory(p)}
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
+                            p === page 
+                              ? 'bg-brand-blue text-white shadow-sm' 
+                              : 'text-slate-400 hover:text-brand-blue border border-transparent hover:border-brand-blue/20'
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      );
+                    })}
+                    <button 
+                      onClick={() => fetchHistory(page + 1)} 
+                      disabled={page >= totalPages}
+                      className="w-8 h-8 rounded-lg border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-slate-400 hover:text-brand-blue hover:border-brand-blue/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all"
+                    >
+                      <ChevronRight size={14} />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </motion.div>
 
       </div>
     </div>
   );
 };
 
-// --- HELPER COMPONENTS ---
+// ─── HELPER COMPONENTS ──────────────────────────────
 
-const SummaryCard = ({ label, value, unit, icon, trend, color, isPositive = true }: any) => (
-  <div className="p-8 bg-white dark:bg-[#08080a] border border-black/5 dark:border-white/10 rounded-sm space-y-6 group hover:border-brand-blue transition-all shadow-sm">
-     <div className="flex justify-between items-start">
-        <div className={`w-12 h-12 rounded-sm bg-black/5 dark:bg-white/5 flex items-center justify-center ${color} group-hover:bg-brand-blue group-hover:text-white transition-all`}>
-           {icon}
-        </div>
-        <div className={`flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-           {isPositive ? <ArrowUpRight size={12}/> : <ArrowDownRight size={12}/>} {trend}
-        </div>
-     </div>
-     <div className="space-y-1">
-        <p className="text-[10px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest italic">{label}</p>
-        <div className="flex items-baseline gap-2">
-           <h4 className="text-4xl font-black italic tracking-tighter text-black dark:text-white">{value}</h4>
-           <span className="text-[10px] font-black text-brand-blue uppercase">{unit}</span>
-        </div>
-     </div>
-  </div>
-);
-
-const PriceItem = ({ label, credits, detail }: any) => (
-  <div className="flex items-start gap-4 group">
-     <div className="mt-1 w-2 h-2 bg-brand-blue group-hover:scale-125 transition-transform"></div>
-     <div className="space-y-1">
-        <div className="flex items-center gap-4">
-           <span className="text-sm font-black uppercase tracking-tighter italic text-black dark:text-white">{label}</span>
-           <div className="flex-grow h-px bg-black/5 dark:bg-white/10 min-w-[20px] lg:min-w-[100px]"></div>
-           <span className="text-sm font-black text-brand-blue italic">{credits} CR</span>
-        </div>
-        <p className="text-[10px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest">{detail}</p>
-     </div>
+const StatCard = ({ label, value, unit, icon, color }: { label: string; value: string; unit: string; icon: React.ReactNode; color: string }) => (
+  <div className="p-5 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl group hover:border-black/[0.08] dark:hover:border-white/[0.08] transition-all">
+    <div className="flex items-center justify-between mb-3">
+      <div className="w-9 h-9 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform" style={{ backgroundColor: `${color}12`, color }}>
+        {icon}
+      </div>
+    </div>
+    <p className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-1">{label}</p>
+    <div className="flex items-baseline gap-1.5">
+      <span className="text-2xl font-black tracking-tight text-slate-900 dark:text-white tabular-nums">{value}</span>
+      <span className="text-[10px] font-bold" style={{ color }}>{unit}</span>
+    </div>
   </div>
 );
 
