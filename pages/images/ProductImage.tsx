@@ -14,9 +14,18 @@ import {
 } from 'lucide-react';
 import ProductImageWorkspace from '../../components/ProductImageWorkspace';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const ProductImage = () => {
   const solution = SOLUTIONS.find(s => s.slug === 'product-image');
   const { lang, t } = useLanguage();
+  usePageMeta({
+    title: 'AI Product Photography | Skyverses',
+    description: 'Transform product photos into professional studio shots with AI.',
+    keywords: 'product photography AI, e-commerce images',
+    canonical: '/product/product-image'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (!solution) return null;

@@ -7,7 +7,16 @@ import { ModesSection } from '../../components/landing/video-generator/ModesSect
 import { UseCasesSection } from '../../components/landing/video-generator/UseCasesSection';
 import { FinalCTA } from '../../components/landing/video-generator/FinalCTA';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const AIVideoGenerator: React.FC = () => {
+  usePageMeta({
+    title: 'AI Video Generator | Skyverses',
+    description: 'Generate cinematic videos from text or images. VEO3, WAN, Gommo engines.',
+    keywords: 'AI video generator, text to video, Skyverses',
+    canonical: '/product/ai-video-generator'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   // Studio Mode Overlay

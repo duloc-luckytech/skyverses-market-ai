@@ -7,7 +7,16 @@ import { ModesSection } from '../../components/landing/image-generator/ModesSect
 import { UseCasesSection } from '../../components/landing/image-generator/UseCasesSection';
 import { FinalCTA } from '../../components/landing/image-generator/FinalCTA';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const AIImageGenerator = () => {
+  usePageMeta({
+    title: 'AI Image Generator | Skyverses',
+    description: 'Generate stunning AI images from text prompts. Multiple models, styles, and resolutions.',
+    keywords: 'AI image generator, text to image, Skyverses',
+    canonical: '/product/ai-image-generator'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (isStudioOpen) {

@@ -13,8 +13,17 @@ import {
 import RestorationWorkspace from '../../components/RestorationWorkspace';
 import { useLanguage } from '../../context/LanguageContext';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const AIImageRestoration = () => {
   const { lang } = useLanguage();
+  usePageMeta({
+    title: 'AI Image Restoration | Skyverses',
+    description: 'Restore old, damaged, and low-resolution photos to 4K clarity with AI.',
+    keywords: 'AI image restoration, photo repair, upscale',
+    canonical: '/product/ai-image-restorer'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (isStudioOpen) {

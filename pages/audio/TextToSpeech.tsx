@@ -11,9 +11,18 @@ import {
 } from 'lucide-react';
 import TTSWorkspace from '../../components/TTSWorkspace';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const TextToSpeech = () => {
   const solution = SOLUTIONS.find(s => s.slug === 'text-to-speech');
   const { lang, t } = useLanguage();
+  usePageMeta({
+    title: 'Text to Speech | Skyverses',
+    description: 'Natural-sounding speech from text. 100+ languages, multiple voices.',
+    keywords: 'text to speech, TTS, AI voice',
+    canonical: '/product/text-to-speech'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (!solution) return null;

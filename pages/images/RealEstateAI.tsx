@@ -11,8 +11,17 @@ import {
 import RealEstateWorkspace from '../../components/RealEstateWorkspace';
 import { useLanguage } from '../../context/LanguageContext';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const RealEstateAI: React.FC = () => {
   const { lang } = useLanguage();
+  usePageMeta({
+    title: 'AI Bất Động Sản | Skyverses',
+    description: 'Virtual staging, interior renovation, architectural style transfer with AI.',
+    keywords: 'AI real estate, virtual staging, interior design',
+    canonical: '/product/bat-dong-san-ai'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (isStudioOpen) {

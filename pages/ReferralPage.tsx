@@ -12,9 +12,18 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 
+import { usePageMeta } from '../hooks/usePageMeta';
+
 const ReferralPage: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
+  usePageMeta({
+    title: 'Referral Program | Skyverses',
+    description: 'Earn credits by referring friends to Skyverses AI creative platform.',
+    keywords: 'referral, earn credits, invite friends',
+    canonical: '/referral'
+  });
+
   const [copied, setCopied] = useState(false);
 
   const referralLink = `https://market.skyverses.io/register?ref=${user?._id?.slice(0, 8) || 'CREATIVE'}`;

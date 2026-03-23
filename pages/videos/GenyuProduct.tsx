@@ -17,9 +17,18 @@ import {
 import GenyuWorkspace from '../../components/GenyuWorkspace';
 import { motion } from 'framer-motion';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const GenyuProduct = () => {
   const solution = SOLUTIONS.find(s => s.id === 'STUDIO-ARCHITECT-V1');
   const { lang, t } = useLanguage();
+  usePageMeta({
+    title: 'Studio Architect | Skyverses',
+    description: 'Professional video production studio with AI-powered editing tools.',
+    keywords: 'video studio, AI editing, production',
+    canonical: '/product/studio-architect'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
   
   if (!solution) return null;

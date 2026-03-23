@@ -15,10 +15,18 @@ import {
 } from 'lucide-react';
 import UpscaleWorkspace from '../../components/UpscaleWorkspace';
 import { useLanguage } from '../../context/LanguageContext';
+import { usePageMeta } from '../../hooks/usePageMeta';
 
 const ImageUpscaleAI = () => {
   const { lang } = useLanguage();
   const [isStudioOpen, setIsStudioOpen] = useState(false);
+
+  usePageMeta({
+    title: 'AI Image Upscale | Skyverses',
+    description: 'Enhance and upscale images to 4K-8K with AI super-resolution technology.',
+    keywords: 'image upscale, AI enhance, super resolution',
+    canonical: '/product/image-upscale-ai'
+  });
 
   if (isStudioOpen) {
     return (

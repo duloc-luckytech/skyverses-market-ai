@@ -14,10 +14,19 @@ import { SOLUTIONS } from '../../data';
 import { useLanguage } from '../../context/LanguageContext';
 import VoiceStudioWorkspace from '../../components/VoiceStudioWorkspace';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const VoiceStudio = () => {
   // Tìm kiếm solution theo slug chính xác trong data.ts
   const solution = SOLUTIONS.find(s => s.slug === 'ai-voice-studio');
   const { lang, t } = useLanguage();
+  usePageMeta({
+    title: 'AI Voice Studio | Skyverses',
+    description: 'Professional voice production workspace with multi-language support.',
+    keywords: 'voice studio, AI speech, audio production',
+    canonical: '/product/ai-voice-studio'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   // Nếu đang mở Studio (Modal Công cụ)

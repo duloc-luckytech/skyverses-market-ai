@@ -15,9 +15,18 @@ import PosterStudioWorkspace from '../../components/PosterStudioWorkspace';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const PosterMarketingAI = () => {
   const { lang } = useLanguage();
   const { theme } = useTheme();
+  usePageMeta({
+    title: 'AI Poster & Marketing | Skyverses',
+    description: 'Generate professional marketing posters and ad creatives with AI.',
+    keywords: 'AI poster, marketing design, ad creative',
+    canonical: '/product/poster-marketing-ai'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (isStudioOpen) {

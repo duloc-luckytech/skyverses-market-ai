@@ -16,6 +16,8 @@ import { ExpandModal } from '../../components/music-generator/ExpandModal';
 import ResourceAuthModal from '../../components/common/ResourceAuthModal';
 import { ResourceControl } from '../../components/fashion-studio/ResourceControl';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const MUSIC_TEMPLATES = [
   {
     id: 'lofi',
@@ -49,6 +51,13 @@ const MUSIC_TEMPLATES = [
 
 const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const s = useMusicStudio();
+  usePageMeta({
+    title: 'AI Music Generator | Skyverses',
+    description: 'Create original music from text. Any genre, mood, or style with AI.',
+    keywords: 'AI music, text to music, music generator',
+    canonical: '/product/ai-music-generator'
+  });
+
   const [showResourceModal, setShowResourceModal] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [hasPersonalKey, setHasPersonalKey] = useState(false);

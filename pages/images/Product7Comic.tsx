@@ -23,9 +23,17 @@ import {
   AlignLeft
 } from 'lucide-react';
 import BananaProWorkspace from '../../components/BananaProWorkspace';
+import { usePageMeta } from '../../hooks/usePageMeta';
 
 const Product7Comic = () => {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
+
+  usePageMeta({
+    title: 'AI Comic Engine | Skyverses',
+    description: 'Generate manga and comic pages with consistent characters and panel layouts.',
+    keywords: 'AI comic, manga generator, comic engine',
+    canonical: '/product/banana-pro-comic-engine'
+  });
 
   if (isStudioOpen) {
     return (

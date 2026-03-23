@@ -15,8 +15,17 @@ import { Link } from 'react-router-dom';
 import AvatarLipsyncWorkspace from '../../components/AvatarLipsyncWorkspace';
 import { useLanguage } from '../../context/LanguageContext';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const AvatarLipsyncAI = () => {
   const { lang } = useLanguage();
+  usePageMeta({
+    title: 'AI Avatar Lipsync | Skyverses',
+    description: 'Generate talking-head videos with perfect lip sync from any audio or text.',
+    keywords: 'AI avatar, lipsync, talking head',
+    canonical: '/product/avatar-sync-ai'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (isStudioOpen) {

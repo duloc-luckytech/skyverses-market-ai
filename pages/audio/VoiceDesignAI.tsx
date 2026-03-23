@@ -11,7 +11,16 @@ import {
 import VoiceDesignWorkspace from '../../components/VoiceDesignWorkspace';
 import { Link } from 'react-router-dom';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const VoiceDesignAI: React.FC = () => {
+  usePageMeta({
+    title: 'AI Voice Design | Skyverses',
+    description: 'Voice cloning, custom TTS, and professional audio design studio.',
+    keywords: 'voice cloning, AI voice, audio design',
+    canonical: '/product/voice-design-ai'
+  });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Khóa cuộn trang bên ngoài khi mở Modal

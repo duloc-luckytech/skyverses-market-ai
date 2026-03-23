@@ -13,9 +13,18 @@ import { DocsTab } from '../components/captcha-token/DocsTab';
 import { PricingMatrix } from '../components/captcha-token/PricingMatrix';
 import { CaptchaPaymentModal } from '../components/captcha-token/CaptchaPaymentModal';
 
+import { usePageMeta } from '../hooks/usePageMeta';
+
 const ProductCaptchaToken = () => {
   const { isAuthenticated, login } = useAuth();
   const t = useCaptchaToken();
+
+  usePageMeta({
+    title: 'Captcha Token Service | Skyverses',
+    description: 'Professional CAPTCHA token service for Google VEO3 & FX Lab automation.',
+    keywords: 'captcha token, VEO3, automation',
+    canonical: '/product/captcha-veo3'
+  });
 
   useEffect(() => {
     // Update Page Title

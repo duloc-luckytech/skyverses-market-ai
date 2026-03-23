@@ -11,6 +11,8 @@ import {
 import VideoAnimateWorkspace from '../../components/VideoAnimateWorkspace';
 import { Link } from 'react-router-dom';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const HERO_EXAMPLES = [
   {
     id: 0,
@@ -102,6 +104,13 @@ const SHOWCASE_LIST = [
 ];
 
 const VideoAnimateAI: React.FC = () => {
+  usePageMeta({
+    title: 'AI Video Animation | Skyverses',
+    description: 'Bring static images to life with natural motion and physics simulation.',
+    keywords: 'video animation, image to video, motion AI',
+    canonical: '/product/video-animate-ai'
+  });
+
   const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 

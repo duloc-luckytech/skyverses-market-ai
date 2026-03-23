@@ -14,7 +14,16 @@ import {
 } from 'lucide-react';
 import CastAndDirectWorkspace from '../../components/CastAndDirectWorkspace';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const Product6Image = () => {
+  usePageMeta({
+    title: 'Character Sync Studio | Skyverses',
+    description: 'Maintain consistent character identity across multiple AI-generated images.',
+    keywords: 'character sync, AI identity, consistent images',
+    canonical: '/product/character-sync-studio'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   // Nếu mở Studio (Công cụ làm việc)

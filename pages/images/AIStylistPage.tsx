@@ -12,8 +12,17 @@ import {
 import AIStylistWorkspace from '../../components/AIStylistWorkspace';
 import { useLanguage } from '../../context/LanguageContext';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const AIStylistPage = () => {
   const { lang, t } = useLanguage();
+  usePageMeta({
+    title: 'AI Stylist - Virtual Try-On | Skyverses',
+    description: 'Virtual try-on studio. Upload your portrait, try any outfit instantly with AI.',
+    keywords: 'AI stylist, virtual try-on, fashion AI',
+    canonical: '/product/ai-stylist'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (isStudioOpen) {

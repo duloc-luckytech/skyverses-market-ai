@@ -9,8 +9,17 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
+import { usePageMeta } from '../hooks/usePageMeta';
+
 const BookingPage = () => {
   const { t } = useLanguage();
+  usePageMeta({
+    title: 'Contact & Booking | Skyverses',
+    description: 'Schedule a consultation or book a strategy call with the Skyverses team.',
+    keywords: 'booking, contact, consultation',
+    canonical: '/booking'
+  });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState({

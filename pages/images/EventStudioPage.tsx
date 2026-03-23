@@ -5,12 +5,21 @@ import EventStudioWorkspace from '../../components/EventStudioWorkspace';
 import { EVENT_CONFIGS } from '../../constants/event-configs';
 import { Loader2, Zap } from 'lucide-react';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 interface EventStudioPageProps {
   type: 'noel' | 'tet' | 'wedding' | 'birthday';
 }
 
 const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
   const config = EVENT_CONFIGS[type];
+  usePageMeta({
+    title: 'AI Event Studio | Skyverses',
+    description: 'Create stunning event visuals for birthdays, weddings, holidays with AI.',
+    keywords: 'AI event, birthday generator, wedding AI',
+    canonical: '/product/ai-birthday-generator'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
   const [images, setImages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

@@ -10,8 +10,17 @@ import { useLanguage } from '../context/LanguageContext';
 import { useArt3DGenerator } from '../hooks/useArt3DGenerator';
 import Art3DWorkspace from '../components/Art3DWorkspace';
 
+import { usePageMeta } from '../hooks/usePageMeta';
+
 const SpatialArchitectPage: React.FC = () => {
   const { lang, t } = useLanguage();
+  usePageMeta({
+    title: '3D Spatial Architect | Skyverses',
+    description: 'Generate 3D environments and architectural visualizations with AI.',
+    keywords: '3D architect, spatial AI, CAD generation',
+    canonical: '/product/3d-spatial-architect'
+  });
+
   const logic = useArt3DGenerator();
 
   if (logic.isStudioOpen) {

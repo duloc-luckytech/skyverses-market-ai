@@ -17,9 +17,18 @@ import AetherFlowInterface from '../components/AetherFlowInterface';
 import { useLanguage } from '../context/LanguageContext';
 import { useAetherFlow, WorkflowTemplate } from '../hooks/useAetherFlow';
 
+import { usePageMeta } from '../hooks/usePageMeta';
+
 const ProductAIAgentWorkflow = () => {
   const { lang } = useLanguage();
   const flow = useAetherFlow();
+  usePageMeta({
+    title: 'AI Agent Workflow | Skyverses',
+    description: 'Automate creative workflows with AI agent orchestration pipeline.',
+    keywords: 'AI agent, workflow automation, pipeline',
+    canonical: '/product/ai-agent-workflow'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (isStudioOpen) {

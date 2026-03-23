@@ -18,8 +18,17 @@ import {
 import CharacterSyncWorkspace from '../components/CharacterSyncWorkspace';
 import { useLanguage } from '../context/LanguageContext';
 
+import { usePageMeta } from '../hooks/usePageMeta';
+
 const ProductCharacterSync = () => {
   const { lang } = useLanguage();
+  usePageMeta({
+    title: 'Character Sync AI | Skyverses',
+    description: 'Maintain consistent character appearance across AI-generated content.',
+    keywords: 'character sync, AI identity, consistency',
+    canonical: '/product/character-sync-ai'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (isStudioOpen) {

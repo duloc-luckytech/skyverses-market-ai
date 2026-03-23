@@ -16,9 +16,18 @@ import FashionStudioWorkspace from '../../components/FashionStudioWorkspace';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const FashionCenterAI = () => {
   const { lang } = useLanguage();
   const { theme } = useTheme();
+  usePageMeta({
+    title: 'AI Fashion Center | Skyverses',
+    description: 'Full fashion production pipeline — from design to catalog with AI.',
+    keywords: 'AI fashion, catalog generator, outfit design',
+    canonical: '/product/fashion-center-ai'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (isStudioOpen) {

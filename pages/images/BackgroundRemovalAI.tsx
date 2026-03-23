@@ -11,8 +11,17 @@ import {
 import BackgroundRemovalWorkspace from '../../components/BackgroundRemovalWorkspace';
 import { useLanguage } from '../../context/LanguageContext';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const BackgroundRemovalAI = () => {
   const { lang } = useLanguage();
+  usePageMeta({
+    title: 'AI Background Removal | Skyverses',
+    description: 'One-click AI background removal with hair-level precision. High-res PNG export.',
+    keywords: 'background removal, remove bg, AI',
+    canonical: '/product/background-removal-ai'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (isStudioOpen) {

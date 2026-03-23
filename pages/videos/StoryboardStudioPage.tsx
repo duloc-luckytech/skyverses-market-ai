@@ -10,8 +10,17 @@ import {
 import StoryboardStudioWorkspace from '../../components/StoryboardStudioWorkspace';
 import { useLanguage } from '../../context/LanguageContext';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const StoryboardStudioPage = () => {
   const { lang } = useLanguage();
+  usePageMeta({
+    title: 'Storyboard Studio | Skyverses',
+    description: 'Plan your video scenes visually with AI-powered storyboard generation.',
+    keywords: 'storyboard, video planning, scene builder',
+    canonical: '/product/storyboard-studio'
+  });
+
   const [isStudioOpen, setIsStudioOpen] = useState(false);
   const [explorerVideos, setExplorerVideos] = useState<any[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(true);
