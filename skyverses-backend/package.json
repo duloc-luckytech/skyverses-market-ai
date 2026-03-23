@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
     "build": "tsc || true",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "seed:pricing": "npx ts-node src/scripts/clearAndReseedPricing.ts",
+    "seed:pricing-multiply": "npx ts-node src/scripts/reseedPricingWithMultiplier.ts",
+    "seed:packages": "npx ts-node src/scripts/seedCreditPackages.ts"
   },
   "dependencies": {
     "@google-cloud/speech": "^5.3.0",
