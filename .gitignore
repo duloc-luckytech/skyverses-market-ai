@@ -28,6 +28,11 @@ skyverses-backend/gcp-key.json
 skyverses-backend/service-account.json
 skyverses-backend/.env.prod
 skyverses-backend/.env
-*.env.prod
 skyverses-backend/src/jobs/service-account.json
 skyverses-backend/**/service-account.json
+
+# Env files (ignore secrets, allow .env.production which only has public URLs)
+.env
+cms/.env
+!.env.production
+!cms/.env.production
