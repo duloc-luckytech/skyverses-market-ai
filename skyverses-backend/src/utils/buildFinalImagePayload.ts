@@ -20,12 +20,12 @@ export function mapFxlabAspectRatio(aspectRatio?: string) {
   return "IMAGE_ASPECT_RATIO_LANDSCAPE";
 }
 
-const buildFxlabPayload = ({ config, input, engine }) => {
+const buildFxlabPayload = ({ config, input, engine }: { config: any; input: any; engine: any }) => {
   return {
     imageAspectRatio: mapFxlabAspectRatio(config.aspectRatio),
     imageModelName: engine.model,
     imageInputs: Array.isArray(input.images)
-      ? input.images.map((url) => ({
+      ? input.images.map((url: any) => ({
         imageInputType: "IMAGE_INPUT_TYPE_REFERENCE",
         name: url,
       }))

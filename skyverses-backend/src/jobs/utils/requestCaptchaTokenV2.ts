@@ -7,7 +7,7 @@ const API_KEY =
 const sleep = (ms: number) =>
   new Promise((r) => setTimeout(r, ms + Math.random() * 300));
 
-export async function getCaptchaToken2({ action = "VIDEO", jobId }) {
+export async function getCaptchaToken2({ action = "VIDEO", jobId }: { action?: string; jobId: any }) {
   const intervalMs = 3000;
   const timeoutMs = 5 * 60 * 1000;
   console.log('{ action = "VIDEO", jobId }..', { action, jobId });

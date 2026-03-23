@@ -298,7 +298,7 @@ async function runGommoWorker() {
   if (!jobs.length) return;
 
   const users = await UserModel.find({
-    _id: [...new Set(jobs.map((j) => j.userId))],
+    _id: [...new Set(jobs.map((j: any) => j.userId))],
   });
   const userMap = new Map(users.map((u) => [String(u._id), u]));
 

@@ -258,9 +258,10 @@ async function pollStartEndJobs() {
 
   const groups = new Map<string, any[]>();
   for (const job of googleJobs) {
-    const arr = groups.get(job.sentByEmail) || [];
+    const email = job.sentByEmail || '';
+    const arr = groups.get(email) || [];
     arr.push(job);
-    groups.set(job.sentByEmail, arr);
+    groups.set(email, arr);
   }
 
   for (const [email, list] of groups.entries()) {

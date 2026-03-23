@@ -59,7 +59,7 @@ export async function runVideoRequestFx(job: any) {
   if (!job?._id) {
     throw new Error("FXLAB_MISSING_jobId");
   }
-  let captchaToken, sessionId = null;
+  let captchaToken: string = '', sessionId: string | null = null;
   // const { captchaToken, sessionId } = await getCaptchaToken2({
   //   action: "VIDEO",
   //   jobId: job?._id,

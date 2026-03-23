@@ -46,7 +46,7 @@ async function uploadImageForJob(
       res.data?.mediaGenerationId;
 
     return mediaId;
-  } catch (err) {
+  } catch (err: any) {
     const message = err?.response?.data
       ? JSON.stringify(err.response.data, null, 2)
       : err.message || "Unknown error";

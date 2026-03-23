@@ -177,8 +177,9 @@ export async function editImagePipeline() {
   });
 
   for (const r of running) {
-    const count = processingMap.get(r.googleEmail) || 0;
-    processingMap.set(r.googleEmail, count + 1);
+    const email = r.googleEmail || '';
+    const count = processingMap.get(email) || 0;
+    processingMap.set(email, count + 1);
   }
 
   // Get pending + ready items
