@@ -90,11 +90,11 @@ const Footer: React.FC = () => {
               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white">Sản phẩm</h4>
               <ul className="space-y-3">
                 {[
-                  { label: 'AI Video Studio', to: '/markets' },
-                  { label: 'AI Image Studio', to: '/markets' },
-                  { label: 'AI Voice Studio', to: '/markets' },
-                  { label: 'AI Music Studio', to: '/markets' },
-                  { label: 'Explorer', to: '/explorer' },
+                  { label: 'AI Video Studio', to: '/product/ai-video-generator' },
+                  { label: 'AI Image Studio', to: '/product/ai-image-generator' },
+                  { label: 'AI Voice Studio', to: '/product/voice-design-ai' },
+                  { label: 'AI Music Studio', to: '/product/ai-music-generator' },
+                  { label: 'All Products', to: '/apps' },
                 ].map(link => (
                   <li key={link.label}>
                     <Link to={link.to} className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
@@ -111,22 +111,16 @@ const Footer: React.FC = () => {
               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white">{t('footer.about_title')}</h4>
               <ul className="space-y-3">
                 {[
-                  { label: t('footer.team'), href: 'https://skyverses.com/' },
-                  { label: t('footer.ecosystem'), href: 'https://skyverses.com/' },
+                  { label: t('footer.team'), to: '/about' },
+                  { label: 'Solutions', to: '/solutions' },
+                  { label: 'Use Cases', to: '/use-cases' },
                   { label: t('footer.library'), to: '/explorer' },
                 ].map(link => (
                   <li key={link.label}>
-                    {'to' in link ? (
-                      <Link to={link.to!} className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
-                        <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-gray-600 group-hover:bg-brand-blue group-hover:scale-150 transition-all duration-300" />
-                        {link.label}
-                      </Link>
-                    ) : (
-                      <a href={link.href} target="_blank" rel="noopener noreferrer" className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
-                        <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-gray-600 group-hover:bg-brand-blue group-hover:scale-150 transition-all duration-300" />
-                        {link.label}
-                      </a>
-                    )}
+                    <Link to={link.to} className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
+                      <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-gray-600 group-hover:bg-brand-blue group-hover:scale-150 transition-all duration-300" />
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -158,8 +152,8 @@ const Footer: React.FC = () => {
                 {[
                   { label: 'Terms of Service', to: '/policy' },
                   { label: 'Privacy Policy', to: '/policy' },
-                  { label: 'Pricing', to: '/pricing' },
-                  { label: 'Credits', to: '/credits' },
+                  { label: 'Credits & Pricing', to: '/credits' },
+                  { label: 'Referral', to: '/referral' },
                 ].map(link => (
                   <li key={link.label}>
                     <Link to={link.to} className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
