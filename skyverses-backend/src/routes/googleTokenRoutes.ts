@@ -632,7 +632,7 @@ router.post("/assign-owner-by-cookie", authenticate, async (req: any, res) => {
           $inc: { assigned: 1, slot: 1 },
         },
         { new: true }
-      );
+      ) as any;
     }
 
     /* ---------------------------------------------------------

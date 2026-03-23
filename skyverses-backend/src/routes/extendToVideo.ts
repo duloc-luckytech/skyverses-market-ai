@@ -441,9 +441,9 @@ router.post("/cut-frame", authenticate, async (req: any, res) => {
     // 1️⃣ Tải video tạm
     const writer = fs.createWriteStream(tempVideoPath);
     const videoRes = await axios.get(videoUrl, { responseType: "stream" });
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       videoRes.data.pipe(writer);
-      writer.on("finish", resolve);
+      writer.on("finish", () => resolve());
       writer.on("error", reject);
     });
 

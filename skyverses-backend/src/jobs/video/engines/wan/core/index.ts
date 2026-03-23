@@ -5,8 +5,7 @@ import { requestWanTextToVideo } from "./requestWanTextToVideo";
 import { requestImageToAction } from "./requestImageToAction";
 import { requestSwapCharacter } from "./requestSwapCharacter";
 
-
-export = {
+export default {
   requestSwapCharacter,
   requestImageToAction,
   requestWanImageToVideo,

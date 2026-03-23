@@ -140,7 +140,7 @@ router.get("/statistic", authenticate, async (req: any, res) => {
     const realPaidCodeRevenue = result.paidCode?.[0]?.total || 0;
 
     const totalRevenue = revenueByPlan.reduce(
-      (sum, r) => sum + (r.totalRevenue || 0),
+      (sum: number, r: any) => sum + (r.totalRevenue || 0),
       0
     );
 
