@@ -5,11 +5,12 @@ import {
   Zap, Sparkles, ArrowRight, Check, X, Loader2, Star,
   Shield, Globe2, ChevronDown, CreditCard, RefreshCw,
   Video, ImageIcon, Music, Mic, Wand2, Crown, Cpu,
-  Gift, Infinity, Flame, TrendingUp, Lock
+  Gift, Infinity, Flame, TrendingUp, Lock, Clock, Receipt,
+  ArrowUpRight, ArrowDownRight, ChevronLeft, ChevronRight as ChevronRightIcon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { creditsApi, CreditPackage } from '../apis/credits';
+import { creditsApi, CreditPackage, CreditTransaction } from '../apis/credits';
 import CreditPurchaseModal from '../components/CreditPurchaseModal';
 
 const USD_TO_VND = 26000;
@@ -24,6 +25,14 @@ const CreditsPage = () => {
   const [loading, setLoading] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [hoveredPack, setHoveredPack] = useState<string | null>(null);
+  
+  // Credit History
+  const [showHistory, setShowHistory] = useState(false);
+  const [txHistory, setTxHistory] = useState<CreditTransaction[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [historyTotal, setHistoryTotal] = useState(0);
+  const HISTORY_LIMIT = 15;
 
   useEffect(() => {
     const fetchPacks = async () => {
@@ -40,6 +49,21 @@ const CreditsPage = () => {
     };
     fetchPacks();
   }, []);
+
+  const fetchHistory = async (page: number = 1) => {
+    setHistoryLoading(true);
+    try {
+      const res = await creditsApi.getHistory(page, HISTORY_LIMIT);
+      setTxHistory(res.data || []);
+      setHistoryTotal(res.pagination?.total || 0);
+      setHistoryPage(page);
+    } catch (e) { console.error(e); }
+    setHistoryLoading(false);
+  };
+
+  useEffect(() => {
+    if (showHistory && isAuthenticated) fetchHistory(1);
+  }, [showHistory, isAuthenticated]);
 
   const handleUpgradeClick = (pack: CreditPackage) => {
     if (!isAuthenticated) {
@@ -129,6 +153,152 @@ const CreditsPage = () => {
               </div>
             </motion.div>
           )}
+
+          {/* Toggle History Button */}
+          {isAuthenticated && (
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              onClick={() => setShowHistory(!showHistory)}
+              className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold border border-black/[0.06] dark:border-white/[0.06] bg-white dark:bg-white/[0.03] hover:border-brand-blue/30 hover:text-brand-blue transition-all"
+            >
+              <Receipt size={14} />
+              {showHistory ? 'Ẩn lịch sử' : 'Xem lịch sử giao dịch'}
+            </motion.button>
+          )}
+
+          {/* Credit History Section */}
+          <AnimatePresence>
+            {showHistory && isAuthenticated && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.4 }}
+                className="overflow-hidden w-full max-w-4xl mx-auto mt-8"
+              >
+                <div className="bg-white dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-sm">
+                  {/* Header */}
+                  <div className="px-6 py-4 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center">
+                        <Clock size={14} className="text-brand-blue" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">Lịch sử giao dịch</h3>
+                        <p className="text-[10px] text-slate-400 dark:text-gray-500">{historyTotal} giao dịch</p>
+                      </div>
+                    </div>
+                    <button onClick={() => fetchHistory(historyPage)} className="text-[10px] font-bold text-brand-blue hover:underline flex items-center gap-1">
+                      <RefreshCw size={10} /> Làm mới
+                    </button>
+                  </div>
+
+                  {/* Table */}
+                  {historyLoading ? (
+                    <div className="py-16 flex flex-col items-center gap-3">
+                      <Loader2 className="w-6 h-6 text-brand-blue animate-spin" />
+                      <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Đang tải...</p>
+                    </div>
+                  ) : txHistory.length === 0 ? (
+                    <div className="py-16 text-center">
+                      <Receipt size={32} className="text-slate-200 dark:text-gray-700 mx-auto mb-3" />
+                      <p className="text-sm text-slate-400 dark:text-gray-500">Chưa có giao dịch nào</p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Table header */}
+                      <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-600 border-b border-black/[0.03] dark:border-white/[0.03]">
+                        <div className="col-span-2">Loại</div>
+                        <div className="col-span-2 text-right">Số lượng</div>
+                        <div className="col-span-2 text-right">Số dư</div>
+                        <div className="col-span-3">Ghi chú</div>
+                        <div className="col-span-3 text-right">Thời gian</div>
+                      </div>
+
+                      {/* Rows */}
+                      {txHistory.map((tx) => {
+                        const isPositive = tx.amount > 0;
+                        const typeConfig: Record<string, { label: string; color: string; bg: string }> = {
+                          'TOP_UP': { label: 'Nạp tiền', color: '#10b981', bg: '#10b98112' },
+                          'CONSUME': { label: 'Sử dụng', color: '#ef4444', bg: '#ef444412' },
+                          'REFUND': { label: 'Hoàn trả', color: '#f59e0b', bg: '#f59e0b12' },
+                          'ADMIN_ADJUST': { label: 'Điều chỉnh', color: '#8b5cf6', bg: '#8b5cf612' },
+                          'WELCOME': { label: 'Welcome', color: '#0090ff', bg: '#0090ff12' },
+                          'DAILY': { label: 'Daily', color: '#06b6d4', bg: '#06b6d412' },
+                          'REFERRAL': { label: 'Giới thiệu', color: '#ec4899', bg: '#ec489912' },
+                        };
+                        const cfg = typeConfig[tx.type] || { label: tx.type, color: '#64748b', bg: '#64748b12' };
+                        const date = new Date(tx.createdAt);
+
+                        return (
+                          <div key={tx._id} className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-6 py-3.5 border-b border-black/[0.02] dark:border-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/[0.01] transition-colors items-center">
+                            {/* Type badge */}
+                            <div className="col-span-2 flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider" style={{ backgroundColor: cfg.bg, color: cfg.color }}>
+                                {isPositive ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
+                                {cfg.label}
+                              </span>
+                            </div>
+                            {/* Amount */}
+                            <div className="col-span-2 text-right">
+                              <span className={`text-sm font-black ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+                                {isPositive ? '+' : ''}{tx.amount.toLocaleString()}
+                              </span>
+                              <span className="text-[9px] text-slate-400 ml-1">CR</span>
+                            </div>
+                            {/* Balance after */}
+                            <div className="col-span-2 text-right">
+                              <span className="text-xs font-bold text-slate-500 dark:text-gray-400">{(tx.balanceAfter || 0).toLocaleString()}</span>
+                              <span className="text-[9px] text-slate-300 dark:text-gray-600 ml-1">CR</span>
+                            </div>
+                            {/* Note */}
+                            <div className="col-span-3">
+                              <p className="text-[11px] text-slate-400 dark:text-gray-500 truncate" title={tx.note || tx.source}>
+                                {tx.note || tx.source || '—'}
+                              </p>
+                            </div>
+                            {/* Time */}
+                            <div className="col-span-3 text-right">
+                              <p className="text-[11px] text-slate-400 dark:text-gray-500">
+                                {date.toLocaleDateString('vi-VN')} · {date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Pagination */}
+                      {historyTotal > HISTORY_LIMIT && (
+                        <div className="px-6 py-4 flex items-center justify-between border-t border-black/[0.03] dark:border-white/[0.03]">
+                          <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500">
+                            Trang {historyPage} / {Math.ceil(historyTotal / HISTORY_LIMIT)}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <button 
+                              onClick={() => fetchHistory(historyPage - 1)} 
+                              disabled={historyPage <= 1}
+                              className="w-8 h-8 rounded-lg border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-slate-400 hover:text-brand-blue hover:border-brand-blue/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                            >
+                              <ChevronLeft size={14} />
+                            </button>
+                            <button 
+                              onClick={() => fetchHistory(historyPage + 1)} 
+                              disabled={historyPage >= Math.ceil(historyTotal / HISTORY_LIMIT)}
+                              className="w-8 h-8 rounded-lg border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-slate-400 hover:text-brand-blue hover:border-brand-blue/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                            >
+                              <ChevronRightIcon size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* ════════════════════════════════════════════

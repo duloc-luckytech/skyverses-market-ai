@@ -39,7 +39,7 @@ router.get("/packages", async (_req, res) => {
    GET CURRENT CREDIT BALANCE
 ===================================================== */
 router.get("/balance", authenticate, async (req: any, res) => {
-  const user = await User.findById(req.user.id).select("creditBalance");
+  const user = await User.findById(req.user.userId).select("creditBalance");
   res.json({ creditBalance: user?.creditBalance || 0 });
 });
 
@@ -65,7 +65,7 @@ router.post("/top-up", authenticate, async (req: any, res) => {
     return res.status(400).json({ message: "INVALID_CREDIT_PACKAGE" });
   }
 
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.userId);
   if (!user) {
     return res.status(404).json({ message: "USER_NOT_FOUND" });
   }
@@ -113,7 +113,7 @@ router.post("/consume", authenticate, async (req: any, res) => {
     return res.status(400).json({ message: "INVALID_AMOUNT" });
   }
 
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.userId);
   if (!user) {
     return res.status(404).json({ message: "USER_NOT_FOUND" });
   }
@@ -148,7 +148,7 @@ router.get("/history", authenticate, async (req: any, res) => {
   const page = Number(req.query.page || 1);
   const limit = Number(req.query.limit || 20);
 
-  const query = { userId: req.user.id };
+  const query = { userId: req.user.userId };
 
   const data = await CreditTransaction.find(query)
     .sort({ createdAt: -1 })

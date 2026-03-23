@@ -7,6 +7,9 @@ import ImageJob, {
 import { authenticate } from "../routes/auth";
 import { getAccessTokenForJob } from "../utils/getAccessTokenForJob";
 import { buildFinalImagePayload } from "../utils/buildFinalImagePayload";
+import ModelPricingMatrix from "../models/ModelPricingMatrix.model";
+import User from "../models/UserModel";
+import CreditTransaction from "../models/CreditTransaction.model";
 
 const router = express.Router();
 
@@ -101,6 +104,50 @@ router.post("/", authenticate, async (req: any, res) => {
   if (!type || !engine?.provider || !engine?.model || !enginePayload) {
     return res.status(400).json({ message: "Invalid payload" });
   }
+
+  // ─── CREDIT DEDUCTION ───────────────────────────────
+  const pricingModel = await ModelPricingMatrix.findOne({
+    modelKey: engine.model,
+    status: "active",
+  });
+
+  let creditCost = 0;
+  if (pricingModel?.pricing) {
+    // Get cost from pricing matrix: pricing[resolution]["0"] for images
+    const resolutions = Object.keys(pricingModel.pricing);
+    if (resolutions.length > 0) {
+      const firstRes = resolutions[0];
+      const durations = pricingModel.pricing[firstRes];
+      creditCost = typeof durations === "number" ? durations : (durations?.["0"] || durations?.["1"] || Object.values(durations || {})[0] || 0);
+    }
+  }
+
+  if (creditCost > 0) {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: "USER_NOT_FOUND" });
+    }
+    if (user.creditBalance < creditCost) {
+      return res.status(400).json({ message: "INSUFFICIENT_CREDITS", required: creditCost, balance: user.creditBalance });
+    }
+
+    // Atomic deduction
+    user.creditBalance -= creditCost;
+    await user.save();
+
+    await CreditTransaction.create({
+      userId: user._id,
+      type: "CONSUME",
+      amount: -creditCost,
+      balanceAfter: user.creditBalance,
+      source: "image_generation",
+      note: `Image: ${engine.model} | ${type}`,
+    });
+
+    console.log(`💳 [CREDIT] ${user.email} -${creditCost} CR (image: ${engine.model}) → balance: ${user.creditBalance}`);
+  }
+  // ─── END CREDIT DEDUCTION ───────────────────────────
+
   const finalPayload = buildFinalImagePayload({ input, config, engine });
 
   const job = await ImageJob.create({
@@ -112,9 +159,10 @@ router.post("/", authenticate, async (req: any, res) => {
     finalPayload,
     enginePayload,
     status: ImageJobStatus.PENDING,
+    creditsUsed: creditCost,
   });
 
-  console.log(`📸 [IMG] CREATE job=${job._id} engine=${engine.provider} model=${engine.model} type=${type}`);
+  console.log(`📸 [IMG] CREATE job=${job._id} engine=${engine.provider} model=${engine.model} type=${type} cost=${creditCost}`);
 
   res.json({
     success: true,
@@ -122,6 +170,7 @@ router.post("/", authenticate, async (req: any, res) => {
       status: job.status,
       jobId: job._id,
       result: job.result,
+      creditsUsed: creditCost,
     },
   });
 });
@@ -263,7 +312,29 @@ router.post("/:id/cancel", authenticate, async (req: any, res) => {
   job.status = ImageJobStatus.CANCELLED;
   await job.save();
 
-  res.json({ success: true });
+  // ─── REFUND CREDITS ─────────────────────────────
+  let refunded = 0;
+  if (job.creditsUsed && job.creditsUsed > 0) {
+    const user = await User.findById(req.user.userId);
+    if (user) {
+      user.creditBalance += job.creditsUsed;
+      await user.save();
+      refunded = job.creditsUsed;
+
+      await CreditTransaction.create({
+        userId: user._id,
+        type: "REFUND",
+        amount: job.creditsUsed,
+        balanceAfter: user.creditBalance,
+        source: "image_cancel",
+        note: `Refund cancelled image job: ${job._id}`,
+      });
+
+      console.log(`💳 [REFUND] ${user.email} +${refunded} CR (cancelled image job: ${job._id})`);
+    }
+  }
+
+  res.json({ success: true, refunded });
 });
 
 router.get("/pending/fxlab", async (req, res) => {

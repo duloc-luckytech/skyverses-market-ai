@@ -199,5 +199,43 @@ export const creditsApi = {
     } catch (error) {
       return { success: false, message: 'Connection failed' };
     }
+  },
+
+  getHistory: async (page: number = 1, limit: number = 20): Promise<{
+    data: CreditTransaction[];
+    pagination: { page: number; limit: number; total: number };
+  }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/credits/history?page=${page}&limit=${limit}`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+      return await response.json();
+    } catch (error) {
+      return { data: [], pagination: { page: 1, limit: 20, total: 0 } };
+    }
+  },
+
+  getBalance: async (): Promise<{ creditBalance: number }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/credits/balance`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+      return await response.json();
+    } catch (error) {
+      return { creditBalance: 0 };
+    }
   }
 };
+
+export interface CreditTransaction {
+  _id: string;
+  userId: string;
+  type: 'TOP_UP' | 'CONSUME' | 'REFUND' | 'ADMIN_ADJUST' | 'WELCOME' | 'DAILY' | 'REFERRAL';
+  amount: number;
+  balanceAfter: number;
+  source: string;
+  note?: string;
+  createdAt: string;
+}
