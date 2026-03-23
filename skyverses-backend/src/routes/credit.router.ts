@@ -203,6 +203,38 @@ router.post("/admin/add", authenticate, async (req: any, res) => {
 });
 
 /* =====================================================
+   ADMIN: GET USER CREDIT HISTORY
+===================================================== */
+router.get("/admin/user-history/:userId", authenticate, async (req: any, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "FORBIDDEN" });
+  }
+
+  const { userId } = req.params;
+  const page = Number(req.query.page || 1);
+  const limit = Number(req.query.limit || 20);
+
+  const query = { userId };
+  const [data, total] = await Promise.all([
+    CreditTransaction.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean(),
+    CreditTransaction.countDocuments(query),
+  ]);
+
+  const user = await User.findById(userId).select("email name creditBalance").lean();
+
+  res.json({
+    success: true,
+    user: user ? { email: user.email, name: user.name, creditBalance: user.creditBalance } : null,
+    data,
+    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+  });
+});
+
+/* =====================================================
    CLAIM WELCOME CREDIT (ONE-TIME)
 ===================================================== */
 router.post("/claim-welcome", authenticate, async (req: any, res) => {

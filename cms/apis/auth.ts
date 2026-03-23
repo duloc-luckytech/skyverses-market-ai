@@ -116,5 +116,31 @@ export const authApi = {
       console.error('List Users Error:', error);
       throw error;
     }
+  },
+
+  getUserCreditHistory: async (userId: string, page: number = 1, limit: number = 20): Promise<any> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/credits/admin/user-history/${userId}?page=${page}&limit=${limit}`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('User Credit History Error:', error);
+      return { data: [], pagination: { page: 1, limit: 20, total: 0 } };
+    }
+  },
+
+  adminAdjustCredits: async (userId: string, amount: number, note: string): Promise<any> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/credits/admin/add`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ userId, amount, note }),
+      });
+      return await response.json();
+    } catch (error) {
+      return { success: false, message: 'Connection failed' };
+    }
   }
 };
