@@ -1,41 +1,45 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Orbit } from 'lucide-react';
-import { useLanguage } from '../../context/LanguageContext';
+import { Blocks, ArrowRight } from 'lucide-react';
 
 export const AppsHero: React.FC = () => {
-  const { t } = useLanguage();
-  
   return (
-    <section className="relative py-20 lg:py-32 px-6 lg:px-12 overflow-hidden border-b border-black/5 dark:border-white/5">
-      <div className="absolute inset-0 z-0 pointer-events-none">
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-brand-blue/5 dark:bg-brand-blue/10 rounded-full blur-[150px] animate-pulse"></div>
-         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)', backgroundSize: '100px 100px' }}></div>
+    <section className="relative py-16 lg:py-24 px-4 md:px-8 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[900px] h-[400px] bg-gradient-to-b from-brand-blue/[0.04] to-transparent dark:from-brand-blue/[0.08] rounded-full blur-[120px]" />
       </div>
 
-      <div className="max-w-[1600px] mx-auto flex flex-col items-center text-center space-y-12 relative z-10">
-         <motion.div 
-           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-           className="inline-flex items-center gap-3 px-5 py-2 bg-brand-blue/10 border border-brand-blue/20 rounded-full text-brand-blue text-[11px] font-black uppercase tracking-[0.4em] italic"
-         >
-            <Orbit size={14} className="animate-spin-slow" /> HỆ SINH THÁI ỨNG DỤNG AI
-         </motion.div>
-         
-         <div className="space-y-6">
-           <motion.h1 
-             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-             className="text-6xl lg:text-[120px] font-black uppercase tracking-tighter italic leading-[0.85] text-slate-900 dark:text-white"
-           >
-             The <span className="text-brand-blue">App</span> Console.
-           </motion.h1>
-           <motion.p 
-             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-             className="text-lg lg:text-2xl text-slate-500 dark:text-gray-400 font-medium max-w-3xl mx-auto italic leading-relaxed"
-           >
-             “Điều phối các nút mạng nơ-ron chuyên biệt cho sáng tạo, tự động hóa và hạ tầng kỹ thuật chuyên sâu.”
-           </motion.p>
-         </div>
+      <div className="max-w-[1400px] mx-auto text-center relative z-10 space-y-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full"
+        >
+          <Blocks size={14} className="text-brand-blue" />
+          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">App Ecosystem</span>
+        </motion.div>
+        
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.1 }}
+          className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05]"
+        >
+          Hệ sinh thái{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">
+            ứng dụng AI
+          </span>
+        </motion.h1>
+        
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.2 }}
+          className="text-base md:text-lg text-slate-400 dark:text-gray-500 max-w-2xl mx-auto leading-relaxed"
+        >
+          Khám phá các ứng dụng AI chuyên dụng — từ sáng tạo nội dung, tự động hoá quy trình đến hạ tầng kỹ thuật.
+        </motion.p>
       </div>
     </section>
   );

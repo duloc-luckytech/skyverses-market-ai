@@ -95,26 +95,23 @@ const GlobalToolsBar: React.FC = () => {
 
   return (
     <>
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-[300] w-full max-w-2xl px-4 pb-6 pointer-events-none">
+      <div className="fixed bottom-6 right-6 z-[300] pointer-events-none">
         <motion.div 
           layout
           style={{ willChange: 'transform, height, width' }}
           initial={false}
           animate={{ 
-            height: g.isExpanded ? 'auto' : '56px',
-            width: g.isExpanded ? '100%' : '240px',
+            height: g.isExpanded ? 'auto' : '48px',
+            width: g.isExpanded ? 'min(520px, calc(100vw - 3rem))' : '48px',
           }}
-          transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-          className="mx-auto pointer-events-auto relative transition-all duration-300 group shadow-2xl"
+          transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+          className="ml-auto pointer-events-auto relative"
         >
-          {/* BACKGROUND & BORDER ANIMATION */}
-          <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none">
-            <div className="absolute inset-[-200%] animate-[spin_8s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_300deg,#0090ff_360deg)] opacity-20 group-hover:opacity-60 transition-opacity"></div>
-            <div className="absolute inset-[1.5px] bg-white/95 dark:bg-[#0d0d0f]/98 backdrop-blur-3xl rounded-[2rem]"></div>
-          </div>
+          {/* Clean Background */}
+          <div className="absolute inset-0 rounded-full bg-white/90 dark:bg-[#161618]/90 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-lg" style={{ borderRadius: g.isExpanded ? '1.25rem' : '9999px' }} />
           
           {/* CONTENT LAYER */}
-          <div className="relative w-full h-full rounded-[2rem] flex flex-col z-10 overflow-visible">
+          <div className="relative w-full h-full flex flex-col z-10 overflow-visible" style={{ borderRadius: g.isExpanded ? '1.25rem' : '9999px' }}>
             <AnimatePresence mode="wait">
               {g.isExpanded ? (
                 <motion.div 
@@ -122,7 +119,7 @@ const GlobalToolsBar: React.FC = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="p-1.5 lg:p-2"
+                  className="p-1.5"
                 >
                   <div className="flex items-start gap-3 p-2">
                     <div className="relative shrink-0 mt-1">
@@ -336,16 +333,9 @@ const GlobalToolsBar: React.FC = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => g.setIsExpanded(true)}
-                  className="flex-grow w-full h-[56px] flex items-center justify-between px-6 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-all group"
+                  className="w-[48px] h-[48px] flex items-center justify-center cursor-pointer rounded-full transition-all hover:scale-105 active:scale-95"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-brand-blue blur-md opacity-20 group-hover:opacity-100 transition-opacity"></div>
-                      <Sparkles size={16} className="text-brand-blue relative z-10 animate-pulse" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-400 group-hover:text-brand-blue transition-colors">Quick Studio</span>
-                  </div>
-                  <ChevronUp size={14} className="text-slate-400 dark:text-gray-500" />
+                  <Sparkles size={20} className="text-brand-blue" />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -384,12 +374,6 @@ const GlobalToolsBar: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </>
   );
 };

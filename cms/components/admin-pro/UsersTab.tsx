@@ -195,10 +195,10 @@ export const UsersTab: React.FC<UsersTabProps> = ({ loading, response, onParamsC
                     </td>
                     <td className="px-8 py-6 text-right">
                        <div className="flex items-center justify-end gap-3">
-                          <button className="p-2.5 bg-slate-50 dark:bg-white/5 text-slate-400 hover:text-brand-blue rounded-lg transition-all shadow-sm">
+                          <button className="p-2.5 bg-black/[0.02] dark:bg-white/[0.02] text-slate-400 hover:text-brand-blue rounded-lg transition-all shadow-sm">
                              <Edit3 size={14} />
                           </button>
-                          <button className="p-2.5 bg-slate-50 dark:bg-white/5 text-slate-400 hover:text-brand-blue rounded-lg transition-all shadow-sm">
+                          <button className="p-2.5 bg-black/[0.02] dark:bg-white/[0.02] text-slate-400 hover:text-brand-blue rounded-lg transition-all shadow-sm">
                              <MoreVertical size={14} />
                           </button>
                        </div>

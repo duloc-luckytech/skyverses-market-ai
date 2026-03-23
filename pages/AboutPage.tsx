@@ -2,8 +2,15 @@
 import React from 'react';
 import { Cpu, Users, Eye, Target, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const AboutPage = () => {
+  usePageMeta({
+    title: 'Về Skyverses | Nền tảng AI sáng tạo',
+    description: 'Tìm hiểu về Skyverses - nền tảng AI hàng đầu cho sản xuất nội dung sáng tạo. Sứ mệnh, đội ngũ và tầm nhìn của chúng tôi.',
+    keywords: 'Skyverses, về chúng tôi, AI agency, AI Việt Nam',
+    canonical: '/about'
+  });
   return (
     <div className="pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-4">

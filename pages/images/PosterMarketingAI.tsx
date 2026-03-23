@@ -238,9 +238,9 @@ const PosterMarketingAI = () => {
               <p className="max-w-xs text-center md:text-left opacity-50 font-bold leading-relaxed">Industrial-grade marketing asset production. High-conversion, zero-drift visual synthesis.</p>
            </div>
            <div className="flex gap-12">
-              <a href="#" className="hover:text-brand-blue transition-colors">Technical Docs</a>
-              <a href="#" className="hover:text-brand-blue transition-colors">Privacy Registry</a>
-              <a href="#" className="hover:text-brand-blue transition-colors">Support Node</a>
+              <a href="/policy" className="hover:text-brand-blue transition-colors">Technical Docs</a>
+              <a href="/policy" className="hover:text-brand-blue transition-colors">Privacy Registry</a>
+              <a href="/policy" className="hover:text-brand-blue transition-colors">Support Node</a>
            </div>
         </div>
       </footer>

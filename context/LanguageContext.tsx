@@ -846,28 +846,32 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem('skyversis_lang');
-    if (!saved) {
-      fetch('https://ipapi.co/json/')
-        .then(res => res.json())
-        .then(data => {
-          const country = data.country_code;
-          const mapping: Record<string, Language> = { 
-            'VN': 'vi', 
-            'KR': 'ko', 
-            'JP': 'ja' 
-          };
-          if (mapping[country]) {
-            setLang(mapping[country]);
-          }
-        })
-        .catch(() => {
-          const browserLang = navigator.language.split('-')[0];
-          if (['vi', 'ko', 'ja'].includes(browserLang)) {
-            setLang(browserLang as Language);
-          }
-        });
-    }
+    const detected = localStorage.getItem('skyverses_lang_detected');
+    
+    // Chỉ auto-detect nếu chưa từng detect (lần đầu truy cập hoặc user cũ chưa có flag)
+    if (detected) return;
+    
+    localStorage.setItem('skyverses_lang_detected', '1');
+    
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(data => {
+        const country = data.country_code;
+        const mapping: Record<string, Language> = { 
+          'VN': 'vi', 
+          'KR': 'ko', 
+          'JP': 'ja' 
+        };
+        const detectedLang = mapping[country] || 'en';
+        setLang(detectedLang);
+        localStorage.setItem('skyversis_lang', detectedLang);
+      })
+      .catch(() => {
+        const browserLang = navigator.language.split('-')[0];
+        const fallback = (['vi', 'ko', 'ja'].includes(browserLang) ? browserLang : 'en') as Language;
+        setLang(fallback);
+        localStorage.setItem('skyversis_lang', fallback);
+      });
   }, []);
 
   useEffect(() => {

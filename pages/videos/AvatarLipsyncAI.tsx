@@ -253,9 +253,9 @@ const AvatarLipsyncAI = () => {
               <p className="max-w-xs text-center md:text-left opacity-50 font-bold leading-relaxed">Industrial-grade virtual presenter production. Perfectly synced mouth movement and facial synthesis.</p>
            </div>
            <div className="flex gap-12">
-              <a href="#" className="hover:text-violet-600 dark:hover:text-violet-500 transition-colors">Documentation</a>
-              <a href="#" className="hover:text-violet-600 dark:hover:text-violet-500 transition-colors">Privacy Node</a>
-              <a href="#" className="hover:text-violet-600 dark:hover:text-violet-500 transition-colors">Support Registry</a>
+              <a href="/policy" className="hover:text-violet-600 dark:hover:text-violet-500 transition-colors">Documentation</a>
+              <a href="/policy" className="hover:text-violet-600 dark:hover:text-violet-500 transition-colors">Privacy Node</a>
+              <a href="/policy" className="hover:text-violet-600 dark:hover:text-violet-500 transition-colors">Support Registry</a>
            </div>
         </div>
       </footer>

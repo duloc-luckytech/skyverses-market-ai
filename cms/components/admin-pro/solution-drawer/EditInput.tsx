@@ -14,7 +14,7 @@ export const EditInput: React.FC<EditInputProps> = ({ label, value, onChange, ty
       type={type} 
       value={value || ''} 
       onChange={e => onChange(e.target.value)} 
-      className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white shadow-inner" 
+      className="w-full bg-slate-100 dark:bg-white/5 border border-black/[0.04] dark:border-white/[0.04] p-4 rounded-xl text-[11px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white shadow-inner" 
     />
   </div>
 );

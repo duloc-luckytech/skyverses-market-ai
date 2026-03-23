@@ -277,7 +277,7 @@ export const ProviderTokensTab: React.FC = () => {
                      </div>
                   </td>
                   <td className="px-8 py-6 text-right">
-                     <button onClick={() => handleEdit(t)} className="p-3 bg-slate-50 dark:bg-white/5 text-slate-400 hover:text-brand-blue rounded-lg transition-all shadow-sm">
+                     <button onClick={() => handleEdit(t)} className="p-3 bg-black/[0.02] dark:bg-white/[0.02] text-slate-400 hover:text-brand-blue rounded-lg transition-all shadow-sm">
                         <Edit3 size={14} />
                      </button>
                   </td>
@@ -294,7 +294,7 @@ export const ProviderTokensTab: React.FC = () => {
           <div className="fixed inset-0 z-[1100] flex justify-end">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsDrawerOpen(false)} />
             <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="relative w-full max-w-xl bg-white dark:bg-[#0c0c0e] shadow-3xl flex flex-col border-l border-black/10 dark:border-white/10 text-slate-900 dark:text-white transition-colors">
-              <div className="p-8 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40 transition-colors">
+              <div className="p-8 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40 transition-colors">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center text-white shadow-lg"><Key size={20}/></div>
                   <h3 className="text-xl font-black uppercase tracking-tight italic">{editingId ? 'Cập nhật Token' : 'Đăng ký Token mới'}</h3>
@@ -309,7 +309,7 @@ export const ProviderTokensTab: React.FC = () => {
                        {['labs', 'wan', 'gommo'].map(p => (
                          <button 
                            key={p} onClick={() => setPayload({...payload, provider: p as any})}
-                           className={`py-3 rounded-xl text-[10px] font-black uppercase transition-all border ${payload.provider === p ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg' : 'bg-slate-50 dark:bg-white/5 border-black/5 dark:border-white/10 text-gray-400'}`}
+                           className={`py-3 rounded-xl text-[10px] font-black uppercase transition-all border ${payload.provider === p ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg' : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/5 dark:border-white/10 text-gray-400'}`}
                          >
                             {p}
                          </button>
@@ -380,7 +380,7 @@ export const ProviderTokensTab: React.FC = () => {
                  </div>
               </div>
 
-              <div className="p-8 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/40 flex gap-4 shrink-0">
+              <div className="p-8 border-t border-black/[0.04] dark:border-white/[0.04] bg-slate-50 dark:bg-black/40 flex gap-4 shrink-0">
                 <button onClick={() => setIsDrawerOpen(false)} className="flex-grow py-4 border border-black/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-all">Hủy</button>
                 <button onClick={handleSave} disabled={isSaving} className="flex-grow py-4 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 transition-all disabled:opacity-50">
                   {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Check size={16} />} 

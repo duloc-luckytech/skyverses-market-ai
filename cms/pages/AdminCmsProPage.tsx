@@ -147,12 +147,18 @@ const AdminCmsProPage = () => {
   const currentLabel = sidebarItems.find(i => i.id === activeTab)?.label || '';
 
   return (
-    <div className="h-screen flex bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans overflow-hidden">
+    <div className="h-screen flex bg-slate-50 dark:bg-[#050505] text-slate-900 dark:text-white font-sans overflow-hidden relative">
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-blue/[0.03] dark:bg-brand-blue/[0.05] rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-purple-500/[0.02] dark:bg-purple-500/[0.04] rounded-full blur-[100px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+      </div>
+
       {/* ======= SIDEBAR ======= */}
-      <aside className={`shrink-0 flex flex-col bg-white dark:bg-[#0e0e11] border-r border-slate-200 dark:border-white/[0.06] transition-all duration-300 ${sidebarCollapsed ? 'w-[52px]' : 'w-56'}`}>
+      <aside className={`relative z-10 shrink-0 flex flex-col bg-white/60 dark:bg-[#0a0a0c]/60 backdrop-blur-2xl border-r border-black/[0.04] dark:border-white/[0.04] transition-all duration-300 ${sidebarCollapsed ? 'w-[64px]' : 'w-64'}`}>
         {/* Logo */}
-        <div className={`shrink-0 h-12 flex items-center border-b border-slate-200 dark:border-white/[0.06] ${sidebarCollapsed ? 'justify-center px-2' : 'px-4 gap-2.5'}`}>
-          <div className="w-7 h-7 bg-violet-600 rounded-lg flex items-center justify-center text-white shrink-0">
+        <div className={`shrink-0 h-16 flex items-center border-b border-black/[0.04] dark:border-white/[0.04] ${sidebarCollapsed ? 'justify-center px-2' : 'px-5 gap-3'}`}>
+          <div className="w-7 h-7 bg-brand-blue rounded-lg flex items-center justify-center text-white shrink-0">
             <ShieldCheck size={14} />
           </div>
           {!sidebarCollapsed && (
@@ -164,23 +170,23 @@ const AdminCmsProPage = () => {
         </div>
 
         {/* Nav */}
-        <nav className="flex-grow overflow-y-auto py-2 px-1.5 space-y-0.5 no-scrollbar">
+        <nav className="flex-grow overflow-y-auto py-4 px-3 space-y-1 no-scrollbar">
           {groupedItems.map((group, gi) => (
             <div key={gi}>
               {group.group && GROUP_LABELS[group.group] && !sidebarCollapsed && (
                 <p className="text-[9px] font-bold uppercase text-slate-400 tracking-wider px-2.5 pt-4 pb-1.5">{GROUP_LABELS[group.group]}</p>
               )}
               {group.group && GROUP_LABELS[group.group] && sidebarCollapsed && (
-                <div className="h-px bg-slate-100 dark:bg-white/[0.04] mx-2 my-2"></div>
+                <div className="h-px bg-black/[0.02] dark:bg-white/[0.02] mx-2 my-2"></div>
               )}
               {group.items.map(item => (
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
                   title={sidebarCollapsed ? item.label : undefined}
-                  className={`w-full flex items-center gap-2.5 rounded-lg transition-all text-left ${sidebarCollapsed ? 'justify-center p-2.5' : 'px-2.5 py-2'} ${activeTab === item.id
-                      ? 'bg-violet-600 text-white shadow-sm shadow-violet-600/20'
-                      : 'text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04]'
+                  className={`w-full flex items-center gap-3 rounded-xl transition-all text-left ${sidebarCollapsed ? 'justify-center p-3' : 'px-3 py-2.5'} ${activeTab === item.id
+                      ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20'
+                      : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
                     }`}
                 >
                   <span className="shrink-0">{item.icon}</span>
@@ -192,28 +198,28 @@ const AdminCmsProPage = () => {
         </nav>
 
         {/* Bottom */}
-        <div className={`shrink-0 border-t border-slate-200 dark:border-white/[0.06] p-1.5 space-y-0.5`}>
-          <button onClick={toggleTheme} title="Toggle theme" className={`w-full flex items-center gap-2.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition-all ${sidebarCollapsed ? 'justify-center p-2.5' : 'px-2.5 py-2'}`}>
+        <div className={`shrink-0 border-t border-black/[0.04] dark:border-white/[0.04] p-3 space-y-1`}>
+          <button onClick={toggleTheme} title="Toggle theme" className={`w-full flex items-center gap-3 rounded-xl text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-all ${sidebarCollapsed ? 'justify-center p-3' : 'px-3 py-2.5'}`}>
             {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
             {!sidebarCollapsed && <span className="text-[11px] font-semibold">{theme === 'dark' ? 'Light' : 'Dark'}</span>}
           </button>
-          <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} title="Toggle sidebar" className={`w-full flex items-center gap-2.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition-all ${sidebarCollapsed ? 'justify-center p-2.5' : 'px-2.5 py-2'}`}>
-            {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-            {!sidebarCollapsed && <span className="text-[11px] font-semibold">Thu gọn</span>}
+          <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} title="Toggle sidebar" className={`w-full flex items-center gap-3 rounded-xl text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-all ${sidebarCollapsed ? 'justify-center p-3' : 'px-3 py-2.5'}`}>
+            {sidebarCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
+            {!sidebarCollapsed && <span className="text-[12px] font-semibold">Thu gọn</span>}
           </button>
           {user && (
-            <button onClick={logout} title="Đăng xuất" className={`w-full flex items-center gap-2.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all ${sidebarCollapsed ? 'justify-center p-2.5' : 'px-2.5 py-2'}`}>
-              <LogOut size={14} />
-              {!sidebarCollapsed && <span className="text-[11px] font-semibold">Đăng xuất</span>}
+            <button onClick={logout} title="Đăng xuất" className={`w-full flex items-center gap-3 rounded-xl text-slate-500 dark:text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all ${sidebarCollapsed ? 'justify-center p-3' : 'px-3 py-2.5'}`}>
+              <LogOut size={15} />
+              {!sidebarCollapsed && <span className="text-[12px] font-semibold">Đăng xuất</span>}
             </button>
           )}
         </div>
       </aside>
 
       {/* ======= MAIN ======= */}
-      <main className="flex-grow flex flex-col min-w-0 overflow-hidden">
+      <main className="relative z-10 flex-grow flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
-        <header className="shrink-0 h-12 flex items-center justify-between px-6 bg-white dark:bg-[#0e0e11] border-b border-slate-200 dark:border-white/[0.06]">
+        <header className="shrink-0 h-16 flex items-center justify-between px-8 bg-white/60 dark:bg-[#0a0a0c]/60 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.04]">
           <div className="flex items-center gap-3">
             <h1 className="text-sm font-bold text-slate-900 dark:text-white">{currentLabel}</h1>
             <span className="text-[9px] text-slate-400 font-medium bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded">{activeTab}</span>
@@ -222,14 +228,14 @@ const AdminCmsProPage = () => {
             {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
               <button
                 onClick={() => handleEdit({ id: 'NODE_' + Date.now(), slug: '', name: { en: '', vi: '', ko: '', ja: '' }, category: { en: '', vi: '', ko: '', ja: '' }, description: { en: '', vi: '', ko: '', ja: '' }, problems: [], industries: [], models: [], priceCredits: 0, isFree: false, imageUrl: '', demoType: 'text', tags: [], features: [], complexity: 'Standard', priceReference: '', isActive: true, neuralStack: [], homeBlocks: [] })}
-                className="flex items-center gap-2 px-4 py-1.5 bg-violet-600 text-white rounded-md text-[10px] font-bold hover:bg-violet-700 transition-colors shadow-sm"
+                className="flex items-center gap-2 px-4 py-1.5 bg-brand-blue text-white rounded-md text-[10px] font-bold hover:bg-brand-blue transition-colors shadow-sm"
               >
                 <Plus size={12} /> Thêm giải pháp
               </button>
             )}
             {user && (
               <div className="flex items-center gap-2 text-xs text-slate-400">
-                <div className="w-6 h-6 rounded-full bg-violet-500/10 flex items-center justify-center text-violet-500 text-[10px] font-bold">
+                <div className="w-6 h-6 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue text-[10px] font-bold">
                   {user.email?.[0]?.toUpperCase() || 'A'}
                 </div>
                 {!sidebarCollapsed && <span className="text-[10px] font-medium hidden lg:block">{user.email}</span>}
@@ -239,7 +245,7 @@ const AdminCmsProPage = () => {
         </header>
 
         {/* Content */}
-        <div className="flex-grow overflow-y-auto">
+        <div className="flex-grow overflow-y-auto no-scrollbar">
           <AnimatePresence mode="wait">
             {activeTab === 'DASHBOARD' && <DashboardTab key="dashboard" />}
             {activeTab === 'EXPLORER' && <ExplorerTab key="explorer" />}

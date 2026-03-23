@@ -116,7 +116,7 @@ export const ExplorerTab: React.FC = () => {
                  initial={{ opacity: 0, scale: 0.95 }}
                  animate={{ opacity: 1, scale: 1 }}
                  exit={{ opacity: 0, scale: 0.95 }}
-                 className={`group relative bg-white dark:bg-[#111114] border rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-2xl transition-all ${
+                 className={`group relative bg-white dark:bg-[#0d0d0f] border rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-2xl transition-all ${
                    showLocal ? 'border-black/5 dark:border-white/5' : 'hover:border-brand-blue/30 border-black/5 dark:border-white/10'
                  }`}
                >

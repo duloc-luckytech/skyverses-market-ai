@@ -100,7 +100,7 @@ export const SolutionDrawer: React.FC<SolutionDrawerProps> = ({
       <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="relative w-full max-w-4xl bg-white dark:bg-[#0c0c0e] h-full shadow-3xl flex flex-col border-l border-black/10 dark:border-white/10 text-slate-900 dark:text-white overflow-hidden">
         
         {/* Header */}
-        <div className="p-8 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40 transition-colors">
+        <div className="p-8 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40 transition-colors">
           <div className="flex items-center gap-5">
             <div className="w-14 h-14 bg-brand-blue/10 flex items-center justify-center text-brand-blue rounded-2xl shadow-inner"><Box size={28} /></div>
             <div>
@@ -123,7 +123,7 @@ export const SolutionDrawer: React.FC<SolutionDrawerProps> = ({
               <EditInput label="Đường dẫn sản phẩm (Slug - Duy nhất)" value={editedItem.slug} onChange={(v) => setEditedItem({...editedItem, slug: v})} />
               <div className="space-y-2">
                 <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2 italic">Phân hạng mức độ (Complexity)</label>
-                <select value={editedItem.complexity} onChange={e => setEditedItem({...editedItem, complexity: e.target.value})} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-xs font-black uppercase outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-800 dark:text-white">
+                <select value={editedItem.complexity} onChange={e => setEditedItem({...editedItem, complexity: e.target.value})} className="w-full bg-slate-100 dark:bg-white/5 border border-black/[0.04] dark:border-white/[0.04] p-4 rounded-xl text-xs font-black uppercase outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-800 dark:text-white">
                   <option value="Standard">Tiêu chuẩn (Standard)</option>
                   <option value="Advanced">Nâng cao (Advanced)</option>
                   <option value="Enterprise">Doanh nghiệp (Enterprise)</option>
@@ -133,10 +133,10 @@ export const SolutionDrawer: React.FC<SolutionDrawerProps> = ({
                 <EditInput label="Trọng số hiển thị (Thứ tự)" type="number" value={String(editedItem.order)} onChange={(v) => setEditedItem({...editedItem, order: parseInt(v) || 0})} />
                 <div className="space-y-2">
                   <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-2 italic">Trạng thái hệ thống</label>
-                  <input value={editedItem.status} onChange={e => setEditedItem({...editedItem, status: e.target.value})} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-xs font-black uppercase text-brand-blue outline-none shadow-inner" />
+                  <input value={editedItem.status} onChange={e => setEditedItem({...editedItem, status: e.target.value})} className="w-full bg-slate-100 dark:bg-white/5 border border-black/[0.04] dark:border-white/[0.04] p-4 rounded-xl text-xs font-black uppercase text-brand-blue outline-none shadow-inner" />
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-black/5">
+              <div className="flex items-center justify-between p-4 bg-black/[0.02] dark:bg-white/[0.02] rounded-2xl border border-black/5">
                 <span className="text-[10px] font-black uppercase text-gray-500">Đặt làm sản phẩm nổi bật</span>
                 <button onClick={() => setEditedItem({...editedItem, featured: !editedItem.featured})} className={`p-1 rounded-full transition-all ${editedItem.featured ? 'text-emerald-500' : 'text-gray-400'}`}>
                   {editedItem.featured ? <ToggleRight size={32} /> : <ToggleLeft size={32} />}
@@ -164,7 +164,7 @@ export const SolutionDrawer: React.FC<SolutionDrawerProps> = ({
                 {['en', 'vi'].map(langCode => (
                   <div key={langCode} className="space-y-2">
                     <label className="text-[8px] font-black uppercase text-gray-400 tracking-widest px-2">{langCode === 'vi' ? 'TIẾNG VIỆT' : 'ENGLISH'}</label>
-                    <textarea value={editedItem.description[langCode]} onChange={e => setEditedItem({...editedItem, description: {...editedItem.description, [langCode]: e.target.value}})} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-xs font-medium text-slate-900 dark:text-white" rows={3} />
+                    <textarea value={editedItem.description[langCode]} onChange={e => setEditedItem({...editedItem, description: {...editedItem.description, [langCode]: e.target.value}})} className="w-full bg-slate-100 dark:bg-white/5 border border-black/[0.04] dark:border-white/[0.04] p-4 rounded-xl text-xs font-medium text-slate-900 dark:text-white" rows={3} />
                   </div>
                 ))}
               </div>
@@ -273,7 +273,7 @@ export const SolutionDrawer: React.FC<SolutionDrawerProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-10 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/60 flex justify-between items-center gap-10 shrink-0 transition-colors">
+        <div className="p-10 border-t border-black/[0.04] dark:border-white/[0.04] bg-slate-50 dark:bg-black/60 flex justify-between items-center gap-10 shrink-0 transition-colors">
           <button onClick={onClose} className="text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">Hủy thay đổi</button>
           <button onClick={onSave} disabled={isSaving} className="flex-grow bg-brand-blue text-white py-6 rounded-2xl text-[13px] font-black uppercase tracking-[0.4em] shadow-[0_20px_60px_rgba(0,144,255,0.3)] flex items-center justify-center gap-6 hover:brightness-110 active:scale-[0.98] transition-all">
             {isSaving ? <Loader2 size={24} className="animate-spin" /> : <Zap size={24} fill="currentColor"/>}

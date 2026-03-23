@@ -1,21 +1,23 @@
 
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { marketApi } from '../apis/market';
 import { systemConfigApi } from '../apis/config';
 import { Solution, HomeBlock, Language } from '../types';
 import {
   X, SearchX, Search, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow,
-  Sparkles, LucideIcon, ArrowRight, ChevronRight, Play, Zap, Shield, Globe2, Cpu
+  Sparkles, LucideIcon, ArrowRight, ChevronRight, Play, Zap, Shield, Globe2, Cpu,
+  MousePointerClick, Wand2, Rocket, Megaphone, ShoppingBag, Clapperboard,
+  Building2, Shirt, GraduationCap, Brain, Wrench, Plug, CreditCard, RefreshCw,
+  MonitorPlay, Palette, UserCircle
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useSearch } from '../context/SearchContext';
 import AIModelsMarquee from '../components/AIModelsMarquee';
-import ExploreMoreAI from '../components/ExploreMoreAI';
 import GlobalToolsBar from '../components/GlobalToolsBar';
 import { motion, AnimatePresence } from 'framer-motion';
-import { handleAdminQuickLogin } from '../utils/adminAuth';
 
 import { CardSkeleton } from '../components/market/MarketSkeleton';
 import { MarketSectionHeader } from '../components/market/MarketSectionHeader';
@@ -55,8 +57,15 @@ const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string
 
 const MarketPage = () => {
   const { lang, t } = useLanguage();
-  const { isAuthenticated, loginWithEmail } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  usePageMeta({
+    title: 'Skyverses | Nền tảng AI sáng tạo hình ảnh, video, nhạc & giọng nói',
+    description: 'Khám phá hơn 30+ công cụ AI mạnh mẽ cho sản xuất hình ảnh, video, game assets, nhạc và giọng nói. One Studio for Every Kind of Build.',
+    keywords: 'AI image generator, AI video generator, Skyverses, tạo ảnh AI, tạo video AI, text to speech, AI music',
+    canonical: '/'
+  });
 
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [featuredSolutions, setFeaturedSolutions] = useState<Solution[]>([]);
@@ -79,9 +88,6 @@ const MarketPage = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (!isAuthenticated) handleAdminQuickLogin(loginWithEmail, navigate);
-  }, [isAuthenticated, loginWithEmail, navigate]);
 
   useEffect(() => {
     const handleResetSearch = () => resetSearch();
@@ -321,106 +327,47 @@ const MarketPage = () => {
 
         {/* ═══════════════════ TRUST PILLARS ═══════════════════ */}
         {!query && (
-          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-12 md:py-16">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {[
-                { icon: <Zap size={20} />, title: 'Xử lý tức thì', desc: 'GPU cloud hiệu năng cao', color: 'text-amber-500', bg: 'bg-amber-500/8 dark:bg-amber-500/10' },
-                { icon: <Shield size={20} />, title: 'Bảo mật dữ liệu', desc: 'Mã hoá end-to-end', color: 'text-emerald-500', bg: 'bg-emerald-500/8 dark:bg-emerald-500/10' },
-                { icon: <Globe2 size={20} />, title: 'Đa ngôn ngữ', desc: 'Hỗ trợ English, 한국어, 日本語', color: 'text-brand-blue', bg: 'bg-brand-blue/8 dark:bg-brand-blue/10' },
-                { icon: <Cpu size={20} />, title: 'Multi-engine', desc: 'Kết hợp nhiều AI model', color: 'text-purple-500', bg: 'bg-purple-500/8 dark:bg-purple-500/10' },
-              ].map((item, idx) => (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="group p-5 md:p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.05] hover:border-black/[0.08] dark:hover:border-white/[0.1] transition-all duration-300 hover:shadow-lg"
-                >
-                  <div className={`w-10 h-10 rounded-xl ${item.bg} ${item.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    {item.icon}
-                  </div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{item.title}</h4>
-                  <p className="text-xs text-slate-400 dark:text-gray-500 font-medium">{item.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-          </section>
-        )}
+          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-16 md:py-24">
+            <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-r from-slate-50 via-white to-slate-50 dark:from-[#0a0c12] dark:via-[#0c0e16] dark:to-[#0a0c12] border border-black/[0.04] dark:border-white/[0.04] p-8 md:p-12 lg:p-14">
+              {/* Subtle Background Glow */}
+              <div className="absolute top-[-50%] left-[50%] -translate-x-1/2 w-[800px] h-[400px] bg-brand-blue/[0.03] dark:bg-brand-blue/[0.05] rounded-full blur-[100px] pointer-events-none" />
 
-        {/* ═══════════════════ CREDITS SYSTEM ═══════════════════ */}
-        {!query && (
-          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-12 md:py-20">
-            <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
-              {/* Background glows */}
-              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-brand-blue/8 rounded-full blur-[100px] pointer-events-none" />
-
-              <div className="relative z-10">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-                  <div className="space-y-3">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full">
-                      <Zap size={12} className="text-amber-400" fill="currentColor" />
-                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-400">Universal Credits</span>
-                    </div>
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
-                      1 loại Credit,{' '}
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
-                        dùng cho tất cả sản phẩm
-                      </span>
-                    </h2>
-                    <p className="text-sm text-white/40 max-w-lg leading-relaxed">
-                      Không cần đăng ký riêng cho từng sản phẩm. Mua Credits một lần — sử dụng cho Video AI, Image AI, Voice, Music, Workflow và hơn 30 sản phẩm khác.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => navigate(isAuthenticated ? '/credits' : '/pricing')}
-                    className="shrink-0 inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+              <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-0">
+                {[
+                  { icon: <Zap size={24} />, stat: '0.5s', statLabel: 'Avg Response', title: 'Xử lý siêu nhanh', desc: 'GPU A100/H100 cloud — render video, image, voice trong tích tắc.', color: 'text-amber-500', bg: 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/15 dark:to-orange-500/15', ring: 'ring-amber-500/20' },
+                  { icon: <Shield size={24} />, stat: '100%', statLabel: 'Encrypted', title: 'Bảo mật tuyệt đối', desc: 'Mã hoá end-to-end. Dữ liệu được xoá sau 24h nếu người dùng yêu cầu.', color: 'text-emerald-500', bg: 'bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/15 dark:to-teal-500/15', ring: 'ring-emerald-500/20' },
+                  { icon: <Globe2 size={24} />, stat: '4+', statLabel: 'Languages', title: 'Đa ngôn ngữ', desc: 'Hỗ trợ Tiếng Việt, English, 한국어, 日本語 — UX bản địa hoá hoàn toàn.', color: 'text-brand-blue', bg: 'bg-gradient-to-br from-brand-blue/10 to-cyan-500/10 dark:from-brand-blue/15 dark:to-cyan-500/15', ring: 'ring-brand-blue/20' },
+                  { icon: <Cpu size={24} />, stat: '50+', statLabel: 'AI Models', title: 'Multi-engine AI', desc: 'Kết hợp GPT, Flux, Wan, Kling, ElevenLabs, Suno và 50+ model khác.', color: 'text-purple-500', bg: 'bg-gradient-to-br from-purple-500/10 to-pink-500/10 dark:from-purple-500/15 dark:to-pink-500/15', ring: 'ring-purple-500/20' },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1, duration: 0.5 }}
+                    className={`relative group text-center md:text-left px-4 md:px-8 ${idx < 3 ? 'lg:border-r lg:border-black/[0.04] lg:dark:border-white/[0.04]' : ''}`}
                   >
-                    <Zap size={14} fill="currentColor" />
-                    {isAuthenticated ? 'Nạp Credits' : 'Xem bảng giá'}
-                    <ArrowRight size={14} />
-                  </button>
-                </div>
+                    {/* Icon */}
+                    <div className={`w-14 h-14 rounded-2xl ${item.bg} ${item.color} ring-1 ${item.ring} flex items-center justify-center mx-auto md:mx-0 mb-5 group-hover:scale-110 group-hover:shadow-lg transition-all duration-500`}>
+                      {item.icon}
+                    </div>
 
-                {/* Credit Flow Steps */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12">
-                  {[
-                    { step: '01', title: 'Mua Credits', desc: 'Chọn gói phù hợp hoặc nạp tuỳ ý. Nhận bonus khi mua gói lớn.', icon: '💳' },
-                    { step: '02', title: 'Sử dụng mọi nơi', desc: 'Dùng Credits cho bất kỳ sản phẩm nào — Video, Image, Voice, Music, Workflow...', icon: '⚡' },
-                    { step: '03', title: 'Nạp thêm khi cần', desc: 'Credits không hết hạn. Nạp thêm bất cứ lúc nào, chỉ trả cho những gì bạn dùng.', icon: '🔄' },
-                  ].map((item, idx) => (
-                    <motion.div
-                      key={item.step}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.15 }}
-                      className="relative p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.1] transition-all group"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="text-2xl">{item.icon}</div>
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-black text-amber-400/60 uppercase tracking-widest">Step {item.step}</span>
-                          </div>
-                          <h4 className="text-sm font-bold text-white">{item.title}</h4>
-                          <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
-                        </div>
-                      </div>
-                      {idx < 2 && (
-                        <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                          <ChevronRight size={16} className="text-white/10" />
-                        </div>
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
+                    {/* Stat */}
+                    <div className="mb-3">
+                      <span className={`text-3xl md:text-4xl font-black tracking-tight ${item.color}`}>{item.stat}</span>
+                      <span className="block text-[8px] font-bold text-slate-400 dark:text-gray-600 uppercase tracking-[0.3em] mt-1">{item.statLabel}</span>
+                    </div>
+
+                    {/* Content */}
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">{item.title}</h4>
+                    <p className="text-xs text-slate-400 dark:text-gray-500 leading-relaxed">{item.desc}</p>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </section>
         )}
+
 
         {/* ═══════════════════ ACTIVE FILTER BAR ═══════════════════ */}
         <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
@@ -452,7 +399,7 @@ const MarketPage = () => {
               </div>
             ) : filteredSolutions.length > 0 ? (
               <>
-                {homeBlocks.map((block) => {
+                {homeBlocks.filter(b => query ? true : b.key === 'top_trending').map((block) => {
                   const blockSolutions = filteredSolutions.filter(s => s.homeBlocks?.includes(block.key));
                   if (blockSolutions.length === 0) return null;
 
@@ -510,7 +457,353 @@ const MarketPage = () => {
             )}
           </div>
 
-          {!loading && filteredSolutions.length > 0 && <ExploreMoreAI />}
+          {/* ═══════════════════ HOW IT WORKS ═══════════════════ */}
+          {!query && (
+            <section className="py-20 md:py-28">
+              <div className="text-center mb-14 md:mb-20">
+                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full mb-5">
+                    <Sparkles size={12} className="text-brand-blue" />
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">How It Works</span>
+                  </div>
+                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-4">
+                    Bắt đầu trong <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">3 bước đơn giản</span>
+                  </h2>
+                  <p className="text-sm md:text-base text-slate-400 dark:text-gray-500 max-w-lg mx-auto">Không cần cài đặt, không cần kỹ năng. Chỉ cần đăng nhập và bắt đầu sáng tạo.</p>
+                </motion.div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                {[
+                  { step: '01', title: 'Chọn công cụ AI', desc: 'Duyệt qua 30+ sản phẩm AI — Video, Image, Voice, Music, Workflow — tìm đúng công cụ bạn cần.', icon: <MousePointerClick size={28} />, iconBg: 'bg-brand-blue/10 text-brand-blue', gradient: 'from-brand-blue/10 to-purple-500/10', border: 'hover:border-brand-blue/30' },
+                  { step: '02', title: 'Nhập nội dung của bạn', desc: 'Upload ảnh, nhập prompt, hoặc chọn template có sẵn. AI sẽ xử lý phần còn lại.', icon: <Wand2 size={28} />, iconBg: 'bg-purple-500/10 text-purple-500', gradient: 'from-purple-500/10 to-pink-500/10', border: 'hover:border-purple-500/30' },
+                  { step: '03', title: 'Nhận kết quả chuyên nghiệp', desc: 'Tải về ảnh, video, audio chất lượng cao trong vài giây. Chỉnh sửa và xuất bản ngay.', icon: <Rocket size={28} />, iconBg: 'bg-pink-500/10 text-pink-500', gradient: 'from-pink-500/10 to-amber-500/10', border: 'hover:border-pink-500/30' },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.step}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.15, duration: 0.6 }}
+                    className={`relative p-8 md:p-10 rounded-3xl bg-gradient-to-br ${item.gradient} dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.05] dark:border-white/[0.05] ${item.border} transition-all duration-500 group`}
+                  >
+                    <div className="absolute top-6 right-6 text-[60px] md:text-[80px] font-black text-black/[0.03] dark:text-white/[0.03] leading-none select-none">{item.step}</div>
+                    <div className="relative z-10 space-y-5">
+                      <div className={`w-14 h-14 rounded-2xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform`}>{item.icon}</div>
+                      <div className="space-y-2">
+                        <span className="text-[9px] font-black text-brand-blue uppercase tracking-[0.3em]">Step {item.step}</span>
+                        <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
+                      </div>
+                      <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
+                    </div>
+                    {idx < 2 && (
+                      <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#0a0a0c] border border-black/[0.06] dark:border-white/[0.06] items-center justify-center shadow-lg">
+                        <ChevronRight size={14} className="text-brand-blue" />
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ═══════════════════ SHOWCASE GALLERY ═══════════════════ */}
+          {!query && (
+            <section className="py-16 md:py-24">
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-pink-500/8 dark:bg-pink-500/15 border border-pink-500/15 dark:border-pink-500/25 rounded-full mb-5">
+                  <ImageIcon size={12} className="text-pink-500" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-pink-500">AI Gallery</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-4">
+                  Được tạo bởi <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">Skyverses AI</span>
+                </h2>
+                <p className="text-sm text-slate-400 dark:text-gray-500 max-w-md mx-auto">Khám phá những tác phẩm ấn tượng từ cộng đồng người dùng.</p>
+              </motion.div>
+
+              <div className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4">
+                {[
+                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/955c04bf-959f-4832-843a-dfbaad2d82a3_min.webp', h: 'h-[220px] md:h-[280px]' },
+                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/6571fcff-b67e-4537-98fe-0301d9051c57_min.webp', h: 'h-[280px] md:h-[360px]' },
+                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/596c139a-7cd8-4c10-9305-bad2f9b6ab1f_min.webp', h: 'h-[200px] md:h-[240px]' },
+                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/640d8657-22e1-4ec7-adcf-d2b99f4e25e0_min.webp', h: 'h-[260px] md:h-[320px]' },
+                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/1354a1b1-5ef3-46d7-8cb2-17268db2d7f7_min.webp', h: 'h-[240px] md:h-[300px]' },
+                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/82e86e0d-db5a-4bcf-8f7b-142ff21f8442_min.webp', h: 'h-[200px] md:h-[260px]' },
+                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2wKQUGex0SWTDax9bngGeSqhuK7/bd7a9af7-87da-430f-ae2e-efb223e28cf3_min.webp', h: 'h-[280px] md:h-[340px]' },
+                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_32VMvlSstxcIMk6hBmtAY4gHyan/3ca5245a-2aac-4903-a528-6bfb222533ac_min.webp', h: 'h-[220px] md:h-[270px]' },
+                ].map((img, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.05 }}
+                    className={`mb-3 md:mb-4 break-inside-avoid rounded-2xl overflow-hidden group cursor-pointer relative ${img.h}`}
+                  >
+                    <img src={img.url} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
+                      <span className="px-2.5 py-1 bg-black/60 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-widest rounded-md border border-white/10">AI Generated</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mt-10">
+                <button onClick={() => navigate('/explorer')} className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-white dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl text-sm font-bold text-slate-700 dark:text-white hover:border-brand-blue/30 hover:shadow-lg transition-all">
+                  Xem thêm tại Explorer <ArrowRight size={14} className="text-brand-blue" />
+                </button>
+              </motion.div>
+            </section>
+          )}
+
+          {/* ═══════════════════ USE CASES BY INDUSTRY ═══════════════════ */}
+          {!query && (
+            <section className="py-16 md:py-24">
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/8 dark:bg-emerald-500/15 border border-emerald-500/15 dark:border-emerald-500/25 rounded-full mb-5">
+                  <Globe2 size={12} className="text-emerald-500" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500">Use Cases</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-4">
+                  Giải pháp cho <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-brand-blue">mọi ngành nghề</span>
+                </h2>
+                <p className="text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto">Từ Marketing đến E-commerce, Giáo dục đến Giải trí — AI đang thay đổi cách mọi người làm việc.</p>
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+                {[
+                  { icon: <Megaphone size={24} />, iconBg: 'bg-blue-500/10 text-blue-500', industry: 'Marketing & Agency', desc: 'Tạo hàng trăm content visual mỗi tuần — video quảng cáo, banner, thumbnail — nhanh hơn 10x.', tools: ['Video AI', 'Image AI', 'Poster AI'], color: 'from-blue-500/10 to-cyan-500/10', borderColor: 'hover:border-blue-500/30' },
+                  { icon: <ShoppingBag size={24} />, iconBg: 'bg-amber-500/10 text-amber-500', industry: 'E-commerce', desc: 'Tạo ảnh sản phẩm chuyên nghiệp, video demo, xoá nền hàng loạt cho catalog sản phẩm.', tools: ['Product Image', 'Background Removal', 'Upscale AI'], color: 'from-amber-500/10 to-orange-500/10', borderColor: 'hover:border-amber-500/30' },
+                  { icon: <Clapperboard size={24} />, iconBg: 'bg-purple-500/10 text-purple-500', industry: 'Content Creator', desc: 'Sản xuất video script-to-screen, nhạc nền, voiceover chuyên nghiệp cho YouTube, TikTok.', tools: ['Video AI', 'Music AI', 'Voice Studio'], color: 'from-purple-500/10 to-pink-500/10', borderColor: 'hover:border-purple-500/30' },
+                  { icon: <Building2 size={24} />, iconBg: 'bg-emerald-500/10 text-emerald-500', industry: 'Bất động sản', desc: 'Render nội thất AI, staging ảo, video tour bất động sản chỉ từ bản vẽ hoặc ảnh thực tế.', tools: ['Real Estate AI', 'Image AI', 'Video AI'], color: 'from-emerald-500/10 to-teal-500/10', borderColor: 'hover:border-emerald-500/30' },
+                  { icon: <Shirt size={24} />, iconBg: 'bg-pink-500/10 text-pink-500', industry: 'Thời trang', desc: 'Thử trang phục ảo, tạo lookbook, chụp model AI cho bộ sưu tập mới.', tools: ['Fashion AI', 'Stylist AI', 'Character Sync'], color: 'from-pink-500/10 to-rose-500/10', borderColor: 'hover:border-pink-500/30' },
+                  { icon: <GraduationCap size={24} />, iconBg: 'bg-indigo-500/10 text-indigo-500', industry: 'Giáo dục', desc: 'Tạo bài giảng video, podcast giáo dục, hình minh hoạ chuyên nghiệp cho khoá học online.', tools: ['Voice AI', 'Video AI', 'Storyboard'], color: 'from-indigo-500/10 to-violet-500/10', borderColor: 'hover:border-indigo-500/30' },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.industry}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    className={`p-6 md:p-8 rounded-2xl bg-gradient-to-br ${item.color} dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.05] dark:border-white/[0.05] ${item.borderColor} transition-all duration-500 group`}
+                  >
+                    <div className="space-y-4">
+                      <div className={`w-12 h-12 rounded-xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform`}>{item.icon}</div>
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.industry}</h3>
+                      <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
+                      <div className="flex flex-wrap gap-1.5 pt-2">
+                        {item.tools.map(tool => (
+                          <span key={tool} className="px-2.5 py-1 bg-white dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.06] text-[9px] font-bold text-slate-500 dark:text-gray-400 rounded-lg uppercase tracking-wider">{tool}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ═══════════════════ TESTIMONIALS ═══════════════════ */}
+          {!query && (
+            <section className="py-16 md:py-24">
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/8 dark:bg-amber-500/15 border border-amber-500/15 dark:border-amber-500/25 rounded-full mb-5">
+                  <Sparkles size={12} className="text-amber-500" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">Testimonials</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-4">
+                  Được tin dùng bởi <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">hàng nghìn người dùng</span>
+                </h2>
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
+                {[
+                  { name: 'Minh Tuấn', role: 'Content Creator', initials: 'MT', avatarBg: 'bg-brand-blue/10 text-brand-blue', quote: 'Skyverses giúp tôi sản xuất 5 video/ngày thay vì 1. Chất lượng AI tạo ra không thua gì studio chuyên nghiệp.', rating: 5 },
+                  { name: 'Thu Hà', role: 'Marketing Manager', initials: 'TH', avatarBg: 'bg-purple-500/10 text-purple-500', quote: 'Trước đây thuê photographer mỗi tháng tốn $2000. Giờ chỉ cần vài trăm Credits là có đủ ảnh cho cả tháng.', rating: 5 },
+                  { name: 'David Nguyễn', role: 'E-commerce Owner', initials: 'DN', avatarBg: 'bg-emerald-500/10 text-emerald-500', quote: 'Background Removal AI xử lý 500 ảnh sản phẩm trong 30 phút. Image Upscale nâng chất lượng ảnh lên 4K cực nhanh.', rating: 5 },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.15 }}
+                    className="p-7 md:p-8 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-amber-500/20 transition-all duration-500 group"
+                  >
+                    <div className="space-y-5">
+                      <div className="flex items-center gap-1">
+                        {[...Array(item.rating)].map((_, i) => (
+                          <span key={i} className="text-amber-400 text-sm">★</span>
+                        ))}
+                      </div>
+                      <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed italic">"{item.quote}"</p>
+                      <div className="flex items-center gap-3 pt-2 border-t border-black/[0.04] dark:border-white/[0.04]">
+                        <div className={`w-10 h-10 rounded-full ${item.avatarBg} flex items-center justify-center text-sm font-black`}>{item.initials}</div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</p>
+                          <p className="text-[10px] font-medium text-slate-400 dark:text-gray-500 uppercase tracking-wider">{item.role}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ═══════════════════ CUSTOM SOLUTIONS ═══════════════════ */}
+          {!query && (
+            <section className="py-16 md:py-24">
+              <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-[#0a0e1a] via-[#0c1225] to-[#0a0e1a] dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
+                {/* Background effects */}
+                <div className="absolute top-0 left-[20%] w-[500px] h-[500px] bg-brand-blue/8 rounded-full blur-[150px] pointer-events-none" />
+                <div className="absolute bottom-0 right-[10%] w-[400px] h-[400px] bg-purple-500/8 rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute top-[50%] left-[60%] w-[200px] h-[200px] bg-emerald-500/5 rounded-full blur-[80px] pointer-events-none" />
+
+                <div className="relative z-10">
+                  {/* Header */}
+                  <div className="text-center mb-12 md:mb-16">
+                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6">
+                        <Cpu size={14} className="text-brand-blue" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/70">Custom AI Solutions</span>
+                      </div>
+                      <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-white leading-[1.1] mb-5">
+                        Bạn cần giải pháp AI{' '}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-400 to-pink-400">
+                          riêng cho doanh nghiệp?
+                        </span>
+                      </h2>
+                      <p className="text-sm md:text-base text-white/40 max-w-2xl mx-auto leading-relaxed">
+                        Skyverses chuyên tư vấn, thiết kế và xây dựng các công cụ AI theo yêu cầu. 
+                        Từ chatbot, xử lý ảnh/video, workflow tự động đến hệ thống AI hoàn chỉnh cho doanh nghiệp.
+                      </p>
+                    </motion.div>
+                  </div>
+
+                  {/* Service Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-12">
+                    {[
+                      { icon: <Brain size={22} />, iconBg: 'bg-brand-blue/10 text-brand-blue', title: 'Tư vấn AI Strategy', desc: 'Phân tích nhu cầu, đề xuất giải pháp AI phù hợp cho quy trình kinh doanh của bạn.' },
+                      { icon: <Wrench size={22} />, iconBg: 'bg-purple-500/10 text-purple-500', title: 'Build Custom Tools', desc: 'Phát triển công cụ AI theo spec riêng — image gen, video pipeline, chatbot, voice clone...' },
+                      { icon: <Plug size={22} />, iconBg: 'bg-emerald-500/10 text-emerald-500', title: 'API & Integration', desc: 'Tích hợp AI vào hệ thống hiện có qua API. Hỗ trợ webhook, SDK và tài liệu đầy đủ.' },
+                      { icon: <Rocket size={22} />, iconBg: 'bg-amber-500/10 text-amber-500', title: 'Deploy & Scale', desc: 'Triển khai lên cloud, tối ưu hiệu năng, hỗ trợ scale tự động theo nhu cầu sử dụng.' },
+                    ].map((item, idx) => (
+                      <motion.div
+                        key={item.title}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.05] transition-all duration-500 group"
+                      >
+                        <div className="space-y-4">
+                          <div className={`w-12 h-12 rounded-xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform`}>{item.icon}</div>
+                          <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                          <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* CTA */}
+                  <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button
+                      onClick={() => navigate('/booking')}
+                      className="group inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-2xl text-sm font-bold hover:shadow-2xl hover:shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    >
+                      Liên hệ tư vấn miễn phí
+                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </button>
+                    <a
+                      href="mailto:hello@skyverses.com"
+                      className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
+                    >
+                      <span className="text-[10px] font-bold uppercase tracking-wider">hoặc email:</span>
+                      <span className="font-bold text-brand-blue">hello@skyverses.com</span>
+                    </a>
+                  </motion.div>
+
+                  <p className="text-center text-[10px] font-medium text-white/20 mt-6">✦ Tư vấn miễn phí • Phản hồi trong 24 giờ • Hỗ trợ dài hạn</p>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* ═══════════════════ CREDITS SYSTEM ═══════════════════ */}
+          {!query && (
+            <section className="py-12 md:py-20">
+              <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
+                {/* Background glows */}
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-brand-blue/8 rounded-full blur-[100px] pointer-events-none" />
+
+                <div className="relative z-10">
+                  {/* Header */}
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                    <div className="space-y-3">
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full">
+                        <Zap size={12} className="text-amber-400" fill="currentColor" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-400">Universal Credits</span>
+                      </div>
+                      <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
+                        1 loại Credit,{' '}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
+                          dùng cho tất cả sản phẩm
+                        </span>
+                      </h2>
+                      <p className="text-sm text-white/40 max-w-lg leading-relaxed">
+                        Không cần đăng ký riêng cho từng sản phẩm. Mua Credits một lần — sử dụng cho Video AI, Image AI, Voice, Music, Workflow và hơn 30 sản phẩm khác.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => navigate(isAuthenticated ? '/credits' : '/pricing')}
+                      className="shrink-0 inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    >
+                      <Zap size={14} fill="currentColor" />
+                      {isAuthenticated ? 'Nạp Credits' : 'Xem bảng giá'}
+                      <ArrowRight size={14} />
+                    </button>
+                  </div>
+
+                  {/* Credit Flow Steps */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12">
+                    {[
+                      { step: '01', title: 'Mua Credits', desc: 'Chọn gói phù hợp hoặc nạp tuỳ ý. Nhận bonus khi mua gói lớn.', icon: <CreditCard size={20} />, iconBg: 'bg-amber-500/15 text-amber-400' },
+                      { step: '02', title: 'Sử dụng mọi nơi', desc: 'Dùng Credits cho bất kỳ sản phẩm nào — Video, Image, Voice, Music, Workflow...', icon: <Zap size={20} />, iconBg: 'bg-amber-500/15 text-amber-400' },
+                      { step: '03', title: 'Nạp thêm khi cần', desc: 'Credits không hết hạn. Nạp thêm bất cứ lúc nào, chỉ trả cho những gì bạn dùng.', icon: <RefreshCw size={20} />, iconBg: 'bg-amber-500/15 text-amber-400' },
+                    ].map((item, idx) => (
+                      <motion.div
+                        key={item.step}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: idx * 0.15 }}
+                        className="relative p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.1] transition-all group"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className={`w-10 h-10 rounded-xl ${item.iconBg} flex items-center justify-center`}>{item.icon}</div>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[9px] font-black text-amber-400/60 uppercase tracking-widest">Step {item.step}</span>
+                            </div>
+                            <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                            <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
+                          </div>
+                        </div>
+                        {idx < 2 && (
+                          <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
+                            <ChevronRight size={16} className="text-white/10" />
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
         </div>
       </div>
 

@@ -334,9 +334,9 @@ const ImageUpscaleAI = () => {
               <p className="max-w-xs text-center md:text-left opacity-50 font-bold leading-relaxed">Hệ thống nâng cấp hình ảnh 12K dựa trên thuật toán Generative. Tối ưu cho in ấn và thiết kế chuyên nghiệp.</p>
            </div>
            <div className="flex gap-12">
-              <a href="#" className="hover:text-[#00a870] dark:hover:text-[#4ade80] transition-colors">Tech Docs</a>
-              <a href="#" className="hover:text-[#00a870] dark:hover:text-[#4ade80] transition-colors">Privacy Registry</a>
-              <a href="#" className="hover:text-[#00a870] dark:hover:text-[#4ade80] transition-colors">Support Node</a>
+              <a href="/policy" className="hover:text-[#00a870] dark:hover:text-[#4ade80] transition-colors">Tech Docs</a>
+              <a href="/policy" className="hover:text-[#00a870] dark:hover:text-[#4ade80] transition-colors">Privacy Registry</a>
+              <a href="/policy" className="hover:text-[#00a870] dark:hover:text-[#4ade80] transition-colors">Support Node</a>
            </div>
         </div>
       </footer>

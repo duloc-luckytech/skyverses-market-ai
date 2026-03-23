@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Menu, X, Moon, Sun, ChevronRight, Languages, LogOut, 
-  User, Settings, CheckCircle2, 
-  Zap, ArrowRight, BarChart3, Image as ImageIcon,
+import {
+  Menu, X, Moon, Sun, ChevronRight, Languages, LogOut,
+  User, Settings,
+  Zap, ArrowRight, BarChart3,
   ChevronDown, Bookmark, Loader2, Sparkles,
   Database, HelpCircle, Users, Gift, Plus,
-  Compass, Box, Search, Command
+  Compass, Box, Search, Command, Layers
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
@@ -23,42 +23,24 @@ const DEFAULT_AVATAR = "https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE
 const FlagIcon = ({ code, className = "w-5 h-3.5" }: { code: string; className?: string }) => {
   const map: Record<string, string> = { en: 'us', vi: 'vn', ko: 'kr', ja: 'jp' };
   return (
-    <img 
-      src={`https://flagcdn.com/w40/${map[code] || code}.png`} 
-      className={`${className} object-cover rounded-[1px] shadow-sm border border-black/5 dark:border-white/5`} 
-      alt={code} 
+    <img
+      src={`https://flagcdn.com/w40/${map[code] || code}.png`}
+      className={`${className} object-cover rounded-[2px] shadow-sm`}
+      alt={code}
     />
   );
 };
 
-const DropdownLink = ({ 
-  to, 
-  icon, 
-  label, 
-  onClick, 
-  external = false 
-}: { 
-  to: string; 
-  icon: React.ReactNode; 
-  label: string; 
-  onClick: () => void; 
-  external?: boolean;
+const DropdownLink = ({
+  to, icon, label, onClick, external = false
+}: {
+  to: string; icon: React.ReactNode; label: string; onClick: () => void; external?: boolean;
 }) => {
-  const className = "w-full flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-slate-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-all rounded-lg";
-  
+  const cls = "w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-slate-600 dark:text-gray-300 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white transition-all rounded-lg";
   if (external) {
-    return (
-      <a href={to} target="_blank" rel="noopener noreferrer" onClick={onClick} className={className}>
-        {icon} {label}
-      </a>
-    );
+    return <a href={to} target="_blank" rel="noopener noreferrer" onClick={onClick} className={cls}>{icon} {label}</a>;
   }
-  
-  return (
-    <Link to={to} onClick={onClick} className={className}>
-      {icon} {label}
-    </Link>
-  );
+  return <Link to={to} onClick={onClick} className={cls}>{icon} {label}</Link>;
 };
 
 interface HeaderProps {
@@ -75,14 +57,14 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const [isClaiming, setIsClaiming] = useState(false);
   const [isClaimingDaily, setIsClaimingDaily] = useState(false);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
-  
+
   const location = useLocation();
   const navigate = useNavigate();
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const { user, logout, isAuthenticated, credits, claimWelcomeCredits, refreshUserInfo } = useAuth();
   const search = useSearch();
-  
+
   const langRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
   const exploreRef = useRef<HTMLDivElement>(null);
@@ -103,13 +85,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Global ⌘K shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        search.toggle();
-      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); search.toggle(); }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
@@ -122,221 +100,198 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleClaim = async () => {
-    setIsClaiming(true);
-    await claimWelcomeCredits();
-    setIsClaiming(false);
-  };
+  const handleClaim = async () => { setIsClaiming(true); await claimWelcomeCredits(); setIsClaiming(false); };
 
   const handleClaimDaily = async () => {
     if (isClaimingDaily) return;
     setIsClaimingDaily(true);
     try {
       const res = await creditsApi.claimDaily();
-      if (res.success) {
-        await refreshUserInfo();
-      } else {
-        alert(res.message || "Failed to claim daily credits");
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsClaimingDaily(false);
-    }
+      if (res.success) await refreshUserInfo();
+      else alert(res.message || "Failed to claim daily credits");
+    } catch (err) { console.error(err); }
+    finally { setIsClaimingDaily(false); }
   };
 
   const navLinks = [
-    { id: '02', name: t('nav.browse'), path: '/market' },
-    // nav.explore will be handled by the dropdown
-    { id: '04', name: t('nav.apps'), path: '/apps' },
-    { id: '05', name: t('nav.about'), path: 'https://skyverses.com/', external: true },
+    { name: t('nav.browse'), path: '/market' },
+    { name: t('nav.apps'), path: '/apps' },
+    { name: t('nav.about'), path: 'https://skyverses.com/', external: true },
   ];
 
   const languages: { code: Language; name: string }[] = [
-    { code: 'en', name: 'EN' },
-    { code: 'vi', name: 'VI' },
-    { code: 'ko', name: 'KO' },
-    { code: 'ja', name: 'JA' }
+    { code: 'en', name: 'EN' }, { code: 'vi', name: 'VI' }, { code: 'ko', name: 'KO' }, { code: 'ja', name: 'JA' }
   ];
 
   const logoUrl = "https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268";
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 h-[2px] bg-brand-blue z-[160] opacity-50"></div>
-      
-      <nav className={`fixed w-full z-[150] transition-all duration-500 top-0 ${scrolled ? 'bg-white/80 dark:bg-black/80 backdrop-blur-xl h-16 shadow-sm border-b border-black/5 dark:border-white/5' : 'h-20 bg-transparent'}`}>
-        <div className="max-w-[1600px] mx-auto px-6 lg:px-12 h-full">
-          <div className="flex justify-between items-center h-full gap-4">
-            
-            <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2.5 shrink-0 group">
-              <img src={logoUrl} alt="Logo" className="w-7 h-7 md:w-9 md:h-9 object-contain" />
-              <div className="flex flex-col">
-                <span className="text-lg md:text-xl font-black tracking-tighter italic text-black dark:text-white transition-colors">Skyverses</span>
-                <span className="text-[7px] font-black tracking-[0.4em] uppercase text-brand-blue/70 leading-none">Market</span>
-              </div>
+      {/* Top accent line */}
+      <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-blue/40 to-transparent z-[160]"></div>
+
+      <nav className={`fixed w-full z-[150] top-0 transition-all duration-300 ${
+        scrolled 
+          ? 'h-14 bg-white/90 dark:bg-[#0a0a0c]/90 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.04]' 
+          : 'h-16 bg-white/50 dark:bg-transparent backdrop-blur-sm'
+      }`}>
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-8 h-full">
+          <div className="flex items-center h-full">
+
+            {/* Logo */}
+            <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2 shrink-0 mr-8">
+              <img src={logoUrl} alt="Logo" className="w-7 h-7 object-contain" />
+              <span className="text-base font-black tracking-tight text-black dark:text-white">Skyverses</span>
             </Link>
 
-            <div className="hidden md:flex items-center space-x-10 ml-10 flex-grow">
-              {/* Market Link */}
-              <Link to="/market" className={`text-[13px] font-bold uppercase tracking-widest transition-colors duration-200 ${location.pathname === '/market' ? 'text-brand-blue' : 'text-black/40 dark:text-white/40 hover:text-brand-blue'}`}>
+            {/* Nav Links — Desktop */}
+            <div className="hidden md:flex items-center gap-1">
+              {/* Market */}
+              <Link to="/market" className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive('/market') ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}>
                 {t('nav.browse')}
+              </Link>
+
+              {/* Marketplace */}
+              <Link to="/markets" className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive('/markets') ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}>
+                Marketplace
               </Link>
 
               {/* Explore Dropdown */}
               <div className="relative" ref={exploreRef}>
-                <button 
+                <button
                   onClick={() => setShowExploreMenu(!showExploreMenu)}
                   onMouseEnter={() => setShowExploreMenu(true)}
-                  className={`text-[13px] font-bold uppercase tracking-widest transition-all duration-200 flex items-center gap-1.5 ${location.pathname.startsWith('/explorer') || location.pathname === '/models' ? 'text-brand-blue' : 'text-black/40 dark:text-white/40 hover:text-brand-blue'}`}
+                  className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all flex items-center gap-1 ${
+                    location.pathname.startsWith('/explorer') || location.pathname === '/models'
+                      ? 'text-brand-blue bg-brand-blue/[0.06]' 
+                      : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
+                  }`}
                 >
                   {t('nav.explore')}
-                  <ChevronDown size={14} className={`transition-transform duration-300 ${showExploreMenu ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={12} className={`transition-transform duration-200 ${showExploreMenu ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence>
                   {showExploreMenu && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
+                      transition={{ duration: 0.12 }}
                       onMouseLeave={() => setShowExploreMenu(false)}
-                      className="absolute top-full left-0 mt-3 w-48 bg-white dark:bg-[#0c0c0e] border border-black/10 dark:border-white/5 shadow-2xl rounded-2xl p-2 z-[200] overflow-hidden"
+                      className="absolute top-full left-0 mt-1 w-44 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl p-1 z-[200]"
                     >
-                      <DropdownLink to="/explorer" icon={<Compass size={16} />} label={t('nav.explorer')} onClick={() => setShowExploreMenu(false)} />
-                      <DropdownLink to="/models" icon={<Box size={16} />} label={t('nav.models')} onClick={() => setShowExploreMenu(false)} />
+                      <DropdownLink to="/explorer" icon={<Compass size={15} />} label={t('nav.explorer')} onClick={() => setShowExploreMenu(false)} />
+                      <DropdownLink to="/models" icon={<Box size={15} />} label={t('nav.models')} onClick={() => setShowExploreMenu(false)} />
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
 
-              {/* Other Links */}
+              {/* Other nav links */}
               {navLinks.slice(1).map((link) => (
                 link.external ? (
-                  <a 
-                    key={link.name} href={link.path} target="_blank" rel="noopener noreferrer" 
-                    className="text-[13px] font-bold uppercase tracking-widest transition-colors duration-200 text-black/40 dark:text-white/40 hover:text-brand-blue"
-                  >
-                    {link.name}
-                  </a>
+                  <a key={link.name} href={link.path} target="_blank" rel="noopener noreferrer"
+                    className="px-3 py-1.5 rounded-lg text-[13px] font-semibold text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-all"
+                  >{link.name}</a>
                 ) : (
-                  <Link 
-                    key={link.name} to={link.path} 
-                    className={`text-[13px] font-bold uppercase tracking-widest transition-colors duration-200 ${location.pathname === link.path ? 'text-brand-blue' : 'text-black/40 dark:text-white/40 hover:text-brand-blue'}`}
-                  >
-                    {link.name}
-                  </Link>
+                  <Link key={link.name} to={link.path}
+                    className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive(link.path) ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
+                  >{link.name}</Link>
                 )
               ))}
             </div>
 
-            {/* Search Trigger Pill */}
-            <button 
+            {/* Spacer */}
+            <div className="flex-1" />
+
+            {/* Search Trigger — Desktop */}
+            <button
               onClick={() => search.open()}
-              className="hidden md:flex items-center gap-2.5 px-4 py-2 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl hover:border-brand-blue/30 hover:bg-brand-blue/5 transition-all group ml-auto"
+              className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05] rounded-lg hover:border-brand-blue/20 transition-all group mr-2"
             >
-              <Search size={14} className="text-slate-300 dark:text-gray-600 group-hover:text-brand-blue transition-colors" />
-              <span className="text-[11px] font-medium text-slate-300 dark:text-gray-600 group-hover:text-slate-500 dark:group-hover:text-gray-400 transition-colors w-24 text-left">Tìm kiếm...</span>
-              <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-white dark:bg-white/5 rounded text-[9px] font-bold text-slate-300 dark:text-gray-600 border border-black/[0.04] dark:border-white/[0.06]">
-                <Command size={9} /> K
-              </div>
+              <Search size={13} className="text-slate-300 dark:text-gray-600 group-hover:text-brand-blue transition-colors" />
+              <span className="text-[11px] text-slate-300 dark:text-gray-600 w-16">Search...</span>
+              <kbd className="text-[9px] font-medium text-slate-300 dark:text-gray-600 bg-white dark:bg-white/5 px-1 py-0.5 rounded border border-black/[0.04] dark:border-white/[0.06] flex items-center gap-0.5">
+                <Command size={8} />K
+              </kbd>
             </button>
 
-            <div className="flex items-center space-x-2 md:space-x-4 shrink-0">
-              
-              <div className="flex items-center gap-2 md:gap-4">
-                {isAuthenticated && (
-                  <div className="flex items-center gap-2 md:gap-3">
-                    <AnimatePresence>
-                      {user?.canDailyClaim && (
-                        <motion.button 
-                          initial={{ opacity: 0, y: -20, scale: 0.8 }}
-                          animate={{ 
-                            opacity: 1, 
-                            y: 0, 
-                            scale: 1,
-                            transition: {
-                              y: {
-                                repeat: Infinity,
-                                repeatType: "mirror",
-                                duration: 2,
-                                ease: "easeInOut"
-                              }
-                            }
-                          }}
-                          exit={{ opacity: 0, scale: 0.5 }}
-                          onClick={handleClaimDaily}
-                          disabled={isClaimingDaily}
-                          className="hidden lg:flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_10px_30px_rgba(245,158,11,0.3)] group relative overflow-hidden"
-                        >
-                          <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                          {isClaimingDaily ? <Loader2 size={14} className="animate-spin" /> : <Gift size={14} className="animate-bounce" />}
-                          <span className="text-[11px] font-black uppercase tracking-wider">Quà</span>
-                        </motion.button>
-                      )}
-                    </AnimatePresence>
+            {/* Right Actions */}
+            <div className="flex items-center gap-1.5">
 
-                    {user && !user.claimWelcomeCredit && (
-                      <button 
-                        onClick={handleClaim}
-                        disabled={isClaiming}
-                        className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full hover:scale-105 active:scale-95 transition-all shadowFLG shadow-orange-500/20 group relative overflow-hidden"
+              {/* Authenticated Actions */}
+              {isAuthenticated && (
+                <>
+                  {/* Daily Claim */}
+                  <AnimatePresence>
+                    {user?.canDailyClaim && (
+                      <motion.button
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        onClick={handleClaimDaily}
+                        disabled={isClaimingDaily}
+                        className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-lg text-xs font-bold hover:bg-amber-500/15 transition-all"
                       >
-                        <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                        {isClaiming ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} className="animate-pulse" />}
-                        <span className="text-[10px] font-black uppercase tracking-wider">Claim +1000</span>
-                      </button>
+                        {isClaimingDaily ? <Loader2 size={13} className="animate-spin" /> : <Gift size={13} />}
+                        <span className="text-[11px]">Quà</span>
+                      </motion.button>
                     )}
-                    
-                    <div className="flex items-center gap-2">
-                      {/* Desktop: Standard Credit Link */}
-                      <Link 
-                        to="/credits" 
-                        className="hidden md:flex items-center gap-2 px-4 py-1.5 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full hover:border-brand-blue/30 transition-all"
-                      >
-                        <Zap size={10} className="text-yellow-500" fill="currentColor" />
-                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-white">
-                          {(credits || 0).toLocaleString()}
-                        </span>
-                      </Link>
-                      
-                      {/* Mobile: Unified High-Emphasis Upgrade Button (Wrapped Balance) */}
-                      <button 
-                        onClick={() => setIsPurchaseModalOpen(true)}
-                        className="md:hidden flex items-center bg-brand-blue text-white rounded-full transition-all active:scale-95 shadow-[0_4px_20px_rgba(0,144,255,0.4)] overflow-hidden"
-                      >
-                        <div className="flex items-center gap-1.5 pl-3.5 pr-2.5 py-2 border-r border-white/20">
-                          <Zap size={10} className="text-yellow-400" fill="currentColor" />
-                          <span className="text-[10px] font-black italic tracking-tighter leading-none">
-                            {(credits || 0).toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="px-3.5 py-2 bg-brand-blue">
-                          <span className="text-[9px] font-black uppercase tracking-[0.1em]">UPGRADE</span>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                )}
-                
-                <button onClick={toggleTheme} className="hidden md:flex p-2 text-slate-400 dark:text-gray-500 hover:text-brand-blue transition-colors rounded-full">
-                  {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-                </button>
-              </div>
+                  </AnimatePresence>
 
-              {/* Language Switcher - Desktop - Flags Only */}
+                  {/* Welcome Claim */}
+                  {user && !user.claimWelcomeCredit && (
+                    <button
+                      onClick={handleClaim}
+                      disabled={isClaiming}
+                      className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-600 border border-amber-500/20 rounded-lg text-[11px] font-bold hover:bg-amber-500/15 transition-all"
+                    >
+                      {isClaiming ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                      Claim +1000
+                    </button>
+                  )}
+
+                  {/* Credits — Desktop */}
+                  <Link
+                    to="/credits"
+                    className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05] rounded-lg hover:border-brand-blue/20 transition-all"
+                  >
+                    <Sparkles size={12} className="text-brand-blue" fill="currentColor" />
+                    <span className="text-[12px] font-bold text-slate-700 dark:text-white">{(credits || 0).toLocaleString()}</span>
+                  </Link>
+
+                  {/* Credits — Mobile */}
+                  <button
+                    onClick={() => setIsPurchaseModalOpen(true)}
+                    className="md:hidden flex items-center gap-1.5 px-3 py-1.5 bg-brand-blue text-white rounded-lg text-[11px] font-bold active:scale-95 transition-all"
+                  >
+                    <Sparkles size={11} fill="currentColor" />
+                    {(credits || 0).toLocaleString()}
+                    <Plus size={11} />
+                  </button>
+                </>
+              )}
+
+              {/* Theme Toggle */}
+              <button onClick={toggleTheme} className="hidden md:flex w-8 h-8 items-center justify-center text-slate-400 dark:text-gray-500 hover:text-brand-blue hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all">
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
+
+              {/* Language Switcher — Desktop */}
               <div className="hidden md:block relative" ref={langRef}>
-                <button onClick={() => setShowDesktopLang(!showDesktopLang)} className="p-2 text-slate-400 dark:text-gray-500 hover:text-brand-blue transition-colors flex items-center gap-2">
-                  <FlagIcon code={lang} />
-                  <ChevronDown size={12} className={`transition-transform ${showDesktopLang ? 'rotate-180' : ''}`} />
+                <button onClick={() => setShowDesktopLang(!showDesktopLang)} className="flex items-center gap-1 w-8 h-8 justify-center text-slate-400 hover:text-brand-blue hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all">
+                  <FlagIcon code={lang} className="w-5 h-3.5" />
                 </button>
                 <AnimatePresence>
                   {showDesktopLang && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                      className="absolute top-full mt-2 right-0 w-24 bg-white dark:bg-[#0c0c0e] border border-black/5 dark:border-white/5 shadow-2xl rounded-xl overflow-hidden z-[200]"
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
+                      className="absolute top-full mt-1 right-0 w-20 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl overflow-hidden z-[200]"
                     >
                       {languages.map((l) => (
-                        <button key={l.code} onClick={() => { setLang(l.code); setShowDesktopLang(false); }} className={`w-full flex items-center justify-center py-3 transition-colors ${lang === l.code ? 'bg-brand-blue/10' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}>
+                        <button key={l.code} onClick={() => { setLang(l.code); setShowDesktopLang(false); localStorage.setItem('skyverses_lang_detected', '1'); }}
+                          className={`w-full flex items-center justify-center py-2.5 transition-all ${lang === l.code ? 'bg-brand-blue/8' : 'hover:bg-black/[0.03] dark:hover:bg-white/[0.04]'}`}
+                        >
                           <FlagIcon code={l.code} />
                         </button>
                       ))}
@@ -345,175 +300,200 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 </AnimatePresence>
               </div>
 
+              {/* User Menu / Login */}
               {isAuthenticated ? (
                 <div className="relative" ref={userRef}>
-                  <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-2 p-1 border border-black/5 dark:border-white/10 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-all">
+                  <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-1 ml-1">
                     <img 
                       src={user?.avatar || user?.picture || DEFAULT_AVATAR} 
                       onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR; }}
-                      className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-black/5 dark:border-white/10 object-cover" 
+                      className="w-8 h-8 rounded-lg border border-black/[0.06] dark:border-white/[0.06] object-cover hover:border-brand-blue/30 transition-all" 
                       alt="Avatar" 
                     />
-                    <ChevronDown size={14} className={`hidden md:block text-slate-400 dark:text-gray-500 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
                     {showUserMenu && (
                       <motion.div 
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }} 
+                        initial={{ opacity: 0, y: 6, scale: 0.97 }} 
                         animate={{ opacity: 1, y: 0, scale: 1 }} 
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute top-full mt-3 right-0 w-64 bg-white dark:bg-[#0c0c0e] border border-black/10 dark:border-white/5 shadow-2xl rounded-2xl p-2 z-[200] overflow-hidden"
+                        exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                        transition={{ duration: 0.12 }}
+                        className="absolute top-full mt-1 right-0 w-64 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] shadow-2xl rounded-xl overflow-hidden z-[200]"
                       >
-                        <div className="px-4 py-4 border-b border-black/5 dark:border-white/5 mb-1 bg-slate-50/50 dark:bg-white/[0.02] rounded-t-xl">
-                            <p className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-1.5">{t('user.menu.credits_label')}</p>
-                            <div className="flex items-center justify-between">
-                              <span className="text-[14px] font-black italic text-slate-900 dark:text-white">{(credits || 0).toLocaleString()} CR</span>
-                              <button onClick={() => { setIsPurchaseModalOpen(true); setShowUserMenu(false); }} className="text-[9px] font-black text-brand-blue uppercase hover:underline">Topup +</button>
+                        {/* User Info */}
+                        <div className="px-3 pt-3 pb-2">
+                          <div className="flex items-center gap-2.5 mb-2.5">
+                            <img 
+                              src={user?.avatar || user?.picture || DEFAULT_AVATAR}
+                              onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR; }}
+                              className="w-9 h-9 rounded-lg border border-black/[0.04] dark:border-white/[0.06] object-cover"
+                              alt="Avatar"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user?.name || 'User'}</p>
+                              <p className="text-[11px] text-slate-400 dark:text-gray-500 truncate">{user?.email}</p>
                             </div>
-                        </div>
-                        <div className="py-2">
-                            <DropdownLink to="/settings" icon={<User size={16}/>} label={t('user.menu.profile')} onClick={() => setShowUserMenu(false)} />
-                            <DropdownLink to="/referral" icon={<Users size={16}/>} label={t('user.menu.referral')} onClick={() => setShowUserMenu(false)} />
-                            {(user?.role === 'admin' || user?.email === 'duloc2708@gmail.com') && (
-                              <DropdownLink to="/cms-admin-pro" icon={<Database size={16}/>} label={t('user.menu.admin')} onClick={() => setShowUserMenu(false)} />
-                            )}
-                            <DropdownLink to="/favorites" icon={<Bookmark size={16}/>} label={t('user.menu.favorites')} onClick={() => setShowUserMenu(false)} />
-                            <DropdownLink to="/usage" icon={<BarChart3 size={16}/>} label={t('user.menu.usage')} onClick={() => setShowUserMenu(false)} />
-                            <DropdownLink to="/settings" icon={<Settings size={16}/>} label={t('user.menu.settings')} onClick={() => setShowUserMenu(false)} />
-                            <div className="h-px bg-black/5 dark:bg-white/5 my-1 mx-2"></div>
-                            <DropdownLink to="https://skyverses.com/support" external icon={<HelpCircle size={16}/>} label={t('user.menu.support')} onClick={() => setShowUserMenu(false)} />
-                        </div>
-                        <div className="pt-1 mt-1 border-t border-black/5 dark:border-white/5">
-                            <button onClick={() => { logout(); setShowUserMenu(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all rounded-lg">
-                              <LogOut size={16} /> {t('user.menu.signout')}
+                          </div>
+                          {/* Credits card */}
+                          <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-lg">
+                            <div className="flex items-center gap-1.5">
+                              <Sparkles size={13} className="text-brand-blue" fill="currentColor" />
+                              <span className="text-xs font-bold text-slate-700 dark:text-gray-200">{(credits || 0).toLocaleString()}</span>
+                            </div>
+                            <button 
+                              onClick={() => { setIsPurchaseModalOpen(true); setShowUserMenu(false); }} 
+                              className="text-[10px] font-bold text-brand-blue hover:underline flex items-center gap-0.5"
+                            >
+                              <Plus size={10} /> Nạp
                             </button>
+                          </div>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-px bg-black/[0.04] dark:bg-white/[0.04]" />
+
+                        {/* Menu Items */}
+                        <div className="p-1.5 space-y-0.5">
+                          <DropdownLink to="/settings" icon={<User size={15} />} label={t('user.menu.profile')} onClick={() => setShowUserMenu(false)} />
+                          <DropdownLink to="/referral" icon={<Users size={15} />} label={t('user.menu.referral')} onClick={() => setShowUserMenu(false)} />
+                          {(user?.role === 'admin' || user?.email === 'duloc2708@gmail.com') && (
+                            <DropdownLink to="/cms-admin-pro" icon={<Database size={15} />} label={t('user.menu.admin')} onClick={() => setShowUserMenu(false)} />
+                          )}
+                          <DropdownLink to="/favorites" icon={<Bookmark size={15} />} label={t('user.menu.favorites')} onClick={() => setShowUserMenu(false)} />
+                          <DropdownLink to="/usage" icon={<BarChart3 size={15} />} label={t('user.menu.usage')} onClick={() => setShowUserMenu(false)} />
+                          <DropdownLink to="/settings" icon={<Settings size={15} />} label={t('user.menu.settings')} onClick={() => setShowUserMenu(false)} />
+                          <div className="h-px bg-black/[0.04] dark:bg-white/[0.04] mx-2 my-0.5" />
+                          <DropdownLink to="https://skyverses.com/support" external icon={<HelpCircle size={15} />} label={t('user.menu.support')} onClick={() => setShowUserMenu(false)} />
+                        </div>
+
+                        {/* Logout */}
+                        <div className="p-1.5 pt-0">
+                          <button onClick={() => { logout(); setShowUserMenu(false); }} className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/5 transition-all rounded-lg">
+                            <LogOut size={15} /> {t('user.menu.signout')}
+                          </button>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
               ) : (
-                <Link to="/login" className="hidden md:flex text-[11px] font-black uppercase tracking-widest px-6 py-2 border border-black/10 dark:border-white/10 text-slate-700 dark:text-white hover:border-brand-blue transition-all rounded-full">
+                <Link to="/login" className="hidden md:flex items-center px-4 py-1.5 text-[13px] font-semibold text-slate-600 dark:text-gray-300 hover:text-brand-blue border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 rounded-lg transition-all">
                   {t('nav.login')}
                 </Link>
               )}
 
-              <div className="hidden md:flex items-center gap-4">
-                <Link to="/booking" className="bg-brand-blue text-white px-8 py-2.5 text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-brand-blue/20 rounded-full">
-                  {t('nav.deploy')}
-                </Link>
-              </div>
+              {/* CTA — Desktop */}
+              <Link to="/booking" className="hidden md:flex items-center px-4 py-1.5 bg-brand-blue text-white text-[13px] font-semibold rounded-lg hover:brightness-110 transition-all shadow-sm shadow-brand-blue/20 ml-1">
+                {t('nav.deploy')}
+              </Link>
 
-              <button onClick={() => setIsOpen(true)} className="md:hidden p-2 text-black dark:text-white bg-black/5 dark:bg-white/5 rounded-full hover:bg-brand-blue/10 transition-colors">
-                <Menu size={22} />
+              {/* Mobile Menu Toggle */}
+              <button onClick={() => setIsOpen(true)} className="md:hidden w-8 h-8 flex items-center justify-center text-slate-600 dark:text-gray-300 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all ml-1">
+                <Menu size={20} />
               </button>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* MOBILE MENU DRAWER */}
-      <div className={`fixed inset-0 z-[500] transition-all duration-500 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsOpen(false)}></div>
-        <div className={`absolute top-0 right-0 h-full w-[85%] max-sm max-w-sm bg-white dark:bg-[#050506] shadow-2xl transition-transform duration-500 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      {/* ═══════════ MOBILE DRAWER ═══════════ */}
+      <div className={`fixed inset-0 z-[500] transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+        <div className={`absolute top-0 right-0 h-full w-[85%] max-w-sm bg-white dark:bg-[#0c0c10] shadow-2xl transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between p-6 border-b border-black/5 dark:border-white/5">
-              <div className="flex items-center gap-3">
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.04]">
+              <div className="flex items-center gap-2">
                 <img src={logoUrl} alt="Logo" className="w-6 h-6 object-contain" />
-                <span className="text-sm font-black uppercase tracking-widest italic">Skyverses</span>
+                <span className="text-sm font-bold text-slate-900 dark:text-white">Skyverses</span>
               </div>
-              <button onClick={() => setIsOpen(false)} className="w-10 h-10 flex items-center justify-center bg-black/5 dark:bg-white/5 rounded-full text-slate-400 dark:text-gray-500">
-                <X size={20} />
+              <button onClick={() => setIsOpen(false)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-red-500 rounded-lg transition-all">
+                <X size={18} />
               </button>
             </div>
-            
-            <div className="flex-grow overflow-y-auto p-8 space-y-10 no-scrollbar">
+
+            {/* Drawer Content */}
+            <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6 no-scrollbar">
+              {/* Nav Links */}
               <div className="space-y-1">
-                 {/* Market Link */}
-                 <Link to="/market" onClick={() => setIsOpen(false)} className="flex items-center justify-between py-4 group border-b border-black/[0.03] dark:border-white/[0.03]">
-                    <div className="flex items-center gap-5">
-                       <span className="text-[10px] font-black text-brand-blue opacity-40">01</span>
-                       <span className={`text-xl font-black uppercase tracking-tighter italic transition-all group-hover:translate-x-2 ${location.pathname === '/market' ? 'text-brand-blue' : 'text-slate-800 dark:text-white'}`}>{t('nav.browse')}</span>
-                    </div>
-                    <ChevronRight size={16} className="text-slate-200 dark:text-gray-800" />
-                 </Link>
+                <Link to="/market" onClick={() => setIsOpen(false)}
+                  className={`flex items-center justify-between px-3 py-3 rounded-xl transition-all ${isActive('/market') ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
+                >
+                  <span className="text-sm font-bold">{t('nav.browse')}</span>
+                  <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
+                </Link>
 
-                 {/* Explore Sub-links Mobile */}
-                 <div className="py-4 border-b border-black/[0.03] dark:border-white/[0.03] space-y-4">
-                    <div className="flex items-center gap-5 text-gray-400 opacity-40">
-                       <span className="text-[10px] font-black uppercase tracking-widest">02</span>
-                       <span className="text-[10px] font-black uppercase tracking-widest">{t('nav.explore')}</span>
-                    </div>
-                    <div className="pl-12 space-y-4">
-                      <Link to="/explorer" onClick={() => setIsOpen(false)} className="flex items-center justify-between group">
-                         <span className={`text-lg font-black uppercase tracking-tighter italic ${location.pathname === '/explorer' ? 'text-brand-blue' : 'text-slate-700 dark:text-gray-300'}`}>{t('nav.explorer')}</span>
-                         <ArrowRight size={14} className="text-slate-200 dark:text-gray-800" />
-                      </Link>
-                      <Link to="/models" onClick={() => setIsOpen(false)} className="flex items-center justify-between group">
-                         <span className={`text-lg font-black uppercase tracking-tighter italic ${location.pathname === '/models' ? 'text-brand-blue' : 'text-slate-700 dark:text-gray-300'}`}>{t('nav.models')}</span>
-                         <ArrowRight size={14} className="text-slate-200 dark:text-gray-800" />
-                      </Link>
-                    </div>
-                 </div>
+                <Link to="/markets" onClick={() => setIsOpen(false)}
+                  className={`flex items-center justify-between px-3 py-3 rounded-xl transition-all ${isActive('/markets') ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
+                >
+                  <span className="text-sm font-bold">Marketplace</span>
+                  <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
+                </Link>
 
-                 {navLinks.slice(1).map((link, idx) => (
-                    link.external ? (
-                      <a key={link.name} href={link.path} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between py-4 group border-b border-black/[0.03] dark:border-white/[0.03]">
-                         <div className="flex items-center gap-5">
-                            <span className="text-[10px] font-black text-brand-blue opacity-40">0{idx+3}</span>
-                            <span className="text-xl font-black uppercase tracking-tighter italic transition-all group-hover:translate-x-2 group-hover:text-brand-blue text-slate-800 dark:text-white">{link.name}</span>
-                         </div>
-                         <ArrowRight size={16} className="text-slate-200 dark:text-gray-800" />
-                      </a>
-                    ) : (
-                      <Link key={link.name} to={link.path} onClick={() => setIsOpen(false)} className="flex items-center justify-between py-4 group border-b border-black/[0.03] dark:border-white/[0.03]">
-                         <div className="flex items-center gap-5">
-                            <span className="text-[10px] font-black text-brand-blue opacity-40">0{idx+3}</span>
-                            <span className={`text-xl font-black uppercase tracking-tighter italic transition-all group-hover:translate-x-2 ${location.pathname === link.path ? 'text-brand-blue' : 'text-slate-800 dark:text-white'}`}>{link.name}</span>
-                         </div>
-                         <ChevronRight size={16} className="text-slate-200 dark:text-gray-800" />
-                      </Link>
-                    )
-                 ))}
-              </div>
-
-              <div className="pt-6 border-t border-black/5 dark:border-white/5 space-y-8">
-                <div className="space-y-4">
-                  <span className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-[0.3em] flex items-center gap-2 px-1">
-                    <Languages size={14} /> {t('nav.lang_settings')}
-                  </span>
-                  
-                  <div className="grid grid-cols-4 gap-2">
-                    {languages.map((l) => (
-                      <button
-                        key={l.code}
-                        onClick={() => { setLang(l.code); }}
-                        className={`py-3 flex items-center justify-center rounded-lg border transition-all ${lang === l.code ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-black/5 dark:bg-white/5 border-transparent text-slate-500 dark:text-gray-500'}`}
-                      >
-                        <FlagIcon code={l.code} />
-                      </button>
-                    ))}
+                {/* Explore Sub-links */}
+                <div className="px-3 py-2">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('nav.explore')}</p>
+                  <div className="pl-3 space-y-1">
+                    <Link to="/explorer" onClick={() => setIsOpen(false)} className={`flex items-center justify-between py-2 text-sm font-medium ${isActive('/explorer') ? 'text-brand-blue' : 'text-slate-600 dark:text-gray-300'}`}>
+                      {t('nav.explorer')} <ArrowRight size={14} className="text-slate-300" />
+                    </Link>
+                    <Link to="/models" onClick={() => setIsOpen(false)} className={`flex items-center justify-between py-2 text-sm font-medium ${isActive('/models') ? 'text-brand-blue' : 'text-slate-600 dark:text-gray-300'}`}>
+                      {t('nav.models')} <ArrowRight size={14} className="text-slate-300" />
+                    </Link>
                   </div>
                 </div>
 
-                {!isAuthenticated && (
-                  <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full py-4 bg-brand-blue text-white text-center rounded-xl font-black uppercase tracking-widest text-sm shadow-xl shadow-brand-blue/20">
-                    {t('nav.login')}
-                  </Link>
-                )}
+                {navLinks.slice(1).map((link) => (
+                  link.external ? (
+                    <a key={link.name} href={link.path} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-all"
+                    >
+                      {link.name} <ArrowRight size={16} className="text-slate-300 dark:text-gray-600" />
+                    </a>
+                  ) : (
+                    <Link key={link.name} to={link.path} onClick={() => setIsOpen(false)}
+                      className={`flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold transition-all ${isActive(link.path) ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
+                    >
+                      {link.name} <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
+                    </Link>
+                  )
+                ))}
               </div>
+
+              {/* Language */}
+              <div className="space-y-2">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 px-1">
+                  <Languages size={12} /> {t('nav.lang_settings')}
+                </span>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {languages.map((l) => (
+                    <button key={l.code} onClick={() => { setLang(l.code); localStorage.setItem('skyverses_lang_detected', '1'); }}
+                      className={`py-2.5 flex items-center justify-center rounded-lg border transition-all ${lang === l.code ? 'bg-brand-blue/10 border-brand-blue/30' : 'bg-slate-50 dark:bg-white/[0.03] border-transparent hover:border-brand-blue/20'}`}
+                    >
+                      <FlagIcon code={l.code} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {!isAuthenticated && (
+                <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full py-3 bg-brand-blue text-white text-center rounded-xl text-sm font-bold shadow-lg shadow-brand-blue/20">
+                  {t('nav.login')}
+                </Link>
+              )}
             </div>
 
-            <div className="p-8 border-t border-black/5 dark:border-white/5 bg-[#fafafa] dark:bg-[#030304] space-y-6">
-               <div className="flex items-center justify-between gap-4">
-                  <button onClick={toggleTheme} className="w-12 h-12 flex items-center justify-center border border-black/10 dark:border-white/10 rounded-full text-slate-400 dark:text-gray-500 transition-colors shrink-0">
-                     {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-                  </button>
-                  <Link to="/booking" onClick={() => setIsOpen(false)} className="flex-grow flex items-center justify-center gap-3 py-3 bg-brand-blue text-white rounded-full text-[10px] font-black uppercase tracking-widest">
-                     {t('nav.deploy')}
-                  </Link>
-               </div>
-               <p className="text-[8px] font-black text-gray-400 text-center uppercase tracking-[0.3em] opacity-50 italic">© 2025 SKYVERSES MARKET</p>
+            {/* Drawer Footer */}
+            <div className="px-5 py-4 border-t border-black/[0.04] dark:border-white/[0.04] space-y-3">
+              <div className="flex items-center gap-2">
+                <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-slate-400 shrink-0">
+                  {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                </button>
+                <Link to="/booking" onClick={() => setIsOpen(false)} className="flex-1 flex items-center justify-center py-2.5 bg-brand-blue text-white rounded-xl text-sm font-bold">
+                  {t('nav.deploy')}
+                </Link>
+              </div>
+              <p className="text-[9px] text-slate-300 dark:text-gray-700 text-center">© 2025 Skyverses Market</p>
             </div>
           </div>
         </div>
@@ -521,10 +501,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
       <AnimatePresence>
         {isPurchaseModalOpen && (
-          <CreditPurchaseModal 
-            isOpen={isPurchaseModalOpen} 
-            onClose={() => setIsPurchaseModalOpen(false)} 
-          />
+          <CreditPurchaseModal isOpen={isPurchaseModalOpen} onClose={() => setIsPurchaseModalOpen(false)} />
         )}
       </AnimatePresence>
     </>

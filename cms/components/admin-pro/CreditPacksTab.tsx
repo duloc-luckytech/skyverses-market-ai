@@ -236,7 +236,7 @@ export const CreditPacksTab: React.FC = () => {
              <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 30, stiffness: 300 }} className="relative w-full max-w-6xl bg-white dark:bg-[#0c0c0e] h-full shadow-3xl flex flex-col border-l border-black/10 dark:border-white/10 text-slate-900 dark:text-white overflow-hidden">
                 
                 {/* Header */}
-                <div className="p-10 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40 transition-colors">
+                <div className="p-10 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40 transition-colors">
                    <div className="flex items-center gap-6">
                       <div className="w-16 h-16 bg-brand-blue/10 flex items-center justify-center text-brand-blue rounded-[1.5rem] shadow-inner border border-brand-blue/20">
                          <Coins size={32} />
@@ -271,13 +271,13 @@ export const CreditPacksTab: React.FC = () => {
                            <EditInput label="TÊN HIỂN THỊ TRÊN CHỢ (NAME) *" value={payload.name} onChange={(v: string) => setPayload({...payload, name: v})} />
                            <div className="space-y-2">
                               <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest px-2 italic">Mô tả ngắn</label>
-                              <textarea value={payload.description} onChange={e => setPayload({...payload, description: e.target.value})} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-5 rounded-2xl text-sm font-medium text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-brand-blue transition-all" rows={3} placeholder="Mô tả giá trị của gói nạp này cho khách hàng..." />
+                              <textarea value={payload.description} onChange={e => setPayload({...payload, description: e.target.value})} className="w-full bg-slate-100 dark:bg-white/5 border border-black/[0.04] dark:border-white/[0.04] p-5 rounded-2xl text-sm font-medium text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-brand-blue transition-all" rows={3} placeholder="Mô tả giá trị của gói nạp này cho khách hàng..." />
                            </div>
                         </div>
                         <div className="space-y-6">
                            <EditInput label="NHÃN NÚT BẤM (CTA TEXT)" value={payload.ctaText} onChange={(v: string) => setPayload({...payload, ctaText: v})} />
                            <EditInput label="TRỌNG SỐ SẮP XẾP (SORT ORDER)" type="number" value={payload.sortOrder?.toString() || '0'} onChange={(v: string) => setPayload({...payload, sortOrder: parseInt(v) || 0})} />
-                           <div className="flex items-center justify-between p-6 bg-slate-50 dark:bg-white/5 rounded-3xl border border-black/5 group">
+                           <div className="flex items-center justify-between p-6 bg-black/[0.02] dark:bg-white/[0.02] rounded-3xl border border-black/5 group">
                               <div className="flex items-center gap-4">
                                  <div className={`p-3 rounded-xl transition-all ${payload.active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}><Activity size={20}/></div>
                                  <div>
@@ -360,7 +360,7 @@ export const CreditPacksTab: React.FC = () => {
                       </div>
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                          <div className="grid grid-cols-2 gap-6">
-                            <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-2xl border border-black/5 flex flex-col gap-4">
+                            <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] rounded-2xl border border-black/5 flex flex-col gap-4">
                                <div className="flex items-center justify-between">
                                   <span className="text-[10px] font-black uppercase text-amber-500">PHỔ BIẾN</span>
                                   <button onClick={() => setPayload({...payload, popular: !payload.popular})} className={`p-1 transition-all ${payload.popular ? 'text-amber-500' : 'text-slate-400'}`}>
@@ -369,7 +369,7 @@ export const CreditPacksTab: React.FC = () => {
                                </div>
                                <p className="text-[8px] text-gray-400 uppercase italic">Gắn nhãn "Popular" để thu hút người dùng</p>
                             </div>
-                            <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-2xl border border-black/5 flex flex-col gap-4">
+                            <div className="p-6 bg-black/[0.02] dark:bg-white/[0.02] rounded-2xl border border-black/5 flex flex-col gap-4">
                                <div className="flex items-center justify-between">
                                   <span className="text-[10px] font-black uppercase text-brand-blue">NỔI BẬT</span>
                                   <button onClick={() => setPayload({...payload, highlight: !payload.highlight})} className={`p-1 transition-all ${payload.highlight ? 'text-brand-blue' : 'text-slate-400'}`}>
@@ -383,7 +383,7 @@ export const CreditPacksTab: React.FC = () => {
                             </div>
                          </div>
 
-                         <div className="p-8 bg-slate-50 dark:bg-white/5 rounded-3xl border border-black/5 space-y-6">
+                         <div className="p-8 bg-black/[0.02] dark:bg-white/[0.02] rounded-3xl border border-black/5 space-y-6">
                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic mb-2">Cấu hình Nuy-băng (Ribbon)</p>
                             <div className="grid grid-cols-2 gap-4">
                                <EditInput label="CHỮ HIỂN THỊ" value={payload.ribbon?.text || ''} onChange={(v: string) => setPayload({...payload, ribbon: { ...payload.ribbon!, text: v }})} />
@@ -421,7 +421,7 @@ export const CreditPacksTab: React.FC = () => {
                             </div>
                             <div className="space-y-4">
                                {payload.features?.map((f, idx) => (
-                                  <div key={idx} className="p-6 bg-slate-50 dark:bg-white/5 border border-black/5 rounded-2xl space-y-4 relative group">
+                                  <div key={idx} className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 rounded-2xl space-y-4 relative group">
                                      <div className="flex gap-4">
                                         <div className="flex-grow space-y-4">
                                            <div className="grid grid-cols-2 gap-4">
@@ -483,7 +483,7 @@ export const CreditPacksTab: React.FC = () => {
                             </div>
                             <div className="space-y-4">
                                {payload.unlimitedModels?.map((m, idx) => (
-                                  <div key={idx} className="p-6 bg-slate-50 dark:bg-white/5 border border-black/5 rounded-2xl space-y-4 relative group">
+                                  <div key={idx} className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 rounded-2xl space-y-4 relative group">
                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <input value={m.modelKey} onChange={e => {
                                            const next = [...payload.unlimitedModels!];
@@ -540,7 +540,7 @@ export const CreditPacksTab: React.FC = () => {
                       </div>
                       
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                         <div className="p-8 bg-slate-50 dark:bg-white/5 rounded-3xl border border-black/5 space-y-8">
+                         <div className="p-8 bg-black/[0.02] dark:bg-white/[0.02] rounded-3xl border border-black/5 space-y-8">
                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Màu nền Gradient</p>
                             <div className="grid grid-cols-2 gap-6">
                                <div className="space-y-2">
@@ -561,7 +561,7 @@ export const CreditPacksTab: React.FC = () => {
                             <div className="h-24 w-full rounded-2xl shadow-xl border border-white/10" style={{ background: `linear-gradient(135deg, ${payload.theme?.gradientFrom}, ${payload.theme?.gradientTo})` }}></div>
                          </div>
 
-                         <div className="p-8 bg-slate-50 dark:bg-white/5 rounded-3xl border border-black/5 space-y-8">
+                         <div className="p-8 bg-black/[0.02] dark:bg-white/[0.02] rounded-3xl border border-black/5 space-y-8">
                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Màu nhấn & Nút bấm</p>
                             <div className="space-y-6">
                                <div className="space-y-2">
@@ -596,7 +596,7 @@ export const CreditPacksTab: React.FC = () => {
                 </div>
 
                 {/* Footer */}
-                <div className="p-10 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/60 flex justify-between items-center gap-10 shrink-0 relative z-50">
+                <div className="p-10 border-t border-black/[0.04] dark:border-white/[0.04] bg-slate-50 dark:bg-black/60 flex justify-between items-center gap-10 shrink-0 relative z-50">
                    <button onClick={() => setIsDrawerOpen(false)} className="text-[12px] font-black uppercase tracking-widest text-gray-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2">
                       <X size={16}/> HỦY THAY ĐỔI
                    </button>
@@ -628,6 +628,6 @@ export const CreditPacksTab: React.FC = () => {
 const EditInput = ({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) => (
   <div className="space-y-2">
      <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest px-2 italic">{label}</label>
-     <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-5 rounded-2xl text-[12px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white shadow-inner" />
+     <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} className="w-full bg-slate-100 dark:bg-white/5 border border-black/[0.04] dark:border-white/[0.04] p-5 rounded-2xl text-[12px] font-black outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all text-slate-900 dark:text-white shadow-inner" />
   </div>
 );

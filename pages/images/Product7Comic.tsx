@@ -283,8 +283,8 @@ const Product7Comic = () => {
           <span>Designed for Production</span>
         </div>
         <div className="flex gap-8">
-          <a href="#" className="hover:text-[#FFE135] transition-colors">Privacy Registry</a>
-          <a href="#" className="hover:text-[#FFE135] transition-colors">Terms of Use</a>
+          <a href="/policy" className="hover:text-[#FFE135] transition-colors">Privacy Registry</a>
+          <a href="/policy" className="hover:text-[#FFE135] transition-colors">Terms of Use</a>
         </div>
       </footer>
 

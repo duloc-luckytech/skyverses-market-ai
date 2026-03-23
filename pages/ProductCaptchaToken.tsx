@@ -116,7 +116,7 @@ const ProductCaptchaToken = () => {
                  >
                     MUA TOKEN NGAY <Zap size={24} fill="currentColor" className="group-hover:rotate-12 transition-transform" />
                  </button>
-                 <a href="#/booking" className="px-16 py-8 border-2 border-black/20 text-black hover:bg-black hover:text-white text-sm font-black uppercase tracking-[0.4em] transition-all rounded-full italic">
+                 <a href="/booking" className="px-16 py-8 border-2 border-black/20 text-black hover:bg-black hover:text-white text-sm font-black uppercase tracking-[0.4em] transition-all rounded-full italic">
                     Tư vấn giải pháp API
                  </a>
               </div>

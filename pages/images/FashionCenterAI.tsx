@@ -284,9 +284,9 @@ const FashionCenterAI = () => {
               <p className="max-w-xs text-center md:text-left opacity-50 font-bold">Industrial-grade fashion asset production. Virtual try-on and high-fidelity visual synthesis.</p>
            </div>
            <div className="flex gap-12">
-              <a href="#" className="hover:text-pink-600 dark:hover:text-pink-500 transition-colors">Technical Docs</a>
-              <a href="#" className="hover:text-pink-600 dark:hover:text-pink-500 transition-colors">Privacy Registry</a>
-              <a href="#" className="hover:text-pink-600 dark:hover:text-pink-500 transition-colors">Support Node</a>
+              <a href="/policy" className="hover:text-pink-600 dark:hover:text-pink-500 transition-colors">Technical Docs</a>
+              <a href="/policy" className="hover:text-pink-600 dark:hover:text-pink-500 transition-colors">Privacy Registry</a>
+              <a href="/policy" className="hover:text-pink-600 dark:hover:text-pink-500 transition-colors">Support Node</a>
            </div>
         </div>
       </footer>

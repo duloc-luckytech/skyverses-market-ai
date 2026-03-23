@@ -1,31 +1,40 @@
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ShieldCheck, Send } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Send, CheckCircle, Loader2, 
+  User, Building2, Mail, Briefcase, Globe2, DollarSign, Clock,
+  MessageSquare, Rocket, Code2, Palette, Bot, Shield,
+  ArrowRight, Sparkles, Phone
+} from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const BookingPage = () => {
   const { t } = useLanguage();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     company: '',
     email: '',
-    type: 'Project Type',
-    industry: 'Industry',
-    budget: 'Estimated Budget',
-    timeline: 'Target Timeline',
+    type: '',
+    industry: '',
+    budget: '',
+    timeline: '',
     description: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // 1. Cấu trúc nội dung Email
+    // Simulate delay then open mailto
+    await new Promise(resolve => setTimeout(resolve, 800));
+
     const recipient = "support@skyverses.com";
-    const subject = `[Project Inquiry] ${formData.type} - ${formData.company}`;
-    
+    const subject = `[Project Inquiry] ${formData.type || 'General'} - ${formData.company}`;
     const emailBody = `
-Dear Skyverses Soul Production Team,
+Dear Skyverses Team,
 
 A new project inquiry has been submitted.
 
@@ -42,258 +51,337 @@ Target Timeline: ${formData.timeline}
 ${formData.description}
 
 -----------------------
-Submitted via Skyverses Portal.
+Submitted via Skyverses Booking Portal.
 `.trim();
 
-    // 2. Tạo mailto link và kích hoạt mở App Email
     const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
-    
-    // Mở ứng dụng email trên máy tính
     window.location.href = mailtoLink;
+
+    setIsSubmitting(false);
+    setIsSuccess(true);
+    setTimeout(() => setIsSuccess(false), 4000);
   };
 
-  const inputClasses = "w-full bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 rounded-xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-brand-blue/50 outline-none transition-all placeholder:text-neutral-400 dark:placeholder:text-neutral-600 text-black dark:text-white";
+  const services = [
+    { icon: <Code2 size={20} />, title: t('booking.service.1.title'), desc: t('booking.service.1.desc'), color: 'text-brand-blue', bg: 'bg-brand-blue/8' },
+    { icon: <Palette size={20} />, title: t('booking.service.2.title'), desc: t('booking.service.2.desc'), color: 'text-purple-500', bg: 'bg-purple-500/8' },
+    { icon: <Bot size={20} />, title: t('booking.service.3.title'), desc: t('booking.service.3.desc'), color: 'text-emerald-500', bg: 'bg-emerald-500/8' },
+  ];
+
+  const processSteps = [
+    t('booking.process.1'),
+    t('booking.process.2'),
+    t('booking.process.3'),
+  ];
 
   return (
-    <main className="min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white transition-colors duration-500 pt-32 pb-40">
-      <section className="max-w-7xl mx-auto px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
+    <main className="min-h-screen bg-[#fafafa] dark:bg-[#050507] text-slate-900 dark:text-white transition-colors duration-500 pt-28 pb-32">
+      
+      {/* Background */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-20%] left-[30%] w-[800px] h-[500px] bg-brand-blue/[0.03] dark:bg-brand-blue/[0.06] rounded-full blur-[120px]" />
+        <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-purple-500/[0.02] dark:bg-purple-500/[0.04] rounded-full blur-[120px]" />
+      </div>
 
-        {/* LEFT COLUMN – STUDIO INTRO */}
+      <div className="max-w-[1300px] mx-auto px-4 md:px-8 relative z-10">
+
+        {/* ═══════════════ HERO ═══════════════ */}
         <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="space-y-16"
+          initial={{ opacity: 0, y: 30 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16 max-w-3xl mx-auto"
         >
-          {/* Headline */}
-          <header className="space-y-8">
-            <h1 className="text-6xl lg:text-7xl font-black leading-[0.9] uppercase tracking-tighter italic">
-              {t('booking.title.1')} <br />
-              <span className="text-brand-blue">{t('booking.title.2')}</span>
-            </h1>
-
-            <div className="space-y-6 max-w-xl">
-              <p className="text-xl text-neutral-600 dark:text-neutral-400 font-medium leading-relaxed italic">
-                “{t('booking.intro')}”
-              </p>
-              <p className="text-base text-neutral-500 dark:text-neutral-500 font-medium leading-relaxed uppercase tracking-wider">
-                {t('booking.partner')}
-              </p>
-            </div>
-          </header>
-
-          {/* Services */}
-          <div className="space-y-10">
-            <h3 className="text-[10px] font-black tracking-[0.4em] uppercase text-neutral-400 dark:text-neutral-600">
-              {t('booking.services.title')}
-            </h3>
-
-            <ul className="space-y-8">
-              {[
-                { title: t('booking.service.1.title'), desc: t('booking.service.1.desc') },
-                { title: t('booking.service.2.title'), desc: t('booking.service.2.desc') },
-                { title: t('booking.service.3.title'), desc: t('booking.service.3.desc') }
-              ].map((service, idx) => (
-                <li key={idx} className="group space-y-2 border-l-2 border-transparent hover:border-brand-blue pl-6 transition-all">
-                  <h4 className="font-black text-xl uppercase italic tracking-tight group-hover:text-brand-blue transition-colors">
-                    {service.title}
-                  </h4>
-                  <p className="text-neutral-500 dark:text-neutral-400 text-sm font-medium leading-relaxed">
-                    {service.desc}
-                  </p>
-                </li>
-              ))}
-            </ul>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full mb-6">
+            <Rocket size={14} className="text-brand-blue" />
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">Custom Solutions</span>
           </div>
 
-          {/* Process */}
-          <div className="space-y-10">
-            <h3 className="text-[10px] font-black tracking-[0.4em] uppercase text-neutral-400 dark:text-neutral-600">
-              {t('booking.process.title')}
-            </h3>
-
-            <div className="space-y-6">
-              {[
-                t('booking.process.1'),
-                t('booking.process.2'),
-                t('booking.process.3')
-              ].map((p, i) => {
-                const parts = p.split('—');
-                const bold = parts[0];
-                const rest = parts.slice(1).join('—');
-                return (
-                  <div key={i} className="flex gap-4 items-start text-neutral-700 dark:text-neutral-300">
-                    <span className="text-brand-blue font-black italic">0{i+1}</span>
-                    <p className="text-sm font-medium leading-relaxed uppercase tracking-tight">
-                      <strong className="text-black dark:text-white">{bold}</strong> — {rest}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Delivery */}
-          <div className="pt-10 border-t border-neutral-100 dark:border-white/5 flex items-center gap-4 text-xs font-black uppercase tracking-widest text-neutral-400 dark:text-neutral-600 italic">
-            <ShieldCheck size={16} className="text-brand-blue" />
-            <span>{t('booking.footer.tags')}</span>
-          </div>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.1] mb-5">
+            {t('booking.title.1')}{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">
+              {t('booking.title.2')}
+            </span>
+          </h1>
+          
+          <p className="text-base text-slate-400 dark:text-gray-500 leading-relaxed max-w-xl mx-auto mb-3">
+            {t('booking.intro')}
+          </p>
+          <p className="text-xs text-slate-300 dark:text-gray-600 font-medium">
+            {t('booking.partner')}
+          </p>
         </motion.div>
 
-        {/* RIGHT COLUMN – PROJECT FORM */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="bg-neutral-50 dark:bg-[#080808] rounded-2xl p-8 lg:p-12 shadow-2xl border border-neutral-100 dark:border-white/5 relative overflow-hidden"
-        >
-          <div className="absolute top-0 left-0 w-full h-1 bg-brand-blue"></div>
-          
-          <div className="space-y-12 relative z-10">
-            <header className="space-y-4">
-              <h2 className="text-4xl font-black uppercase italic tracking-tighter">
-                {t('booking.form.title')}
-              </h2>
-              <p className="text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-widest text-xs">
-                {t('booking.form.subtitle')}
-              </p>
-            </header>
+        {/* ═══════════════ 2-COL LAYOUT ═══════════════ */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
 
-            <form onSubmit={handleSubmit} className="space-y-8">
+          {/* LEFT: Services + Process */}
+          <motion.div 
+            initial={{ opacity: 0, x: -15 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-2 space-y-8"
+          >
+            {/* Services */}
+            <div>
+              <h3 className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider mb-4 ml-1">Dịch vụ chúng tôi cung cấp</h3>
+              <div className="space-y-3">
+                {services.map((service, idx) => (
+                  <motion.div 
+                    key={idx}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + idx * 0.1 }}
+                    className="flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/20 transition-all group"
+                  >
+                    <div className={`w-10 h-10 rounded-lg ${service.bg} ${service.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                      {service.icon}
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-1">{service.title}</h4>
+                      <p className="text-xs text-slate-400 dark:text-gray-500 leading-relaxed">{service.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-neutral-400 ml-2 tracking-widest">{t('booking.form.name')}</label>
+            {/* Process */}
+            <div>
+              <h3 className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider mb-4 ml-1">{t('booking.process.title')}</h3>
+              <div className="space-y-4">
+                {processSteps.map((step, i) => {
+                  const parts = step.split('—');
+                  return (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="w-7 h-7 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center shrink-0 text-xs font-black mt-0.5">
+                        {i + 1}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-slate-700 dark:text-gray-300">{parts[0]}</p>
+                        {parts[1] && <p className="text-xs text-slate-400 dark:text-gray-500 mt-0.5">{parts.slice(1).join('—')}</p>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-black/[0.04] dark:border-white/[0.04]">
+              {[
+                { icon: <Shield size={14} />, text: 'NDA Available' },
+                { icon: <Clock size={14} />, text: 'Phản hồi 24h' },
+                { icon: <Sparkles size={14} />, text: '100+ Projects' },
+              ].map((badge, i) => (
+                <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg">
+                  <span className="text-brand-blue">{badge.icon}</span>
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500">{badge.text}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* RIGHT: Form */}
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.3 }}
+            className="lg:col-span-3 bg-white dark:bg-[#0a0a0e] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl"
+          >
+            {/* Form Header */}
+            <div className="px-6 md:px-8 py-6 border-b border-black/[0.04] dark:border-white/[0.04]">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{t('booking.form.title')}</h2>
+              <p className="text-xs text-slate-400 dark:text-gray-500">{t('booking.form.subtitle')}</p>
+            </div>
+
+            {/* Success Banner */}
+            <AnimatePresence>
+              {isSuccess && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex items-center gap-3 px-6 md:px-8 py-4 bg-emerald-500/5 border-b border-emerald-500/10">
+                    <CheckCircle size={18} className="text-emerald-500" />
+                    <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">Email client đã mở! Kiểm tra và gửi email.</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-5">
+              {/* Row: Name + Company */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-gray-400 ml-1">
+                    <User size={12} /> {t('booking.form.name')}
+                  </label>
                   <input
-                    required
-                    type="text"
-                    placeholder="e.g. Alex Rivera"
-                    className={inputClasses}
+                    required type="text" placeholder="VD: Nguyen Van A"
+                    className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 transition-all text-slate-800 dark:text-white placeholder:text-slate-300 dark:placeholder:text-gray-600"
                     value={formData.name}
                     onChange={e => setFormData({...formData, name: e.target.value})}
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-neutral-400 ml-2 tracking-widest">{t('booking.form.company')}</label>
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-gray-400 ml-1">
+                    <Building2 size={12} /> {t('booking.form.company')}
+                  </label>
                   <input
-                    required
-                    type="text"
-                    placeholder="e.g. Void Studios"
-                    className={inputClasses}
+                    required type="text" placeholder="VD: ABC Studio"
+                    className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 transition-all text-slate-800 dark:text-white placeholder:text-slate-300 dark:placeholder:text-gray-600"
                     value={formData.company}
                     onChange={e => setFormData({...formData, company: e.target.value})}
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-neutral-400 ml-2 tracking-widest">{t('booking.form.email')}</label>
+              {/* Email */}
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-gray-400 ml-1">
+                  <Mail size={12} /> {t('booking.form.email')}
+                </label>
                 <input
-                  required
-                  type="email"
-                  placeholder="alex@voidstudios.com"
-                  className={inputClasses}
+                  required type="email" placeholder="name@company.com"
+                  className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 transition-all text-slate-800 dark:text-white placeholder:text-slate-300 dark:placeholder:text-gray-600"
                   value={formData.email}
                   onChange={e => setFormData({...formData, email: e.target.value})}
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                   <label className="text-[10px] font-black uppercase text-neutral-400 ml-2 tracking-widest">{t('booking.form.type')}</label>
-                   <select 
-                     className={inputClasses}
-                     value={formData.type}
-                     onChange={e => setFormData({...formData, type: e.target.value})}
-                   >
-                    <option disabled>{t('booking.form.type')}</option>
+              {/* Row: Type + Industry */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-gray-400 ml-1">
+                    <Briefcase size={12} /> {t('booking.form.type')}
+                  </label>
+                  <select 
+                    className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 transition-all text-slate-800 dark:text-white appearance-none cursor-pointer"
+                    value={formData.type}
+                    onChange={e => setFormData({...formData, type: e.target.value})}
+                  >
+                    <option value="" disabled>Chọn loại dự án</option>
+                    <option>AI Tools & Automation</option>
+                    <option>SaaS Application</option>
                     <option>Game Development</option>
                     <option>Art & Design</option>
-                    <option>AI Tools & Automation</option>
                     <option>Full Production</option>
-                   </select>
+                  </select>
                 </div>
-
-                <div className="space-y-2">
-                   <label className="text-[10px] font-black uppercase text-neutral-400 ml-2 tracking-widest">{t('booking.form.industry')}</label>
-                   <select 
-                     className={inputClasses}
-                     value={formData.industry}
-                     onChange={e => setFormData({...formData, industry: e.target.value})}
-                   >
-                    <option disabled>{t('booking.form.industry')}</option>
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-gray-400 ml-1">
+                    <Globe2 size={12} /> {t('booking.form.industry')}
+                  </label>
+                  <select 
+                    className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 transition-all text-slate-800 dark:text-white appearance-none cursor-pointer"
+                    value={formData.industry}
+                    onChange={e => setFormData({...formData, industry: e.target.value})}
+                  >
+                    <option value="" disabled>Chọn lĩnh vực</option>
+                    <option>Marketing / Agency</option>
+                    <option>E-commerce</option>
                     <option>Game Studio</option>
-                    <option>Brand / Marketing</option>
                     <option>Startup</option>
                     <option>Enterprise</option>
-                    <option>Other</option>
-                   </select>
+                    <option>Education</option>
+                    <option>Khác</option>
+                  </select>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                   <label className="text-[10px] font-black uppercase text-neutral-400 ml-2 tracking-widest">{t('booking.form.budget')}</label>
-                   <select 
-                     className={inputClasses}
-                     value={formData.budget}
-                     onChange={e => setFormData({...formData, budget: e.target.value})}
-                   >
-                    <option disabled>{t('booking.form.budget')}</option>
-                    <option>&lt; $10k</option>
-                    <option>$10k – $30k</option>
-                    <option>$30k – $60k</option>
-                    <option>$60k+</option>
-                   </select>
+              {/* Row: Budget + Timeline */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-gray-400 ml-1">
+                    <DollarSign size={12} /> {t('booking.form.budget')}
+                  </label>
+                  <select 
+                    className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 transition-all text-slate-800 dark:text-white appearance-none cursor-pointer"
+                    value={formData.budget}
+                    onChange={e => setFormData({...formData, budget: e.target.value})}
+                  >
+                    <option value="" disabled>Chọn ngân sách</option>
+                    <option>&lt; $5,000</option>
+                    <option>$5,000 – $15,000</option>
+                    <option>$15,000 – $30,000</option>
+                    <option>$30,000+</option>
+                  </select>
                 </div>
-
-                <div className="space-y-2">
-                   <label className="text-[10px] font-black uppercase text-neutral-400 ml-2 tracking-widest">{t('booking.form.timeline')}</label>
-                   <select 
-                     className={inputClasses}
-                     value={formData.timeline}
-                     onChange={e => setFormData({...formData, timeline: e.target.value})}
-                   >
-                    <option disabled>{t('booking.form.timeline')}</option>
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-gray-400 ml-1">
+                    <Clock size={12} /> {t('booking.form.timeline')}
+                  </label>
+                  <select 
+                    className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 transition-all text-slate-800 dark:text-white appearance-none cursor-pointer"
+                    value={formData.timeline}
+                    onChange={e => setFormData({...formData, timeline: e.target.value})}
+                  >
+                    <option value="" disabled>Chọn timeline</option>
                     <option>ASAP</option>
-                    <option>1–2 Months</option>
-                    <option>3–6 Months</option>
-                    <option>Flexible</option>
-                   </select>
+                    <option>1–2 tháng</option>
+                    <option>3–6 tháng</option>
+                    <option>Linh hoạt</option>
+                  </select>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-neutral-400 ml-2 tracking-widest">{t('booking.form.desc')}</label>
+              {/* Description */}
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-gray-400 ml-1">
+                  <MessageSquare size={12} /> {t('booking.form.desc')}
+                </label>
                 <textarea
-                  required
-                  rows={5}
-                  placeholder="Tell us about the scope, timeline, and goals..."
-                  className={`${inputClasses} resize-none`}
+                  required rows={4}
+                  placeholder="Mô tả chi tiết dự án: mục tiêu, phạm vi, kỹ thuật mong muốn..."
+                  className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 transition-all text-slate-800 dark:text-white resize-none placeholder:text-slate-300 dark:placeholder:text-gray-600"
                   value={formData.description}
                   onChange={e => setFormData({...formData, description: e.target.value})}
                 />
               </div>
 
-              <div className="pt-4 space-y-6">
+              {/* Submit */}
+              <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-6 rounded-xl bg-brand-blue text-white font-black uppercase tracking-[0.3em] hover:brightness-110 shadow-2xl shadow-brand-blue/20 transition-all flex items-center justify-center gap-4 group"
+                  disabled={isSubmitting}
+                  className="w-full py-4 rounded-xl bg-brand-blue text-white font-bold text-sm flex items-center justify-center gap-2 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-60 shadow-lg shadow-brand-blue/20"
                 >
-                  {t('booking.form.submit')}
-                  <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  {isSubmitting ? (
+                    <><Loader2 size={16} className="animate-spin" /> Đang xử lý...</>
+                  ) : (
+                    <><Send size={16} /> {t('booking.form.submit')}</>
+                  )}
                 </button>
-
-                <p className="text-[10px] text-neutral-500 text-center font-black uppercase tracking-widest italic">
-                  {t('booking.form.footer')}
-                </p>
               </div>
 
+              <p className="text-center text-[10px] text-slate-300 dark:text-gray-600">
+                {t('booking.form.footer')}
+              </p>
             </form>
+          </motion.div>
+        </div>
+
+        {/* ═══════════════ CONTACT STRIP ═══════════════ */}
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          whileInView={{ opacity: 1 }} 
+          viewport={{ once: true }}
+          className="mt-16 text-center"
+        >
+          <p className="text-xs text-slate-400 dark:text-gray-500 mb-3">Hoặc liên hệ trực tiếp</p>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a href="mailto:support@skyverses.com" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl text-sm font-bold text-slate-600 dark:text-gray-400 hover:text-brand-blue hover:border-brand-blue/20 transition-all">
+              <Mail size={16} /> support@skyverses.com
+            </a>
+            <a href="tel:+84123456789" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl text-sm font-bold text-slate-600 dark:text-gray-400 hover:text-brand-blue hover:border-brand-blue/20 transition-all">
+              <Phone size={16} /> Hotline
+            </a>
           </div>
         </motion.div>
 
-      </section>
+      </div>
     </main>
   );
 };

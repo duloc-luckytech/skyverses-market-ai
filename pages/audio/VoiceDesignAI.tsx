@@ -323,11 +323,11 @@ const VoiceDesignAI: React.FC = () => {
               <p className="max-w-xs text-center md:text-left opacity-70 font-bold leading-relaxed">Industrial-grade AI voice synthesis. Build expressive, natural identities for global deployment.</p>
            </div>
            <div className="flex gap-12">
-              <a href="#" className="hover:text-[#7C7CFF] transition-colors">Pricing</a>
-              <a href="#" className="hover:text-[#7C7CFF] transition-colors">Docs</a>
-              <a href="#" className="hover:text-[#7C7CFF] transition-colors">API</a>
-              <a href="#" className="hover:text-[#7C7CFF] transition-colors">Privacy</a>
-              <a href="#" className="hover:text-[#7C7CFF] transition-colors">Terms</a>
+              <a href="/policy" className="hover:text-[#7C7CFF] transition-colors">Pricing</a>
+              <a href="/policy" className="hover:text-[#7C7CFF] transition-colors">Docs</a>
+              <a href="/policy" className="hover:text-[#7C7CFF] transition-colors">API</a>
+              <a href="/policy" className="hover:text-[#7C7CFF] transition-colors">Privacy</a>
+              <a href="/policy" className="hover:text-[#7C7CFF] transition-colors">Terms</a>
            </div>
         </div>
         <div className="mt-12 text-center text-[8px] opacity-20 uppercase tracking-[0.3em]">

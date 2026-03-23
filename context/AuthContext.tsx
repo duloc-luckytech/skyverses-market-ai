@@ -53,9 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const hostname = window.location.hostname;
     const isPreview = hostname.includes('stackblitz') || 
                       hostname.includes('web-platform') || 
-                      hostname.includes('github.io') ||
-                      hostname === 'localhost' ||
-                      hostname === '127.0.0.1';
+                      hostname.includes('github.io');
     
     setIsSandboxEnv(isPreview);
 
@@ -130,29 +128,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = () => {
     const g = (window as any).google;
-    if (isSandboxEnv || authError === "ORIGIN_NOT_ALLOWED") {
+    if (isSandboxEnv) {
       mockLogin();
       return;
     }
 
     if (g && g.accounts) {
       setAuthError(null);
-      let promptTriggered = false;
       try {
         g.accounts.id.prompt((notification: any) => {
-          promptTriggered = true;
-          if (notification.isNotDisplayed() || notification.isSkipped()) {
-            mockLogin();
+          if (notification.isNotDisplayed()) {
+            console.warn("[AUTH] Google One Tap not displayed, reason:", notification.getNotDisplayedReason());
+            setAuthError("GOOGLE_PROMPT_FAILED");
+          } else if (notification.isSkipped()) {
+            console.warn("[AUTH] Google One Tap skipped, reason:", notification.getSkippedReason());
           }
         });
-        setTimeout(() => {
-          if (!promptTriggered) mockLogin();
-        }, 1200);
       } catch (err) {
-        mockLogin();
+        console.error("[AUTH] Google prompt error:", err);
+        setAuthError("GOOGLE_PROMPT_FAILED");
       }
     } else {
-      mockLogin();
+      console.warn("[AUTH] Google SDK not loaded");
+      setAuthError("GOOGLE_NOT_LOADED");
     }
   };
 

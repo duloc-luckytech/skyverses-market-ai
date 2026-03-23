@@ -14,7 +14,6 @@ import MarketSearchTerminal from '../components/MarketSearchTerminal';
 import AIModelsMarquee from '../components/AIModelsMarquee';
 import ExploreMoreAI from '../components/ExploreMoreAI';
 import { motion, AnimatePresence } from 'framer-motion';
-import { handleAdminQuickLogin } from '../utils/adminAuth';
 
 // Import các sub-components
 import { FeaturedSkeleton, CardSkeleton } from '../components/market/MarketSkeleton';

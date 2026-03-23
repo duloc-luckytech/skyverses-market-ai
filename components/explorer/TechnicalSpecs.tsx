@@ -1,5 +1,5 @@
 import React from 'react';
-import { Info, Cpu, Zap, Maximize2, Calendar } from 'lucide-react';
+import { Cpu, Zap, Maximize2, Calendar } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
 interface TechnicalSpecsProps {
@@ -13,25 +13,23 @@ interface TechnicalSpecsProps {
 const TechnicalSpecs: React.FC<TechnicalSpecsProps> = ({ modelKey, engine, resolution, seed, createdAt }) => {
   const { t } = useLanguage();
   const specs = [
-    { label: 'Model AI', val: modelKey || 'Gemini 3 Pro', icon: <Cpu size={12}/> },
-    { label: t('settings.compute.performance'), val: engine || 'Skyverses Cluster', icon: <Zap size={12}/> },
-    { label: 'Độ phân giải', val: resolution || '1080p (Native)', icon: <Maximize2 size={12}/> },
-    { label: 'Created', val: createdAt ? new Date(createdAt).toLocaleDateString('vi-VN') : 'Mới đây', icon: <Calendar size={12}/> }
+    { label: 'Model', val: (modelKey || 'Gemini 3 Pro').replace(/_/g, ' '), icon: <Cpu size={13} /> },
+    { label: 'Engine', val: engine || 'Skyverses Cluster', icon: <Zap size={13} /> },
+    { label: 'Resolution', val: resolution || '1080p', icon: <Maximize2 size={13} /> },
+    { label: 'Created', val: createdAt ? new Date(createdAt).toLocaleDateString('vi-VN') : 'Mới đây', icon: <Calendar size={13} /> }
   ];
 
   return (
-    <div className="space-y-6 pt-2">
-      <div className="flex items-center gap-3 px-1">
-        <Info size={14} className="text-brand-blue" />
-        <h4 className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400 dark:text-gray-500">{t('explorer.modal.specs')}</h4>
-      </div>
-      <div className="grid grid-cols-1 gap-2">
+    <div className="space-y-3">
+      <h4 className="text-[12px] font-semibold text-slate-400 dark:text-gray-500 px-1">{t('explorer.modal.specs')}</h4>
+      <div className="grid grid-cols-2 gap-2">
         {specs.map(spec => (
-          <div key={spec.label} className="flex justify-between items-center p-4 bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.04] transition-all">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-3">
-               {spec.icon} {spec.label}
-            </span>
-            <span className="text-[11px] font-black text-slate-800 dark:text-white uppercase tracking-tight italic">{spec.val}</span>
+          <div key={spec.label} className="p-3 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
+            <div className="flex items-center gap-1.5 text-slate-400 dark:text-gray-500 mb-1">
+              {spec.icon}
+              <span className="text-[11px] font-medium">{spec.label}</span>
+            </div>
+            <p className="text-[13px] font-semibold text-slate-700 dark:text-white truncate">{spec.val}</p>
           </div>
         ))}
       </div>

@@ -183,34 +183,44 @@ const AISupportChat: React.FC = () => {
 
   return (
     <>
-      <div className="fixed top-1/2 right-0 -translate-y-1/2 z-[600] pointer-events-auto">
+      <div className="fixed bottom-[5.5rem] right-[1.65rem] z-[600]">
         <motion.button
-          whileHover={{ scale: 1.05, x: -4 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Support Assistant"
-          className={`relative w-14 h-16 md:w-16 md:h-20 rounded-l-[1.8rem] rounded-r-none flex items-center justify-center overflow-hidden group shadow-[-10px_0_40px_rgba(0,144,255,0.15)] transition-all duration-500 border-y border-l ${
+          className={`relative w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 ${
             isOpen 
-            ? 'bg-black dark:bg-white text-white dark:text-black border-transparent' 
-            : 'bg-white/90 dark:bg-[#0d0d10]/90 backdrop-blur-md border-black/5 dark:border-white/10'
+            ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-xl' 
+            : 'bg-white dark:bg-[#161618] text-brand-blue shadow-lg hover:shadow-xl'
           }`}
         >
+          {/* AI Orbiting Ring */}
           {!isOpen && (
-            <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_270deg,#0090ff_360deg)] animate-[spin_3s_linear_infinite] opacity-60 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute -inset-[3px] rounded-full animate-[ai-orbit_3s_linear_infinite]" style={{
+              background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, #0090ff 300deg, #a855f7 330deg, transparent 360deg)',
+              mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+              WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+            }} />
           )}
-          <div className={`relative flex flex-col items-center justify-center transition-all duration-500 z-10 ${
-            isOpen ? 'text-white dark:text-black' : 'text-brand-blue'
-          }`}>
-            {isOpen ? (
-              <X size={24} />
-            ) : (
-              <div className="flex flex-col items-center gap-1">
-                <img src={logoUrl} alt="Skyverses Assistant" className="w-7 h-7 md:w-8 md:h-8 object-contain" />
-                <span className="text-[7px] font-black uppercase tracking-tighter opacity-60 group-hover:opacity-100">AI</span>
-              </div>
-            )}
+          {/* Glow */}
+          {!isOpen && (
+            <div className="absolute inset-0 rounded-full bg-brand-blue/15 blur-md animate-pulse" />
+          )}
+          {/* Border */}
+          <div className={`absolute inset-0 rounded-full border ${isOpen ? 'border-transparent' : 'border-black/[0.06] dark:border-white/[0.08]'}`} />
+          {/* Icon */}
+          <div className="relative z-10">
+            {isOpen ? <X size={18} /> : <Bot size={18} />}
           </div>
         </motion.button>
+
+        <style>{`
+          @keyframes ai-orbit {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
 
       <AnimatePresence>

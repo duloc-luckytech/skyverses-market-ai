@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Terminal, Copy, Check } from 'lucide-react';
 
@@ -19,43 +18,44 @@ const ContentInfo: React.FC<ContentInfoProps> = ({ title, description, prompt })
   };
 
   return (
-    <div className="space-y-10">
-      {/* Tiêu đề & Mô tả */}
-      <div className="space-y-4">
-         <h2 className="text-2xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white leading-tight">
-           {title}
-         </h2>
-         {description && (
-           <p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed italic border-l-2 border-brand-blue pl-4 py-1">
-             "{description}"
-           </p>
-         )}
+    <div className="space-y-5">
+      {/* Title & Description */}
+      <div className="space-y-2">
+        <h2 className="text-xl font-bold text-slate-800 dark:text-white leading-tight tracking-tight">
+          {title}
+        </h2>
+        {description && (
+          <p className="text-sm text-slate-400 dark:text-gray-500 leading-relaxed">
+            {description}
+          </p>
+        )}
       </div>
 
-      {/* Khu vực Prompt */}
+      {/* Prompt Section */}
       {prompt && (
-        <div className="space-y-4 p-6 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/5 rounded-2xl relative group overflow-hidden transition-colors shadow-inner">
-          <div className="absolute top-0 left-0 w-1 h-full bg-brand-blue opacity-50"></div>
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-3">
-              <Terminal size={14} className="text-brand-blue" />
-              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-500">Kịch bản (Prompt)</h4>
+        <div className="rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] overflow-hidden">
+          <div className="flex justify-between items-center px-4 py-2.5 border-b border-black/[0.04] dark:border-white/[0.04]">
+            <div className="flex items-center gap-2">
+              <Terminal size={13} className="text-brand-blue" />
+              <span className="text-[12px] font-medium text-slate-500 dark:text-gray-400">Prompt</span>
             </div>
             <button 
               onClick={handleCopyPrompt}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all shadow-sm ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
                 isCopied 
-                ? 'bg-emerald-500 text-white' 
-                : 'bg-white dark:bg-white/5 text-slate-500 dark:text-gray-400 hover:bg-brand-blue hover:text-white'
+                ? 'bg-emerald-500/10 text-emerald-600' 
+                : 'text-slate-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-slate-600 dark:hover:text-white'
               }`}
             >
-              {isCopied ? <Check size={12} strokeWidth={3} /> : <Copy size={12} />}
-              {isCopied ? 'ĐÃ SAO CHÉP' : 'SAO CHÉP'}
+              {isCopied ? <Check size={12} /> : <Copy size={12} />}
+              {isCopied ? 'Đã sao chép' : 'Sao chép'}
             </button>
           </div>
-          <p className="text-[14px] leading-relaxed text-slate-700 dark:text-gray-300 font-medium italic selection:bg-brand-blue/30 line-clamp-6 group-hover:line-clamp-none transition-all duration-500">
-            {prompt}
-          </p>
+          <div className="p-4">
+            <p className="text-[13px] leading-relaxed text-slate-600 dark:text-gray-300 selection:bg-brand-blue/20 line-clamp-6 hover:line-clamp-none transition-all cursor-text">
+              {prompt}
+            </p>
+          </div>
         </div>
       )}
     </div>

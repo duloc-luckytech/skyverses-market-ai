@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
@@ -29,6 +29,7 @@ import FavoritesPage from './pages/FavoritesPage';
 import ReferralPage from './pages/ReferralPage';
 import PolicyPage from './pages/PolicyPage';
 import AdminMarketCMS from './pages/AdminMarketCMS';
+import MarketsPage from './pages/MarketsPage';
 
 // Product Page Imports
 import AIImageGenerator from './pages/images/AIImageGenerator';
@@ -85,6 +86,7 @@ const App: React.FC = () => {
                       <Route path="/" element={<MarketPage />} />
                       <Route path="/category/:id" element={<CategoryPage />} />
                       <Route path="/explorer" element={<ExplorerPage />} />
+                      <Route path="/markets" element={<MarketsPage />} />
                       <Route path="/models" element={<ModelsPage />} />
                       <Route path="/apps" element={<AppsPage />} />
                       <Route path="/app/:id" element={<AppInterfacePage />} />

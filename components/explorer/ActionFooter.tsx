@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { RefreshCw, Video, Download, Maximize2, Edit3, Box } from 'lucide-react';
 
@@ -14,44 +13,45 @@ const ActionFooter: React.FC<ActionFooterProps> = ({ mediaUrl, type, onUpscale, 
   const is3D = type === 'game_asset_3d';
 
   return (
-    <div className="p-8 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 shrink-0 space-y-4 transition-colors">
+    <div className="p-5 border-t border-black/[0.04] dark:border-white/[0.04] shrink-0 space-y-3">
+      {/* Primary Action */}
       {is3D ? (
         <button 
           onClick={onOpenStudio}
-          className="w-full bg-brand-blue text-white py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-[0_15px_40px_rgba(0,144,255,0.2)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 italic group"
+          className="w-full bg-brand-blue text-white py-3 rounded-xl text-[13px] font-semibold hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
         >
-          <Box size={16} strokeWidth={3} className="group-hover:scale-110 transition-transform duration-300" /> MỞ TRONG 3D STUDIO
+          <Box size={15} /> Mở trong 3D Studio
         </button>
       ) : (
-        <button className="w-full bg-[#dfff1a] text-black py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-[0_15px_40px_rgba(223,255,26,0.2)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 italic group">
-          <RefreshCw size={16} strokeWidth={3} className="group-hover:rotate-180 transition-transform duration-700" /> TÁI TỔNG HỢP Ý TƯỞNG
+        <button className="w-full bg-brand-blue text-white py-3 rounded-xl text-[13px] font-semibold hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+          <RefreshCw size={15} /> Tái tạo từ prompt
         </button>
       )}
       
-      <div className="grid grid-cols-2 gap-3">
-        <button className="p-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl flex items-center justify-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all shadow-sm">
-          <Video size={14} /> TẠO CHUYỂN ĐỘNG
+      {/* Secondary Actions */}
+      <div className="grid grid-cols-2 gap-2">
+        <button className="py-2.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl flex items-center justify-center gap-1.5 text-[12px] font-medium text-slate-600 dark:text-gray-300 hover:border-brand-blue/30 transition-all">
+          <Video size={13} /> Tạo video
         </button>
         <a 
-          href={mediaUrl} 
-          download 
-          className="p-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl flex items-center justify-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all shadow-sm"
+          href={mediaUrl} download 
+          className="py-2.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl flex items-center justify-center gap-1.5 text-[12px] font-medium text-slate-600 dark:text-gray-300 hover:border-brand-blue/30 transition-all"
         >
-          <Download size={14} /> TẢI XUỐNG GỐC
+          <Download size={13} /> Tải xuống
         </a>
         <button 
           onClick={() => isUpscaleSupported && onUpscale()}
           disabled={!isUpscaleSupported}
-          className={`p-4 border border-black/10 dark:border-white/10 rounded-xl flex items-center justify-center gap-3 text-[9px] font-black uppercase tracking-widest transition-all shadow-sm ${
+          className={`py-2.5 border border-black/[0.04] dark:border-white/[0.04] rounded-xl flex items-center justify-center gap-1.5 text-[12px] font-medium transition-all ${
             isUpscaleSupported 
-            ? 'bg-white dark:bg-white/5 text-slate-700 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-black' 
-            : 'bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50'
+            ? 'bg-slate-50 dark:bg-white/[0.03] text-slate-600 dark:text-gray-300 hover:border-brand-blue/30' 
+            : 'bg-slate-50 dark:bg-white/[0.01] text-slate-300 dark:text-gray-600 cursor-not-allowed'
           }`}
         >
-          <Maximize2 size={14} /> NÂNG CẤP (UPSCALE)
+          <Maximize2 size={13} /> Upscale
         </button>
-        <button className="p-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl flex items-center justify-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-700 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all shadow-sm">
-          <Edit3 size={14} /> CHỈNH SỬA (EDIT)
+        <button className="py-2.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl flex items-center justify-center gap-1.5 text-[12px] font-medium text-slate-600 dark:text-gray-300 hover:border-brand-blue/30 transition-all">
+          <Edit3 size={13} /> Chỉnh sửa
         </button>
       </div>
     </div>

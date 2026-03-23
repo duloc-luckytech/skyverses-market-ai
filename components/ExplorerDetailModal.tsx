@@ -59,21 +59,18 @@ const ExplorerDetailModal: React.FC<ExplorerDetailModalProps> = ({ item, onClose
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[1000] bg-white/95 dark:bg-black/98 flex flex-col md:flex-row items-center justify-center overflow-hidden transition-colors duration-500"
+        className="fixed inset-0 z-[1000] bg-white dark:bg-[#0a0a0c] flex flex-col md:flex-row overflow-hidden transition-colors"
       >
-        {/* PHẦN TRÁI: VIEWPORT TRÌNH CHIẾU */}
-        <div className="flex-grow w-full h-[45vh] md:h-full flex flex-col relative overflow-hidden group">
-          {/* Mobile Controller Overlay */}
-          <div className="absolute top-6 left-6 right-6 flex items-center justify-between z-50 md:hidden">
-            <button 
-              onClick={onClose}
-              className="p-3 bg-white/80 dark:bg-black/40 backdrop-blur-md rounded-full text-slate-900 dark:text-white border border-black/5 dark:border-white/10 shadow-lg"
-            >
-              <X size={20} />
+        {/* LEFT: MEDIA VIEWPORT */}
+        <div className="flex-grow w-full h-[45vh] md:h-full flex flex-col relative overflow-hidden">
+          {/* Mobile close button */}
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-50 md:hidden">
+            <button onClick={onClose} className="p-2.5 bg-white/90 dark:bg-black/50 backdrop-blur-md rounded-xl text-slate-700 dark:text-white border border-black/[0.04] dark:border-white/[0.06] shadow-sm">
+              <X size={18} />
             </button>
-            <div className="flex gap-2">
-              <button className="p-3 bg-brand-blue text-white rounded-full shadow-lg"><Heart size={16} fill="currentColor" /></button>
-            </div>
+            <button className="p-2.5 bg-brand-blue text-white rounded-xl shadow-sm">
+              <Heart size={14} fill="currentColor" />
+            </button>
           </div>
 
           <MediaViewport 
@@ -85,16 +82,16 @@ const ExplorerDetailModal: React.FC<ExplorerDetailModalProps> = ({ item, onClose
           />
         </div>
 
-        {/* PHẦN PHẢI: SIDEBAR THÔNG TIN CHI TIẾT */}
-        <aside className="w-full md:w-[480px] h-[55vh] md:h-full bg-white dark:bg-[#0d0d0f] border-l border-black/5 dark:border-white/5 flex flex-col shrink-0 z-[60] shadow-2xl transition-colors duration-500">
+        {/* RIGHT: SIDEBAR */}
+        <aside className="w-full md:w-[420px] h-[55vh] md:h-full bg-white dark:bg-[#0e0e12] border-l border-black/[0.04] dark:border-white/[0.04] flex flex-col shrink-0 z-[60] transition-colors">
           
           <SidebarHeader 
-            authorName={item.authorName || 'Kiến trúc sư Skyverses'} 
+            authorName={item.authorName || 'Skyverses Creator'} 
             onClose={onClose} 
           />
 
-          {/* Nội dung cuộn của Sidebar */}
-          <div className="flex-grow overflow-y-auto no-scrollbar p-8 space-y-10">
+          {/* Scrollable Content */}
+          <div className="flex-grow overflow-y-auto no-scrollbar px-5 py-5 space-y-6">
             <ContentInfo 
               title={item.title}
               description={item.description}

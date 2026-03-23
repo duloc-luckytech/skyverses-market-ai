@@ -3,8 +3,15 @@ import React from 'react';
 import { PRICING_PACKAGES } from '../data';
 import { Link } from 'react-router-dom';
 import { Check, Info, ArrowRight, HelpCircle } from 'lucide-react';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const PricingPage = () => {
+  usePageMeta({
+    title: 'Bảng giá | Skyverses - Chi phí dịch vụ AI',
+    description: 'Xem bảng giá dịch vụ phát triển AI của Skyverses. Từ tư vấn đến triển khai toàn diện, đáp ứng mọi quy mô doanh nghiệp.',
+    keywords: 'AI pricing, bảng giá AI, dịch vụ AI, Skyverses pricing',
+    canonical: '/pricing'
+  });
   return (
     <div className="pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-4">

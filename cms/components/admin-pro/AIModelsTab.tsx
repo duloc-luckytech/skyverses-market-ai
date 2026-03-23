@@ -155,16 +155,16 @@ export const AIModelsTab: React.FC = () => {
             { label: 'Image', value: stats.image, color: 'text-sky-500' },
             { label: 'Video', value: stats.video, color: 'text-purple-500' },
           ].map(s => (
-            <div key={s.label} className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-100 dark:border-white/5">
+            <div key={s.label} className="flex items-center gap-2 px-3 py-1.5 bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-slate-100 dark:border-white/5">
               <span className="text-[9px] font-bold uppercase text-slate-400 tracking-wider">{s.label}</span>
               <span className={`text-sm font-bold ${s.color}`}>{s.value}</span>
             </div>
           ))}
           <div className="ml-auto flex items-center gap-3">
-            <button onClick={fetchData} className="flex items-center gap-2 px-4 py-2 text-[10px] font-bold uppercase text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-100 dark:border-white/5 transition-all">
+            <button onClick={fetchData} className="flex items-center gap-2 px-4 py-2 text-[10px] font-bold uppercase text-slate-400 hover:text-slate-900 dark:hover:text-white bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-slate-100 dark:border-white/5 transition-all">
               <RefreshCw size={12} className={loading ? 'animate-spin' : ''} /> Làm mới
             </button>
-            <button onClick={handleAddNew} className="flex items-center gap-2 px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-violet-600/20 transition-all">
+            <button onClick={handleAddNew} className="flex items-center gap-2 px-5 py-2.5 bg-brand-blue hover:bg-brand-blue text-white rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-brand-blue/20 transition-all">
               <Plus size={14} strokeWidth={3} /> Thêm Model
             </button>
           </div>
@@ -177,22 +177,22 @@ export const AIModelsTab: React.FC = () => {
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Tìm model, key, provider..."
-              className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg pl-9 pr-4 py-2.5 text-xs outline-none focus:border-violet-500 text-slate-800 dark:text-white transition-all"
+              className="w-full bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg pl-9 pr-4 py-2.5 text-xs outline-none focus:border-brand-blue text-slate-800 dark:text-white transition-all"
             />
           </div>
 
-          <div className="flex bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10 p-0.5">
+          <div className="flex bg-slate-100 dark:bg-white/5 rounded-lg border border-black/[0.04] dark:border-white/[0.04] p-0.5">
             {[{ key: '', label: 'Tất cả' }, { key: 'text', label: 'Text' }, { key: 'image', label: 'Image' }, { key: 'video', label: 'Video' }, { key: 'audio', label: 'Audio' }].map(c => (
               <button key={c.key} onClick={() => setCategoryFilter(c.key)}
-                className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${categoryFilter === c.key ? 'bg-white dark:bg-white/10 text-violet-600 dark:text-violet-400 shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}
+                className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${categoryFilter === c.key ? 'bg-white dark:bg-white/10 text-brand-blue dark:text-brand-blue shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}
               >{c.label}</button>
             ))}
           </div>
 
-          <div className="flex bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10 p-0.5">
+          <div className="flex bg-slate-100 dark:bg-white/5 rounded-lg border border-black/[0.04] dark:border-white/[0.04] p-0.5">
             {[{ key: '', label: 'Tất cả' }, { key: 'active', label: 'Active', icon: <Eye size={11} /> }, { key: 'inactive', label: 'Inactive', icon: <EyeOff size={11} /> }].map(s => (
               <button key={s.key} onClick={() => setStatusFilter(s.key)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${statusFilter === s.key ? 'bg-white dark:bg-white/10 text-violet-600 dark:text-violet-400 shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${statusFilter === s.key ? 'bg-white dark:bg-white/10 text-brand-blue dark:text-brand-blue shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}
               >{s.icon}{s.label}</button>
             ))}
           </div>
@@ -202,7 +202,7 @@ export const AIModelsTab: React.FC = () => {
       {/* Content */}
       <div className="flex-grow overflow-y-auto p-6 space-y-6">
         {loading ? (
-          <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-violet-500" size={32} /></div>
+          <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-brand-blue" size={32} /></div>
         ) : groupedByCategory.length === 0 ? (
           <div className="text-center py-20 opacity-40">
             <Bot size={48} className="mx-auto mb-4" />
@@ -212,9 +212,9 @@ export const AIModelsTab: React.FC = () => {
           groupedByCategory.map(([category, catModels]) => {
             const catCfg = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.text;
             return (
-              <div key={category} className="rounded-xl border border-slate-200 dark:border-white/[0.06] overflow-hidden bg-white dark:bg-[#0a0a0c]">
+              <div key={category} className="rounded-xl border border-black/[0.04] dark:border-white/[0.04] overflow-hidden bg-white dark:bg-[#0a0a0c]">
                 {/* Category Header */}
-                <div className="flex items-center justify-between px-5 py-3 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200 dark:border-white/[0.06]">
+                <div className="flex items-center justify-between px-5 py-3 bg-slate-50 dark:bg-white/[0.02] border-b border-black/[0.04] dark:border-white/[0.04]">
                   <div className="flex items-center gap-2.5">
                     <div className={`w-7 h-7 rounded-lg flex items-center justify-center border ${catCfg.bg}`}>
                       {catCfg.icon}
@@ -231,7 +231,7 @@ export const AIModelsTab: React.FC = () => {
                   {catModels.map(model => (
                     <div key={model._id} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50/50 dark:hover:bg-white/[0.015] transition-colors group">
                       {/* Logo */}
-                      <div className="w-9 h-9 rounded-lg bg-slate-900 dark:bg-black flex items-center justify-center p-1.5 border border-slate-200 dark:border-white/10 shrink-0 shadow-sm">
+                      <div className="w-9 h-9 rounded-lg bg-slate-900 dark:bg-black flex items-center justify-center p-1.5 border border-black/[0.04] dark:border-white/[0.04] shrink-0 shadow-sm">
                         {model.logoUrl ? (
                           <img src={model.logoUrl} className="w-full h-full object-contain" alt="" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                         ) : (
@@ -243,7 +243,7 @@ export const AIModelsTab: React.FC = () => {
                       <div className="flex-grow min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">{model.name}</p>
-                          <span className={`shrink-0 px-1.5 py-0.5 text-[8px] font-bold rounded border ${model.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-slate-200/50 dark:bg-white/5 text-slate-400 border-slate-200 dark:border-white/10'}`}>
+                          <span className={`shrink-0 px-1.5 py-0.5 text-[8px] font-bold rounded border ${model.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-slate-200/50 dark:bg-white/5 text-slate-400 border-black/[0.04] dark:border-white/[0.04]'}`}>
                             {model.status}
                           </span>
                         </div>
@@ -252,7 +252,7 @@ export const AIModelsTab: React.FC = () => {
                           {model.provider && (
                             <>
                               <span className="text-slate-300 dark:text-slate-600">·</span>
-                              <span className="text-violet-500 font-semibold">{model.provider}</span>
+                              <span className="text-brand-blue font-semibold">{model.provider}</span>
                             </>
                           )}
                           {model.route && (
@@ -273,7 +273,7 @@ export const AIModelsTab: React.FC = () => {
                           {model.status === 'active' ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
                         </button>
                         <button onClick={() => handleDuplicate(model)} title="Nhân bản" className="p-1.5 rounded-md hover:bg-sky-500/10 text-slate-400 hover:text-sky-500 transition-all"><Copy size={13} /></button>
-                        <button onClick={() => handleEdit(model)} title="Chỉnh sửa" className="p-1.5 rounded-md hover:bg-violet-500/10 text-slate-400 hover:text-violet-500 transition-all"><Edit3 size={13} /></button>
+                        <button onClick={() => handleEdit(model)} title="Chỉnh sửa" className="p-1.5 rounded-md hover:bg-brand-blue/10 text-slate-400 hover:text-brand-blue transition-all"><Edit3 size={13} /></button>
                         <button onClick={() => handleDelete(model._id)} title="Xóa" className="p-1.5 rounded-md hover:bg-red-500/10 text-slate-400 hover:text-red-500 transition-all"><Trash2 size={13} /></button>
                       </div>
                     </div>
@@ -290,11 +290,11 @@ export const AIModelsTab: React.FC = () => {
         {isDrawerOpen && (
           <div className="fixed inset-0 z-[1100] flex justify-end">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsDrawerOpen(false)} />
-            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="relative w-full max-w-lg bg-white dark:bg-[#0c0c0e] h-full shadow-3xl flex flex-col border-l border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
+            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="relative w-full max-w-lg bg-white dark:bg-[#0c0c0e] h-full shadow-3xl flex flex-col border-l border-black/[0.04] dark:border-white/[0.04] text-slate-900 dark:text-white">
               {/* Header */}
-              <div className="p-5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40">
+              <div className="p-5 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/40">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-violet-500/10 flex items-center justify-center text-violet-500 rounded-lg"><Bot size={16} /></div>
+                  <div className="w-8 h-8 bg-brand-blue/10 flex items-center justify-center text-brand-blue rounded-lg"><Bot size={16} /></div>
                   <div>
                     <h3 className="text-sm font-bold">{editingId ? 'Chỉnh sửa Model' : 'Thêm Model mới'}</h3>
                     <p className="text-[9px] text-slate-400">AI Model Registry</p>
@@ -316,7 +316,7 @@ export const AIModelsTab: React.FC = () => {
                   </div>
                   <FormInput label="Logo URL" value={payload.logoUrl} onChange={v => setPayload({ ...payload, logoUrl: v })} placeholder="https://..." />
                   {payload.logoUrl && (
-                    <div className="flex items-center gap-3 px-3 py-2 bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-100 dark:border-white/5">
+                    <div className="flex items-center gap-3 px-3 py-2 bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-slate-100 dark:border-white/5">
                       <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center p-1.5">
                         <img src={payload.logoUrl} className="w-full h-full object-contain" alt="Preview" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                       </div>
@@ -325,7 +325,7 @@ export const AIModelsTab: React.FC = () => {
                   )}
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mô tả</label>
-                    <textarea value={payload.description} onChange={e => setPayload({ ...payload, description: e.target.value })} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-3 rounded-lg text-xs text-slate-900 dark:text-white outline-none focus:border-violet-500" rows={2} placeholder="Mô tả model..." />
+                    <textarea value={payload.description} onChange={e => setPayload({ ...payload, description: e.target.value })} className="w-full bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] p-3 rounded-lg text-xs text-slate-900 dark:text-white outline-none focus:border-brand-blue" rows={2} placeholder="Mô tả model..." />
                   </div>
                 </FormSection>
 
@@ -333,14 +333,14 @@ export const AIModelsTab: React.FC = () => {
                   <div className="grid grid-cols-3 gap-3">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Category</label>
-                      <select value={payload.category} onChange={e => setPayload({ ...payload, category: e.target.value })} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-3 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                      <select value={payload.category} onChange={e => setPayload({ ...payload, category: e.target.value })} className="w-full bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] p-3 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
                         {['text', 'image', 'video', 'audio'].map(o => <option key={o} value={o}>{o.charAt(0).toUpperCase() + o.slice(1)}</option>)}
                       </select>
                     </div>
                     <FormInput label="Thứ tự" type="number" value={payload.order?.toString() || '0'} onChange={v => setPayload({ ...payload, order: parseInt(v) || 0 })} />
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status</label>
-                      <select value={payload.status} onChange={e => setPayload({ ...payload, status: e.target.value })} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-3 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
+                      <select value={payload.status} onChange={e => setPayload({ ...payload, status: e.target.value })} className="w-full bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] p-3 rounded-lg text-xs font-semibold text-slate-900 dark:text-white">
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
                         <option value="draft">Draft</option>
@@ -351,9 +351,9 @@ export const AIModelsTab: React.FC = () => {
               </div>
 
               {/* Footer */}
-              <div className="p-5 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/40 flex justify-between items-center gap-4 shrink-0">
+              <div className="p-5 border-t border-black/[0.04] dark:border-white/[0.04] bg-slate-50 dark:bg-black/40 flex justify-between items-center gap-4 shrink-0">
                 <button onClick={() => setIsDrawerOpen(false)} className="text-xs font-semibold text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors">Hủy</button>
-                <button onClick={handleSave} disabled={isSaving} className="bg-violet-600 hover:bg-violet-700 text-white px-8 py-3 rounded-lg text-xs font-bold flex items-center gap-3 shadow-lg shadow-violet-600/20 transition-all disabled:opacity-50">
+                <button onClick={handleSave} disabled={isSaving} className="bg-brand-blue hover:bg-brand-blue text-white px-8 py-3 rounded-lg text-xs font-bold flex items-center gap-3 shadow-lg shadow-brand-blue/20 transition-all disabled:opacity-50">
                   {isSaving ? <Loader2 className="animate-spin" size={14} /> : <Check size={14} />}
                   {editingId ? 'Cập nhật' : 'Tạo mới'}
                 </button>
@@ -371,7 +371,7 @@ export const AIModelsTab: React.FC = () => {
 ===================================================== */
 const FormSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="space-y-3">
-    <h4 className="text-[10px] font-bold uppercase text-violet-500 tracking-wider border-b border-violet-500/20 pb-2">{title}</h4>
+    <h4 className="text-[10px] font-bold uppercase text-brand-blue tracking-wider border-b border-brand-blue/20 pb-2">{title}</h4>
     <div className="space-y-3">{children}</div>
   </div>
 );
@@ -379,6 +379,6 @@ const FormSection: React.FC<{ title: string; children: React.ReactNode }> = ({ t
 const FormInput = ({ label, value, onChange, type = "text", placeholder = "" }: { label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string }) => (
   <div className="space-y-1.5">
     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{label}</label>
-    <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-3 rounded-lg text-xs font-semibold outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/20 text-slate-900 dark:text-white transition-all" />
+    <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} className="w-full bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] p-3 rounded-lg text-xs font-semibold outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 text-slate-900 dark:text-white transition-all" />
   </div>
 );

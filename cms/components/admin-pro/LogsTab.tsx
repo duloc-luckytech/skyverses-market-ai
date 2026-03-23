@@ -108,7 +108,7 @@ export const LogsTab: React.FC<LogsTabProps> = ({ remoteSolutions }) => {
                  <span>Failed: {logs.filter(l => l.status === 'FAILED').length}</span>
               </div>
            </div>
-           <button onClick={fetchData} className="p-3 bg-slate-50 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-xl transition-all border border-black/5 dark:border-white/10">
+           <button onClick={fetchData} className="p-3 bg-black/[0.02] dark:bg-white/[0.02] hover:bg-brand-blue hover:text-white rounded-xl transition-all border border-black/5 dark:border-white/10">
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
            </button>
         </div>

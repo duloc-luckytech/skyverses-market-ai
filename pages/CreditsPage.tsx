@@ -1,29 +1,27 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Zap, Crown, ShieldCheck, 
-  ArrowRight, ImageIcon, Video,
-  BrainCircuit, LayoutGrid, Sparkles,
-  Lock, Activity, TrendingUp,
-  Cpu, Database, Code2, ArrowUpRight,
-  Info, Check, X, HelpCircle, Gift,
-  Coins, AlertCircle, Loader2, Star
+  Zap, Sparkles, ArrowRight, Check, X, Loader2, Star,
+  Shield, Cpu, Globe2, ChevronDown, Gift, CreditCard, RefreshCw,
+  Video, ImageIcon, Music, Mic, Wand2, Crown
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { creditsApi, CreditPackage } from '../apis/credits';
 import CreditPurchaseModal from '../components/CreditPurchaseModal';
 
+const USD_TO_VND = 26000;
+const formatVND = (usd: number) => Math.round(usd * USD_TO_VND).toLocaleString('vi-VN');
+
 const CreditsPage = () => {
   const { t } = useLanguage();
   const { credits, isAuthenticated, login } = useAuth();
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   const [selectedPackForModal, setSelectedPackForModal] = useState<CreditPackage | null>(null);
-  
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
   const [packages, setPackages] = useState<CreditPackage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchPacks = async () => {
@@ -31,7 +29,6 @@ const CreditsPage = () => {
       try {
         const res = await creditsApi.getAdminPackages();
         if (res.data) {
-          // Lọc các gói theo chu kỳ đang chọn hoặc hiển thị linh hoạt
           setPackages(res.data.sort((a, b) => a.sortOrder - b.sortOrder));
         }
       } catch (error) {
@@ -57,212 +54,328 @@ const CreditsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#050505] text-black dark:text-white pt-32 pb-40 transition-colors duration-500 overflow-x-hidden selection:bg-brand-blue/30">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#050507] text-black dark:text-white pt-28 pb-32 transition-colors duration-500 overflow-x-hidden selection:bg-brand-blue/30">
       
-      {/* Background Decor */}
+      {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0">
-         <div className="absolute top-0 right-0 w-[1000px] h-[1000px] bg-brand-blue/5 dark:bg-brand-blue/10 rounded-full blur-[150px] pointer-events-none"></div>
-         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)', backgroundSize: '100px 100px' }}></div>
+        <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[1200px] h-[600px] bg-gradient-to-b from-brand-blue/[0.04] to-transparent dark:from-brand-blue/[0.08] rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-purple-500/[0.02] dark:bg-purple-500/[0.04] rounded-full blur-[120px]" />
       </div>
 
-      <div className="max-w-[1600px] mx-auto px-6 relative z-10">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
         
-        {/* --- HERO SECTION --- */}
-        <div className="text-center space-y-12 mb-20 max-w-4xl mx-auto">
-           <div className="space-y-6">
-             <motion.h1 
-               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-               className="text-7xl lg:text-[100px] font-black tracking-tighter uppercase italic leading-[0.85]"
-             >
-               SÁNG TẠO <br /> KHÔNG <span className="text-brand-blue">GIỚI HẠN.</span>
-             </motion.h1>
-             <motion.p 
-               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-               className="text-gray-500 dark:text-gray-400 text-xl lg:text-2xl font-medium max-w-3xl mx-auto italic leading-relaxed"
-             >
-               “Credits được dùng cho mọi công cụ trong Skyverses Market — từ tạo video điện ảnh, hình ảnh AI đến prompt và workflow tự động.”
-             </motion.p>
-           </div>
+        {/* ═══════════════ HERO ═══════════════ */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.7 }}
+          className="text-center mb-16 md:mb-20 max-w-3xl mx-auto"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full mb-6">
+            <Zap size={14} className="text-brand-blue" fill="currentColor" />
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">Universal Credits</span>
+          </div>
+          
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] mb-6">
+            Mua Credits một lần,{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">
+              dùng cho tất cả
+            </span>
+          </h1>
+          
+          <p className="text-base md:text-lg text-slate-400 dark:text-gray-500 leading-relaxed max-w-2xl mx-auto mb-8">
+            Không subscription, không lock-in. Mua Credits theo nhu cầu và sử dụng cho hơn 30 sản phẩm AI — Video, Image, Voice, Music và nhiều hơn nữa.
+          </p>
 
-           {/* BILLING SWITCHER */}
-           <div className="flex flex-col items-center gap-6">
-              <div className="flex items-center gap-6 bg-black/5 dark:bg-white/5 p-2 rounded-full border border-black/5 dark:border-white/10">
-                 <button 
-                   onClick={() => setBillingCycle('monthly')}
-                   className={`px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${billingCycle === 'monthly' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-xl' : 'text-gray-500'}`}
-                 >
-                   Hàng tháng
-                 </button>
-                 <div className="flex items-center gap-4">
-                    <button 
-                      onClick={() => setBillingCycle('annual')}
-                      className={`px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${billingCycle === 'annual' ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-xl' : 'text-gray-500'}`}
-                    >
-                      Hàng năm
-                    </button>
-                    <span className="bg-pink-600 text-white text-[9px] font-black px-3 py-1 rounded-full animate-pulse">GIẢM ĐẾN -85%</span>
-                 </div>
+          {/* Current Balance */}
+          {isAuthenticated && (
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl shadow-sm">
+              <div className="w-8 h-8 rounded-xl bg-brand-blue/10 flex items-center justify-center">
+                <Sparkles size={16} className="text-brand-blue" fill="currentColor" />
               </div>
-              <button className="flex items-center gap-2 px-6 py-2 bg-[#dfff1a] text-black rounded-full text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all">
-                <Info size={14} /> Cách để tiết kiệm Credit
-              </button>
-           </div>
-        </div>
+              <div className="text-left">
+                <p className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Số dư hiện tại</p>
+                <p className="text-lg font-black text-brand-blue">{(credits || 0).toLocaleString()} <span className="text-xs font-bold text-slate-400">credits</span></p>
+              </div>
+            </div>
+          )}
+        </motion.div>
 
-        {/* --- PRICING GRID --- */}
-        <section className="mb-40">
-           {loading ? (
-              <div className="py-40 flex flex-col items-center justify-center gap-6">
-                 <Loader2 className="w-16 h-16 text-brand-blue animate-spin" />
-                 <p className="text-[11px] font-black uppercase tracking-[0.5em] text-gray-500 animate-pulse">Đang nạp bảng giá hệ thống...</p>
+        {/* ═══════════════ HOW CREDITS WORK ═══════════════ */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-16 md:mb-20 max-w-4xl mx-auto"
+        >
+          {[
+            { icon: <CreditCard size={20} />, title: 'Chọn gói phù hợp', desc: 'Mua gói Credits hoặc nạp tuỳ ý. Gói lớn hơn = giá tốt hơn.', color: 'text-brand-blue', bg: 'bg-brand-blue/8' },
+            { icon: <Wand2 size={20} />, title: 'Sử dụng mọi nơi', desc: 'Dùng Credits cho bất kỳ tool AI nào — không giới hạn sản phẩm.', color: 'text-purple-500', bg: 'bg-purple-500/8' },
+            { icon: <RefreshCw size={20} />, title: 'Không hết hạn', desc: 'Credits còn lại mãi mãi. Nạp thêm bất cứ lúc nào bạn muốn.', color: 'text-emerald-500', bg: 'bg-emerald-500/8' },
+          ].map((item, idx) => (
+            <div key={idx} className="flex items-start gap-4 p-5 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04]">
+              <div className={`w-10 h-10 rounded-xl ${item.bg} ${item.color} flex items-center justify-center shrink-0`}>{item.icon}</div>
+              <div>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{item.title}</h4>
+                <p className="text-xs text-slate-400 dark:text-gray-500 leading-relaxed">{item.desc}</p>
               </div>
-           ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-                {packages.map((pack) => {
-                  // Logic xác định style dựa trên theme hoặc code
-                  const isUltimate = pack.code.toLowerCase().includes('ultimate') || pack.popular;
-                  const isCreator = pack.code.toLowerCase().includes('creator');
-                  
-                  return (
-                    <div 
-                      key={pack._id}
-                      className={`relative flex flex-col bg-white dark:bg-[#111114] rounded-[2rem] border-2 transition-all duration-500 overflow-hidden shadow-2xl ${
-                        isUltimate ? 'border-[#dfff1a] scale-105 z-20' : 
-                        isCreator ? 'border-pink-600' : 
-                        'border-black/5 dark:border-white/5'
-                      }`}
-                    >
-                      {/* Popular Tag */}
-                      {isUltimate && (
-                        <div className="bg-[#dfff1a] text-black py-2 flex items-center justify-center gap-2">
-                           <Star size={12} fill="currentColor" />
-                           <span className="text-[10px] font-black uppercase tracking-widest">PHỔ BIẾN NHẤT</span>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* ═══════════════ PRICING GRID ═══════════════ */}
+        <section className="mb-20 md:mb-28">
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight mb-2">Chọn gói Credits</h2>
+            <p className="text-sm text-slate-400 dark:text-gray-500">Chọn gói phù hợp với nhu cầu sáng tạo của bạn</p>
+          </motion.div>
+
+          {loading ? (
+            <div className="py-32 flex flex-col items-center justify-center gap-4">
+              <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Đang tải bảng giá...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
+              {packages.map((pack, packIdx) => {
+                const isPopular = pack.code.toLowerCase().includes('ultimate') || pack.popular;
+                const isCreator = pack.code.toLowerCase().includes('creator');
+                
+                const accentColor = isPopular ? 'brand-blue' : isCreator ? 'purple-500' : 'slate-300';
+                const accentBg = isPopular ? 'bg-brand-blue' : isCreator ? 'bg-purple-500' : 'bg-slate-900 dark:bg-white';
+                const accentText = isPopular ? 'text-white' : isCreator ? 'text-white' : 'text-white dark:text-black';
+
+                return (
+                  <motion.div 
+                    key={pack._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: packIdx * 0.1 }}
+                    className={`relative flex flex-col rounded-2xl border overflow-hidden transition-all duration-500 ${
+                      isPopular 
+                        ? 'border-brand-blue/40 shadow-xl shadow-brand-blue/10 dark:shadow-brand-blue/5 scale-[1.02] z-10' 
+                        : isCreator 
+                          ? 'border-purple-500/30 shadow-lg' 
+                          : 'border-black/[0.06] dark:border-white/[0.06] shadow-sm hover:shadow-lg'
+                    } bg-white dark:bg-[#0c0c10]`}
+                  >
+                    {/* Popular Badge */}
+                    {isPopular && (
+                      <div className="bg-brand-blue text-white py-2.5 flex items-center justify-center gap-2">
+                        <Crown size={12} fill="currentColor" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.3em]">Phổ biến nhất</span>
+                      </div>
+                    )}
+
+                    {/* Ribbon */}
+                    {pack.ribbon?.text && !isPopular && (
+                      <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 flex items-center justify-center gap-2">
+                        <Gift size={12} />
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">{pack.ribbon.text}</span>
+                      </div>
+                    )}
+
+                    <div className="p-7 md:p-8 flex flex-col flex-grow">
+                      {/* Name & Description */}
+                      <div className="mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-xl font-black tracking-tight">{pack.name}</h3>
+                          {pack.badge && (
+                            <span className="text-[8px] font-black uppercase px-2 py-1 bg-pink-500/10 text-pink-500 rounded-md border border-pink-500/20 tracking-wider">{pack.badge}</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-400 dark:text-gray-500 leading-relaxed">{pack.description}</p>
+                      </div>
+
+                      {/* Price */}
+                      <div className="mb-6">
+                        <div className="flex items-baseline gap-2">
+                          {pack.originalPrice && pack.originalPrice > pack.price && (
+                            <span className="text-sm font-bold text-slate-300 dark:text-gray-600 line-through">{formatVND(pack.originalPrice)}₫</span>
+                          )}
+                          <span className="text-3xl md:text-4xl font-black tracking-tight">{formatVND(pack.price)}<span className="text-lg">₫</span></span>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-1">≈ ${pack.price} / tháng • Tỷ giá 1$ = {USD_TO_VND.toLocaleString()}₫</p>
+                        {pack.originalPrice && pack.originalPrice > pack.price && (
+                          <span className="inline-block mt-2 px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[9px] font-black rounded-md border border-emerald-500/20">
+                            Tiết kiệm {Math.round((1 - pack.price / pack.originalPrice) * 100)}%
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Credits Badge */}
+                      <div className={`flex items-center gap-3 p-3.5 rounded-xl mb-6 ${isPopular ? 'bg-brand-blue/5 border border-brand-blue/15' : isCreator ? 'bg-purple-500/5 border border-purple-500/15' : 'bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04]'}`}>
+                        <Sparkles size={18} className={isPopular ? 'text-brand-blue' : isCreator ? 'text-purple-500' : 'text-slate-400'} fill="currentColor" />
+                        <div>
+                          <p className="text-base font-black tracking-tight">{pack.totalCredits?.toLocaleString() || pack.credits.toLocaleString()} <span className="text-xs font-bold text-slate-400">credits/tháng</span></p>
+                        </div>
+                      </div>
+
+                      {/* CTA Button */}
+                      <button 
+                        onClick={() => handleUpgradeClick(pack)}
+                        className={`w-full py-4 rounded-xl text-[11px] font-black uppercase tracking-[0.15em] transition-all active:scale-[0.97] shadow-sm hover:shadow-lg ${accentBg} ${accentText} ${
+                          isPopular ? 'hover:shadow-brand-blue/20' : isCreator ? 'hover:shadow-purple-500/20' : ''
+                        }`}
+                      >
+                        Chọn gói này <ArrowRight size={14} className="inline ml-1" />
+                      </button>
+
+                      {/* Features */}
+                      <div className="mt-6 pt-6 border-t border-black/[0.04] dark:border-white/[0.04] space-y-3 flex-grow">
+                        {pack.features?.map((feat, i) => (
+                          <div key={i} className={`flex gap-3 items-start ${feat.enabled ? '' : 'opacity-25'}`}>
+                            {feat.enabled ? (
+                              <div className="w-5 h-5 rounded-md bg-emerald-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                                <Check size={12} className="text-emerald-500" strokeWidth={3} />
+                              </div>
+                            ) : (
+                              <div className="w-5 h-5 rounded-md bg-slate-100 dark:bg-white/5 flex items-center justify-center shrink-0 mt-0.5">
+                                <X size={12} className="text-slate-300 dark:text-gray-600" strokeWidth={3} />
+                              </div>
+                            )}
+                            <div>
+                              <p className="text-xs font-bold text-slate-700 dark:text-gray-300 leading-tight">{feat.label}</p>
+                              {feat.highlight && <span className="inline-block mt-1 text-[7px] font-black px-1.5 py-0.5 bg-pink-500/10 text-pink-500 rounded border border-pink-500/20 uppercase tracking-wider">Bonus</span>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Unlimited Models */}
+                      {pack.unlimitedModels && pack.unlimitedModels.length > 0 && (
+                        <div className="mt-6 pt-6 border-t border-black/[0.04] dark:border-white/[0.04]">
+                          <p className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] mb-3">Unlimited Access</p>
+                          <div className="space-y-2">
+                            {pack.unlimitedModels.map((model, i) => (
+                              <div key={i} className={`flex items-center justify-between px-3 py-2 rounded-lg ${model.enabled ? 'bg-brand-blue/5 border border-brand-blue/10' : 'opacity-20 border border-black/[0.04] dark:border-white/[0.04]'}`}>
+                                <div className="flex items-center gap-2">
+                                  {model.enabled ? <Check size={12} className="text-brand-blue" strokeWidth={3} /> : <X size={12} className="text-slate-300" />}
+                                  <span className="text-[10px] font-bold">{model.label}</span>
+                                </div>
+                                {model.enabled && (
+                                  <span className={`text-[7px] font-black uppercase px-1.5 py-0.5 rounded ${model.highlight ? 'bg-brand-blue text-white' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}`}>
+                                    {model.badge || '∞'}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
-
-                      {/* Limited Offer Ribbon */}
-                      {pack.ribbon?.text && (
-                         <div className="bg-pink-600 text-white py-2 flex items-center justify-center gap-2">
-                            <Sparkles size={12} fill="currentColor" />
-                            <span className="text-[10px] font-black uppercase tracking-widest italic">{pack.ribbon.text}</span>
-                         </div>
-                      )}
-
-                      <div className="p-10 flex flex-col flex-grow space-y-10">
-                         {/* Header Info */}
-                         <div className="space-y-4">
-                            <div className="flex justify-between items-start">
-                               <h3 className="text-3xl font-black uppercase italic tracking-tighter">{pack.name}</h3>
-                               {pack.badge && (
-                                  <span className="bg-pink-600/10 text-pink-600 text-[9px] font-black px-2 py-1 rounded-sm border border-pink-500/20">{pack.badge}</span>
-                               )}
-                            </div>
-                            <p className="text-xs text-gray-500 font-medium leading-relaxed">{pack.description}</p>
-                         </div>
-
-                         {/* Pricing Display */}
-                         <div className="space-y-2">
-                            <div className="flex items-baseline gap-3">
-                               {pack.originalPrice && pack.originalPrice > pack.price && (
-                                 <span className="text-2xl font-black text-pink-600 line-through opacity-60 italic tracking-tighter">${pack.originalPrice}</span>
-                               )}
-                               <span className="text-6xl font-black italic tracking-tighter">${pack.price}</span>
-                               <span className="text-gray-500 font-bold uppercase text-xs">/tháng</span>
-                            </div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Thanh toán cho {pack.billedMonths} tháng</p>
-                         </div>
-
-                         {/* Select Button */}
-                         <button 
-                           onClick={() => handleUpgradeClick(pack)}
-                           className={`w-full py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 ${
-                             isUltimate ? 'bg-[#dfff1a] text-black hover:brightness-110' : 
-                             isCreator ? 'bg-pink-600 text-white shadow-pink-500/20' : 
-                             'bg-white dark:bg-[#1a1a1e] border border-black/10 dark:border-white/10 text-black dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black'
-                           }`}
-                         >
-                            CHỌN GÓI NÀY
-                         </button>
-
-                         {/* Core Credit Stats */}
-                         <div className="space-y-2 pt-2">
-                            <div className="flex items-center gap-3">
-                               <Sparkles className={isUltimate ? 'text-[#dfff1a]' : isCreator ? 'text-pink-600' : 'text-brand-blue'} size={18} fill="currentColor" />
-                               <span className="text-base font-black italic tracking-tight">{pack.totalCredits?.toLocaleString() || pack.credits.toLocaleString()} credits mỗi tháng</span>
-                            </div>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest pl-7 italic">= {Math.floor(pack.credits/2)} Nano Banana Pro</p>
-                         </div>
-
-                         {/* Feature Checklist */}
-                         <div className="space-y-4 py-8 border-y border-black/5 dark:border-white/5">
-                            {pack.features?.map((feat, i) => (
-                               <div key={i} className={`flex gap-4 items-start ${feat.enabled ? 'opacity-100' : 'opacity-30'}`}>
-                                  {feat.enabled ? (
-                                    <Check size={16} className="text-white mt-0.5 shrink-0" strokeWidth={4} />
-                                  ) : (
-                                    <X size={16} className="text-gray-500 mt-0.5 shrink-0" strokeWidth={4} />
-                                  )}
-                                  <div className="space-y-1">
-                                    <p className="text-xs font-bold uppercase tracking-tight leading-tight">{feat.label}</p>
-                                    {feat.highlight && <span className="inline-block bg-pink-600 text-white text-[7px] font-black px-1.5 py-0.5 rounded-sm uppercase tracking-widest">EXTRA</span>}
-                                  </div>
-                               </div>
-                            ))}
-                         </div>
-
-                         {/* Unlimited Grid Section */}
-                         <div className="space-y-6">
-                            <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-[0.4em] italic">TRUY CẬP KHÔNG GIỚI HẠN</h4>
-                            <div className="space-y-2.5">
-                               {pack.unlimitedModels?.map((model, i) => (
-                                  <div key={i} className={`flex items-center justify-between p-2.5 rounded-lg border ${model.enabled ? 'border-brand-blue/30 bg-brand-blue/5' : 'border-black/5 dark:border-white/5 opacity-20'}`}>
-                                     <div className="flex items-center gap-3">
-                                        {model.enabled ? <Check size={12} className="text-brand-blue" strokeWidth={4} /> : <X size={12} className="text-gray-500" />}
-                                        <span className="text-[10px] font-bold uppercase tracking-tight">{model.label}</span>
-                                     </div>
-                                     {model.enabled && (
-                                        <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-sm ${model.highlight ? 'bg-[#dfff1a] text-black' : 'bg-brand-blue text-white'}`}>
-                                          {model.badge || 'UNLIMITED'}
-                                        </span>
-                                     )}
-                                  </div>
-                               ))}
-                            </div>
-                         </div>
-
-                         {/* Footer Link */}
-                         <div className="pt-6">
-                            <button className="w-full py-4 border border-black/10 dark:border-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-brand-blue hover:border-brand-blue transition-all">
-                               Tìm hiểu thêm về Unlimited
-                            </button>
-                         </div>
-                      </div>
                     </div>
-                  );
-                })}
-              </div>
-           )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </section>
 
-        {/* --- FOOTER EXPLAINER --- Centered FAQ Section */}
-        <div className="mt-40 border-t border-black/5 dark:border-white/10 pt-24 max-w-4xl mx-auto">
-           <div className="space-y-12">
-              <h2 className="text-5xl font-black uppercase italic tracking-tighter text-center">Câu hỏi thường gặp</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 {[
-                   { q: 'Gói đăng ký có tự động gia hạn không?', a: 'Có, các gói sẽ tự động gia hạn vào cuối chu kỳ. Bạn có thể hủy bất cứ lúc nào trong cài đặt.' },
-                   { q: 'Tôi có thể nâng cấp giữa chừng không?', a: 'Hoàn toàn được. Hệ thống sẽ tính toán chênh lệch Credit và thời gian còn lại cho bạn.' },
-                   { q: 'Unlimited Model là gì?', a: 'Là quyền truy cập không tốn Credit vào một số Model AI nhất định trong suốt thời gian đăng ký.' },
-                   { q: 'Hỗ trợ kỹ thuật 24/7?', a: 'Tất cả các gói trả phí đều nhận được hỗ trợ ưu tiên từ đội ngũ kỹ sư của Skyverses.' }
-                 ].map((faq, i) => (
-                    <div key={i} className="p-8 bg-black/5 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-2xl group hover:border-brand-blue/30 transition-all">
-                       <h4 className="text-sm font-black uppercase tracking-widest mb-3 flex items-center gap-3 text-slate-800 dark:text-white"><ArrowUpRight size={16} className="text-brand-blue" /> {faq.q}</h4>
-                       <p className="text-sm text-gray-500 dark:text-gray-400 font-medium italic leading-relaxed">{faq.a}</p>
-                    </div>
-                 ))}
-              </div>
-           </div>
-        </div>
+        {/* ═══════════════ WHAT CAN YOU CREATE ═══════════════ */}
+        <section className="mb-20 md:mb-28">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight mb-3">
+              Credits dùng được cho <span className="text-brand-blue">mọi thứ</span>
+            </h2>
+            <p className="text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto">Một loại credit, dùng cho hơn 30 công cụ AI khác nhau</p>
+          </motion.div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 max-w-5xl mx-auto">
+            {[
+              { icon: <Video size={22} />, name: 'Video AI', cost: '~20-120', color: 'text-red-500', bg: 'bg-red-500/8' },
+              { icon: <ImageIcon size={22} />, name: 'Image AI', cost: '~2-15', color: 'text-brand-blue', bg: 'bg-brand-blue/8' },
+              { icon: <Mic size={22} />, name: 'Voice AI', cost: '~5-15', color: 'text-amber-500', bg: 'bg-amber-500/8' },
+              { icon: <Music size={22} />, name: 'Music AI', cost: '~10-30', color: 'text-pink-500', bg: 'bg-pink-500/8' },
+              { icon: <Wand2 size={22} />, name: 'Enhance AI', cost: '~3-10', color: 'text-purple-500', bg: 'bg-purple-500/8' },
+              { icon: <Cpu size={22} />, name: 'Workflow', cost: '~5-50', color: 'text-emerald-500', bg: 'bg-emerald-500/8' },
+            ].map((tool, idx) => (
+              <motion.div 
+                key={tool.name}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.05 }}
+                className="group p-5 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.1] dark:hover:border-white/[0.1] transition-all text-center"
+              >
+                <div className={`w-12 h-12 rounded-xl ${tool.bg} ${tool.color} flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
+                  {tool.icon}
+                </div>
+                <p className="text-xs font-bold text-slate-900 dark:text-white mb-1">{tool.name}</p>
+                <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500">{tool.cost} credits</p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* ═══════════════ TRUST STRIP ═══════════════ */}
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          whileInView={{ opacity: 1 }} 
+          viewport={{ once: true }}
+          className="flex flex-wrap items-center justify-center gap-6 md:gap-10 py-10 mb-20 border-y border-black/[0.04] dark:border-white/[0.04]"
+        >
+          {[
+            { icon: <Shield size={16} />, text: 'Thanh toán an toàn 100%' },
+            { icon: <Globe2 size={16} />, text: 'Hỗ trợ đa ngôn ngữ' },
+            { icon: <RefreshCw size={16} />, text: 'Credits không hết hạn' },
+            { icon: <Zap size={16} />, text: 'Hoàn tiền trong 7 ngày' },
+          ].map((item, idx) => (
+            <div key={idx} className="flex items-center gap-2 text-slate-400 dark:text-gray-500">
+              <span className="text-brand-blue">{item.icon}</span>
+              <span className="text-xs font-bold">{item.text}</span>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* ═══════════════ FAQ ═══════════════ */}
+        <section className="max-w-3xl mx-auto mb-20">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight mb-2">Câu hỏi thường gặp</h2>
+            <p className="text-sm text-slate-400 dark:text-gray-500">Mọi thứ bạn cần biết về Credits</p>
+          </motion.div>
+
+          <div className="space-y-3">
+            {[
+              { q: 'Credits có hết hạn không?', a: 'Không. Credits bạn mua sẽ còn mãi mãi cho đến khi sử dụng hết. Không có thời hạn sử dụng.' },
+              { q: 'Tôi có thể dùng Credits cho sản phẩm nào?', a: 'Tất cả sản phẩm trong Skyverses Market — Video AI, Image AI, Voice Studio, Music AI, Workflow, Background Removal, Upscale và hơn 30 công cụ khác.' },
+              { q: 'Mỗi lần tạo ảnh/video tốn bao nhiêu Credits?', a: 'Tuỳ theo model và chất lượng. Image AI từ 2-15 credits, Video AI từ 20-120 credits. Chi tiết hiển thị trước khi bạn tạo.' },
+              { q: 'Có được hoàn tiền không?', a: 'Có, Skyverses hỗ trợ hoàn tiền trong vòng 7 ngày nếu bạn chưa sử dụng Credits. Liên hệ support để được hỗ trợ.' },
+              { q: 'Unlimited Model là gì?', a: 'Một số gói cho phép truy cập không giới hạn vào các model AI cụ thể — bạn có thể tạo bao nhiêu tuỳ ý mà không tốn Credits.' },
+              { q: 'Tôi có thể nâng cấp gói giữa chừng không?', a: 'Hoàn toàn được. Hệ thống sẽ tính toán chênh lệch Credit và thời gian còn lại. Bạn chỉ trả phần chênh lệch.' },
+            ].map((faq, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="border border-black/[0.05] dark:border-white/[0.05] rounded-xl overflow-hidden bg-white dark:bg-white/[0.02] hover:border-black/[0.1] dark:hover:border-white/[0.1] transition-all"
+              >
+                <button 
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between px-6 py-4 text-left"
+                >
+                  <span className="text-sm font-bold text-slate-800 dark:text-white pr-4">{faq.q}</span>
+                  <ChevronDown size={16} className={`text-slate-400 shrink-0 transition-transform duration-300 ${openFaq === i ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {openFaq === i && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="overflow-hidden"
+                    >
+                      <p className="px-6 pb-5 text-sm text-slate-400 dark:text-gray-500 leading-relaxed">{faq.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </div>
+        </section>
 
       </div>
 

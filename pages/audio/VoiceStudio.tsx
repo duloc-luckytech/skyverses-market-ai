@@ -217,9 +217,9 @@ const VoiceStudio = () => {
               <p className="max-w-xs text-center md:text-left opacity-50 font-bold leading-relaxed">Industrial-grade acoustic synthesis for creative studios. Powered by Skyverses neural network.</p>
            </div>
            <div className="flex gap-12">
-              <a href="#" className="hover:text-[#ff4b3a] transition-colors">Documentation</a>
-              <a href="#" className="hover:text-[#ff4b3a] transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-[#ff4b3a] transition-colors">Privacy Policy</a>
+              <a href="/policy" className="hover:text-[#ff4b3a] transition-colors">Documentation</a>
+              <a href="/policy" className="hover:text-[#ff4b3a] transition-colors">Terms of Service</a>
+              <a href="/policy" className="hover:text-[#ff4b3a] transition-colors">Privacy Policy</a>
            </div>
         </div>
       </footer>

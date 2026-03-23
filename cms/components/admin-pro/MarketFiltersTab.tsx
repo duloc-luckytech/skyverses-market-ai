@@ -233,7 +233,7 @@ export const MarketFiltersTab: React.FC = () => {
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Registry Sync: {categories.length} Nodes</p>
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={handleExportExcel} className="px-6 py-2.5 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all">
+          <button onClick={handleExportExcel} className="px-6 py-2.5 bg-slate-100 dark:bg-white/5 border border-black/[0.04] dark:border-white/[0.04] text-slate-600 dark:text-gray-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all">
             <FileDown size={16} /> Export CSV
           </button>
           <button onClick={initNewCategory} className="flex items-center gap-2 px-6 py-2.5 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand-blue/20 hover:scale-105 transition-all">
@@ -333,7 +333,7 @@ export const MarketFiltersTab: React.FC = () => {
 
                       <div className="space-y-6">
                         {editingCategory.subCategories.map((sub, idx) => (
-                          <div key={idx} className="p-6 bg-slate-50 dark:bg-white/5 border border-black/5 rounded-2xl space-y-4 group/sub relative">
+                          <div key={idx} className="p-6 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 rounded-2xl space-y-4 group/sub relative">
                             <div className="flex justify-between items-start">
                               <div className="flex-grow grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
