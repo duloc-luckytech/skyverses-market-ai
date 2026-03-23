@@ -30,11 +30,9 @@ echo -e "${NC}"
 # ── Create logs directory ──
 mkdir -p logs
 
-# ── Step 0: Git pull & submodule sync ──
-echo -e "\n${BLUE}[0/7]${NC} ${BOLD}Pulling latest code & syncing submodules...${NC}"
+# ── Step 0: Git pull ──
+echo -e "\n${BLUE}[0/7]${NC} ${BOLD}Pulling latest code...${NC}"
 git pull origin main || true
-git submodule init
-git submodule update --recursive --remote
 echo -e "  ${GREEN}✓${NC} Code synced"
 
 # ── Step 1: Install dependencies ──

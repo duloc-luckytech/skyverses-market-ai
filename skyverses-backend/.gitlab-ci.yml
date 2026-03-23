@@ -1,0 +1,17 @@
+stages:
+  - deploy
+
+deploy_backend:
+  stage: deploy
+  image: node:20
+  only:
+    - main
+  before_script:
+    - apt-get update -y
+    - apt-get install -y openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
+    - ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+  script:
+    - ssh root@$SERVER_IP "cd /root/skyverses/skyverses-backend && ./deploy-be.sh"

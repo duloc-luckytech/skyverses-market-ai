@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Sensitive files
+skyverses-backend/gcp-key.json
+skyverses-backend/service-account.json
+skyverses-backend/.env.prod
+skyverses-backend/.env
+*.env.prod
+skyverses-backend/src/jobs/service-account.json
+skyverses-backend/**/service-account.json

@@ -1,0 +1,130 @@
+import axios from "axios";
+import crypto from "crypto";
+
+interface GenerateTextSceneOptions {
+  prompt: string;
+  quantity: number;
+  freeCredit: boolean;
+  aspectRatio?: "VIDEO_ASPECT_RATIO_LANDSCAPE" | "VIDEO_ASPECT_RATIO_PORTRAIT";
+  modelKey?: string;
+  seed?: number;
+  token: string;
+  recaptchaToken: string;
+  sceneId?: string;
+  mode?: string;
+}
+
+export async function textVideo({
+  prompt,
+  token,
+  recaptchaToken,
+  quantity = 1,
+  aspectRatio,
+  freeCredit = false,
+  mode,
+}: GenerateTextSceneOptions) {
+  const url =
+    "https://aisandbox-pa.googleapis.com/v1/video:batchAsyncGenerateVideoText";
+
+  /* =========================
+     MODEL SELECTION
+  ========================== */
+  const baseModelKey =
+    aspectRatio === "VIDEO_ASPECT_RATIO_PORTRAIT"
+      ? "veo_3_1_t2v_fast_portrait_ultra"
+      : "veo_3_1_t2v_fast_ultra";
+
+  const selectedModelKey =
+    mode == "relaxed" ? baseModelKey + `_${mode}` : baseModelKey;
+
+  const PROJECT_ID = "22e30795-e8ad-4330-96be-a8d48b65b9c1";
+
+  /* =========================
+     BUILD REQUESTS
+  ========================== */
+  const requests = Array.from({ length: quantity }).map(() => ({
+    aspectRatio,
+    seed: Math.floor(Math.random() * 10000),
+    textInput: {
+      prompt,
+    },
+    videoModelKey: selectedModelKey,
+    metadata: {
+      sceneId: crypto.randomUUID(),
+    },
+  }));
+
+  const requestBody = {
+    clientContext: {
+      recaptchaContext: {
+        token: recaptchaToken,
+        applicationType: "RECAPTCHA_APPLICATION_TYPE_WEB",
+      },
+      projectId: PROJECT_ID,
+      tool: "PINHOLE",
+      userPaygateTier: "PAYGATE_TIER_TWO",
+    },
+    requests,
+  };
+
+  const headers = {
+    accept: "*/*",
+    "accept-language":
+      "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7,fr-FR;q=0.6,fr;q=0.5",
+    authorization: `Bearer ${token}`,
+    "cache-control": "no-cache",
+    "content-type": "text/plain;charset=UTF-8",
+    origin: "https://labs.google",
+    pragma: "no-cache",
+    priority: "u=1, i",
+    referer: "https://labs.google/",
+    "sec-ch-ua":
+      '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"macOS"',
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "x-browser-copyright": "Copyright 2025 Google LLC. All rights reserved.",
+    "x-browser-validation": "jFliu1AvGMEE7cpr93SSytkZ8D4=",
+    "x-browser-year": "2025",
+    "x-client-data": "CJK2yQEIpLbJAQipncoBCPvbygEIkqHLAQj0o8sBCIagzQEIkIfPAQ==",
+  };
+
+  /* =========================
+     REQUEST
+  ========================== */
+  try {
+    const response = await axios.post(url, JSON.stringify(requestBody), {
+      headers,
+      timeout: 180_000,
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
+      transformRequest: [(data) => data],
+    });
+
+    const ops = response.data?.operations;
+    if (!Array.isArray(ops) || ops.length === 0) {
+      throw new Error("❌ Không có operation nào trả về từ Labs API.");
+    }
+
+    return {
+      taskId: ops[0].operation?.name,
+      accessToken: token,
+    };
+  } catch (err: any) {
+    const fullMessage = err?.response?.data
+      ? `❌ predictLabsTextCharacters error:\n${JSON.stringify(
+          err.response.data,
+          null,
+          2
+        )}`
+      : `❌ predictLabsTextCharacters unknown error:\n${JSON.stringify(
+          err,
+          null,
+          2
+        )}`;
+
+    throw new Error(fullMessage);
+  }
+}

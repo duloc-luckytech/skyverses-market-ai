@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+
+    /* ---- ⭐ TẮT CHECK LỖI HOÀN TOÀN ⭐ ---- */
+    "strict": false,
+    "skipLibCheck": true,
+    "noEmitOnError": false,
+    "noImplicitAny": false,
+
+    /* ---- ⭐ TẮT CÁC LOẠI CHECK LẶT VẶT ⭐ ---- */
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+
+    /* ---- ⭐ Đảm bảo tsc build luôn emit JS dù có lỗi ⭐ ---- */
+    "allowJs": true
+  },
+
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
