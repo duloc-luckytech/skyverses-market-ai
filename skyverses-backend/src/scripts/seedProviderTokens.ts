@@ -16,7 +16,7 @@ async function seed() {
   });
 
   console.log("✅ Inserted tokens:");
-  console.log("WAN:", wanToken._id.toString());
+  console.log("WAN:", (wanToken as any)._id.toString());
 
   await mongoose.disconnect();
   process.exit(0);

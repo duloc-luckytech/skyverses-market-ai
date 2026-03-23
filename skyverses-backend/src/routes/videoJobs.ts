@@ -165,7 +165,7 @@ router.get("/:id", authenticate, async (req: any, res) => {
       status: job.status,
       jobId: job._id,
       error: {
-        message: job?.error.message,
+        message: job?.error?.message,
         userMessage: job?.error?.userMessage,
       },
       result: job.result,

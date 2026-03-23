@@ -136,6 +136,7 @@ async function handleSubmitMulti(job: any) {
 
     if (job.sceneIndex === 0) {
       const user = await UserModel.findById(job.userId);
+      if (!user) throw new Error("User not found for scene0");
       tokenDoc = await GoogleTokenModel.findById(user.googleId).lean();
       if (!tokenDoc?.accessToken) throw new Error("Missing token for scene0");
 

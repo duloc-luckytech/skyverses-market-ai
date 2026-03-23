@@ -3,7 +3,7 @@ import { requestWanExtendVideo } from "./requestWanExtendVideo";
 import { requestWanStartEndImageToVideo } from "./requestWanStartEndImageToVideo";
 import { requestWanTextToVideo } from "./requestWanTextToVideo";
 
-export = {
+export default {
   requestWanImageToVideo,
   requestWanTextToVideo,
   requestWanStartEndImageToVideo,
