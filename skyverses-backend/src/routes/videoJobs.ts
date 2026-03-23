@@ -3,6 +3,9 @@ import VideoJob, { VideoJobStatus } from "../models/VideoJobModelV2";
 import { authenticate } from "./auth";
 import { getAccessTokenForJob } from "../utils/getAccessTokenForJob";
 import { getCookieForJob } from "../utils/getCookieForJob";
+import ModelPricingMatrix from "../models/ModelPricingMatrix.model";
+import User from "../models/UserModel";
+import CreditTransaction from "../models/CreditTransaction.model";
 
 export const EXECUTION_CONFIGS = ["router_a"] as const;
 
@@ -102,6 +105,54 @@ router.post("/", authenticate, async (req: any, res) => {
     return res.status(400).json({ message: "Invalid payload" });
   }
 
+  // ─── CREDIT DEDUCTION ───────────────────────────────
+  const pricingModel = await ModelPricingMatrix.findOne({
+    modelKey: engine.model,
+    status: "active",
+  });
+
+  let creditCost = 0;
+  if (pricingModel?.pricing) {
+    const resolution = config?.resolution || Object.keys(pricingModel.pricing)[0] || "720p";
+    const duration = String(config?.duration || "5");
+    const resPricing = pricingModel.pricing[resolution];
+    if (resPricing) {
+      creditCost = typeof resPricing === "number" ? resPricing : (resPricing[duration] || resPricing[Object.keys(resPricing)[0]] || 0);
+    } else {
+      // Fallback: try first resolution
+      const firstRes = Object.keys(pricingModel.pricing)[0];
+      if (firstRes) {
+        const fallback = pricingModel.pricing[firstRes];
+        creditCost = typeof fallback === "number" ? fallback : (fallback[duration] || fallback[Object.keys(fallback)[0]] || 0);
+      }
+    }
+  }
+
+  if (creditCost > 0) {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: "USER_NOT_FOUND" });
+    }
+    if (user.creditBalance < creditCost) {
+      return res.status(400).json({ message: "INSUFFICIENT_CREDITS", required: creditCost, balance: user.creditBalance });
+    }
+
+    user.creditBalance -= creditCost;
+    await user.save();
+
+    await CreditTransaction.create({
+      userId: user._id,
+      type: "CONSUME",
+      amount: -creditCost,
+      balanceAfter: user.creditBalance,
+      source: "video_generation",
+      note: `Video: ${engine.model} | ${type} | ${config?.resolution || '720p'} ${config?.duration || 5}s`,
+    });
+
+    console.log(`💳 [CREDIT] ${user.email} -${creditCost} CR (video: ${engine.model}) → balance: ${user.creditBalance}`);
+  }
+  // ─── END CREDIT DEDUCTION ───────────────────────────
+
   let executor;
   if (engine?.provider == "fxlab") {
     executor = await getCookieForJob()
@@ -116,15 +167,17 @@ router.post("/", authenticate, async (req: any, res) => {
     enginePayload,
     executor,
     status: VideoJobStatus.PENDING,
+    creditsUsed: creditCost,
   });
 
-  console.log(`🎬 [VID] CREATE job=${job._id} engine=${engine.provider} model=${engine.model} type=${type}`);
+  console.log(`🎬 [VID] CREATE job=${job._id} engine=${engine.provider} model=${engine.model} type=${type} cost=${creditCost}`);
 
   res.json({
     success: true,
     data: {
       status: job.status,
       jobId: job._id,
+      creditsUsed: creditCost,
     },
   });
 });
@@ -336,7 +389,29 @@ router.post("/:id/cancel", authenticate, async (req: any, res) => {
   job.status = VideoJobStatus.CANCELLED;
   await job.save();
 
-  res.json({ success: true });
+  // ─── REFUND CREDITS ─────────────────────────────
+  let refunded = 0;
+  if (job.creditsUsed && job.creditsUsed > 0) {
+    const user = await User.findById(req.user.userId);
+    if (user) {
+      user.creditBalance += job.creditsUsed;
+      await user.save();
+      refunded = job.creditsUsed;
+
+      await CreditTransaction.create({
+        userId: user._id,
+        type: "REFUND",
+        amount: job.creditsUsed,
+        balanceAfter: user.creditBalance,
+        source: "video_cancel",
+        note: `Refund cancelled video job: ${job._id}`,
+      });
+
+      console.log(`💳 [REFUND] ${user.email} +${refunded} CR (cancelled video job: ${job._id})`);
+    }
+  }
+
+  res.json({ success: true, refunded });
 });
 
 /* =====================================================
