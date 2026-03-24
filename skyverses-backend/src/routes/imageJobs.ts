@@ -156,7 +156,7 @@ router.post("/", authenticate, async (req: any, res) => {
   ====================================================== */
   const finalEngine = { ...engine };
   if (finalEngine.provider === "gommo") {
-    const usesFxflow = Math.random() < 0.5;
+    const usesFxflow = true; // 🧪 TEST: 100% fxflow (sẽ đổi lại 0.5 sau)
     if (usesFxflow) {
       finalEngine.provider = "fxflow";
       console.log(`🎲 [IMG] Random → fxflow (original: gommo)`);
