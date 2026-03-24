@@ -12,6 +12,7 @@ import { useArt3DGenerator } from '../hooks/useArt3DGenerator';
 import Art3DWorkspace from '../components/Art3DWorkspace';
 import { usePageMeta } from '../hooks/usePageMeta';
 
+
 /* ─── LIVE 3D MODELS (Sketchfab embeds — verified public models) ─── */
 const LIVE_3D_MODELS = [
   { id: '70ab4f4164b54afbad87f174f8b285c1', label: 'Duplex Architecture', tag: 'Architecture', vertices: '156K' },
@@ -167,6 +168,72 @@ const HoloCard3D: React.FC<{ item: typeof SHOWCASE_3D[0]; index: number }> = ({ 
   );
 };
 
+/* ─── HERO MODEL VIEWER — 3 switchable models ─── */
+const HERO_MODELS = [
+  { src: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb', label: 'Astronaut_v1', tag: 'Character', faces: '12,158', vertices: '8,304' },
+  { src: 'https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb', label: 'NeilArmstrong_v2', tag: 'Historical', faces: '23,456', vertices: '16,892' },
+  { src: 'https://modelviewer.dev/shared-assets/models/reflective-sphere.glb', label: 'PBR_Sphere_v1', tag: 'Material', faces: '8,192', vertices: '4,225' },
+];
+
+const HeroModelViewer: React.FC = () => {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mvRef = useRef<any>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    // Remove old
+    while (el.firstChild) el.removeChild(el.firstChild);
+    // Create model-viewer element via DOM API
+    const mv = document.createElement('model-viewer') as any;
+    mv.setAttribute('src', HERO_MODELS[activeIdx].src);
+    mv.setAttribute('alt', HERO_MODELS[activeIdx].label);
+    mv.setAttribute('auto-rotate', '');
+    mv.setAttribute('camera-controls', '');
+    mv.setAttribute('shadow-intensity', '1');
+    mv.setAttribute('environment-image', 'neutral');
+    mv.setAttribute('rotation-per-second', '20deg');
+    mv.style.width = '100%';
+    mv.style.height = '100%';
+    mv.style.backgroundColor = 'transparent';
+    el.appendChild(mv);
+    mvRef.current = mv;
+  }, [activeIdx]);
+
+  return (
+    <div className="w-full h-full relative">
+      {/* viewer */}
+      <div ref={containerRef} className="w-full h-full" />
+
+      {/* Model switcher tabs */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
+        {HERO_MODELS.map((m, i) => (
+          <button
+            key={i}
+            onClick={() => setActiveIdx(i)}
+            className={`px-3 py-1 rounded text-[8px] font-mono font-bold uppercase tracking-wider transition-all border ${
+              activeIdx === i
+                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
+                : 'bg-black/40 border-white/10 text-white/30 hover:text-white/60'
+            }`}
+          >
+            {m.tag}
+          </button>
+        ))}
+      </div>
+
+      {/* Active model info */}
+      <div className="absolute top-3 right-3 z-30 pointer-events-none">
+        <div className="text-right space-y-0.5">
+          <div className="text-[7px] font-mono text-emerald-400/60">{HERO_MODELS[activeIdx].label}</div>
+          <div className="text-[7px] font-mono text-white/20">{HERO_MODELS[activeIdx].faces} tri</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /* ═══════════════════════════════════════════════════
    MAIN PAGE
    ═══════════════════════════════════════════════════ */
@@ -182,6 +249,15 @@ const SpatialArchitectPage: React.FC = () => {
   const { scrollYProgress } = useScroll();
   const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.15], [1, 0.95]);
+
+  // Load model-viewer web component
+  useEffect(() => {
+    if (document.querySelector('script[src*="model-viewer"]')) return;
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = 'https://ajax.googleapis.com/ajax/libs/model-viewer/3.6.0/model-viewer.min.js';
+    document.head.appendChild(script);
+  }, []);
 
   if (logic.isStudioOpen) {
     return (
@@ -263,8 +339,54 @@ const SpatialArchitectPage: React.FC = () => {
           </motion.div>
         </div>
 
+        {/* ─── HERO 3D MODEL VIEWER ─── */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.4, duration: 1, ease: [0.22, 1, 0.36, 1] as const }}
+          className="relative z-10 w-full max-w-3xl mx-auto mt-12"
+        >
+          <div className="relative bg-[#0a0f0a] border border-emerald-500/[0.08] rounded-2xl overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.6)] hover:border-emerald-500/20 transition-all duration-700 group">
+            {/* HUD corner accents */}
+            <div className="absolute top-0 left-0 w-10 h-px bg-emerald-500/40 z-20" />
+            <div className="absolute top-0 left-0 h-10 w-px bg-emerald-500/40 z-20" />
+            <div className="absolute top-0 right-0 w-10 h-px bg-emerald-500/40 z-20" />
+            <div className="absolute top-0 right-0 h-10 w-px bg-emerald-500/40 z-20" />
+            <div className="absolute bottom-0 left-0 w-10 h-px bg-emerald-500/40 z-20" />
+            <div className="absolute bottom-0 left-0 h-10 w-px bg-emerald-500/40 z-20" />
+            <div className="absolute bottom-0 right-0 w-10 h-px bg-emerald-500/40 z-20" />
+            <div className="absolute bottom-0 right-0 h-10 w-px bg-emerald-500/40 z-20" />
+
+            {/* Top HUD bar */}
+            <div className="absolute top-3 left-4 flex items-center gap-2 z-20 pointer-events-none">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+              <span className="text-[8px] font-mono font-bold text-emerald-400/70 uppercase tracking-widest">LIVE_3D_PREVIEW</span>
+            </div>
+            <div className="absolute top-3 right-4 z-20 pointer-events-none flex items-center gap-2">
+              <span className="text-[7px] font-mono text-white/20">Drag to rotate</span>
+              <div className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[7px] font-mono text-emerald-400/70">
+                INTERACTIVE
+              </div>
+            </div>
+
+            {/* model-viewer via ref — 3 switchable models */}
+            <div className="aspect-[16/9] relative">
+              <HeroModelViewer />
+            </div>
+
+            {/* Bottom HUD */}
+            <div className="px-5 py-3 border-t border-emerald-500/[0.06] flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-mono font-bold text-white/70">AI_Generated_Model</span>
+                <span className="text-[8px] font-mono text-emerald-500/40">Drag to rotate • Scroll to zoom</span>
+              </div>
+              <span className="text-[8px] font-mono text-white/20">.GLB • PBR Textured</span>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Scroll indicator */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
           <div className="w-px h-12 bg-gradient-to-b from-transparent to-emerald-500/30" />
           <span className="text-[8px] font-mono text-emerald-500/40 uppercase tracking-widest">Scroll</span>
