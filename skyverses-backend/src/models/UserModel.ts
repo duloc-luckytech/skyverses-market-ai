@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IUser extends Document {
   email: string;
+  password?: string;
   name?: string; // full name — bạn có thể bỏ nếu dùng fistName + lastName
   firstName?: string;
   lastName?: string;
@@ -87,6 +88,8 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
   {
     // ----------- BASIC INFO -----------
     email: { type: String, unique: true, required: true },
+    password: { type: String, default: null },
+    name: { type: String, default: "" },
 
     firstName: { type: String, default: "" },
     lastName: { type: String, default: "" },
