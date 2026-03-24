@@ -6,6 +6,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import { swaggerOptions } from "./swagger";
 import apiRoutes from "./routes";
+import { seedAdmin } from "./scripts/seedAdmin";
 // import githubWebhookRoutes from "./routes/githubWebhook"; // 🔒 Temporarily disabled
 // import './scripts/seedCategories'
 // import './scripts/asynsDataMongo' // ✅ Migration completed — disabled to avoid duplicate key errors
@@ -71,8 +72,12 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
     console.log("✅ MongoDB connected!");
 
+    /* ------------------------------ Seed Admin ------------------------------ */
+    await seedAdmin(); // ← comment lại sau khi reset xong
+
     /* ------------------------------ Routes ------------------------------ */
     app.use(apiRoutes);
+
 
     /* ------------------------------ Static ------------------------------ */
     app.use("/final", express.static("outputs"));

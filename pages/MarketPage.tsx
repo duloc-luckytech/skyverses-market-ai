@@ -263,7 +263,7 @@ const MarketPage = () => {
                   className="flex flex-wrap gap-3 pt-2"
                 >
                   <button
-                    onClick={() => navigate('/market')}
+                    onClick={() => navigate(isAuthenticated ? '/explorer' : '/login')}
                     className="group relative inline-flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-7 py-4 rounded-2xl text-sm font-bold shadow-xl hover:shadow-2xl hover:shadow-brand-blue/20 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-brand-blue to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -273,7 +273,7 @@ const MarketPage = () => {
                     </span>
                   </button>
                   <button
-                    onClick={() => navigate('/market')}
+                    onClick={() => navigate('/pricing')}
                     className="inline-flex items-center gap-3 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-7 py-4 rounded-2xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/10 hover:border-brand-blue/30 transition-all duration-300"
                   >
                     <Play size={14} className="text-brand-blue" fill="currentColor" />
@@ -452,7 +452,7 @@ const MarketPage = () => {
           )}
 
           {/* ═══════════════════ PRODUCT GRID ═══════════════════ */}
-          <div id="products-section" className="space-y-16 md:space-y-24 relative z-10 pt-8">
+          <div className="space-y-16 md:space-y-24 relative z-10 pt-8">
             {(loading || isSearching) ? (
               <div className="flex gap-4 md:gap-8 overflow-x-hidden">
                 {[1, 2, 3, 4, 5].map(i => <CardSkeleton key={i} />)}
@@ -764,7 +764,7 @@ const MarketPage = () => {
                         </span>
                       </h2>
                       <p className="text-sm md:text-base text-white/40 max-w-2xl mx-auto leading-relaxed">
-                        Skyverses chuyên tư vấn, thiết kế và xây dựng các công cụ AI theo yêu cầu. 
+                        Skyverses chuyên tư vấn, thiết kế và xây dựng các công cụ AI theo yêu cầu.
                         Từ chatbot, xử lý ảnh/video, workflow tự động đến hệ thống AI hoàn chỉnh cho doanh nghiệp.
                       </p>
                     </motion.div>
