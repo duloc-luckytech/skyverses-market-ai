@@ -294,22 +294,58 @@ router.get("/user/info", authenticate, async (req: any, res) => {
 router.post("/admin/login", async (req, res) => {
   const { username, password } = req.body;
 
-  if (username !== "admin" || password !== "Builder@Veo3") {
-    return res
-      .status(401)
-      .json({ success: false, message: "❌ Sai thông tin đăng nhập" });
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: "Thiếu thông tin đăng nhập" });
   }
 
-  // ✅ Tạo JWT cho admin
-  const token = jwt.sign({ role: "admin", username: "admin" }, JWT_SECRET, {
-    expiresIn: "7d",
-  });
+  try {
+    // Find admin user by email or username
+    const email = username.includes("@") ? username : `${username}@skyverses.com`;
+    const user: any = await UserModel.findOne({ email, role: "admin" });
 
-  return res.json({
-    success: true,
-    token,
-    message: "🎉 Đăng nhập admin thành công",
-  });
+    if (!user) {
+      return res.status(401).json({ success: false, message: "Tài khoản admin không tồn tại" });
+    }
+
+    // Verify password (scrypt:salt:hash format)
+    if (!user.password) {
+      return res.status(401).json({ success: false, message: "Tài khoản chưa có mật khẩu. Chạy reset-admin.ts" });
+    }
+
+    const crypto = require("crypto");
+    const [prefix, salt, storedHash] = user.password.split(":");
+    if (prefix !== "scrypt" || !salt || !storedHash) {
+      return res.status(401).json({ success: false, message: "Định dạng mật khẩu không hợp lệ" });
+    }
+
+    const testHash = crypto.scryptSync(password, salt, 64).toString("hex");
+    if (testHash !== storedHash) {
+      return res.status(401).json({ success: false, message: "Sai mật khẩu" });
+    }
+
+    // ✅ Create JWT with userId (compatible with refreshUserInfo)
+    const token = jwt.sign(
+      { userId: user._id.toString(), role: "admin", email: user.email },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    return res.json({
+      success: true,
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        avatar: user.avatar,
+      },
+      message: "🎉 Đăng nhập admin thành công",
+    });
+  } catch (err: any) {
+    console.error("Admin login error:", err);
+    return res.status(500).json({ success: false, message: "Lỗi server" });
+  }
 });
 
 export default router;

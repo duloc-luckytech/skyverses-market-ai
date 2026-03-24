@@ -3,22 +3,19 @@
  * 
  * - Xoá tất cả admin users cũ
  * - Tạo 1 admin mới với email + password từ ENV
+ * - Dùng Node.js crypto (KHÔNG cần bcryptjs)
  * 
  * ENV required in .env / .env.prod:
  *   ADMIN_EMAIL=admin@skyverses.com
  *   ADMIN_PASSWORD=YourSecurePassword123!
  * 
- * Usage (trên server):
- *   cd /root/skyverses-market-ai/skyverses-backend
- *   npx tsx scripts/reset-admin.ts
- * 
- * Usage (trên Mac):
+ * Usage:
  *   cd skyverses-backend
  *   npx tsx scripts/reset-admin.ts
  */
 
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import dotenv from "dotenv";
 import path from "path";
 
@@ -36,7 +33,23 @@ if (!ADMIN_PASSWORD) {
   process.exit(1);
 }
 
-// Minimal User schema (just what we need)
+/* =====================================================
+   Hash password using Node.js crypto (no bcryptjs needed)
+   Format: scrypt:<salt>:<hash>
+===================================================== */
+function hashPassword(password: string): string {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.scryptSync(password, salt, 64).toString("hex");
+  return `scrypt:${salt}:${hash}`;
+}
+
+function verifyPassword(password: string, stored: string): boolean {
+  const [, salt, hash] = stored.split(":");
+  const test = crypto.scryptSync(password, salt, 64).toString("hex");
+  return test === hash;
+}
+
+// Minimal User schema
 const UserSchema = new mongoose.Schema({
   email: String,
   password: String,
@@ -60,7 +73,6 @@ async function main() {
   console.log(`  Pass:  ${"*".repeat(ADMIN_PASSWORD.length)}`);
   console.log("");
 
-  // Connect
   await mongoose.connect(MONGO_URI);
   console.log("✅ Connected to MongoDB");
 
@@ -68,15 +80,15 @@ async function main() {
   const existingAdmins = await User.find({ role: "admin" }).select("email name");
   console.log(`\n📋 Existing admins (${existingAdmins.length}):`);
   existingAdmins.forEach(a => {
-    console.log(`   - ${a.email} (${a.name || "no name"})`);
+    console.log(`   - ${a.email} (${(a as any).name || "no name"})`);
   });
 
   // 2. Delete all admins
   const deleteResult = await User.deleteMany({ role: "admin" });
   console.log(`\n🗑️  Deleted ${deleteResult.deletedCount} admin users`);
 
-  // 3. Hash password
-  const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
+  // 3. Hash password (using Node.js crypto)
+  const hashedPassword = hashPassword(ADMIN_PASSWORD);
 
   // 4. Create new admin
   const newAdmin = await User.create({
@@ -88,12 +100,16 @@ async function main() {
     creditBalance: 999999,
   });
 
+  // Verify hash works
+  const verified = verifyPassword(ADMIN_PASSWORD, hashedPassword);
+
   console.log(`\n✅ New admin created:`);
-  console.log(`   ID:    ${newAdmin._id}`);
-  console.log(`   Email: ${newAdmin.email}`);
-  console.log(`   Role:  ${newAdmin.role}`);
-  console.log(`   Plan:  ${newAdmin.plan}`);
-  console.log(`   CR:    ${newAdmin.creditBalance}`);
+  console.log(`   ID:       ${newAdmin._id}`);
+  console.log(`   Email:    ${newAdmin.email}`);
+  console.log(`   Role:     ${(newAdmin as any).role}`);
+  console.log(`   Plan:     ${(newAdmin as any).plan}`);
+  console.log(`   CR:       ${(newAdmin as any).creditBalance}`);
+  console.log(`   Hash OK:  ${verified}`);
 
   console.log("\n════════════════════════════════════════════════════");
   console.log("  ✅ DONE — Login with:");
