@@ -17,26 +17,21 @@ fi
 export PATH="$NODE_BIN:/usr/local/bin:/usr/bin:/bin"
 
 # =====================================================
-# LOG
-# =====================================================
-# =====================================================
 # LOG (TERMINAL + FILE)
 # =====================================================
-LOG="/root/skyverses/skyverses-backend/deploy.log"
+LOG="/root/skyverses-market-ai/deploy-cms.log"
 exec > >(tee -a "$LOG") 2>&1
 
 echo "=============================================="
-echo "🚀 DEPLOY STARTED $(date)"
-echo "User: $(whoami)"
-echo "Node path: $(which node)"
-echo "Node version: $(node -v)"
-echo "Yarn path: $(which yarn)"
-echo "Yarn version: $(yarn -v)"
+echo "🚀 CMS DEPLOY STARTED $(date)"
+echo "Node: $(node -v) | Yarn: $(yarn -v)"
 
 # =====================================================
 # PROJECT CONFIG
+# CMS is inside the same monorepo at /cms
 # =====================================================
-APP_DIR="/root/skyverses/skyverses-market-cms"
+APP_DIR="/root/skyverses-market-ai"
+CMS_DIR="/root/skyverses-market-ai/cms"
 BRANCH="main"
 PM2_APP_NAME="sky-cms"
 
@@ -44,7 +39,7 @@ cd "$APP_DIR"
 echo "PWD: $(pwd)"
 
 # =====================================================
-# GIT
+# GIT (pull from root of monorepo)
 # =====================================================
 echo "📥 Fetch & pull latest code"
 git fetch origin
@@ -52,35 +47,32 @@ git checkout "$BRANCH"
 git pull origin "$BRANCH"
 
 # =====================================================
-# INSTALL DEPENDENCIES
-# ⚠️ QUAN TRỌNG:
-# - Install = development (có devDependencies → tsc)
-# - CI=false để giống manual build
+# INSTALL DEPENDENCIES (CMS)
 # =====================================================
-echo "📦 Install deps (LOCKED, WITH DEV)"
+cd "$CMS_DIR"
+echo "📦 Install CMS deps"
 export NODE_ENV=development
 export CI=false
 
-if [ ! -f yarn.lock ]; then
-  echo "❌ yarn.lock NOT FOUND – deploy aborted"
-  exit 1
+if [ -f yarn.lock ]; then
+  yarn install --frozen-lockfile
+elif [ -f package-lock.json ]; then
+  npm ci
+else
+  npm install
 fi
-
-yarn install --frozen-lockfile
 
 # =====================================================
 # BUILD
-# - Build = production
-# - Nhưng deps đã đầy đủ
 # =====================================================
-echo "🏗️ Build (production)"
+echo "🏗️ Build CMS (production)"
 export NODE_ENV=production
-yarn build --mode production
+yarn build --mode production || npm run build
 
 # =====================================================
 # RESTART SERVICE
 # =====================================================
 echo "♻️ Restart PM2 process"
-pm2 restart "$PM2_APP_NAME"
+pm2 restart "$PM2_APP_NAME" || echo "⚠️ PM2 process $PM2_APP_NAME not found"
 
-echo "✅ DEPLOY DONE $(date)"
+echo "✅ CMS DEPLOY DONE $(date)"
