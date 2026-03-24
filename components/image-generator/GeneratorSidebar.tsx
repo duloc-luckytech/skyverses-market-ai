@@ -190,7 +190,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           {/* Cost bar */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <button onClick={() => props.setShowResourceModal(true)} className="text-[#555] hover:text-rose-400 transition-colors"><Settings size={11} /></button>
+              <button onClick={() => props.setShowResourceModal(true)} className="text-slate-400 dark:text-[#555] hover:text-rose-400 transition-colors"><Settings size={11} /></button>
               <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-fuchsia-500 dark:text-fuchsia-400' : 'text-slate-500 dark:text-[#666]'}`}>
                 {props.usagePreference === 'credits' ? `${credits.toLocaleString()} CR` : props.usagePreference === 'key' ? 'API Key' : '—'}
               </span>

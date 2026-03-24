@@ -195,7 +195,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
         {/* ─── MODEL INFO ─── */}
         {selectedModel && (
           <p className="text-[9px] text-slate-400 dark:text-[#444] truncate px-0.5">
-            → {selectedModel.raw?.name || selectedModel.name} <span className="text-[#333]">({selectedModel.raw?.modelKey || selectedModel.id})</span>
+            → {selectedModel.raw?.name || selectedModel.name} <span className="text-slate-400 dark:text-[#333]">({selectedModel.raw?.modelKey || selectedModel.id})</span>
           </p>
         )}
       </div>

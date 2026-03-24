@@ -96,7 +96,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
                   >
                     {props.familyList.map(f => <option key={f} value={f}>{f}</option>)}
                   </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-[#555] pointer-events-none" size={11} />
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#555] pointer-events-none" size={11} />
                 </div>
                 <button
                   onClick={() => setIsDetailModalOpen(true)}
@@ -124,7 +124,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
                   <Pill key={extraSelected._id} label={stripFamily(extraSelected.name)} active={true} onClick={() => props.setSelectedModelObj(extraSelected)} />
                 )}
                 {hasMoreVariants && (
-                  <button onClick={() => setShowAllVariants(!showAllVariants)} className="px-1.5 py-1 text-[9px] font-medium text-[#555] hover:text-indigo-400 transition-colors">
+                  <button onClick={() => setShowAllVariants(!showAllVariants)} className="px-1.5 py-1 text-[9px] font-medium text-slate-400 dark:text-[#555] hover:text-indigo-400 transition-colors">
                     {showAllVariants ? '↑ Thu gọn' : `+${allVariants.length - MAX_VARIANTS}`}
                   </button>
                 )}
@@ -187,7 +187,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
           {/* ─── COST BAR ─── */}
           <div className="flex items-center justify-between pt-1 border-t border-black/[0.06] dark:border-white/[0.04]">
             <div className="flex items-center gap-2">
-              <button onClick={() => props.setShowResourceModal(true)} className="text-[#555] hover:text-indigo-400 transition-colors"><Settings size={11} /></button>
+              <button onClick={() => props.setShowResourceModal(true)} className="text-slate-400 dark:text-[#555] hover:text-indigo-400 transition-colors"><Settings size={11} /></button>
               <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-violet-500 dark:text-violet-400' : 'text-slate-500 dark:text-[#666]'}`}>
                 {props.usagePreference === 'credits' ? `${props.credits.toLocaleString()} CR` : props.usagePreference === 'key' ? 'API Key' : '—'}
               </span>
@@ -200,8 +200,8 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
 
           {/* ─── AUTO MODEL INFO ─── */}
           {props.selectedModelObj && (
-            <p className="text-[9px] text-[#444] truncate px-0.5">
-              → {props.selectedModelObj.name} <span className="text-[#333]">({props.selectedModelObj.modelKey})</span>
+            <p className="text-[9px] text-slate-500 dark:text-[#444] truncate px-0.5">
+              → {props.selectedModelObj.name} <span className="text-slate-400 dark:text-[#333]">({props.selectedModelObj.modelKey})</span>
             </p>
           )}
         </div>

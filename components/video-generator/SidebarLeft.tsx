@@ -157,7 +157,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
                     </div>
                     {i < props.multiFrames.length - 1
                       ? <textarea value={f.prompt} onChange={e => props.handleFramePromptChange(f.id, e.target.value)} placeholder="..." className="w-full h-9 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded p-1.5 text-[9px] font-medium text-slate-700 dark:text-white/60 focus:border-indigo-500/30 outline-none resize-none" />
-                      : <div className="h-9 flex items-center justify-center border border-dashed border-white/[0.04] rounded opacity-20"><span className="text-[8px] font-semibold uppercase text-[#555]">End</span></div>
+                      : <div className="h-9 flex items-center justify-center border border-dashed border-black/[0.06] dark:border-white/[0.04] rounded opacity-30"><span className="text-[8px] font-semibold uppercase text-slate-400 dark:text-[#555]">End</span></div>
                     }
                   </div>
                 ))}
@@ -196,7 +196,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
                       <div className="aspect-video bg-slate-100 dark:bg-white/[0.02] border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded flex items-center justify-center overflow-hidden relative group/s">
                         {props.isUploadingImage === `${t.id}-START` ? <Loader2 size={10} className="text-indigo-400 animate-spin" />
                           : t.startUrl ? <img src={t.startUrl} className="w-full h-full object-cover" alt="" />
-                            : <span className="text-[8px] font-medium text-[#333]">Start</span>}
+                            : <span className="text-[8px] font-medium text-slate-400 dark:text-[#333]">Start</span>}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/s:opacity-100 transition-opacity flex items-center justify-center gap-1">
                           <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'START', 'UPLOAD'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><Upload size={7} /></button>
                           <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'START', 'LIBRARY'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><FolderOpen size={7} /></button>
@@ -205,7 +205,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
                       <div className="aspect-video bg-slate-100 dark:bg-white/[0.02] border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded flex items-center justify-center overflow-hidden relative group/e">
                         {props.isUploadingImage === `${t.id}-END` ? <Loader2 size={10} className="text-indigo-400 animate-spin" />
                           : t.endUrl ? <img src={t.endUrl} className="w-full h-full object-cover" alt="" />
-                            : <span className="text-[8px] font-medium text-[#333]">End</span>}
+                            : <span className="text-[8px] font-medium text-slate-400 dark:text-[#333]">End</span>}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/e:opacity-100 transition-opacity flex items-center justify-center gap-1">
                           <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'END', 'UPLOAD'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><Upload size={7} /></button>
                           <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'END', 'LIBRARY'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><FolderOpen size={7} /></button>
