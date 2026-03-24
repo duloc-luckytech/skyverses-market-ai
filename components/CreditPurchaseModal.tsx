@@ -11,12 +11,13 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { creditsApi, CreditPackage } from '../apis/credits';
+import { API_BASE_URL, getHeaders as getConfigHeaders } from '../apis/config';
 import WalletConnectModal from './WalletConnectModal';
 
 const USD_TO_VND = 26000;
 const formatVND = (usd: number) => Math.round(usd * USD_TO_VND).toLocaleString('vi-VN');
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3221';
+// API_BASE_URL is imported from apis/config (handles dev/prod automatically)
 
 // USDT ERC-20 transfer ABI (only transfer function)
 const ERC20_TRANSFER_ABI = [
@@ -94,10 +95,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
   const pollRef = useRef<any>(null);
   const timerRef = useRef<any>(null);
 
-  const getAuthHeaders = () => {
-    const token = localStorage.getItem('skyverses_auth_token');
-    return { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
-  };
+  const getAuthHeaders = () => getConfigHeaders();
 
   const fetchBankingConfig = async () => {
     try {
