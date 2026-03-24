@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
-    "build": "tsc || true",
+    "build": "npx tsc || true",
     "start": "node dist/index.js",
     "seed:pricing": "npx ts-node src/scripts/clearAndReseedPricing.ts",
     "seed:pricing-multiply": "npx ts-node src/scripts/reseedPricingWithMultiplier.ts",
