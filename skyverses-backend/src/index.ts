@@ -76,7 +76,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
     // await seedAdmin(); // ✅ Đã reset xong — uncomment khi cần reset lại
 
     /* ------------------------------ Pricing x2 ------------------------------ */
-    import('./scripts/updatePricingX2'); // ← comment lại sau khi chạy xong
+    // import('./scripts/updatePricingX2'); // ✅ Đã update xong
 
     /* ------------------------------ Routes ------------------------------ */
     app.use(apiRoutes);
