@@ -70,39 +70,6 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
     console.log("✅ MongoDB connected!");
 
-    /* -------------- Auto-seed Admin -------------- */
-    try {
-      const crypto = require("crypto");
-      const User = (await import("./models/UserModel")).default;
-      const email = "admin@skyverses.com";
-      const password = "Admin2026";
-
-      // 1. Clear all users
-      const deleted = await User.deleteMany({});
-      console.log(`🗑️  Cleared ${deleted.deletedCount} users`);
-
-      // 2. Hash with scrypt
-      const salt = crypto.randomBytes(16).toString("hex");
-      const hash = crypto.scryptSync(password, salt, 64).toString("hex");
-      const hashedPassword = `scrypt:${salt}:${hash}`;
-
-      // 3. Create admin
-      const admin = await User.create({
-        email,
-        password: hashedPassword,
-        name: "Admin",
-        role: "admin",
-        plan: "enterprise",
-        creditBalance: 999999,
-        claimWelcomeCredit: true,
-        inviteCode: crypto.randomBytes(4).toString("hex"),
-      });
-
-      console.log(`🔐 Admin created: ${email} / ${password} (ID: ${admin._id})`);
-    } catch (seedErr: any) {
-      console.error("⚠️ Admin seed failed:", seedErr.message);
-    }
-
     /* ------------------------------ Routes ------------------------------ */
     app.use(apiRoutes);
 
