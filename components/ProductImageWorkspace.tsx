@@ -33,7 +33,7 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
 }) => {
   const { theme } = useTheme();
   const e = useProductImageEditor(initialImage, theme);
-  const ACTION_COST = e.selectedModel?.cost || 150;
+  const ACTION_COST = e.selectedModelCost;
   
   const [isMobileSidebarExpanded, setIsMobileSidebarExpanded] = useState(false);
 

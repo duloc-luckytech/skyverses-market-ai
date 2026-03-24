@@ -3,7 +3,7 @@ import { ChevronDown, Cpu, Loader2, Globe } from 'lucide-react';
 
 interface ModelAISelectorProps {
   selectedModel: { id: string; name: string } | null;
-  models: { id: string; name: string; cost: number }[];
+  models: { id: string; name: string; [key: string]: any }[];
   onSelect: (model: any) => void;
   selectedEngine?: string;
   onSelectEngine?: (engine: string) => void;

@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
-import { pricingApi, PricingModel } from '../apis/pricing';
 import { generateDemoImage } from '../services/gemini';
 import { uploadToGCS } from '../services/storage';
+import { useImageModels, MappedImageModel } from './useImageModels';
 
 export interface TextLayer {
   id: string;
@@ -47,9 +47,9 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
   const [hasPersonalKey, setHasPersonalKey] = useState(false);
   const [personalKey, setPersonalKey] = useState<string | undefined>(undefined);
   
-  const [availableModels, setAvailableModels] = useState<any[]>([]);
-  const [selectedModel, setSelectedModel] = useState<any>(null);
   const [selectedEngine, setSelectedEngine] = useState('gommo');
+  const imageModels = useImageModels(selectedEngine, 'google_image_gen_4_5');
+  const { availableModels, selectedModel, setSelectedModel, selectedFamily, setSelectedFamily, selectedMode, setSelectedMode, selectedRatio, setSelectedRatio, selectedRes, setSelectedRes, familyList, familyModels, familyModes, familyResolutions, familyRatios, selectedModelCost } = imageModels;
 
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -119,28 +119,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     }
   };
 
-  useEffect(() => {
-    const fetchModels = async () => {
-      try {
-        const res = await pricingApi.getPricing({ tool: 'image', engine: selectedEngine });
-        if (res.success && res.data.length > 0) {
-          const mapped = res.data.map((m: PricingModel) => {
-            let cost = 150;
-            if (m.pricing && m.pricing['1k']) {
-              const firstKey = Object.keys(m.pricing['1k'])[0];
-              cost = m.pricing['1k'][firstKey] || 150;
-            }
-            return { id: m.modelKey, name: m.name, cost };
-          });
-          setAvailableModels(mapped);
-          setSelectedModel(mapped.find(m => m.id === 'google_image_gen_4_5') || mapped[0]);
-        }
-      } catch (error) {
-        console.error("Failed to fetch image models:", error);
-      }
-    };
-    fetchModels();
-  }, [selectedEngine]);
+  // Model fetching is now handled by shared useImageModels hook
 
   useEffect(() => {
     const vault = localStorage.getItem('skyverses_model_vault');
@@ -215,7 +194,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
       return;
     }
 
-    const currentCost = forceCost !== undefined ? forceCost : (selectedModel?.cost || 150);
+    const currentCost = forceCost !== undefined ? forceCost : selectedModelCost;
     const taskId = Date.now().toString();
 
     if (usagePreference === 'key') {
@@ -227,7 +206,8 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
       try {
         const inputImages = [...references];
         if (result) inputImages.push(result);
-        const url = await generateDemoImage({ prompt: finalPrompt, images: inputImages, apiKey: activeKey, model: selectedModel.id });
+        const modelId = selectedModel?.raw?.modelKey || selectedModel?.id || 'google_image_gen_4_5';
+        const url = await generateDemoImage({ prompt: finalPrompt, images: inputImages, apiKey: activeKey, model: modelId });
         if (url) {
           pushToHistory(url);
           setHistory(prev => [{ id: Date.now().toString(), url, prompt: finalPrompt, timestamp: new Date().toLocaleTimeString() }, ...prev]);
@@ -245,7 +225,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
           type: "image_to_image",
           input: { prompt: finalPrompt, images: references.length > 0 ? [...references] : undefined },
           config: { width: 1024, height: 1024, aspectRatio: '1:1', seed: 0, style: "cinematic" },
-          engine: { provider: selectedEngine as any, model: selectedModel.id as any },
+          engine: { provider: selectedEngine as any, model: (selectedModel?.raw?.modelKey || selectedModel?.id || '') as any },
           enginePayload: { prompt: finalPrompt, privacy: "PRIVATE", projectId: "default" }
         };
         const apiRes = await imagesApi.createJob(payload);
@@ -493,6 +473,10 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     showLowCreditAlert, setShowLowCreditAlert, isLibraryOpen, setIsLibraryOpen,
     handleGenerate, applyCrop, handleExport, addTextLayer, updateTextLayer,
     availableModels, selectedModel, setSelectedModel, selectedEngine, setSelectedEngine,
+    selectedFamily, setSelectedFamily, selectedMode, setSelectedMode,
+    selectedRatio, setSelectedRatio, selectedRes, setSelectedRes,
+    familyList, familyModels, familyModes, familyResolutions, familyRatios,
+    selectedModelCost,
     isResumingGenerate, setIsResumingGenerate,
     activeTab, setActiveTab,
     visibleLayers, setVisibleLayers,
