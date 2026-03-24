@@ -32,6 +32,7 @@ export enum ImageEngineProvider {
   STABLE_DIFFUSION = "stable_diffusion",
   LEONARDO = "leonardo",
   FXLAB = "fxlab",
+  FXFLOW = "fxflow",
 }
 
 /* ================================

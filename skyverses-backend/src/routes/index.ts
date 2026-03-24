@@ -31,6 +31,7 @@ import marketRoutes from "./market";
 import explorerMediaRoutes from "./explorerMedia.router";
 import imageRoutes from "./imageJobs";
 import audioRoutes from "./audio";
+import fxflowRoutes from "./fxflow";
 
 import providerTokenRoutes from "./providerToken";
 import aiModelRoutes from "./aiModel.admin";
@@ -52,6 +53,7 @@ router.use("/ai-model", aiModelRoutes);
 
 router.use("/image-jobs", imageRoutes);
 router.use("/runninghub", runninghubRoutes);
+router.use("/fxflow", fxflowRoutes);
 router.use("/audio", audioRoutes);
 router.use("/explorer", explorerMediaRoutes);
 router.use("/market", marketRoutes);

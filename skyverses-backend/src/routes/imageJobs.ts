@@ -150,19 +150,32 @@ router.post("/", authenticate, async (req: any, res) => {
 
   const finalPayload = buildFinalImagePayload({ input, config, engine });
 
+  /* =====================================================
+     🎲 RANDOM PROVIDER SELECTION: gommo ↔ fxflow
+     Chỉ áp dụng khi provider gốc là gommo
+  ====================================================== */
+  const finalEngine = { ...engine };
+  if (finalEngine.provider === "gommo") {
+    const usesFxflow = Math.random() < 0.5;
+    if (usesFxflow) {
+      finalEngine.provider = "fxflow";
+      console.log(`🎲 [IMG] Random → fxflow (original: gommo)`);
+    }
+  }
+
   const job = await ImageJob.create({
     userId: req.user.userId,
     type,
     input,
     config,
-    engine,
+    engine: finalEngine,
     finalPayload,
     enginePayload,
     status: ImageJobStatus.PENDING,
     creditsUsed: creditCost,
   });
 
-  console.log(`📸 [IMG] CREATE job=${job._id} engine=${engine.provider} model=${engine.model} type=${type} cost=${creditCost}`);
+  console.log(`📸 [IMG] CREATE job=${job._id} engine=${finalEngine.provider} model=${finalEngine.model} type=${type} cost=${creditCost}`);
 
   res.json({
     success: true,

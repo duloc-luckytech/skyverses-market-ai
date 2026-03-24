@@ -21,7 +21,9 @@ export async function processVideoJobs() {
   const pendingJobs = await VideoJob.find({
     type: { $ne: VideoJobType.TEXT_TO_MUSIC },
     status: VideoJobStatus.PENDING,
-    "engine.provider": { $ne: VideoEngineProvider.FXLAB }, // fxlab dùng flow riêng
+    "engine.provider": {
+      $nin: [VideoEngineProvider.FXLAB, VideoEngineProvider.FXFLOW],
+    },
   })
     .sort({ createdAt: -1 })
     .limit(MAX_CONCURRENCY);

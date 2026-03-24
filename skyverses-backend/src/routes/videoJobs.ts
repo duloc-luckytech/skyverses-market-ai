@@ -158,19 +158,32 @@ router.post("/", authenticate, async (req: any, res) => {
     executor = await getCookieForJob()
   }
 
+  /* =====================================================
+     🎲 RANDOM PROVIDER SELECTION: gommo ↔ fxflow
+     Chỉ áp dụng khi provider gốc là gommo
+  ====================================================== */
+  const finalEngine = { ...engine };
+  if (finalEngine.provider === "gommo") {
+    const usesFxflow = Math.random() < 0.5;
+    if (usesFxflow) {
+      finalEngine.provider = "fxflow";
+      console.log(`🎲 [VID] Random → fxflow (original: gommo)`);
+    }
+  }
+
   const job = await VideoJob.create({
     userId: req.user.userId,
     type,
     input,
     config,
-    engine,
+    engine: finalEngine,
     enginePayload,
     executor,
     status: VideoJobStatus.PENDING,
     creditsUsed: creditCost,
   });
 
-  console.log(`🎬 [VID] CREATE job=${job._id} engine=${engine.provider} model=${engine.model} type=${type} cost=${creditCost}`);
+  console.log(`🎬 [VID] CREATE job=${job._id} engine=${finalEngine.provider} model=${finalEngine.model} type=${type} cost=${creditCost}`);
 
   res.json({
     success: true,

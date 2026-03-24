@@ -31,6 +31,7 @@ export enum VideoEngineProvider {
   KLING = "kling",
   FXLAB = "fxlab",
   WAN = "wan",
+  FXFLOW = "fxflow",
 }
 
 /* ================================
