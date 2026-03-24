@@ -6,9 +6,10 @@ import { DeployLog } from "../models/DeployLog";
 const router = Router();
 const SECRET = process.env.GITHUB_WEBHOOK_SECRET!;
 
-/* ═══════════════════════════════════════════════════
-   FE + BE Deploy (main repo push)
-═══════════════════════════════════════════════════ */
+/**
+ * GitHub Webhook — Single deploy.sh handles everything
+ * FE:5300 | CMS:5301 | API:5302
+ */
 router.post("/github", (req: Request, res: Response) => {
   if (!Buffer.isBuffer(req.body)) {
     console.error("❌ Body is not Buffer");
@@ -34,7 +35,7 @@ router.post("/github", (req: Request, res: Response) => {
   const event = req.headers["x-github-event"];
 
   if (event === "push" && branch === "refs/heads/main") {
-    console.log("🚀 GitHub push detected → Deploying FE + BE...");
+    console.log("🚀 GitHub push detected → Running deploy.sh...");
 
     const startTime = Date.now();
 
@@ -49,9 +50,9 @@ router.post("/github", (req: Request, res: Response) => {
 
     log.save();
 
-    // Deploy FE
     exec(
-      'bash -lc "/root/skyverses-market-ai/skyverses-backend/deploy.sh"',
+      'bash -lc "/root/skyverses-market-ai/deploy.sh"',
+      { timeout: 300000 }, // 5 min timeout
       async (error, stdout, stderr) => {
         const durationMs = Date.now() - startTime;
 
@@ -63,37 +64,18 @@ router.post("/github", (req: Request, res: Response) => {
             errorMessage: error.message,
             durationMs,
           });
-          console.error("❌ FE Deploy error:", error.message);
-        } else {
-          console.log("✅ FE Deploy finished");
+          console.error("❌ Deploy error:", error.message);
+          return;
         }
 
-        // Deploy BE (after FE, same git pull already done)
-        exec(
-          'bash -lc "/root/skyverses-market-ai/skyverses-backend/deploy-be.sh"',
-          async (beError, beStdout, beStderr) => {
-            const totalDuration = Date.now() - startTime;
+        await DeployLog.findByIdAndUpdate(log._id, {
+          status: "SUCCESS",
+          stdout,
+          stderr,
+          durationMs,
+        });
 
-            if (beError) {
-              await DeployLog.findByIdAndUpdate(log._id, {
-                status: "PARTIAL",
-                stdout: stdout + "\n--- BE ---\n" + beStdout,
-                stderr: stderr + "\n--- BE ---\n" + beStderr,
-                errorMessage: `FE: ${error ? "FAIL" : "OK"} | BE: ${beError.message}`,
-                durationMs: totalDuration,
-              });
-              console.error("❌ BE Deploy error:", beError.message);
-            } else {
-              await DeployLog.findByIdAndUpdate(log._id, {
-                status: error ? "PARTIAL" : "SUCCESS",
-                stdout: stdout + "\n--- BE ---\n" + beStdout,
-                stderr: stderr + "\n--- BE ---\n" + beStderr,
-                durationMs: totalDuration,
-              });
-              console.log("✅ BE Deploy finished");
-            }
-          }
-        );
+        console.log(`✅ Deploy finished (${Math.round(durationMs / 1000)}s)`);
       }
     );
   }
@@ -101,12 +83,9 @@ router.post("/github", (req: Request, res: Response) => {
   res.json({ success: true });
 });
 
-/* ═══════════════════════════════════════════════════
-   CMS Deploy
-═══════════════════════════════════════════════════ */
+// CMS webhook → same deploy.sh (builds everything)
 router.post("/github-cms", (req: Request, res: Response) => {
   if (!Buffer.isBuffer(req.body)) {
-    console.error("❌ Body is not Buffer");
     return res.status(400).json({ message: "Invalid body type" });
   }
 
@@ -120,7 +99,6 @@ router.post("/github-cms", (req: Request, res: Response) => {
   const digest = "sha256=" + hmac.digest("hex");
 
   if (signature !== digest) {
-    console.error("❌ Invalid GitHub signature");
     return res.status(401).json({ message: "Invalid signature" });
   }
 
@@ -129,7 +107,7 @@ router.post("/github-cms", (req: Request, res: Response) => {
   const event = req.headers["x-github-event"];
 
   if (event === "push" && branch === "refs/heads/main") {
-    console.log("🚀 GitHub push detected → Deploying CMS...");
+    console.log("🚀 GitHub CMS push detected → Running deploy.sh...");
 
     const startTime = Date.now();
 
@@ -146,7 +124,8 @@ router.post("/github-cms", (req: Request, res: Response) => {
     log.save();
 
     exec(
-      'bash -lc "/root/skyverses-market-ai/skyverses-backend/deploy-cms.sh"',
+      'bash -lc "/root/skyverses-market-ai/deploy.sh"',
+      { timeout: 300000 },
       async (error, stdout, stderr) => {
         const durationMs = Date.now() - startTime;
 
@@ -169,7 +148,7 @@ router.post("/github-cms", (req: Request, res: Response) => {
           durationMs,
         });
 
-        console.log("✅ CMS Deploy finished");
+        console.log(`✅ CMS Deploy finished (${Math.round(durationMs / 1000)}s)`);
       }
     );
   }
