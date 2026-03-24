@@ -83,7 +83,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
       <aside className={`
         ${props.isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
-        w-[300px] lg:w-[280px] xl:w-[300px] shrink-0
+        w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
         bg-white dark:bg-[#0c0c10] border-r border-black/[0.06] dark:border-white/[0.04]
         flex flex-col transition-transform duration-300
       `}>
