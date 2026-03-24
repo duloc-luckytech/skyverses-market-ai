@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, ChevronDown } from 'lucide-react';
+import { Sparkles, ChevronDown, PenLine } from 'lucide-react';
 
 interface SidebarSingleProps {
   prompt: string;
@@ -20,7 +20,7 @@ export const SidebarSingle: React.FC<SidebarSingleProps> = ({ prompt, setPrompt 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-1.5">
       <div className="flex justify-between items-center px-0.5">
-        <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Prompt</p>
+        <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5"><PenLine size={11} className="text-rose-400" /> Prompt</p>
         <button
           onClick={() => setShowSuggestions(!showSuggestions)}
           className="flex items-center gap-1 text-[9px] font-medium text-rose-400/60 hover:text-rose-400 transition-colors"

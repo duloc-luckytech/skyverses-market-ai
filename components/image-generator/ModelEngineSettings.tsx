@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, List } from 'lucide-react';
+import { ChevronDown, ChevronUp, List, Brain, GitBranch, SlidersHorizontal, Ratio, MonitorUp, Hash, Settings2 } from 'lucide-react';
 import { ModelSelectorModal } from '../common/ModelSelectorModal';
 
 interface ModelEngineSettingsProps {
@@ -96,7 +96,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
           className="w-full flex items-center justify-between py-2.5 px-0.5 group"
         >
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">⚙️ Cấu hình AI</span>
+            <span className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5"><Settings2 size={12} className="text-rose-400" /> Cấu hình AI</span>
             {!isExpanded && summaryText && (
               <span className="text-[9px] font-medium text-rose-400/70 truncate max-w-[140px]">{summaryText}</span>
             )}
@@ -114,7 +114,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
             {/* MODEL FAMILY */}
             {hasFamilyData && (
               <div className="space-y-1">
-                <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Model</p>
+                <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5"><Brain size={11} className="text-cyan-500" /> Model</p>
                 <div className="flex gap-1.5">
                   <div className="relative flex-grow">
                     <select
@@ -142,8 +142,8 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
             {/* VARIANTS */}
             {allVariants.length > 1 && (
               <div className="space-y-1">
-                <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1">
-                  Phiên bản {hasMoreVariants && <span className="text-[9px] text-slate-400 dark:text-slate-500 normal-case font-normal">({allVariants.length})</span>}
+                <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5">
+                  <GitBranch size={11} className="text-violet-400" /> Phiên bản {hasMoreVariants && <span className="text-[9px] text-slate-400 dark:text-slate-500 normal-case font-normal">({allVariants.length})</span>}
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {visibleVariants.map((m: any) => (
@@ -190,7 +190,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                 const hiddenCount = modes.length - MAX;
                 return (
                   <div className="space-y-1">
-                    <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Chế độ</p>
+                    <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5"><SlidersHorizontal size={11} className="text-amber-400" /> Chế độ</p>
                     <div className="flex flex-wrap gap-1">
                       {visibleItems.map((m: string) => <Pill key={m} label={m} active={selectedMode === m} onClick={() => setSelectedMode(m)} disabled={isGenerating} />)}
                       {activeOutside && <Pill label={selectedMode} active={true} onClick={() => {}} disabled={isGenerating} />}
@@ -215,7 +215,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                   const hiddenCount = ratios.length - MAX;
                   return (
                     <div className="space-y-0.5">
-                      <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Tỷ lệ</p>
+                      <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1"><Ratio size={10} className="text-emerald-400" /> Tỷ lệ</p>
                       <div className="flex flex-wrap gap-0.5">
                         {visibleItems.map((r: string) => <Pill key={r} label={r} active={selectedRatio === r} onClick={() => setSelectedRatio(r)} disabled={isGenerating} />)}
                         {activeOutside && <Pill label={selectedRatio} active={true} onClick={() => {}} disabled={isGenerating} />}
@@ -237,7 +237,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                   const hiddenCount = resolutions.length - MAX;
                   return (
                     <div className="space-y-0.5">
-                      <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">P.Giải</p>
+                      <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1"><MonitorUp size={10} className="text-blue-400" /> P.Giải</p>
                       <div className="flex flex-wrap gap-0.5">
                         {visibleItems.map((r: string) => <Pill key={r} label={r} active={selectedRes === r} onClick={() => setSelectedRes(r)} disabled={isGenerating} />)}
                         {activeOutside && <Pill label={selectedRes} active={true} onClick={() => {}} disabled={isGenerating} />}
@@ -255,7 +255,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
               {/* Quantity (Single mode only) */}
               {activeMode === 'SINGLE' && (
                 <div className="flex items-center gap-2">
-                  <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">SL</p>
+                  <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1"><Hash size={10} className="text-orange-400" /> SL</p>
                   <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-md border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
                     {[1, 2, 3, 4].map(n => (
                       <button key={n} onClick={() => setQuantity(n)} className={`w-8 py-1 text-[10px] font-semibold transition-all ${quantity === n ? 'bg-rose-500/15 text-rose-400' : 'text-slate-500 dark:text-[#888] hover:text-white/70'}`}>{n}</button>

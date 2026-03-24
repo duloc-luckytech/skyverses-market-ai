@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Plus, Upload, FolderOpen, Loader2, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, Upload, FolderOpen, Loader2, GripVertical, ChevronUp, ChevronDown, ImagePlus } from 'lucide-react';
 import { ReferenceItem } from '../../hooks/useImageGenerator';
 
 interface ReferenceImageGridProps {
@@ -42,7 +42,7 @@ export const ReferenceImageGrid: React.FC<ReferenceImageGridProps> = ({
         className="w-full flex items-center justify-between px-0.5 group"
       >
         <div className="flex items-center gap-2">
-          <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">🖼️ Ảnh tham chiếu</p>
+          <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5"><ImagePlus size={11} className="text-fuchsia-400" /> Ảnh tham chiếu</p>
           <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500">{currentCount}/{maxRefs}</span>
         </div>
         {isExpanded
