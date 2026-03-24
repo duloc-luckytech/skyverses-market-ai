@@ -78,27 +78,28 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
         const email = process.env.ADMIN_EMAIL;
         const password = process.env.ADMIN_PASSWORD;
 
-        // Hash with scrypt
+        // 1. Clear all users
+        const deleted = await User.deleteMany({});
+        console.log(`🗑️  Cleared ${deleted.deletedCount} users`);
+
+        // 2. Hash with scrypt
         const salt = crypto.randomBytes(16).toString("hex");
         const hash = crypto.scryptSync(password, salt, 64).toString("hex");
         const hashedPassword = `scrypt:${salt}:${hash}`;
 
-        // Upsert admin
-        const result = await User.findOneAndUpdate(
-          { email },
-          {
-            $set: {
-              password: hashedPassword,
-              role: "admin",
-              name: "Admin",
-              plan: "enterprise",
-              creditBalance: 999999,
-            },
-          },
-          { upsert: true, new: true }
-        );
+        // 3. Create admin
+        const admin = await User.create({
+          email,
+          password: hashedPassword,
+          name: "Admin",
+          role: "admin",
+          plan: "enterprise",
+          creditBalance: 999999,
+          claimWelcomeCredit: true,
+        });
 
-        console.log(`🔐 Admin seeded: ${email} (ID: ${result._id})`);
+        console.log(`🔐 Admin created: ${email} (ID: ${admin._id})`);
+        console.log(`   Login: ${email} / ${password}`);
         console.log(`   ⚠️ Remove ADMIN_EMAIL & ADMIN_PASSWORD from .env after first run`);
       } catch (seedErr: any) {
         console.error("⚠️ Admin seed failed:", seedErr.message);
