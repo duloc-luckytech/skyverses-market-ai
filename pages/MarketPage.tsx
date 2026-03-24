@@ -273,11 +273,11 @@ const MarketPage = () => {
                     </span>
                   </button>
                   <button
-                    onClick={() => document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => navigate('/market')}
                     className="inline-flex items-center gap-3 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-7 py-4 rounded-2xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/10 hover:border-brand-blue/30 transition-all duration-300"
                   >
                     <Play size={14} className="text-brand-blue" fill="currentColor" />
-                    Xem sản phẩm
+                    Xem demo
                   </button>
                 </motion.div>
 
