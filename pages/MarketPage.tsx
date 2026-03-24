@@ -10,8 +10,9 @@ import {
   Sparkles, LucideIcon, ArrowRight, ChevronRight, Play, Zap, Shield, Globe2, Cpu,
   MousePointerClick, Wand2, Rocket, Megaphone, ShoppingBag, Clapperboard,
   Building2, Shirt, GraduationCap, Brain, Wrench, Plug, CreditCard, RefreshCw,
-  MonitorPlay, Palette, UserCircle
+  MonitorPlay, Palette, UserCircle, Landmark
 } from 'lucide-react';
+
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useSearch } from '../context/SearchContext';
@@ -429,7 +430,127 @@ const MarketPage = () => {
         )}
 
 
+
+        {/* ═══════════════════ PAYMENT METHODS ═══════════════════ */}
+        {!query && (
+          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-6 md:py-10">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative overflow-hidden rounded-[2rem] border border-black/[0.05] dark:border-white/[0.05] bg-gradient-to-br from-slate-50 to-white dark:from-[#0a0c12] dark:to-[#0c0f18] p-7 md:p-10"
+            >
+              {/* Background glow */}
+              <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-brand-blue/[0.04] dark:bg-brand-blue/[0.06] rounded-full blur-[80px] pointer-events-none" />
+
+              <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-12">
+                {/* Label */}
+                <div className="shrink-0">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/8 dark:bg-emerald-500/15 border border-emerald-500/15 dark:border-emerald-500/25 rounded-full mb-3">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400">Thanh toán</span>
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                    Nạp credits<br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-emerald-500">linh hoạt & an toàn</span>
+                  </h3>
+                  <p className="text-xs text-slate-400 dark:text-gray-500 mt-2 max-w-[200px] leading-relaxed">
+                    Hỗ trợ chuyển khoản ngân hàng và thanh toán crypto USDT.
+                  </p>
+                </div>
+
+                {/* Payment cards */}
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                  {/* Bank Transfer */}
+                  <motion.div
+                    whileHover={{ y: -4, scale: 1.02 }}
+                    transition={{ duration: 0.25 }}
+                    onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
+                    className="group relative cursor-pointer p-5 rounded-2xl bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 hover:shadow-lg hover:shadow-brand-blue/5 transition-all duration-300"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-blue/10 to-cyan-500/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform duration-300 shrink-0">
+                        <Landmark size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-black text-slate-900 dark:text-white mb-1">Chuyển khoản ngân hàng</p>
+                        <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-relaxed">VietQR — Tự động xác nhận qua webhook</p>
+                        <div className="flex flex-wrap gap-1.5 mt-3">
+                          {['Vietcombank', 'Techcombank', 'MB Bank', 'BIDV'].map(b => (
+                            <span key={b} className="px-2 py-0.5 bg-slate-50 dark:bg-white/5 border border-black/[0.05] dark:border-white/[0.06] text-[8px] font-bold text-slate-400 dark:text-gray-500 rounded-md">
+                              {b}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-black/[0.04] dark:border-white/[0.04]">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Tự động · 15 phút</span>
+                      </div>
+                      <ArrowRight size={14} className="text-slate-300 dark:text-gray-600 group-hover:text-brand-blue group-hover:translate-x-1 transition-all duration-300" />
+                    </div>
+                  </motion.div>
+
+                  {/* Crypto USDT */}
+                  <motion.div
+                    whileHover={{ y: -4, scale: 1.02 }}
+                    transition={{ duration: 0.25 }}
+                    onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
+                    className="group relative cursor-pointer p-5 rounded-2xl bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform duration-300 shrink-0">
+                        {/* USDT coin icon */}
+                        <svg viewBox="0 0 32 32" fill="none" className="w-5 h-5">
+                          <circle cx="16" cy="16" r="16" fill="#26A17B" fillOpacity="0.12"/>
+                          <path d="M17.922 17.383v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003C9.85 17.17 7 16.42 7 15.5c0-.92 2.85-1.672 6.009-1.883v2.387c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.386C19.908 13.83 22.75 14.58 22.75 15.5c0 .92-2.842 1.67-6.828 1.883zM13.009 13.375v-2.127h-3.36V9h12.702v2.248h-3.36v2.124c3.514.26 6.009 1.17 6.009 2.251 0 1.08-2.495 1.99-6.009 2.25v4.03H13.01v-4.031c-3.514-.26-6.009-1.17-6.009-2.25 0-1.08 2.495-1.99 6.009-2.25z" fill="#26A17B"/>
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-black text-slate-900 dark:text-white mb-1">Crypto USDT</p>
+                        <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-relaxed">BSC / ETH — MetaMask, Trust Wallet, Coinbase</p>
+                        <div className="flex flex-wrap gap-1.5 mt-3">
+                          {['BEP-20', 'ERC-20', 'MetaMask', 'WalletConnect'].map(b => (
+                            <span key={b} className="px-2 py-0.5 bg-slate-50 dark:bg-white/5 border border-black/[0.05] dark:border-white/[0.06] text-[8px] font-bold text-slate-400 dark:text-gray-500 rounded-md">
+                              {b}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-black/[0.04] dark:border-white/[0.04]">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                        <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">On-chain · Tức thì</span>
+                      </div>
+                      <ArrowRight size={14} className="text-slate-300 dark:text-gray-600 group-hover:text-amber-500 group-hover:translate-x-1 transition-all duration-300" />
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* CTA button */}
+                <div className="shrink-0 self-center">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
+                    className="group relative inline-flex flex-col items-center gap-1.5 px-6 py-4 rounded-2xl bg-gradient-to-br from-brand-blue to-purple-600 text-white shadow-xl shadow-brand-blue/20 hover:shadow-2xl hover:shadow-brand-blue/30 transition-all duration-300 overflow-hidden"
+                  >
+                    <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Sparkles size={20} className="relative z-10" fill="currentColor" />
+                    <span className="relative z-10 text-xs font-black whitespace-nowrap">Nạp Credits</span>
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </section>
+        )}
+
         {/* ═══════════════════ ACTIVE FILTER BAR ═══════════════════ */}
+
         <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
           {(query || primary !== 'ALL') && (
             <motion.div
