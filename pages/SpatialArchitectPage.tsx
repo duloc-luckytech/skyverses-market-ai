@@ -12,7 +12,15 @@ import { useArt3DGenerator } from '../hooks/useArt3DGenerator';
 import Art3DWorkspace from '../components/Art3DWorkspace';
 import { usePageMeta } from '../hooks/usePageMeta';
 
-/* ─── 3D SHOWCASE VIDEOS/IMAGES ─── */
+/* ─── LIVE 3D MODELS (Sketchfab embeds — verified public models) ─── */
+const LIVE_3D_MODELS = [
+  { id: '70ab4f4164b54afbad87f174f8b285c1', label: 'Duplex Architecture', tag: 'Architecture', vertices: '156K' },
+  { id: '66dcdec2a0c44d1d9cc2ee12a4abc186', label: 'Guard Tower Structure', tag: 'Brutalist', vertices: '89K' },
+  { id: 'b1701e74c9fe402f8620b7bf20459916', label: 'Interior Environment', tag: 'Interior', vertices: '210K' },
+  { id: '6a93eca9479d4eacb012e9f2c9a909c7', label: 'Sci-Fi Supply Port', tag: 'Sci-Fi', vertices: '340K' },
+];
+
+/* ─── 3D SHOWCASE IMAGES ─── */
 const SHOWCASE_3D = [
   { url: 'https://images.unsplash.com/photo-1618336753974-aae8e04506aa?auto=format&fit=crop&q=80&w=600', label: 'Brutalist Tower', tag: 'Architecture' },
   { url: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?auto=format&fit=crop&q=80&w=600', label: 'Interior Space', tag: 'Interior' },
@@ -263,7 +271,73 @@ const SpatialArchitectPage: React.FC = () => {
         </motion.div>
       </motion.section>
 
-      {/* ═══ 3D SHOWCASE ═══ */}
+      {/* ═══ LIVE 3D INTERACTIVE ═══ */}
+      <section className="py-32 px-6 lg:px-12 relative border-t border-emerald-500/[0.06]">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#060806] via-[#080a08] to-[#060806] pointer-events-none" />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="text-center space-y-4 mb-16">
+            <div className="inline-flex items-center gap-2 text-[10px] font-mono text-emerald-500/50 uppercase tracking-widest">
+              <Box size={12} className="animate-spin" style={{ animationDuration: '8s' }} /> INTERACTIVE_3D_VIEWER
+            </div>
+            <h2 className="text-4xl lg:text-6xl font-black tracking-tight">
+              Live 3D <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Models</span>
+            </h2>
+            <p className="text-sm text-white/30 font-mono max-w-lg mx-auto">
+              Xoay, zoom, khám phá trực tiếp các mô hình 3D. Kéo chuột để xoay.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {LIVE_3D_MODELS.map((model, i) => (
+              <motion.div key={model.id}
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ delay: i * 0.15, ease: [0.22, 1, 0.36, 1] as const }}
+                className="group relative bg-[#0a0f0a] border border-emerald-500/[0.08] rounded-2xl overflow-hidden hover:border-emerald-500/25 transition-all duration-700">
+                {/* HUD corner accents */}
+                <div className="absolute top-0 left-0 w-8 h-px bg-emerald-500/30 z-20" />
+                <div className="absolute top-0 left-0 h-8 w-px bg-emerald-500/30 z-20" />
+                <div className="absolute top-0 right-0 w-8 h-px bg-emerald-500/30 z-20" />
+                <div className="absolute top-0 right-0 h-8 w-px bg-emerald-500/30 z-20" />
+
+                {/* Sketchfab Iframe */}
+                <div className="aspect-[16/10] relative">
+                  <iframe
+                    title={model.label}
+                    src={`https://sketchfab.com/models/${model.id}/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0&transparent=1`}
+                    className="w-full h-full border-0"
+                    allow="autoplay; fullscreen; xr-spatial-tracking"
+                    allowFullScreen
+                  />
+                  {/* Top HUD */}
+                  <div className="absolute top-3 left-3 flex items-center gap-2 z-20 pointer-events-none">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+                    <span className="text-[8px] font-mono font-bold text-emerald-400/70 uppercase tracking-widest">{model.tag}</span>
+                  </div>
+                  <div className="absolute top-3 right-3 z-20 pointer-events-none">
+                    <div className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[7px] font-mono text-emerald-400/70">
+                      LIVE_3D
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer info */}
+                <div className="px-5 py-4 border-t border-emerald-500/[0.06] flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <h4 className="text-sm font-bold text-white/90 font-mono">{model.label}</h4>
+                    <span className="text-[9px] font-mono text-emerald-500/40">{model.vertices} vertices • interactive</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[8px] font-mono text-white/20">
+                    <RotateCcw size={10} /> Drag to rotate
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 3D IMAGE SHOWCASE ═══ */}
       <section id="showcase" className="py-32 px-6 lg:px-12 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-[#060806] via-[#080a08] to-[#060806] pointer-events-none" />
         <div className="max-w-7xl mx-auto relative z-10">
@@ -273,10 +347,10 @@ const SpatialArchitectPage: React.FC = () => {
               <Hexagon size={12} /> RENDER_GALLERY_v4
             </div>
             <h2 className="text-4xl lg:text-6xl font-black tracking-tight">
-              3D <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Showcase</span>
+              AI <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Renders</span>
             </h2>
             <p className="text-sm text-white/30 font-mono max-w-md mx-auto">
-              Kết quả thực tế từ hệ thống AI Mesh Engine.
+              Kết quả phối cảnh từ hệ thống AI Mesh Engine.
             </p>
           </motion.div>
 
