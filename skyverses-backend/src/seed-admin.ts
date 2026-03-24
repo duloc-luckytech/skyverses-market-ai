@@ -1,87 +1,95 @@
 /**
- * Seed Admin Account
- * Run: npx ts-node src/seed-admin.ts
+ * 🔐 Seed Admin — Clear all users & create fresh admin
+ * 
+ * Run on server:
+ *   cd /root/skyverses-market-ai/skyverses-backend
+ *   npx tsx src/seed-admin.ts
+ * 
+ * Run on Mac:
+ *   cd skyverses-backend
+ *   npx tsx src/seed-admin.ts
  */
 import mongoose from "mongoose";
+import crypto from "crypto";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/skyverses-dev";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@skyverses.com";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Admin2026";
 
 async function seedAdmin() {
-  console.log("🔗 Connecting to MongoDB:", MONGO_URI);
+  console.log("");
+  console.log("════════════════════════════════════════════════════");
+  console.log("  🔐 Seed Admin — Clear & Create");
+  console.log("════════════════════════════════════════════════════");
+  console.log(`  DB:    ${MONGO_URI.replace(/\/\/.*:.*@/, "//***:***@")}`);
+  console.log(`  Email: ${ADMIN_EMAIL}`);
+  console.log(`  Pass:  ${ADMIN_PASSWORD}`);
+  console.log("");
+
   await mongoose.connect(MONGO_URI);
+  console.log("✅ MongoDB connected!");
 
   const UserModel = (await import("./models/UserModel")).default;
 
-  const adminEmail = "admin@skyverses.com";
-  const existing = await UserModel.findOne({ email: adminEmail });
+  // 1. Count existing users
+  const totalUsers = await UserModel.countDocuments();
+  console.log(`\n📋 Current users: ${totalUsers}`);
 
-  if (existing) {
-    console.log("⚡ Admin account already exists, updating role...");
-    existing.role = "admin";
-    existing.creditBalance = 999999;
-    existing.credit = 999999;
-    await existing.save();
-    console.log("✅ Admin account updated:");
-    console.log(`   Email: ${existing.email}`);
-    console.log(`   Role: ${existing.role}`);
-    console.log(`   Credits: ${existing.creditBalance}`);
-  } else {
-    // Generate unique invite code
-    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-    let inviteCode = "";
-    for (let i = 0; i < 8; i++) {
-      inviteCode += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+  // 2. Clear ALL users
+  const deleteResult = await UserModel.deleteMany({});
+  console.log(`🗑️  Deleted ${deleteResult.deletedCount} users`);
 
-    const admin = await UserModel.create({
-      email: adminEmail,
-      firstName: "Admin",
-      lastName: "Skyverses",
-      role: "admin",
-      inviteCode,
-      credit: 999999,
-      creditBalance: 999999,
-      claimWelcomeCredit: true,
-      onboarding: {
-        role: "ai_architect",
-        goals: ["full_pipeline"],
-        workStyle: "studio",
-        experienceLevel: "expert",
-        completedAt: new Date(),
-      },
-    });
+  // 3. Hash password with crypto.scrypt (no bcryptjs needed)
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.scryptSync(ADMIN_PASSWORD, salt, 64).toString("hex");
+  const hashedPassword = `scrypt:${salt}:${hash}`;
 
-    console.log("✅ Admin account created successfully:");
-    console.log(`   Email: ${admin.email}`);
-    console.log(`   Role: ${admin.role}`);
-    console.log(`   Invite Code: ${admin.inviteCode}`);
-    console.log(`   Credits: ${admin.creditBalance}`);
+  // 4. Create admin
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let inviteCode = "";
+  for (let i = 0; i < 8; i++) {
+    inviteCode += chars.charAt(Math.floor(Math.random() * chars.length));
   }
 
-  // Also ensure the dev admin account has admin role
-  const devAdmin = await UserModel.findOne({ email: "duloc2708@gmail.com" });
-  if (devAdmin) {
-    devAdmin.role = "admin";
-    await devAdmin.save();
-    console.log("✅ Dev admin (duloc2708@gmail.com) role set to admin");
-  }
+  const admin = await UserModel.create({
+    email: ADMIN_EMAIL,
+    password: hashedPassword,
+    name: "Admin",
+    role: "admin",
+    inviteCode,
+    plan: "enterprise",
+    credit: 999999,
+    creditBalance: 999999,
+    claimWelcomeCredit: true,
+  });
 
-  console.log("\n🎉 Seed complete!");
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  console.log("CMS Login credentials:");
-  console.log("  Email:    admin@skyverses.com");
-  console.log("  Password: (any - uses email auth)");
-  console.log("  Or use: Admin Quick Login button");
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  // 5. Verify password works
+  const [, testSalt, testHash] = hashedPassword.split(":");
+  const verify = crypto.scryptSync(ADMIN_PASSWORD, testSalt, 64).toString("hex");
+  const passOk = verify === testHash;
+
+  console.log(`\n✅ Admin created:`);
+  console.log(`   ID:       ${admin._id}`);
+  console.log(`   Email:    ${admin.email}`);
+  console.log(`   Role:     ${(admin as any).role}`);
+  console.log(`   Plan:     ${(admin as any).plan}`);
+  console.log(`   Credits:  ${(admin as any).creditBalance}`);
+  console.log(`   Pass OK:  ${passOk}`);
+
+  console.log("\n════════════════════════════════════════════════════");
+  console.log("  ✅ DONE — CMS Login:");
+  console.log(`     Email:    ${ADMIN_EMAIL}`);
+  console.log(`     Password: ${ADMIN_PASSWORD}`);
+  console.log("════════════════════════════════════════════════════\n");
 
   await mongoose.disconnect();
   process.exit(0);
 }
 
 seedAdmin().catch((err) => {
-  console.error("❌ Seed failed:", err);
+  console.error("❌ Seed failed:", err.message);
   process.exit(1);
 });
