@@ -73,10 +73,12 @@ function mapImageModel(engineModel?: string): string {
 function mapAspectRatio(ratio?: string): string {
   switch (ratio) {
     case "9:16":
+    case "3:4":
       return "portrait";
     case "1:1":
       return "square";
     case "16:9":
+    case "4:3":
     default:
       return "landscape";
   }
