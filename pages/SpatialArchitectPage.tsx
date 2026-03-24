@@ -20,14 +20,14 @@ const LIVE_3D_MODELS = [
   { id: '6a93eca9479d4eacb012e9f2c9a909c7', label: 'Sci-Fi Supply Port', tag: 'Sci-Fi', vertices: '340K' },
 ];
 
-/* ─── 3D SHOWCASE IMAGES ─── */
+/* ─── 3D SHOWCASE IMAGES (AI-generated renders) ─── */
 const SHOWCASE_3D = [
-  { url: 'https://images.unsplash.com/photo-1618336753974-aae8e04506aa?auto=format&fit=crop&q=80&w=600', label: 'Brutalist Tower', tag: 'Architecture' },
-  { url: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?auto=format&fit=crop&q=80&w=600', label: 'Interior Space', tag: 'Interior' },
-  { url: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&q=80&w=600', label: 'Glass Facade', tag: 'Exterior' },
-  { url: 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&q=80&w=600', label: 'Modular Design', tag: 'Modular' },
-  { url: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&q=80&w=600', label: 'Urban Planning', tag: 'Urban' },
-  { url: 'https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&q=80&w=600', label: 'Concept Render', tag: 'VFX' },
+  { url: '/showcase-3d/helmet.png', label: 'Space Helmet', tag: 'Text → 3D' },
+  { url: '/showcase-3d/character.png', label: 'Fantasy Warrior', tag: 'Character' },
+  { url: '/showcase-3d/vehicle.png', label: 'Sci-Fi Spacecraft', tag: 'Vehicle' },
+  { url: '/showcase-3d/furniture.png', label: '2D→3D Chair', tag: 'Image → 3D' },
+  { url: '/showcase-3d/creature.png', label: 'Dragon Model', tag: 'Creature' },
+  { url: '/showcase-3d/treasure.png', label: 'Treasure Chest', tag: 'Game Asset' },
 ];
 
 const FEATURES = [
