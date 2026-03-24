@@ -6,6 +6,7 @@ import ImageJob, {
 
 import { runImageEngineRequest } from "./engines/runImageEngineRequest";
 import { runImageEnginePoll } from "./engines/runImageEnginePoll";
+import { refundJobCredits } from "../../utils/refundJobCredits";
 
 const MAX_CONCURRENCY = 3;
 
@@ -50,6 +51,7 @@ export async function processImageJobs() {
         locked.status = ImageJobStatus.ERROR;
         locked.error = { message: err.message };
         await locked.save();
+        await refundJobCredits(locked, "image_worker_error");
       }
     })
   );

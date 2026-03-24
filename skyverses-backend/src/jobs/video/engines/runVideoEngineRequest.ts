@@ -6,6 +6,7 @@ import {
 import UserModel from "../../../models/UserModel";
 
 import { getPricingCredits } from "../../../utils/getPricingCredits";
+import { refundJobCredits } from "../../../utils/refundJobCredits";
 
 import { runGommoRequest } from "./gommo/request";
 import { runVideoRequestFx } from "./fxlab/request";
@@ -113,7 +114,8 @@ export async function runVideoEngineRequest(job: any) {
 
     await job.save();
 
-    // ❌ Không refund mặc định
+    // 💳 Auto-refund on failure
+    await refundJobCredits(job, "video_engine_error");
     return;
   }
 }

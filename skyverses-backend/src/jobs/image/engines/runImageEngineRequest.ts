@@ -2,6 +2,7 @@ import {
   ImageEngineProvider,
   ImageJobStatus,
 } from "../../../models/ImageJob";
+import { refundJobCredits } from "../../../utils/refundJobCredits";
 
 import { runGommoImageRequest } from "./gommo/request";
 import { runVideoRequestForWan } from "./running/request";
@@ -105,6 +106,7 @@ export async function runImageEngineRequest(job: any) {
     job.status = ImageJobStatus.ERROR;
     job.error = { message: err.message };
     await job.save();
+    await refundJobCredits(job, "image_engine_error");
     throw err;
   }
 }
