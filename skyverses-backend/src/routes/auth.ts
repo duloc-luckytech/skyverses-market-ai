@@ -299,36 +299,26 @@ router.post("/admin/login", async (req, res) => {
   }
 
   try {
-    // Find admin user by email or username
     const email = username.includes("@") ? username : `${username}@skyverses.com`;
-    console.log(`[ADMIN LOGIN] Searching: email=${email} role=admin`);
     const user: any = await UserModel.findOne({ email, role: "admin" });
 
     if (!user) {
-      console.log(`[ADMIN LOGIN] ❌ User not found: ${email}`);
       return res.status(401).json({ success: false, message: "Tài khoản admin không tồn tại" });
     }
 
-    console.log(`[ADMIN LOGIN] ✅ Found user: ${user.email}, has password: ${!!user.password}, password prefix: ${(user.password||"").substring(0,10)}`);
-
-    // Verify password (scrypt:salt:hash format)
     if (!user.password) {
       return res.status(401).json({ success: false, message: "Tài khoản chưa có mật khẩu" });
     }
 
     const crypto = require("crypto");
     const [prefix, salt, storedHash] = user.password.split(":");
-    console.log(`[ADMIN LOGIN] Hash format: prefix=${prefix}, salt=${salt?.substring(0,8)}..., hash=${storedHash?.substring(0,8)}...`);
 
     if (prefix !== "scrypt" || !salt || !storedHash) {
       return res.status(401).json({ success: false, message: "Định dạng mật khẩu không hợp lệ" });
     }
 
     const testHash = crypto.scryptSync(password, salt, 64).toString("hex");
-    const matched = testHash === storedHash;
-    console.log(`[ADMIN LOGIN] Password match: ${matched}`);
-
-    if (!matched) {
+    if (testHash !== storedHash) {
       return res.status(401).json({ success: false, message: "Sai mật khẩu" });
     }
 
