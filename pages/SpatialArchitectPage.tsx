@@ -272,123 +272,140 @@ const SpatialArchitectPage: React.FC = () => {
 
       {/* ═══ HERO — IMMERSIVE 3D ═══ */}
       <motion.section style={{ opacity: heroOpacity, scale: heroScale }}
-        className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
+        className="relative min-h-screen flex items-center px-6 lg:px-16 overflow-hidden pt-24 pb-16">
         <WireframeGrid />
 
-        {/* Floating elements */}
-        <FloatingCube size={80} delay={0} x="10%" y="20%" />
-        <FloatingCube size={50} delay={5} x="85%" y="30%" />
-        <FloatingCube size={35} delay={10} x="75%" y="70%" />
+        {/* Floating cubes — only corners */}
+        <FloatingCube size={60} delay={0} x="2%" y="15%" />
+        <FloatingCube size={35} delay={8} x="92%" y="60%" />
 
         {/* Glow orbs */}
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-emerald-500/[0.04] rounded-full blur-[150px] animate-pulse pointer-events-none" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-cyan-500/[0.03] rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.03] rounded-full blur-[180px] pointer-events-none -translate-y-1/2" />
+        <div className="absolute top-1/2 right-0 w-[500px] h-[500px] bg-teal-500/[0.03] rounded-full blur-[150px] pointer-events-none -translate-y-1/2" />
 
-        <div className="relative z-10 text-center max-w-5xl mx-auto space-y-8 pt-20">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-            <Link to="/market" className="inline-flex items-center gap-2 text-[11px] font-mono font-semibold text-emerald-500/60 hover:text-emerald-400 transition-colors mb-8">
-              <ChevronLeft size={14} /> ← BACK_TO_MARKET
-            </Link>
-          </motion.div>
+        {/* 2-col grid */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-400 text-[11px] font-mono font-bold uppercase tracking-wider">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-            TEXT & IMAGE → 3D MODEL ENGINE
-          </motion.div>
+          {/* ── LEFT: Content ── */}
+          <div className="space-y-8 text-left">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+              <Link to="/market" className="inline-flex items-center gap-2 text-[11px] font-mono font-semibold text-emerald-500/60 hover:text-emerald-400 transition-colors">
+                <ChevronLeft size={14} /> ← BACK_TO_MARKET
+              </Link>
+            </motion.div>
 
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 1, ease: [0.22, 1, 0.36, 1] as const }}
-            className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.85]">
-            <span className="text-white/90">SPATIAL</span>
-            <br />
-            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(16,185,129,0.3)]">
-              ARCHITECT
-            </span>
-          </motion.h1>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+              className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-400 text-[11px] font-mono font-bold uppercase tracking-wider">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+              TEXT & IMAGE → 3D ENGINE
+            </motion.div>
 
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
-            className="text-base md:text-lg text-white/40 font-mono max-w-2xl mx-auto leading-relaxed">
-            Chuyển ảnh 2D thành mô hình 3D hoặc tạo model từ prompt. Chỉnh sửa PBR, viewport 360°
-            <span className="text-emerald-400/60"> — export .GLB/.OBJ ngay.</span>
-          </motion.p>
-
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }}
-            className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <button onClick={() => logic.setIsStudioOpen(true)}
-              className="group relative bg-emerald-500 text-black px-10 py-5 rounded-xl font-black text-sm tracking-wide shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.5)] hover:scale-[1.03] transition-all flex items-center gap-3 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="relative z-10 flex items-center gap-3">
-                <Box size={18} />
-                KHỞI CHẠY FORGE
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 1, ease: [0.22, 1, 0.36, 1] as const }}
+              className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.85]">
+              <span className="text-white/90">SPATIAL</span>
+              <br />
+              <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(16,185,129,0.3)]">
+                ARCHITECT
               </span>
-            </button>
-            <a href="#showcase"
-              className="px-10 py-5 border border-emerald-500/20 rounded-xl font-bold text-sm text-emerald-400/60 hover:text-emerald-400 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all font-mono">
-              XEM 3D SHOWCASE ↓
-            </a>
-          </motion.div>
+            </motion.h1>
 
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
-            className="flex flex-wrap items-center justify-center gap-6 pt-6 font-mono">
-            {['Text → 3D', 'Image → 3D', 'PBR Editor', 'GLB/OBJ Export'].map((badge, i) => (
-              <span key={i} className="flex items-center gap-1.5 text-[10px] font-semibold text-white/25">
-                <div className="w-1 h-1 rounded-full bg-emerald-500/50" /> {badge}
-              </span>
-            ))}
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
+              className="text-base text-white/40 font-mono max-w-md leading-relaxed">
+              Chuyển ảnh 2D thành mô hình 3D hoặc tạo model từ prompt. Chỉnh sửa PBR, viewport 360°
+              <span className="text-emerald-400/60"> — export .GLB/.OBJ ngay.</span>
+            </motion.p>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }}
+              className="flex flex-wrap gap-4">
+              <button onClick={() => logic.setIsStudioOpen(true)}
+                className="group relative bg-emerald-500 text-black px-8 py-4 rounded-xl font-black text-sm tracking-wide shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.5)] hover:scale-[1.03] transition-all flex items-center gap-3 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="relative z-10 flex items-center gap-3">
+                  <Box size={16} />
+                  KHỞI CHẠY FORGE
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </span>
+              </button>
+              <a href="#showcase"
+                className="px-8 py-4 border border-emerald-500/20 rounded-xl font-bold text-sm text-emerald-400/60 hover:text-emerald-400 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all font-mono">
+                XEM SHOWCASE ↓
+              </a>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
+              className="flex flex-wrap gap-5 font-mono">
+              {['Text → 3D', 'Image → 3D', 'PBR Editor', 'GLB/OBJ Export'].map((badge, i) => (
+                <span key={i} className="flex items-center gap-1.5 text-[10px] font-semibold text-white/25">
+                  <div className="w-1 h-1 rounded-full bg-emerald-500/50" /> {badge}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* ── RIGHT: Floating 3D Viewer ── */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.7, duration: 1.2, ease: [0.22, 1, 0.36, 1] as const }}
+            className="relative"
+          >
+            {/* Floating animation wrapper */}
+            <div style={{ animation: 'heroFloat 6s ease-in-out infinite' }}>
+              <div className="relative bg-[#0a0f0a] border border-emerald-500/[0.1] rounded-2xl overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.7),0_0_60px_rgba(16,185,129,0.05)] hover:border-emerald-500/25 transition-all duration-700">
+                {/* HUD corner accents */}
+                <div className="absolute top-0 left-0 w-10 h-px bg-emerald-500/40 z-20" />
+                <div className="absolute top-0 left-0 h-10 w-px bg-emerald-500/40 z-20" />
+                <div className="absolute top-0 right-0 w-10 h-px bg-emerald-500/40 z-20" />
+                <div className="absolute top-0 right-0 h-10 w-px bg-emerald-500/40 z-20" />
+                <div className="absolute bottom-0 left-0 w-10 h-px bg-emerald-500/40 z-20" />
+                <div className="absolute bottom-0 left-0 h-10 w-px bg-emerald-500/40 z-20" />
+                <div className="absolute bottom-0 right-0 w-10 h-px bg-emerald-500/40 z-20" />
+                <div className="absolute bottom-0 right-0 h-10 w-px bg-emerald-500/40 z-20" />
+
+                {/* Top HUD bar */}
+                <div className="absolute top-3 left-4 flex items-center gap-2 z-20 pointer-events-none">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+                  <span className="text-[8px] font-mono font-bold text-emerald-400/70 uppercase tracking-widest">LIVE_3D_PREVIEW</span>
+                </div>
+                <div className="absolute top-3 right-4 z-20 pointer-events-none flex items-center gap-2">
+                  <span className="text-[7px] font-mono text-white/20">Drag to rotate</span>
+                  <div className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[7px] font-mono text-emerald-400/70">
+                    INTERACTIVE
+                  </div>
+                </div>
+
+                {/* 3D Viewer */}
+                <div className="aspect-[4/3] relative">
+                  <HeroModelViewer />
+                </div>
+
+                {/* Bottom HUD */}
+                <div className="px-5 py-3 border-t border-emerald-500/[0.06] flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-mono font-bold text-white/70">AI_Generated_Model</span>
+                    <span className="text-[8px] font-mono text-emerald-500/40">Drag to rotate • Scroll to zoom</span>
+                  </div>
+                  <span className="text-[8px] font-mono text-white/20">.GLB • PBR</span>
+                </div>
+              </div>
+
+              {/* Reflection glow below card */}
+              <div className="mx-8 h-6 bg-emerald-500/10 blur-xl rounded-full mt-2" />
+            </div>
+
+            <style>{`
+              @keyframes heroFloat {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-18px); }
+              }
+            `}</style>
           </motion.div>
         </div>
 
-        {/* ─── HERO 3D MODEL VIEWER ─── */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.4, duration: 1, ease: [0.22, 1, 0.36, 1] as const }}
-          className="relative z-10 w-full max-w-3xl mx-auto mt-12"
-        >
-          <div className="relative bg-[#0a0f0a] border border-emerald-500/[0.08] rounded-2xl overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.6)] hover:border-emerald-500/20 transition-all duration-700 group">
-            {/* HUD corner accents */}
-            <div className="absolute top-0 left-0 w-10 h-px bg-emerald-500/40 z-20" />
-            <div className="absolute top-0 left-0 h-10 w-px bg-emerald-500/40 z-20" />
-            <div className="absolute top-0 right-0 w-10 h-px bg-emerald-500/40 z-20" />
-            <div className="absolute top-0 right-0 h-10 w-px bg-emerald-500/40 z-20" />
-            <div className="absolute bottom-0 left-0 w-10 h-px bg-emerald-500/40 z-20" />
-            <div className="absolute bottom-0 left-0 h-10 w-px bg-emerald-500/40 z-20" />
-            <div className="absolute bottom-0 right-0 w-10 h-px bg-emerald-500/40 z-20" />
-            <div className="absolute bottom-0 right-0 h-10 w-px bg-emerald-500/40 z-20" />
-
-            {/* Top HUD bar */}
-            <div className="absolute top-3 left-4 flex items-center gap-2 z-20 pointer-events-none">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
-              <span className="text-[8px] font-mono font-bold text-emerald-400/70 uppercase tracking-widest">LIVE_3D_PREVIEW</span>
-            </div>
-            <div className="absolute top-3 right-4 z-20 pointer-events-none flex items-center gap-2">
-              <span className="text-[7px] font-mono text-white/20">Drag to rotate</span>
-              <div className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[7px] font-mono text-emerald-400/70">
-                INTERACTIVE
-              </div>
-            </div>
-
-            {/* model-viewer via ref — 3 switchable models */}
-            <div className="aspect-[16/9] relative">
-              <HeroModelViewer />
-            </div>
-
-            {/* Bottom HUD */}
-            <div className="px-5 py-3 border-t border-emerald-500/[0.06] flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] font-mono font-bold text-white/70">AI_Generated_Model</span>
-                <span className="text-[8px] font-mono text-emerald-500/40">Drag to rotate • Scroll to zoom</span>
-              </div>
-              <span className="text-[8px] font-mono text-white/20">.GLB • PBR Textured</span>
-            </div>
-          </div>
-        </motion.div>
-
         {/* Scroll indicator */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-          <div className="w-px h-12 bg-gradient-to-b from-transparent to-emerald-500/30" />
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+          <div className="w-px h-10 bg-gradient-to-b from-transparent to-emerald-500/30" />
           <span className="text-[8px] font-mono text-emerald-500/40 uppercase tracking-widest">Scroll</span>
         </motion.div>
       </motion.section>
