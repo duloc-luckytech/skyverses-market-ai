@@ -35,7 +35,7 @@ const Pill = ({ label, active, onClick, disabled }: { label: string; active: boo
     disabled={disabled}
     className={`px-2.5 py-1 rounded-md text-[10px] font-semibold transition-all border ${active
       ? 'bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/25'
-      : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-500 dark:text-[#666] hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
+      : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-600 dark:text-[#888] hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
       }`}
   >
     {label}
@@ -84,7 +84,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
         {/* ─── MODEL FAMILY ─── */}
         {hasFamilyData && (
           <div className="space-y-1">
-            <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider px-0.5">Model</p>
+            <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Model</p>
             <div className="flex gap-1.5">
               <div className="relative flex-grow">
                 <select
@@ -100,7 +100,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
               <button
                 onClick={() => setIsDetailOpen(true)}
                 disabled={isGenerating}
-                className="shrink-0 px-2 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-[10px] font-medium text-slate-500 dark:text-[#666] hover:text-rose-500 dark:hover:text-rose-400 hover:border-rose-500/30 transition-all flex items-center gap-1"
+                className="shrink-0 px-2 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-[10px] font-medium text-slate-500 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:border-rose-500/30 transition-all flex items-center gap-1"
                 title="Xem chi tiết"
               >
                 <List size={10} />
@@ -112,8 +112,8 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
         {/* ─── VARIANTS ─── */}
         {allVariants.length > 1 && (
           <div className="space-y-1">
-            <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider px-0.5 flex items-center gap-1">
-              Phiên bản {hasMoreVariants && <span className="text-[9px] text-slate-400 dark:text-[#444] normal-case font-normal">({allVariants.length})</span>}
+            <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1">
+              Phiên bản {hasMoreVariants && <span className="text-[9px] text-slate-400 dark:text-slate-500 normal-case font-normal">({allVariants.length})</span>}
             </p>
             <div className="flex flex-wrap gap-1">
               {visibleVariants.map((m: any) => (
@@ -140,7 +140,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                 />
               )}
               {hasMoreVariants && (
-                <button onClick={() => setShowAllVariants(!showAllVariants)} className="px-1.5 py-1 text-[9px] font-medium text-slate-400 dark:text-[#555] hover:text-rose-400 transition-colors">
+                <button onClick={() => setShowAllVariants(!showAllVariants)} className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-[#888] hover:text-rose-400 transition-colors">
                   {showAllVariants ? '↑ Thu gọn' : `+${allVariants.length - MAX_VARIANTS}`}
                 </button>
               )}
@@ -151,7 +151,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
         {/* ─── MODES ─── */}
         {modes.length > 0 && (
           <div className="space-y-1">
-            <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider px-0.5">Chế độ</p>
+            <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Chế độ</p>
             <div className="flex flex-wrap gap-1">
               {modes.map((m: string) => <Pill key={m} label={m} active={selectedMode === m} onClick={() => setSelectedMode(m)} disabled={isGenerating} />)}
             </div>
@@ -163,7 +163,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
           {/* Ratio */}
           {ratios.length > 0 && (
             <div className="space-y-0.5">
-              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#444] tracking-wider px-0.5">Tỷ lệ</p>
+              <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Tỷ lệ</p>
               <div className="flex flex-wrap gap-0.5">
                 {ratios.map((r: string) => <Pill key={r} label={r} active={selectedRatio === r} onClick={() => setSelectedRatio(r)} disabled={isGenerating} />)}
               </div>
@@ -172,7 +172,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
           {/* Resolution */}
           {resolutions.length > 0 && (
             <div className="space-y-0.5">
-              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#444] tracking-wider px-0.5">P.Giải</p>
+              <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">P.Giải</p>
               <div className="flex flex-wrap gap-0.5">
                 {resolutions.map((r: string) => <Pill key={r} label={r} active={selectedRes === r} onClick={() => setSelectedRes(r)} disabled={isGenerating} />)}
               </div>
@@ -183,10 +183,10 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
         {/* ─── QUANTITY (SINGLE) ─── */}
         {activeMode === 'SINGLE' && (
           <div className="flex items-center gap-2">
-            <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#444] tracking-wider">SL</p>
+            <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">SL</p>
             <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-md border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
               {[1, 2, 3, 4].map(n => (
-                <button key={n} onClick={() => setQuantity(n)} className={`w-8 py-1 text-[10px] font-semibold transition-all ${quantity === n ? 'bg-rose-500/15 text-rose-400' : 'text-slate-400 dark:text-[#555] hover:text-white/70'}`}>{n}</button>
+                <button key={n} onClick={() => setQuantity(n)} className={`w-8 py-1 text-[10px] font-semibold transition-all ${quantity === n ? 'bg-rose-500/15 text-rose-400' : 'text-slate-500 dark:text-[#888] hover:text-white/70'}`}>{n}</button>
               ))}
             </div>
           </div>

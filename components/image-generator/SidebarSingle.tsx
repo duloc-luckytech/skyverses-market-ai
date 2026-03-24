@@ -20,7 +20,7 @@ export const SidebarSingle: React.FC<SidebarSingleProps> = ({ prompt, setPrompt 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-1.5">
       <div className="flex justify-between items-center px-0.5">
-        <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">Prompt</p>
+        <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Prompt</p>
         <button
           onClick={() => setShowSuggestions(!showSuggestions)}
           className="flex items-center gap-1 text-[9px] font-medium text-rose-400/60 hover:text-rose-400 transition-colors"
@@ -39,7 +39,7 @@ export const SidebarSingle: React.FC<SidebarSingleProps> = ({ prompt, setPrompt 
               className="p-2 rounded-lg border border-black/[0.06] dark:border-white/[0.04] bg-slate-50 dark:bg-white/[0.015] hover:border-rose-500/20 text-left transition-all"
             >
               <span className="text-sm">{q.emoji}</span>
-              <p className="text-[8px] text-slate-400 dark:text-[#444] mt-1 line-clamp-2 leading-relaxed">{q.text}</p>
+              <p className="text-[8px] text-slate-500 dark:text-[#666] mt-1 line-clamp-2 leading-relaxed">{q.text}</p>
             </button>
           ))}
         </div>

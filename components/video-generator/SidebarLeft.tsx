@@ -89,7 +89,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
       <div className={`px-3 pt-2.5 pb-2 border-b border-black/[0.06] dark:border-white/[0.04] shrink-0 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         <div className="hidden lg:flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <button onClick={e => { stop(e); props.onClose(); }} className="p-0.5 text-slate-400 dark:text-[#555] hover:text-slate-900 dark:hover:text-white transition-colors"><ChevronLeft size={16} /></button>
+            <button onClick={e => { stop(e); props.onClose(); }} className="p-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><ChevronLeft size={16} /></button>
             <Video size={12} className="text-indigo-400" />
             <span className="text-xs font-semibold text-slate-600 dark:text-white/70">Video Studio</span>
           </div>
@@ -98,7 +98,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
         <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
           {(['SINGLE', 'MULTI', 'AUTO'] as const).map(m => (
             <button key={m} onClick={e => { stop(e); props.setActiveMode(m); }}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === m ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-400 dark:text-[#555] hover:text-slate-600 dark:hover:text-white/60'
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === m ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white/60'
                 }`}>
               {m === 'SINGLE' ? <Play size={9} /> : m === 'MULTI' ? <Layers size={9} /> : <Zap size={9} />}
               {m === 'SINGLE' ? 'Đơn' : m === 'MULTI' ? 'Multi' : 'Auto'}
@@ -114,7 +114,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
           {props.activeMode === 'SINGLE' && (
             <motion.div key="s" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2.5">
               <div className="space-y-1">
-                <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider px-0.5">Kịch bản</p>
+                <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Kịch bản</p>
                 <textarea
                   value={props.prompt} onChange={e => props.setPrompt(e.target.value)}
                   className="w-full min-h-[100px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-lg p-3 text-xs font-medium focus:border-indigo-500/30 outline-none transition-all resize-y text-slate-800 dark:text-white/80 placeholder:text-slate-300 dark:placeholder:text-[#333] leading-relaxed"
@@ -123,11 +123,11 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-0.5">
-                  <p className="text-[9px] font-medium text-slate-400 dark:text-[#444] px-0.5">Start</p>
+                  <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400 px-0.5">Start</p>
                   <Slot url={props.startFrame} uploading={props.isUploadingImage === 'START'} onUp={() => props.handleSingleFrameClick('START', 'UPLOAD')} onLib={() => props.handleSingleFrameClick('START', 'LIBRARY')} />
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-[9px] font-medium text-slate-400 dark:text-[#444] px-0.5">End</p>
+                  <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400 px-0.5">End</p>
                   <Slot url={props.endFrame} uploading={props.isUploadingImage === 'END'} onUp={() => props.handleSingleFrameClick('END', 'UPLOAD')} onLib={() => props.handleSingleFrameClick('END', 'LIBRARY')} />
                 </div>
               </div>
@@ -138,7 +138,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
           {props.activeMode === 'MULTI' && (
             <motion.div key="m" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
               <div className="flex justify-between items-center">
-                <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">{props.multiFrames.length} frames</p>
+                <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">{props.multiFrames.length} frames</p>
                 <button onClick={e => { stop(e); props.handleAddFrame(); }} className="text-indigo-400 text-[10px] font-semibold flex items-center gap-1 hover:brightness-125"><Plus size={12} strokeWidth={3} /> Add</button>
               </div>
               <div className="grid grid-cols-3 gap-1.5">
@@ -169,7 +169,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
           {props.activeMode === 'AUTO' && (
             <motion.div key="a" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
               <div className="flex justify-between items-center">
-                <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">Batch</p>
+                <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Batch</p>
                 <button onClick={e => { stop(e); props.setIsBulkImporting(!props.isBulkImporting); }} className="text-indigo-400 text-[10px] font-semibold flex items-center gap-1 hover:brightness-125">
                   {props.isBulkImporting ? <><X size={12} /> Hủy</> : <><ListPlus size={12} /> Nhập</>}
                 </button>

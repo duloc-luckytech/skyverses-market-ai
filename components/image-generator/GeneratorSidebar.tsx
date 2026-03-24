@@ -97,7 +97,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
       <div className={`px-3 pt-2.5 pb-2 border-b border-black/[0.06] dark:border-white/[0.04] shrink-0 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
         <div className="hidden lg:flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <button onClick={props.onClose} className="p-0.5 text-slate-400 dark:text-[#555] hover:text-slate-900 dark:hover:text-white transition-colors"><ChevronLeft size={16} /></button>
+            <button onClick={props.onClose} className="p-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><ChevronLeft size={16} /></button>
             <ImageIcon size={12} className="text-rose-400" />
             <span className="text-xs font-semibold text-slate-600 dark:text-white/70">Image Studio</span>
           </div>
@@ -106,14 +106,14 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
           <button
             onClick={() => props.setActiveMode('SINGLE')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === 'SINGLE' ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-400 dark:text-[#555] hover:text-slate-600 dark:hover:text-white/60'
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === 'SINGLE' ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white/60'
               }`}
           >
             <ImageIcon size={9} /> Đơn lẻ
           </button>
           <button
             onClick={() => props.setActiveMode('BATCH')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === 'BATCH' ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-400 dark:text-[#555] hover:text-slate-600 dark:hover:text-white/60'
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === 'BATCH' ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white/60'
               }`}
           >
             <Layers size={9} /> Batch
@@ -191,7 +191,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <button onClick={() => props.setShowResourceModal(true)} className="text-slate-400 dark:text-[#555] hover:text-rose-400 transition-colors"><Settings size={11} /></button>
-              <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-fuchsia-500 dark:text-fuchsia-400' : 'text-slate-500 dark:text-[#666]'}`}>
+              <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-fuchsia-500 dark:text-fuchsia-400' : 'text-slate-600 dark:text-[#888]'}`}>
                 {props.usagePreference === 'credits' ? `${credits.toLocaleString()} CR` : props.usagePreference === 'key' ? 'API Key' : '—'}
               </span>
             </div>
