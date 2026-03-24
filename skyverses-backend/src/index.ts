@@ -70,6 +70,41 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
     console.log("✅ MongoDB connected!");
 
+    /* -------------- Auto-seed Admin (if env vars set) -------------- */
+    if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+      try {
+        const crypto = require("crypto");
+        const User = (await import("./models/UserModel")).default;
+        const email = process.env.ADMIN_EMAIL;
+        const password = process.env.ADMIN_PASSWORD;
+
+        // Hash with scrypt
+        const salt = crypto.randomBytes(16).toString("hex");
+        const hash = crypto.scryptSync(password, salt, 64).toString("hex");
+        const hashedPassword = `scrypt:${salt}:${hash}`;
+
+        // Upsert admin
+        const result = await User.findOneAndUpdate(
+          { email },
+          {
+            $set: {
+              password: hashedPassword,
+              role: "admin",
+              name: "Admin",
+              plan: "enterprise",
+              creditBalance: 999999,
+            },
+          },
+          { upsert: true, new: true }
+        );
+
+        console.log(`🔐 Admin seeded: ${email} (ID: ${result._id})`);
+        console.log(`   ⚠️ Remove ADMIN_EMAIL & ADMIN_PASSWORD from .env after first run`);
+      } catch (seedErr: any) {
+        console.error("⚠️ Admin seed failed:", seedErr.message);
+      }
+    }
+
     /* ------------------------------ Routes ------------------------------ */
     app.use(apiRoutes);
 
