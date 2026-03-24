@@ -50,26 +50,37 @@ echo ""
 echo "[2/7] Building Backend (TypeScript → dist/)..."
 cd skyverses-backend
 rm -rf dist
-./node_modules/.bin/tsc || echo "  ⚠ TypeScript errors (non-blocking)"
+if ! ./node_modules/.bin/tsc; then
+  echo "  ✗ ERROR: Backend TypeScript build failed!"
+  exit 1
+fi
 cd "$ROOT_DIR"
 
 # Verify backend build
 if [ ! -f "skyverses-backend/dist/index.js" ]; then
   echo "  ✗ ERROR: skyverses-backend/dist/index.js not found!"
-  echo "  Backend build failed. Continuing anyway..."
+  exit 1
 fi
 echo "  ✓ Backend built"
 
 # ── Step 3: Build Frontend ──
 echo ""
 echo "[3/7] Building Frontend (Vite)..."
-npm run build || echo "  ⚠ Frontend build had issues"
+if ! npm run build; then
+  echo "  ✗ ERROR: Frontend build failed!"
+  exit 1
+fi
 echo "  ✓ Frontend built"
 
 # ── Step 4: Build CMS ──
 echo ""
 echo "[4/7] Building CMS (Vite)..."
-cd cms && npm run build || echo "  ⚠ CMS build had issues"
+cd cms
+if ! npm run build; then
+  echo "  ✗ ERROR: CMS build failed!"
+  cd "$ROOT_DIR"
+  exit 1
+fi
 cd "$ROOT_DIR"
 echo "  ✓ CMS built"
 
