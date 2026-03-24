@@ -488,7 +488,7 @@ const MarketPage = () => {
                     <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-black/[0.04] dark:border-white/[0.04]">
                       <div className="flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Tự động · 15 phút</span>
+                        <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Tự động · 1-3 phút</span>
                       </div>
                       <ArrowRight size={14} className="text-slate-300 dark:text-gray-600 group-hover:text-brand-blue group-hover:translate-x-1 transition-all duration-300" />
                     </div>
@@ -524,7 +524,7 @@ const MarketPage = () => {
                     <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-black/[0.04] dark:border-white/[0.04]">
                       <div className="flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                        <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">On-chain · Tức thì</span>
+                        <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">On-chain · 5-10 phút</span>
                       </div>
                       <ArrowRight size={14} className="text-slate-300 dark:text-gray-600 group-hover:text-amber-500 group-hover:translate-x-1 transition-all duration-300" />
                     </div>
