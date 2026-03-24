@@ -7,6 +7,12 @@
 
 set -e  # Exit on error
 
+# ── Load NVM + Node 20 (required for non-interactive shell via webhook) ──
+export HOME=/root
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+nvm use 20 2>/dev/null || true
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -19,6 +25,7 @@ BOLD='\033[1m'
 # Root directory
 ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT_DIR"
+export PATH="$ROOT_DIR/skyverses-backend/node_modules/.bin:$ROOT_DIR/node_modules/.bin:$ROOT_DIR/cms/node_modules/.bin:$PATH"
 
 echo -e "${CYAN}${BOLD}"
 echo "╔═══════════════════════════════════════════════╗"
