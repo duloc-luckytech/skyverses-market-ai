@@ -6,7 +6,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import { swaggerOptions } from "./swagger";
 import apiRoutes from "./routes";
-import githubWebhookRoutes from "./routes/githubWebhook";
+// import githubWebhookRoutes from "./routes/githubWebhook"; // 🔒 Temporarily disabled
 // import './scripts/seedCategories'
 // import './scripts/asynsDataMongo' // ✅ Migration completed — disabled to avoid duplicate key errors
 dotenv.config();
@@ -14,15 +14,16 @@ dotenv.config();
 const app = express();
 app.set("trust proxy", true);
 
-app.use(
-  "/webhook/github",
-  express.raw({ type: "application/json" })
-);
-app.use(
-  "/webhook/github-cms",
-  express.raw({ type: "application/json" })
-);
-app.use("/webhook", githubWebhookRoutes);
+// 🔒 GitHub Webhook — Temporarily disabled
+// app.use(
+//   "/webhook/github",
+//   express.raw({ type: "application/json" })
+// );
+// app.use(
+//   "/webhook/github-cms",
+//   express.raw({ type: "application/json" })
+// );
+// app.use("/webhook", githubWebhookRoutes);
 
 
 /* ---------------------------- Middleware Setup ---------------------------- */
