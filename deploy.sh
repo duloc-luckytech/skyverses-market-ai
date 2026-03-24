@@ -39,6 +39,8 @@ mkdir -p logs
 
 # ── Step 0: Git pull ──
 echo -e "\n${BLUE}[0/7]${NC} ${BOLD}Pulling latest code...${NC}"
+git checkout -- .
+git clean -fd
 git pull origin main || true
 echo -e "  ${GREEN}✓${NC} Code synced"
 
