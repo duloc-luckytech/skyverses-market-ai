@@ -1,5 +1,6 @@
 // ✅ routes/fxflow.ts — FXFlow External Worker API
 import express from "express";
+import mongoose from "mongoose";
 import VideoJob, {
   VideoJobStatus,
   VideoEngineProvider,
@@ -11,8 +12,39 @@ import ImageJob, {
 } from "../models/ImageJob";
 import User from "../models/UserModel";
 import CreditTransaction from "../models/CreditTransaction.model";
+import { authenticate } from "./auth";
 
 const router = express.Router();
+
+/* =====================================================
+   SYSTEM SETTING (shared model from config.ts)
+===================================================== */
+const SystemSettingSchema = new mongoose.Schema({
+  key: { type: String, unique: true, required: true },
+  value: { type: mongoose.Schema.Types.Mixed },
+}, { timestamps: true });
+
+const SystemSetting = (mongoose.models.SystemSetting || mongoose.model("SystemSetting", SystemSettingSchema)) as mongoose.Model<any>;
+
+/* =====================================================
+   FXFLOW CONFIG DEFAULTS
+===================================================== */
+const DEFAULT_FXFLOW_CONFIG = {
+  enabled: true,
+  routingPercent: 100,       // 0-100: % traffic gommo → fxflow (hiện tại 100% test)
+  videoQuality: "relaxed",   // "fast" | "relaxed" | "quality"
+  imageModel: "NARWHAL",     // default model cho image
+};
+
+/** Lấy fxflow config từ DB, fallback to defaults */
+async function getFxflowConfig() {
+  try {
+    const setting = await SystemSetting.findOne({ key: "fxflow" }).lean() as any;
+    return { ...DEFAULT_FXFLOW_CONFIG, ...(setting?.value || {}) };
+  } catch {
+    return DEFAULT_FXFLOW_CONFIG;
+  }
+}
 
 /* =====================================================
    MAPPING HELPERS
@@ -76,6 +108,7 @@ function mapQuality(mode?: string): string {
 ===================================================== */
 router.get("/tasks/pending", async (req, res) => {
   try {
+    const fxConfig = await getFxflowConfig();
     // 1️⃣ Fetch pending IMAGE jobs (fxflow)
     const pendingImages = await ImageJob.find({
       status: ImageJobStatus.PENDING,
@@ -130,8 +163,8 @@ router.get("/tasks/pending", async (req, res) => {
       const videoMode = mapVideoMode(job.type);
       if (videoMode !== "text") task.videoMode = videoMode;
 
-      // Optional: quality (default: "fast")
-      const quality = mapQuality(job.enginePayload?.mode);
+      // quality — luôn dùng config (default: "relaxed", sau này dynamic từ CMS)
+      const quality = fxConfig.videoQuality || "relaxed";
       if (quality !== "fast") task.quality = quality;
 
       // Optional: aspectRatio (default: "landscape")
@@ -357,5 +390,46 @@ async function refundFxflowCredits(job: any, source: string) {
     `💳 [FXFlow][REFUND] ${user.email} +${job.creditsUsed} CR (${source}: ${job._id})`
   );
 }
+
+/* =====================================================
+   CMS CONFIG ENDPOINTS
+   Admin quản lý fxflow settings từ CMS
+===================================================== */
+
+// GET /fxflow/config — Lấy config hiện tại
+router.get("/config", async (_req, res) => {
+  try {
+    const config = await getFxflowConfig();
+    res.json({ success: true, data: config });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// PUT /fxflow/config — Admin update config
+router.put("/config", authenticate, async (req: any, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Forbidden" });
+    }
+
+    const allowedKeys = ["enabled", "routingPercent", "videoQuality", "imageModel"];
+    const update: any = {};
+    for (const key of allowedKeys) {
+      if (req.body[key] !== undefined) update[key] = req.body[key];
+    }
+
+    const result = await SystemSetting.findOneAndUpdate(
+      { key: "fxflow" },
+      { $set: { value: { ...DEFAULT_FXFLOW_CONFIG, ...update } } },
+      { upsert: true, new: true }
+    );
+
+    console.log(`⚙️ [FXFlow] Config updated:`, result.value);
+    res.json({ success: true, data: result.value });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
 export default router;

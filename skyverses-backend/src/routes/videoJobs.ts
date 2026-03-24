@@ -159,15 +159,23 @@ router.post("/", authenticate, async (req: any, res) => {
   }
 
   /* =====================================================
-     🎲 RANDOM PROVIDER SELECTION: gommo ↔ fxflow
-     Chỉ áp dụng khi provider gốc là gommo
+     🎲 DYNAMIC PROVIDER SELECTION: gommo ↔ fxflow
+     Config từ SystemSetting (CMS quản lý)
   ====================================================== */
   const finalEngine = { ...engine };
   if (finalEngine.provider === "gommo") {
-    const usesFxflow = true; // 🧪 TEST: 100% fxflow (sẽ đổi lại 0.5 sau)
-    if (usesFxflow) {
-      finalEngine.provider = "fxflow";
-      console.log(`🎲 [VID] Random → fxflow (original: gommo)`);
+    try {
+      const mongoose = require("mongoose");
+      const SystemSetting = mongoose.models.SystemSetting;
+      const setting = SystemSetting ? await SystemSetting.findOne({ key: "fxflow" }).lean() : null;
+      const fxConfig = { enabled: true, routingPercent: 100, ...(setting?.value || {}) };
+
+      if (fxConfig.enabled && Math.random() * 100 < fxConfig.routingPercent) {
+        finalEngine.provider = "fxflow";
+        console.log(`🎲 [VID] → fxflow (routing: ${fxConfig.routingPercent}%)`);
+      }
+    } catch {
+      // Fallback: giữ gommo nếu lỗi đọc config
     }
   }
 
