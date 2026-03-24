@@ -1,31 +1,68 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { 
-  ChevronLeft, Play, Zap, ShieldCheck, 
-  Users, Target, Film, Clapperboard, 
-  Sparkles, CheckCircle2, Lock, 
-  Layers, MessageSquare, ArrowRight,
-  UserCheck, Palette, MonitorPlay,
-  Share2, Heart, Download, Info,
-  Fingerprint, Smartphone, Cpu,
-  Activity, UserPlus as UserPlusIcon,
-  Trash2, Plus, LayoutGrid, X,
-  // Add missing icons
-  ChevronRight, Terminal, BrainCircuit, Upload, 
-  History as HistoryIcon, Database, RefreshCw, Maximize2
+import {
+  Fingerprint, ArrowRight, Users, CheckCircle2, X,
+  Upload, UserCheck, Zap, Activity, Star,
+  ChevronLeft, BrainCircuit, RefreshCw, Maximize2,
+  Database, ChevronRight, Sparkles
 } from 'lucide-react';
 import CharacterSyncWorkspace from '../components/CharacterSyncWorkspace';
-import { useLanguage } from '../context/LanguageContext';
-
 import { usePageMeta } from '../hooks/usePageMeta';
 
+/* ─── DATA ─── */
+const FEATURES = [
+  { icon: <Fingerprint />, title: 'DNA Anchoring', desc: 'Upload lên 10 ảnh để định danh nhân vật. Mỗi ảnh trở thành nguồn sự thật hình ảnh.' },
+  { icon: <BrainCircuit />, title: 'Semantic Binding', desc: 'Prompt tham chiếu nhân vật theo tên — y như kịch bản đạo diễn chuyên nghiệp.' },
+  { icon: <Activity />, title: 'Context Memory', desc: 'AI ghi nhớ mối quan hệ nhân vật và đặc điểm tính cách xuyên suốt.' },
+  { icon: <RefreshCw />, title: 'Zero-Drift Sync', desc: 'Duy trì khuôn mặt, tóc, trang phục ổn định ở mọi tư thế và góc nhìn.' },
+  { icon: <Users />, title: 'Multi-Actor Control', desc: 'Tham chiếu đồng thời đến 3 nhân vật trong một cảnh mà không bị lẫn.' },
+  { icon: <Database />, title: 'Shared Library', desc: 'Kho nhân vật tập trung — tái sử dụng xuyên suốt mọi dự án và video.' },
+];
+
+const PROBLEMS = [
+  'Nhân vật thay đổi khuôn mặt mỗi lần generate.',
+  'Trang phục và phong cách trôi dạt giữa các prompt.',
+  'AI không ghi nhớ đặc điểm nhân vật dài hạn.',
+  'Quản lý nhiều nhân vật trong một cảnh rất hỗn loạn.',
+];
+
+const WORKFLOW = [
+  { step: '01', title: 'Upload ảnh nhân vật', desc: 'Upload 1-10 ảnh để xây dựng bộ DNA hình ảnh.', icon: <Upload size={20} /> },
+  { step: '02', title: 'Đặt tên & vai trò', desc: 'Gán tên (VD: Luna) và mô tả tính cách.', icon: <UserCheck size={20} /> },
+  { step: '03', title: 'Viết kịch bản', desc: '"Luna bước vào phòng lab" → AI tự áp dụng DNA.', icon: <Zap size={20} /> },
+  { step: '04', title: 'Tổng hợp & lặp lại', desc: 'AI xử lý và xuất ảnh/video nhất quán.', icon: <Maximize2 size={20} /> },
+];
+
+const COMPARISON = [
+  { label: 'Visual Memory', old: 'Ngẫu nhiên', new: 'Cố định vĩnh viễn' },
+  { label: 'Tham chiếu nhân vật', old: 'Re-prompt thủ công', new: 'Gọi tên trực tiếp' },
+  { label: 'Identity Drifting', old: 'Thường xuyên', new: 'Zero-Drift' },
+  { label: 'Lịch sử', old: 'Không có', new: 'Full Registry' },
+];
+
+const USE_CASES = [
+  { emoji: '📚', title: 'Truyện tranh AI', desc: 'Nhân vật nhất quán qua mọi trang' },
+  { emoji: '🎬', title: 'Phim ngắn AI', desc: 'Diễn viên ảo xuyên suốt cốt truyện' },
+  { emoji: '📱', title: 'Content Series', desc: 'Persona thống nhất cho social media' },
+  { emoji: '🎮', title: 'Game Characters', desc: 'NPC nhất quán trong game AI' },
+  { emoji: '📰', title: 'AI Anchor', desc: 'MC ảo cho bản tin, podcast' },
+  { emoji: '👗', title: 'Virtual Model', desc: 'Model ảo cho lookbook, quảng cáo' },
+];
+
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 24 } as const,
+  whileInView: { opacity: 1, y: 0 } as const,
+  viewport: { once: true } as const,
+  transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] as const },
+});
+
 const ProductCharacterSync = () => {
-  const { lang } = useLanguage();
   usePageMeta({
-    title: 'Character Sync AI | Skyverses',
-    description: 'Maintain consistent character appearance across AI-generated content.',
-    keywords: 'character sync, AI identity, consistency',
+    title: 'Character Sync AI — Nhất quán nhân vật | Skyverses',
+    description: 'Duy trì nhất quán hình ảnh nhân vật xuyên suốt ảnh, cảnh, truyện tranh và video bằng AI.',
+    keywords: 'character sync, AI identity, consistency, Skyverses',
     canonical: '/product/character-sync-ai'
   });
 
@@ -40,243 +77,267 @@ const ProductCharacterSync = () => {
   }
 
   return (
-    <div className="bg-[#050505] min-h-screen text-white font-sans selection:bg-purple-500/30 overflow-x-hidden pt-20 transition-colors duration-500">
-      
-      {/* 1. HERO SECTION */}
-      <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-20 relative">
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-[1000px] h-[1000px] bg-purple-600/10 rounded-full blur-[200px]"></div>
-          <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-cyan-600/10 rounded-full blur-[200px]"></div>
+    <div className="bg-white dark:bg-[#050508] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 transition-colors duration-500">
+
+      {/* ═══ HERO ═══ */}
+      <section className="relative pt-32 pb-24 px-6 lg:px-12 min-h-[90vh] flex flex-col items-center justify-center overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-purple-500/8 via-violet-500/5 to-transparent rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-fuchsia-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="max-w-5xl mx-auto w-full z-10 space-y-12 text-center">
+          <motion.div {...fadeUp(0)}>
+            <Link to="/market" className="inline-flex items-center gap-2 text-[11px] font-semibold text-slate-400 dark:text-slate-500 hover:text-purple-500 transition-colors mb-6">
+              <ChevronLeft size={14} /> Quay lại
+            </Link>
+          </motion.div>
+
+          <motion.div {...fadeUp(0)}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-[11px] font-bold uppercase tracking-[0.15em]">
+            <Fingerprint size={14} /> Identity Persistence Engine
+          </motion.div>
+
+          <motion.h1 {...fadeUp(0.1)} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95]">
+            Nhất quán nhân vật
+            <br />
+            <span className="bg-gradient-to-r from-purple-500 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
+              xuyên mọi sáng tạo
+            </span>
+          </motion.h1>
+
+          <motion.p {...fadeUp(0.2)} className="text-lg md:text-xl text-slate-500 dark:text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed">
+            Định danh nhân vật một lần — duy trì 100% nhất quán trên mọi ảnh, cảnh, truyện tranh và video AI.
+          </motion.p>
+
+          <motion.div {...fadeUp(0.3)} className="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <button onClick={() => setIsStudioOpen(true)}
+              className="group bg-gradient-to-r from-purple-500 to-violet-600 text-white px-10 py-5 rounded-2xl font-bold text-sm shadow-[0_20px_50px_rgba(147,51,234,0.25)] hover:shadow-[0_25px_60px_rgba(147,51,234,0.35)] hover:scale-[1.02] transition-all flex items-center gap-3">
+              <Fingerprint size={18} />
+              Thử Character Sync
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+            <a href="#features" className="px-10 py-5 border border-slate-200 dark:border-white/10 rounded-2xl font-bold text-sm text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+              Tìm hiểu thêm
+            </a>
+          </motion.div>
+
+          <motion.div {...fadeUp(0.4)} className="flex flex-wrap items-center justify-center gap-6 pt-6">
+            {['DNA Lock', 'Zero-Drift', 'Multi-Actor', 'Name Reference'].map((badge, i) => (
+              <span key={i} className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 dark:text-slate-500">
+                <CheckCircle2 size={13} className="text-emerald-500" /> {badge}
+              </span>
+            ))}
+          </motion.div>
         </div>
 
-        <div className="max-w-[1500px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center relative z-10">
-          <div className="lg:col-span-6 space-y-10">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[10px] font-black uppercase tracking-[0.3em] italic"
-            >
-              <Fingerprint size={14} /> Identity Persistence Engine
-            </motion.div>
-            
-            <div className="space-y-8">
-              <h1 className="text-6xl lg:text-[110px] font-black leading-[0.85] tracking-tighter italic uppercase">
-                Sync Characters <span className="text-purple-500">Once.</span> <br />
-                Create Stories Forever.
-              </h1>
-              <p className="text-xl lg:text-3xl text-gray-400 font-medium leading-tight border-l-2 border-purple-500 pl-8 max-w-2xl">
-                An AI tool that locks character identity across images, scenes, comics, and videos. Maintain 100% consistency across your entire production.
-              </p>
+        {/* Visual Preview */}
+        <motion.div {...fadeUp(0.5)} className="relative max-w-5xl mx-auto mt-16 w-full border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[#0c0c10] rounded-2xl shadow-[0_40px_100px_rgba(0,0,0,0.08)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.4)] overflow-hidden">
+          <div className="h-10 border-b border-slate-100 dark:border-white/[0.04] bg-slate-50/80 dark:bg-white/[0.02] flex items-center px-4 gap-2">
+            <div className="flex gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-400/60" />
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-400/60" />
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/60" />
             </div>
-
-            <div className="flex flex-col sm:flex-row gap-6 pt-4">
-              <button 
-                onClick={() => setIsStudioOpen(true)}
-                className="bg-purple-600 text-white px-12 py-6 rounded-sm text-xs font-black uppercase tracking-[0.4em] shadow-[0_20px_50px_rgba(147,51,234,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
-              >
-                Try Character Sync <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </button>
-              {/* Fix: ChevronRight added to imports */}
-              <button className="px-12 py-6 border border-white/10 rounded-sm text-xs font-black uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
-                View Showcase <ChevronRight size={16} />
-              </button>
+            <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 ml-3 uppercase tracking-wider">Character Sync — Studio</span>
+          </div>
+          <div className="aspect-[16/7] bg-gradient-to-br from-slate-100 via-purple-50/20 to-slate-50 dark:from-[#0a0a0e] dark:via-purple-950/10 dark:to-[#0c0c12] flex items-center justify-center relative group cursor-pointer"
+            onClick={() => setIsStudioOpen(true)}>
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto text-purple-500 group-hover:scale-110 group-hover:bg-purple-500/20 transition-all duration-500">
+                <Fingerprint size={32} />
+              </div>
+              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 group-hover:text-purple-500 transition-colors">Click để mở Studio</p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500">Upload ảnh → Đặt tên → Viết kịch bản</p>
+            </div>
+            <div className="absolute top-6 right-6 px-3 py-1.5 bg-white/90 dark:bg-black/60 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-lg flex items-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+              <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+              <span className="text-[9px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">DNA Ready</span>
             </div>
           </div>
+        </motion.div>
+      </section>
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }}
-            className="lg:col-span-6 relative"
-          >
-             <div className="aspect-square bg-white/5 border border-white/10 rounded-[3rem] p-1 shadow-3xl overflow-hidden group">
-                <div className="h-full w-full bg-black rounded-[2.9rem] flex items-center justify-center relative">
-                   <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1200" className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-all duration-[5s]" alt="Sync Visual" />
-                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                      <div className="w-24 h-24 rounded-full bg-purple-600/80 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl animate-pulse">
-                         <Fingerprint size={48} />
-                      </div>
-                   </div>
-                   <div className="absolute bottom-10 left-10 right-10 flex justify-between items-end">
-                      <div className="space-y-1">
-                         <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest">DNA_LOCKED_v4</p>
-                         <h3 className="text-3xl font-black italic uppercase tracking-tighter text-white">Visual Consistency.</h3>
-                      </div>
-                   </div>
+      {/* ═══ PROBLEM ═══ */}
+      <section className="py-32 border-t border-slate-100 dark:border-white/[0.03] bg-slate-50/50 dark:bg-black/20 transition-colors">
+        <div className="max-w-6xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <motion.div {...fadeUp()} className="space-y-8">
+            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+              Vì sao nhất quán nhân vật <span className="text-red-400">rất khó</span> với AI?
+            </h2>
+            <div className="space-y-4">
+              {PROBLEMS.map(point => (
+                <div key={point} className="flex gap-3 items-start group">
+                  <div className="w-5 h-5 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0 mt-0.5">
+                    <X size={12} strokeWidth={3} />
+                  </div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">{point}</p>
                 </div>
-             </div>
+              ))}
+            </div>
+          </motion.div>
+          <motion.div {...fadeUp(0.15)} className="p-8 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl relative overflow-hidden">
+            <div className="grid grid-cols-3 gap-2.5">
+              {[1,2,3,4,5,6].map(i => (
+                <div key={i} className="aspect-[3/4] bg-slate-100 dark:bg-white/[0.03] rounded-xl overflow-hidden border border-slate-200/60 dark:border-white/[0.04]">
+                  <img src={`https://i.pravatar.cc/300?u=err${i}`} className="w-full h-full object-cover opacity-25 grayscale" alt="" />
+                </div>
+              ))}
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="bg-red-500 text-white px-5 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-xl -rotate-6">Broken Identity</span>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* 2. PROBLEM SECTION */}
-      {/* Fix: JSX Tags are properly closed to avoid scoping issues */}
-      <section className="py-40 border-y border-white/5 bg-[#080808]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-           <div className="space-y-8">
-              <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter italic leading-none">Why Consistency <br />Is Hard with AI.</h2>
-              <div className="space-y-6">
-                 {[
-                   'Characters change face every single generation.',
-                   'Outfits and art styles drift between prompts.',
-                   'No long-term memory of character traits.',
-                   'Manual management of multi-character scenes is chaotic.'
-                 ].map(point => (
-                    <div key={point} className="flex gap-4 items-start group">
-                       <div className="w-6 h-6 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 shrink-0 mt-0.5">
-                          <X size={14} strokeWidth={4} />
-                       </div>
-                       <p className="text-lg text-gray-500 font-medium group-hover:text-gray-300 transition-colors">"{point}"</p>
-                    </div>
-                 ))}
-              </div>
-           </div>
-           <div className="p-16 border border-white/5 bg-white/[0.01] rounded-sm relative overflow-hidden group">
-              <div className="absolute inset-0 bg-red-500/5 animate-pulse"></div>
-              <div className="relative z-10 grid grid-cols-3 gap-4">
-                 {[1,2,3,4,5,6].map(i => (
-                    <div key={i} className="aspect-[3/4] bg-gray-900 rounded border border-white/5 overflow-hidden grayscale">
-                       <img src={`https://i.pravatar.cc/300?u=err${i}`} className="w-full h-full object-cover opacity-20" />
-                    </div>
-                 ))}
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-                 <div className="bg-red-600 text-white px-6 py-2 text-[10px] font-black uppercase tracking-[0.4em] shadow-2xl -rotate-12">Broken_Identity</div>
-              </div>
-           </div>
-        </div>
-      </section>
+      {/* ═══ SOLUTION / FEATURES ═══ */}
+      <section id="features" className="py-32 border-t border-slate-100 dark:border-white/[0.03] transition-colors">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <motion.div {...fadeUp()} className="text-center space-y-4 mb-20">
+            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+              Character Sync <span className="text-purple-500">giải quyết</span>
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-lg mx-auto">
+              Một Character Layer nằm trên prompt — định danh nhân vật một lần, tham chiếu bằng tên xuyên suốt mọi dự án.
+            </p>
+          </motion.div>
 
-      {/* 3. SOLUTION SECTION */}
-      <section className="py-40">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 text-center space-y-24">
-           <div className="max-w-3xl mx-auto space-y-6">
-              <h2 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter italic">Character Sync <br /><span className="text-purple-500">Fixes This.</span></h2>
-              <p className="text-xl text-gray-400">We created a **Character Layer** that sits above your prompts. Define your cast once, then reference them by name across every project.</p>
-           </div>
-
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 border border-white/5 shadow-3xl">
-              {[
-                { t: 'DNA Anchoring', d: 'Upload up to 10 images to define a character visual lock.', i: <Fingerprint /> },
-                { t: 'Semantic Binding', d: 'Prompts reference actors by name like a director script.', i: <Terminal /> },
-                { t: 'Context Memory', d: 'AI remembers character relationships and personality traits.', i: <BrainCircuit /> },
-                { t: 'Zero-Drift Sync', d: 'Maintains face, hair, and outfit details across any pose.', i: <Activity /> }
-              ].map((item, i) => (
-                <div key={i} className="p-16 bg-[#080808] space-y-8 group hover:bg-purple-500/[0.02] transition-all duration-500 border-r border-white/5 last:border-r-0">
-                   <div className="w-14 h-14 border border-white/10 flex items-center justify-center text-gray-500 group-hover:text-purple-500 group-hover:border-purple-500 transition-all rounded-sm shadow-xl">
-                      {React.cloneElement(item.i as React.ReactElement<any>, { size: 24 })}
-                   </div>
-                   <div className="text-left space-y-3">
-                      <h4 className="text-2xl font-black uppercase tracking-tighter italic">{item.t}</h4>
-                      <p className="text-sm text-gray-500 font-medium leading-relaxed uppercase tracking-widest leading-loose">"{item.d}"</p>
-                   </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {FEATURES.map((f, i) => (
+              <motion.div key={i} {...fadeUp(i * 0.08)}
+                className="p-8 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl space-y-5 group hover:border-purple-500/20 hover:shadow-lg dark:hover:shadow-purple-500/5 transition-all duration-500">
+                <div className="w-12 h-12 border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:text-purple-500 group-hover:border-purple-500/30 transition-all rounded-xl">
+                  {React.cloneElement(f.icon as React.ReactElement<any>, { size: 22 })}
                 </div>
-              ))}
-           </div>
-        </div>
-      </section>
-
-      {/* 4. CORE FEATURES GRID */}
-      <section className="py-40 bg-[#08080a] border-y border-white/5">
-         <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-20">
-            {/* FIXED: Changed to 2 columns on desktop */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-               {[
-                 { t: 'Character Image Upload', d: 'Upload 10 identity anchors per project. Each image becomes a visual source of truth.', i: <Upload /> },
-                 { t: 'Name & Role Casting', d: 'Assign names (e.g. Luna) and roles (e.g. Villain). Describe personality for deeper AI context.', i: <UserCheck /> },
-                 { t: 'Prompt Binding', d: 'Write: "Luna enters the lab." AI automatically applies the locked visual DNA of Luna.', i: <Zap /> },
-                 { t: 'Multi-Actor Control', i: <Users />, d: 'Reference up to 3 actors in one scene. No identity mix or visual artifacts.' },
-                 { t: 'Infinite History', i: <HistoryIcon />, d: 'Auto-save every generation. Browse history by character, project, or prompt.' },
-                 { t: 'Shared Library', i: <Database />, d: 'Central hub for all your characters. Reuse a hero across multiple stories and videos.' }
-               ].map((f, i) => (
-                  <div key={i} className="p-10 border border-white/10 bg-white/[0.02] rounded-sm hover:border-purple-500/40 transition-all group">
-                     <div className="text-purple-400 mb-6 group-hover:scale-110 transition-transform">{f.i}</div>
-                     <h4 className="text-xl font-black uppercase italic mb-4">{f.t}</h4>
-                     <p className="text-xs text-gray-500 font-bold uppercase tracking-widest leading-relaxed leading-loose">"{f.d}"</p>
-                  </div>
-               ))}
-            </div>
-         </div>
-      </section>
-
-      {/* 5. STEP FLOW */}
-      <section className="py-40 relative">
-        <div className="max-w-5xl mx-auto px-6 text-center space-y-24">
-           <h2 className="text-5xl lg:text-8xl font-black uppercase tracking-tighter italic">How it Works.</h2>
-           <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-              {[
-                { s: '01', t: 'Upload', i: <Upload /> },
-                { s: '02', t: 'Define', i: <UserCheck /> },
-                { s: '03', t: 'Script', i: <Terminal /> },
-                { s: '04', t: 'Synthesize', i: <RefreshCw /> },
-                { s: '05', t: 'Iterate', i: <Maximize2 /> }
-              ].map((step, i) => (
-                <div key={i} className="space-y-6 group">
-                   <div className="aspect-square rounded-full border border-white/10 flex items-center justify-center relative group-hover:border-purple-500/40 transition-all">
-                      <div className="absolute inset-0 bg-purple-500/5 blur-xl scale-0 group-hover:scale-100 transition-transform"></div>
-                      <div className="text-purple-500 relative z-10">{step.i}</div>
-                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-black border border-white/10 rounded-full flex items-center justify-center text-[10px] font-black">{step.s}</div>
-                   </div>
-                   <h4 className="text-xs font-black uppercase tracking-[0.4em]">{step.t}</h4>
+                <div className="space-y-2">
+                  <h4 className="text-lg font-bold text-slate-800 dark:text-white/90">{f.title}</h4>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{f.desc}</p>
                 </div>
-              ))}
-           </div>
-        </div>
-      </section>
-
-      {/* 6. COMPARISON SECTION */}
-      <section className="py-40 bg-black border-y border-white/5">
-        <div className="max-w-4xl mx-auto px-6">
-           <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                 <thead>
-                    <tr className="bg-white/5 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                       <th className="p-8 text-left">Protocol</th>
-                       <th className="p-8 text-center">Traditional AI</th>
-                       <th className="p-8 text-center text-purple-400">Character Sync AI</th>
-                    </tr>
-                 </thead>
-                 <tbody className="divide-y divide-white/5">
-                    {[
-                      { l: 'Visual Memory', t: 'Random ❌', s: 'Persistent ✅' },
-                      { l: 'Character Referencing', t: 'Re-prompting ❌', s: 'Name-based ✅' },
-                      { l: 'Identity Drifting', t: 'Frequent ❌', s: 'Zero-Drift ✅' },
-                      { l: 'History Management', t: 'None ❌', s: 'Full Registry ✅' }
-                    ].map(row => (
-                       <tr key={row.l} className="group hover:bg-white/[0.01]">
-                          <td className="p-8 text-xs font-black uppercase text-gray-500">{row.l}</td>
-                          <td className="p-8 text-center text-[11px] font-bold uppercase">{row.t}</td>
-                          <td className="p-8 text-center text-[11px] font-black uppercase text-purple-400 italic">{row.s}</td>
-                       </tr>
-                    ))}
-                 </tbody>
-              </table>
-           </div>
-        </div>
-      </section>
-
-      {/* 7. FINAL CTA */}
-      <section className="py-60 text-center relative overflow-hidden bg-purple-600">
-        <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-black text-white leading-none tracking-tighter select-none italic">
-          SYNC SYNC SYNC SYNC SYNC
-        </div>
-        <div className="max-w-4xl mx-auto space-y-16 relative z-10">
-           <h2 className="text-7xl lg:text-[140px] font-black uppercase tracking-tighter leading-[0.8] italic text-white">Build Worlds, <br /> Not Just Prompts.</h2>
-           <div className="flex flex-col sm:flex-row items-center justify-center gap-10 pt-10">
-            <button 
-              onClick={() => setIsStudioOpen(true)}
-              className="bg-black text-white px-20 py-8 rounded-sm text-sm font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl"
-            >
-              Start Creating Characters
-            </button>
-            <Link to="/booking" className="bg-white/10 text-white border border-white/20 px-20 py-8 rounded-sm text-sm font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
-              Request Enterprise Access
-            </Link>
+              </motion.div>
+            ))}
           </div>
+        </div>
+      </section>
+
+      {/* ═══ WORKFLOW ═══ */}
+      <section className="py-32 border-t border-slate-100 dark:border-white/[0.03] bg-slate-50/50 dark:bg-black/20 transition-colors">
+        <div className="max-w-5xl mx-auto px-6 lg:px-12">
+          <motion.div {...fadeUp()} className="text-center space-y-4 mb-20">
+            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+              Quy trình <span className="text-purple-500">đơn giản</span>
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Chỉ 4 bước để có nhân vật nhất quán</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {WORKFLOW.map((s, i) => (
+              <motion.div key={i} {...fadeUp(i * 0.1)}
+                className="flex gap-5 p-6 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl group hover:border-purple-500/20 transition-all">
+                <div className="shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500/10 to-violet-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
+                  {s.icon}
+                </div>
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-bold text-purple-500 uppercase tracking-widest">Bước {s.step}</span>
+                  <h4 className="text-base font-bold text-slate-800 dark:text-white/90">{s.title}</h4>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{s.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ COMPARISON TABLE ═══ */}
+      <section className="py-32 border-t border-slate-100 dark:border-white/[0.03] transition-colors">
+        <div className="max-w-4xl mx-auto px-6 lg:px-12">
+          <motion.div {...fadeUp()} className="text-center space-y-4 mb-16">
+            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+              So sánh <span className="text-purple-500">ưu việt</span>
+            </h2>
+          </motion.div>
+
+          <motion.div {...fadeUp(0.1)} className="bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200/80 dark:border-white/[0.04]">
+                  <th className="p-5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Tiêu chí</th>
+                  <th className="p-5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">AI Truyền thống</th>
+                  <th className="p-5 text-center text-[11px] font-bold uppercase tracking-wider text-purple-500">Character Sync</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-white/[0.03]">
+                {COMPARISON.map(row => (
+                  <tr key={row.label} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                    <td className="p-5 text-sm font-semibold text-slate-700 dark:text-white/80">{row.label}</td>
+                    <td className="p-5 text-center text-sm text-red-400 font-medium">✗ {row.old}</td>
+                    <td className="p-5 text-center text-sm text-emerald-500 font-bold flex items-center justify-center gap-1.5">
+                      <CheckCircle2 size={14} /> {row.new}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══ USE CASES ═══ */}
+      <section className="py-32 border-t border-slate-100 dark:border-white/[0.03] bg-slate-50/50 dark:bg-black/20 transition-colors">
+        <div className="max-w-6xl mx-auto px-6 lg:px-12">
+          <motion.div {...fadeUp()} className="text-center space-y-4 mb-16">
+            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+              Ứng dụng <span className="text-purple-500">đa dạng</span>
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Từ truyện tranh đến phim ngắn — nhân vật AI luôn nhất quán.</p>
+          </motion.div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {USE_CASES.map((uc, i) => (
+              <motion.div key={i} {...fadeUp(i * 0.06)}
+                className="p-6 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl text-center group hover:border-purple-500/20 hover:shadow-md transition-all">
+                <span className="text-3xl">{uc.emoji}</span>
+                <h4 className="text-sm font-bold text-slate-800 dark:text-white/90 mt-3">{uc.title}</h4>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{uc.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ CTA ═══ */}
+      <section className="py-40 text-center relative overflow-hidden border-t border-slate-100 dark:border-white/[0.03] bg-white dark:bg-[#050508] transition-colors">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-500/5 to-violet-500/5 rounded-full blur-[150px] pointer-events-none" />
+        <div className="max-w-3xl mx-auto space-y-10 relative z-10 px-6">
+          <motion.div {...fadeUp()} className="space-y-6">
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.95] text-slate-900 dark:text-white">
+              Xây dựng thế giới <br />
+              <span className="text-purple-500">nhân vật AI</span>
+            </h2>
+            <p className="text-base text-slate-500 dark:text-slate-400 font-medium max-w-xl mx-auto">
+              Định danh nhân vật một lần — sáng tạo câu chuyện mãi mãi.
+            </p>
+          </motion.div>
+          <motion.div {...fadeUp(0.15)} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button onClick={() => setIsStudioOpen(true)}
+              className="group bg-gradient-to-r from-purple-500 to-violet-600 text-white px-14 py-6 rounded-2xl text-sm font-bold shadow-[0_25px_60px_rgba(147,51,234,0.3)] hover:shadow-[0_30px_70px_rgba(147,51,234,0.4)] hover:scale-[1.03] transition-all inline-flex items-center gap-3">
+              <Fingerprint size={18} />
+              Bắt đầu tạo nhân vật
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+            <Link to="/booking"
+              className="px-10 py-6 border border-slate-200 dark:border-white/10 rounded-2xl text-sm font-bold text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+              Enterprise Access
+            </Link>
+          </motion.div>
+          <motion.div {...fadeUp(0.25)} className="flex items-center justify-center gap-2 pt-4">
+            <div className="flex gap-0.5">
+              {[1,2,3,4,5].map(i => <Star key={i} size={14} className="text-amber-400 fill-amber-400" />)}
+            </div>
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Được tin dùng bởi 800+ creators</span>
+          </motion.div>
         </div>
       </section>
     </div>
   );
 };
-
-const Gamepad = ({ size }: { size?: number }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>;
 
 export default ProductCharacterSync;
