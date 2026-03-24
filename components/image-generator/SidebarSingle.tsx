@@ -29,6 +29,7 @@ export const SidebarSingle: React.FC<SidebarSingleProps> = ({ prompt, setPrompt 
           <ChevronDown size={10} className={`transition-transform ${showSuggestions ? 'rotate-180' : ''}`} />
         </button>
       </div>
+      <p className="text-[9px] text-slate-400 dark:text-slate-500 px-0.5 leading-relaxed">Mô tả chi tiết hình ảnh bạn muốn, bao gồm phong cách, ánh sáng, màu sắc, góc chụp.</p>
 
       {showSuggestions && (
         <div className="grid grid-cols-2 gap-1.5">
@@ -49,7 +50,7 @@ export const SidebarSingle: React.FC<SidebarSingleProps> = ({ prompt, setPrompt 
         value={prompt}
         onChange={e => setPrompt(e.target.value)}
         className="w-full min-h-[100px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-lg p-3 text-xs font-medium focus:border-rose-500/30 outline-none transition-all resize-y text-slate-800 dark:text-white/80 placeholder:text-slate-300 dark:placeholder:text-[#333] leading-relaxed"
-        placeholder="Mô tả hình ảnh bạn muốn tạo..."
+        placeholder="VD: Chân dung cô gái mặc áo dài trắng, nền vườn hoa sen, ánh sáng tự nhiên, phong cách nhiếp ảnh chân dung 8K..."
       />
     </motion.div>
   );

@@ -36,9 +36,10 @@ export const ReferenceImageGrid: React.FC<ReferenceImageGridProps> = ({
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center px-0.5">
-        <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">Ảnh tham chiếu</p>
-        <span className="text-[9px] font-medium text-slate-400 dark:text-[#444]">{currentCount}/{maxRefs}</span>
+        <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Ảnh tham chiếu</p>
+        <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500">{currentCount}/{maxRefs}</span>
       </div>
+      <p className="text-[8px] text-slate-400 dark:text-slate-500 px-0.5 leading-relaxed">💡 Tải ảnh mẫu để AI tham chiếu phong cách, bố cục hoặc chủ thể. Có thể để trống.</p>
 
       <div
         className="grid grid-cols-3 gap-1.5"

@@ -115,22 +115,24 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
             <motion.div key="s" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2.5">
               <div className="space-y-1">
                 <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Kịch bản</p>
+                <p className="text-[9px] text-slate-400 dark:text-slate-500 px-0.5 leading-relaxed">Mô tả chi tiết nội dung video bạn muốn tạo. Càng chi tiết, kết quả càng chính xác.</p>
                 <textarea
                   value={props.prompt} onChange={e => props.setPrompt(e.target.value)}
                   className="w-full min-h-[100px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-lg p-3 text-xs font-medium focus:border-indigo-500/30 outline-none transition-all resize-y text-slate-800 dark:text-white/80 placeholder:text-slate-300 dark:placeholder:text-[#333] leading-relaxed"
-                  placeholder="Nhập kịch bản video..."
+                  placeholder="VD: Một chú mèo đang nhảy qua hàng rào trong vườn hoa, ánh nắng chiều, phong cách cinematic 4K..."
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-0.5">
-                  <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400 px-0.5">Start</p>
+                  <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400 px-0.5">Start <span className="font-normal text-slate-400 dark:text-slate-500">(Khung hình đầu)</span></p>
                   <Slot url={props.startFrame} uploading={props.isUploadingImage === 'START'} onUp={() => props.handleSingleFrameClick('START', 'UPLOAD')} onLib={() => props.handleSingleFrameClick('START', 'LIBRARY')} />
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400 px-0.5">End</p>
+                  <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400 px-0.5">End <span className="font-normal text-slate-400 dark:text-slate-500">(Khung hình cuối)</span></p>
                   <Slot url={props.endFrame} uploading={props.isUploadingImage === 'END'} onUp={() => props.handleSingleFrameClick('END', 'UPLOAD')} onLib={() => props.handleSingleFrameClick('END', 'LIBRARY')} />
                 </div>
               </div>
+              <p className="text-[8px] text-slate-400 dark:text-slate-500 px-0.5 leading-relaxed">💡 Tải lên ảnh bắt đầu & kết thúc để AI tạo chuyển động giữa 2 khung hình. Có thể để trống nếu chỉ dùng kịch bản.</p>
             </motion.div>
           )}
 
