@@ -279,18 +279,21 @@ router.post("/bank", async (req, res) => {
       const { transactionId, amount, description } = tx;
       if (!description) continue;
 
-      // Match new format: SKY {PACKAGE_CODE} {USER_ID_6} {TIMESTAMP_10}
-      // Example: "SKY ULTIMATE A2B3C4 0323173505"
-      const creditMatch = description.match(/SKY\s+([A-Z0-9]+)\s+([A-F0-9]{6})\s+(\d{10})/i);
+      // Match new format: SKY {PACKAGE_CODE} {USER_ID_6} {TIMESTAMP_10}{RND_3}
+      // Example: "SKY ULTIMATE A2B3C4 0323173505XY2"
+      const creditMatch = description.match(/SKY\s+([A-Z0-9]+)\s+([A-F0-9]{6})\s+([A-Z0-9]{10,15})/i);
       if (!creditMatch) continue;
 
-      // Reconstruct the full memo to find in DB
-      const fullMemo = `SKY ${creditMatch[1].toUpperCase()} ${creditMatch[2].toUpperCase()} ${creditMatch[3]}`;
+      // Reconstruct the full memo to find in DB (exact match)
+      const fullMemo = `SKY ${creditMatch[1].toUpperCase()} ${creditMatch[2].toUpperCase()} ${creditMatch[3].toUpperCase()}`;
 
       // Find pending credit transaction with this memo
+      // Also try prefix match in case bank truncates the description
       const pendingTx: any = await Transaction.findOne({
-        note: fullMemo,
-        status: "pending",
+        $or: [
+          { note: fullMemo, status: "pending" },
+          { note: { $regex: `^SKY ${creditMatch[1].toUpperCase()} ${creditMatch[2].toUpperCase()}`, $options: 'i' }, status: "pending" }
+        ]
       });
       if (!pendingTx) continue;
 
