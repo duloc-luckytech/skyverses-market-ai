@@ -152,10 +152,15 @@ router.post("/", authenticate, async (req: any, res) => {
 
   /* =====================================================
      🎲 DYNAMIC PROVIDER SELECTION: gommo ↔ fxflow
+     - Chỉ áp dụng cho model Google (imagen, google_image_gen/banana)
+     - Model khác (Midjourney, Kling, etc.) → luôn gommo
      Config từ SystemSetting (CMS quản lý)
   ====================================================== */
   const finalEngine = { ...engine };
-  if (finalEngine.provider === "gommo") {
+  const imgModelKey = (finalEngine.model || "").toLowerCase();
+  const isGoogleImageModel = imgModelKey.includes("imagen") || imgModelKey.includes("google_image_gen");
+
+  if (finalEngine.provider === "gommo" && isGoogleImageModel) {
     try {
       const mongoose = require("mongoose");
       const SystemSetting = mongoose.models.SystemSetting;
@@ -164,7 +169,7 @@ router.post("/", authenticate, async (req: any, res) => {
 
       if (fxConfig.enabled && Math.random() * 100 < fxConfig.routingPercent) {
         finalEngine.provider = "fxflow";
-        console.log(`🎲 [IMG] → fxflow (routing: ${fxConfig.routingPercent}%)`);
+        console.log(`🎲 [IMG] ${imgModelKey} → fxflow (routing: ${fxConfig.routingPercent}%)`);
       }
     } catch {
       // Fallback: giữ gommo nếu lỗi đọc config

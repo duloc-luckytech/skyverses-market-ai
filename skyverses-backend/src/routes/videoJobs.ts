@@ -160,10 +160,15 @@ router.post("/", authenticate, async (req: any, res) => {
 
   /* =====================================================
      🎲 DYNAMIC PROVIDER SELECTION: gommo ↔ fxflow
+     - Chỉ áp dụng cho model VEO
+     - Model khác (Kling, Hailuo, etc.) → luôn gommo
      Config từ SystemSetting (CMS quản lý)
   ====================================================== */
   const finalEngine = { ...engine };
-  if (finalEngine.provider === "gommo") {
+  const modelKey = (finalEngine.model || "").toLowerCase();
+  const isVeoModel = modelKey.includes("veo");
+
+  if (finalEngine.provider === "gommo" && isVeoModel) {
     try {
       const mongoose = require("mongoose");
       const SystemSetting = mongoose.models.SystemSetting;
@@ -172,7 +177,7 @@ router.post("/", authenticate, async (req: any, res) => {
 
       if (fxConfig.enabled && Math.random() * 100 < fxConfig.routingPercent) {
         finalEngine.provider = "fxflow";
-        console.log(`🎲 [VID] → fxflow (routing: ${fxConfig.routingPercent}%)`);
+        console.log(`🎲 [VID] VEO → fxflow (routing: ${fxConfig.routingPercent}%)`);
       }
     } catch {
       // Fallback: giữ gommo nếu lỗi đọc config
