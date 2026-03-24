@@ -20,8 +20,8 @@ set -eo pipefail
 # CONFIG — Chỉnh sửa phần này
 # ═══════════════════════════════════════════════════════
 
-# Source (remote) database
-SOURCE_URI="mongodb://sky_user2:duloc123@209.74.65.102:27017/skyverses-dev?authSource=admin"
+# Source (remote) database — NO authSource (user authenticates against skyverses-dev)
+SOURCE_URI="mongodb://sky_user2:duloc123@209.74.65.102:27017/skyverses-dev"
 SOURCE_DB="skyverses-dev"
 
 # Local MongoDB config
