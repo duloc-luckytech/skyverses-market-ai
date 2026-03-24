@@ -660,8 +660,11 @@ function generateCreditMemo(packageCode: string, userId: string): string {
     String(now.getMinutes()).padStart(2, '0'),
     String(now.getSeconds()).padStart(2, '0'),
   ].join('');
-  return `SKY ${code} ${uid} ${ts}`;
+  // Random 3-char suffix to prevent duplicate key on rapid retries
+  const rnd = Math.random().toString(36).slice(2, 5).toUpperCase();
+  return `SKY ${code} ${uid} ${ts}${rnd}`;
 }
+
 
 /**
  * POST /credits/purchase/create
@@ -709,6 +712,9 @@ router.post("/purchase/create", authenticate, async (req: any, res) => {
     });
   } catch (err: any) {
     console.error("❌ [CREDIT PURCHASE CREATE]", err);
+    if (err.code === 11000) {
+      return res.status(409).json({ message: "Giao dịch trùng lặp, vui lòng thử lại." });
+    }
     res.status(500).json({ message: err.message });
   }
 });
