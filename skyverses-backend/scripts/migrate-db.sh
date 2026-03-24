@@ -14,14 +14,14 @@
 # Chạy trên Linux server nơi MongoDB local sẽ chạy
 # ============================================================
 
-set -e
+set -eo pipefail
 
 # ═══════════════════════════════════════════════════════
 # CONFIG — Chỉnh sửa phần này
 # ═══════════════════════════════════════════════════════
 
 # Source (remote) database
-SOURCE_URI="mongodb://sky_user2:duloc123@209.74.65.102:27017/skyverses-dev"
+SOURCE_URI="mongodb://sky_user2:duloc123@209.74.65.102:27017/skyverses-dev?authSource=admin"
 SOURCE_DB="skyverses-dev"
 
 # Local MongoDB config
@@ -172,24 +172,58 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 
 mkdir -p "$DUMP_DIR"
 
+info "Running mongodump (verbose)..."
 mongodump \
   --uri="$SOURCE_URI" \
   --out="$DUMP_DIR" \
   --gzip \
-  2>&1 | tail -5
+  --verbose \
+  2>&1 | tee /tmp/mongodump_output.log | tail -20
 
-if [ $? -ne 0 ]; then
-  err "mongodump failed"
+DUMP_EXIT=${PIPESTATUS[0]}
+if [ $DUMP_EXIT -ne 0 ]; then
+  echo ""
+  err "mongodump failed (exit: $DUMP_EXIT). Full log: /tmp/mongodump_output.log"
+fi
+
+# Validate dump directory exists and has files
+if [ ! -d "$DUMP_DIR/$SOURCE_DB" ]; then
+  echo ""
+  warn "Expected dump at: $DUMP_DIR/$SOURCE_DB"
+  info "Actual contents of dump dir:"
+  ls -la "$DUMP_DIR/" 2>/dev/null || echo "  (empty)"
+  find "$DUMP_DIR" -maxdepth 2 -type f 2>/dev/null | head -20
+  
+  # Try to find actual DB directory
+  ACTUAL_DB_DIR=$(find "$DUMP_DIR" -maxdepth 1 -type d ! -name "$(basename $DUMP_DIR)" | head -1)
+  if [ -n "$ACTUAL_DB_DIR" ]; then
+    ACTUAL_DB_NAME=$(basename "$ACTUAL_DB_DIR")
+    warn "Found DB directory: $ACTUAL_DB_NAME (expected: $SOURCE_DB)"
+    warn "Auto-correcting SOURCE_DB to: $ACTUAL_DB_NAME"
+    SOURCE_DB="$ACTUAL_DB_NAME"
+  else
+    err "No database directory found in dump. Check mongodump log: /tmp/mongodump_output.log"
+  fi
+fi
+
+# Count files
+BSON_COUNT=$(find "$DUMP_DIR/$SOURCE_DB" -name "*.bson.gz" 2>/dev/null | wc -l)
+if [ "$BSON_COUNT" -eq 0 ]; then
+  BSON_COUNT=$(find "$DUMP_DIR/$SOURCE_DB" -name "*.bson" 2>/dev/null | wc -l)
+fi
+
+if [ "$BSON_COUNT" -eq 0 ]; then
+  err "Dump directory exists but contains 0 BSON files!"
 fi
 
 # Show dump stats
-DUMP_SIZE=$(du -sh "$DUMP_DIR" | cut -f1)
-COLLECTIONS=$(find "$DUMP_DIR" -name "*.bson.gz" | wc -l)
-log "Dump complete: ${DUMP_SIZE} · ${COLLECTIONS} collections"
+DUMP_SIZE=$(du -sh "$DUMP_DIR/$SOURCE_DB" | cut -f1)
+log "Dump complete: ${DUMP_SIZE} · ${BSON_COUNT} collections"
 echo ""
 info "Collections dumped:"
-find "$DUMP_DIR" -name "*.bson.gz" | while read f; do
-  echo "  📄 $(basename "$f" .bson.gz)"
+find "$DUMP_DIR/$SOURCE_DB" -name "*.bson*" | sort | while read f; do
+  FSIZE=$(du -h "$f" | cut -f1)
+  echo "  📄 $(basename "$f") ($FSIZE)"
 done
 
 # ═══════════════════════════════════════════════════════
@@ -202,8 +236,9 @@ info "STEP 4: Restore data to local MongoDB"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # Drop existing DB first (clean restore)
-mongosh --host $LOCAL_HOST --port $LOCAL_PORT --quiet --eval "use ${LOCAL_DB}; db.dropDatabase(); print('🗑️ Dropped existing ${LOCAL_DB}');"
+mongosh --host $LOCAL_HOST --port $LOCAL_PORT --quiet --eval "use ${LOCAL_DB}; db.dropDatabase(); print('Dropped existing ${LOCAL_DB}');" 2>/dev/null || true
 
+info "Running mongorestore (verbose)..."
 mongorestore \
   --host="$LOCAL_HOST" \
   --port="$LOCAL_PORT" \
@@ -211,10 +246,13 @@ mongorestore \
   --dir="$DUMP_DIR/$SOURCE_DB" \
   --gzip \
   --drop \
-  2>&1 | tail -10
+  --verbose \
+  2>&1 | tee /tmp/mongorestore_output.log | tail -20
 
-if [ $? -ne 0 ]; then
-  err "mongorestore failed"
+RESTORE_EXIT=${PIPESTATUS[0]}
+if [ $RESTORE_EXIT -ne 0 ]; then
+  echo ""
+  err "mongorestore failed (exit: $RESTORE_EXIT). Full log: /tmp/mongorestore_output.log"
 fi
 log "Restore complete"
 
