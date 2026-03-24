@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   BarChart3, Cloud, HardDrive, DollarSign,
   Package, History, Users, Banknote, Globe,
-  Filter, Compass, Bot, Cog, Key,
+  Filter, Compass, Bot, Cog, Key, Zap,
   ShieldCheck, ChevronLeft, ChevronRight,
   Sun, Moon, LogOut, Plus, CreditCard
 } from 'lucide-react';
@@ -32,9 +32,10 @@ import { ProviderTokensTab } from '../components/admin-pro/ProviderTokensTab';
 import { BankingTab } from '../components/admin-pro/BankingTab';
 import { PaymentHistoryTab } from '../components/admin-pro/PaymentHistoryTab';
 import { WebhookLogsTab } from '../components/admin-pro/WebhookLogsTab';
+import { FxflowTab } from '../components/admin-pro/FxflowTab';
 import { SolutionDrawer } from '../components/admin-pro/solution-drawer/SolutionDrawer';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW';
 
 const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
   { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart3 size={16} />, group: 'MAIN' },
@@ -52,6 +53,7 @@ const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; gro
   { id: 'LOGS', label: 'Nhật ký', icon: <History size={16} />, group: 'SYSTEM' },
   { id: 'WEBHOOK_LOGS', label: 'Webhook Logs', icon: <Globe size={16} />, group: 'SYSTEM' },
   { id: 'CONFIG', label: 'Cấu hình', icon: <Cog size={16} />, group: 'SYSTEM' },
+  { id: 'FXFLOW', label: 'FXFlow Engine', icon: <Zap size={16} />, group: 'SYSTEM' },
 ];
 
 const GROUP_LABELS: Record<string, string> = {
@@ -303,6 +305,7 @@ const AdminCmsProPage = () => {
             {activeTab === 'PAYMENT_HISTORY' && <PaymentHistoryTab key="payment_history" />}
             {activeTab === 'WEBHOOK_LOGS' && <WebhookLogsTab key="webhook_logs" />}
             {activeTab === 'CONFIG' && <ConfigurationTab key="config" />}
+            {activeTab === 'FXFLOW' && <FxflowTab key="fxflow" />}
             {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
               <NodeRegistryTab
                 key={activeTab}
