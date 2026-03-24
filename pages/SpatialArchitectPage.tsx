@@ -31,19 +31,19 @@ const SHOWCASE_3D = [
 ];
 
 const FEATURES = [
-  { icon: <Layers />, title: 'Structural Gen', desc: 'Tạo lưới cấu trúc chịu lực cho kiến trúc & nội thất.', stat: '2.4M vertices' },
-  { icon: <Palette />, title: 'PBR Photoreal', desc: 'Vật liệu xây dựng chuẩn PBR chuyên nghiệp.', stat: '4K textures' },
-  { icon: <Package />, title: 'CAD Export', desc: 'Xuất .STEP, .OBJ, .GLTF chuẩn ngành.', stat: '12 formats' },
-  { icon: <Cpu />, title: 'BIM Nodes', desc: 'Tích hợp dữ liệu mô hình thông tin công trình.', stat: 'IFC ready' },
-  { icon: <Monitor />, title: 'Ambient Render', desc: 'Phối cảnh ánh sáng tự nhiên chân thực.', stat: 'HDRI maps' },
-  { icon: <ShieldCheck />, title: 'VPC Sandbox', desc: 'Bảo mật bản quyền trong mạng riêng ảo.', stat: 'Encrypted' },
+  { icon: <Layers />, title: 'Text → 3D', desc: 'Viết prompt mô tả vật thể — AI tự động tạo mesh 3D hoàn chỉnh.', stat: 'Prompt-based' },
+  { icon: <Upload />, title: 'Image → 3D', desc: 'Upload ảnh 2D bất kỳ — chuyển đổi thành mô hình 3D chi tiết.', stat: '2D to 3D' },
+  { icon: <Palette />, title: 'PBR Materials', desc: 'Chỉnh sửa vật liệu PBR: metallic, roughness, shading trực tiếp.', stat: '4K textures' },
+  { icon: <Monitor />, title: '3D Viewport', desc: 'Xoay, zoom, kiểm tra model từ mọi góc với grid và axis gizmo.', stat: 'Real-time' },
+  { icon: <Package />, title: 'Multi-Format', desc: 'Upload/Export .GLB, .GLTF, .OBJ — tương thích mọi pipeline.', stat: '12 formats' },
+  { icon: <ShieldCheck />, title: 'Asset Library', desc: 'Quản lý kho model 3D, tái sử dụng xuyên suốt các dự án.', stat: 'Cloud sync' },
 ];
 
 const WORKFLOW = [
-  { step: '01', title: 'Mô tả', desc: 'Nhập prompt mô tả không gian, phong cách kiến trúc.', icon: <Upload size={20} /> },
-  { step: '02', title: 'Mesh AI', desc: 'Engine tạo cấu trúc lưới 3D từ mô tả.', icon: <Cpu size={20} /> },
-  { step: '03', title: 'Preview', desc: 'Xem trước, tinh chỉnh vật liệu và ánh sáng.', icon: <Eye size={20} /> },
-  { step: '04', title: 'Export', desc: 'Xuất file chuẩn ngành, sẵn sàng sản xuất.', icon: <Download size={20} /> },
+  { step: '01', title: 'Input', desc: 'Nhập prompt mô tả hoặc upload ảnh 2D muốn chuyển 3D.', icon: <Upload size={20} /> },
+  { step: '02', title: 'AI Generate', desc: 'AI phân tích và tạo mesh 3D với texture tự động.', icon: <Cpu size={20} /> },
+  { step: '03', title: 'Edit & Refine', desc: 'Chỉnh material, shading, xem qua viewport 360°.', icon: <Eye size={20} /> },
+  { step: '04', title: 'Export', desc: 'Xuất .GLB/.OBJ, sẵn sàng cho game, phim, in 3D.', icon: <Download size={20} /> },
 ];
 
 /* ─── ANIMATED WIREFRAME GRID ─── */
@@ -172,9 +172,9 @@ const HoloCard3D: React.FC<{ item: typeof SHOWCASE_3D[0]; index: number }> = ({ 
    ═══════════════════════════════════════════════════ */
 const SpatialArchitectPage: React.FC = () => {
   usePageMeta({
-    title: '3D Spatial Architect — Kiến tạo không gian AI | Skyverses',
-    description: 'Kiến tạo không gian 3D cấp độ công nghiệp bằng AI.',
-    keywords: '3D architect, spatial AI, CAD generation, Skyverses',
+    title: '3D Spatial Architect — Tạo mô hình 3D bằng AI | Skyverses',
+    description: 'Chuyển đổi ảnh 2D thành 3D hoặc tạo model 3D từ prompt. Upload, chỉnh sửa PBR materials, export GLB/OBJ.',
+    keywords: '3D model AI, image to 3D, text to 3D, PBR materials, Skyverses',
     canonical: '/product/3d-spatial-architect'
   });
 
@@ -218,7 +218,7 @@ const SpatialArchitectPage: React.FC = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
             className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-400 text-[11px] font-mono font-bold uppercase tracking-wider">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-            CAD-GRADE AI ARCHITECTURE
+            TEXT & IMAGE → 3D MODEL ENGINE
           </motion.div>
 
           <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 1, ease: [0.22, 1, 0.36, 1] as const }}
@@ -232,8 +232,8 @@ const SpatialArchitectPage: React.FC = () => {
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
             className="text-base md:text-lg text-white/40 font-mono max-w-2xl mx-auto leading-relaxed">
-            Kiến tạo không gian 3D cấp công nghiệp. Chuyển đổi mô tả thành mesh cấu trúc hoàn hảo
-            <span className="text-emerald-400/60"> — trong vài phút.</span>
+            Chuyển ảnh 2D thành mô hình 3D hoặc tạo model từ prompt. Chỉnh sửa PBR, viewport 360°
+            <span className="text-emerald-400/60"> — export .GLB/.OBJ ngay.</span>
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }}
@@ -255,7 +255,7 @@ const SpatialArchitectPage: React.FC = () => {
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
             className="flex flex-wrap items-center justify-center gap-6 pt-6 font-mono">
-            {['CAD Export', 'PBR Materials', 'BIM Ready', '2.4M Vertices'].map((badge, i) => (
+            {['Text → 3D', 'Image → 3D', 'PBR Editor', 'GLB/OBJ Export'].map((badge, i) => (
               <span key={i} className="flex items-center gap-1.5 text-[10px] font-semibold text-white/25">
                 <div className="w-1 h-1 rounded-full bg-emerald-500/50" /> {badge}
               </span>
@@ -478,7 +478,7 @@ const SpatialArchitectPage: React.FC = () => {
               <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">SPATIAL</span>
             </h2>
             <p className="text-sm text-white/30 font-mono max-w-md mx-auto">
-              Từ ý tưởng đến mô hình 3D cấp công nghiệp — chỉ bằng AI.
+              Từ ảnh 2D hoặc prompt — tạo model 3D chuyên nghiệp chỉ bằng AI.
             </p>
           </motion.div>
 
@@ -501,7 +501,7 @@ const SpatialArchitectPage: React.FC = () => {
             <div className="flex gap-0.5">
               {[1,2,3,4,5].map(i => <Star key={i} size={12} className="text-emerald-500/40 fill-emerald-500/40" />)}
             </div>
-            <span className="text-[10px] font-mono text-white/20">500+ kiến trúc sư tin dùng</span>
+            <span className="text-[10px] font-mono text-white/20">500+ creators tin dùng</span>
           </motion.div>
         </div>
       </section>
