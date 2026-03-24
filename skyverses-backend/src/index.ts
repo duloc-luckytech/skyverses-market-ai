@@ -95,6 +95,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
         plan: "enterprise",
         creditBalance: 999999,
         claimWelcomeCredit: true,
+        inviteCode: crypto.randomBytes(4).toString("hex"),
       });
 
       console.log(`🔐 Admin created: ${email} / ${password} (ID: ${admin._id})`);
