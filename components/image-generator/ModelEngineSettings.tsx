@@ -51,6 +51,9 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [showAllVariants, setShowAllVariants] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+
+  const toggleGroup = (key: string) => setExpandedGroups(prev => ({ ...prev, [key]: !prev[key] }));
 
   const hasFamilyData = familyList && familyList.length > 0;
   const modes = hasFamilyData && familyModes?.length ? familyModes : (selectedModel?.raw?.modes || []);
@@ -178,33 +181,75 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
             {/* COMPACT ROW: Modes + Ratio + Resolution + Quantity */}
             <div className="space-y-2">
               {/* Modes */}
-              {modes.length > 0 && (
-                <div className="space-y-1">
-                  <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Chế độ</p>
-                  <div className="flex flex-wrap gap-1">
-                    {modes.map((m: string) => <Pill key={m} label={m} active={selectedMode === m} onClick={() => setSelectedMode(m)} disabled={isGenerating} />)}
+              {modes.length > 0 && (() => {
+                const MAX = 3;
+                const isGroupExpanded = expandedGroups['modes'];
+                const activeIdx = modes.findIndex((m: string) => m === selectedMode);
+                const visibleItems = isGroupExpanded ? modes : modes.slice(0, MAX);
+                const activeOutside = !isGroupExpanded && activeIdx >= MAX;
+                const hiddenCount = modes.length - MAX;
+                return (
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Chế độ</p>
+                    <div className="flex flex-wrap gap-1">
+                      {visibleItems.map((m: string) => <Pill key={m} label={m} active={selectedMode === m} onClick={() => setSelectedMode(m)} disabled={isGenerating} />)}
+                      {activeOutside && <Pill label={selectedMode} active={true} onClick={() => {}} disabled={isGenerating} />}
+                      {hiddenCount > 0 && (
+                        <button onClick={() => toggleGroup('modes')} className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-[#888] hover:text-rose-400 transition-colors">
+                          {isGroupExpanded ? '↑ Thu gọn' : `+${hiddenCount}`}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Ratio + Res on same row */}
               <div className="flex flex-wrap gap-x-4 gap-y-2">
-                {ratios.length > 0 && (
-                  <div className="space-y-0.5">
-                    <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Tỷ lệ</p>
-                    <div className="flex flex-wrap gap-0.5">
-                      {ratios.map((r: string) => <Pill key={r} label={r} active={selectedRatio === r} onClick={() => setSelectedRatio(r)} disabled={isGenerating} />)}
+                {ratios.length > 0 && (() => {
+                  const MAX = 3;
+                  const isGroupExpanded = expandedGroups['ratios'];
+                  const activeIdx = ratios.findIndex((r: string) => r === selectedRatio);
+                  const visibleItems = isGroupExpanded ? ratios : ratios.slice(0, MAX);
+                  const activeOutside = !isGroupExpanded && activeIdx >= MAX;
+                  const hiddenCount = ratios.length - MAX;
+                  return (
+                    <div className="space-y-0.5">
+                      <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">Tỷ lệ</p>
+                      <div className="flex flex-wrap gap-0.5">
+                        {visibleItems.map((r: string) => <Pill key={r} label={r} active={selectedRatio === r} onClick={() => setSelectedRatio(r)} disabled={isGenerating} />)}
+                        {activeOutside && <Pill label={selectedRatio} active={true} onClick={() => {}} disabled={isGenerating} />}
+                        {hiddenCount > 0 && (
+                          <button onClick={() => toggleGroup('ratios')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-[#888] hover:text-rose-400 transition-colors">
+                            {isGroupExpanded ? '↑' : `+${hiddenCount}`}
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
-                {resolutions.length > 0 && (
-                  <div className="space-y-0.5">
-                    <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">P.Giải</p>
-                    <div className="flex flex-wrap gap-0.5">
-                      {resolutions.map((r: string) => <Pill key={r} label={r} active={selectedRes === r} onClick={() => setSelectedRes(r)} disabled={isGenerating} />)}
+                  );
+                })()}
+                {resolutions.length > 0 && (() => {
+                  const MAX = 3;
+                  const isGroupExpanded = expandedGroups['res'];
+                  const activeIdx = resolutions.findIndex((r: string) => r === selectedRes);
+                  const visibleItems = isGroupExpanded ? resolutions : resolutions.slice(0, MAX);
+                  const activeOutside = !isGroupExpanded && activeIdx >= MAX;
+                  const hiddenCount = resolutions.length - MAX;
+                  return (
+                    <div className="space-y-0.5">
+                      <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5">P.Giải</p>
+                      <div className="flex flex-wrap gap-0.5">
+                        {visibleItems.map((r: string) => <Pill key={r} label={r} active={selectedRes === r} onClick={() => setSelectedRes(r)} disabled={isGenerating} />)}
+                        {activeOutside && <Pill label={selectedRes} active={true} onClick={() => {}} disabled={isGenerating} />}
+                        {hiddenCount > 0 && (
+                          <button onClick={() => toggleGroup('res')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-[#888] hover:text-rose-400 transition-colors">
+                            {isGroupExpanded ? '↑' : `+${hiddenCount}`}
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
 
               {/* Quantity (Single mode only) */}
