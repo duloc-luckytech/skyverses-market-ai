@@ -91,14 +91,14 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
           <div className="flex items-center gap-2">
             <button onClick={e => { stop(e); props.onClose(); }} className="p-0.5 text-slate-400 dark:text-[#555] hover:text-slate-900 dark:hover:text-white transition-colors"><ChevronLeft size={16} /></button>
             <Video size={12} className="text-indigo-400" />
-            <span className="text-[10px] font-semibold text-slate-600 dark:text-white/70">Video Studio</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-white/70">Video Studio</span>
           </div>
         </div>
         {/* MODE TABS */}
         <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
           {(['SINGLE', 'MULTI', 'AUTO'] as const).map(m => (
             <button key={m} onClick={e => { stop(e); props.setActiveMode(m); }}
-              className={`flex-1 flex items-center justify-center gap-1 py-1.5 text-[8px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === m ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-400 dark:text-[#555] hover:text-slate-600 dark:hover:text-white/60'
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === m ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-400 dark:text-[#555] hover:text-slate-600 dark:hover:text-white/60'
                 }`}>
               {m === 'SINGLE' ? <Play size={9} /> : m === 'MULTI' ? <Layers size={9} /> : <Zap size={9} />}
               {m === 'SINGLE' ? 'Đơn' : m === 'MULTI' ? 'Multi' : 'Auto'}
@@ -114,20 +114,20 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
           {props.activeMode === 'SINGLE' && (
             <motion.div key="s" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2.5">
               <div className="space-y-1">
-                <p className="text-[8px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider px-0.5">Kịch bản</p>
+                <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider px-0.5">Kịch bản</p>
                 <textarea
                   value={props.prompt} onChange={e => props.setPrompt(e.target.value)}
-                  className="w-full min-h-[90px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-lg p-2.5 text-[10px] font-medium focus:border-indigo-500/30 outline-none transition-all resize-y text-slate-800 dark:text-white/80 placeholder:text-slate-300 dark:placeholder:text-[#333]"
+                  className="w-full min-h-[100px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-lg p-3 text-xs font-medium focus:border-indigo-500/30 outline-none transition-all resize-y text-slate-800 dark:text-white/80 placeholder:text-slate-300 dark:placeholder:text-[#333] leading-relaxed"
                   placeholder="Nhập kịch bản video..."
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-0.5">
-                  <p className="text-[7px] font-medium text-slate-400 dark:text-[#444] px-0.5">Start</p>
+                  <p className="text-[9px] font-medium text-slate-400 dark:text-[#444] px-0.5">Start</p>
                   <Slot url={props.startFrame} uploading={props.isUploadingImage === 'START'} onUp={() => props.handleSingleFrameClick('START', 'UPLOAD')} onLib={() => props.handleSingleFrameClick('START', 'LIBRARY')} />
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-[7px] font-medium text-slate-400 dark:text-[#444] px-0.5">End</p>
+                  <p className="text-[9px] font-medium text-slate-400 dark:text-[#444] px-0.5">End</p>
                   <Slot url={props.endFrame} uploading={props.isUploadingImage === 'END'} onUp={() => props.handleSingleFrameClick('END', 'UPLOAD')} onLib={() => props.handleSingleFrameClick('END', 'LIBRARY')} />
                 </div>
               </div>
@@ -138,8 +138,8 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
           {props.activeMode === 'MULTI' && (
             <motion.div key="m" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
               <div className="flex justify-between items-center">
-                <p className="text-[8px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">{props.multiFrames.length} frames</p>
-                <button onClick={e => { stop(e); props.handleAddFrame(); }} className="text-indigo-400 text-[8px] font-semibold flex items-center gap-0.5 hover:brightness-125"><Plus size={10} strokeWidth={3} /> Add</button>
+                <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">{props.multiFrames.length} frames</p>
+                <button onClick={e => { stop(e); props.handleAddFrame(); }} className="text-indigo-400 text-[10px] font-semibold flex items-center gap-1 hover:brightness-125"><Plus size={12} strokeWidth={3} /> Add</button>
               </div>
               <div className="grid grid-cols-3 gap-1.5">
                 {props.multiFrames.map((f, i) => (
@@ -148,7 +148,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
                       {props.isUploadingImage === f.id ? <div className="flex items-center justify-center h-full"><Loader2 size={12} className="text-indigo-400 animate-spin" /></div>
                         : f.url ? <img src={f.url} className="w-full h-full object-cover" alt="" />
                           : <div className="flex items-center justify-center h-full opacity-15"><ImageIcon size={12} /></div>}
-                      <div className="absolute top-0.5 left-0.5 w-3.5 h-3.5 bg-indigo-600/80 rounded text-[6px] font-bold flex items-center justify-center text-white">{i + 1}</div>
+                      <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-indigo-600/80 rounded text-[8px] font-bold flex items-center justify-center text-white">{i + 1}</div>
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
                         <button onClick={e => { stop(e); props.handleFrameClick(f.id, 'UPLOAD'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500 transition-all"><Upload size={8} /></button>
                         <button onClick={e => { stop(e); props.handleFrameClick(f.id, 'LIBRARY'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500 transition-all"><FolderOpen size={8} /></button>
@@ -156,8 +156,8 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
                       {props.multiFrames.length > 2 && <button onClick={e => { stop(e); props.removeFrame(f.id); }} className="absolute top-0.5 right-0.5 p-0.5 bg-black/50 rounded text-white/30 hover:text-red-400 transition-all"><Trash2 size={7} /></button>}
                     </div>
                     {i < props.multiFrames.length - 1
-                      ? <textarea value={f.prompt} onChange={e => props.handleFramePromptChange(f.id, e.target.value)} placeholder="..." className="w-full h-8 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded p-1 text-[7px] font-medium text-slate-700 dark:text-white/60 focus:border-indigo-500/30 outline-none resize-none" />
-                      : <div className="h-8 flex items-center justify-center border border-dashed border-white/[0.04] rounded opacity-20"><span className="text-[6px] font-semibold uppercase text-[#555]">End</span></div>
+                      ? <textarea value={f.prompt} onChange={e => props.handleFramePromptChange(f.id, e.target.value)} placeholder="..." className="w-full h-9 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded p-1.5 text-[9px] font-medium text-slate-700 dark:text-white/60 focus:border-indigo-500/30 outline-none resize-none" />
+                      : <div className="h-9 flex items-center justify-center border border-dashed border-white/[0.04] rounded opacity-20"><span className="text-[8px] font-semibold uppercase text-[#555]">End</span></div>
                     }
                   </div>
                 ))}
@@ -169,17 +169,17 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
           {props.activeMode === 'AUTO' && (
             <motion.div key="a" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
               <div className="flex justify-between items-center">
-                <p className="text-[8px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">Batch</p>
-                <button onClick={e => { stop(e); props.setIsBulkImporting(!props.isBulkImporting); }} className="text-indigo-400 text-[8px] font-semibold flex items-center gap-0.5 hover:brightness-125">
-                  {props.isBulkImporting ? <><X size={10} /> Hủy</> : <><ListPlus size={10} /> Nhập</>}
+                <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">Batch</p>
+                <button onClick={e => { stop(e); props.setIsBulkImporting(!props.isBulkImporting); }} className="text-indigo-400 text-[10px] font-semibold flex items-center gap-1 hover:brightness-125">
+                  {props.isBulkImporting ? <><X size={12} /> Hủy</> : <><ListPlus size={12} /> Nhập</>}
                 </button>
               </div>
               <AnimatePresence>
                 {props.isBulkImporting && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                     <div className="p-2 bg-indigo-500/5 border border-indigo-500/10 rounded-lg space-y-1.5">
-                      <textarea value={props.bulkText} onChange={e => props.setBulkText(e.target.value)} className="w-full h-16 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded p-2 text-[8px] font-medium text-slate-700 dark:text-white/70 focus:border-indigo-500/30 outline-none resize-none" placeholder="Mỗi dòng = 1 kịch bản..." />
-                      <button onClick={e => { stop(e); props.handleBulkImport(); }} className="w-full py-1.5 bg-indigo-600 text-white rounded text-[8px] font-semibold uppercase tracking-wider">Phân tách</button>
+                      <textarea value={props.bulkText} onChange={e => props.setBulkText(e.target.value)} className="w-full h-20 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded p-2.5 text-[10px] font-medium text-slate-700 dark:text-white/70 focus:border-indigo-500/30 outline-none resize-none" placeholder="Mỗi dòng = 1 kịch bản..." />
+                      <button onClick={e => { stop(e); props.handleBulkImport(); }} className="w-full py-2 bg-indigo-600 text-white rounded text-[10px] font-semibold uppercase tracking-wider">Phân tách</button>
                     </div>
                   </motion.div>
                 )}
@@ -188,15 +188,15 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
                 {props.autoTasks.map((t, i) => (
                   <div key={t.id} className="p-2 bg-black/[0.01] dark:bg-white/[0.015] border border-black/[0.06] dark:border-white/[0.04] rounded-lg space-y-1.5 group hover:border-indigo-500/20 transition-all">
                     <div className="flex justify-between items-center">
-                      <span className="text-[7px] font-semibold text-indigo-400">#{i + 1}</span>
+                      <span className="text-[9px] font-semibold text-indigo-400">#{i + 1}</span>
                       <button onClick={e => { stop(e); props.removeAutoTask(t.id); }} className="text-slate-300 dark:text-[#333] hover:text-red-400 transition-colors"><Trash2 size={9} /></button>
                     </div>
-                    <textarea value={t.prompt} onChange={e => props.handleAutoPromptChange(t.id, e.target.value)} placeholder="Kịch bản..." className="w-full h-8 bg-transparent border-b border-black/[0.06] dark:border-white/[0.04] text-[8px] font-medium outline-none focus:border-indigo-500/20 resize-none text-slate-700 dark:text-white/70" />
+                    <textarea value={t.prompt} onChange={e => props.handleAutoPromptChange(t.id, e.target.value)} placeholder="Kịch bản..." className="w-full h-9 bg-transparent border-b border-black/[0.06] dark:border-white/[0.04] text-[10px] font-medium outline-none focus:border-indigo-500/20 resize-none text-slate-700 dark:text-white/70" />
                     <div className="grid grid-cols-2 gap-1.5">
                       <div className="aspect-video bg-slate-100 dark:bg-white/[0.02] border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded flex items-center justify-center overflow-hidden relative group/s">
                         {props.isUploadingImage === `${t.id}-START` ? <Loader2 size={10} className="text-indigo-400 animate-spin" />
                           : t.startUrl ? <img src={t.startUrl} className="w-full h-full object-cover" alt="" />
-                            : <span className="text-[6px] font-medium text-[#333]">Start</span>}
+                            : <span className="text-[8px] font-medium text-[#333]">Start</span>}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/s:opacity-100 transition-opacity flex items-center justify-center gap-1">
                           <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'START', 'UPLOAD'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><Upload size={7} /></button>
                           <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'START', 'LIBRARY'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><FolderOpen size={7} /></button>
@@ -205,7 +205,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
                       <div className="aspect-video bg-slate-100 dark:bg-white/[0.02] border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded flex items-center justify-center overflow-hidden relative group/e">
                         {props.isUploadingImage === `${t.id}-END` ? <Loader2 size={10} className="text-indigo-400 animate-spin" />
                           : t.endUrl ? <img src={t.endUrl} className="w-full h-full object-cover" alt="" />
-                            : <span className="text-[6px] font-medium text-[#333]">End</span>}
+                            : <span className="text-[8px] font-medium text-[#333]">End</span>}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/e:opacity-100 transition-opacity flex items-center justify-center gap-1">
                           <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'END', 'UPLOAD'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><Upload size={7} /></button>
                           <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'END', 'LIBRARY'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><FolderOpen size={7} /></button>
