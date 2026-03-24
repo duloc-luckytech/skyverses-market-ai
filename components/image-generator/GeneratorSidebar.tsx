@@ -42,7 +42,7 @@ interface GeneratorSidebarProps {
   isGenerating: boolean;
   handleLocalFileUpload: (file: File) => void;
   handleGenerate: () => void;
-  generateTooltip: string;
+  generateTooltip: string | null;
   isGenerateDisabled: boolean;
   isMobileExpanded: boolean;
   setIsMobileExpanded: (v: boolean) => void;
