@@ -13,8 +13,8 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('skyverses_theme');
-    // Mặc định là 'light' nếu chưa có giá trị lưu trữ
-    return (saved as Theme) || 'light';
+    // Mặc định là 'dark' cho người dùng mới
+    return (saved as Theme) || 'dark';
   });
 
   useEffect(() => {
