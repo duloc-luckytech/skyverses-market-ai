@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
                 { icon: <Twitter size={16} />, href: 'https://twitter.com/', label: 'Twitter' },
                 { icon: <Linkedin size={16} />, href: 'https://linkedin.com/', label: 'LinkedIn' },
                 { icon: <Github size={16} />, href: 'https://github.com/', label: 'GitHub' },
-                { icon: <Mail size={16} />, href: 'mailto:hello@skyverses.com', label: 'Email' },
+                { icon: <Mail size={16} />, href: 'mailto:support@skyverses.com', label: 'Email' },
               ].map(social => (
                 <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" title={social.label}
                   className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center text-slate-400 dark:text-gray-500 hover:bg-brand-blue hover:border-brand-blue hover:text-white hover:shadow-lg hover:shadow-brand-blue/20 hover:scale-110 transition-all duration-300">

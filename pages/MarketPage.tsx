@@ -931,11 +931,11 @@ const MarketPage = () => {
                       <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                     <a
-                      href="mailto:hello@skyverses.com"
+                      href="mailto:support@skyverses.com"
                       className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
                     >
                       <span className="text-[10px] font-bold uppercase tracking-wider">hoặc email:</span>
-                      <span className="font-bold text-brand-blue">hello@skyverses.com</span>
+                      <span className="font-bold text-brand-blue">support@skyverses.com</span>
                     </a>
                   </motion.div>
 
