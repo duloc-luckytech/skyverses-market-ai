@@ -22,12 +22,11 @@ const WelcomeBonusModal: React.FC = () => {
       }
     }).catch(() => { /* use default */ });
 
-    // TODO: restore localStorage check after testing
-    // const hasSeen = localStorage.getItem(STORAGE_KEY);
-    // if (!hasSeen) {
+    const hasSeen = localStorage.getItem(STORAGE_KEY);
+    if (!hasSeen) {
       const timer = setTimeout(() => setIsOpen(true), 2000);
       return () => clearTimeout(timer);
-    // }
+    }
   }, []);
 
   const handleClose = () => {
