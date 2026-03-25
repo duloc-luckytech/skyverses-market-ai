@@ -366,9 +366,9 @@ const MarketsPage: React.FC = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   usePageMeta({
-    title: 'Marketplace | Skyverses - Kho công cụ AI sáng tạo',
-    description: 'Khám phá hơn 30+ công cụ AI cho sản xuất hình ảnh, video, nhạc, giọng nói và tự động hóa.',
-    keywords: 'AI tools, AI marketplace, công cụ AI, Skyverses market',
+    title: 'Marketplace AI | Skyverses - Kho ứng dụng AI sáng tạo all-in-one',
+    description: 'Khám phá Marketplace với 30+ ứng dụng AI: Video AI (VEO3, Kling), Image AI (Midjourney, Flux), Voice AI, Music AI & Automation. Hệ sinh thái AI toàn diện cho mọi nhu cầu sáng tạo.',
+    keywords: 'AI marketplace, kho ứng dụng AI, công cụ AI, hệ sinh thái AI, Skyverses marketplace, VEO3, Kling, Midjourney, AI tools, AI automation, video AI, image AI',
     canonical: '/markets'
   });
 

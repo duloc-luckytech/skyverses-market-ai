@@ -62,9 +62,9 @@ const MarketPage = () => {
   const navigate = useNavigate();
 
   usePageMeta({
-    title: 'Skyverses | Nền tảng AI sáng tạo hình ảnh, video, nhạc & giọng nói',
-    description: 'Khám phá hơn 30+ công cụ AI mạnh mẽ cho sản xuất hình ảnh, video, game assets, nhạc và giọng nói. One Studio for Every Kind of Build.',
-    keywords: 'AI image generator, AI video generator, Skyverses, tạo ảnh AI, tạo video AI, text to speech, AI music',
+    title: 'Skyverses | Marketplace AI - Hệ sinh thái ứng dụng AI sáng tạo hàng đầu Việt Nam',
+    description: 'Skyverses Marketplace - Hệ sinh thái 30+ ứng dụng AI: tạo video (VEO3, Kling, Sora), ảnh (Midjourney, Flux), nhạc, giọng nói & tự động hoá. Nền tảng AI all-in-one cho doanh nghiệp và cá nhân.',
+    keywords: 'AI marketplace, hệ sinh thái AI, ứng dụng AI, tạo video AI, tạo ảnh AI, Skyverses, VEO3, Kling, Sora, Midjourney, AI Việt Nam, nền tảng AI, marketplace AI',
     canonical: '/'
   });
 
