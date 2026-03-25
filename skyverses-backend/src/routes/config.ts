@@ -4,8 +4,17 @@ import Plan from "../models/PlanModel"; // ✅ Model MongoDB
 import { SYSTEM_CONFIG } from "../constanst/index";
 import { HOME_BLOCKS_CONFIG } from "../config/marketHomeBlocks";
 import { listKeyGommoGenmini } from "../config/keyGenminiGommo";
+import { authenticate } from "./auth";
 
 const router = express.Router();
+
+/* ─── Shared SystemSetting Model ─── */
+const SystemSettingSchema = new mongoose.Schema({
+  key: { type: String, unique: true, required: true },
+  value: { type: mongoose.Schema.Types.Mixed },
+}, { timestamps: true });
+
+const SystemSetting = (mongoose.models.SystemSetting || mongoose.model("SystemSetting", SystemSettingSchema)) as mongoose.Model<any>;
 
 /**
  * @swagger
@@ -29,7 +38,7 @@ router.get("/", async (req, res) => {
      * --------------------------------------- */
     let welcomeBonusCredits = 1000; // default
     try {
-      const bonusSetting = await mongoose.connection.db.collection('systemsettings').findOne({ key: 'welcomeBonusCredits' });
+      const bonusSetting: any = await SystemSetting.findOne({ key: 'welcomeBonusCredits' }).lean();
       if (bonusSetting?.value) welcomeBonusCredits = bonusSetting.value;
     } catch (e) { /* fallback to default */ }
 
@@ -83,14 +92,6 @@ router.get("/", async (req, res) => {
 /* =====================================================
    BANKING CONFIG - GET & UPDATE
 ===================================================== */
-import { authenticate } from "./auth";
-
-const SystemSettingSchema = new mongoose.Schema({
-  key: { type: String, unique: true, required: true },
-  value: { type: mongoose.Schema.Types.Mixed },
-}, { timestamps: true });
-
-const SystemSetting = (mongoose.models.SystemSetting || mongoose.model("SystemSetting", SystemSettingSchema)) as mongoose.Model<any>;
 
 // Default banking config from .env
 const DEFAULT_BANKING = {
