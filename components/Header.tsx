@@ -356,9 +356,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                         <div className="p-1.5 space-y-0.5">
                           <DropdownLink to="/settings" icon={<User size={15} />} label={t('user.menu.profile')} onClick={() => setShowUserMenu(false)} />
                           <DropdownLink to="/referral" icon={<Users size={15} />} label={t('user.menu.referral')} onClick={() => setShowUserMenu(false)} />
-                          {(user?.role === 'admin' || user?.email === 'duloc2708@gmail.com') && (
-                            <DropdownLink to="/cms-admin-pro" icon={<Database size={15} />} label={t('user.menu.admin')} onClick={() => setShowUserMenu(false)} />
-                          )}
                           <DropdownLink to="/favorites" icon={<Bookmark size={15} />} label={t('user.menu.favorites')} onClick={() => setShowUserMenu(false)} />
                           <DropdownLink to="/usage" icon={<BarChart3 size={15} />} label={t('user.menu.usage')} onClick={() => setShowUserMenu(false)} />
                           <DropdownLink to="/settings" icon={<Settings size={15} />} label={t('user.menu.settings')} onClick={() => setShowUserMenu(false)} />

@@ -28,7 +28,6 @@ import SettingsPage from './pages/SettingsPage';
 import FavoritesPage from './pages/FavoritesPage';
 import ReferralPage from './pages/ReferralPage';
 import PolicyPage from './pages/PolicyPage';
-import AdminMarketCMS from './pages/AdminMarketCMS';
 import MarketsPage from './pages/MarketsPage';
 
 // Product Page Imports
@@ -97,7 +96,7 @@ const App: React.FC = () => {
                       <Route path="/referral" element={<ReferralPage />} />
                       <Route path="/policy" element={<PolicyPage />} />
                       
-                      <Route path="/cms-admin-pro" element={<AdminMarketCMS />} />
+                      
 
                       <Route path="/product/background-removal-ai" element={<BackgroundRemovalAI />} />
                       <Route path="/product/ai-agent-workflow" element={<ProductAIAgentWorkflow />} />
