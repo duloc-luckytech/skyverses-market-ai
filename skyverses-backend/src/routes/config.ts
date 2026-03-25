@@ -24,6 +24,17 @@ router.get("/", async (req, res) => {
     let plans = await Plan.find().lean();
 
     /* ---------------------------------------
+     * 🎁 Welcome Bonus Credits (configurable from CMS)
+     * --------------------------------------- */
+    let welcomeBonusCredits = 1000; // default
+    try {
+      const { default: mongoose } = await import('mongoose');
+      const SystemSetting = mongoose.models.SystemSetting || mongoose.model('SystemSetting', new mongoose.Schema({ key: { type: String, unique: true }, value: mongoose.Schema.Types.Mixed }, { timestamps: true }));
+      const bonusSetting: any = await SystemSetting.findOne({ key: 'welcomeBonusCredits' }).lean();
+      if (bonusSetting?.value) welcomeBonusCredits = bonusSetting.value;
+    } catch (e) { /* fallback to default */ }
+
+    /* ---------------------------------------
      * 🔧 Các cấu hình khác
      * --------------------------------------- */
     const resolutions = [
@@ -56,7 +67,8 @@ router.get("/", async (req, res) => {
         videoExpireHours: SYSTEM_CONFIG.videoExpireHours,
         imageExpireHours: SYSTEM_CONFIG.imageExpireHours,
         marketHomeBlock: HOME_BLOCKS_CONFIG,
-        listKeyGommoGenmini
+        listKeyGommoGenmini,
+        welcomeBonusCredits,
       },
     });
   } catch (err: any) {

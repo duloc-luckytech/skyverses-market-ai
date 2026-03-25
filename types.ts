@@ -38,6 +38,7 @@ export interface SystemConfig {
   imageExpireHours: number;
   marketHomeBlock: HomeBlock[];
   listKeyGommoGenmini?: GeminiKey[];
+  welcomeBonusCredits?: number;
 }
 
 export interface Solution {

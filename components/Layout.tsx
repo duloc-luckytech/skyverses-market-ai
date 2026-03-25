@@ -6,6 +6,7 @@ import AISupportChat from './AISupportChat';
 import ImageLibraryModal from './ImageLibraryModal';
 import ProductImageWorkspace from './ProductImageWorkspace';
 import CommandPalette from './CommandPalette';
+import WelcomeBonusModal from './WelcomeBonusModal';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -32,6 +33,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <Footer />
       <AISupportChat />
       <CommandPalette />
+      <WelcomeBonusModal />
       
       {/* Thư viện hình ảnh toàn cục */}
       <ImageLibraryModal 

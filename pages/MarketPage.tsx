@@ -10,7 +10,7 @@ import {
   Sparkles, LucideIcon, ArrowRight, ChevronRight, Play, Zap, Shield, Globe2, Cpu,
   MousePointerClick, Wand2, Rocket, Megaphone, ShoppingBag, Clapperboard,
   Building2, Shirt, GraduationCap, Brain, Wrench, Plug, CreditCard, RefreshCw,
-  MonitorPlay, Palette, UserCircle, Landmark
+  MonitorPlay, Palette, UserCircle, Landmark, TrendingDown
 } from 'lucide-react';
 
 import { useLanguage } from '../context/LanguageContext';
@@ -264,7 +264,7 @@ const MarketPage = () => {
                   className="flex flex-wrap gap-3 pt-2"
                 >
                   <button
-                    onClick={() => navigate(isAuthenticated ? '/explorer' : '/login')}
+                    onClick={() => navigate('/markets')}
                     className="group relative inline-flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-7 py-4 rounded-2xl text-sm font-bold shadow-xl hover:shadow-2xl hover:shadow-brand-blue/20 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-brand-blue to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -274,7 +274,7 @@ const MarketPage = () => {
                     </span>
                   </button>
                   <button
-                    onClick={() => navigate('/pricing')}
+                    onClick={() => navigate('/markets')}
                     className="inline-flex items-center gap-3 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-7 py-4 rounded-2xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/10 hover:border-brand-blue/30 transition-all duration-300"
                   >
                     <Play size={14} className="text-brand-blue" fill="currentColor" />
@@ -308,73 +308,77 @@ const MarketPage = () => {
                 </motion.div>
               </div>
 
-              {/* Right: Featured Visual */}
+              {/* Right: Vertical Scrolling Gallery */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.9, rotateY: -5 }}
-                animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="relative"
-                style={{ perspective: '1200px' }}
+                className="relative h-[420px] md:h-[520px] lg:h-[580px] overflow-hidden rounded-3xl"
               >
-                {featuredSolutions.length > 0 && activeFeatured && (
-                  <div className="relative">
-                    {/* Animated glow behind card */}
-                    <div className="absolute inset-0 bg-brand-blue/10 dark:bg-brand-blue/20 blur-[80px] rounded-full scale-75 animate-[pulse_3s_ease-in-out_infinite]" />
-                    <div className="absolute -top-8 -right-8 w-32 h-32 bg-purple-500/15 blur-[60px] rounded-full animate-[float_4s_ease-in-out_infinite]" />
-                    <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-pink-500/10 blur-[50px] rounded-full animate-[float_5s_ease-in-out_infinite_1s]" />
-                    {/* Orbit ring */}
-                    <div className="absolute inset-[-20px] border border-brand-blue/[0.08] dark:border-brand-blue/[0.12] rounded-[2rem] animate-[orbit_8s_linear_infinite] pointer-events-none">
-                      <div className="absolute -top-1 left-1/2 w-2 h-2 rounded-full bg-brand-blue/40 shadow-[0_0_10px_rgba(0,144,255,0.5)]" />
-                    </div>
+                {/* Glow effects behind gallery */}
+                <div className="absolute inset-0 bg-brand-blue/5 dark:bg-brand-blue/10 blur-[80px] rounded-full scale-75 pointer-events-none z-0" />
+                <div className="absolute -top-8 -right-8 w-32 h-32 bg-purple-500/10 blur-[60px] rounded-full pointer-events-none z-0" />
 
-                    {/* Main featured card */}
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={activeFeatured.id}
-                        initial={{ opacity: 0, scale: 0.92, y: 20, rotateX: 3 }}
-                        animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-                        exit={{ opacity: 0, scale: 0.92, y: -20, rotateX: -3 }}
-                        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                        onClick={() => handleNavigate(activeFeatured.slug)}
-                        className="relative rounded-3xl overflow-hidden cursor-pointer group aspect-[4/3] shadow-2xl shadow-brand-blue/10 border border-black/5 dark:border-white/5 hover:shadow-3xl hover:shadow-brand-blue/20 transition-shadow duration-700"
-                      >
-                        <img src={activeFeatured.imageUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" alt="" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                        {/* Shimmer overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-[shimmer_1.5s_ease-in-out] pointer-events-none" />
+                {/* Fade masks top & bottom */}
+                <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-[#fcfcfd] dark:from-[#030304] to-transparent z-20 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#fcfcfd] dark:from-[#030304] to-transparent z-20 pointer-events-none" />
 
-                        {/* Overlay content */}
-                        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                          <motion.div className="flex items-center gap-2 mb-3"
-                            initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
-                            <span className="px-2.5 py-1 bg-brand-blue/90 text-white text-[8px] font-black uppercase tracking-widest rounded-md">{activeFeatured.category[currentLang]}</span>
-                            <span className="px-2.5 py-1 bg-white/10 backdrop-blur-md text-white text-[8px] font-bold uppercase tracking-wider rounded-md border border-white/10">Featured</span>
-                          </motion.div>
-                          <h3 className="text-xl md:text-2xl font-black text-white tracking-tight mb-2">{activeFeatured.name[currentLang]}</h3>
-                          <p className="text-white/60 text-sm line-clamp-2 max-w-md">{activeFeatured.description[currentLang]}</p>
-
-                          <div className="flex items-center gap-4 mt-4">
-                            <button className="group/btn inline-flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-white/90 transition-all active:scale-95 shadow-lg">
-                              Khám phá <ArrowRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
-                            </button>
+                {/* Two-column vertical marquee */}
+                <div className="relative z-10 grid grid-cols-2 gap-3 h-full">
+                  {/* Column 1 — scrolls UP */}
+                  <div className="overflow-hidden relative">
+                    <div className="animate-[marqueeUp_25s_linear_infinite] flex flex-col gap-3">
+                      {(() => {
+                        const col1Images = [
+                          'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/955c04bf-959f-4832-843a-dfbaad2d82a3_min.webp',
+                          'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/596c139a-7cd8-4c10-9305-bad2f9b6ab1f_min.webp',
+                          'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/640d8657-22e1-4ec7-adcf-d2b99f4e25e0_min.webp',
+                          'https://d8j0ntlcm91z4.cloudfront.net/user_2wKQUGex0SWTDax9bngGeSqhuK7/bd7a9af7-87da-430f-ae2e-efb223e28cf3_min.webp',
+                        ];
+                        return [...col1Images, ...col1Images].map((url, i) => (
+                          <div key={`up-${i}`} className="rounded-2xl overflow-hidden group cursor-pointer relative flex-shrink-0">
+                            <img src={url} alt="" loading="lazy" className="w-full h-[180px] md:h-[220px] object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                            <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-400 translate-y-2 group-hover:translate-y-0">
+                              <span className="px-2 py-0.5 bg-black/50 backdrop-blur-md text-white text-[7px] font-black uppercase tracking-widest rounded-md border border-white/10">AI Generated</span>
+                            </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    </AnimatePresence>
-
-                    {/* Progress dots */}
-                    <div className="flex justify-center gap-2 mt-6">
-                      {featuredSolutions.map((_, i) => (
-                        <button key={i} onClick={() => setFeaturedIdx(i)}
-                          className={`h-1.5 rounded-full transition-all duration-500 ${i === featuredIdx ? 'w-8 bg-brand-blue shadow-md shadow-brand-blue/30' : 'w-1.5 bg-slate-300 dark:bg-white/15 hover:bg-brand-blue/40'}`} />
-                      ))}
+                        ));
+                      })()}
                     </div>
                   </div>
-                )}
 
-                {loading && featuredSolutions.length === 0 && (
-                  <div className="aspect-[4/3] bg-slate-100 dark:bg-white/5 rounded-3xl animate-pulse" />
-                )}
+                  {/* Column 2 — scrolls DOWN */}
+                  <div className="overflow-hidden relative">
+                    <div className="animate-[marqueeDown_30s_linear_infinite] flex flex-col gap-3">
+                      {(() => {
+                        const col2Images = [
+                          'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/6571fcff-b67e-4537-98fe-0301d9051c57_min.webp',
+                          'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/1354a1b1-5ef3-46d7-8cb2-17268db2d7f7_min.webp',
+                          'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/82e86e0d-db5a-4bcf-8f7b-142ff21f8442_min.webp',
+                          'https://d8j0ntlcm91z4.cloudfront.net/user_32VMvlSstxcIMk6hBmtAY4gHyan/3ca5245a-2aac-4903-a528-6bfb222533ac_min.webp',
+                        ];
+                        return [...col2Images, ...col2Images].map((url, i) => (
+                          <div key={`down-${i}`} className="rounded-2xl overflow-hidden group cursor-pointer relative flex-shrink-0">
+                            <img src={url} alt="" loading="lazy" className="w-full h-[200px] md:h-[240px] object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                            <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-400 translate-y-2 group-hover:translate-y-0">
+                              <span className="px-2 py-0.5 bg-black/50 backdrop-blur-md text-white text-[7px] font-black uppercase tracking-widest rounded-md border border-white/10">AI Generated</span>
+                            </div>
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating badge */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-black/5 dark:border-white/10 rounded-full shadow-xl">
+                    <Sparkles size={12} className="text-brand-blue" />
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-700 dark:text-white/80">Powered by 50+ AI Models</span>
+                  </div>
+                </div>
               </motion.div>
             </div>
           </section>
@@ -392,13 +396,14 @@ const MarketPage = () => {
               {/* Subtle Background Glow */}
               <div className="absolute top-[-50%] left-[50%] -translate-x-1/2 w-[800px] h-[400px] bg-brand-blue/[0.03] dark:bg-brand-blue/[0.05] rounded-full blur-[100px] pointer-events-none" />
 
-              <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-0">
+              <div className="relative z-10 grid grid-cols-2 lg:grid-cols-5 gap-6 md:gap-0">
                 {[
                   { icon: <Zap size={24} />, stat: '0.5s', statLabel: 'Avg Response', title: 'Xử lý siêu nhanh', desc: 'GPU A100/H100 cloud — render video, image, voice trong tích tắc.', color: 'text-amber-500', bg: 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/15 dark:to-orange-500/15', ring: 'ring-amber-500/20' },
+                  { icon: <TrendingDown size={24} />, stat: '~70%', statLabel: 'Save', title: 'Tiết kiệm chi phí', desc: 'Chi phí hợp lý hơn nhiều so với Runway, Midjourney, ElevenLabs — chất lượng tương đương.', color: 'text-rose-500', bg: 'bg-gradient-to-br from-rose-500/10 to-red-500/10 dark:from-rose-500/15 dark:to-red-500/15', ring: 'ring-rose-500/20' },
                   { icon: <Shield size={24} />, stat: '100%', statLabel: 'Encrypted', title: 'Bảo mật tuyệt đối', desc: 'Mã hoá end-to-end. Dữ liệu được xoá sau 24h nếu người dùng yêu cầu.', color: 'text-emerald-500', bg: 'bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/15 dark:to-teal-500/15', ring: 'ring-emerald-500/20' },
                   { icon: <Globe2 size={24} />, stat: '4+', statLabel: 'Languages', title: 'Đa ngôn ngữ', desc: 'Hỗ trợ Tiếng Việt, English, 한국어, 日本語 — UX bản địa hoá hoàn toàn.', color: 'text-brand-blue', bg: 'bg-gradient-to-br from-brand-blue/10 to-cyan-500/10 dark:from-brand-blue/15 dark:to-cyan-500/15', ring: 'ring-brand-blue/20' },
                   { icon: <Cpu size={24} />, stat: '50+', statLabel: 'AI Models', title: 'Multi-engine AI', desc: 'Kết hợp GPT, Flux, Wan, Kling, ElevenLabs, Suno và 50+ model khác.', color: 'text-purple-500', bg: 'bg-gradient-to-br from-purple-500/10 to-pink-500/10 dark:from-purple-500/15 dark:to-pink-500/15', ring: 'ring-purple-500/20' },
-                ].map((item, idx) => (
+                ].map((item, idx, arr) => (
                   <motion.div
                     key={item.title}
                     initial={{ opacity: 0, y: 30, scale: 0.95 }}
@@ -406,7 +411,7 @@ const MarketPage = () => {
                     viewport={{ once: true, margin: '-50px' }}
                     transition={{ delay: idx * 0.12, duration: 0.6, type: 'spring', stiffness: 120 }}
                     whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                    className={`relative group text-center md:text-left px-4 md:px-8 ${idx < 3 ? 'lg:border-r lg:border-black/[0.04] lg:dark:border-white/[0.04]' : ''}`}
+                    className={`relative group text-center md:text-left px-4 md:px-6 ${idx < arr.length - 1 ? 'lg:border-r lg:border-black/[0.04] lg:dark:border-white/[0.04]' : ''}`}
                   >
                     {/* Icon */}
                     <div className={`w-14 h-14 rounded-2xl ${item.bg} ${item.color} ring-1 ${item.ring} flex items-center justify-center mx-auto md:mx-0 mb-5 group-hover:scale-110 group-hover:shadow-xl group-hover:rotate-3 transition-all duration-500`}>
@@ -1072,6 +1077,14 @@ const MarketPage = () => {
         @keyframes orbit {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+        @keyframes marqueeUp {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(-50%); }
+        }
+        @keyframes marqueeDown {
+          0% { transform: translateY(-50%); }
+          100% { transform: translateY(0); }
         }
       `}</style>
     </div>
