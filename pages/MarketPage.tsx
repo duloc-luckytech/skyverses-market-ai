@@ -182,34 +182,27 @@ const MarketPage = () => {
 
   return (
     <div className="relative min-h-screen bg-[#fcfcfd] dark:bg-[#030304] font-sans transition-colors duration-500">
-      {/* ═══ CINEMATIC BACKGROUND SYSTEM ═══ */}
+      {/* ═══ LIGHTWEIGHT BACKGROUND ═══ */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* Morphing blobs */}
-        <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[1200px] h-[800px] bg-brand-blue/[0.04] dark:bg-brand-blue/[0.06] rounded-full blur-[200px] animate-[morph_20s_ease-in-out_infinite]" />
-        <div className="absolute top-[60%] left-[-10%] w-[600px] h-[600px] bg-purple-500/[0.03] dark:bg-purple-500/[0.04] rounded-full blur-[180px] animate-[morph_25s_ease-in-out_infinite_reverse]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-pink-500/[0.02] dark:bg-pink-500/[0.03] rounded-full blur-[150px] animate-[morph_18s_ease-in-out_infinite]" />
-        {/* Aurora / Northern Lights bands */}
-        <div className="absolute top-0 left-0 right-0 h-[70vh] overflow-hidden opacity-40 dark:opacity-60">
-          <div className="absolute top-[10%] left-[-20%] w-[140%] h-[200px] bg-gradient-to-r from-transparent via-brand-blue/10 to-transparent blur-[60px] animate-[aurora_8s_ease-in-out_infinite] rotate-[-6deg]" />
-          <div className="absolute top-[25%] left-[-10%] w-[120%] h-[150px] bg-gradient-to-r from-transparent via-purple-500/8 to-transparent blur-[80px] animate-[aurora_12s_ease-in-out_infinite_reverse] rotate-[-3deg]" />
-          <div className="absolute top-[40%] left-[-15%] w-[130%] h-[120px] bg-gradient-to-r from-transparent via-pink-500/5 to-transparent blur-[70px] animate-[aurora_10s_ease-in-out_infinite_2s] rotate-[-8deg]" />
-        </div>
+        {/* Static gradient blobs — no animations, minimal blur */}
+        <div className="absolute top-[-10%] left-[40%] w-[600px] h-[400px] bg-brand-blue/[0.04] dark:bg-brand-blue/[0.06] rounded-full blur-[80px]" />
+        <div className="absolute top-[65%] left-[-5%] w-[350px] h-[350px] bg-purple-500/[0.03] dark:bg-purple-500/[0.04] rounded-full blur-[60px]" />
+        {/* Single subtle aurora — static */}
+        <div className="absolute top-[15%] left-0 right-0 h-[150px] bg-gradient-to-r from-transparent via-brand-blue/[0.04] to-transparent blur-[40px] rotate-[-4deg] opacity-40 dark:opacity-50" />
         {/* Grid overlay */}
         <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(0,144,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,144,255,0.3) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
-        {/* Radial spotlight (follows a slow orbit) */}
-        <div className="absolute w-[600px] h-[600px] rounded-full blur-[150px] animate-[spotlight_15s_linear_infinite]" style={{ background: 'radial-gradient(circle, rgba(0,144,255,0.06) 0%, transparent 70%)' }} />
       </div>
 
       <div className="relative z-10">
         {/* ═══════════════════ HERO ═══════════════════ */}
         {!query && (
           <section className="pt-24 md:pt-32 pb-0 max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 relative">
-            {/* Enhanced floating particles */}
+            {/* Lightweight floating particles — reduced from 12 to 4, no box-shadow */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              {[...Array(12)].map((_, i) => (
-                <div key={i} className={`absolute rounded-full ${i % 3 === 0 ? 'w-1.5 h-1.5 bg-brand-blue/40 shadow-[0_0_6px_rgba(0,144,255,0.4)]' : i % 3 === 1 ? 'w-1 h-1 bg-purple-400/30' : 'w-0.5 h-0.5 bg-pink-400/25'}`} style={{
-                  left: `${8 + i * 7.5}%`, top: `${15 + ((i * 17) % 60)}%`,
-                  animation: `float ${2.5 + i * 0.5}s ease-in-out infinite ${i * 0.3}s`
+              {[0, 1, 2, 3].map(i => (
+                <div key={i} className={`absolute rounded-full ${i % 2 === 0 ? 'w-1.5 h-1.5 bg-brand-blue/30' : 'w-1 h-1 bg-purple-400/25'}`} style={{
+                  left: `${15 + i * 20}%`, top: `${20 + ((i * 17) % 50)}%`,
+                  animation: `float ${3 + i * 0.8}s ease-in-out infinite ${i * 0.5}s`
                 }} />
               ))}
             </div>
@@ -315,9 +308,6 @@ const MarketPage = () => {
                 transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 className="relative h-[420px] md:h-[520px] lg:h-[580px] overflow-hidden rounded-3xl"
               >
-                {/* Glow effects behind gallery */}
-                <div className="absolute inset-0 bg-brand-blue/5 dark:bg-brand-blue/10 blur-[80px] rounded-full scale-75 pointer-events-none z-0" />
-                <div className="absolute -top-8 -right-8 w-32 h-32 bg-purple-500/10 blur-[60px] rounded-full pointer-events-none z-0" />
 
                 {/* Fade masks top & bottom */}
                 <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-[#fcfcfd] dark:from-[#030304] to-transparent z-20 pointer-events-none" />
@@ -333,15 +323,11 @@ const MarketPage = () => {
                           'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/955c04bf-959f-4832-843a-dfbaad2d82a3_min.webp',
                           'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/596c139a-7cd8-4c10-9305-bad2f9b6ab1f_min.webp',
                           'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/640d8657-22e1-4ec7-adcf-d2b99f4e25e0_min.webp',
-                          'https://d8j0ntlcm91z4.cloudfront.net/user_2wKQUGex0SWTDax9bngGeSqhuK7/bd7a9af7-87da-430f-ae2e-efb223e28cf3_min.webp',
                         ];
                         return [...col1Images, ...col1Images].map((url, i) => (
                           <div key={`up-${i}`} className="rounded-2xl overflow-hidden group cursor-pointer relative flex-shrink-0">
-                            <img src={url} alt="" loading="lazy" className="w-full h-[180px] md:h-[220px] object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-                            <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-400 translate-y-2 group-hover:translate-y-0">
-                              <span className="px-2 py-0.5 bg-black/50 backdrop-blur-md text-white text-[7px] font-black uppercase tracking-widest rounded-md border border-white/10">AI Generated</span>
-                            </div>
+                            <img src={url} alt="" loading="lazy" className="w-full h-[180px] md:h-[220px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           </div>
                         ));
                       })()}
@@ -356,15 +342,11 @@ const MarketPage = () => {
                           'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/6571fcff-b67e-4537-98fe-0301d9051c57_min.webp',
                           'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/1354a1b1-5ef3-46d7-8cb2-17268db2d7f7_min.webp',
                           'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/82e86e0d-db5a-4bcf-8f7b-142ff21f8442_min.webp',
-                          'https://d8j0ntlcm91z4.cloudfront.net/user_32VMvlSstxcIMk6hBmtAY4gHyan/3ca5245a-2aac-4903-a528-6bfb222533ac_min.webp',
                         ];
                         return [...col2Images, ...col2Images].map((url, i) => (
                           <div key={`down-${i}`} className="rounded-2xl overflow-hidden group cursor-pointer relative flex-shrink-0">
-                            <img src={url} alt="" loading="lazy" className="w-full h-[200px] md:h-[240px] object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-                            <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-400 translate-y-2 group-hover:translate-y-0">
-                              <span className="px-2 py-0.5 bg-black/50 backdrop-blur-md text-white text-[7px] font-black uppercase tracking-widest rounded-md border border-white/10">AI Generated</span>
-                            </div>
+                            <img src={url} alt="" loading="lazy" className="w-full h-[200px] md:h-[240px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           </div>
                         ));
                       })()}
@@ -393,8 +375,6 @@ const MarketPage = () => {
         {!query && (
           <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-8 md:py-12">
             <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-r from-slate-50 via-white to-slate-50 dark:from-[#0a0c12] dark:via-[#0c0e16] dark:to-[#0a0c12] border border-black/[0.04] dark:border-white/[0.04] p-8 md:p-12 lg:p-14">
-              {/* Subtle Background Glow */}
-              <div className="absolute top-[-50%] left-[50%] -translate-x-1/2 w-[800px] h-[400px] bg-brand-blue/[0.03] dark:bg-brand-blue/[0.05] rounded-full blur-[100px] pointer-events-none" />
 
               <div className="relative z-10 grid grid-cols-2 lg:grid-cols-5 gap-6 md:gap-0">
                 {[
@@ -446,8 +426,6 @@ const MarketPage = () => {
               transition={{ duration: 0.6 }}
               className="relative overflow-hidden rounded-[2rem] border border-black/[0.05] dark:border-white/[0.05] bg-gradient-to-br from-slate-50 to-white dark:from-[#0a0c12] dark:to-[#0c0f18] p-7 md:p-10"
             >
-              {/* Background glow */}
-              <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-brand-blue/[0.04] dark:bg-brand-blue/[0.06] rounded-full blur-[80px] pointer-events-none" />
 
               <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-12">
                 {/* Label */}
@@ -741,10 +719,8 @@ const MarketPage = () => {
                     whileHover={{ scale: 1.03, y: -5, transition: { duration: 0.3 } }}
                     className={`mb-3 md:mb-4 break-inside-avoid rounded-2xl overflow-hidden group cursor-pointer relative ${img.h}`}
                   >
-                    <img src={img.url} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-115 transition-transform duration-1000 ease-out" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    {/* Shimmer on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-[shimmer_1.5s_ease-in-out] pointer-events-none" />
+                    <img src={img.url} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-3 group-hover:translate-y-0">
                       <span className="px-2.5 py-1 bg-black/60 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-widest rounded-md border border-white/10 shadow-lg">AI Generated</span>
                     </div>
@@ -852,7 +828,6 @@ const MarketPage = () => {
                       <div className="flex items-center gap-3 pt-2 border-t border-black/[0.04] dark:border-white/[0.04]">
                         <div className={`relative w-10 h-10 rounded-full ${item.avatarBg} flex items-center justify-center text-sm font-black`}>
                           {item.initials}
-                          <div className={`absolute inset-[-2px] rounded-full border-2 border-transparent border-t-brand-blue/30 animate-[orbit_3s_linear_infinite]`} />
                         </div>
                         <div>
                           <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</p>
@@ -870,10 +845,6 @@ const MarketPage = () => {
           {!query && (
             <section className="py-16 md:py-24">
               <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-[#0a0e1a] via-[#0c1225] to-[#0a0e1a] dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
-                {/* Background effects */}
-                <div className="absolute top-0 left-[20%] w-[500px] h-[500px] bg-brand-blue/8 rounded-full blur-[150px] pointer-events-none" />
-                <div className="absolute bottom-0 right-[10%] w-[400px] h-[400px] bg-purple-500/8 rounded-full blur-[120px] pointer-events-none" />
-                <div className="absolute top-[50%] left-[60%] w-[200px] h-[200px] bg-emerald-500/5 rounded-full blur-[80px] pointer-events-none" />
 
                 <div className="relative z-10">
                   {/* Header */}
@@ -949,9 +920,6 @@ const MarketPage = () => {
           {!query && (
             <section className="py-12 md:py-20">
               <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
-                {/* Background glows */}
-                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-brand-blue/8 rounded-full blur-[100px] pointer-events-none" />
 
                 <div className="relative z-10">
                   {/* Header */}
@@ -1048,35 +1016,8 @@ const MarketPage = () => {
           100% { background-position: 0% 50%; }
         }
         @keyframes float {
-          0%, 100% { transform: translateY(0px) scale(1); opacity: 0.3; }
-          50% { transform: translateY(-25px) scale(1.8); opacity: 0.9; }
-        }
-        @keyframes morph {
-          0%, 100% { transform: translate(0, 0) scale(1); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-          25% { transform: translate(30px, -20px) scale(1.05); border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
-          50% { transform: translate(-20px, 20px) scale(0.95); border-radius: 40% 60% 30% 70% / 40% 30% 60% 50%; }
-          75% { transform: translate(10px, 10px) scale(1.02); border-radius: 60% 30% 50% 40% / 30% 60% 40% 70%; }
-        }
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        @keyframes aurora {
-          0%, 100% { transform: translateX(-10%) scaleY(1); opacity: 0.5; }
-          25% { transform: translateX(5%) scaleY(1.4); opacity: 0.8; }
-          50% { transform: translateX(10%) scaleY(0.8); opacity: 0.4; }
-          75% { transform: translateX(-5%) scaleY(1.2); opacity: 0.7; }
-        }
-        @keyframes spotlight {
-          0% { top: 10%; left: 20%; }
-          25% { top: 30%; left: 70%; }
-          50% { top: 60%; left: 50%; }
-          75% { top: 20%; left: 30%; }
-          100% { top: 10%; left: 20%; }
-        }
-        @keyframes orbit {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+          0%, 100% { transform: translateY(0px); opacity: 0.3; }
+          50% { transform: translateY(-15px); opacity: 0.7; }
         }
         @keyframes marqueeUp {
           0% { transform: translateY(0); }
