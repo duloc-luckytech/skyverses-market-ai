@@ -62,9 +62,9 @@ const MarketPage = () => {
   const navigate = useNavigate();
 
   usePageMeta({
-    title: 'Skyverses | Marketplace AI - Hệ sinh thái ứng dụng AI sáng tạo',
-    description: 'Skyverses Marketplace - Hệ sinh thái 30+ ứng dụng AI: tạo video (VEO3, Kling, Sora), ảnh (Midjourney, Flux), nhạc, giọng nói & tự động hoá. Nền tảng AI all-in-one cho doanh nghiệp và cá nhân.',
-    keywords: 'AI marketplace, hệ sinh thái AI, ứng dụng AI, tạo video AI, tạo ảnh AI, Skyverses, VEO3, Kling, Sora, Midjourney, AI Việt Nam, nền tảng AI, marketplace AI',
+    title: 'Skyverses | Marketplace AI — Mọi công cụ AI trong một nền tảng',
+    description: 'Skyverses Marketplace — 30+ ứng dụng AI, 50+ model (VEO3, Kling, Sora, Midjourney, Flux). Tiết kiệm ~70% chi phí. Tạo video, ảnh, nhạc, giọng nói & tự động hoá trong một nơi.',
+    keywords: 'AI marketplace, hệ sinh thái AI, ứng dụng AI, VEO3, Kling, Sora, Midjourney, Flux, tạo video AI, tạo ảnh AI, AI giá rẻ, 50+ model AI, Skyverses',
     canonical: '/'
   });
 
