@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import Plan from "../models/PlanModel"; // ✅ Model MongoDB
 import { SYSTEM_CONFIG } from "../constanst/index";
 import { HOME_BLOCKS_CONFIG } from "../config/marketHomeBlocks";
@@ -28,9 +29,7 @@ router.get("/", async (req, res) => {
      * --------------------------------------- */
     let welcomeBonusCredits = 1000; // default
     try {
-      const { default: mongoose } = await import('mongoose');
-      const SystemSetting = mongoose.models.SystemSetting || mongoose.model('SystemSetting', new mongoose.Schema({ key: { type: String, unique: true }, value: mongoose.Schema.Types.Mixed }, { timestamps: true }));
-      const bonusSetting: any = await SystemSetting.findOne({ key: 'welcomeBonusCredits' }).lean();
+      const bonusSetting = await mongoose.connection.db.collection('systemsettings').findOne({ key: 'welcomeBonusCredits' });
       if (bonusSetting?.value) welcomeBonusCredits = bonusSetting.value;
     } catch (e) { /* fallback to default */ }
 
@@ -84,7 +83,6 @@ router.get("/", async (req, res) => {
 /* =====================================================
    BANKING CONFIG - GET & UPDATE
 ===================================================== */
-import mongoose from "mongoose";
 import { authenticate } from "./auth";
 
 const SystemSettingSchema = new mongoose.Schema({
