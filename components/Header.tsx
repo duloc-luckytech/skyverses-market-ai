@@ -116,7 +116,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const navLinks = [
     { name: t('nav.browse'), path: '/market' },
     { name: t('nav.apps'), path: '/apps' },
-    { name: t('nav.about'), path: 'https://skyverses.com/', external: true },
   ];
 
   const languages: { code: Language; name: string }[] = [
@@ -189,15 +188,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
               {/* Other nav links */}
               {navLinks.slice(1).map((link) => (
-                link.external ? (
-                  <a key={link.name} href={link.path} target="_blank" rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded-lg text-[13px] font-semibold text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-all"
-                  >{link.name}</a>
-                ) : (
-                  <Link key={link.name} to={link.path}
-                    className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive(link.path) ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
-                  >{link.name}</Link>
-                )
+                <Link key={link.name} to={link.path}
+                  className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive(link.path) ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
+                >{link.name}</Link>
               ))}
             </div>
 
@@ -441,19 +434,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 </div>
 
                 {navLinks.slice(1).map((link) => (
-                  link.external ? (
-                    <a key={link.name} href={link.path} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-all"
-                    >
-                      {link.name} <ArrowRight size={16} className="text-slate-300 dark:text-gray-600" />
-                    </a>
-                  ) : (
-                    <Link key={link.name} to={link.path} onClick={() => setIsOpen(false)}
-                      className={`flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold transition-all ${isActive(link.path) ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
-                    >
-                      {link.name} <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
-                    </Link>
-                  )
+                  <Link key={link.name} to={link.path} onClick={() => setIsOpen(false)}
+                    className={`flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold transition-all ${isActive(link.path) ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
+                  >
+                    {link.name} <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
+                  </Link>
                 ))}
               </div>
 
