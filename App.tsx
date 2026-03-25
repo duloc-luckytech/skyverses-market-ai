@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -9,53 +9,67 @@ import LoadingScreen from './components/LoadingScreen';
 import Layout from './components/Layout';
 import { ToastProvider } from './context/ToastContext';
 
-// Page Imports
-import MarketPage from './pages/MarketPage';
-import CategoryPage from './pages/CategoryPage';
-import ExplorerPage from './pages/ExplorerPage';
-import ModelsPage from './pages/ModelsPage';
-import AppsPage from './pages/AppsPage';
-import AppInterfacePage from './pages/AppInterfacePage';
-import CreditsPage from './pages/CreditsPage';
-import CreditUsagePage from './pages/CreditUsagePage';
-import LoginPage from './pages/LoginPage';
-import SolutionDetail from './pages/SolutionDetail';
-import UseCasesPage from './pages/UseCasesPage';
-import PricingPage from './pages/PricingPage';
-import BookingPage from './pages/BookingPage';
-import AboutPage from './pages/AboutPage';
-import SettingsPage from './pages/SettingsPage';
-import FavoritesPage from './pages/FavoritesPage';
-import ReferralPage from './pages/ReferralPage';
-import PolicyPage from './pages/PolicyPage';
-import MarketsPage from './pages/MarketsPage';
+// ═══ Lazy-loaded Pages (code-splitting) ═══
+// Core pages
+const MarketPage = React.lazy(() => import('./pages/MarketPage'));
+const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
+const ExplorerPage = React.lazy(() => import('./pages/ExplorerPage'));
+const ModelsPage = React.lazy(() => import('./pages/ModelsPage'));
+const AppsPage = React.lazy(() => import('./pages/AppsPage'));
+const AppInterfacePage = React.lazy(() => import('./pages/AppInterfacePage'));
+const CreditsPage = React.lazy(() => import('./pages/CreditsPage'));
+const CreditUsagePage = React.lazy(() => import('./pages/CreditUsagePage'));
+const LoginPage = React.lazy(() => import('./pages/LoginPage'));
+const SolutionDetail = React.lazy(() => import('./pages/SolutionDetail'));
+const UseCasesPage = React.lazy(() => import('./pages/UseCasesPage'));
+const PricingPage = React.lazy(() => import('./pages/PricingPage'));
+const BookingPage = React.lazy(() => import('./pages/BookingPage'));
+const AboutPage = React.lazy(() => import('./pages/AboutPage'));
+const SettingsPage = React.lazy(() => import('./pages/SettingsPage'));
+const FavoritesPage = React.lazy(() => import('./pages/FavoritesPage'));
+const ReferralPage = React.lazy(() => import('./pages/ReferralPage'));
+const PolicyPage = React.lazy(() => import('./pages/PolicyPage'));
+const MarketsPage = React.lazy(() => import('./pages/MarketsPage'));
 
-// Product Page Imports
-import AIImageGenerator from './pages/images/AIImageGenerator';
-import AIVideoGenerator from './pages/videos/AIVideoGenerator';
-import EventStudioPage from './pages/images/EventStudioPage'; 
-import GenyuProduct from './pages/videos/GenyuProduct';
-import AvatarLipsyncAI from './pages/videos/AvatarLipsyncAI';
-import VideoAnimateAI from './pages/videos/VideoAnimateAI';
-import TextToSpeech from './pages/audio/TextToSpeech';
-import MusicGenerator from './pages/audio/MusicGenerator';
-import VoiceDesignAI from './pages/audio/VoiceDesignAI';
-import VoiceStudio from './pages/audio/VoiceStudio';
-import ProductImage from './pages/images/ProductImage';
-import PosterMarketingAI from './pages/images/PosterMarketingAI';
-import FashionCenterAI from './pages/images/FashionCenterAI';
-import ImageUpscaleAI from './pages/images/ImageUpscaleAI';
-import Product6Image from './pages/images/Product6Image';
-import Product7Comic from './pages/images/Product7Comic';
-import SpatialArchitectPage from './pages/SpatialArchitectPage';
-import ProductCharacterSync from './pages/ProductCharacterSync';
-import AIStylistPage from './pages/images/AIStylistPage';
-import StoryboardStudioPage from './pages/videos/StoryboardStudioPage';
-import AIImageRestoration from './pages/images/AIImageRestoration';
-import RealEstateAI from './pages/images/RealEstateAI';
-import ProductAIAgentWorkflow from './pages/ProductAIAgentWorkflow';
-import ProductCaptchaToken from './pages/ProductCaptchaToken';
-import BackgroundRemovalAI from './pages/images/BackgroundRemovalAI';
+// Product pages — images
+const AIImageGenerator = React.lazy(() => import('./pages/images/AIImageGenerator'));
+const EventStudioPage = React.lazy(() => import('./pages/images/EventStudioPage'));
+const ProductImage = React.lazy(() => import('./pages/images/ProductImage'));
+const PosterMarketingAI = React.lazy(() => import('./pages/images/PosterMarketingAI'));
+const FashionCenterAI = React.lazy(() => import('./pages/images/FashionCenterAI'));
+const ImageUpscaleAI = React.lazy(() => import('./pages/images/ImageUpscaleAI'));
+const Product6Image = React.lazy(() => import('./pages/images/Product6Image'));
+const Product7Comic = React.lazy(() => import('./pages/images/Product7Comic'));
+const AIStylistPage = React.lazy(() => import('./pages/images/AIStylistPage'));
+const AIImageRestoration = React.lazy(() => import('./pages/images/AIImageRestoration'));
+const RealEstateAI = React.lazy(() => import('./pages/images/RealEstateAI'));
+const BackgroundRemovalAI = React.lazy(() => import('./pages/images/BackgroundRemovalAI'));
+
+// Product pages — videos
+const AIVideoGenerator = React.lazy(() => import('./pages/videos/AIVideoGenerator'));
+const GenyuProduct = React.lazy(() => import('./pages/videos/GenyuProduct'));
+const AvatarLipsyncAI = React.lazy(() => import('./pages/videos/AvatarLipsyncAI'));
+const VideoAnimateAI = React.lazy(() => import('./pages/videos/VideoAnimateAI'));
+const StoryboardStudioPage = React.lazy(() => import('./pages/videos/StoryboardStudioPage'));
+
+// Product pages — audio
+const TextToSpeech = React.lazy(() => import('./pages/audio/TextToSpeech'));
+const MusicGenerator = React.lazy(() => import('./pages/audio/MusicGenerator'));
+const VoiceDesignAI = React.lazy(() => import('./pages/audio/VoiceDesignAI'));
+const VoiceStudio = React.lazy(() => import('./pages/audio/VoiceStudio'));
+
+// Product pages — other
+const SpatialArchitectPage = React.lazy(() => import('./pages/SpatialArchitectPage'));
+const ProductCharacterSync = React.lazy(() => import('./pages/ProductCharacterSync'));
+const ProductAIAgentWorkflow = React.lazy(() => import('./pages/ProductAIAgentWorkflow'));
+const ProductCaptchaToken = React.lazy(() => import('./pages/ProductCaptchaToken'));
+
+// ═══ Suspense fallback ═══
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="w-8 h-8 border-2 border-brand-blue/30 border-t-brand-blue rounded-full animate-spin" />
+  </div>
+);
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -78,9 +92,10 @@ const App: React.FC = () => {
               <SearchProvider>
               <ScrollToTop />
               <Routes>
-                <Route path="/login" element={<LoginPage />} />
+                <Route path="/login" element={<Suspense fallback={<PageLoader />}><LoginPage /></Suspense>} />
                 <Route path="*" element={
                   <Layout>
+                    <Suspense fallback={<PageLoader />}>
                     <Routes>
                       <Route path="/" element={<MarketPage />} />
                       <Route path="/category/:id" element={<CategoryPage />} />
@@ -139,6 +154,7 @@ const App: React.FC = () => {
                       <Route path="/about" element={<AboutPage />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
+                    </Suspense>
                   </Layout>
                 } />
               </Routes>
