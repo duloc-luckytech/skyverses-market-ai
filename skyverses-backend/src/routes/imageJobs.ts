@@ -10,6 +10,7 @@ import { buildFinalImagePayload } from "../utils/buildFinalImagePayload";
 import ModelPricingMatrix from "../models/ModelPricingMatrix.model";
 import User from "../models/UserModel";
 import CreditTransaction from "../models/CreditTransaction.model";
+import ImageOwnerModel from "../models/ImageOwnerModel";
 
 const router = express.Router();
 
@@ -447,6 +448,23 @@ router.post("/submit-result-image/fxlab", async (req: any, res: any) => {
     job.progress = { percent: 100, step: "done" };
 
     await job.save();
+
+    // 📚 Auto-save vào thư viện (ImageOwner)
+    try {
+      await ImageOwnerModel.create({
+        userId: job.userId,
+        imageUrl: data.fifeUrl,
+        mediaId: data.mediaGenerationId || null,
+        type: "ai-generated",
+        source: "fxlab",
+        prompt: job.enginePayload?.prompt || job.input?.prompt || "",
+        originalName: `AI_${String(job._id).slice(-6)}`,
+        status: "done",
+      });
+      console.log(`📚 [FXLab][IMG] Saved to library for user=${job.userId}`);
+    } catch (libErr) {
+      console.error(`⚠️ [FXLab][IMG] Failed to save to library:`, libErr);
+    }
 
     return res.json({
       success: true,

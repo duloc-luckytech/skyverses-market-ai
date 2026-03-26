@@ -12,6 +12,7 @@ import ImageJob, {
 } from "../models/ImageJob";
 import User from "../models/UserModel";
 import CreditTransaction from "../models/CreditTransaction.model";
+import ImageOwnerModel from "../models/ImageOwnerModel";
 import { authenticate } from "./auth";
 
 const router = express.Router();
@@ -285,6 +286,23 @@ async function handleImageComplete(
     console.log(
       `✅ [FXFlow][IMG] DONE job=${job._id} mediaId=${result.mediaId}`
     );
+
+    // 📚 Auto-save vào thư viện (ImageOwner)
+    try {
+      await ImageOwnerModel.create({
+        userId: job.userId,
+        imageUrl: result.resultUrl,
+        mediaId: result.mediaId || null,
+        type: "ai-generated",
+        source: "fxflow",
+        prompt: job.enginePayload?.prompt || job.input?.prompt || "",
+        originalName: `AI_${String(job._id).slice(-6)}`,
+        status: "done",
+      });
+      console.log(`📚 [FXFlow][IMG] Saved to library for user=${job.userId}`);
+    } catch (libErr) {
+      console.error(`⚠️ [FXFlow][IMG] Failed to save to library:`, libErr);
+    }
 
     return res.json({
       success: true,
