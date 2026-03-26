@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -10,19 +10,26 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
-import { uploadToGCS, GCSAssetMetadata } from '../services/storage';
-import { upscaleApi, UpscaleResponse } from '../apis/upscale';
+import { GCSAssetMetadata } from '../services/storage';
+import { mediaApi } from '../apis/media';
+import { upscaleApi, UpscaleTask } from '../apis/upscale';
 import ImageLibraryModal from './ImageLibraryModal';
 import ProductImageWorkspace from './ProductImageWorkspace';
+
+// ═══ TYPES ═══
+
+type JobStatus = 'IDLE' | 'UPLOADING' | 'PROCESSING' | 'DONE' | 'ERROR';
 
 interface UpscaleJob {
   id: string;
   original: string;
   result: string | null;
-  status: 'IDLE' | 'UPLOADING' | 'PROCESSING' | 'DONE' | 'ERROR';
+  status: JobStatus;
   timestamp: string;
-  res: string;
+  resolution: string;
   sourceRes: string;
+  errorMessage?: string;
+  logs: string[];
 }
 
 interface UpscaleWorkspaceProps {
@@ -30,10 +37,47 @@ interface UpscaleWorkspaceProps {
   initialImage?: string | null;
 }
 
+// ═══ HELPERS ═══
+
+const generateJobId = () => `usc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Strip the data:image/xxx;base64, prefix
+      const base64 = result.split(',')[1] || result;
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
+const getFileName = (url: string) => {
+  if (!url) return 'Unknown';
+  try {
+    const parts = url.split('/');
+    const nameWithExt = parts[parts.length - 1].split('?')[0];
+    return decodeURIComponent(nameWithExt);
+  } catch {
+    return 'Image';
+  }
+};
+
+const getFileExt = (url: string) => {
+  const name = getFileName(url);
+  const parts = name.split('.');
+  return parts.length > 1 ? parts[parts.length - 1].toUpperCase() : 'IMG';
+};
+
+// ═══ COMPONENT ═══
+
 const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialImage }) => {
   const { lang, t } = useLanguage();
   const { theme } = useTheme();
-  const { credits, useCredits, isAuthenticated, login } = useAuth();
+  const { credits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
 
   const [jobs, setJobs] = useState<UpscaleJob[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -41,6 +85,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
   const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
   const [comparisonJob, setComparisonJob] = useState<UpscaleJob | null>(null);
   const [sliderPosition, setSliderPosition] = useState(50);
+  const [selectedResolution, setSelectedResolution] = useState('4K');
 
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -50,24 +95,34 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
+  const jobsRef = useRef<UpscaleJob[]>([]);
 
   const UPSCALE_COST = 100;
+  const RESOLUTIONS = ['2K', '4K', '8K', '12K'];
+  const POLL_INTERVAL = 4000;
 
+  // Keep ref in sync
+  useEffect(() => {
+    jobsRef.current = jobs;
+  }, [jobs]);
+
+  // Init from external image
   useEffect(() => {
     if (initialImage && jobs.length === 0) {
-      const initId = 'init-' + Date.now();
       setJobs([{
-        id: initId,
+        id: generateJobId(),
         original: initialImage,
         result: null,
         status: 'IDLE',
-        timestamp: new Date().toLocaleTimeString(),
-        res: '4K (UHD)',
-        sourceRes: 'Detected'
+        timestamp: new Date().toLocaleTimeString('vi-VN'),
+        resolution: selectedResolution,
+        sourceRes: 'Detected',
+        logs: []
       }]);
     }
   }, [initialImage]);
 
+  // Close add menu on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) {
@@ -78,21 +133,237 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const getFileName = (url: string) => {
-    if (!url) return 'Unknown';
+  // Prevent accidental close while processing
+  useEffect(() => {
+    const processingCount = jobs.filter(j => j.status === 'PROCESSING').length;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (processingCount > 0) { e.preventDefault(); e.returnValue = ''; }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [jobs]);
+
+  const addLog = useCallback((jobId: string, message: string) => {
+    const time = new Date().toLocaleTimeString('vi-VN');
+    setJobs(prev => prev.map(j =>
+      j.id === jobId ? { ...j, logs: [...j.logs, `[${time}] ${message}`] } : j
+    ));
+  }, []);
+
+  // ═══ UPLOAD FLOW ═══
+  // Step 1: Upload file → mediaApi.uploadImage → get URL
+
+  const uploadFileToServer = async (file: File): Promise<string | null> => {
     try {
-      const parts = url.split('/');
-      const nameWithExt = parts[parts.length - 1].split('?')[0];
-      return decodeURIComponent(nameWithExt);
-    } catch (e) {
-      return 'Image';
+      const base64 = await fileToBase64(file);
+      const res = await mediaApi.uploadImage({
+        base64,
+        fileName: file.name,
+        size: file.size,
+        source: 'upscale'
+      });
+      if (res.success && res.imageUrl) {
+        return res.imageUrl;
+      }
+      console.error('Upload failed:', res.message);
+      return null;
+    } catch (err) {
+      console.error('Upload error:', err);
+      return null;
     }
   };
 
-  const getFileExt = (url: string) => {
-    const name = getFileName(url);
-    const parts = name.split('.');
-    return parts.length > 1 ? parts[parts.length - 1].toUpperCase() : 'IMG';
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const fileList = Array.from(files);
+    setShowAddMenu(false);
+
+    for (const file of fileList) {
+      const tempId = generateJobId();
+
+      setJobs(prev => [...prev, {
+        id: tempId,
+        original: '',
+        result: null,
+        status: 'UPLOADING',
+        timestamp: new Date().toLocaleTimeString('vi-VN'),
+        resolution: selectedResolution,
+        sourceRes: 'SD',
+        logs: [`Đang tải lên ${file.name}...`]
+      }]);
+
+      const imageUrl = await uploadFileToServer(file);
+
+      if (imageUrl) {
+        setJobs(prev => prev.map(j => j.id === tempId ? {
+          ...j,
+          original: imageUrl,
+          status: 'IDLE',
+          logs: [...j.logs, `Tải lên thành công`]
+        } : j));
+      } else {
+        setJobs(prev => prev.map(j => j.id === tempId ? {
+          ...j,
+          status: 'ERROR',
+          errorMessage: 'Tải lên thất bại',
+          logs: [...j.logs, `Lỗi tải lên`]
+        } : j));
+      }
+    }
+    if (e.target) e.target.value = '';
+  };
+
+  const handleLibraryConfirm = (selected: GCSAssetMetadata[]) => {
+    const newJobs: UpscaleJob[] = selected.map(asset => ({
+      id: generateJobId(),
+      original: asset.url,
+      result: null,
+      status: 'IDLE' as JobStatus,
+      timestamp: new Date().toLocaleTimeString('vi-VN'),
+      resolution: selectedResolution,
+      sourceRes: 'Detected',
+      logs: ['Đã thêm từ thư viện']
+    }));
+    setJobs(prev => [...prev, ...newJobs]);
+    setIsLibraryOpen(false);
+    setShowAddMenu(false);
+  };
+
+  const removeJob = (id: string) => setJobs(prev => prev.filter(j => j.id !== id));
+
+  const clearAll = () => {
+    if (jobs.length === 0) return;
+    if (window.confirm("Xóa tất cả ảnh trong danh sách?")) setJobs([]);
+  };
+
+  // ═══ POLL FLOW ═══
+  // Step 3: Poll each job until done/error
+
+  const pollJobStatus = useCallback(async (jobId: string) => {
+    try {
+      const res = await upscaleApi.getJobStatus(jobId);
+
+      if (res.success && res.data) {
+        const { status, resultUrl, error } = res.data;
+
+        if (status === 'done' && resultUrl) {
+          addLog(jobId, `Nâng cấp hoàn tất`);
+          setJobs(prev => prev.map(j => j.id === jobId ? {
+            ...j,
+            status: 'DONE',
+            result: resultUrl,
+            resolution: res.data!.width && res.data!.height
+              ? `${res.data!.width}x${res.data!.height}`
+              : j.resolution,
+            sourceRes: res.data!.oldWidth && res.data!.oldHeight
+              ? `${res.data!.oldWidth}x${res.data!.oldHeight}`
+              : j.sourceRes
+          } : j));
+          refreshUserInfo();
+          return; // done
+        }
+
+        if (status === 'error') {
+          addLog(jobId, `Lỗi: ${error || 'Unknown error'}`);
+          setJobs(prev => prev.map(j => j.id === jobId ? {
+            ...j,
+            status: 'ERROR',
+            errorMessage: error || 'Upscale failed'
+          } : j));
+          return; // done
+        }
+
+        // Still processing → schedule next poll
+        addLog(jobId, `Đang xử lý...`);
+        setTimeout(() => pollJobStatus(jobId), POLL_INTERVAL);
+      } else {
+        // API error → retry
+        setTimeout(() => pollJobStatus(jobId), POLL_INTERVAL * 2);
+      }
+    } catch (err) {
+      // Network error → retry
+      setTimeout(() => pollJobStatus(jobId), POLL_INTERVAL * 2);
+    }
+  }, [addLog, refreshUserInfo]);
+
+  // ═══ UPSCALE BATCH FLOW ═══
+  // Step 2: Create batch upscale jobs → poll
+
+  const runUpscaleBatch = async () => {
+    const idleJobs = jobs.filter(j => j.status === 'IDLE' && j.original && !j.original.toLowerCase().endsWith('.webp'));
+    if (idleJobs.length === 0 || isProcessing) return;
+    if (!isAuthenticated) { login(); return; }
+
+    const totalCost = idleJobs.length * UPSCALE_COST;
+    if (credits < totalCost || credits < 100) { setShowLowCreditAlert(true); return; }
+
+    setIsProcessing(true);
+
+    // Build tasks array
+    const tasks: UpscaleTask[] = idleJobs.map(job => ({
+      jobId: job.id,
+      urlImage: job.original,
+      resolution: job.resolution
+    }));
+
+    // Mark all as processing
+    setJobs(prev => prev.map(j => {
+      if (idleJobs.find(ij => ij.id === j.id)) {
+        return { ...j, status: 'PROCESSING' as JobStatus, logs: [...j.logs, 'Đang gửi yêu cầu nâng cấp...'] };
+      }
+      return j;
+    }));
+
+    try {
+      const res = await upscaleApi.createBatch(tasks);
+
+      if (res.success) {
+        // Deduct credits
+        useCredits(totalCost);
+
+        // Start polling each job
+        for (const job of idleJobs) {
+          addLog(job.id, `Job được chấp nhận — đang xử lý`);
+          pollJobStatus(job.id);
+        }
+      } else {
+        // Batch creation failed
+        setJobs(prev => prev.map(j => {
+          if (idleJobs.find(ij => ij.id === j.id)) {
+            return { ...j, status: 'ERROR' as JobStatus, errorMessage: res.message || 'Batch request failed' };
+          }
+          return j;
+        }));
+      }
+    } catch (err) {
+      console.error('Upscale batch error:', err);
+      setJobs(prev => prev.map(j => {
+        if (idleJobs.find(ij => ij.id === j.id)) {
+          return { ...j, status: 'ERROR' as JobStatus, errorMessage: 'Network error' };
+        }
+        return j;
+      }));
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleSafeClose = useCallback(() => {
+    const processingCount = jobs.filter(j => j.status === 'PROCESSING').length;
+    if (processingCount > 0) {
+      if (window.confirm("Đang xử lý ảnh. Nếu thoát bây giờ, bạn sẽ không theo dõi được tiến trình trực tiếp. Bạn có chắc?")) {
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  }, [jobs, onClose]);
+
+  const handleEditImage = (url: string) => {
+    setEditorImage(url);
+    setIsEditorOpen(true);
   };
 
   const triggerDownload = async (url: string, filename: string) => {
@@ -116,111 +387,11 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
     }
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const fileList = Array.from(files) as File[];
+  // ═══ DERIVED STATE ═══
 
-      for (const file of fileList) {
-        const tempId = Date.now().toString() + Math.random();
-
-        setJobs(prev => [...prev, {
-          id: tempId,
-          original: '',
-          result: null,
-          status: 'UPLOADING',
-          timestamp: new Date().toLocaleTimeString(),
-          res: '4K (UHD)',
-          sourceRes: 'SD'
-        }]);
-
-        try {
-          const metadata = await uploadToGCS(file);
-          setJobs(prev => prev.map(j => j.id === tempId ? {
-            ...j,
-            original: metadata.url,
-            status: 'IDLE'
-          } : j));
-        } catch (err) {
-          console.error("Upload failed:", err);
-          setJobs(prev => prev.map(j => j.id === tempId ? { ...j, status: 'ERROR' } : j));
-        }
-      }
-    }
-    if (e.target) e.target.value = '';
-    setShowAddMenu(false);
-  };
-
-  const handleLibraryConfirm = (selected: GCSAssetMetadata[]) => {
-    const newJobs: UpscaleJob[] = selected.map(asset => ({
-      id: asset.id,
-      original: asset.url,
-      result: null,
-      status: 'IDLE',
-      timestamp: new Date().toLocaleTimeString(),
-      res: '4K (UHD)',
-      sourceRes: 'Detected'
-    }));
-    setJobs(prev => [...prev, ...newJobs]);
-    setIsLibraryOpen(false);
-    setShowAddMenu(false);
-  };
-
-  const removeJob = (id: string) => {
-    setJobs(prev => prev.filter(j => j.id !== id));
-  };
-
-  const clearAll = () => {
-    if (jobs.length === 0) return;
-    if (window.confirm("Xóa tất cả ảnh trong danh sách?")) {
-      setJobs([]);
-    }
-  };
-
-  const runUpscaleBatch = async () => {
-    const idleJobs = jobs.filter(j => j.status === 'IDLE' && !j.original.toLowerCase().endsWith('.webp'));
-    if (idleJobs.length === 0 || isProcessing) return;
-    if (!isAuthenticated) { login(); return; }
-
-    const totalCost = idleJobs.length * UPSCALE_COST;
-    if (credits < totalCost || credits < 100) { setShowLowCreditAlert(true); return; }
-
-    setIsProcessing(true);
-
-    for (const job of idleJobs) {
-      setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'PROCESSING' } : j));
-
-      try {
-        const response: UpscaleResponse = await upscaleApi.upscale(job.original);
-
-        if (response.success && response.data?.image?.url) {
-          useCredits(UPSCALE_COST);
-          setJobs(prev => prev.map(j => j.id === job.id ? {
-            ...j,
-            status: 'DONE',
-            result: response.data!.image.url,
-            res: `${response.data!.image.width}x${response.data!.image.height}`,
-            sourceRes: `${response.data!.image.oldWidth}x${response.data!.image.oldHeight}`
-          } : j));
-        } else {
-          setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'ERROR' } : j));
-        }
-      } catch (err) {
-        console.error("Upscale error:", err);
-        setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'ERROR' } : j));
-      }
-    }
-
-    setIsProcessing(false);
-  };
-
-  const handleEditImage = (url: string) => {
-    setEditorImage(url);
-    setIsEditorOpen(true);
-  };
-
-  const idleCount = jobs.filter(j => j.status === 'IDLE' && !j.original.toLowerCase().endsWith('.webp')).length;
+  const idleCount = jobs.filter(j => j.status === 'IDLE' && j.original && !j.original.toLowerCase().endsWith('.webp')).length;
   const currentTotalCost = idleCount * UPSCALE_COST;
+  const processingCount = jobs.filter(j => j.status === 'PROCESSING').length;
 
   const isAddDisabled = !isAuthenticated || (credits < UPSCALE_COST && jobs.length === 0);
   const isUpscaleDisabled = isProcessing || idleCount === 0 || !isAuthenticated || (credits < currentTotalCost) || (credits < 100);
@@ -238,6 +409,8 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
     if (idleCount === 0 && !isProcessing) return "Thêm ảnh để bắt đầu";
     return null;
   }, [isAuthenticated, idleCount, credits, currentTotalCost, isProcessing]);
+
+  // ═══ RENDER ═══
 
   return (
     <div className="h-full w-full flex flex-col bg-white dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300 relative">
@@ -277,7 +450,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                     Tải từ máy tính
                   </button>
                   <button
-                    onClick={() => setIsLibraryOpen(true)}
+                    onClick={() => { setIsLibraryOpen(true); setShowAddMenu(false); }}
                     className="w-full flex items-center gap-3 px-3 py-2.5 text-[11px] font-medium text-slate-600 dark:text-gray-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] rounded-lg transition-all"
                   >
                     <FolderOpen size={14} className="text-purple-500" />
@@ -288,17 +461,42 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
             </AnimatePresence>
           </div>
 
+          {/* Resolution selector */}
+          <div className="hidden sm:flex items-center gap-1 bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] rounded-xl p-0.5">
+            {RESOLUTIONS.map(res => (
+              <button
+                key={res}
+                onClick={() => setSelectedResolution(res)}
+                className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${
+                  selectedResolution === res
+                    ? 'bg-emerald-500 text-white shadow-sm'
+                    : 'text-slate-500 dark:text-[#666] hover:text-slate-700 dark:hover:text-white'
+                }`}
+              >
+                {res}
+              </button>
+            ))}
+          </div>
+
           {/* Clear all */}
           <button
             onClick={clearAll}
             className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 text-red-500/70 hover:text-red-500 hover:bg-red-500/[0.06] rounded-xl text-[11px] font-medium transition-all"
           >
             <Trash2 size={14} />
-            <span className="hidden sm:inline">Xóa tất cả</span>
+            <span className="hidden md:inline">Xóa tất cả</span>
           </button>
         </div>
 
         <div className="flex items-center gap-2 md:gap-3">
+          {/* Processing count */}
+          {processingCount > 0 && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+              <Loader2 size={11} className="text-emerald-500 animate-spin" />
+              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{processingCount} đang xử lý</span>
+            </div>
+          )}
+
           {/* Credits */}
           <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] rounded-full">
             <Sparkles size={11} className="text-brand-blue" fill="currentColor" />
@@ -317,7 +515,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
               }`}
             >
               {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <ArrowUpCircle size={14} />}
-              <span className="hidden sm:inline">Upscale</span>
+              <span className="hidden sm:inline">Upscale {selectedResolution}</span>
             </button>
 
             {upscaleTooltip && (
@@ -330,7 +528,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
           </div>
 
           {/* Close */}
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.04]">
+          <button onClick={handleSafeClose} className="p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.04]">
             <X size={20} />
           </button>
         </div>
@@ -343,7 +541,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
             <AnimatePresence>
               {jobs.map((job, idx) => {
-                const isWebp = job.original.toLowerCase().endsWith('.webp');
+                const isWebp = job.original?.toLowerCase().endsWith('.webp');
                 const fileName = getFileName(job.original);
                 const fileExt = getFileExt(job.original);
 
@@ -393,6 +591,10 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                         <div className="bg-emerald-500 text-white p-1 rounded-full shadow-lg">
                           <Check size={10} strokeWidth={3} />
                         </div>
+                      ) : job.status === 'ERROR' ? (
+                        <div className="bg-red-500 text-white p-1 rounded-full shadow-lg">
+                          <AlertTriangle size={10} />
+                        </div>
                       ) : !isWebp && (
                         <div className="bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] font-semibold text-white/60 border border-white/10">
                           {fileExt}
@@ -404,7 +606,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                     {job.status === 'PROCESSING' && (
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-20">
                         <Loader2 size={28} className="text-emerald-400 animate-spin" />
-                        <p className="text-[10px] font-semibold text-emerald-400">Đang xử lý...</p>
+                        <p className="text-[10px] font-semibold text-emerald-400">Đang nâng cấp...</p>
                       </div>
                     )}
 
@@ -443,7 +645,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                       </div>
                     )}
 
-                    {/* WebP remove button */}
+                    {/* WebP remove */}
                     {isWebp && (
                       <div className="absolute top-3 right-3 z-40">
                         <button
@@ -458,11 +660,9 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                     {/* Bottom info */}
                     <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end pointer-events-none z-30">
                       <div className="space-y-0.5 min-w-0 pr-3">
-                        <p className="text-[9px] font-semibold text-white truncate">
-                          {fileName}
-                        </p>
+                        <p className="text-[9px] font-semibold text-white truncate">{fileName}</p>
                         <p className="text-[8px] font-medium text-white/50">
-                          {job.status === 'DONE' ? 'Đã nâng cấp' : 'Ảnh gốc'} · {job.res}
+                          {job.status === 'DONE' ? 'Đã nâng cấp' : job.status === 'ERROR' ? 'Lỗi' : 'Ảnh gốc'} · {job.resolution}
                         </p>
                       </div>
                       {job.result && job.status === 'DONE' && (
@@ -521,7 +721,6 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[1000] bg-white/98 dark:bg-black/98 backdrop-blur-xl flex flex-col overflow-hidden"
           >
-            {/* Comparison header */}
             <div className="h-14 md:h-16 px-4 md:px-6 flex items-center justify-between shrink-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]">
               <div className="flex items-center gap-3">
                 <div className="p-1.5 bg-emerald-500/10 rounded-lg text-emerald-500">
@@ -529,7 +728,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                 </div>
                 <div>
                   <h3 className="text-[12px] font-bold leading-none">So sánh kết quả</h3>
-                  <p className="text-[10px] text-slate-400 dark:text-[#555] mt-0.5">{comparisonJob.sourceRes} → {comparisonJob.res}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-[#555] mt-0.5">{comparisonJob.sourceRes} → {comparisonJob.resolution}</p>
                 </div>
               </div>
 
@@ -558,7 +757,6 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
               </div>
             </div>
 
-            {/* Comparison viewport */}
             <div className="flex-grow relative overflow-hidden bg-slate-100 dark:bg-[#050505] flex items-center justify-center p-4 md:p-10">
               <div className="relative w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
                 <img src={comparisonJob.original} className="absolute inset-0 w-full h-full object-contain select-none" alt="Original" />
@@ -575,7 +773,6 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                   />
                 </div>
 
-                {/* Slider handle */}
                 <div
                   className="absolute inset-y-0 z-10 w-0.5 bg-emerald-500 cursor-ew-resize pointer-events-none"
                   style={{ left: `${sliderPosition}%` }}
@@ -591,7 +788,6 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                   className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20"
                 />
 
-                {/* Labels */}
                 <div className="absolute bottom-4 left-4 z-30 pointer-events-none px-2.5 py-1 bg-emerald-500 text-white text-[9px] font-semibold rounded-lg shadow-lg">
                   Đã nâng cấp
                 </div>
@@ -601,7 +797,6 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
               </div>
             </div>
 
-            {/* Bottom bar */}
             <div className="h-10 md:h-12 px-6 flex items-center justify-center bg-white dark:bg-black border-t border-black/[0.04] dark:border-white/[0.04]">
               <p className="text-[9px] font-medium text-slate-400 dark:text-[#555] text-center">
                 Kéo thanh trượt để so sánh chi tiết trước và sau khi nâng cấp
