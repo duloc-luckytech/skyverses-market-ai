@@ -5,16 +5,9 @@ import { SYSTEM_CONFIG } from "../constanst/index";
 import { HOME_BLOCKS_CONFIG } from "../config/marketHomeBlocks";
 import { listKeyGommoGenmini } from "../config/keyGenminiGommo";
 import { authenticate } from "./auth";
+import SystemSetting from "../models/SystemSetting.model";
 
 const router = express.Router();
-
-/* ─── Shared SystemSetting Model ─── */
-const SystemSettingSchema = new mongoose.Schema({
-  key: { type: String, unique: true, required: true },
-  value: { type: mongoose.Schema.Types.Mixed },
-}, { timestamps: true });
-
-const SystemSetting = (mongoose.models.SystemSetting || mongoose.model("SystemSetting", SystemSettingSchema)) as mongoose.Model<any>;
 
 /**
  * @swagger

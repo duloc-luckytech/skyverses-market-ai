@@ -122,4 +122,22 @@ export const upscaleApi = {
       return { success: false, message: 'Network connection failed' };
     }
   },
+
+  /**
+   * Upscale from an existing image generation job
+   * POST /image/upscale-from-job
+   */
+  upscaleFromJob: async (imageJobId: string, resolution: string = '4K'): Promise<UpscaleCreateResponse> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/image/upscale-from-job`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ imageJobId, resolution }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Upscale From Job API Error:', error);
+      return { success: false, message: 'Network connection failed' };
+    }
+  },
 };

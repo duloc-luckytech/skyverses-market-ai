@@ -32,6 +32,7 @@ interface GeneratorViewportProps {
   deleteResult: (id: string) => void;
   onRetry: (res: ImageResult) => void;
   onViewLogs?: (res: ImageResult) => void;
+  onUpscale?: (id: string) => void;
 }
 
 const CATEGORY_TAGS = [
@@ -52,7 +53,7 @@ const getFakeStats = (seedId: string) => {
 
 export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   onClose, activePreviewUrl, setActivePreviewUrl, zoomLevel, setZoomLevel, onApplyExample, onEdit, onDownload,
-  results, serverResults, isFetchingServer, hasMoreServer, onLoadMoreServer, selectedIds, toggleSelect, deleteResult, onRetry, onViewLogs
+  results, serverResults, isFetchingServer, hasMoreServer, onLoadMoreServer, selectedIds, toggleSelect, deleteResult, onRetry, onViewLogs, onUpscale
 }) => {
   const [activeTab, setActiveTab] = useState<'RESULTS' | 'HISTORY'>('RESULTS');
 
@@ -337,6 +338,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                     onDownload={onDownload}
                     onRetry={() => onRetry(res)}
                     onViewLogs={onViewLogs}
+                    onUpscale={res.status === 'done' ? onUpscale : undefined}
                   />
                 ))}
               </div>
@@ -377,6 +379,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                         onDownload={onDownload}
                         onRetry={() => onRetry(res)}
                         onViewLogs={onViewLogs}
+                        onUpscale={res.status === 'done' ? onUpscale : undefined}
                       />
                     </div>
                   ))}

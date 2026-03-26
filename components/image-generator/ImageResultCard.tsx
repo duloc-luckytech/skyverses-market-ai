@@ -3,7 +3,7 @@ import React from 'react';
 import {
   Loader2, Check, Maximize2, Trash2, Edit3,
   Download, Zap, Box, Monitor, AlertCircle,
-  Clock, RefreshCw, Terminal, Copy
+  Clock, RefreshCw, Terminal, Copy, ArrowUpCircle
 } from 'lucide-react';
 import { ImageResult } from '../../hooks/useImageGenerator';
 import { useToast } from '../../context/ToastContext';
@@ -18,10 +18,11 @@ interface ImageResultCardProps {
   onDownload: (url: string, filename: string) => void;
   onRetry: () => void;
   onViewLogs?: (res: ImageResult) => void;
+  onUpscale?: (id: string) => void;
 }
 
 export const ImageResultCard: React.FC<ImageResultCardProps> = ({
-  res, isSelected, onToggleSelect, onFullscreen, onEdit, onDelete, onDownload, onRetry, onViewLogs
+  res, isSelected, onToggleSelect, onFullscreen, onEdit, onDelete, onDownload, onRetry, onViewLogs, onUpscale
 }) => {
   const isProcessing = res.status === 'processing';
   const isError = res.status === 'error';
@@ -129,6 +130,15 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
               >
                 <Download size={18} />
               </button>
+              {onUpscale && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onUpscale(res.id); }}
+                  className="p-3 bg-white text-purple-600 rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-purple-600 hover:text-white"
+                  title="Upscale ảnh"
+                >
+                  <ArrowUpCircle size={18} />
+                </button>
+              )}
             </>
           )}
 

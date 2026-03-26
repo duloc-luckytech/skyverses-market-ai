@@ -11,9 +11,14 @@ import { GeneratorViewport } from './image-generator/GeneratorViewport';
 import { useImageGenerator, ImageResult } from '../hooks/useImageGenerator';
 import { JobLogsModal } from './common/JobLogsModal';
 import { extractImageFamily } from '../hooks/useImageModels';
+import { upscaleApi } from '../apis/upscale';
+import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 
 const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const g = useImageGenerator();
+  const { showToast } = useToast();
+  const { refreshUserInfo } = useAuth();
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [selectedLogTask, setSelectedLogTask] = useState<ImageResult | null>(null);
   const [selectedFamily, setSelectedFamily] = useState('');
@@ -80,6 +85,61 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     } else onClose();
   }, [isAnyTaskProcessing, onClose]);
 
+  // ─── UPSCALE FROM IMAGE JOB ───
+  const handleUpscaleFromJob = useCallback(async (imageJobId: string) => {
+    try {
+      showToast('Đang gửi yêu cầu upscale...', 'info');
+      const res = await upscaleApi.upscaleFromJob(imageJobId, '4K');
+
+      if (!res.success) {
+        if (res.message === 'INSUFFICIENT_CREDITS') {
+          g.setShowLowCreditAlert(true);
+        } else {
+          showToast(res.message || 'Upscale thất bại', 'error');
+        }
+        return;
+      }
+
+      const upscaleJobId = res.data?.jobs?.[0]?.jobId || (res.data as any)?.jobId;
+      if (!upscaleJobId) {
+        showToast('Không nhận được Job ID', 'error');
+        return;
+      }
+
+      if (res.data?.creditsUsed) {
+        refreshUserInfo();
+      }
+
+      showToast('Upscale đang xử lý — theo dõi tại trang Upscale', 'success');
+
+      // Optional: poll and notify when done
+      const pollUpscale = async () => {
+        try {
+          const status = await upscaleApi.getJobStatus(upscaleJobId);
+          if (status.success && status.data) {
+            if (status.data.status === 'done') {
+              showToast('Upscale hoàn tất! ✅', 'success');
+              refreshUserInfo();
+              return;
+            }
+            if (status.data.status === 'error') {
+              showToast('Upscale thất bại — credits đã hoàn lại', 'error');
+              refreshUserInfo();
+              return;
+            }
+          }
+          setTimeout(pollUpscale, 5000);
+        } catch {
+          setTimeout(pollUpscale, 10000);
+        }
+      };
+      pollUpscale();
+    } catch (err) {
+      console.error('Upscale from job error:', err);
+      showToast('Lỗi kết nối khi gửi upscale', 'error');
+    }
+  }, [g, showToast, refreshUserInfo]);
+
   return (
     <div className="h-full w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
 
@@ -135,6 +195,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         selectedIds={g.selectedIds} toggleSelect={g.toggleSelect}
         deleteResult={g.deleteResult} onRetry={g.handleRetry}
         onViewLogs={(res) => setSelectedLogTask(res)}
+        onUpscale={handleUpscaleFromJob}
       />
 
       {/* ─── MODALS ─── */}

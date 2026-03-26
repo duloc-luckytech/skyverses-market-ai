@@ -8,6 +8,7 @@ import { authenticate } from "./auth";
 import User from "../models/UserModel";
 import CreditTransaction from "../models/CreditTransaction.model";
 import ModelPricingMatrix from "../models/ModelPricingMatrix.model";
+import SystemSetting from "../models/SystemSetting.model";
 
 const router = express.Router();
 
@@ -66,11 +67,7 @@ router.post("/upscale-batch", authenticate, async (req: any, res) => {
     // BE tự random provider giữa fxflow / gommo
     let finalProvider: ImageEngineProvider = ImageEngineProvider.FXFLOW;
     try {
-      const mongoose = require("mongoose");
-      const SystemSetting = mongoose.models.SystemSetting;
-      const setting = SystemSetting
-        ? await SystemSetting.findOne({ key: "upscale_routing" }).lean()
-        : null;
+      const setting: any = await SystemSetting.findOne({ key: "upscale_routing" }).lean();
       const config = { fxflowPercent: 100, ...(setting?.value || {}) };
 
       finalProvider =
@@ -160,7 +157,7 @@ router.post("/upscale-batch", authenticate, async (req: any, res) => {
 /* =====================================================
    2. GET /image/upscale-tasks
    Bên thứ 3 pull — lấy danh sách pending tasks
-   Trả format: { tasks: [{ jobId, urlImage, resolution }] }
+   Trả format: { tasks: [{ jobId, mediaIdInput, resolution }] }
 ===================================================== */
 router.get("/upscale-tasks/:provider", async (req, res) => {
   try {
@@ -171,7 +168,6 @@ router.get("/upscale-tasks/:provider", async (req, res) => {
       status: ImageJobStatus.PENDING,
     };
 
-    // filter by provider from path param
     if (provider) {
       filter["engine.provider"] = provider;
     }
@@ -183,16 +179,34 @@ router.get("/upscale-tasks/:provider", async (req, res) => {
         _id: 1,
         enginePayload: 1,
         engine: 1,
+        input: 1,
         createdAt: 1,
       })
       .lean();
 
-    // Map to format bên thứ 3 cần
-    const tasks = jobs.map((job: any) => ({
-      jobId: job._id.toString(),
-      urlImage: job.enginePayload?.urlImage || job.input?.image || "",
-      resolution: job.enginePayload?.resolution || "4K",
-    }));
+    // Lookup mediaIdInput từ source ImageJob nếu có
+    const tasks = await Promise.all(
+      jobs.map(async (job: any) => {
+        let mediaIdInput: string | null = null;
+
+        const sourceJobId = job.enginePayload?.sourceImageJobId;
+        if (sourceJobId) {
+          try {
+            const sourceJob = await ImageJob.findById(sourceJobId)
+              .select({ "result.imageId": 1 })
+              .lean();
+            mediaIdInput = (sourceJob as any)?.result?.imageId || null;
+          } catch {}
+        }
+
+        return {
+          jobId: job._id.toString(),
+          urlImage: job.enginePayload?.urlImage || job.input?.image || "",
+          mediaIdInput,
+          resolution: job.enginePayload?.resolution || "4K",
+        };
+      })
+    );
 
     return res.json({
       success: true,
@@ -331,6 +345,162 @@ router.get("/upscale-status/:jobId", authenticate, async (req: any, res) => {
     });
   } catch (err: any) {
     console.error("[UPSCALE] status check error:", err);
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+/* =====================================================
+   5. POST /image/upscale-from-job
+   FE gọi từ page tạo hình — upscale ảnh đã generate
+   Body: { imageJobId, resolution }
+   BE tự lookup imageUrl từ ImageJob result
+===================================================== */
+router.post("/upscale-from-job", authenticate, async (req: any, res) => {
+  try {
+    const { imageJobId, resolution = "4K" } = req.body;
+    const userId = req.user?.userId;
+
+    if (!imageJobId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing imageJobId",
+      });
+    }
+
+    // ─── LOOKUP SOURCE IMAGE JOB ───
+    const sourceJob = await ImageJob.findOne({
+      _id: imageJobId,
+      userId,
+    }).lean();
+
+    if (!sourceJob) {
+      return res.status(404).json({
+        success: false,
+        message: "IMAGE_JOB_NOT_FOUND",
+      });
+    }
+
+    if (sourceJob.status !== ImageJobStatus.DONE) {
+      return res.status(400).json({
+        success: false,
+        message: "IMAGE_JOB_NOT_COMPLETED",
+      });
+    }
+
+    const urlImage =
+      sourceJob.result?.images?.[0] ||
+      sourceJob.result?.thumbnail;
+
+    if (!urlImage) {
+      return res.status(400).json({
+        success: false,
+        message: "IMAGE_JOB_NO_RESULT_URL",
+      });
+    }
+
+    // ─── CREDIT CHECK ───
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "USER_NOT_FOUND" });
+    }
+
+    let costPerTask = UPSCALE_DEFAULT_COST;
+    try {
+      const pricing = await ModelPricingMatrix.findOne({
+        modelKey: "image_upscale",
+        status: "active",
+      }).lean();
+      if (pricing?.pricing) {
+        const resolutions = Object.keys(pricing.pricing);
+        if (resolutions.length > 0) {
+          const firstRes = resolutions[0];
+          const durations = pricing.pricing[firstRes];
+          costPerTask = typeof durations === "number" ? durations : (durations?.["0"] || UPSCALE_DEFAULT_COST);
+        }
+      }
+    } catch {}
+
+    if (user.creditBalance < costPerTask) {
+      return res.status(400).json({
+        success: false,
+        message: "INSUFFICIENT_CREDITS",
+        required: costPerTask,
+        balance: user.creditBalance,
+      });
+    }
+
+    // ─── DETERMINE PROVIDER ───
+    let finalProvider: ImageEngineProvider = ImageEngineProvider.FXFLOW;
+    try {
+      const setting: any = await SystemSetting.findOne({ key: "upscale_routing" }).lean();
+      const config = { fxflowPercent: 100, ...(setting?.value || {}) };
+      finalProvider =
+        Math.random() * 100 < config.fxflowPercent
+          ? ImageEngineProvider.FXFLOW
+          : ImageEngineProvider.GOMMO;
+    } catch {
+      finalProvider = ImageEngineProvider.FXFLOW;
+    }
+
+    // ─── CREATE UPSCALE JOB ───
+    const job = await ImageJob.create({
+      userId,
+      type: ImageJobType.IMAGE_UPSCALE,
+      status: ImageJobStatus.PENDING,
+
+      input: {
+        image: urlImage,
+      },
+
+      config: {
+        aspectRatio: resolution,
+      },
+
+      engine: {
+        provider: finalProvider,
+        model: "image_upscale",
+      },
+
+      enginePayload: {
+        jobId: String(sourceJob._id),
+        urlImage,
+        resolution,
+        sourceImageJobId: imageJobId,
+      },
+
+      creditsUsed: costPerTask,
+    });
+
+    // ─── DEDUCT CREDITS ───
+    user.creditBalance -= costPerTask;
+    await user.save();
+
+    await CreditTransaction.create({
+      userId: user._id,
+      type: "CONSUME",
+      amount: -costPerTask,
+      balanceAfter: user.creditBalance,
+      source: "image_upscale",
+      note: `Upscale from image job: ${imageJobId}`,
+    });
+
+    console.log(
+      `📸 [UPSCALE-FROM-JOB] ${user.email} source=${imageJobId} provider=${finalProvider} cost=${costPerTask} balance=${user.creditBalance}`
+    );
+
+    return res.json({
+      success: true,
+      data: {
+        jobId: String(job._id),
+        status: job.status,
+        creditsUsed: costPerTask,
+      },
+    });
+  } catch (err: any) {
+    console.error("[UPSCALE] from-job error:", err);
     return res.status(500).json({
       success: false,
       message: err.message,
