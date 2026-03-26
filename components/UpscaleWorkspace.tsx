@@ -86,6 +86,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
   const [comparisonJob, setComparisonJob] = useState<UpscaleJob | null>(null);
   const [sliderPosition, setSliderPosition] = useState(50);
   const [selectedResolution, setSelectedResolution] = useState('4K');
+  const [selectedProvider, setSelectedProvider] = useState('fxflow');
 
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -99,6 +100,10 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
 
   const UPSCALE_COST = 100;
   const RESOLUTIONS = ['2K', '4K', '8K', '12K'];
+  const PROVIDERS = [
+    { id: 'fxflow', label: 'FxFlow' },
+    // Add more providers here as needed
+  ];
   const POLL_INTERVAL = 4000;
 
   // Keep ref in sync
@@ -317,7 +322,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
     }));
 
     try {
-      const res = await upscaleApi.createBatch(tasks);
+      const res = await upscaleApi.createBatch(tasks, selectedProvider);
 
       if (res.success) {
         // Deduct credits
@@ -459,6 +464,23 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
+
+          {/* Provider selector */}
+          <div className="hidden sm:flex items-center gap-1 bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] rounded-xl p-0.5">
+            {PROVIDERS.map(p => (
+              <button
+                key={p.id}
+                onClick={() => setSelectedProvider(p.id)}
+                className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${
+                  selectedProvider === p.id
+                    ? 'bg-brand-blue text-white shadow-sm'
+                    : 'text-slate-500 dark:text-[#666] hover:text-slate-700 dark:hover:text-white'
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
           </div>
 
           {/* Resolution selector */}

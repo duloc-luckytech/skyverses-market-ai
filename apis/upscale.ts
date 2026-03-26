@@ -6,9 +6,11 @@ export interface UpscaleTask {
   jobId: string;
   urlImage: string;
   resolution?: string; // '2K' | '4K' | '8K' | '12K'
+  provider?: string;   // 'fxflow' | 'topaz' | etc.
 }
 
 export interface UpscaleCreateRequest {
+  provider: string;
   tasks: UpscaleTask[];
 }
 
@@ -89,12 +91,12 @@ export const upscaleApi = {
    * Create batch upscale jobs
    * POST /image/upscale-batch
    */
-  createBatch: async (tasks: UpscaleTask[]): Promise<UpscaleCreateResponse> => {
+  createBatch: async (tasks: UpscaleTask[], provider: string = 'fxflow'): Promise<UpscaleCreateResponse> => {
     try {
       const response = await fetch(`${API_BASE_URL}/image/upscale-batch`, {
         method: 'POST',
         headers: getHeaders(),
-        body: JSON.stringify({ tasks }),
+        body: JSON.stringify({ provider, tasks }),
       });
       return await response.json();
     } catch (error) {
