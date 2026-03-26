@@ -153,14 +153,17 @@ router.post("/", authenticate, async (req: any, res) => {
 
   /* =====================================================
      🎲 DYNAMIC PROVIDER SELECTION: gommo ↔ fxflow
+     - Chỉ áp dụng khi user chọn Server 1 (gommo)
+     - Nếu user đã chọn Server 2 (fxflow) → giữ nguyên, KHÔNG random
      - Chỉ áp dụng cho model Google (imagen, google_image_gen/banana)
-     - Model khác (Midjourney, Kling, etc.) → luôn gommo
      Config từ SystemSetting (CMS quản lý)
   ====================================================== */
   const finalEngine = { ...engine };
   const imgModelKey = (finalEngine.model || "").toLowerCase();
-  const isGoogleImageModel = imgModelKey.includes("imagen") || imgModelKey.includes("google_image_gen");
+  const isGoogleImageModel = imgModelKey.includes("imagen") || imgModelKey.includes("google_image_gen") || imgModelKey.includes("banana");
 
+  // Chỉ random routing khi provider = gommo (Server 1)
+  // Khi user chọn fxflow (Server 2) trực tiếp → giữ nguyên
   if (finalEngine.provider === "gommo" && isGoogleImageModel) {
     try {
       const mongoose = require("mongoose");

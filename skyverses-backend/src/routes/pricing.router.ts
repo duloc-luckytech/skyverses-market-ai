@@ -504,4 +504,66 @@ router.delete("/:id", async (req, res) => {
     version: cfg.version,
   });
 });
+
+/* =====================================================
+   CLONE / DUPLICATE PRICING CONFIG (ADMIN)
+   POST /pricing/:id/clone
+   Body: { engine?: string }
+   → Tạo bản sao model sang engine mới (default: fxflow)
+===================================================== */
+router.post("/:id/clone", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { engine: targetEngine } = req.body;
+
+    const source = await ModelPricingMatrix.findById(id).lean();
+    if (!source) {
+      return res.status(404).json({ error: "PRICING_CONFIG_NOT_FOUND" });
+    }
+
+    const newEngine = targetEngine || (source.engine === "gommo" ? "fxflow" : "gommo");
+    const newModelKey = `${source.modelKey}_${newEngine}`;
+
+    // Check trùng
+    const existed = await ModelPricingMatrix.findOne({
+      tool: source.tool,
+      engine: newEngine,
+      modelKey: newModelKey,
+      version: source.version,
+    });
+
+    if (existed) {
+      return res.status(409).json({
+        error: "CLONE_ALREADY_EXISTS",
+        existingId: existed._id,
+      });
+    }
+
+    const cloned: any = { ...source };
+    delete cloned._id;
+    delete cloned.__v;
+    delete cloned.createdAt;
+    delete cloned.updatedAt;
+
+    cloned.engine = newEngine;
+    cloned.modelKey = newModelKey;
+    cloned.name = `${source.name || source.modelKey} (Server 2)`;
+
+    const doc = await ModelPricingMatrix.create(cloned);
+
+    console.log(`📋 [PRICING] Cloned ${source.modelKey} → ${newModelKey} (engine: ${newEngine})`);
+
+    res.json({
+      success: true,
+      id: doc._id,
+      engine: doc.engine,
+      modelKey: doc.modelKey,
+      name: doc.name,
+    });
+  } catch (err: any) {
+    console.error("[PRICING] clone error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;
