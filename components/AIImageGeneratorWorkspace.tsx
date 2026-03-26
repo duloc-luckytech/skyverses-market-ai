@@ -117,6 +117,9 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
       showToast('Upscale đang xử lý...', 'success');
 
+      let pollRetries = 0;
+      const MAX_POLL_RETRIES = 30; // ~2.5 phút
+
       const pollUpscale = async () => {
         try {
           const status = await upscaleApi.getJobStatus(upscaleJobId);
@@ -132,11 +135,39 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'error' } }));
               showToast('Upscale thất bại — credits đã hoàn lại', 'error');
               refreshUserInfo();
+              // Auto-clear badge sau 5s để user có thể retry
+              setTimeout(() => setUpscaleMap(prev => {
+                const copy = { ...prev };
+                if (copy[imageJobId]?.status === 'error') delete copy[imageJobId];
+                return copy;
+              }), 5000);
               return;
             }
           }
+          pollRetries++;
+          if (pollRetries >= MAX_POLL_RETRIES) {
+            setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'error' } }));
+            showToast('Upscale timeout — vui lòng thử lại', 'error');
+            setTimeout(() => setUpscaleMap(prev => {
+              const copy = { ...prev };
+              if (copy[imageJobId]?.status === 'error') delete copy[imageJobId];
+              return copy;
+            }), 5000);
+            return;
+          }
           setTimeout(pollUpscale, 5000);
         } catch {
+          pollRetries++;
+          if (pollRetries >= MAX_POLL_RETRIES) {
+            setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'error' } }));
+            showToast('Mất kết nối khi kiểm tra upscale', 'error');
+            setTimeout(() => setUpscaleMap(prev => {
+              const copy = { ...prev };
+              if (copy[imageJobId]?.status === 'error') delete copy[imageJobId];
+              return copy;
+            }), 5000);
+            return;
+          }
           setTimeout(pollUpscale, 10000);
         }
       };
