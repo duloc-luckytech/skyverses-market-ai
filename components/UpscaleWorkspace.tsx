@@ -319,14 +319,21 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
     try {
       const res = await upscaleApi.createBatch(tasks, 'fxflow');
 
-      if (res.success) {
+      if (res.success && res.data) {
         // Deduct credits
-        useCredits(totalCost);
+        useCredits(res.data.creditsUsed || totalCost);
 
-        // Start polling each job
-        for (const job of idleJobs) {
-          addLog(job.id, `Job được chấp nhận — đang xử lý`);
-          pollJobStatus(job.id);
+        // Map BE jobIds back to FE jobs and start polling
+        const beJobs = res.data.jobs || [];
+        for (let i = 0; i < beJobs.length && i < idleJobs.length; i++) {
+          const beJobId = beJobs[i].jobId;
+          const feJob = idleJobs[i];
+
+          // Update FE job with BE's jobId for polling
+          setJobs(prev => prev.map(j => j.id === feJob.id ? { ...j, id: beJobId } : j));
+
+          addLog(beJobId, `Job được chấp nhận — đang xử lý`);
+          pollJobStatus(beJobId);
         }
       } else {
         // Batch creation failed

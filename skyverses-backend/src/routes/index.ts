@@ -32,6 +32,7 @@ import explorerMediaRoutes from "./explorerMedia.router";
 import imageRoutes from "./imageJobs";
 import audioRoutes from "./audio";
 import fxflowRoutes from "./fxflow";
+import upscaleJobRoutes from "./upscaleJobs";
 
 import providerTokenRoutes from "./providerToken";
 import aiModelRoutes from "./aiModel.admin";
@@ -52,6 +53,7 @@ router.use("/credits", creditRoutes);
 router.use("/ai-model", aiModelRoutes);
 
 router.use("/image-jobs", imageRoutes);
+router.use("/image", upscaleJobRoutes);
 router.use("/runninghub", runninghubRoutes);
 router.use("/fxflow", fxflowRoutes);
 router.use("/audio", audioRoutes);

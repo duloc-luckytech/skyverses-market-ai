@@ -20,6 +20,7 @@ export interface UpscaleCreateResponse {
   data?: {
     accepted: number;
     jobs: Array<{ jobId: string; status: string }>;
+    creditsUsed?: number;
   };
 }
 
