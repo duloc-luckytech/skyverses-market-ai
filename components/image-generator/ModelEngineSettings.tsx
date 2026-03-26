@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, List, Brain, GitBranch, SlidersHorizontal, Ratio, MonitorUp, Hash, Settings2, Cpu } from 'lucide-react';
+import { ChevronDown, ChevronUp, List, Brain, GitBranch, SlidersHorizontal, Ratio, MonitorUp, Hash, Settings2 } from 'lucide-react';
+import { ServerSelector } from '../common/ServerSelector';
 import { ModelSelectorModal } from '../common/ModelSelectorModal';
 
 interface ModelEngineSettingsProps {
@@ -112,23 +113,12 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
           <div className="space-y-4 pb-3 px-1">
 
             {/* SERVER */}
-            <div className="space-y-1.5">
-              <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5"><Cpu size={11} className="text-rose-400" /> Server</p>
-              <div className="flex gap-1.5">
-                {[
-                  { key: 'gommo', label: 'Server 1' },
-                  { key: 'fxflow', label: 'Server 2' },
-                ].map(s => (
-                  <Pill
-                    key={s.key}
-                    label={s.label}
-                    active={selectedEngine === s.key}
-                    onClick={() => onSelectEngine(s.key)}
-                    disabled={isGenerating}
-                  />
-                ))}
-              </div>
-            </div>
+            <ServerSelector
+              selected={selectedEngine}
+              onChange={onSelectEngine}
+              disabled={isGenerating}
+              variant="pill"
+            />
             {/* MODEL FAMILY */}
             {hasFamilyData && (
               <div className="space-y-1.5">

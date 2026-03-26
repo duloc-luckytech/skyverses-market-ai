@@ -151,5 +151,23 @@ export const pricingApi = {
       console.error('Pricing Delete Error:', error);
       return { success: false, message: 'Network synchronization failed' };
     }
+  },
+
+  /**
+   * Clone pricing config to another engine
+   * POST /pricing/:id/clone
+   */
+  clonePricing: async (id: string, engine?: string): Promise<{ success: boolean; id?: string; modelKey?: string; name?: string; error?: string }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/pricing/${id}/clone`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ engine }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Pricing Clone Error:', error);
+      return { success: false, error: 'Network synchronization failed' };
+    }
   }
 };

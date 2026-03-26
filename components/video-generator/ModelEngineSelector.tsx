@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronDown, Globe } from 'lucide-react';
 import { PricingModel } from '../../apis/pricing';
+import { ServerSelector } from '../common/ServerSelector';
 
 interface ModelEngineSelectorProps {
   availableModels: PricingModel[];
@@ -37,20 +38,13 @@ export const ModelEngineSelector: React.FC<ModelEngineSelectorProps> = ({
       <div className="grid grid-cols-2 gap-4">
         {/* Infrastructure Source */}
         <div className="space-y-3">
-          <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1">
-            Source
-          </label>
-          <div className="relative">
-            <select 
-              value={selectedEngine} 
-              onChange={e => setSelectedEngine(e.target.value)} 
-              className="w-full bg-white dark:bg-[#1c1c1e] border border-slate-200 dark:border-white/10 p-3 rounded-lg text-[11px] font-black uppercase outline-none appearance-none focus:border-purple-500 text-slate-800 dark:text-white transition-colors cursor-pointer"
-            >
-               <option value="gommo">Gommo</option>
-               <option value="fxlab">FxLab</option>
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-500 pointer-events-none" size={16} />
-          </div>
+          <ServerSelector
+            selected={selectedEngine}
+            onChange={setSelectedEngine}
+            variant="dropdown"
+            showLabel={true}
+            labelText="Source"
+          />
         </div>
 
         {/* Model Selection */}
