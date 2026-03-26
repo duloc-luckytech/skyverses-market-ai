@@ -151,6 +151,12 @@ router.get("/tasks/pending", async (req, res) => {
       const priority = job.enginePayload?.priority;
       if (priority != null && priority !== 1) task.priority = priority;
 
+      // Optional: referenceImages — ảnh tham chiếu từ FE (input.images)
+      const refImages = job.input?.images;
+      if (Array.isArray(refImages) && refImages.length > 0) {
+        task.referenceImages = refImages;
+      }
+
       tasks.push(task);
     }
 
