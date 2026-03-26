@@ -33,7 +33,7 @@ interface GeneratorViewportProps {
   onRetry: (res: ImageResult) => void;
   onViewLogs?: (res: ImageResult) => void;
   onUpscale?: (id: string, resolution: string) => void;
-  upscaleMap?: Record<string, { resolution: string; status: 'processing' | 'done' | 'error' }>;
+  upscaleMap?: Record<string, { resolution: string; status: 'processing' | 'done' | 'error'; resultUrl?: string }>;
 }
 
 const CATEGORY_TAGS = [

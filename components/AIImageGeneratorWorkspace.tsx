@@ -22,7 +22,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [selectedLogTask, setSelectedLogTask] = useState<ImageResult | null>(null);
   const [selectedFamily, setSelectedFamily] = useState('');
-  const [upscaleMap, setUpscaleMap] = useState<Record<string, { resolution: string; status: 'processing' | 'done' | 'error' }>>({});
+  const [upscaleMap, setUpscaleMap] = useState<Record<string, { resolution: string; status: 'processing' | 'done' | 'error'; resultUrl?: string }>>({});
 
   // ─── FAMILY GROUPING (uses shared extractImageFamily) ───
   const rawModels = useMemo(() => g.availableModels.map((m: any) => m.raw || m), [g.availableModels]);
@@ -122,7 +122,8 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           const status = await upscaleApi.getJobStatus(upscaleJobId);
           if (status.success && status.data) {
             if (status.data.status === 'done') {
-              setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'done' } }));
+              const upscaledUrl = status.data.resultUrl || '';
+              setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'done', resultUrl: upscaledUrl } }));
               showToast('Upscale hoàn tất! ✅', 'success');
               refreshUserInfo();
               return;

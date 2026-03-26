@@ -19,7 +19,7 @@ interface ImageResultCardProps {
   onRetry: () => void;
   onViewLogs?: (res: ImageResult) => void;
   onUpscale?: (id: string, resolution: string) => void;
-  upscaleInfo?: { resolution: string; status: 'processing' | 'done' | 'error' };
+  upscaleInfo?: { resolution: string; status: 'processing' | 'done' | 'error'; resultUrl?: string };
 }
 
 export const ImageResultCard: React.FC<ImageResultCardProps> = ({
@@ -28,6 +28,9 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
   const isProcessing = res.status === 'processing';
   const isError = res.status === 'error';
   const { showToast } = useToast();
+
+  // Ảnh hiển thị: ưu tiên ảnh upscale nếu đã xong
+  const displayUrl = (upscaleInfo?.status === 'done' && upscaleInfo.resultUrl) ? upscaleInfo.resultUrl : res.url;
 
   const handleCopyId = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -43,14 +46,14 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           ? 'border-red-500/20 bg-red-900/5 hover:border-red-500/30'
           : 'border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-[#111114] hover:border-black/10 dark:hover:border-white/10'
         }`}
-      onClick={() => res.url ? onFullscreen(res.url) : null}
+      onClick={() => displayUrl ? onFullscreen(displayUrl) : null}
     >
       {/* Visual Area */}
       <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-100 dark:bg-black border border-black/[0.06] dark:border-white/[0.04] flex items-center justify-center">
 
-        {res.url && !isProcessing && !isError && (
+        {displayUrl && !isProcessing && !isError && (
           <div className="absolute inset-0 z-0">
-            <img src={res.url} className="w-full h-full object-cover blur-2xl opacity-30 scale-110" alt="" />
+            <img src={displayUrl} className="w-full h-full object-cover blur-2xl opacity-30 scale-110" alt="" />
           </div>
         )}
 
@@ -70,9 +73,9 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
               <p className="text-[9px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-tighter">Vui lòng kiểm tra lại kịch bản</p>
             </div>
           </div>
-        ) : res.url ? (
+        ) : displayUrl ? (
           <img
-            src={res.url}
+            src={displayUrl}
             className="relative z-10 max-w-full max-h-full object-contain transition-transform duration-1000 group-hover:scale-[1.02]"
             alt="Generated result"
           />
@@ -129,21 +132,21 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           {!isError && !isProcessing && res.url && (
             <>
               <button
-                onClick={(e) => { e.stopPropagation(); onFullscreen(res.url!); }}
+                onClick={(e) => { e.stopPropagation(); onFullscreen(displayUrl!); }}
                 className="p-3 bg-white text-black rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-rose-500 hover:text-white"
                 title="Xem toàn màn hình"
               >
                 <Maximize2 size={18} />
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); onEdit(res.url!); }}
+                onClick={(e) => { e.stopPropagation(); onEdit(displayUrl!); }}
                 className="p-3 bg-white text-rose-500 rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-rose-500 hover:text-white"
                 title="Chỉnh sửa"
               >
                 <Edit3 size={18} />
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); onDownload(res.url!, `image_${res.id}.png`); }}
+                onClick={(e) => { e.stopPropagation(); onDownload(displayUrl!, `image_${res.id}.png`); }}
                 className="p-3 bg-white text-emerald-600 rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-emerald-600 hover:text-white"
                 title="Tải xuống"
               >
