@@ -205,6 +205,12 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         onViewLogs={(res) => setSelectedLogTask(res)}
         onUpscale={handleUpscaleFromJob}
         upscaleMap={upscaleMap}
+        onAddReference={(url) => {
+          const newRef = { id: `ref-${Date.now()}`, url, name: 'Từ kết quả', file: null };
+          g.setReferences((prev: any[]) => [...prev, newRef]);
+          showToast('Đã thêm ảnh tham chiếu', 'success');
+          if (window.innerWidth < 1024) setIsMobileExpanded(true);
+        }}
       />
 
       {/* ─── MODALS ─── */}

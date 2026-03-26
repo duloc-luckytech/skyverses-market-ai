@@ -3,7 +3,7 @@ import React from 'react';
 import {
   Loader2, Check, Maximize2, Trash2, Edit3,
   Download, Zap, Box, Monitor, AlertCircle,
-  Clock, RefreshCw, Terminal, Copy, ArrowUpCircle
+  Clock, RefreshCw, Terminal, Copy, ArrowUpCircle, ImagePlus
 } from 'lucide-react';
 import { ImageResult } from '../../hooks/useImageGenerator';
 import { useToast } from '../../context/ToastContext';
@@ -20,10 +20,11 @@ interface ImageResultCardProps {
   onViewLogs?: (res: ImageResult) => void;
   onUpscale?: (id: string, resolution: string) => void;
   upscaleInfo?: { resolution: string; status: 'processing' | 'done' | 'error'; resultUrl?: string };
+  onAddReference?: (url: string) => void;
 }
 
 export const ImageResultCard: React.FC<ImageResultCardProps> = ({
-  res, isSelected, onToggleSelect, onFullscreen, onEdit, onDelete, onDownload, onRetry, onViewLogs, onUpscale, upscaleInfo
+  res, isSelected, onToggleSelect, onFullscreen, onEdit, onDelete, onDownload, onRetry, onViewLogs, onUpscale, upscaleInfo, onAddReference
 }) => {
   const isProcessing = res.status === 'processing';
   const isError = res.status === 'error';
@@ -128,43 +129,52 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         )}
 
         {/* Hover Actions */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2.5 z-40">
+        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 z-40">
           {!isError && !isProcessing && res.url && (
             <>
               <button
                 onClick={(e) => { e.stopPropagation(); onFullscreen(displayUrl!); }}
-                className="p-3 bg-white text-black rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-rose-500 hover:text-white"
+                className="p-2 bg-white/90 backdrop-blur-sm text-black rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-rose-500 hover:text-white"
                 title="Xem toàn màn hình"
               >
-                <Maximize2 size={18} />
+                <Maximize2 size={14} />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); onEdit(displayUrl!); }}
-                className="p-3 bg-white text-rose-500 rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-rose-500 hover:text-white"
+                className="p-2 bg-white/90 backdrop-blur-sm text-rose-500 rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-rose-500 hover:text-white"
                 title="Chỉnh sửa"
               >
-                <Edit3 size={18} />
+                <Edit3 size={14} />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); onDownload(displayUrl!, `image_${res.id}.png`); }}
-                className="p-3 bg-white text-emerald-600 rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-emerald-600 hover:text-white"
+                className="p-2 bg-white/90 backdrop-blur-sm text-emerald-600 rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-emerald-600 hover:text-white"
                 title="Tải xuống"
               >
-                <Download size={18} />
+                <Download size={14} />
               </button>
+              {onAddReference && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onAddReference(displayUrl!); }}
+                  className="p-2 bg-white/90 backdrop-blur-sm text-cyan-600 rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-cyan-600 hover:text-white"
+                  title="Thêm ảnh tham chiếu"
+                >
+                  <ImagePlus size={14} />
+                </button>
+              )}
               {onUpscale && (
-                <div className="flex items-center bg-white rounded-full shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center bg-white/90 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={() => onUpscale(res.id, '2K')}
-                    className="px-2.5 py-2.5 text-[10px] font-black text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
+                    className="px-2 py-2 text-[9px] font-black text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
                     title="Upscale 2K"
                   >
                     2K
                   </button>
-                  <div className="w-px h-5 bg-purple-200" />
+                  <div className="w-px h-4 bg-purple-200" />
                   <button
                     onClick={() => onUpscale(res.id, '4K')}
-                    className="px-2.5 py-2.5 text-[10px] font-black text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
+                    className="px-2 py-2 text-[9px] font-black text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
                     title="Upscale 4K"
                   >
                     4K
@@ -177,10 +187,10 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           {(isError || isProcessing || res.url) && (
             <button
               onClick={(e) => { e.stopPropagation(); onViewLogs?.(res); }}
-              className="p-3 bg-white text-rose-600 rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-rose-600 hover:text-white"
-              title="Xem nhật ký tiến trình"
+              className="p-2 bg-white/90 backdrop-blur-sm text-slate-500 rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-slate-800 hover:text-white"
+              title="Xem log"
             >
-              <Terminal size={18} />
+              <Terminal size={14} />
             </button>
           )}
         </div>
