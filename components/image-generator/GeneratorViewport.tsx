@@ -33,6 +33,7 @@ interface GeneratorViewportProps {
   onRetry: (res: ImageResult) => void;
   onViewLogs?: (res: ImageResult) => void;
   onUpscale?: (id: string, resolution: string) => void;
+  upscaleMap?: Record<string, { resolution: string; status: 'processing' | 'done' | 'error' }>;
 }
 
 const CATEGORY_TAGS = [
@@ -53,7 +54,7 @@ const getFakeStats = (seedId: string) => {
 
 export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   onClose, activePreviewUrl, setActivePreviewUrl, zoomLevel, setZoomLevel, onApplyExample, onEdit, onDownload,
-  results, serverResults, isFetchingServer, hasMoreServer, onLoadMoreServer, selectedIds, toggleSelect, deleteResult, onRetry, onViewLogs, onUpscale
+  results, serverResults, isFetchingServer, hasMoreServer, onLoadMoreServer, selectedIds, toggleSelect, deleteResult, onRetry, onViewLogs, onUpscale, upscaleMap
 }) => {
   const [activeTab, setActiveTab] = useState<'RESULTS' | 'HISTORY'>('RESULTS');
 
@@ -339,6 +340,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                     onRetry={() => onRetry(res)}
                     onViewLogs={onViewLogs}
                     onUpscale={res.status === 'done' ? onUpscale : undefined}
+                    upscaleInfo={upscaleMap?.[res.id]}
                   />
                 ))}
               </div>
@@ -380,6 +382,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                         onRetry={() => onRetry(res)}
                         onViewLogs={onViewLogs}
                         onUpscale={res.status === 'done' ? onUpscale : undefined}
+                        upscaleInfo={upscaleMap?.[res.id]}
                       />
                     </div>
                   ))}

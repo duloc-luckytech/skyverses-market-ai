@@ -19,10 +19,11 @@ interface ImageResultCardProps {
   onRetry: () => void;
   onViewLogs?: (res: ImageResult) => void;
   onUpscale?: (id: string, resolution: string) => void;
+  upscaleInfo?: { resolution: string; status: 'processing' | 'done' | 'error' };
 }
 
 export const ImageResultCard: React.FC<ImageResultCardProps> = ({
-  res, isSelected, onToggleSelect, onFullscreen, onEdit, onDelete, onDownload, onRetry, onViewLogs, onUpscale
+  res, isSelected, onToggleSelect, onFullscreen, onEdit, onDelete, onDownload, onRetry, onViewLogs, onUpscale, upscaleInfo
 }) => {
   const isProcessing = res.status === 'processing';
   const isError = res.status === 'error';
@@ -101,6 +102,24 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
             <span className="bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[8px] font-black text-white/80 border border-white/10 uppercase tracking-widest">
               {res.aspectRatio}
+            </span>
+          </div>
+        )}
+
+        {/* Upscale Badge */}
+        {upscaleInfo && (
+          <div className={`absolute top-3 left-3 z-30 flex items-center gap-1.5 px-2 py-1 rounded-lg backdrop-blur-md border shadow-lg ${
+            upscaleInfo.status === 'processing'
+              ? 'bg-purple-500/20 border-purple-500/30 text-purple-300'
+              : upscaleInfo.status === 'done'
+                ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
+                : 'bg-red-500/20 border-red-500/30 text-red-300'
+          }`}>
+            {upscaleInfo.status === 'processing' && <Loader2 size={10} className="animate-spin" />}
+            {upscaleInfo.status === 'done' && <ArrowUpCircle size={10} />}
+            {upscaleInfo.status === 'error' && <AlertCircle size={10} />}
+            <span className="text-[8px] font-black uppercase tracking-wider">
+              {upscaleInfo.status === 'processing' ? `↑ ${upscaleInfo.resolution}` : upscaleInfo.status === 'done' ? `↑ ${upscaleInfo.resolution} ✓` : `↑ ${upscaleInfo.resolution} ✗`}
             </span>
           </div>
         )}

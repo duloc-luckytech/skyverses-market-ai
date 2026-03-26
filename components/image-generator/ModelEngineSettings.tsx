@@ -109,11 +109,11 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
 
         {/* ─── EXPANDED CONTENT ─── */}
         {isExpanded && (
-          <div className="space-y-2.5 pb-2.5">
+          <div className="space-y-4 pb-3 px-1">
 
             {/* MODEL FAMILY */}
             {hasFamilyData && (
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5"><Brain size={11} className="text-cyan-500" /> Model</p>
                 <div className="flex gap-1.5">
                   <div className="relative flex-grow">
@@ -141,7 +141,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
 
             {/* VARIANTS */}
             {allVariants.length > 1 && (
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5">
                   <GitBranch size={11} className="text-violet-400" /> Phiên bản {hasMoreVariants && <span className="text-[9px] text-slate-400 dark:text-slate-500 normal-case font-normal">({allVariants.length})</span>}
                 </p>
@@ -179,7 +179,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
             )}
 
             {/* COMPACT ROW: Modes + Ratio + Resolution + Quantity */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               {/* Modes */}
               {modes.length > 0 && (() => {
                 const MAX = 3;

@@ -22,6 +22,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [selectedLogTask, setSelectedLogTask] = useState<ImageResult | null>(null);
   const [selectedFamily, setSelectedFamily] = useState('');
+  const [upscaleMap, setUpscaleMap] = useState<Record<string, { resolution: string; status: 'processing' | 'done' | 'error' }>>({});
 
   // ─── FAMILY GROUPING (uses shared extractImageFamily) ───
   const rawModels = useMemo(() => g.availableModels.map((m: any) => m.raw || m), [g.availableModels]);
@@ -89,9 +90,12 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const handleUpscaleFromJob = useCallback(async (imageJobId: string, resolution: string = '4K') => {
     try {
       showToast(`Đang gửi yêu cầu upscale ${resolution}...`, 'info');
+      setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'processing' } }));
+
       const res = await upscaleApi.upscaleFromJob(imageJobId, resolution);
 
       if (!res.success) {
+        setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'error' } }));
         if (res.message === 'INSUFFICIENT_CREDITS') {
           g.setShowLowCreditAlert(true);
         } else {
@@ -102,6 +106,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
       const upscaleJobId = res.data?.jobs?.[0]?.jobId || (res.data as any)?.jobId;
       if (!upscaleJobId) {
+        setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'error' } }));
         showToast('Không nhận được Job ID', 'error');
         return;
       }
@@ -110,19 +115,20 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         refreshUserInfo();
       }
 
-      showToast('Upscale đang xử lý — theo dõi tại trang Upscale', 'success');
+      showToast('Upscale đang xử lý...', 'success');
 
-      // Optional: poll and notify when done
       const pollUpscale = async () => {
         try {
           const status = await upscaleApi.getJobStatus(upscaleJobId);
           if (status.success && status.data) {
             if (status.data.status === 'done') {
+              setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'done' } }));
               showToast('Upscale hoàn tất! ✅', 'success');
               refreshUserInfo();
               return;
             }
             if (status.data.status === 'error') {
+              setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'error' } }));
               showToast('Upscale thất bại — credits đã hoàn lại', 'error');
               refreshUserInfo();
               return;
@@ -136,6 +142,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       pollUpscale();
     } catch (err) {
       console.error('Upscale from job error:', err);
+      setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'error' } }));
       showToast('Lỗi kết nối khi gửi upscale', 'error');
     }
   }, [g, showToast, refreshUserInfo]);
@@ -196,6 +203,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         deleteResult={g.deleteResult} onRetry={g.handleRetry}
         onViewLogs={(res) => setSelectedLogTask(res)}
         onUpscale={handleUpscaleFromJob}
+        upscaleMap={upscaleMap}
       />
 
       {/* ─── MODALS ─── */}
