@@ -32,7 +32,7 @@ interface GeneratorViewportProps {
   deleteResult: (id: string) => void;
   onRetry: (res: ImageResult) => void;
   onViewLogs?: (res: ImageResult) => void;
-  onUpscale?: (id: string) => void;
+  onUpscale?: (id: string, resolution: string) => void;
 }
 
 const CATEGORY_TAGS = [

@@ -18,7 +18,7 @@ interface ImageResultCardProps {
   onDownload: (url: string, filename: string) => void;
   onRetry: () => void;
   onViewLogs?: (res: ImageResult) => void;
-  onUpscale?: (id: string) => void;
+  onUpscale?: (id: string, resolution: string) => void;
 }
 
 export const ImageResultCard: React.FC<ImageResultCardProps> = ({
@@ -131,13 +131,23 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
                 <Download size={18} />
               </button>
               {onUpscale && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); onUpscale(res.id); }}
-                  className="p-3 bg-white text-purple-600 rounded-full hover:scale-110 transition-transform shadow-2xl hover:bg-purple-600 hover:text-white"
-                  title="Upscale ảnh"
-                >
-                  <ArrowUpCircle size={18} />
-                </button>
+                <div className="flex items-center bg-white rounded-full shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={() => onUpscale(res.id, '2K')}
+                    className="px-2.5 py-2.5 text-[10px] font-black text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
+                    title="Upscale 2K"
+                  >
+                    2K
+                  </button>
+                  <div className="w-px h-5 bg-purple-200" />
+                  <button
+                    onClick={() => onUpscale(res.id, '4K')}
+                    className="px-2.5 py-2.5 text-[10px] font-black text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
+                    title="Upscale 4K"
+                  >
+                    4K
+                  </button>
+                </div>
               )}
             </>
           )}

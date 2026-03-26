@@ -86,10 +86,10 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   }, [isAnyTaskProcessing, onClose]);
 
   // ─── UPSCALE FROM IMAGE JOB ───
-  const handleUpscaleFromJob = useCallback(async (imageJobId: string) => {
+  const handleUpscaleFromJob = useCallback(async (imageJobId: string, resolution: string = '4K') => {
     try {
-      showToast('Đang gửi yêu cầu upscale...', 'info');
-      const res = await upscaleApi.upscaleFromJob(imageJobId, '4K');
+      showToast(`Đang gửi yêu cầu upscale ${resolution}...`, 'info');
+      const res = await upscaleApi.upscaleFromJob(imageJobId, resolution);
 
       if (!res.success) {
         if (res.message === 'INSUFFICIENT_CREDITS') {
