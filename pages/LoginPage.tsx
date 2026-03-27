@@ -8,7 +8,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 import { userApi } from '../apis/user';
 import { LOGIN_SLIDER_IMAGES } from '../data';
 import { 
-  ChevronLeft, Mail, Loader2, 
+  ChevronLeft, Loader2, 
   ArrowRight, Sparkles,
   Cpu, Clapperboard, Check, User,
   TrendingUp, Image as ImageIcon,
@@ -24,6 +24,7 @@ const FlagIcon = ({ code, className = "w-5 h-3.5" }: { code: string; className?:
 
 const LoginPage = () => {
   const { login, loginWithEmail, isAuthenticated, user } = useAuth();
+  // Note: loginWithEmail kept for onboarding flow compatibility
   const { lang, setLang, t } = useLanguage();
   const navigate = useNavigate();
 
@@ -33,16 +34,12 @@ const LoginPage = () => {
     canonical: '/login'
   });
 
-  const [showEmailForm, setShowEmailForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showTransition, setShowTransition] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0); 
   const [loginImageIndex, setLoginImageIndex] = useState(0);
   const [showLangMenu, setShowLangMenu] = useState(false);
-  
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
   
   const langRef = useRef<HTMLDivElement>(null);
 
@@ -59,11 +56,11 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const hasDoneOnboarding = localStorage.getItem(`onboarding_complete_${user?.email || email}`) === 'true';
+      const hasDoneOnboarding = localStorage.getItem(`onboarding_complete_${user?.email}`) === 'true';
       if (hasDoneOnboarding) navigateWithTransition('/');
       else if (onboardingStep === 0) setOnboardingStep(1);
     }
-  }, [isAuthenticated, user, email, navigate, onboardingStep]);
+  }, [isAuthenticated, user, navigate, onboardingStep]);
 
   useEffect(() => {
     const interval = setInterval(() => setLoginImageIndex((prev) => (prev + 1) % LOGIN_SLIDER_IMAGES.length), 5000);
@@ -84,20 +81,6 @@ const LoginPage = () => {
     }, 1200);
   };
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !name) return;
-    setIsSubmitting(true);
-    const hasDoneOnboarding = localStorage.getItem(`onboarding_complete_${email}`) === 'true';
-    if (hasDoneOnboarding) {
-      try {
-        const success = await loginWithEmail(email, name);
-        if (success) { navigateWithTransition('/'); return; }
-      } catch (err) { console.error("Login failed:", err); }
-    }
-    setIsSubmitting(false);
-    setOnboardingStep(1);
-  };
 
   const handleOnboardingNext = async () => {
     if (onboardingStep < 4) {
@@ -105,15 +88,11 @@ const LoginPage = () => {
     } else {
       setIsSubmitting(true);
       try {
-        if (!isAuthenticated) {
-          const success = await loginWithEmail(email, name);
-          if (!success) return;
-        }
         await userApi.submitOnboarding({
           role: surveyData.role, goals: surveyData.goals,
           workStyle: surveyData.workingStyle, experienceLevel: surveyData.experience, complete: true
         });
-        localStorage.setItem(`onboarding_complete_${user?.email || email}`, 'true');
+        localStorage.setItem(`onboarding_complete_${user?.email}`, 'true');
         navigateWithTransition('/');
       } catch (err) { navigateWithTransition('/'); }
       finally { setIsSubmitting(false); }
@@ -249,59 +228,23 @@ const LoginPage = () => {
                     </div>
                   </div>
 
-                  {!showEmailForm ? (
-                    <div className="space-y-3">
-                      {/* Google Login */}
-                      <button 
-                        onClick={handleGoogleLogin}
-                        disabled={isGoogleLoading}
-                        className="w-full flex items-center gap-3 py-3 px-4 bg-white dark:bg-white/[0.03] border border-black/[0.08] dark:border-white/[0.08] rounded-xl hover:border-black/20 dark:hover:border-white/20 hover:shadow-sm transition-all disabled:opacity-70"
-                      >
-                        {isGoogleLoading ? (
-                          <Loader2 size={18} className="animate-spin text-brand-blue" />
-                        ) : (
-                          <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" className="w-5 h-5" alt="Google" />
-                        )}
-                        <span className="text-sm font-medium text-slate-700 dark:text-gray-200">
-                          {isGoogleLoading ? 'Đang kết nối...' : t('login.google')}
-                        </span>
-                      </button>
-                      
-                      {/* Divider */}
-                      <div className="flex items-center gap-3 py-2">
-                        <div className="flex-1 h-px bg-black/[0.06] dark:bg-white/[0.06]" />
-                        <span className="text-[11px] text-slate-300 dark:text-gray-600 font-medium">{t('login.or')}</span>
-                        <div className="flex-1 h-px bg-black/[0.06] dark:bg-white/[0.06]" />
-                      </div>
-
-                      {/* Email Login */}
-                      <button 
-                        onClick={() => setShowEmailForm(true)} 
-                        className="w-full flex items-center gap-3 py-3 px-4 bg-white dark:bg-white/[0.03] border border-black/[0.08] dark:border-white/[0.08] rounded-xl hover:border-brand-blue/30 hover:shadow-sm transition-all"
-                      >
-                        <Mail size={18} className="text-slate-400" />
-                        <span className="text-sm font-medium text-slate-700 dark:text-gray-200">{t('login.email')}</span>
-                      </button>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleEmailSubmit} className="space-y-4">
-                      <div className="space-y-3">
-                        <input type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="Họ và tên"
-                          className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] px-4 py-3 rounded-xl text-sm focus:border-brand-blue outline-none transition-colors"
-                        />
-                        <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="Email"
-                          className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] px-4 py-3 rounded-xl text-sm focus:border-brand-blue outline-none transition-colors"
-                        />
-                      </div>
-                      <button type="submit" disabled={isSubmitting} className="w-full py-3 bg-brand-blue text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:brightness-110 active:scale-[0.99] transition-all disabled:opacity-50">
-                        {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
-                        Đăng nhập
-                      </button>
-                      <button type="button" onClick={() => setShowEmailForm(false)} className="w-full text-[13px] text-slate-400 hover:text-brand-blue transition-colors py-1">
-                        ← Quay lại
-                      </button>
-                    </form>
-                  )}
+                  <div className="space-y-3">
+                    {/* Google Login */}
+                    <button 
+                      onClick={handleGoogleLogin}
+                      disabled={isGoogleLoading}
+                      className="w-full flex items-center justify-center gap-3 py-3.5 px-4 bg-white dark:bg-white/[0.03] border border-black/[0.08] dark:border-white/[0.08] rounded-xl hover:border-black/20 dark:hover:border-white/20 hover:shadow-md transition-all disabled:opacity-70"
+                    >
+                      {isGoogleLoading ? (
+                        <Loader2 size={18} className="animate-spin text-brand-blue" />
+                      ) : (
+                        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" className="w-5 h-5" alt="Google" />
+                      )}
+                      <span className="text-sm font-medium text-slate-700 dark:text-gray-200">
+                        {isGoogleLoading ? 'Đang kết nối...' : t('login.google')}
+                      </span>
+                    </button>
+                  </div>
 
                   {/* Terms */}
                   <p className="text-[11px] text-slate-300 dark:text-gray-600 text-center leading-relaxed">
