@@ -182,6 +182,7 @@ export const UsersTab: React.FC<UsersTabProps> = () => {
                 <th className="px-3 py-3">Role</th>
                 <th className="px-3 py-3 cursor-pointer hover:text-brand-blue" onClick={() => handleSort('creditBalance')}>Credits <ArrowUpDown size={7} className="inline ml-0.5" /></th>
                 <th className="px-3 py-3 cursor-pointer hover:text-brand-blue" onClick={() => handleSort('plan')}>Gói <ArrowUpDown size={7} className="inline ml-0.5" /></th>
+                <th className="px-3 py-3">Worker</th>
                 <th className="px-3 py-3">Video</th>
                 <th className="px-3 py-3">Hoa hồng</th>
                 <th className="px-3 py-3 cursor-pointer hover:text-brand-blue" onClick={() => handleSort('lastActiveAt')}>Hoạt động <ArrowUpDown size={7} className="inline ml-0.5" /></th>
@@ -190,9 +191,9 @@ export const UsersTab: React.FC<UsersTabProps> = () => {
             </thead>
             <tbody className="divide-y divide-black/[0.02] dark:divide-white/[0.02]">
               {loading ? (
-                <tr><td colSpan={8} className="py-20 text-center"><Loader2 className="animate-spin mx-auto text-brand-blue mb-2" size={24} /><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Đang tải...</p></td></tr>
+                <tr><td colSpan={9} className="py-20 text-center"><Loader2 className="animate-spin mx-auto text-brand-blue mb-2" size={24} /><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Đang tải...</p></td></tr>
               ) : users.length === 0 ? (
-                <tr><td colSpan={8} className="py-20 text-center"><SearchX size={36} className="mx-auto mb-2 text-slate-200 dark:text-gray-700" /><p className="text-sm font-bold text-slate-400">Không tìm thấy</p></td></tr>
+                <tr><td colSpan={9} className="py-20 text-center"><SearchX size={36} className="mx-auto mb-2 text-slate-200 dark:text-gray-700" /><p className="text-sm font-bold text-slate-400">Không tìm thấy</p></td></tr>
               ) : users.map(u => {
                 const planExpiry = u.planExpiresAt ? new Date(u.planExpiresAt) : null;
                 const expired = planExpiry && planExpiry < new Date();
@@ -226,6 +227,12 @@ export const UsersTab: React.FC<UsersTabProps> = () => {
                         <span className={`px-1.5 py-0.5 text-[8px] font-bold uppercase rounded-md border ${PLAN_COLORS[u.plan || ''] || 'bg-slate-100 dark:bg-white/5 text-slate-400 border-slate-200 dark:border-white/10'}`}>{u.plan || 'Free'}</span>
                         {planExpiry && <p className={`text-[8px] mt-0.5 ${expired ? 'text-red-400' : 'text-slate-400'}`}>{expired ? 'Hết hạn' : planExpiry.toLocaleDateString('vi-VN')}</p>}
                       </div>
+                    </td>
+                    {/* Worker (fxflowOwner) */}
+                    <td className="px-3 py-3">
+                      {u.fxflowOwner ? (
+                        <span className="px-1.5 py-0.5 text-[8px] font-bold uppercase rounded-md border bg-cyan-500/10 text-cyan-600 border-cyan-500/20">{u.fxflowOwner}</span>
+                      ) : <span className="text-[9px] text-slate-300">—</span>}
                     </td>
                     {/* Video */}
                     <td className="px-3 py-3">
