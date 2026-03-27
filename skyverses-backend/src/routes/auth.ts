@@ -239,6 +239,10 @@ router.get("/user/info", authenticate, async (req: any, res) => {
         creditBalance: user.creditBalance,
         claimWelcomeCredit: user.claimWelcomeCredit || false,
 
+        // 👇 PLAN INFO
+        plan: user.plan || null,
+        planExpiresAt: user.planExpiresAt || null,
+
         // 👇 DAILY CLAIM INFO
         lastDailyClaimAt,
         canDailyClaim,
