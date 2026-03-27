@@ -51,7 +51,7 @@ const ReferralPage: React.FC = () => {
   const [loadingStats, setLoadingStats] = useState(false);
 
   const referralCode = user?.inviteCode || '';
-  const referralLink = `https://market.skyverses.io/login?ref=${referralCode}`;
+  const referralLink = `${window.location.origin}/login?ref=${referralCode}`;
 
   // Fetch stats
   useEffect(() => {
