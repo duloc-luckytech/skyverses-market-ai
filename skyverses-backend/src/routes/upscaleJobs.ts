@@ -9,6 +9,7 @@ import User from "../models/UserModel";
 import CreditTransaction from "../models/CreditTransaction.model";
 import ModelPricingMatrix from "../models/ModelPricingMatrix.model";
 import SystemSetting from "../models/SystemSetting.model";
+import { pickRandomActiveOwner } from "./fxflow";
 
 const router = express.Router();
 
@@ -86,6 +87,12 @@ router.post("/upscale-batch", authenticate, async (req: any, res) => {
 
       if (!jobId || !urlImage) continue;
 
+      // ✅ Random assign owner nếu provider là fxflow
+      let jobOwner: string | null = null;
+      if (finalProvider === ImageEngineProvider.FXFLOW) {
+        jobOwner = await pickRandomActiveOwner();
+      }
+
       const job = await ImageJob.create({
         userId,
         type: ImageJobType.IMAGE_UPSCALE,
@@ -111,6 +118,7 @@ router.post("/upscale-batch", authenticate, async (req: any, res) => {
         },
 
         creditsUsed: costPerTask,
+        owner: jobOwner,
       });
 
       createdJobs.push({
@@ -445,6 +453,12 @@ router.post("/upscale-from-job", authenticate, async (req: any, res) => {
       finalProvider = ImageEngineProvider.FXFLOW;
     }
 
+    // ✅ Random assign owner nếu provider là fxflow
+    let jobOwner: string | null = null;
+    if (finalProvider === ImageEngineProvider.FXFLOW) {
+      jobOwner = await pickRandomActiveOwner();
+    }
+
     // ─── CREATE UPSCALE JOB ───
     const job = await ImageJob.create({
       userId,
@@ -472,6 +486,7 @@ router.post("/upscale-from-job", authenticate, async (req: any, res) => {
       },
 
       creditsUsed: costPerTask,
+      owner: jobOwner,
     });
 
     // ─── DEDUCT CREDITS ───

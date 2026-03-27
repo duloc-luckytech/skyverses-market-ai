@@ -13,6 +13,7 @@ import ImageJob, {
 import User from "../models/UserModel";
 import CreditTransaction from "../models/CreditTransaction.model";
 import ImageOwnerModel from "../models/ImageOwnerModel";
+import FxflowOwner from "../models/FxflowOwner.model";
 import { authenticate } from "./auth";
 
 const router = express.Router();
@@ -44,6 +45,21 @@ async function getFxflowConfig() {
     return { ...DEFAULT_FXFLOW_CONFIG, ...(setting?.value || {}) };
   } catch {
     return DEFAULT_FXFLOW_CONFIG;
+  }
+}
+
+/* =====================================================
+   OWNER HELPER
+   Random chọn 1 owner active để gán vào job
+===================================================== */
+export async function pickRandomActiveOwner(): Promise<string | null> {
+  try {
+    const owners = await FxflowOwner.find({ status: "active" }).lean();
+    if (!owners.length) return null;
+    const pick = owners[Math.floor(Math.random() * owners.length)];
+    return pick.name;
+  } catch {
+    return null;
   }
 }
 
@@ -108,24 +124,38 @@ function mapQuality(mode?: string): string {
 /* =====================================================
    GET /tasks/pending
    Bên thứ 3 (fxflow) gọi endpoint này để lấy task về xử lý
+   ✅ Hỗ trợ ?owner=acc1 để lọc theo owner
 ===================================================== */
 router.get("/tasks/pending", async (req, res) => {
   try {
     const fxConfig = await getFxflowConfig();
-    // 1️⃣ Fetch pending IMAGE jobs (fxflow)
-    const pendingImages = await ImageJob.find({
+    const ownerFilter = req.query.owner as string | undefined;
+
+    // Build shared filter
+    const imageFilter: any = {
       status: ImageJobStatus.PENDING,
       "engine.provider": ImageEngineProvider.FXFLOW,
-    })
+    };
+
+    const videoFilter: any = {
+      status: VideoJobStatus.PENDING,
+      "engine.provider": VideoEngineProvider.FXFLOW,
+    };
+
+    // ✅ Nếu có ?owner= → chỉ lấy job của owner đó
+    if (ownerFilter) {
+      imageFilter.owner = ownerFilter;
+      videoFilter.owner = ownerFilter;
+    }
+
+    // 1️⃣ Fetch pending IMAGE jobs (fxflow)
+    const pendingImages = await ImageJob.find(imageFilter)
       .sort({ createdAt: 1 }) // oldest first (FIFO)
       .limit(5)
       .lean();
 
     // 2️⃣ Fetch pending VIDEO jobs (fxflow)
-    const pendingVideos = await VideoJob.find({
-      status: VideoJobStatus.PENDING,
-      "engine.provider": VideoEngineProvider.FXFLOW,
-    })
+    const pendingVideos = await VideoJob.find(videoFilter)
       .sort({ createdAt: 1 })
       .limit(5)
       .lean();
@@ -138,6 +168,7 @@ router.get("/tasks/pending", async (req, res) => {
         id: String(job._id),
         type: "image",
         prompt: job.enginePayload?.prompt || job.input?.prompt || "",
+        owner: job.owner || null,
       };
 
       // Optional: model (default: NARWHAL)
@@ -166,6 +197,7 @@ router.get("/tasks/pending", async (req, res) => {
         id: String(job._id),
         type: "video",
         prompt: job.enginePayload?.prompt || job.input?.prompt || "",
+        owner: job.owner || null,
       };
 
       // Optional: videoMode (default: "text")
@@ -288,7 +320,7 @@ async function handleImageComplete(
     await job.save();
 
     console.log(
-      `✅ [FXFlow][IMG] DONE job=${job._id} mediaId=${result.mediaId}`
+      `✅ [FXFlow][IMG] DONE job=${job._id} mediaId=${result.mediaId} owner=${job.owner}`
     );
 
     // 📚 Auto-save vào thư viện (ImageOwner)
@@ -361,7 +393,7 @@ async function handleVideoComplete(
     await job.save();
 
     console.log(
-      `✅ [FXFlow][VID] DONE job=${job._id} mediaId=${result.mediaId}`
+      `✅ [FXFlow][VID] DONE job=${job._id} mediaId=${result.mediaId} owner=${job.owner}`
     );
 
     return res.json({
@@ -457,6 +489,100 @@ router.put("/config", authenticate, async (req: any, res) => {
 
     console.log(`⚙️ [FXFlow] Config updated:`, result.value);
     res.json({ success: true, data: result.value });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/* =====================================================
+   FXFLOW OWNER CRUD
+   Admin quản lý danh sách owner (acc1, acc2, ...)
+===================================================== */
+
+// GET /fxflow/owners — Lấy danh sách tất cả owners
+router.get("/owners", async (_req, res) => {
+  try {
+    const owners = await FxflowOwner.find().sort({ createdAt: 1 }).lean();
+    res.json({ success: true, data: owners });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST /fxflow/owners — Tạo owner mới
+router.post("/owners", authenticate, async (req: any, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Forbidden" });
+    }
+
+    const { name, description, status = "active" } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: "Missing owner name" });
+    }
+
+    const existing = await FxflowOwner.findOne({ name: name.trim() });
+    if (existing) {
+      return res.status(409).json({ success: false, message: "Owner already exists" });
+    }
+
+    const owner = await FxflowOwner.create({
+      name: name.trim(),
+      description: description || "",
+      status,
+    });
+
+    console.log(`👤 [FXFlow] Owner created: ${owner.name} (${owner.status})`);
+    res.json({ success: true, data: owner });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// PUT /fxflow/owners/:id — Update owner (toggle status, rename, etc.)
+router.put("/owners/:id", authenticate, async (req: any, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Forbidden" });
+    }
+
+    const { status, description, name } = req.body;
+    const update: any = {};
+    if (status !== undefined) update.status = status;
+    if (description !== undefined) update.description = description;
+    if (name !== undefined) update.name = name.trim();
+
+    const owner = await FxflowOwner.findByIdAndUpdate(
+      req.params.id,
+      { $set: update },
+      { new: true }
+    );
+
+    if (!owner) {
+      return res.status(404).json({ success: false, message: "Owner not found" });
+    }
+
+    console.log(`👤 [FXFlow] Owner updated: ${owner.name} → ${owner.status}`);
+    res.json({ success: true, data: owner });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// DELETE /fxflow/owners/:id — Xóa owner
+router.delete("/owners/:id", authenticate, async (req: any, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Forbidden" });
+    }
+
+    const owner = await FxflowOwner.findByIdAndDelete(req.params.id);
+    if (!owner) {
+      return res.status(404).json({ success: false, message: "Owner not found" });
+    }
+
+    console.log(`🗑️ [FXFlow] Owner deleted: ${owner.name}`);
+    res.json({ success: true, message: `Deleted owner: ${owner.name}` });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
   }

@@ -110,6 +110,9 @@ export interface IImageJob extends Document {
   /* ---------- FALLBACK ---------- */
   failedEngines?: string[]; // engines that have timed out / failed
 
+  /* ---------- FXFLOW OWNER ---------- */
+  owner?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -194,6 +197,9 @@ const ImageJobSchema = new Schema<IImageJob>(
     },
 
     creditsUsed: { type: Number, default: 0 },
+
+    /* ---------- FXFLOW OWNER ---------- */
+    owner: { type: String, default: null, index: true },
 
     pollStartedAt: Number, // ⭐ timestamp
 

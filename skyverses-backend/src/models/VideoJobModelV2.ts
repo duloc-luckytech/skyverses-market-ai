@@ -103,6 +103,9 @@ export interface IVideoJob extends Document {
   /* ---------- FALLBACK ---------- */
   failedEngines?: string[];
 
+  /* ---------- FXFLOW OWNER ---------- */
+  owner?: string;
+
   refundedAt?: Date;
   refundReason: string;
 
@@ -197,6 +200,9 @@ const VideoJobSchema = new Schema<IVideoJob>(
     refundReason: String,
     creditsUsed: { type: Number, default: 0 },
     pollStartedAt: Date,
+
+    /* ---------- FXFLOW OWNER ---------- */
+    owner: { type: String, default: null, index: true },
 
     /* ---------- FALLBACK ---------- */
     failedEngines: { type: [String], default: [] },

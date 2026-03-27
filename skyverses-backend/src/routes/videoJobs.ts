@@ -6,6 +6,7 @@ import { getCookieForJob } from "../utils/getCookieForJob";
 import ModelPricingMatrix from "../models/ModelPricingMatrix.model";
 import User from "../models/UserModel";
 import CreditTransaction from "../models/CreditTransaction.model";
+import { pickRandomActiveOwner } from "./fxflow";
 
 export const EXECUTION_CONFIGS = ["router_a"] as const;
 
@@ -184,6 +185,12 @@ router.post("/", authenticate, async (req: any, res) => {
     }
   }
 
+  // ✅ Random assign owner nếu provider là fxflow
+  let jobOwner: string | null = null;
+  if (finalEngine.provider === "fxflow") {
+    jobOwner = await pickRandomActiveOwner();
+  }
+
   const job = await VideoJob.create({
     userId: req.user.userId,
     type,
@@ -194,9 +201,10 @@ router.post("/", authenticate, async (req: any, res) => {
     executor,
     status: VideoJobStatus.PENDING,
     creditsUsed: creditCost,
+    owner: jobOwner,
   });
 
-  console.log(`🎬 [VID] CREATE job=${job._id} engine=${finalEngine.provider} model=${finalEngine.model} type=${type} cost=${creditCost}`);
+  console.log(`🎬 [VID] CREATE job=${job._id} engine=${finalEngine.provider} model=${finalEngine.model} type=${type} cost=${creditCost} owner=${jobOwner}`);
 
   res.json({
     success: true,

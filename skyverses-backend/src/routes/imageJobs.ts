@@ -11,6 +11,7 @@ import ModelPricingMatrix from "../models/ModelPricingMatrix.model";
 import User from "../models/UserModel";
 import CreditTransaction from "../models/CreditTransaction.model";
 import ImageOwnerModel from "../models/ImageOwnerModel";
+import { pickRandomActiveOwner } from "./fxflow";
 
 const router = express.Router();
 
@@ -180,6 +181,12 @@ router.post("/", authenticate, async (req: any, res) => {
     }
   }
 
+  // ✅ Random assign owner nếu provider là fxflow
+  let jobOwner: string | null = null;
+  if (finalEngine.provider === "fxflow") {
+    jobOwner = await pickRandomActiveOwner();
+  }
+
   const job = await ImageJob.create({
     userId: req.user.userId,
     type,
@@ -190,9 +197,10 @@ router.post("/", authenticate, async (req: any, res) => {
     enginePayload,
     status: ImageJobStatus.PENDING,
     creditsUsed: creditCost,
+    owner: jobOwner,
   });
 
-  console.log(`📸 [IMG] CREATE job=${job._id} engine=${finalEngine.provider} model=${finalEngine.model} type=${type} cost=${creditCost}`);
+  console.log(`📸 [IMG] CREATE job=${job._id} engine=${finalEngine.provider} model=${finalEngine.model} type=${type} cost=${creditCost} owner=${jobOwner}`);
 
   res.json({
     success: true,
