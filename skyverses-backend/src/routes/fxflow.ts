@@ -146,6 +146,8 @@ function mapVideoMode(type?: string): string {
       return "image";
     case VideoJobType.START_END_IMAGE:
       return "startend";
+    case VideoJobType.INGREDIENT:
+      return "ingredient";
     case VideoJobType.TEXT_TO_VIDEO:
     default:
       return "text";
@@ -273,6 +275,15 @@ router.get("/tasks/pending", async (req, res) => {
           job.input?.images?.[1] ||
           job.input?.endImage ||
           "";
+      }
+
+      // referenceImages — required khi videoMode = "ingredient" (Character Sync)
+      // FE gửi: input.images = [charUrl1, charUrl2, ...]
+      if (videoMode === "ingredient") {
+        const refImages = job.input?.images;
+        if (Array.isArray(refImages) && refImages.length > 0) {
+          task.referenceImages = refImages.filter((img: any) => img != null);
+        }
       }
 
       tasks.push(task);

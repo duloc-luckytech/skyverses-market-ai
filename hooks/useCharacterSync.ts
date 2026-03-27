@@ -39,18 +39,12 @@ export interface ProductionJob {
   error?: string;
 }
 
+export const MAX_CHARACTERS = 10;
+
 export const useCharacterSync = () => {
   const { credits, useCredits, addCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
 
-  const [slots, setSlots] = useState<CharacterSlot[]>(
-    Array.from({ length: 10 }, (_, i) => ({
-      id: `slot-${i}`,
-      url: null,
-      mediaId: null,
-      name: `Nhân vật ${i + 1}`,
-      role: 'NPC'
-    }))
-  );
+  const [slots, setSlots] = useState<CharacterSlot[]>([]);
 
   const [sequences, setSequences] = useState<PromptSequence[]>([
     { id: 'seq-1', text: '', duration: '8s', boundCharacterIds: [] }
@@ -131,6 +125,22 @@ export const useCharacterSync = () => {
     setSlots(prev => prev.map((s, i) => i === idx ? { ...s, ...updates } : s));
   };
 
+  const addCharacterFromLibrary = (url: string, mediaId: string | null, name: string) => {
+    if (slots.length >= MAX_CHARACTERS) return;
+    const newSlot: CharacterSlot = {
+      id: `slot-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+      url,
+      mediaId,
+      name: name.trim().toUpperCase() || `NV ${slots.length + 1}`,
+      role: 'NPC'
+    };
+    setSlots(prev => [...prev, newSlot]);
+  };
+
+  const removeCharacter = (id: string) => {
+    setSlots(prev => prev.filter(s => s.id !== id));
+  };
+
   const addSequence = () => {
     setSequences([...sequences, { id: `seq-${Date.now()}`, text: '', duration: duration, boundCharacterIds: [] }]);
   };
@@ -146,13 +156,10 @@ export const useCharacterSync = () => {
   const hasValidSequence = useMemo(() => {
     const activeSeqs = sequences.filter(s => s.text.trim() !== '');
     if (activeSeqs.length === 0) return false;
-    if (activeCharacterNames.length === 0) return false;
-
-    return activeSeqs.some(seq => {
-      const textUpper = seq.text.toUpperCase();
-      return activeCharacterNames.some(name => textUpper.includes(name));
-    });
-  }, [sequences, activeCharacterNames]);
+    // Just need at least one character with an image uploaded
+    const hasCharacter = slots.some(s => s.url);
+    return hasCharacter;
+  }, [sequences, slots]);
 
   const currentUnitCost = useMemo(() => {
     if (!selectedModel || !selectedModel.pricing) return 50;
@@ -232,7 +239,14 @@ export const useCharacterSync = () => {
   };
 
   const applyTemplate = (template: any) => {
-    setSlots(prev => prev.map((s, i) => template.actors[i] ? { ...s, url: template.actors[i].url, name: template.actors[i].name, mediaId: template.actors[i].mediaId || null } : s));
+    const newSlots: CharacterSlot[] = (template.actors || []).slice(0, MAX_CHARACTERS).map((actor: any, i: number) => ({
+      id: `slot-tmpl-${Date.now()}-${i}`,
+      url: actor.url,
+      mediaId: actor.mediaId || null,
+      name: actor.name || `NV ${i + 1}`,
+      role: 'NPC'
+    }));
+    setSlots(newSlots);
     setSequences([{ id: `seq-${Date.now()}`, text: template.prompt, duration: '8s', boundCharacterIds: [] }]);
     setIsTemplateModalOpen(false);
   };
@@ -245,57 +259,124 @@ export const useCharacterSync = () => {
     if (usagePreference === 'credits' && credits < totalCostEstimate) return 'LOW_CREDITS';
 
     setIsGenerating(true);
+
+    // Collect all character reference images (same as VideoGenerator's inputImages)
     const charUrls = slots.filter(s => s.url).map(s => s.url!);
-    // Ưu tiên sử dụng mediaId nếu có cho engine fxlab/gommo
-    const charMediaIds = slots.filter(s => s.url).map(s => s.mediaId || s.url!);
 
     const now = new Date();
     const dateKey = now.toISOString().split('T')[0];
     const timeStr = now.toLocaleTimeString();
 
-    for (const seq of activeSequences) {
-      const resultId = `sync-job-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
-      const newJob: ProductionJob = {
-        id: resultId, status: 'SYNTHESIZING', prompt: seq.text, progress: 15, timestamp: timeStr, cost: currentUnitCost, ratio: aspectRatio, resolution: resolution, duration: duration, references: charUrls, dateKey: dateKey, modelName: selectedModel.name
+    // Create placeholder jobs for each sequence
+    const taskEntries = activeSequences.map(seq => {
+      const localId = `sync-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+      const job: ProductionJob = {
+        id: localId,
+        status: 'SYNTHESIZING',
+        prompt: seq.text,
+        progress: 10,
+        timestamp: timeStr,
+        cost: currentUnitCost,
+        ratio: aspectRatio,
+        resolution,
+        duration,
+        references: charUrls,
+        dateKey,
+        modelName: selectedModel.name,
       };
-      setJobs(prev => [newJob, ...prev]);
+      return { localId, seq, job };
+    });
 
-      try {
-        if (usagePreference === 'credits') {
-          const payload: VideoJobRequest = {
-            type: "ingredient",
-            input: { images: charUrls },
-            config: { duration: parseInt(duration), aspectRatio, resolution },
-            engine: { provider: selectedEngine as any, model: selectedModel.modelKey as any },
-            enginePayload: { accessToken: "SECURE_GATEWAY_TOKEN", prompt: seq.text, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: selectedModel.mode as any }
-          };
-          const res = await videosApi.createJob(payload);
-          const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
-          if (isSuccess && res.data.jobId) {
-            useCredits(currentUnitCost);
-            pollJobStatus(res.data.jobId, resultId, currentUnitCost);
+    // Add all placeholder jobs to the queue
+    setJobs(prev => [...taskEntries.map(t => t.job), ...prev]);
+
+    // Run all sequences in parallel (like VideoGenerator's Promise.all)
+    try {
+      await Promise.all(taskEntries.map(async ({ localId, seq }) => {
+        try {
+          if (usagePreference === 'credits') {
+            // Build payload matching VideoGenerator format — use "ingredient" for multi-reference character sync
+            const payload: VideoJobRequest = {
+              type: "ingredient",
+              input: { images: charUrls.length > 0 ? charUrls : [null] },
+              config: {
+                duration: parseInt(duration),
+                aspectRatio,
+                resolution,
+              },
+              engine: {
+                provider: selectedEngine as any,
+                model: selectedModel.modelKey as any,
+              },
+              enginePayload: {
+                accessToken: "SECURE_GATEWAY_TOKEN",
+                prompt: seq.text,
+                privacy: "PRIVATE",
+                translateToEn: true,
+                projectId: "default",
+                mode: (selectedModel.mode || "relaxed") as any,
+              },
+            };
+
+            const res = await videosApi.createJob(payload);
+            const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
+
+            if (isSuccess && res.data.jobId) {
+              const serverJobId = res.data.jobId;
+
+              // Replace local ID with server ID (same as VideoGenerator)
+              setJobs(prev => prev.map(j => j.id === localId ? { ...j, id: serverJobId } : j));
+
+              // Credits deducted server-side, sync client
+              useCredits(currentUnitCost);
+
+              // Start polling with server job ID
+              pollJobStatus(serverJobId, serverJobId, currentUnitCost);
+            } else {
+              setJobs(prev => prev.map(j => j.id === localId ? {
+                ...j, status: 'FAILED', error: res.message || 'Khởi tạo Job thất bại'
+              } : j));
+            }
           } else {
-            setJobs(prev => prev.map(j => j.id === resultId ? { ...j, status: 'FAILED', error: res.message || 'Khởi tạo Job thất bại' } : j));
+            // Personal API Key flow (same as VideoGenerator)
+            const url = await generateDemoVideo({
+              prompt: seq.text,
+              references: charUrls.length > 0 ? charUrls : undefined,
+              resolution: resolution as '720p' | '1080p',
+              aspectRatio,
+              duration,
+              isUltra: selectedModel.modelKey.includes('ultra') || selectedModel.name.includes('PRO'),
+            });
+
+            if (url) {
+              setJobs(prev => {
+                const job = prev.find(j => j.id === localId);
+                if (job) {
+                  setHistory(h => [{ ...job, status: 'COMPLETED', url, progress: 100 }, ...h]);
+                }
+                return prev.filter(j => j.id !== localId);
+              });
+            } else {
+              setJobs(prev => prev.map(j => j.id === localId ? {
+                ...j, status: 'FAILED', error: 'Engine trả về kết quả rỗng'
+              } : j));
+            }
           }
-        } else {
-          const url = await generateDemoVideo({ prompt: `Character Sync: ${seq.text}. Identity Locked.`, references: charUrls, resolution: resolution as '720p' | '1080p', aspectRatio: aspectRatio, duration: duration, isUltra: selectedModel.modelKey.includes('ultra') || selectedModel.name.includes('PRO') });
-          if (url) {
-            setJobs(prev => prev.filter(j => j.id !== resultId));
-            setHistory(prev => [{ ...newJob, status: 'COMPLETED', url, progress: 100 }, ...prev]);
-          } else {
-            setJobs(prev => prev.map(j => j.id === resultId ? { ...j, status: 'FAILED', error: 'Từ chối bởi Engine' } : j));
-          }
+        } catch (e) {
+          setJobs(prev => prev.map(j => j.id === localId ? {
+            ...j, status: 'FAILED', error: `Lỗi: ${String(e)}`
+          } : j));
         }
-      } catch (e) {
-        setJobs(prev => prev.map(j => j.id === resultId ? { ...j, status: 'FAILED', error: 'Lỗi động cơ xử lý' } : j));
-      }
+      }));
+    } finally {
+      setIsGenerating(false);
     }
-    setIsGenerating(false);
+
     return 'SUCCESS';
   };
 
   return {
-    slots, setSlots, updateSlot,
+    slots, setSlots, updateSlot, addCharacterFromLibrary, removeCharacter,
     sequences, setSequences, addSequence, removeSequence,
     jobs, setJobs,
     history, setHistory,

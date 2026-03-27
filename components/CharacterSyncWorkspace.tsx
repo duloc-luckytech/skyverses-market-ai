@@ -1,107 +1,28 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, Zap, Loader2, Download, Activity, Monitor, Coins, Film,
-  Calendar, Clock, AlertCircle, Play, Pause, Maximize2,
-  Trash2, ChevronLeft, Fingerprint, Menu
+  X, Zap, Loader2, Download, Activity, Coins, Film,
+  Calendar, AlertCircle, Search,
+  ChevronLeft, Fingerprint, User
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { videosApi } from '../apis/videos';
 import ImageLibraryModal from './ImageLibraryModal';
 import ResourceAuthModal from './common/ResourceAuthModal';
 import ProductImageWorkspace from './ProductImageWorkspace';
 import { GCSAssetMetadata } from '../services/storage';
 
-import { useCharacterSync, ProductionJob } from '../hooks/useCharacterSync';
+import { useCharacterSync, ProductionJob, MAX_CHARACTERS } from '../hooks/useCharacterSync';
 import { RegistrySection } from './character-sync/RegistrySection';
 import { NarrativeBeats } from './character-sync/NarrativeBeats';
-import { ModelSelectionSection } from './character-sync/ModelSelectionSection';
-import { ParameterSettings } from './character-sync/ParameterSettings';
+import { ConfigurationSection } from './character-sync/ConfigurationSection';
 import { TutorialModal } from './character-sync/TutorialModal';
 import { TemplateModal } from './character-sync/TemplateModal';
 import { GuideSlider } from './character-sync/GuideSlider';
 import { MobileGeneratorBar } from './common/MobileGeneratorBar';
+import { VideoCard, VideoResult } from './video-generator/VideoCard';
+import { JobLogsModal } from './common/JobLogsModal';
 
-/* ─── PRODUCTION CARD ─── */
-const ProductionCard: React.FC<{
-  job: ProductionJob;
-  onDownload: (url: string, filename: string) => void;
-  onDelete: (id: string) => void;
-  onFullscreen: (url: string) => void;
-  onEdit: (url: string) => void;
-}> = ({ job, onDownload, onDelete, onFullscreen, onEdit }) => {
-  const isDone = job.status === 'COMPLETED';
-  const isFailed = job.status === 'FAILED';
-  const isProcessing = job.status === 'SYNTHESIZING';
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  const togglePlay = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!videoRef.current || !isDone) return;
-    isPlaying ? videoRef.current.pause() : videoRef.current.play();
-    setIsPlaying(!isPlaying);
-  };
-
-  return (
-    <div className="group relative bg-white dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:border-purple-500/20 transition-all">
-      <div className="aspect-video bg-slate-100 dark:bg-black relative overflow-hidden flex items-center justify-center cursor-pointer" onClick={togglePlay}>
-        {isDone && job.url ? (
-          <>
-            <video ref={videoRef} src={job.url} loop muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div className={`absolute inset-0 flex items-center justify-center bg-black/20 transition-opacity ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
-              {isPlaying ? <Pause size={28} className="text-white drop-shadow-lg" fill="currentColor" /> : <Play size={28} className="text-white drop-shadow-lg ml-0.5" fill="currentColor" />}
-            </div>
-          </>
-        ) : isProcessing ? (
-          <div className="flex flex-col items-center gap-2">
-            <Loader2 size={24} className="text-purple-400 animate-spin" />
-            <p className="text-[9px] font-bold uppercase tracking-wider text-purple-400 animate-pulse">Rendering...</p>
-          </div>
-        ) : isFailed ? (
-          <div className="text-center px-4 space-y-1.5">
-            <AlertCircle size={16} className="mx-auto text-red-400" />
-            <p className="text-[9px] font-medium text-red-400">{job.error || 'Lỗi tạo video'}</p>
-          </div>
-        ) : (
-          <Activity size={16} className="text-slate-400 animate-pulse" />
-        )}
-
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all flex gap-1.5 z-20">
-          {isDone && job.url && (
-            <>
-              <button onClick={e => { e.stopPropagation(); onDownload(job.url!, `sync_${job.id}.mp4`); }}
-                className="p-1.5 bg-black/50 backdrop-blur-md rounded-lg text-white hover:bg-purple-500 transition-all">
-                <Download size={12} />
-              </button>
-              <button onClick={e => { e.stopPropagation(); onFullscreen(job.url!); }}
-                className="p-1.5 bg-black/50 backdrop-blur-md rounded-lg text-white hover:bg-purple-500 transition-all">
-                <Maximize2 size={12} />
-              </button>
-            </>
-          )}
-          {(isDone || isFailed) && (
-            <button onClick={e => { e.stopPropagation(); onDelete(job.id); }}
-              className="p-1.5 bg-black/50 backdrop-blur-md rounded-lg text-white hover:bg-red-500 transition-all">
-              <Trash2 size={12} />
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="p-4 space-y-2">
-        <h4 className="text-xs font-bold text-slate-700 dark:text-white/80 truncate">{job.prompt}</h4>
-        <div className="flex justify-between items-center">
-          <span className="flex items-center gap-1 text-[9px] text-slate-400 dark:text-slate-500"><Clock size={8} /> {job.timestamp}</span>
-          <div className={`flex items-center gap-0.5 text-[9px] font-semibold ${job.isRefunded ? 'text-emerald-500' : 'text-amber-500/80'}`}>
-            <Zap size={8} fill="currentColor" />
-            <span>{job.isRefunded ? 'Hoàn trả' : `-${job.cost}`}</span>
-          </div>
-        </div>
-        <p className="text-[8px] text-slate-300 dark:text-slate-600 truncate">{job.modelName}</p>
-      </div>
-    </div>
-  );
-};
 
 /* ═══════════════════════════════════════════════════
    MAIN WORKSPACE
@@ -112,6 +33,9 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
   const [activeSlotIdx, setActiveSlotIdx] = useState<number | null>(null);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [isAddingCharacter, setIsAddingCharacter] = useState(false);
+  const [pendingAsset, setPendingAsset] = useState<{url: string, mediaId: string | null} | null>(null);
+  const [characterName, setCharacterName] = useState('');
   const [showResourceModal, setShowResourceModal] = useState(false);
   const [isResumingGenerate, setIsResumingGenerate] = useState(false);
   const [hasPersonalKey, setHasPersonalKey] = useState(false);
@@ -120,9 +44,18 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorImage, setEditorImage] = useState<string | null>(null);
+  const [selectedLogTask, setSelectedLogTask] = useState<VideoResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const prevHistoryLength = useRef(api.history.length);
   const todayKey = useMemo(() => new Date().toISOString().split('T')[0], []);
+
+  // ─── SERVER-SIDE HISTORY STATE ───
+  const [serverHistory, setServerHistory] = useState<VideoResult[]>([]);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [hasMoreHistory, setHasMoreHistory] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [historySearch, setHistorySearch] = useState('');
+  const historyObserver = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     if (autoDownload && api.history.length > prevHistoryLength.current) {
@@ -140,6 +73,69 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
     }
   }, [showResourceModal]);
 
+  // ─── FETCH SERVER HISTORY ───
+  const fetchHistory = async (pageNum: number, isInitial = false) => {
+    if (pageNum === 1) setLoadingHistory(true);
+    try {
+      const res = await videosApi.getJobs({
+        page: pageNum,
+        limit: 15,
+        status: 'done',
+        type: 'ingredient',
+        q: historySearch || undefined,
+      });
+      if (res.success && res.data) {
+        const mapped: VideoResult[] = res.data.map(item => {
+          const d = new Date(item.createdAt);
+          return {
+            id: item.jobId,
+            url: item.videoUrl || null,
+            prompt: item.prompt || 'Untitled',
+            fullTimestamp: d.toLocaleString('vi-VN'),
+            dateKey: d.toISOString().split('T')[0],
+            displayDate: d.toLocaleDateString('vi-VN'),
+            model: item.model || 'Unknown',
+            mode: 'standard',
+            duration: '8s',
+            status: item.status === 'done' ? 'done' as const : 'error' as const,
+            hasSound: false,
+            aspectRatio: '16:9' as const,
+            cost: 0,
+          };
+        });
+        if (isInitial) setServerHistory(mapped);
+        else setServerHistory(prev => [...prev, ...mapped]);
+        setHasMoreHistory(res.meta.page < res.meta.totalPages);
+      }
+    } catch (err) {
+      console.error('[CharSync] History fetch error:', err);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  useEffect(() => {
+    if (api.activeResultTab === 'HISTORY') {
+      setHistoryPage(1);
+      fetchHistory(1, true);
+    }
+  }, [api.activeResultTab, historySearch]);
+
+  const lastHistoryRef = useCallback((node: HTMLDivElement | null) => {
+    if (loadingHistory) return;
+    if (historyObserver.current) historyObserver.current.disconnect();
+    historyObserver.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMoreHistory) {
+        setHistoryPage(prev => {
+          const n = prev + 1;
+          fetchHistory(n);
+          return n;
+        });
+      }
+    });
+    if (node) historyObserver.current.observe(node);
+  }, [loadingHistory, hasMoreHistory]);
+
   const handleSynthesizeClick = async () => {
     if (!isAuthenticated) { login(); return; }
     if (window.innerWidth < 1024) setIsMobileExpanded(false);
@@ -148,11 +144,45 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
     else if (status === 'LOW_CREDITS') { alert("Số dư không đủ."); }
   };
 
+  // Flow for adding a new character: library → name → add
+  const handleAddCharacterClick = () => {
+    if (api.slots.length >= MAX_CHARACTERS) return;
+    setIsAddingCharacter(true);
+    setActiveSlotIdx(null);
+    setIsLibraryOpen(true);
+  };
+
   const handleLibrarySelect = (assets: GCSAssetMetadata[]) => {
-    if (assets.length > 0 && activeSlotIdx !== null && activeSlotIdx >= 0) {
-      api.updateSlot(activeSlotIdx, { url: assets[0].url, mediaId: assets[0].mediaId || null });
+    if (assets.length === 0) { setIsLibraryOpen(false); return; }
+    const asset = assets[0];
+
+    if (isAddingCharacter) {
+      // Adding new character → show naming modal
+      setPendingAsset({ url: asset.url, mediaId: asset.mediaId || null });
+      setCharacterName('');
+      setIsLibraryOpen(false);
+    } else if (activeSlotIdx !== null && activeSlotIdx >= 0) {
+      // Replacing existing slot image
+      api.updateSlot(activeSlotIdx, { url: asset.url, mediaId: asset.mediaId || null });
+      setIsLibraryOpen(false);
+    } else {
+      setIsLibraryOpen(false);
     }
-    setIsLibraryOpen(false);
+  };
+
+  const handleConfirmAddCharacter = () => {
+    if (!pendingAsset) return;
+    const name = characterName.trim() || `NV ${api.slots.length + 1}`;
+    api.addCharacterFromLibrary(pendingAsset.url, pendingAsset.mediaId, name);
+    setPendingAsset(null);
+    setCharacterName('');
+    setIsAddingCharacter(false);
+  };
+
+  const handleCancelAddCharacter = () => {
+    setPendingAsset(null);
+    setCharacterName('');
+    setIsAddingCharacter(false);
   };
 
   const openEditor = (url: string) => { setEditorImage(url); setIsEditorOpen(true); };
@@ -178,24 +208,59 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
     completed.forEach((h, i) => setTimeout(() => handleDownload(h.url!, `sync_${h.id}.mp4`), i * 800));
   };
 
-  const groupedHistory = useMemo(() => {
-    const groups: Record<string, ProductionJob[]> = {};
-    api.history.forEach(job => {
-      const key = job.dateKey === todayKey ? 'Hôm nay' : job.dateKey;
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(job);
-    });
-    return groups;
-  }, [api.history, todayKey]);
+
 
   const disabledReason = useMemo(() => {
     if (api.isGenerating) return null;
     if (!api.slots.some(s => s.url)) return "Thêm ít nhất một Nhân vật";
     if (!api.sequences.some(s => s.text.trim() !== '')) return "Nhập nội dung Kịch bản";
-    if (!api.hasValidSequence) return "Kịch bản chưa chứa tên Nhân vật";
     if (api.usagePreference === 'credits' && credits < api.totalCostEstimate) return `Cần ${api.totalCostEstimate} CR`;
     return null;
-  }, [api.isGenerating, api.slots, api.sequences, api.hasValidSequence, api.usagePreference, credits, api.totalCostEstimate]);
+  }, [api.isGenerating, api.slots, api.sequences, api.usagePreference, credits, api.totalCostEstimate]);
+
+  /* ─── Map ProductionJob → VideoResult for VideoCard ─── */
+  const mapJobToResult = (job: ProductionJob): VideoResult => ({
+    id: job.id,
+    url: job.url || null,
+    prompt: job.prompt,
+    fullTimestamp: job.timestamp,
+    dateKey: job.dateKey,
+    displayDate: job.dateKey === todayKey ? 'Hôm nay' : job.dateKey,
+    model: job.modelName,
+    mode: 'standard',
+    duration: job.duration,
+    resolution: job.resolution,
+    status: job.status === 'COMPLETED' ? 'done' : job.status === 'FAILED' ? 'error' : 'processing',
+    hasSound: false,
+    aspectRatio: (job.ratio === '9:16' ? '9:16' : '16:9') as '16:9' | '9:16',
+    cost: job.cost,
+    isRefunded: job.isRefunded,
+    errorMessage: job.error,
+  });
+
+  const sessionResults = useMemo(() => {
+    const jobResults = api.jobs.map(mapJobToResult);
+    const todayResults = api.history.filter(h => h.dateKey === todayKey).map(mapJobToResult);
+    return [...jobResults, ...todayResults];
+  }, [api.jobs, api.history, todayKey]);
+
+  const processingCount = useMemo(() => sessionResults.filter(r => r.status === 'processing').length, [sessionResults]);
+  const doneCount = useMemo(() => sessionResults.filter(r => r.status === 'done').length, [sessionResults]);
+  const errorCount = useMemo(() => sessionResults.filter(r => r.status === 'error').length, [sessionResults]);
+
+  const historyResults = useMemo(() => api.history.map(mapJobToResult), [api.history]);
+
+  // Server-side history grouped by date
+  const groupedServerHistory = useMemo(() => {
+    const groups: Record<string, VideoResult[]> = {};
+    serverHistory.forEach(res => {
+      const key = res.dateKey === todayKey ? 'Hôm nay' : res.displayDate || res.dateKey;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(res);
+    });
+    return groups;
+  }, [serverHistory, todayKey]);
+  const sortedServerKeys = useMemo(() => Object.keys(groupedServerHistory).sort((a, b) => b.localeCompare(a)), [groupedServerHistory]);
 
   const primaryPrompt = api.sequences[0]?.text || '';
   const setPrimaryPrompt = (val: string) => api.setSequences(prev => prev.map((s, i) => i === 0 ? { ...s, text: val } : s));
@@ -233,9 +298,13 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             isGenerateDisabled={!!disabledReason || api.isGenerating}
             onGenerate={handleSynthesizeClick}
             onOpenLibrary={() => {
-              const firstEmptyIdx = api.slots.findIndex(s => !s.url);
-              setActiveSlotIdx(firstEmptyIdx >= 0 ? firstEmptyIdx : 0);
-              setIsLibraryOpen(true);
+              if (api.slots.length === 0) {
+                handleAddCharacterClick();
+              } else {
+                const firstEmptyIdx = api.slots.findIndex(s => !s.url);
+                setActiveSlotIdx(firstEmptyIdx >= 0 ? firstEmptyIdx : 0);
+                setIsLibraryOpen(true);
+              }
             }}
             generateLabel="TẠO"
             type="video"
@@ -248,10 +317,10 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
                 <ChevronLeft size={18} />
               </button>
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-white">
-                <Fingerprint size={14} />
+              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-white">
+                <Fingerprint size={12} />
               </div>
-              <span className="text-sm font-bold text-slate-800 dark:text-white">Character Sync</span>
+              <span className="text-xs font-bold text-slate-800 dark:text-white">Character Sync</span>
             </div>
           </header>
 
@@ -260,10 +329,13 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             <RegistrySection
               slots={api.slots}
               updateSlot={api.updateSlot}
-              onOpenLibrary={(idx) => { setActiveSlotIdx(idx); setIsLibraryOpen(true); }}
+              removeCharacter={api.removeCharacter}
+              onAddCharacter={handleAddCharacterClick}
+              onOpenLibrary={(idx) => { setIsAddingCharacter(false); setActiveSlotIdx(idx); setIsLibraryOpen(true); }}
               onTriggerUpload={(idx) => { setActiveSlotIdx(idx); fileInputRef.current?.click(); }}
               uploadingIdx={api.uploadingIdx}
               onOpenTutorial={() => api.setShowTutorial(true)}
+              onReorderSlots={api.setSlots}
             />
             <NarrativeBeats
               sequences={api.sequences}
@@ -272,15 +344,12 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               removeSequence={api.removeSequence}
               activeCharacterNames={api.activeCharacterNames}
             />
-            <ModelSelectionSection
+            <ConfigurationSection
               availableModels={api.availableModels}
               selectedModel={api.selectedModel}
               setSelectedModel={api.setSelectedModel}
               selectedEngine={api.selectedEngine}
               setSelectedEngine={api.setSelectedEngine}
-              unitCost={api.currentUnitCost}
-            />
-            <ParameterSettings
               resolution={api.resolution}
               setResolution={api.setResolution}
               availableResolutions={api.availableResolutions}
@@ -289,6 +358,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               duration={api.duration}
               setDuration={api.setDuration}
               availableDurations={api.availableDurations}
+              isGenerating={api.isGenerating}
             />
           </div>
 
@@ -296,19 +366,19 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           <div className={`shrink-0 border-t border-slate-200/80 dark:border-white/[0.04] bg-white/80 dark:bg-[#0c0c10]/80 backdrop-blur-lg px-4 py-3 space-y-2.5 ${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <Coins size={10} className="text-purple-500" />
-                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{credits.toLocaleString()} CR</span>
+                <Coins size={9} className="text-purple-500" />
+                <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">{credits.toLocaleString()} CR</span>
               </div>
               <div className="flex items-center gap-1 text-amber-500/80">
-                <Zap size={10} fill="currentColor" />
-                <span className="text-[11px] font-semibold">{api.currentUnitCost}</span>
+                <Zap size={9} fill="currentColor" />
+                <span className="text-[10px] font-semibold">{api.currentUnitCost}</span>
               </div>
             </div>
 
             <div className="relative group/genbtn">
               <button onClick={handleSynthesizeClick}
                 disabled={!!disabledReason || api.isGenerating}
-                className={`w-full py-3.5 rounded-xl text-white font-bold uppercase text-[11px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2.5
+                className={`w-full py-3 rounded-xl text-white font-bold uppercase text-[10px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2
                   ${!disabledReason && !api.isGenerating
                     ? 'bg-gradient-to-r from-purple-500 to-violet-500 hover:brightness-110 active:scale-[0.98] shadow-purple-500/20'
                     : 'bg-slate-200 dark:bg-white/[0.04] text-slate-400 dark:text-slate-600 cursor-not-allowed'}`}>
@@ -317,7 +387,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               </button>
               {disabledReason && (
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover/genbtn:opacity-100 pointer-events-none transition-all z-[160]">
-                  <div className="bg-slate-800 text-white text-[9px] font-semibold px-3 py-1.5 rounded-lg shadow-xl whitespace-nowrap border border-white/10">
+                  <div className="bg-slate-800 text-white text-[8px] font-semibold px-2.5 py-1 rounded-lg shadow-xl whitespace-nowrap border border-white/10">
                     {disabledReason}
                   </div>
                 </div>
@@ -328,82 +398,133 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
         {/* ─── RIGHT VIEWPORT ─── */}
         <aside className="flex-grow h-full flex flex-col bg-slate-50 dark:bg-[#050508] transition-colors relative">
-          {/* Viewport Header */}
-          <div className="h-14 border-b border-slate-200/80 dark:border-white/[0.04] flex items-center justify-between px-4 lg:px-6 shrink-0 bg-white/90 dark:bg-[#0c0c10]/90 backdrop-blur-lg z-40">
-            <div className="flex bg-slate-100 dark:bg-white/[0.03] p-1 rounded-xl border border-slate-200/80 dark:border-white/[0.04]">
-              {[
-                { id: 'CURRENT', label: 'Phiên hiện tại' },
-                { id: 'HISTORY', label: 'Lịch sử' }
-              ].map(tab => (
-                <button key={tab.id} onClick={() => api.setActiveResultTab(tab.id as any)}
-                  className={`px-4 md:px-5 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all ${api.activeResultTab === tab.id
-                    ? 'bg-white dark:bg-white/[0.06] text-purple-500 shadow-sm' : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-white'}`}>
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
+          {/* ─── TOOLBAR ─── */}
+          <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.04] bg-white/95 dark:bg-[#111114]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
             <div className="flex items-center gap-3">
-              <div className="hidden sm:flex items-center gap-2 bg-slate-100 dark:bg-white/[0.03] px-3 py-1.5 rounded-lg border border-slate-200/80 dark:border-white/[0.04]">
-                <span className="text-[9px] font-semibold text-slate-500 dark:text-slate-400">Auto tải</span>
-                <button onClick={() => setAutoDownload(!autoDownload)}
-                  className={`w-7 h-3.5 rounded-full relative transition-colors ${autoDownload ? 'bg-purple-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
-                  <motion.div animate={{ left: autoDownload ? 15 : 2 }} className="absolute top-0.5 w-2.5 h-2.5 bg-white rounded-full shadow-sm" />
+              <button onClick={onClose} className="lg:hidden p-1.5 -ml-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><ChevronLeft size={18} /></button>
+              <div className="flex bg-black/[0.03] dark:bg-white/[0.03] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+                <button onClick={() => api.setActiveResultTab('CURRENT')} className={`px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all ${api.activeResultTab === 'CURRENT' ? 'bg-black/[0.05] dark:bg-white/[0.06] text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
+                  <span className="flex items-center gap-1.5"><Film size={12} /> Lab</span>
+                </button>
+                <button onClick={() => api.setActiveResultTab('HISTORY')} className={`px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all ${api.activeResultTab === 'HISTORY' ? 'bg-black/[0.05] dark:bg-white/[0.06] text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
+                  <span className="flex items-center gap-1.5"><Calendar size={12} /> History</span>
                 </button>
               </div>
-              <button onClick={handleDownloadAll}
-                className="hidden sm:flex items-center gap-1.5 px-4 py-1.5 bg-purple-500 text-white rounded-lg text-[10px] font-bold hover:brightness-110 shadow-md transition-all">
-                <Download size={13} /> Tải tất cả
-              </button>
-              <button onClick={onClose} className="lg:hidden p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
-                <X size={18} />
+
+              {/* Status chips */}
+              {api.activeResultTab === 'CURRENT' && sessionResults.length > 0 && (
+                <div className="hidden md:flex items-center gap-2 ml-2">
+                  {processingCount > 0 && (
+                    <span className="flex items-center gap-1 px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-[9px] font-semibold text-amber-600 dark:text-amber-400">
+                      <Loader2 size={10} className="animate-spin" /> {processingCount}
+                    </span>
+                  )}
+                  {doneCount > 0 && (
+                    <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
+                      <Activity size={10} /> {doneCount}
+                    </span>
+                  )}
+                  {errorCount > 0 && (
+                    <span className="flex items-center gap-1 px-2 py-0.5 bg-red-500/10 border border-red-500/20 rounded-full text-[9px] font-semibold text-red-600 dark:text-red-400">
+                      <AlertCircle size={10} /> {errorCount}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-black/[0.03] dark:bg-white/[0.03] px-2.5 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.04]">
+                <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400">Auto DL</span>
+                <button onClick={() => setAutoDownload(!autoDownload)} className={`w-7 h-3.5 rounded-full relative transition-colors ${autoDownload ? 'bg-purple-500' : 'bg-slate-300 dark:bg-white/[0.1]'}`}>
+                  <motion.div animate={{ left: autoDownload ? 14 : 2 }} className="absolute top-0.5 w-2.5 h-2.5 bg-white rounded-full shadow-sm" />
+                </button>
+              </div>
+              <button onClick={handleDownloadAll} title="Tải tất cả"
+                className="p-2 bg-purple-500/10 text-purple-500 dark:text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all border border-purple-500/20">
+                <Download size={14} />
               </button>
             </div>
           </div>
 
-          {/* Results Area */}
-          <div className="flex-grow overflow-y-auto no-scrollbar px-4 md:px-6 lg:px-8 py-6 pb-32 lg:pb-8">
+          {/* ─── CONTENT ─── */}
+          <div className="flex-grow overflow-y-auto no-scrollbar p-4 md:p-6 lg:p-8 pb-32 lg:pb-8 relative z-10">
             <AnimatePresence mode="wait">
               {api.activeResultTab === 'CURRENT' ? (
-                <motion.div key="current" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
-                  {api.jobs.length === 0 && api.history.filter(h => h.dateKey === todayKey).length === 0 ? (
+                <motion.div key="session" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                  {sessionResults.length === 0 ? (
                     <GuideSlider onOpenTemplates={() => api.setIsTemplateModalOpen(true)} />
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                      {api.jobs.map(job => (
-                        <ProductionCard key={job.id} job={job} onDownload={handleDownload} onDelete={handleDeleteJob}
-                          onFullscreen={url => setFullscreenVideo({url, hasSound: false, id: job.id})} onEdit={openEditor} />
-                      ))}
-                      {api.history.filter(h => h.dateKey === todayKey).map(job => (
-                        <ProductionCard key={job.id} job={job} onDownload={handleDownload} onDelete={handleDeleteJob}
-                          onFullscreen={url => setFullscreenVideo({url, hasSound: false, id: job.id})} onEdit={openEditor} />
+                      {sessionResults.map(res => (
+                        <VideoCard key={res.id} res={res} isSelected={false} onToggleSelect={() => {}}
+                          onFullscreen={(url, hs, id) => setFullscreenVideo({ url, hasSound: hs, id })}
+                          onDelete={handleDeleteJob}
+                          onRetry={() => {}}
+                          onDownload={handleDownload}
+                          onViewLogs={(r) => setSelectedLogTask(r)} />
                       ))}
                     </div>
                   )}
                 </motion.div>
               ) : (
-                <motion.div key="history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-10">
-                  {api.history.length === 0 ? (
-                    <div className="py-24 text-center opacity-10 flex flex-col items-center gap-4 select-none">
-                      <Film size={64} strokeWidth={1} />
-                      <p className="text-sm font-bold uppercase tracking-wider">Chưa có bản ghi</p>
+                <motion.div key="history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6 pb-20">
+                  {/* Search bar */}
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 px-1">
+                    <div className="space-y-1">
+                      <h2 className="text-xl lg:text-2xl font-bold text-slate-800 dark:text-white/90">Lịch sử <span className="text-purple-500 dark:text-purple-400">lưu trữ</span></h2>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Tất cả video Character Sync đã tạo thành công.</p>
+                    </div>
+                    <div className="relative group w-full md:w-72">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-purple-400 transition-colors" size={14} />
+                      <input type="text" value={historySearch} onChange={e => setHistorySearch(e.target.value)}
+                        placeholder="Tìm theo prompt..."
+                        className="w-full bg-white dark:bg-white/[0.03] border border-black/[0.08] dark:border-white/[0.04] rounded-lg pl-9 pr-3 py-2 text-xs font-medium outline-none focus:border-purple-500/30 text-slate-700 dark:text-white/70 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+                    </div>
+                  </div>
+
+                  {loadingHistory && serverHistory.length === 0 ? (
+                    <div className="py-32 flex flex-col items-center gap-3 opacity-40">
+                      <Loader2 className="animate-spin text-purple-400" size={32} />
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Đang đồng bộ...</p>
+                    </div>
+                  ) : serverHistory.length > 0 ? (
+                    <div className="space-y-8">
+                      {sortedServerKeys.map(date => (
+                        <div key={date} className="space-y-4">
+                          <div className="flex items-center gap-3 px-1">
+                            <Calendar size={14} className="text-purple-400" />
+                            <h3 className="text-sm font-semibold text-slate-600 dark:text-white/70">{date}</h3>
+                            <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500 bg-black/[0.03] dark:bg-white/[0.03] px-2 py-0.5 rounded-full">{groupedServerHistory[date].length} video</span>
+                            <div className="h-px flex-grow bg-black/[0.06] dark:bg-white/[0.04]" />
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                            {groupedServerHistory[date].map((res, idx) => {
+                              const isLast = serverHistory.indexOf(res) === serverHistory.length - 1;
+                              return (
+                                <div key={res.id} ref={isLast ? lastHistoryRef : null}>
+                                  <VideoCard res={res} isSelected={false} onToggleSelect={() => {}}
+                                    onFullscreen={(url, hs, id) => setFullscreenVideo({ url, hasSound: hs, id })}
+                                    onDelete={handleDeleteJob}
+                                    onRetry={() => {}}
+                                    onDownload={handleDownload}
+                                    onViewLogs={(r) => setSelectedLogTask(r)} />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                      {loadingHistory && (
+                        <div className="flex justify-center py-8"><Loader2 className="animate-spin text-purple-400" size={28} /></div>
+                      )}
                     </div>
                   ) : (
-                    (Object.entries(groupedHistory) as [string, ProductionJob[]][]).map(([date, items]) => (
-                      <div key={date} className="space-y-4">
-                        <div className="flex items-center gap-3">
-                          <div className="p-1.5 bg-purple-500/10 rounded-lg text-purple-500"><Calendar size={12} /></div>
-                          <h5 className="text-xs font-bold text-slate-700 dark:text-white/80">{date}</h5>
-                          <div className="h-px flex-grow bg-slate-200/60 dark:bg-white/[0.04]" />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                          {items.map(job => (
-                            <ProductionCard key={job.id} job={job} onDownload={handleDownload} onDelete={handleDeleteJob}
-                              onFullscreen={url => setFullscreenVideo({url, hasSound: false, id: job.id})} onEdit={openEditor} />
-                          ))}
-                        </div>
-                      </div>
-                    ))
+                    <div className="py-32 text-center flex flex-col items-center gap-4">
+                      <Film size={60} strokeWidth={1} className="text-slate-300 dark:text-slate-600" />
+                      <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Chưa có lịch sử</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500">Tạo video Character Sync đầu tiên để bắt đầu.</p>
+                    </div>
                   )}
                 </motion.div>
               )}
@@ -429,6 +550,20 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       </AnimatePresence>
 
       <TemplateModal isOpen={api.isTemplateModalOpen} onClose={() => api.setIsTemplateModalOpen(false)} onApply={api.applyTemplate} />
+
+      <AnimatePresence>
+        {selectedLogTask && (
+          <JobLogsModal
+            isOpen={true}
+            logs={selectedLogTask.logs || []}
+            status={selectedLogTask.status}
+            title="Character Sync Trace"
+            subtitle="Node Process Trace"
+            jobId={selectedLogTask.id}
+            onClose={() => setSelectedLogTask(null)}
+          />
+        )}
+      </AnimatePresence>
       <TutorialModal isOpen={api.showTutorial} onClose={api.closeTutorial} />
       <ImageLibraryModal isOpen={isLibraryOpen} onClose={() => setIsLibraryOpen(false)} onConfirm={handleLibrarySelect}
         onEdit={url => { openEditor(url); setIsLibraryOpen(false); }} maxSelect={1} />
@@ -439,6 +574,72 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           if (isResumingGenerate) { setIsResumingGenerate(false); api.handleSynthesize(); } }}
         hasPersonalKey={hasPersonalKey} totalCost={api.currentUnitCost} />
       <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={e => api.handleLocalUpload(e, activeSlotIdx)} />
+
+      {/* ─── NAMING MODAL ─── */}
+      <AnimatePresence>
+        {pendingAsset && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
+              className="relative w-full max-w-sm bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
+              {/* Header */}
+              <div className="p-5 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                    <User size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-white">Đặt tên nhân vật</h3>
+                    <p className="text-[10px] text-slate-400">Nhân vật {api.slots.length + 1}/{MAX_CHARACTERS}</p>
+                  </div>
+                </div>
+                <button onClick={handleCancelAddCharacter} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Preview + Name */}
+              <div className="p-5 space-y-4">
+                <div className="flex gap-4 items-start">
+                  <div className="w-20 h-28 rounded-xl overflow-hidden border-2 border-purple-500/30 shrink-0">
+                    <img src={pendingAsset.url} className="w-full h-full object-cover" alt="" />
+                  </div>
+                  <div className="flex-grow space-y-2">
+                    <label className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
+                      Tên nhân vật
+                    </label>
+                    <input
+                      autoFocus
+                      value={characterName}
+                      onChange={e => setCharacterName(e.target.value.toUpperCase())}
+                      onKeyDown={e => { if (e.key === 'Enter' && characterName.trim()) handleConfirmAddCharacter(); }}
+                      className="w-full bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl py-3 px-4 text-sm font-bold uppercase outline-none focus:border-purple-500/40 transition-all text-slate-800 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-600"
+                      placeholder="VD: MINH, ANNA..."
+                      maxLength={20}
+                    />
+                    <p className="text-[9px] text-slate-400 dark:text-slate-500 leading-relaxed">
+                      Tên sẽ dùng trong kịch bản để AI nhận diện nhân vật.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="p-5 border-t border-slate-100 dark:border-white/[0.04] flex gap-3">
+                <button onClick={handleCancelAddCharacter}
+                  className="flex-1 py-3 border border-slate-200 dark:border-white/[0.06] rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+                  Hủy
+                </button>
+                <button onClick={handleConfirmAddCharacter}
+                  disabled={!characterName.trim()}
+                  className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-violet-500 text-white rounded-xl text-xs font-bold shadow-lg hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                  <User size={14} /> Thêm nhân vật
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
