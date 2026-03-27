@@ -8,6 +8,8 @@ import {
 import { PricingModel } from '../../apis/pricing';
 import { ModelSelectorModal } from '../common/ModelSelectorModal';
 import { ServerSelector } from '../common/ServerSelector';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 interface ConfigurationPanelProps {
   availableModels: PricingModel[];
@@ -50,6 +52,20 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
   const [isExpanded, setIsExpanded] = useState(true);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const toggleGroup = (key: string) => setExpandedGroups(prev => ({ ...prev, [key]: !prev[key] }));
+
+  const { user } = useAuth();
+  const { showToast } = useToast();
+
+  // ⚠️ Guard: chặn chọn 1080p+ nếu chưa nạp gói
+  const HIGH_RES = ['1080p', '2k', '4k', '2K', '4K'];
+  const handleResolutionClick = (res: string) => {
+    if (!user?.plan && HIGH_RES.includes(res)) {
+      showToast('⚠️ Bạn cần nạp gói lần đầu để sử dụng độ phân giải ' + res + '. Vui lòng nạp credits để tiếp tục.', 'error');
+      return;
+    }
+    if (props.setResolution) props.setResolution(res);
+    else props.cycleResolution();
+  };
 
   const modes = props.familyModes?.length ? props.familyModes : (props.selectedModelObj?.modes || []);
   const resolutions = props.familyResolutions?.length ? props.familyResolutions : ['720p', '1080p'];
@@ -211,7 +227,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
                         <MonitorUp size={10} className="text-blue-400" /> P.Giải
                       </p>
                       <div className="flex flex-wrap gap-0.5">
-                        {visibleItems.map(r => <Pill key={r} label={r} active={props.resolution === r} onClick={() => props.setResolution ? props.setResolution(r) : props.cycleResolution()} />)}
+                        {visibleItems.map(r => <Pill key={r} label={r} active={props.resolution === r} onClick={() => handleResolutionClick(r)} />)}
                         {activeOutside && <Pill label={props.resolution} active={true} onClick={() => {}} />}
                         {hiddenCount > 0 && (
                           <button onClick={() => toggleGroup('res')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-[#888] hover:text-indigo-400 transition-colors">
