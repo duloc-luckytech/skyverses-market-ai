@@ -5,7 +5,7 @@ import {
   Activity, Download, Wand2,
   Edit3, ChevronLeft,
   Sparkles, X, LayoutGrid, ArrowLeft, Image as ImageIcon,
-  Loader2, Zap, AlertCircle, Eye, Heart, Maximize2, Tag,
+  Loader2, Zap, AlertCircle, Eye, Heart, Maximize2,
   History as HistoryIcon, Database, CheckCircle2, Clock
 } from 'lucide-react';
 import { ImageResult } from '../../hooks/useImageGenerator';
@@ -37,10 +37,7 @@ interface GeneratorViewportProps {
   onAddReference?: (url: string) => void;
 }
 
-const CATEGORY_TAGS = [
-  'ALL', 'FEATURED', 'POSTER & AD', 'PRODUCT', 'SOCIAL MEDIA',
-  'CARD', 'CHARACTER'
-];
+
 
 const getFakeStats = (seedId: string) => {
   const hash = seedId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -77,7 +74,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [selectedDetailItem, setSelectedDetailItem] = useState<ExplorerItem | null>(null);
-  const [activeTag, setActiveTag] = useState('ALL');
+
 
   const observer = useRef<IntersectionObserver | null>(null);
 
@@ -266,26 +263,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
         </div>
       </div>
 
-      {/* ─── CATEGORY TAGS ─── */}
-      {!activePreviewUrl && (
-        <div className="bg-white/80 dark:bg-[#111114]/50 backdrop-blur-sm border-b border-black/[0.06] dark:border-white/[0.04] px-4 py-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
-          <Tag size={14} className="text-slate-400 dark:text-slate-500 shrink-0" />
-          <div className="flex gap-2">
-            {CATEGORY_TAGS.map(tag => (
-              <button
-                key={tag}
-                onClick={() => setActiveTag(tag)}
-                className={`px-3 py-1 rounded-lg text-[10px] font-semibold whitespace-nowrap transition-all border ${activeTag === tag
-                  ? 'bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/25'
-                  : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-600 dark:text-[#888] hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
-                  }`}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+
 
       {/* ─── CONTENT ─── */}
       <div className="flex-grow p-4 md:p-8 lg:p-12 relative overflow-y-auto no-scrollbar">
