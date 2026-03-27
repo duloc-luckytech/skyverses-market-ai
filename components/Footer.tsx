@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Twitter, Linkedin, Mail, Github, Facebook,
-  Zap, ArrowRight, Globe2, Sparkles, Heart
+  Zap, ArrowRight, Globe2, Sparkles
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -169,22 +169,10 @@ const Footer: React.FC = () => {
 
         {/* ═══ Bottom Bar ═══ */}
         <div className="pt-8 border-t border-black/[0.04] dark:border-white/[0.04]">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex justify-center items-center">
             <p className="text-[10px] font-medium text-slate-400 dark:text-gray-600 tracking-wide">
               © 2026 Skyverses. All rights reserved.
-              <span className="mx-3 text-slate-200 dark:text-gray-700">|</span>
-              <span className="italic">{t('footer.version')}</span>
             </p>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400 dark:text-gray-600">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                All systems operational
-              </div>
-              <span className="text-slate-200 dark:text-gray-700">|</span>
-              <span className="flex items-center gap-1 text-[10px] font-medium text-slate-400 dark:text-gray-600">
-                Made with <Heart size={10} className="text-rose-500" fill="currentColor" /> in Vietnam
-              </span>
-            </div>
           </div>
         </div>
       </div>
