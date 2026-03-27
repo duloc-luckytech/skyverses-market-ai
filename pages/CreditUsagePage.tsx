@@ -293,7 +293,11 @@ const CreditUsagePage: React.FC = () => {
                     {daysLeft > 0 ? `Còn ${daysLeft} ngày · ${expiry.toLocaleDateString('vi-VN')}` : `Hết hạn · ${expiry.toLocaleDateString('vi-VN')}`}
                   </div>
                 );
-              })() : (
+              })() : (myPlan || user?.plan) ? (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-emerald-500/10 text-emerald-500">
+                  <Sparkles size={10} /> Đang hoạt động
+                </div>
+              ) : (
                 <p className="text-[11px] text-slate-400 dark:text-gray-500">Chưa mua gói nào</p>
               )}
             </div>
