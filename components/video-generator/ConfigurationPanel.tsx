@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { PricingModel } from '../../apis/pricing';
 import { ModelSelectorModal } from '../common/ModelSelectorModal';
+import { ServerSelector } from '../common/ServerSelector';
 
 interface ConfigurationPanelProps {
   availableModels: PricingModel[];
@@ -92,6 +93,14 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
           {/* ─── EXPANDED CONTENT ─── */}
           {isExpanded && (
             <div className="space-y-2.5">
+              {/* SERVER SELECTOR */}
+              <ServerSelector
+                selected={props.selectedEngine}
+                onChange={props.setSelectedEngine}
+                disabled={props.isGenerating}
+                variant="pill"
+              />
+
               {/* MODEL FAMILY */}
               {props.familyList && props.familyList.length > 0 && (
                 <div className="space-y-1">
