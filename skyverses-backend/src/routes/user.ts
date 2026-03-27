@@ -122,19 +122,56 @@ router.get("/list-u", async (req: any, res) => {
 
       {
         $project: {
+          // ─── Basic Info ───
           email: 1,
           name: 1,
+          firstName: 1,
+          lastName: 1,
+          avatar: 1,
+          phone: 1,
+          gender: 1,
+          birthYear: 1,
+          province: 1,
+
+          // ─── Role & System ───
+          role: 1,
+          inviteCode: 1,
+          inviteFrom: 1,
+          googleId: 1,
+          googleEmail: "$googleInfo.email",
+          ownedTools: 1,
+          claimWelcomeCredit: 1,
+          lastDailyClaimAt: 1,
+
+          // ─── Plan & Quota ───
           plan: 1,
           planExpiresAt: 1,
           videoUsed: 1,
           maxVideo: 1,
-          avatar: 1,
-          createdAt: 1,
-          googleId: 1,
-          lastActiveAt: 1,
+          videoCount: 1,
 
-          // ⭐ Trả thêm googleEmail
-          googleEmail: "$googleInfo.email",
+          // ─── Credits & Finance ───
+          creditBalance: 1,
+          affiliateTotal: 1,
+          affiliatePending: 1,
+          pendingShopPayment: 1,
+
+          // ─── Career ───
+          specialty: 1,
+          experienceYears: 1,
+          careerDescription: 1,
+
+          // ─── Banking ───
+          bankAccountName: 1,
+          bankName: 1,
+          bankNumber: 1,
+
+          // ─── Onboarding ───
+          onboarding: 1,
+
+          // ─── Timestamps ───
+          createdAt: 1,
+          lastActiveAt: 1,
         },
       },
     ];
