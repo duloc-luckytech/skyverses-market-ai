@@ -172,8 +172,12 @@ router.get("/tasks/pending", async (req, res) => {
       const videoMode = mapVideoMode(job.type);
       if (videoMode !== "text") task.videoMode = videoMode;
 
-      // quality — luôn dùng config (default: "relaxed", sau này dynamic từ CMS)
-      const quality = fxConfig.videoQuality || "relaxed";
+      // resolution — pass from job config (e.g. "720p", "1080p") for auto-upscale
+      const resolution = job.config?.resolution;
+      if (resolution) task.resolution = resolution;
+
+      // quality — use per-job mode from enginePayload, fallback to fxConfig default
+      const quality = mapQuality(job.enginePayload?.mode) || fxConfig.videoQuality || "relaxed";
       if (quality !== "fast") task.quality = quality;
 
       // Optional: aspectRatio (default: "landscape")
