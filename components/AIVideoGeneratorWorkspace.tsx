@@ -16,6 +16,7 @@ import { ResultsMain } from './video-generator/ResultsMain';
 import { VideoResult } from './video-generator/VideoCard';
 import { pricingApi, PricingModel } from '../apis/pricing';
 import { JobLogsModal } from './common/JobLogsModal';
+import { useToast } from '../context/ToastContext';
 
 type CreationMode = 'SINGLE' | 'MULTI' | 'AUTO';
 type AutoTaskType = 'TEXT' | 'IMAGE_TO_VIDEO' | 'START_END';
@@ -39,6 +40,7 @@ interface AutoTask {
 
 const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { credits, addCredits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
+  const { showToast } = useToast();
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -356,6 +358,15 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     setIsGenerating(true);
     if (isMobileExpanded) setIsMobileExpanded(false);
 
+    // Toast warning for high-resolution (2K/4K)
+    const isHighRes = ['2k', '4k'].includes(resolution.toLowerCase());
+    if (isHighRes && !retryTask) {
+      showToast(
+        `Tạo video với độ phân giải cao (${resolution.toUpperCase()}). Quá trình này có thể mất vài phút. Để có kết quả tốt nhất, hãy tránh bắt đầu nhiều công việc tăng độ phân giải cùng lúc.`,
+        'warning'
+      );
+    }
+
     const tasksToProduce = retryTask
       ? [{ id: retryTask.id, type: "text-to-video" as const, prompt: retryTask.prompt, startUrl: retryTask.startImg || null, startMediaId: null, endUrl: retryTask.endImg || null, endMediaId: null, cost: retryTask.cost, ratio: retryTask.aspectRatio }]
       : activeMode === 'SINGLE'
@@ -390,6 +401,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         model: selectedModelObj.name,
         mode: selectedMode,
         duration,
+        resolution,
+        engine: selectedEngine,
         status: 'processing',
         hasSound: soundEnabled,
         aspectRatio: t.ratio as any,

@@ -17,6 +17,8 @@ export interface VideoResult {
   model: string;
   mode: string;
   duration: string;
+  resolution?: string;
+  engine?: string;
   status: 'processing' | 'done' | 'error';
   hasSound: boolean;
   aspectRatio: '16:9' | '9:16';
@@ -82,6 +84,9 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     e.stopPropagation();
     showToast(`Đã gửi báo cáo lỗi cho Job ID: ${res.id}`, 'info');
   };
+
+  const isHighRes = res.resolution && ['2k', '4k'].includes(res.resolution.toLowerCase());
+  const resBadgeLabel = res.resolution?.toUpperCase();
 
   const cardClass = `group relative p-3 rounded-2xl border transition-all flex flex-col gap-3 ${isSelected
     ? 'border-indigo-500/40 bg-indigo-500/5'
@@ -209,6 +214,15 @@ export const VideoCard: React.FC<VideoCardProps> = ({
             <VolumeX size={12} />
           </div>
         )}
+
+        {/* Resolution Badge (2K/4K) */}
+        {isHighRes && (
+          <div className="absolute bottom-3 left-3 z-20">
+            <span className="px-2 py-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-md text-[9px] font-black text-white uppercase tracking-wider shadow-lg shadow-amber-500/30 animate-pulse">
+              {resBadgeLabel}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className={`px-1 pb-1 space-y-2 ${res.status === 'processing' ? 'opacity-50' : ''}`}>
@@ -228,13 +242,30 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         </div>
         <div className="flex justify-between items-center pt-1.5 border-t border-black/[0.06] dark:border-white/[0.04]">
           <div className="flex flex-col gap-0.5">
-            <span className="text-[8px] font-medium text-indigo-400/80">{res.duration} · {res.aspectRatio} · {res.mode}</span>
+            <div className="flex flex-wrap items-center gap-1">
+              <span className="text-[8px] font-medium text-indigo-400/80">{res.duration}</span>
+              <span className="text-[7px] text-slate-300 dark:text-[#333]">·</span>
+              <span className="text-[8px] font-medium text-indigo-400/80">{res.aspectRatio}</span>
+              <span className="text-[7px] text-slate-300 dark:text-[#333]">·</span>
+              <span className="text-[8px] font-medium text-indigo-400/80">{res.mode}</span>
+              {res.resolution && (
+                <>
+                  <span className="text-[7px] text-slate-300 dark:text-[#333]">·</span>
+                  <span className={`text-[8px] font-bold ${isHighRes ? 'text-amber-500' : 'text-indigo-400/80'}`}>{res.resolution}</span>
+                </>
+              )}
+            </div>
             <div className={`flex items-center gap-1 text-[8px] font-semibold ${res.isRefunded ? 'text-emerald-400' : res.status === 'error' ? 'text-red-400' : 'text-amber-500/70'}`}>
               <Zap size={8} fill="currentColor" />
               {res.isRefunded ? 'Refunded' : res.status === 'error' ? 'Failed' : `-${res.cost}`}
             </div>
           </div>
-          <span className="text-[7px] font-medium text-slate-400 dark:text-[#333]">{res.model}</span>
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="text-[7px] font-medium text-slate-400 dark:text-[#333] text-right">{res.model}</span>
+            {res.engine && (
+              <span className="text-[7px] font-medium text-slate-400/60 dark:text-[#2a2a2a] uppercase">{res.engine === 'gommo' ? 'SV1' : res.engine === 'fxflow' ? 'SV2' : res.engine}</span>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>
