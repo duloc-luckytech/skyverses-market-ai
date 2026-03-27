@@ -42,6 +42,7 @@ const ImageOwnerSchema = new mongoose.Schema(
         "fail",
         "reject",
         "processing-upload",
+        "pending-fxflow-upload",
       ],
       default: "processing",
     },

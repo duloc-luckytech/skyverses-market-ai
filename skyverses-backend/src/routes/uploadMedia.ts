@@ -1218,7 +1218,7 @@ router.post("/media/image-upload", authenticate, async (req: any, res) => {
     let height: number | null = null;
 
     /* =====================================================
-       CASE 1️⃣ — GOMMO IMAGE UPLOAD
+       STEP 1️⃣ — GOMMO CDN UPLOAD (always — gets imageUrl)
     ====================================================== */
     const body = new URLSearchParams({
       access_token: process.env.GOMMO_API_KEY as string,
@@ -1253,57 +1253,18 @@ router.post("/media/image-upload", authenticate, async (req: any, res) => {
     height = data.imageInfo?.height;
 
     /* =====================================================
-       CASE 2️⃣ — FXLAB (GOOGLE LABS) IMAGE UPLOAD
+       STEP 2️⃣ — DEFER GOOGLE UPLOAD TO FXFLOW WORKER
+       Default: 100% fxflow. Worker polls GET /fxflow/image/upload-tasks
+       and uploads to Google to get mediaId, then reports back.
     ====================================================== */
-    if (source === "fxlab") {
-      const fxlabAccessToken = await getAccessTokenForJob(); // ✅ BACKEND ONLY
-
-      const fxlabPayload = {
-        imageInput: {
-          mimeType: "image/jpeg",
-          rawImageBytes: base64,
-          aspectRatio,
-          isUserUploaded: true,
-        },
-        clientContext: {
-          sessionId: String(Date.now()),
-          tool: "ASSET_MANAGER",
-        },
-      };
-
-      const response = await axios.post(
-        "https://aisandbox-pa.googleapis.com/v1:uploadUserImage",
-        fxlabPayload,
-        {
-          timeout: 120_000,
-          headers: {
-            Authorization: `Bearer ${fxlabAccessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const data = response.data;
-
-      if (!data?.mediaGenerationId?.mediaGenerationId) {
-        throw new Error("FXLAB_IMAGE_UPLOAD_FAILED");
-      }
-
-      mediaId = data.mediaGenerationId.mediaGenerationId;
-      width = data.width;
-      height = data.height;
-    }
-
-    /* =========================
-       UPDATE IMAGE OWNER
-    ========================== */
     imageRecord.imageUrl = imageUrl;
-    imageRecord.mediaId = mediaId;
     imageRecord.width = width || undefined;
     imageRecord.height = height || undefined;
-    imageRecord.status = "done";
     imageRecord.source = source;
+    imageRecord.status = "pending-fxflow-upload"; // FXFlow worker will pick this up
     await imageRecord.save();
+
+    console.log(`📸 [IMG] Created upload task: ${imageRecord._id} → fxflow (${fileName})`);
 
     /* =========================
        SUCCESS RESPONSE
@@ -1312,7 +1273,7 @@ router.post("/media/image-upload", authenticate, async (req: any, res) => {
       success: true,
       imageId: imageRecord._id,
       imageUrl,
-      mediaId,
+      mediaId: null, // Will be filled async by FXFlow worker
       width,
       height,
       source,

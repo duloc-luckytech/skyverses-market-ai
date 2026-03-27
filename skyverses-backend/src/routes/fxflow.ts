@@ -643,4 +643,108 @@ router.delete("/owners/:id", authenticate, async (req: any, res) => {
   }
 });
 
+/* =====================================================
+   GET /fxflow/image/upload-tasks
+   FXFlow worker polls this to get pending image upload tasks.
+   Worker receives imageUrl → uploads to Google → gets mediaId
+   → reports back via POST /fxflow/image/upload-result
+===================================================== */
+router.get("/image/upload-tasks", async (req, res) => {
+  try {
+    const owner = req.query.owner?.toString() || null;
+    const limit = Math.min(parseInt(req.query.limit as string) || 5, 20);
+
+    const query: any = {
+      status: "pending-fxflow-upload",
+      imageUrl: { $ne: null }, // Must have CDN URL to upload
+    };
+
+    // Optional owner filter (for multi-worker setups)
+    if (owner) {
+      query.source = owner;
+    }
+
+    // Find and atomically mark as "processing" to prevent double-pick
+    const pendingImages = await ImageOwnerModel.find(query)
+      .sort({ createdAt: 1 }) // oldest first
+      .limit(limit)
+      .lean();
+
+    if (pendingImages.length === 0) {
+      return res.json({ tasks: [] });
+    }
+
+    // Mark all as processing atomically
+    const ids = pendingImages.map((img: any) => img._id);
+    await ImageOwnerModel.updateMany(
+      { _id: { $in: ids } },
+      { $set: { status: "processing" } }
+    );
+
+    // Build task format for worker
+    const tasks = pendingImages.map((img: any) => ({
+      jobId: String(img._id),
+      imageUrl: img.imageUrl,
+      fileName: img.originalName || "image.jpg",
+      priority: 1,
+    }));
+
+    console.log(`📸 [FXFlow] Dispatched ${tasks.length} image upload tasks`);
+    return res.json({ tasks });
+  } catch (err: any) {
+    console.error("[FXFlow] GET /image/upload-tasks error:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+/* =====================================================
+   POST /fxflow/image/upload-result
+   FXFlow worker reports upload result here.
+   Body: { id, status: "done"|"error", mediaId?, error? }
+===================================================== */
+router.post("/image/upload-result", async (req, res) => {
+  try {
+    const { id, status, mediaId, error } = req.body;
+
+    if (!id || !status) {
+      return res.status(400).json({ message: "Missing id or status" });
+    }
+
+    const record = await ImageOwnerModel.findById(id);
+    if (!record) {
+      return res.status(404).json({ message: "Image record not found" });
+    }
+
+    if (status === "done" && mediaId) {
+      record.status = "done";
+      record.mediaId = mediaId;
+      await record.save();
+
+      console.log(`✅ [FXFlow] Image upload done: ${id} → mediaId=${mediaId}`);
+    } else if (status === "error") {
+      const retryCount = (record.retryCount || 0) + 1;
+      record.retryCount = retryCount;
+
+      if (retryCount >= 3) {
+        record.status = "fail";
+        record.errorMessage = error || "Upload failed after 3 retries";
+        console.log(`❌ [FXFlow] Image upload FAILED (max retries): ${id}`);
+      } else {
+        record.status = "pending-fxflow-upload"; // Re-queue for retry
+        record.errorMessage = error || "Upload failed, retrying...";
+        console.log(`🔄 [FXFlow] Image upload retry ${retryCount}/3: ${id}`);
+      }
+
+      await record.save();
+    } else {
+      return res.status(400).json({ message: "Invalid status or missing mediaId" });
+    }
+
+    return res.json({ success: true });
+  } catch (err: any) {
+    console.error("[FXFlow] POST /image/upload-result error:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 export default router;
