@@ -199,11 +199,13 @@ router.get("/upscale-tasks/:provider", async (req, res) => {
       })
       .lean();
 
-    // Lookup mediaIdInput từ source ImageJob nếu có
+    // Lookup mediaIdInput từ source ImageJob hoặc extract từ URL
     const tasks = await Promise.all(
       jobs.map(async (job: any) => {
         let mediaIdInput: string | null = null;
+        const urlImage = job.enginePayload?.urlImage || job.input?.image || "";
 
+        // 1. Thử lookup từ source ImageJob
         const sourceJobId = job.enginePayload?.sourceImageJobId;
         if (sourceJobId) {
           try {
@@ -214,9 +216,22 @@ router.get("/upscale-tasks/:provider", async (req, res) => {
           } catch {}
         }
 
+        // 2. Fallback: extract mediaId từ GCS URL
+        // Format: https://storage.googleapis.com/.../image/{mediaId}?...
+        if (!mediaIdInput && urlImage) {
+          try {
+            const urlObj = new URL(urlImage);
+            const pathParts = urlObj.pathname.split("/").filter(Boolean);
+            // Lấy segment cuối cùng (mediaId)
+            if (pathParts.length > 0) {
+              mediaIdInput = pathParts[pathParts.length - 1];
+            }
+          } catch {}
+        }
+
         return {
           jobId: job._id.toString(),
-          urlImage: job.enginePayload?.urlImage || job.input?.image || "",
+          urlImage,
           mediaIdInput,
           resolution: job.enginePayload?.resolution || "4K",
           owner: job.owner || null,
