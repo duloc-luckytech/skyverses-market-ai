@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -8,7 +7,7 @@ import {
   AlertTriangle, ChevronLeft, ChevronRight,
   ImageIcon, Video, Music, Mic, Wand2,
   TrendingUp, Wallet, ArrowRight, Lock,
-  Receipt, Loader2, Sparkles
+  Receipt, Loader2, Sparkles, Crown, Package
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -17,7 +16,7 @@ import { creditsApi, CreditTransaction } from '../apis/credits';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 const CreditUsagePage: React.FC = () => {
-  const { credits, login, isAuthenticated, refreshUserInfo } = useAuth();
+  const { credits, login, isAuthenticated, user, refreshUserInfo } = useAuth();
   const { t } = useLanguage();
 
   usePageMeta({
@@ -34,6 +33,12 @@ const CreditUsagePage: React.FC = () => {
   const [total, setTotal] = useState(0);
   const LIMIT = 20;
 
+  // Purchase history
+  const [purchases, setPurchases] = useState<any[]>([]);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
+  const [myPlan, setMyPlan] = useState<string | null>(null);
+  const [myPlanExpiry, setMyPlanExpiry] = useState<string | null>(null);
+
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
@@ -49,9 +54,23 @@ const CreditUsagePage: React.FC = () => {
     setLoading(false);
   }, []);
 
+  const fetchPurchases = useCallback(async () => {
+    setPurchaseLoading(true);
+    try {
+      const res = await creditsApi.getMyPurchases();
+      if (res.success) {
+        setPurchases(res.purchases || []);
+        setMyPlan(res.plan);
+        setMyPlanExpiry(res.planExpiresAt);
+      }
+    } catch (e) { console.error(e); }
+    setPurchaseLoading(false);
+  }, []);
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchHistory(1);
+      fetchPurchases();
       refreshUserInfo();
     }
   }, [isAuthenticated]);
@@ -236,6 +255,96 @@ const CreditUsagePage: React.FC = () => {
             icon={<Receipt size={18} />} 
             color="#10b981" 
           />
+        </motion.section>
+
+        {/* ════════════ PLAN & PURCHASE HISTORY ════════════ */}
+        <motion.section
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-10"
+        >
+          {/* Current Plan */}
+          <div className="lg:col-span-4 p-6 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl flex flex-col">
+            <div className="flex items-center gap-2.5 mb-5">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                <Crown size={14} className="text-amber-500" />
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Gói hiện tại</h3>
+            </div>
+            <div className="flex-grow flex flex-col items-center justify-center text-center py-4">
+              <p className={`text-3xl font-black uppercase tracking-tight mb-2 ${
+                (myPlan || user?.plan)
+                  ? 'text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500'
+                  : 'text-slate-300 dark:text-gray-600'
+              }`}>
+                {myPlan || user?.plan || 'Free'}
+              </p>
+              {(myPlanExpiry || user?.planExpiresAt) ? (() => {
+                const expiry = new Date(myPlanExpiry || user?.planExpiresAt || '');
+                const daysLeft = Math.ceil((expiry.getTime() - Date.now()) / 86400000);
+                return (
+                  <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold ${
+                    daysLeft > 0
+                      ? 'bg-emerald-500/10 text-emerald-500'
+                      : 'bg-red-500/10 text-red-500'
+                  }`}>
+                    <Clock size={10} />
+                    {daysLeft > 0 ? `Còn ${daysLeft} ngày · ${expiry.toLocaleDateString('vi-VN')}` : `Hết hạn · ${expiry.toLocaleDateString('vi-VN')}`}
+                  </div>
+                );
+              })() : (
+                <p className="text-[11px] text-slate-400 dark:text-gray-500">Chưa mua gói nào</p>
+              )}
+            </div>
+            <Link to="/credits" className="mt-4 inline-flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-sm">
+              <Package size={12} /> Nâng cấp gói
+            </Link>
+          </div>
+
+          {/* Purchase History */}
+          <div className="lg:col-span-8 p-6 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                  <Receipt size={14} className="text-indigo-500" />
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Lịch sử mua gói</h3>
+              </div>
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{purchases.length} giao dịch</span>
+            </div>
+            {purchaseLoading ? (
+              <div className="py-12 text-center">
+                <Loader2 className="w-6 h-6 text-indigo-500 animate-spin mx-auto" />
+              </div>
+            ) : purchases.length === 0 ? (
+              <div className="py-12 text-center">
+                <Receipt size={32} className="text-slate-200 dark:text-gray-700 mx-auto mb-3" />
+                <p className="text-xs font-bold text-slate-400 dark:text-gray-500">Chưa có lịch sử mua gói</p>
+                <p className="text-[10px] text-slate-300 dark:text-gray-600 mt-1">Mua gói Credits để mở khoá tính năng nâng cao</p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-[300px] overflow-y-auto no-scrollbar">
+                {purchases.map((p, i) => (
+                  <div key={i} className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-white/[0.03] rounded-xl border border-black/[0.03] dark:border-white/[0.03] hover:border-black/[0.06] dark:hover:border-white/[0.06] transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                        <Package size={14} className="text-indigo-500" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-bold text-slate-700 dark:text-white uppercase">{p.planName || p.planCode}</p>
+                        <p className="text-[9px] text-slate-400">{new Date(p.purchasedAt).toLocaleDateString('vi-VN')} · {new Date(p.purchasedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-black text-emerald-500 tabular-nums">{(p.amount || 0).toLocaleString()}<span className="text-[9px] text-slate-400 ml-1">₫</span></p>
+                      <p className="text-[8px] font-bold text-emerald-500/60 uppercase">Thành công</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </motion.section>
 
         {/* ════════════ BREAKDOWN + BALANCE ════════════ */}

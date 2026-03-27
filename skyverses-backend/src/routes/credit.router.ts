@@ -165,6 +165,48 @@ router.get("/history", authenticate, async (req: any, res) => {
 });
 
 /* =====================================================
+   USER: MY PURCHASE HISTORY (plan info + purchase list)
+===================================================== */
+router.get("/my-purchases", authenticate, async (req: any, res) => {
+  try {
+    const userId = req.user.userId;
+    const user = await User.findById(userId).lean();
+    if (!user) return res.status(404).json({ success: false, message: "USER_NOT_FOUND" });
+
+    // Import Transaction model
+    const { Transaction } = await import("../models/BankTransactionModel");
+
+    // Tìm tất cả giao dịch thành công có planCode
+    const txs = await Transaction.find({
+      userId,
+      status: "success",
+      planCode: { $exists: true, $ne: null },
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const purchases = txs.map((t: any) => ({
+      planCode: t.planCode,
+      planName: t.planName || t.planCode,
+      amount: t.amount || 0,
+      memo: t.note,
+      purchasedAt: t.createdAt,
+      verifiedAt: t.verifiedAt,
+    }));
+
+    res.json({
+      success: true,
+      plan: user.plan || null,
+      planExpiresAt: user.planExpiresAt || null,
+      purchases,
+    });
+  } catch (err: any) {
+    console.error("❌ [GET /credits/my-purchases]", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/* =====================================================
    ADMIN ADJUST CREDIT
 ===================================================== */
 router.post("/admin/add", authenticate, async (req: any, res) => {

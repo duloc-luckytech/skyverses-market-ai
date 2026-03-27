@@ -226,7 +226,31 @@ export const creditsApi = {
     } catch (error) {
       return { creditBalance: 0 };
     }
-  }
+  },
+
+  getMyPurchases: async (): Promise<{
+    success: boolean;
+    plan: string | null;
+    planExpiresAt: string | null;
+    purchases: Array<{
+      planCode: string;
+      planName: string;
+      amount: number;
+      memo: string;
+      purchasedAt: string;
+      verifiedAt: string;
+    }>;
+  }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/credits/my-purchases`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+      return await response.json();
+    } catch (error) {
+      return { success: false, plan: null, planExpiresAt: null, purchases: [] };
+    }
+  },
 };
 
 export interface CreditTransaction {
