@@ -6,8 +6,8 @@ import {
   Save, Loader2, Sparkles, Zap, Activity,
   Brain, ShieldCheck, Smartphone, Lock, Eye, EyeOff,
   Shield, Users, Copy, Check, ArrowRight,
-  History as HistoryIcon, UserCheck, Cloud,
-  Moon, Sun, Globe, Coins, Clock
+  History as HistoryIcon, Cloud, Coins, Clock,
+  Moon, Sun, Globe, ExternalLink, Calendar
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -17,16 +17,17 @@ import { useToast } from '../../context/ToastContext';
 
 const tabAnimation = { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -10 } };
 
-export const InputGroup = ({ label, value, onChange, disabled, icon }: any) => (
+export const InputGroup = ({ label, value, onChange, disabled, icon, placeholder }: any) => (
   <div className="space-y-1.5">
     <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-gray-400 ml-1">
       {icon && <span className="opacity-60">{icon}</span>}
       {label}
     </label>
     <input
-      value={value}
+      value={value ?? ''}
       onChange={onChange}
       disabled={disabled}
+      placeholder={placeholder}
       className={`w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] px-4 py-3 rounded-xl text-sm font-medium outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 transition-all ${disabled ? 'opacity-40 cursor-not-allowed' : 'text-slate-800 dark:text-white'}`}
     />
   </div>
@@ -82,6 +83,10 @@ export const ProfileTab = ({ logic }: any) => {
     showToast('Đã lưu thông tin!', 'success');
   };
 
+  const setField = (key: string, val: string) => {
+    logic.setProfileFields((prev: any) => ({ ...prev, [key]: val }));
+  };
+
   return (
     <motion.div key="profile" {...tabAnimation} className="space-y-8">
       {/* Avatar Row */}
@@ -100,7 +105,7 @@ export const ProfileTab = ({ logic }: any) => {
               <Check size={10} strokeWidth={3} /> {t('settings.profile.verified')}
             </span>
             {logic.user?.plan && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[9px] font-bold rounded-md border border-brand-blue/15">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[9px] font-bold rounded-md border border-brand-blue/15 uppercase">
                 {logic.user.plan}
               </span>
             )}
@@ -108,15 +113,28 @@ export const ProfileTab = ({ logic }: any) => {
         </div>
       </div>
 
-      {/* Fields */}
+      {/* Basic Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <InputGroup
-          label={t('settings.profile.name')}
-          value={logic.profileName}
-          onChange={(e: any) => logic.setProfileName(e.target.value)}
-        />
         <InputGroup label={t('settings.profile.email')} value={logic.user?.email || ''} disabled />
         <InputGroup label="Invite Code" value={logic.user?.inviteCode || '—'} disabled />
+        <InputGroup
+          label="Họ"
+          value={logic.profileFields.firstName ?? logic.user?.firstName ?? ''}
+          onChange={(e: any) => setField('firstName', e.target.value)}
+          placeholder="Nhập họ"
+        />
+        <InputGroup
+          label="Tên"
+          value={logic.profileFields.lastName ?? logic.user?.lastName ?? ''}
+          onChange={(e: any) => setField('lastName', e.target.value)}
+          placeholder="Nhập tên"
+        />
+        <InputGroup
+          label="Số điện thoại"
+          value={logic.profileFields.phone ?? logic.user?.phone ?? ''}
+          onChange={(e: any) => setField('phone', e.target.value)}
+          placeholder="0912 xxx xxx"
+        />
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-slate-500 dark:text-gray-400 ml-1">{t('settings.profile.language')}</label>
           <select
@@ -162,7 +180,8 @@ export const ProfileTab = ({ logic }: any) => {
 // ── Compute ──
 export const ComputeTab = ({ logic }: any) => {
   const { t } = useLanguage();
-  const usedPercent = logic.user?.plan ? Math.min(100, ((logic.user?.videoUsed || 0) / (logic.user?.maxVideo || 1)) * 100) : 0;
+  const maxVideo = logic.user?.maxVideo || 0;
+  const usedPercent = maxVideo > 0 ? Math.min(100, ((logic.user?.videoUsed || 0) / maxVideo) * 100) : 0;
 
   return (
     <motion.div key="compute" {...tabAnimation} className="space-y-8">
@@ -182,7 +201,7 @@ export const ComputeTab = ({ logic }: any) => {
         </Link>
       </div>
 
-      {/* Usage stats */}
+      {/* Stats grid */}
       <div>
         <h4 className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
           <Activity size={14} /> {t('settings.compute.stats')}
@@ -191,20 +210,20 @@ export const ComputeTab = ({ logic }: any) => {
           <StatBox label="Plan" val={logic.user?.plan || 'Free'} icon={<Shield size={14} />} color="text-purple-500" />
           <StatBox
             label="Video đã dùng"
-            val={`${logic.user?.videoUsed || 0} / ${logic.user?.maxVideo || '∞'}`}
+            val={maxVideo > 0 ? `${logic.user?.videoUsed || 0} / ${maxVideo}` : `${logic.user?.videoUsed || 0}`}
             icon={<Zap size={14} />}
           />
           <StatBox
-            label={t('settings.compute.performance')}
-            val={t('settings.compute.optimal')}
-            icon={<Check size={14} />}
-            color="text-emerald-500"
+            label="Hết hạn"
+            val={logic.user?.planExpiresAt ? new Date(logic.user.planExpiresAt).toLocaleDateString('vi-VN') : '—'}
+            icon={<Calendar size={14} />}
+            color="text-amber-500"
           />
         </div>
       </div>
 
       {/* Video usage bar */}
-      {logic.user?.plan && (
+      {maxVideo > 0 && (
         <div className="p-4 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs font-bold text-slate-600 dark:text-slate-300">Video quota</span>
@@ -292,10 +311,26 @@ export const SecurityTab = ({ logic }: any) => {
           <div className="flex items-center gap-3 p-3 bg-white dark:bg-white/[0.02] rounded-lg border border-black/[0.03] dark:border-white/[0.03]">
             <Clock size={14} className="text-emerald-500" />
             <div>
-              <p className="text-[10px] text-slate-400 font-medium">Tham gia từ</p>
+              <p className="text-[10px] text-slate-400 font-medium">Ngày tham gia</p>
               <p className="text-xs font-semibold text-slate-700 dark:text-white">
                 {logic.user?.createdAt ? new Date(logic.user.createdAt).toLocaleDateString('vi-VN') : '—'}
               </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-3 bg-white dark:bg-white/[0.02] rounded-lg border border-black/[0.03] dark:border-white/[0.03]">
+            <Activity size={14} className="text-amber-500" />
+            <div>
+              <p className="text-[10px] text-slate-400 font-medium">Hoạt động lần cuối</p>
+              <p className="text-xs font-semibold text-slate-700 dark:text-white">
+                {logic.user?.lastActiveAt ? new Date(logic.user.lastActiveAt).toLocaleDateString('vi-VN') : 'Hôm nay'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-3 bg-white dark:bg-white/[0.02] rounded-lg border border-black/[0.03] dark:border-white/[0.03]">
+            <Shield size={14} className="text-purple-500" />
+            <div>
+              <p className="text-[10px] text-slate-400 font-medium">Role</p>
+              <p className="text-xs font-semibold text-slate-700 dark:text-white capitalize">{logic.user?.role || 'user'}</p>
             </div>
           </div>
         </div>
@@ -333,10 +368,10 @@ export const SecurityTab = ({ logic }: any) => {
       </div>
 
       {/* Danger zone */}
-      <div className="p-5 bg-red-500/[0.03] border border-red-500/10 rounded-xl space-y-3 mt-6">
+      <div className="p-5 bg-red-500/[0.03] border border-red-500/10 rounded-xl space-y-3 mt-2">
         <h4 className="text-xs font-bold text-red-500 uppercase tracking-wider">Danger Zone</h4>
         <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-          Nếu bạn muốn xóa tài khoản vĩnh viễn, vui lòng liên hệ support@skyverses.io. Dữ liệu sẽ không thể khôi phục.
+          Để xóa tài khoản vĩnh viễn, vui lòng liên hệ support@skyverses.io. Toàn bộ dữ liệu sẽ không thể khôi phục.
         </p>
       </div>
     </motion.div>
@@ -346,6 +381,7 @@ export const SecurityTab = ({ logic }: any) => {
 // ── Billing ──
 export const BillingTab = ({ logic }: any) => {
   const { t } = useLanguage();
+
   return (
     <motion.div key="billing" {...tabAnimation} className="space-y-6">
       {/* Plan info */}
@@ -356,7 +392,7 @@ export const BillingTab = ({ logic }: any) => {
           </div>
           <div>
             <div className="flex items-center gap-2 mb-0.5">
-              <h3 className="text-lg font-bold">{logic.user?.plan || 'Free'}</h3>
+              <h3 className="text-lg font-bold capitalize">{logic.user?.plan || 'Free'}</h3>
               {logic.user?.plan && (
                 <span className="px-2 py-0.5 bg-brand-blue text-white text-[8px] font-bold rounded">{t('settings.billing.monthly')}</span>
               )}
@@ -364,7 +400,7 @@ export const BillingTab = ({ logic }: any) => {
             <p className="text-xs text-slate-400 dark:text-gray-500">
               {logic.user?.planExpiresAt
                 ? `${t('settings.billing.expires')} ${new Date(logic.user.planExpiresAt).toLocaleDateString('vi-VN')}`
-                : 'Không có gói đăng ký'
+                : 'Gói miễn phí — không giới hạn thời gian'
               }
             </p>
           </div>
@@ -374,10 +410,41 @@ export const BillingTab = ({ logic }: any) => {
         </Link>
       </div>
 
-      {/* Transaction history */}
+      {/* Purchase history */}
+      {logic.purchaseHistory.length > 0 && (
+        <div>
+          <h4 className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Coins size={14} /> Lịch sử mua gói
+          </h4>
+          <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
+            <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
+              {logic.purchaseHistory.map((p: any, i: number) => (
+                <div key={i} className="flex items-center justify-between px-5 py-4 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue">
+                      <Shield size={14} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-700 dark:text-white">{p.planName || p.planCode}</p>
+                      <p className="text-[10px] text-slate-400">
+                        {p.purchasedAt ? new Date(p.purchasedAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-sm font-bold text-slate-600 dark:text-slate-300">
+                    {p.amount?.toLocaleString()} ₫
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Credit transaction history */}
       <div>
         <h4 className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-          <HistoryIcon size={14} /> Lịch sử giao dịch
+          <HistoryIcon size={14} /> Lịch sử giao dịch Credits
         </h4>
 
         {logic.creditHistoryLoading ? (
@@ -388,27 +455,33 @@ export const BillingTab = ({ logic }: any) => {
         ) : logic.creditHistory.length > 0 ? (
           <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
             <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
-              {logic.creditHistory.map((tx: any, i: number) => (
-                <div key={i} className="flex items-center justify-between px-5 py-4 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${tx.type === 'DEDUCT' || tx.type === 'USAGE'
-                        ? 'bg-red-500/10 text-red-500'
-                        : 'bg-emerald-500/10 text-emerald-500'
-                      }`}>
-                      <Coins size={14} />
+              {logic.creditHistory.map((tx: any, i: number) => {
+                const isDeduct = tx.amount < 0 || tx.type === 'CONSUME';
+                return (
+                  <div key={i} className="flex items-center justify-between px-5 py-4 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDeduct ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-500'}`}>
+                        <Coins size={14} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-slate-700 dark:text-white">{tx.note || tx.type}</p>
+                        <p className="text-[10px] text-slate-400">
+                          {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
+                          {tx.source && tx.source !== 'system' ? ` · ${tx.source}` : ''}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs font-semibold text-slate-700 dark:text-white">{tx.note || tx.type}</p>
-                      <p className="text-[10px] text-slate-400">
-                        {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
-                      </p>
+                    <div className="text-right">
+                      <span className={`text-sm font-bold ${isDeduct ? 'text-red-500' : 'text-emerald-500'}`}>
+                        {isDeduct ? '' : '+'}{tx.amount?.toLocaleString()} CR
+                      </span>
+                      {tx.balanceAfter !== undefined && (
+                        <p className="text-[9px] text-slate-400 font-mono">= {tx.balanceAfter?.toLocaleString()}</p>
+                      )}
                     </div>
                   </div>
-                  <span className={`text-sm font-bold ${tx.type === 'DEDUCT' || tx.type === 'USAGE' ? 'text-red-500' : 'text-emerald-500'}`}>
-                    {tx.type === 'DEDUCT' || tx.type === 'USAGE' ? '-' : '+'}{Math.abs(tx.amount || 0).toLocaleString()} CR
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ) : (
@@ -443,28 +516,22 @@ export const ReferralsTab = ({ logic }: any) => {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="p-5 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('settings.referrals.total_reward')}</p>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('settings.referrals.friends_invited')}</p>
           <h4 className="text-3xl font-black text-brand-blue tracking-tight">
-            {logic.referralLoading ? '—' : logic.referralStats.totalEarned} <span className="text-sm font-bold text-slate-300">CR</span>
+            {logic.referralLoading ? '—' : logic.referralTotal}
           </h4>
         </div>
         <div className="p-5 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('settings.referrals.friends_invited')}</p>
-          <h4 className="text-3xl font-black text-purple-500 tracking-tight">
-            {logic.referralLoading ? '—' : logic.referralStats.totalInvited}
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Mã giới thiệu</p>
+          <h4 className="text-3xl font-black text-purple-500 tracking-tight font-mono">
+            {referralCode || '—'}
           </h4>
-          <div className="flex items-center gap-1 text-slate-400 text-[10px] font-bold mt-1">
-            <UserCheck size={12} /> {t('settings.referrals.active_friends')}
-          </div>
         </div>
       </div>
 
       {/* Referral Link */}
       <div className="p-5 bg-brand-blue/5 dark:bg-brand-blue/10 border border-brand-blue/10 dark:border-brand-blue/15 rounded-xl space-y-3">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-bold text-brand-blue">{t('settings.referrals.link_label')}</p>
-          <span className="text-[10px] font-mono text-brand-blue/60 bg-brand-blue/10 px-2 py-0.5 rounded">{referralCode}</span>
-        </div>
+        <p className="text-xs font-bold text-brand-blue">{t('settings.referrals.link_label')}</p>
         <div className="flex gap-2">
           <div className="flex-grow bg-white dark:bg-black/40 px-4 py-3 rounded-lg border border-black/[0.04] dark:border-white/[0.06] font-mono text-xs text-slate-500 dark:text-gray-400 truncate">
             {referralLink}
@@ -479,46 +546,69 @@ export const ReferralsTab = ({ logic }: any) => {
         </div>
       </div>
 
-      {/* Referral page link */}
+      {/* Go to referral page */}
       <Link to="/referral" className="flex items-center justify-between p-4 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl hover:border-brand-blue/20 transition-all group">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500">
-            <Users size={16} />
+            <ExternalLink size={16} />
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-800 dark:text-white">Xem chi tiết chương trình Referral</p>
-            <p className="text-[10px] text-slate-400">Bao gồm hoa hồng 5% coming soon</p>
+            <p className="text-[10px] text-slate-400">Bao gồm hoa hồng 5% — coming soon</p>
           </div>
         </div>
         <ArrowRight size={14} className="text-slate-400 group-hover:text-brand-blue group-hover:translate-x-1 transition-all" />
       </Link>
 
-      {/* History */}
-      {logic.referralStats.history.length > 0 && (
-        <div>
-          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <HistoryIcon size={14} /> {t('settings.referrals.history')}
-          </h4>
+      {/* Friends list from API */}
+      <div>
+        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <Users size={14} /> Danh sách bạn bè ({logic.referralTotal})
+        </h4>
+
+        {logic.referralLoading ? (
+          <div className="flex items-center justify-center py-12 gap-3">
+            <Loader2 className="animate-spin text-brand-blue" size={18} />
+            <span className="text-xs text-slate-400">Đang tải...</span>
+          </div>
+        ) : logic.referralFriends.length > 0 ? (
           <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
             <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
-              {logic.referralStats.history.map((f: any, i: number) => (
+              {logic.referralFriends.map((f: any, i: number) => (
                 <div key={i} className="flex items-center justify-between px-5 py-4 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors text-xs">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue text-[10px] font-bold">
-                      {f.name?.[0]?.toUpperCase() || '?'}
-                    </div>
+                    {f.avatar ? (
+                      <img src={f.avatar} className="w-8 h-8 rounded-full object-cover" alt="" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue text-[10px] font-bold">
+                        {f.name?.[0]?.toUpperCase() || '?'}
+                      </div>
+                    )}
                     <div>
-                      <p className="font-semibold text-slate-800 dark:text-white">{f.name}</p>
-                      <p className="text-[10px] text-slate-400">{f.date ? new Date(f.date).toLocaleDateString('vi-VN') : ''}</p>
+                      <p className="font-semibold text-slate-800 dark:text-white">{f.name || 'Người dùng'}</p>
+                      <p className="text-[10px] text-slate-400">{f.email}</p>
                     </div>
                   </div>
-                  <span className="font-bold text-brand-blue">+{f.credits} CR</span>
+                  <div className="flex items-center gap-3">
+                    {f.plan && (
+                      <span className="px-2 py-0.5 text-[8px] font-bold text-brand-blue bg-brand-blue/10 rounded uppercase">{f.plan}</span>
+                    )}
+                    <span className="text-[10px] text-slate-400">
+                      {f.createdAt ? new Date(f.createdAt).toLocaleDateString('vi-VN') : ''}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="py-12 text-center">
+            <Users size={32} className="mx-auto text-slate-300 dark:text-slate-600 mb-3" />
+            <p className="text-xs text-slate-400">Chưa có bạn bè nào</p>
+            <p className="text-[10px] text-slate-400 mt-1">Chia sẻ link giới thiệu để bắt đầu!</p>
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 };
@@ -528,7 +618,7 @@ export const CloudStorageTab = () => {
   const { t } = useLanguage();
   return (
     <motion.div key="cloud" {...tabAnimation} className="space-y-8">
-      {/* Usage Bar */}
+      {/* Usage */}
       <div className="p-5 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
@@ -553,14 +643,14 @@ export const CloudStorageTab = () => {
           <div>
             <p className="text-xs font-bold text-slate-700 dark:text-gray-300 mb-0.5">Lưu trữ tự động</p>
             <p className="text-[11px] text-slate-400 dark:text-gray-500 leading-relaxed">
-              Tất cả hình ảnh và video bạn tạo được lưu trữ tự động trên cloud.
-              Truy cập từ mục "Thư viện" để quản lý và tải xuống bất cứ lúc nào.
+              Tất cả hình ảnh và video được lưu tự động trên cloud.
+              Truy cập "Thư viện" để quản lý và tải xuống bất cứ lúc nào.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Manage link */}
+      {/* Quick links */}
       <Link to="/favorites" className="flex items-center justify-between p-4 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl hover:border-emerald-500/20 transition-all group">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">

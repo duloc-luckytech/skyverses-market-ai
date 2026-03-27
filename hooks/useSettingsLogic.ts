@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { API_BASE_URL, getHeaders } from '../apis/config';
+import { creditsApi, CreditTransaction } from '../apis/credits';
 
 export type SettingTab = 'profile' | 'compute' | 'cloud' | 'keys' | 'referrals' | 'security' | 'billing';
 
@@ -29,6 +30,7 @@ export const useSettingsLogic = () => {
 
   // ── Profile editing ──
   const [profileName, setProfileName] = useState('');
+  const [profileFields, setProfileFields] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (user?.name) setProfileName(user.name);
@@ -42,53 +44,71 @@ export const useSettingsLogic = () => {
     }
   }, []);
 
-  // ── Referral stats from BE ──
-  const [referralStats, setReferralStats] = useState({
-    totalInvited: 0, totalEarned: 0, history: [] as any[]
-  });
+  // ── Referral friends from BE: GET /user/list-by-invite?userId= ──
+  const [referralFriends, setReferralFriends] = useState<any[]>([]);
+  const [referralTotal, setReferralTotal] = useState(0);
   const [referralLoading, setReferralLoading] = useState(false);
 
-  const fetchReferralStats = useCallback(async () => {
+  const fetchReferralFriends = useCallback(async () => {
+    if (!user?._id) return;
     setReferralLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/user/referral-stats`, { method: 'GET', headers: getHeaders() });
+      const res = await fetch(`${API_BASE_URL}/user/list-by-invite?userId=${user._id}&limit=50`, {
+        method: 'GET', headers: getHeaders()
+      });
       if (res.ok) {
         const data = await res.json();
-        if (data.success) setReferralStats(data.data);
+        if (data.success) {
+          setReferralFriends(data.users || []);
+          setReferralTotal(data.total || 0);
+        }
       }
     } catch { }
     setReferralLoading(false);
-  }, []);
+  }, [user?._id]);
 
   useEffect(() => {
-    if (activeTab === 'referrals' && user) fetchReferralStats();
-  }, [activeTab, user, fetchReferralStats]);
+    if (activeTab === 'referrals' && user?._id) fetchReferralFriends();
+  }, [activeTab, user?._id, fetchReferralFriends]);
 
-  // ── Credit transactions from BE ──
-  const [creditHistory, setCreditHistory] = useState<any[]>([]);
+  // ── Credit history from BE: GET /credits/history ──
+  const [creditHistory, setCreditHistory] = useState<CreditTransaction[]>([]);
   const [creditHistoryLoading, setCreditHistoryLoading] = useState(false);
 
-  const fetchCreditHistory = useCallback(async () => {
+  // ── Purchase history from BE: GET /credits/my-purchases ──
+  const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
+
+  const fetchBillingData = useCallback(async () => {
     setCreditHistoryLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/credits/history?limit=20`, { method: 'GET', headers: getHeaders() });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success) setCreditHistory(data.data || []);
-      }
+      const [historyRes, purchaseRes] = await Promise.all([
+        creditsApi.getHistory(1, 30),
+        creditsApi.getMyPurchases(),
+      ]);
+      setCreditHistory(historyRes.data || []);
+      if (purchaseRes.success) setPurchaseHistory(purchaseRes.purchases || []);
     } catch { }
     setCreditHistoryLoading(false);
   }, []);
 
   useEffect(() => {
-    if (activeTab === 'billing' && user) fetchCreditHistory();
-  }, [activeTab, user, fetchCreditHistory]);
+    if (activeTab === 'billing' && user) fetchBillingData();
+  }, [activeTab, user, fetchBillingData]);
 
   // ── Actions ──
   const handleSaveKeys = async () => {
     setIsSaving(true);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(modelKeys));
-    await new Promise(r => setTimeout(r, 600));
+    // Also save gemini key to backend
+    if (modelKeys.gemini) {
+      try {
+        await fetch(`${API_BASE_URL}/user/update-gemini-api-key`, {
+          method: 'PUT', headers: getHeaders(),
+          body: JSON.stringify({ geminiApiKey: modelKeys.gemini }),
+        });
+      } catch { }
+    }
+    await new Promise(r => setTimeout(r, 400));
     setIsSaving(false);
   };
 
@@ -99,14 +119,25 @@ export const useSettingsLogic = () => {
     }
   };
 
+  // PUT /user/update-profile — uses allowed fields from BE
   const handleSaveProfile = async () => {
     setIsSaving(true);
     try {
-      await fetch(`${API_BASE_URL}/user/profile`, {
-        method: 'PUT',
-        headers: getHeaders(),
-        body: JSON.stringify({ name: profileName }),
-      });
+      const payload: any = {};
+      // Name is special — backend uses firstName/lastName but we also allow name
+      if (profileFields.firstName !== undefined) payload.firstName = profileFields.firstName;
+      if (profileFields.lastName !== undefined) payload.lastName = profileFields.lastName;
+      if (profileFields.phone !== undefined) payload.phone = profileFields.phone;
+      if (profileFields.gender !== undefined) payload.gender = profileFields.gender;
+      if (profileFields.birthYear !== undefined) payload.birthYear = profileFields.birthYear;
+      if (profileFields.province !== undefined) payload.province = profileFields.province;
+
+      if (Object.keys(payload).length > 0) {
+        await fetch(`${API_BASE_URL}/user/update-profile`, {
+          method: 'PUT', headers: getHeaders(),
+          body: JSON.stringify(payload),
+        });
+      }
       await refreshUserInfo();
     } catch { }
     setIsSaving(false);
@@ -118,9 +149,12 @@ export const useSettingsLogic = () => {
     lang, setLang,
     activeTab, setActiveTab,
     isSaving,
-    profileName, setProfileName, handleSaveProfile,
+    profileName, setProfileName,
+    profileFields, setProfileFields,
+    handleSaveProfile,
     modelKeys, setModelKeys, handleSaveKeys, handleResetKeys,
-    referralStats, referralLoading, fetchReferralStats,
+    referralFriends, referralTotal, referralLoading, fetchReferralFriends,
     creditHistory, creditHistoryLoading,
+    purchaseHistory,
   };
 };
