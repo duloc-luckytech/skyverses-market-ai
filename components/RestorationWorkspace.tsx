@@ -2,14 +2,16 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, Zap, Loader2, ChevronLeft, RefreshCw, Plus,
+  X, Zap, Loader2, ChevronLeft, RefreshCw,
   CheckCircle2, AlertCircle, Clock, ImageIcon, Target, ShieldCheck,
-  AlertTriangle, Info, Upload, Trash2, Clock4, Film, MessageSquare
+  AlertTriangle, Info, Upload, Trash2, Clock4, Film, MessageSquare, FolderOpen
 } from 'lucide-react';
 import { useRestoration, RESTORATION_PRESETS, RestoreJob } from '../hooks/useRestoration';
 import { RestorationViewport } from './restoration/RestorationViewport';
 import ProductImageWorkspace from './ProductImageWorkspace';
 import UpscaleWorkspace from './UpscaleWorkspace';
+import ImageLibraryModal from './ImageLibraryModal';
+import { GCSAssetMetadata } from '../services/storage';
 
 /* ─── Status config ─── */
 const statusConfig: Record<string, { icon: any; color: string; label: string }> = {
@@ -36,6 +38,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   const [upscaleImageUrl, setUpscaleImageUrl] = useState<string | null>(null);
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const activeJob = jobs.find(j => j.id === activeJobId);
@@ -57,6 +60,13 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   const onDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragOver(true); };
   const onDragLeave = () => setIsDragOver(false);
   const onDropHandler = (e: React.DragEvent) => { setIsDragOver(false); handleDrop(e); };
+
+  // Library select handler
+  const handleLibrarySelect = (assets: GCSAssetMetadata[]) => {
+    if (assets.length === 0) { setIsLibraryOpen(false); return; }
+    assets.forEach(asset => handleApplyTemplate(asset.url));
+    setIsLibraryOpen(false);
+  };
 
   // Display list based on active tab
   const displayJobs = activeTab === 'session' ? jobs : history;
@@ -168,22 +178,34 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           {/* ─── Sidebar Body ─── */}
           <div className={`flex-grow overflow-y-auto no-scrollbar ${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
 
-            {/* Upload Section — #5 Batch */}
-            <div className="p-4 border-b border-slate-200/80 dark:border-white/[0.04]">
-              <button onClick={() => fileInputRef.current?.click()}
-                className="w-full py-3.5 bg-emerald-50 dark:bg-emerald-500/[0.06] border border-emerald-200/60 dark:border-emerald-500/15 rounded-xl flex items-center justify-center gap-2.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 hover:border-emerald-400 dark:hover:border-emerald-500/30 transition-all group shadow-sm hover:shadow-md hover:shadow-emerald-500/5">
-                <Upload size={14} className="group-hover:scale-110 transition-transform" />
-                Tải ảnh (hoặc kéo thả)
-              </button>
+            {/* Chọn ảnh — 2 options */}
+            <div className="p-4 border-b border-slate-200/80 dark:border-white/[0.04] space-y-2">
+              <div className="flex items-center gap-2 mb-1">
+                <ImageIcon size={13} className="text-emerald-500" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Chọn ảnh cần phục chế</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <button onClick={() => setIsLibraryOpen(true)}
+                  className="py-3 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:border-emerald-400 dark:hover:border-emerald-500/30 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all group">
+                  <FolderOpen size={16} className="group-hover:scale-110 transition-transform" />
+                  Thư viện Cloud
+                </button>
+                <button onClick={() => fileInputRef.current?.click()}
+                  className="py-3 bg-emerald-50 dark:bg-emerald-500/[0.06] border border-emerald-200/60 dark:border-emerald-500/15 rounded-xl flex flex-col items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 hover:border-emerald-400 dark:hover:border-emerald-500/30 transition-all group">
+                  <Upload size={16} className="group-hover:scale-110 transition-transform" />
+                  Từ máy tính
+                </button>
+              </div>
+              <p className="text-[8px] text-slate-300 dark:text-slate-600 text-center font-medium">Hoặc kéo thả ảnh vào khu vực bên phải</p>
               <input type="file" ref={fileInputRef} className="hidden" accept="image/*" multiple
                 onChange={(e) => e.target.files && handleBatchUpload(e.target.files)} />
             </div>
 
-            {/* Preset Selection */}
+            {/* Chế độ phục chế */}
             <div className="p-4 border-b border-slate-200/80 dark:border-white/[0.04]">
               <div className="flex items-center gap-2 mb-3">
                 <Target size={13} className="text-emerald-500" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Kịch bản phục chế</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Chế độ phục chế</span>
               </div>
               <div className="space-y-1.5">
                 {RESTORATION_PRESETS.map((preset, index) => {
@@ -216,23 +238,23 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               </div>
             </div>
 
-            {/* #6 Custom Prompt */}
+            {/* Hướng dẫn bổ sung */}
             <div className="p-4 border-b border-slate-200/80 dark:border-white/[0.04]">
               <div className="flex items-center gap-2 mb-2">
                 <MessageSquare size={13} className="text-slate-400" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Ghi chú bổ sung</span>
-                <span className="text-[8px] font-medium text-slate-300 dark:text-slate-600 ml-auto">Tùy chọn</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hướng dẫn thêm cho AI</span>
+                <span className="text-[8px] font-medium text-slate-300 dark:text-slate-600 ml-auto">Không bắt buộc</span>
               </div>
               <textarea
                 value={customPrompt}
                 onChange={e => setCustomPrompt(e.target.value)}
-                placeholder="VD: Tập trung vào mắt, giữ nguyên nền, làm rõ chữ viết..."
+                placeholder="VD: Làm rõ khuôn mặt, giữ nguyên nền cũ, tập trung sửa vết xước bên trái..."
                 rows={2}
                 className="w-full bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl py-2.5 px-3 text-[11px] font-medium outline-none focus:border-emerald-500/30 transition-all text-slate-700 dark:text-white/70 placeholder:text-slate-300 dark:placeholder:text-slate-600 resize-none"
               />
             </div>
 
-            {/* Job Queue with tabs */}
+            {/* Danh sách ảnh */}
             <div className="p-4">
               {/* #3 Tab switcher */}
               <div className="flex items-center gap-1 mb-3 bg-slate-100 dark:bg-white/[0.03] rounded-lg p-1 border border-slate-200 dark:border-white/[0.04]">
@@ -240,7 +262,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                   className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-[9px] font-bold uppercase tracking-wider transition-all ${
                     activeTab === 'session' ? 'bg-white dark:bg-white/[0.06] text-slate-800 dark:text-white shadow-sm' : 'text-slate-400 dark:text-slate-500'
                   }`}>
-                  <Film size={11} /> Phiên này
+                  <Film size={11} /> Phiên hiện tại
                 </button>
                 <button onClick={() => setActiveTab('history')}
                   className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-[9px] font-bold uppercase tracking-wider transition-all ${
@@ -305,7 +327,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                   <div className="py-8 text-center">
                     <ImageIcon size={24} strokeWidth={1.5} className="mx-auto mb-2 text-slate-200 dark:text-white/10" />
                     <p className="text-[9px] font-bold uppercase tracking-wider text-slate-300 dark:text-slate-600">
-                      {activeTab === 'session' ? 'Chưa có ảnh nào' : 'Chưa có lịch sử'}
+                      {activeTab === 'session' ? 'Chọn ảnh từ thư viện hoặc tải lên để bắt đầu' : 'Chưa có kết quả nào trước đó'}
                     </p>
                   </div>
                 )}
@@ -319,8 +341,8 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             <div className="p-3 bg-emerald-50/80 dark:bg-emerald-500/[0.04] border border-emerald-100 dark:border-emerald-500/10 rounded-xl flex items-start gap-2.5">
               <ShieldCheck size={14} className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div>
-                <p className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Miễn phí • Neural Audit</p>
-                <p className="text-[8px] text-slate-500 dark:text-slate-500 mt-0.5 leading-relaxed">Giữ cấu trúc nguyên bản, chỉ tái tạo pixel bị tổn thương. Bảo mật VPC.</p>
+                <p className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Hoàn toàn miễn phí</p>
+                <p className="text-[8px] text-slate-500 dark:text-slate-500 mt-0.5 leading-relaxed">AI giữ nguyên cấu trúc gốc, chỉ tái tạo các chi tiết bị hỏng. Ảnh được mã hóa đầu-cuối và tự xóa sau 24h.</p>
               </div>
             </div>
 
@@ -332,7 +354,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                   : 'bg-slate-200 dark:bg-white/[0.04] text-slate-400 dark:text-slate-600 cursor-not-allowed'
               }`}>
               {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} fill="currentColor" />}
-              PHỤC CHẾ MIỄN PHÍ
+              BẮT ĐẦU PHỤC CHẾ
             </button>
           </div>
         </section>
@@ -349,6 +371,9 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           />
         </aside>
       </div>
+
+      {/* ─── Modals ─── */}
+      <ImageLibraryModal isOpen={isLibraryOpen} onClose={() => setIsLibraryOpen(false)} onConfirm={handleLibrarySelect} maxSelect={6} />
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
