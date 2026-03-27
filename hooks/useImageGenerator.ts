@@ -94,6 +94,10 @@ export const useImageGenerator = () => {
   };
 
   useEffect(() => {
+    // Immediately clear stale models to prevent jumbled labels during engine switch
+    setAvailableModels([]);
+    setSelectedModel(null);
+
     const fetchPricing = async () => {
       try {
         const res = await pricingApi.getPricing({ tool: 'image', engine: selectedEngine });

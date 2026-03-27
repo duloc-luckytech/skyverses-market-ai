@@ -158,8 +158,12 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     return n.split(/\s*-\s/)[0].split(/\s+/)[0] || 'Other';
   };
 
-  // Fetch Pricing Models
+  // Fetch Pricing Models — reset family to avoid stale data during server switch
   useEffect(() => {
+    // Immediately clear stale family so familyModels doesn't render with old data
+    setSelectedFamily('');
+    setAvailableModels([]);
+
     const fetchPricing = async () => {
       try {
         const res = await pricingApi.getPricing({ tool: 'video', engine: selectedEngine });
@@ -216,11 +220,13 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   }, [selectedFamily, selectedMode, resolution, familyModels]);
 
   // When family changes, reset mode/resolution to first available
+  // Guard: only reset when familyModels has data (avoids resetting during engine switch loading)
   useEffect(() => {
+    if (familyModels.length === 0) return;
     if (familyModes.length > 0 && !familyModes.includes(selectedMode)) setSelectedMode(familyModes[0]);
     if (familyResolutions.length > 0 && !familyResolutions.includes(resolution)) setResolution(familyResolutions[0]);
     if (familyRatios.length > 0 && !familyRatios.includes(ratio)) setRatio(familyRatios[0]);
-  }, [selectedFamily, familyModes, familyResolutions, familyRatios]);
+  }, [selectedFamily, familyModes, familyResolutions, familyRatios, familyModels]);
 
   // Detect if pricing is mode-based (keys like "fast","quality") vs duration-based (keys like "5","8")
   const isModeBased = useMemo(() => {

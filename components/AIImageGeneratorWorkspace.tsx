@@ -50,6 +50,11 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     }
   }, [familyList, g.selectedModel]);
 
+  // Reset selectedFamily when engine changes to avoid stale data
+  useEffect(() => {
+    setSelectedFamily('');
+  }, [g.selectedEngine]);
+
   useEffect(() => {
     if (familyModels.length === 0) return;
     const currentRaw = g.selectedModel?.raw || g.selectedModel;
@@ -63,11 +68,13 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     }
   }, [selectedFamily, g.selectedMode, g.selectedRes, familyModels]);
 
+  // Guard: only reset when familyModels has data (avoids resetting during engine switch loading)
   useEffect(() => {
+    if (familyModels.length === 0) return;
     if (familyModes.length > 0 && !familyModes.includes(g.selectedMode)) g.setSelectedMode(familyModes[0]);
     if (familyResolutions.length > 0 && !familyResolutions.includes(g.selectedRes)) g.setSelectedRes(familyResolutions[0]);
     if (familyRatios.length > 0 && !familyRatios.includes(g.selectedRatio)) g.setSelectedRatio(familyRatios[0]);
-  }, [selectedFamily, familyModes, familyResolutions, familyRatios]);
+  }, [selectedFamily, familyModes, familyResolutions, familyRatios, familyModels]);
 
   // --- SAFE NAVIGATION ---
   const isAnyTaskProcessing = useMemo(() => g.results.some(r => r.status === 'processing'), [g.results]);
