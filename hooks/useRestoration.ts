@@ -104,6 +104,10 @@ export const useRestoration = () => {
   const [selectedPresetId, setSelectedPresetId] = useState(RESTORATION_PRESETS[0].id);
   const [restoreCost, setRestoreCost] = useState(DEFAULT_RESTORE_COST);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
+  const [customPrompt, setCustomPrompt] = useState('');           // #6 Custom prompt
+  const [activeTab, setActiveTab] = useState<'session' | 'history'>('session'); // #3 History tab
+  const [history, setHistory] = useState<RestoreJob[]>([]);       // #3 History
+  const [historyLoading, setHistoryLoading] = useState(false);
   
   const [usagePreference, setUsagePreference] = useState<'credits' | 'key'>(() => {
     const saved = localStorage.getItem('skyverses_usage_preference');
@@ -243,6 +247,36 @@ export const useRestoration = () => {
     }, POLL_INTERVAL);
   }, [refreshUserInfo]);
 
+  // ─── #3 FETCH HISTORY ───
+  const fetchHistory = useCallback(async () => {
+    setHistoryLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/image-jobs?status=done&type=image_to_image&limit=30`, {
+        headers: getHeaders(),
+      });
+      const json = await res.json();
+      const items = json?.data || json?.jobs || [];
+      const mapped: RestoreJob[] = items.map((item: any) => ({
+        id: item._id || item.jobId,
+        original: item.input?.image || '',
+        result: item.result?.images?.[0] || item.result?.thumbnail || null,
+        status: item.status === 'done' ? 'DONE' as const : 'ERROR' as const,
+        timestamp: new Date(item.createdAt).toLocaleTimeString(),
+        presetId: item.config?.style || 'portrait',
+        backendJobId: item._id || item.jobId,
+      }));
+      setHistory(mapped);
+    } catch (err) {
+      console.error('[Restore] History fetch error:', err);
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'history') fetchHistory();
+  }, [activeTab, fetchHistory]);
+
   // ─── UPLOAD IMAGE ───
   const handleUpload = async (file: File) => {
     const tempId = Date.now().toString();
@@ -270,6 +304,25 @@ export const useRestoration = () => {
       showToast('❌ Tải ảnh lên thất bại. Kiểm tra kết nối mạng.', 'error');
     }
   };
+
+  // ─── #5 BATCH UPLOAD ───
+  const handleBatchUpload = async (files: FileList | File[]) => {
+    const fileArr = Array.from(files).filter(f => f.type.startsWith('image/'));
+    if (fileArr.length === 0) return;
+    showToast(`📦 Đang tải ${fileArr.length} ảnh...`, 'info');
+    for (const file of fileArr) {
+      await handleUpload(file);
+    }
+    if (fileArr.length > 1) showToast(`✅ Đã tải ${fileArr.length} ảnh vào hàng đợi!`, 'success');
+  };
+
+  // ─── #2 DRAG & DROP ───
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const files = e.dataTransfer.files;
+    if (files.length > 0) handleBatchUpload(files);
+  }, []);
 
   const handleApplyTemplate = (url: string) => {
     const tempId = `template-${Date.now()}`;
@@ -306,19 +359,12 @@ export const useRestoration = () => {
     showToast('🔄 Đang chuẩn bị thử lại...', 'info');
   };
 
-  // ─── RUN RESTORATION (Backend Job) ───
+  // ─── RUN RESTORATION (Backend Job — FREE) ───
   const runRestoration = async () => {
     const currentJob = jobs.find(j => j.id === activeJobId);
-    const RESTORE_COST = restoreCost;
 
     if (!currentJob || (currentJob.status !== 'Khởi tạo' && currentJob.status !== 'ERROR') || isProcessing) return;
     if (!isAuthenticated) { login(); return; }
-
-    // #2 — Better credit check message
-    if (credits < RESTORE_COST) {
-      showToast(`💳 Không đủ credits. Cần ${RESTORE_COST} CR, bạn có ${credits} CR.`, 'error');
-      return;
-    }
 
     setIsProcessing(true);
     setJobs(prev => prev.map(j => j.id === activeJobId
@@ -328,7 +374,8 @@ export const useRestoration = () => {
 
     try {
       const selectedPreset = RESTORATION_PRESETS.find(p => p.id === selectedPresetId);
-      const restorationPrompt = `${SYSTEM_INSTRUCTION}\n\nSPECIFIC RESTORATION STRATEGY: ${selectedPreset?.prompt || ''}`;
+      const userAddendum = customPrompt.trim() ? `\n\nADDITIONAL USER INSTRUCTIONS: ${customPrompt.trim()}` : '';
+      const restorationPrompt = `${SYSTEM_INSTRUCTION}\n\nSPECIFIC RESTORATION STRATEGY: ${selectedPreset?.prompt || ''}${userAddendum}`;
 
       const response = await fetch(`${API_BASE_URL}/image-jobs`, {
         method: 'POST',
@@ -363,10 +410,7 @@ export const useRestoration = () => {
       if (!response.ok || !json?.data?.jobId) {
         const msg = json?.message || 'Failed to create restoration job';
 
-        // #2 — Specific error messages
-        if (msg === 'INSUFFICIENT_CREDITS') {
-          showToast(`💳 Không đủ credits. Cần ${json?.required || RESTORE_COST} CR.`, 'error');
-        } else if (msg === 'USER_NOT_FOUND') {
+        if (msg === 'USER_NOT_FOUND') {
           showToast('🔒 Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', 'error');
         } else {
           showToast(`❌ ${msg}`, 'error');
@@ -403,12 +447,20 @@ export const useRestoration = () => {
     selectedPresetId,
     setSelectedPresetId,
     handleUpload,
+    handleBatchUpload,
+    handleDrop,
     handleApplyTemplate,
     runRestoration,
     retryJob,
     deleteJob,
     credits,
-    restoreCost,      // #6 Dynamic pricing
+    restoreCost,
+    customPrompt,
+    setCustomPrompt,
+    activeTab,
+    setActiveTab,
+    history,
+    historyLoading,
     usagePreference,
     setUsagePreference,
     hasPersonalKey,

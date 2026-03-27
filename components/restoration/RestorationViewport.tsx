@@ -1,11 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Monitor, Loader2, Sparkles, MoveHorizontal, Wand2, 
   HelpCircle, Image as ImageIcon, Download, Edit3, Maximize2,
   Upload, Scan, RefreshCw, ArrowRight, Zap, Layers, RotateCcw,
-  AlertTriangle, RotateCw
+  AlertTriangle, RotateCw, ZoomIn, ZoomOut, Minus, Plus
 } from 'lucide-react';
 import { RestoreJob, RESTORATION_PRESETS } from '../../hooks/useRestoration';
 
@@ -15,7 +15,7 @@ interface Props {
   onDownload: (url: string) => void;
   onEdit: (url: string) => void;
   onUpscale: (url: string) => void;
-  onRetry?: (jobId: string) => void;  // #3 NEW
+  onRetry?: (jobId: string) => void;
 }
 
 const GUIDE_STEPS = [
@@ -27,6 +27,17 @@ const GUIDE_STEPS = [
 export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplate, onDownload, onEdit, onUpscale, onRetry }) => {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [imgLoading, setImgLoading] = useState(true);
+  const [zoom, setZoom] = useState(1);
+
+  // #4 Zoom with scroll wheel
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (activeJob?.status !== 'DONE') return;
+    e.preventDefault();
+    setZoom(prev => {
+      const next = prev + (e.deltaY < 0 ? 0.15 : -0.15);
+      return Math.min(4, Math.max(1, next));
+    });
+  }, [activeJob?.status]);
 
   return (
     <div className="flex-grow flex flex-col bg-slate-50/50 dark:bg-[#050506] overflow-hidden transition-colors duration-500 relative">
@@ -70,28 +81,31 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
               </div>
 
               {activeJob.status === 'DONE' && activeJob.result ? (
-                /* ═══ RESULT VIEW — Before/After Slider ═══ */
-                <div className="w-full h-full relative pt-10">
-                  <img src={activeJob.original} className="absolute inset-0 w-full h-full object-contain pt-10" alt="Original" />
-                  <div 
-                    className="absolute inset-0 overflow-hidden pt-10"
-                    style={{ width: `${sliderPosition}%`, borderRight: '2px solid #10b981' }}
-                  >
-                    <img 
-                      src={activeJob.result} 
-                      className="absolute inset-0 h-full object-contain pt-10" 
-                      style={{ width: `calc(100% * 100 / ${sliderPosition})`, maxWidth: 'none' }}
-                      alt="Restored" 
-                    />
-                  </div>
+                /* ═══ RESULT VIEW — Before/After Slider + #4 Zoom ═══ */
+                <div className="w-full h-full relative pt-10 overflow-hidden" onWheel={handleWheel}>
+                  <div style={{ transform: `scale(${zoom})`, transformOrigin: 'center center', transition: 'transform 0.15s ease-out' }}
+                    className="w-full h-full relative">
+                    <img src={activeJob.original} className="absolute inset-0 w-full h-full object-contain pt-10" alt="Original" />
+                    <div 
+                      className="absolute inset-0 overflow-hidden pt-10"
+                      style={{ width: `${sliderPosition}%`, borderRight: '2px solid #10b981' }}
+                    >
+                      <img 
+                        src={activeJob.result} 
+                        className="absolute inset-0 h-full object-contain pt-10" 
+                        style={{ width: `calc(100% * 100 / ${sliderPosition})`, maxWidth: 'none' }}
+                        alt="Restored" 
+                      />
+                    </div>
 
-                  {/* Slider Handle */}
-                  <div 
-                    className="absolute inset-y-0 z-10 w-1 cursor-ew-resize pointer-events-none pt-10"
-                    style={{ left: `${sliderPosition}%` }}
-                  >
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full shadow-[0_4px_20px_rgba(16,185,129,0.5)] flex items-center justify-center text-white border-2 border-white dark:border-[#0a0a0e]">
-                      <MoveHorizontal strokeWidth={2.5} className="w-5 h-5" />
+                    {/* Slider Handle */}
+                    <div 
+                      className="absolute inset-y-0 z-10 w-1 cursor-ew-resize pointer-events-none pt-10"
+                      style={{ left: `${sliderPosition}%` }}
+                    >
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full shadow-[0_4px_20px_rgba(16,185,129,0.5)] flex items-center justify-center text-white border-2 border-white dark:border-[#0a0a0e]">
+                        <MoveHorizontal strokeWidth={2.5} className="w-5 h-5" />
+                      </div>
                     </div>
                   </div>
                   
@@ -107,6 +121,16 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                   </div>
                   <div className="absolute bottom-5 right-5 z-30 pointer-events-none flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-xl text-white/80 text-[9px] font-black uppercase tracking-[0.2em] rounded-lg border border-white/10">
                     <RotateCcw size={12} /> Ảnh gốc
+                  </div>
+
+                  {/* #4 Zoom Controls */}
+                  <div className="absolute top-14 right-4 z-30 flex flex-col gap-1 bg-white/80 dark:bg-black/60 backdrop-blur-xl rounded-xl border border-slate-200 dark:border-white/10 p-1 shadow-lg">
+                    <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="p-1.5 hover:bg-emerald-500/10 rounded-lg text-slate-500 dark:text-slate-400 hover:text-emerald-500 transition-colors"><Plus size={14} /></button>
+                    <div className="text-center text-[8px] font-black text-slate-400 dark:text-slate-500">{Math.round(zoom * 100)}%</div>
+                    <button onClick={() => setZoom(z => Math.max(1, z - 0.25))} className="p-1.5 hover:bg-emerald-500/10 rounded-lg text-slate-500 dark:text-slate-400 hover:text-emerald-500 transition-colors"><Minus size={14} /></button>
+                    {zoom !== 1 && (
+                      <button onClick={() => setZoom(1)} className="p-1.5 hover:bg-red-500/10 rounded-lg text-[8px] font-black text-red-400 transition-colors">1:1</button>
+                    )}
                   </div>
                 </div>
 
