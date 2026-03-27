@@ -8,7 +8,7 @@ import {
   Search as SearchIcon, CheckCircle2, FolderOpen, Monitor,
   Link as LinkIcon, LayoutGrid, Share2, PenLine,
   Settings2, ChevronUp, Brain, SlidersHorizontal, Ratio,
-  Hash, Menu
+  Hash, Menu, Lock
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useVideoAnimate, RATIOS, QUALITY_MODES, RenderTask } from '../hooks/useVideoAnimate';
@@ -17,6 +17,7 @@ import { AnimateIntelView } from './video-animate/AnimateIntelView';
 import { AnimateTemplateModal } from './video-animate/AnimateTemplateModal';
 import ImageLibraryModal from './ImageLibraryModal';
 import { QuickImageGenModal } from './QuickImageGenModal';
+import { API_BASE_URL } from '../apis/config';
 
 /* ─── VIDEO RESULT CARD ─── */
 const VideoResultCard: React.FC<{
@@ -241,8 +242,21 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const [uploadTarget, setUploadTarget] = useState<'IMG' | 'VID'>('IMG');
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [configExpanded, setConfigExpanded] = useState(true);
+  const [isLocked, setIsLocked] = useState(false);
   const imgInputRef = useRef<HTMLInputElement>(null);
   const vidInputRef = useRef<HTMLInputElement>(null);
+
+  // Check product lock
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/config`)
+      .then(r => r.json())
+      .then(data => {
+        if (data?.success && data.data?.productLocks?.['video-animate-ai']) {
+          setIsLocked(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const autoPrompt = localStorage.getItem('skyverses_global_auto_prompt');
@@ -514,14 +528,15 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 <span className="text-[11px] font-semibold">{v.estimatedCost}</span>
               </div>
             </div>
-            <button onClick={v.handleSynthesize}
-              disabled={v.isGenerating || !v.sourceImg || !v.selectedModel}
-              className={`w-full py-3.5 rounded-xl text-white font-bold uppercase text-[11px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2.5
-                ${v.sourceImg && v.selectedModel
-                  ? 'bg-gradient-to-r from-indigo-500 to-violet-500 hover:brightness-110 active:scale-[0.98] shadow-indigo-500/20'
-                  : 'bg-slate-200 dark:bg-white/[0.04] text-slate-400 dark:text-slate-600 cursor-not-allowed'}`}>
-              {v.isGenerating ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} fill="currentColor" />}
-              Khởi chạy Studio
+            <button onClick={isLocked ? undefined : v.handleSynthesize}
+              disabled={isLocked || v.isGenerating || !v.sourceImg || !v.selectedModel}
+              className={`w-full py-3.5 rounded-xl font-bold uppercase text-[11px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2.5
+                ${isLocked
+                  ? 'bg-slate-200 dark:bg-white/[0.04] text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                  : v.sourceImg && v.selectedModel
+                    ? 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white hover:brightness-110 active:scale-[0.98] shadow-indigo-500/20'
+                    : 'bg-slate-200 dark:bg-white/[0.04] text-slate-400 dark:text-slate-600 cursor-not-allowed'}`}>
+              {isLocked ? <><Lock size={14} /> Sắp ra mắt</> : <>{v.isGenerating ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} fill="currentColor" />} Khởi chạy Studio</>}
             </button>
           </div>
         </aside>
