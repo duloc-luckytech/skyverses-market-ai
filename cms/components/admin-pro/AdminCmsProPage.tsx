@@ -34,10 +34,11 @@ import { ExplorerTab } from './ExplorerTab';
 import { AIModelsTab } from './AIModelsTab';
 import { MarketFiltersTab } from './MarketFiltersTab';
 import { ConfigurationTab } from './ConfigurationTab';
+import { ProductsTab } from './ProductsTab';
 import { ProviderTokensTab } from './ProviderTokensTab';
 import { SolutionDrawer } from './solution-drawer/SolutionDrawer';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'PRODUCTS';
 
 const AdminCmsProPage = () => {
   const { user } = useAuth();
@@ -172,6 +173,7 @@ const AdminCmsProPage = () => {
     { id: 'USERS', label: 'Quản lý khách hàng', icon: <Users size={20} /> },
     { id: 'LOGS', label: 'Nhật ký hệ thống', icon: <History size={20} /> },
     { id: 'CONFIG', label: 'Cấu hình chung', icon: <Cog size={20} /> },
+    { id: 'PRODUCTS', label: 'Sản phẩm', icon: <Package size={20} /> },
   ];
 
   return (
@@ -215,6 +217,7 @@ const AdminCmsProPage = () => {
              {activeTab === 'LOGS' && <LogsTab key="logs" remoteSolutions={remoteSolutions} />}
              {activeTab === 'USERS' && <UsersTab key="users" loading={loading} response={null} onParamsChange={()=>{}} />}
              {activeTab === 'CONFIG' && <ConfigurationTab key="config" />}
+             {activeTab === 'PRODUCTS' && <ProductsTab key="products" />}
              {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
                <NodeRegistryTab 
                  key={activeTab} 

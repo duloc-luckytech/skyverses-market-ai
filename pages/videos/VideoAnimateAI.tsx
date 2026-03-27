@@ -4,11 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, Zap, Sparkles, ArrowRight, CheckCircle2,
   Video, UserCircle, Music, Mic2, UserCheck,
-  Film, Clapperboard, Upload, Cpu, Star, ChevronLeft
+  Film, Clapperboard, Upload, Cpu, Star, ChevronLeft, Lock
 } from 'lucide-react';
 import VideoAnimateWorkspace from '../../components/VideoAnimateWorkspace';
 import { Link } from 'react-router-dom';
 import { usePageMeta } from '../../hooks/usePageMeta';
+import { API_BASE_URL } from '../../apis/config';
 
 /* ─── DATA ─── */
 const HERO_VIDEOS = [
@@ -110,6 +111,19 @@ const VideoAnimateAI: React.FC = () => {
 
   const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+
+  // Check product lock from config
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/config`)
+      .then(r => r.json())
+      .then(data => {
+        if (data?.success && data.data?.productLocks?.['video-animate-ai']) {
+          setIsLocked(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentSlide(prev => (prev + 1) % HERO_VIDEOS.length), 7000);
@@ -158,11 +172,16 @@ const VideoAnimateAI: React.FC = () => {
           </motion.p>
 
           <motion.div {...fadeUp(0.3)} className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <button onClick={() => setIsWorkspaceOpen(true)}
-              className="group bg-gradient-to-r from-indigo-500 to-violet-600 text-white px-10 py-5 rounded-2xl font-bold text-sm shadow-[0_20px_50px_rgba(99,102,241,0.25)] hover:shadow-[0_25px_60px_rgba(99,102,241,0.35)] hover:scale-[1.02] transition-all flex items-center gap-3">
-              <Video size={18} />
-              Mở Video Studio
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            <button onClick={() => !isLocked && setIsWorkspaceOpen(true)}
+              disabled={isLocked}
+              className={`group px-10 py-5 rounded-2xl font-bold text-sm flex items-center gap-3 transition-all ${
+                isLocked
+                  ? 'bg-slate-200 dark:bg-white/10 text-slate-400 dark:text-white/30 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-[0_20px_50px_rgba(99,102,241,0.25)] hover:shadow-[0_25px_60px_rgba(99,102,241,0.35)] hover:scale-[1.02]'
+              }`}>
+              {isLocked ? <Lock size={18} /> : <Video size={18} />}
+              {isLocked ? 'Sắp ra mắt' : 'Mở Video Studio'}
+              {!isLocked && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
             </button>
             <a href="#showcases" className="px-10 py-5 border border-slate-200 dark:border-white/10 rounded-2xl font-bold text-sm text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
               Xem Showcases
@@ -295,9 +314,12 @@ const VideoAnimateAI: React.FC = () => {
                       </div>
                     ))}
                   </div>
-                  <button onClick={() => setIsWorkspaceOpen(true)}
-                    className="inline-flex items-center gap-2 text-sm font-bold text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors group/btn pt-2">
-                    Thử nghiệm ngay <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+                  <button onClick={() => !isLocked && setIsWorkspaceOpen(true)}
+                    disabled={isLocked}
+                    className={`inline-flex items-center gap-2 text-sm font-bold transition-colors group/btn pt-2 ${
+                      isLocked ? 'text-slate-400 cursor-not-allowed' : 'text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300'
+                    }`}>
+                    {isLocked ? <><Lock size={14} /> Sắp ra mắt</> : <>Thử nghiệm ngay <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" /></>}
                   </button>
                 </div>
               </motion.div>
@@ -370,11 +392,16 @@ const VideoAnimateAI: React.FC = () => {
               Chỉ cần ảnh + audio — AI sẽ tạo video chuyên nghiệp trong vài phút.
             </p>
           </motion.div>
-          <motion.button {...fadeUp(0.15)} onClick={() => setIsWorkspaceOpen(true)}
-            className="group bg-gradient-to-r from-indigo-500 to-violet-600 text-white px-14 py-6 rounded-2xl text-sm font-bold shadow-[0_25px_60px_rgba(99,102,241,0.3)] hover:shadow-[0_30px_70px_rgba(99,102,241,0.4)] hover:scale-[1.03] transition-all inline-flex items-center gap-3">
-            <Video size={18} />
-            Mở Video Studio
-            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          <motion.button {...fadeUp(0.15)} onClick={() => !isLocked && setIsWorkspaceOpen(true)}
+            disabled={isLocked}
+            className={`px-14 py-6 rounded-2xl text-sm font-bold inline-flex items-center gap-3 transition-all ${
+              isLocked
+                ? 'bg-slate-200 dark:bg-white/10 text-slate-400 dark:text-white/30 cursor-not-allowed'
+                : 'bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-[0_25px_60px_rgba(99,102,241,0.3)] hover:shadow-[0_30px_70px_rgba(99,102,241,0.4)] hover:scale-[1.03] group'
+            }`}>
+            {isLocked ? <Lock size={18} /> : <Video size={18} />}
+            {isLocked ? 'Sắp ra mắt' : 'Mở Video Studio'}
+            {!isLocked && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
           </motion.button>
           <motion.div {...fadeUp(0.25)} className="flex items-center justify-center gap-2 pt-4">
             <div className="flex gap-0.5">
