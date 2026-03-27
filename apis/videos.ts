@@ -22,6 +22,7 @@ export interface VideoJobRequest {
     translateToEn: boolean;
     projectId: string;
     mode: "relaxed" | "fast";
+    referenceMediaIds?: string[];
   };
 }
 

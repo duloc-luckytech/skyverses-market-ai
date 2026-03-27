@@ -262,6 +262,8 @@ export const useCharacterSync = () => {
 
     // Collect all character reference images (same as VideoGenerator's inputImages)
     const charUrls = slots.filter(s => s.url).map(s => s.url!);
+    // Collect media IDs for fxflow third-party format (referenceMediaIds)
+    const charMediaIds = slots.filter(s => s.url && s.mediaId).map(s => s.mediaId!);
 
     const now = new Date();
     const dateKey = now.toISOString().split('T')[0];
@@ -295,7 +297,7 @@ export const useCharacterSync = () => {
       await Promise.all(taskEntries.map(async ({ localId, seq }) => {
         try {
           if (usagePreference === 'credits') {
-            // Build payload matching VideoGenerator format — use "ingredient" for multi-reference character sync
+            // Build payload — use "ingredient" type for multi-reference character sync
             const payload: VideoJobRequest = {
               type: "ingredient",
               input: { images: charUrls.length > 0 ? charUrls : [null] },
@@ -315,6 +317,8 @@ export const useCharacterSync = () => {
                 translateToEn: true,
                 projectId: "default",
                 mode: (selectedModel.mode || "relaxed") as any,
+                // Media IDs for fxflow third-party (charsync videoMode)
+                referenceMediaIds: charMediaIds.length > 0 ? charMediaIds : undefined,
               },
             };
 
