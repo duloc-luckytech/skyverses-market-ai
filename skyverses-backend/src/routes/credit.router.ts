@@ -754,6 +754,12 @@ router.get("/purchase/check/:txId", authenticate, async (req: any, res) => {
 
           if (creditAmount > 0) {
             user.creditBalance += creditAmount;
+
+            // ✅ Ghi nhận plan từ gói đã mua (để CMS hiển thị đúng)
+            if (pkg.code) {
+              user.plan = pkg.code;
+            }
+
             await user.save();
 
             await CreditTransaction.create({
@@ -993,6 +999,12 @@ router.post("/purchase/crypto", authenticate, async (req: any, res) => {
 
     // ✅ VERIFIED — Credit the user
     user.creditBalance += creditAmount;
+
+    // ✅ Ghi nhận plan từ gói đã mua (để CMS hiển thị đúng)
+    if (pkg.code) {
+      user.plan = pkg.code;
+    }
+
     await user.save();
 
     await CreditTransaction.create({

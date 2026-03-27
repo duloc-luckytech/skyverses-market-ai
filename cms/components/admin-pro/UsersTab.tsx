@@ -40,6 +40,13 @@ const PLAN_COLORS: Record<string, string> = {
   studio: 'bg-brand-blue/10 text-brand-blue border-brand-blue/20',
   creator: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
   starter: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+  // Credit package codes
+  basic: 'bg-slate-500/10 text-slate-500 border-slate-500/20',
+  pro: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
+  ultimate: 'bg-fuchsia-500/10 text-fuchsia-500 border-fuchsia-500/20',
+  BASIC: 'bg-slate-500/10 text-slate-500 border-slate-500/20',
+  PRO: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
+  ULTIMATE: 'bg-fuchsia-500/10 text-fuchsia-500 border-fuchsia-500/20',
 };
 
 const relativeTime = (d: string) => {
@@ -153,7 +160,7 @@ export const UsersTab: React.FC<UsersTabProps> = () => {
           <div className="flex items-center gap-1.5 px-2.5 py-1.5 border border-black/[0.04] dark:border-white/[0.06] rounded-xl bg-slate-50 dark:bg-white/[0.03]">
             <Filter size={11} className="text-slate-400" />
             <select value={params.plan} onChange={e => handleFilterPlan(e.target.value)} className="bg-transparent border-none text-[10px] font-bold uppercase tracking-wider outline-none cursor-pointer text-slate-600 dark:text-gray-400">
-              <option value="">Tất cả</option><option value="free">Free</option><option value="starter">Starter</option><option value="creator">Creator</option><option value="studio">Studio</option>
+              <option value="">Tất cả</option><option value="free">Free</option><option value="starter">Starter</option><option value="creator">Creator</option><option value="studio">Studio</option><option value="basic">Basic</option><option value="pro">Pro</option><option value="ultimate">Ultimate</option>
             </select>
           </div>
           <div className="flex items-center gap-1 bg-slate-50 dark:bg-white/[0.03] p-1 rounded-xl border border-black/[0.04] dark:border-white/[0.06]">

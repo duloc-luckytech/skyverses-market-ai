@@ -313,6 +313,12 @@ router.post("/bank", async (req, res) => {
 
       /* ================= AUTO-CONFIRM CREDIT ================= */
       creditUser.creditBalance += creditAmount;
+
+      // ✅ Ghi nhận plan từ gói đã mua (để CMS hiển thị đúng)
+      if (pkg.code) {
+        creditUser.plan = pkg.code;
+      }
+
       await creditUser.save();
 
       await CreditTransaction.create({
