@@ -172,6 +172,9 @@ router.get("/list-u", async (req: any, res) => {
           // ─── Timestamps ───
           createdAt: 1,
           lastActiveAt: 1,
+
+          // ─── FXFlow ───
+          fxflowOwner: 1,
         },
       },
     ];

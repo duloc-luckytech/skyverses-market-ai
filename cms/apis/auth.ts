@@ -64,6 +64,9 @@ export interface AuthUser {
   // Timestamps
   lastActiveAt?: string;
   createdAt?: string;
+
+  // FXFlow
+  fxflowOwner?: string;
 }
 
 export interface RegisterRequest {
