@@ -57,6 +57,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     setIsSandboxEnv(isPreview);
 
+    // Capture referral code from URL ?ref=xxx
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get('ref') || urlParams.get('invite');
+    if (refCode) {
+      localStorage.setItem('skyverses_ref_code', refCode);
+    }
+
     const token = localStorage.getItem('skyverses_auth_token');
     if (token) {
       refreshUserInfo();
@@ -122,7 +129,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const handleCredentialResponse = (response: any) => {
     const payload = decodeJwt(response.credential);
     if (payload) {
-      loginWithEmail(payload.email, payload.name, undefined, payload.picture);
+      // Get stored referral code from URL capture
+      const storedRefCode = localStorage.getItem('skyverses_ref_code') || undefined;
+      loginWithEmail(payload.email, payload.name, storedRefCode, payload.picture).then(() => {
+        // Clear ref code after successful registration
+        localStorage.removeItem('skyverses_ref_code');
+      });
     }
   };
 
