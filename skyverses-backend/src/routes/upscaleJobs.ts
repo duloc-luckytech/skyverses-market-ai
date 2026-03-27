@@ -9,7 +9,7 @@ import User from "../models/UserModel";
 import CreditTransaction from "../models/CreditTransaction.model";
 import ModelPricingMatrix from "../models/ModelPricingMatrix.model";
 import SystemSetting from "../models/SystemSetting.model";
-import { pickRandomActiveOwner } from "./fxflow";
+import { getOrAssignOwnerForUser } from "./fxflow";
 
 const router = express.Router();
 
@@ -87,10 +87,10 @@ router.post("/upscale-batch", authenticate, async (req: any, res) => {
 
       if (!jobId || !urlImage) continue;
 
-      // ✅ Random assign owner nếu provider là fxflow
+      // ✅ Sticky assign owner per user (nếu provider là fxflow)
       let jobOwner: string | null = null;
       if (finalProvider === ImageEngineProvider.FXFLOW) {
-        jobOwner = await pickRandomActiveOwner();
+        jobOwner = await getOrAssignOwnerForUser(userId);
       }
 
       const job = await ImageJob.create({
@@ -170,6 +170,7 @@ router.post("/upscale-batch", authenticate, async (req: any, res) => {
 router.get("/upscale-tasks/:provider", async (req, res) => {
   try {
     const { provider } = req.params;
+    const ownerFilter = req.query.owner as string | undefined;
 
     const filter: any = {
       type: ImageJobType.IMAGE_UPSCALE,
@@ -180,6 +181,11 @@ router.get("/upscale-tasks/:provider", async (req, res) => {
       filter["engine.provider"] = provider;
     }
 
+    // ✅ Nếu có ?owner= → chỉ lấy job của owner đó
+    if (ownerFilter) {
+      filter.owner = ownerFilter;
+    }
+
     const jobs = await ImageJob.find(filter)
       .sort({ createdAt: 1 })
       .limit(10)
@@ -188,6 +194,7 @@ router.get("/upscale-tasks/:provider", async (req, res) => {
         enginePayload: 1,
         engine: 1,
         input: 1,
+        owner: 1,
         createdAt: 1,
       })
       .lean();
@@ -212,6 +219,7 @@ router.get("/upscale-tasks/:provider", async (req, res) => {
           urlImage: job.enginePayload?.urlImage || job.input?.image || "",
           mediaIdInput,
           resolution: job.enginePayload?.resolution || "4K",
+          owner: job.owner || null,
         };
       })
     );
@@ -453,10 +461,10 @@ router.post("/upscale-from-job", authenticate, async (req: any, res) => {
       finalProvider = ImageEngineProvider.FXFLOW;
     }
 
-    // ✅ Random assign owner nếu provider là fxflow
+    // ✅ Sticky assign owner per user (nếu provider là fxflow)
     let jobOwner: string | null = null;
     if (finalProvider === ImageEngineProvider.FXFLOW) {
-      jobOwner = await pickRandomActiveOwner();
+      jobOwner = await getOrAssignOwnerForUser(userId);
     }
 
     // ─── CREATE UPSCALE JOB ───

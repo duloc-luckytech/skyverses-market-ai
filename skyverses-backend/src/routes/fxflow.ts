@@ -50,7 +50,8 @@ async function getFxflowConfig() {
 
 /* =====================================================
    OWNER HELPER
-   Random chọn 1 owner active để gán vào job
+   Sticky assignment: user giữ 1 owner cố định.
+   Chỉ random lại khi owner đó inactive hoặc chưa có.
 ===================================================== */
 export async function pickRandomActiveOwner(): Promise<string | null> {
   try {
@@ -60,6 +61,42 @@ export async function pickRandomActiveOwner(): Promise<string | null> {
     return pick.name;
   } catch {
     return null;
+  }
+}
+
+/**
+ * Sticky owner per user:
+ * 1. User đã có fxflowOwner + owner còn active → dùng luôn
+ * 2. User chưa có / owner inactive → random owner mới, lưu vào user
+ */
+export async function getOrAssignOwnerForUser(userId: string): Promise<string | null> {
+  try {
+    const User = (await import("../models/UserModel")).default;
+    const user = await User.findById(userId);
+    if (!user) return await pickRandomActiveOwner();
+
+    // Nếu user đã có owner → check active
+    if (user.fxflowOwner) {
+      const existing = await FxflowOwner.findOne({
+        name: user.fxflowOwner,
+        status: "active",
+      }).lean();
+
+      if (existing) return user.fxflowOwner; // ✅ still active → reuse
+    }
+
+    // Owner chưa có hoặc inactive → pick mới
+    const newOwner = await pickRandomActiveOwner();
+    if (newOwner) {
+      user.fxflowOwner = newOwner;
+      await user.save();
+      console.log(`👤 [FXFlow] Assigned owner "${newOwner}" to user ${user.email}`);
+    }
+
+    return newOwner;
+  } catch (err) {
+    console.error("[FXFlow] getOrAssignOwnerForUser error:", err);
+    return await pickRandomActiveOwner();
   }
 }
 

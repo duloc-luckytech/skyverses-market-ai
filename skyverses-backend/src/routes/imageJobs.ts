@@ -11,7 +11,7 @@ import ModelPricingMatrix from "../models/ModelPricingMatrix.model";
 import User from "../models/UserModel";
 import CreditTransaction from "../models/CreditTransaction.model";
 import ImageOwnerModel from "../models/ImageOwnerModel";
-import { pickRandomActiveOwner } from "./fxflow";
+import { getOrAssignOwnerForUser } from "./fxflow";
 
 const router = express.Router();
 
@@ -181,10 +181,10 @@ router.post("/", authenticate, async (req: any, res) => {
     }
   }
 
-  // ✅ Random assign owner nếu provider là fxflow
+  // ✅ Sticky assign owner per user (nếu provider là fxflow)
   let jobOwner: string | null = null;
   if (finalEngine.provider === "fxflow") {
-    jobOwner = await pickRandomActiveOwner();
+    jobOwner = await getOrAssignOwnerForUser(req.user.userId);
   }
 
   const job = await ImageJob.create({
