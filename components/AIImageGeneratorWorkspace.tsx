@@ -18,7 +18,7 @@ import { useAuth } from '../context/AuthContext';
 const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const g = useImageGenerator();
   const { showToast } = useToast();
-  const { refreshUserInfo } = useAuth();
+  const { user, refreshUserInfo } = useAuth();
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [selectedLogTask, setSelectedLogTask] = useState<ImageResult | null>(null);
   const [selectedFamily, setSelectedFamily] = useState('');
@@ -96,6 +96,12 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   // ─── UPSCALE FROM IMAGE JOB ───
   const handleUpscaleFromJob = useCallback(async (imageJobId: string, resolution: string = '4K') => {
     try {
+      // ⚠️ Check: user chưa từng nạp gói → cảnh báo
+      if (!user?.plan) {
+        showToast('⚠️ Bạn cần nạp gói lần đầu để sử dụng tính năng Upscale. Vui lòng nạp credits để tiếp tục.', 'error');
+        return;
+      }
+
       showToast(`Đang gửi yêu cầu upscale ${resolution}...`, 'info');
       setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'processing' } }));
 
@@ -184,7 +190,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       setUpscaleMap(prev => ({ ...prev, [imageJobId]: { resolution, status: 'error' } }));
       showToast('Lỗi kết nối khi gửi upscale', 'error');
     }
-  }, [g, showToast, refreshUserInfo]);
+  }, [g, showToast, refreshUserInfo, user]);
 
   return (
     <div className="h-full w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
