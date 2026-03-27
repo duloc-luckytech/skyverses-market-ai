@@ -5,7 +5,8 @@ import {
   Zap, Edit3, ChevronDown, Monitor, Clock,
   Loader2, Trash2, Search,
   X, DollarSign, Settings2, RefreshCw, Plus, Copy, Maximize2,
-  Video, Image, Music, Server, Tag, Layers, Activity, Eye, EyeOff, ServerCog
+  Video, Image, Music, Server, Tag, Layers, Activity, Eye, EyeOff, ServerCog,
+  Power
 } from 'lucide-react';
 import { pricingApi, PricingModel, PricingFilters, CreatePricingRequest } from '../../apis/pricing';
 
@@ -37,6 +38,8 @@ export const PricingTab: React.FC = () => {
   const [toolFilter, setToolFilter] = useState('');
   const [engineFilter, setEngineFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [serverStatus, setServerStatus] = useState<Record<string, boolean>>({});
+  const [togglingEngine, setTogglingEngine] = useState<string | null>(null);
 
   // Drawer
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -69,7 +72,25 @@ export const PricingTab: React.FC = () => {
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [toolFilter, engineFilter]);
+  const fetchServerStatus = async () => {
+    try {
+      const res = await pricingApi.getServerStatus();
+      if (res.success) setServerStatus(res.data);
+    } catch (e) { console.error(e); }
+  };
+
+  useEffect(() => { fetchData(); fetchServerStatus(); }, [toolFilter, engineFilter]);
+
+  const handleToggleServerStatus = async (engine: string, isLive: boolean) => {
+    setTogglingEngine(engine);
+    try {
+      const res = await pricingApi.updateServerStatus(engine, isLive);
+      if (res.success) {
+        setServerStatus(prev => ({ ...prev, [engine]: isLive }));
+      }
+    } catch (e) { console.error(e); }
+    finally { setTogglingEngine(null); }
+  };
 
   /* =====================================================
      DERIVED DATA
@@ -332,6 +353,9 @@ export const PricingTab: React.FC = () => {
               onDuplicate={handleDuplicate}
               onDelete={handleDelete}
               onCloneToServer2={handleCloneToServer2}
+              isLive={serverStatus[engine] !== false}
+              isToggling={togglingEngine === engine}
+              onToggleStatus={(isLive) => handleToggleServerStatus(engine, isLive)}
               onCellUpdate={async (id, res, dur, val) => {
                 const result = await pricingApi.updatePricingCell(id, res, Number(dur), val);
                 fetchData();
@@ -451,8 +475,11 @@ const EngineGroup: React.FC<{
   onDuplicate: (m: PricingModel) => void;
   onDelete: (id: string) => void;
   onCloneToServer2: (id: string) => void;
+  isLive: boolean;
+  isToggling: boolean;
+  onToggleStatus: (isLive: boolean) => void;
   onCellUpdate: (id: string, res: string, dur: string, val: number) => Promise<any>;
-}> = ({ engine, models, expandedIds, toggleExpand, onEdit, onDuplicate, onDelete, onCloneToServer2, onCellUpdate }) => {
+}> = ({ engine, models, expandedIds, toggleExpand, onEdit, onDuplicate, onDelete, onCloneToServer2, isLive, isToggling, onToggleStatus, onCellUpdate }) => {
   const engineColor = ENGINE_COLORS[engine] || '#6b7280';
   const videoCount = models.filter(m => m.tool === 'video').length;
   const imageCount = models.filter(m => m.tool === 'image').length;
@@ -470,7 +497,7 @@ const EngineGroup: React.FC<{
             <p className="text-[10px] text-slate-400 font-medium">{models.length} models</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {videoCount > 0 && (
             <span className="flex items-center gap-1 px-2 py-1 rounded-md bg-purple-500/10 text-purple-500 text-[9px] font-bold border border-purple-500/20">
               <Video size={10} /> {videoCount}
@@ -481,6 +508,20 @@ const EngineGroup: React.FC<{
               <Image size={10} /> {imageCount}
             </span>
           )}
+
+          {/* Server Status Toggle */}
+          <button
+            onClick={() => onToggleStatus(!isLive)}
+            disabled={isToggling}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all ${
+              isLive
+                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20'
+                : 'bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20'
+            } ${isToggling ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
+          >
+            {isToggling ? <Loader2 size={12} className="animate-spin" /> : <Power size={12} />}
+            {isLive ? 'LIVE' : 'OFF'}
+          </button>
         </div>
       </div>
 

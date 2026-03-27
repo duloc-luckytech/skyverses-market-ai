@@ -1,8 +1,71 @@
 import express from "express";
 import ModelPricingMatrix from "../models/ModelPricingMatrix.model";
+import ServerStatus from "../models/ServerStatus.model";
 import { buildPricingMatrix } from "../utils/buildPricingMatrix";
 
 const router = express.Router();
+
+/* =====================================================
+   SERVER STATUS — live / off per engine
+===================================================== */
+
+/**
+ * GET /pricing/server-status
+ * Returns status of all servers
+ */
+router.get("/server-status", async (_req, res) => {
+  try {
+    // Auto-seed defaults if missing
+    const engines = ["gommo", "fxflow"];
+    for (const engine of engines) {
+      await ServerStatus.findOneAndUpdate(
+        { engine },
+        { $setOnInsert: { engine, isLive: true } },
+        { upsert: true, new: true }
+      );
+    }
+    const statuses = await ServerStatus.find({}).lean();
+    const result: Record<string, boolean> = {};
+    statuses.forEach((s) => {
+      result[s.engine] = s.isLive;
+    });
+    res.json({ success: true, data: result });
+  } catch (err: any) {
+    console.error("[SERVER_STATUS] GET error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * PUT /pricing/server-status/:engine
+ * Toggle server live/off
+ * Body: { isLive: boolean }
+ */
+router.put("/server-status/:engine", async (req, res) => {
+  try {
+    const { engine } = req.params;
+    const { isLive } = req.body;
+
+    if (typeof isLive !== "boolean") {
+      return res.status(400).json({ error: "isLive must be boolean" });
+    }
+
+    const doc = await ServerStatus.findOneAndUpdate(
+      { engine },
+      { isLive },
+      { upsert: true, new: true }
+    );
+
+    console.log(
+      `🔧 [SERVER_STATUS] ${engine} → ${isLive ? "🟢 LIVE" : "🔴 OFF"}`
+    );
+
+    res.json({ success: true, engine: doc.engine, isLive: doc.isLive });
+  } catch (err: any) {
+    console.error("[SERVER_STATUS] PUT error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 function normalizeResolutions(
   resolutions: string[] | string | Record<string, number>

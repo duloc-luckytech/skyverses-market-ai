@@ -163,5 +163,22 @@ export const pricingApi = {
       console.error('Pricing Clone Error:', error);
       return { success: false, error: 'Network synchronization failed' };
     }
+  },
+
+  /**
+   * Get server status (live/off)
+   * GET /pricing/server-status
+   */
+  getServerStatus: async (): Promise<{ success: boolean; data: Record<string, boolean> }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/pricing/server-status`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Server Status Fetch Error:', error);
+      return { success: false, data: {} };
+    }
   }
 };
