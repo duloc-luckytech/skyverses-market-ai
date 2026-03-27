@@ -60,6 +60,7 @@ export interface IUser extends Document {
   creditBalance: number;
   claimWelcomeCredit: boolean;
   lastDailyClaimAt?: Date | null;
+  fxflowOwner?: string; // sticky owner cho FXFlow jobs
 
   onboarding?: {
     role?:
@@ -173,6 +174,10 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     },
     lastDailyClaimAt: {
       type: Date,
+      default: null,
+    },
+    fxflowOwner: {
+      type: String,
       default: null,
     },
     onboarding: {
