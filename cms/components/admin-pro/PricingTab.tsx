@@ -198,9 +198,20 @@ export const PricingTab: React.FC = () => {
         const [key, val] = part.split(':');
         if (key && val) resObj[key.trim()] = parseFloat(val.trim()) || 1;
       });
-      const finalDurations = durInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      // Parse durations — support both numeric (5, 8, 10) and mode-based (relaxed, fast)
+      const durParts = durInput.split(',').map(s => s.trim()).filter(Boolean);
+      const numericDurations = durParts.map(s => parseInt(s)).filter(n => !isNaN(n));
+      const modeParts = durParts.filter(s => isNaN(parseInt(s)));
+      
+      // If durInput has numeric values → use as durations; otherwise they are modes
+      const finalDurations = numericDurations.length > 0 ? numericDurations : [];
+      // Merge modes from durInput with existing payload.modes
+      const finalModes = modeParts.length > 0 
+        ? [...new Set([...(payload.modes || []), ...modeParts])]
+        : (payload.modes || []);
+
       const finalAspectRatios = aspectRatioInput.split(',').map(s => s.trim()).filter(Boolean);
-      const body: any = { ...payload, resolutions: resObj, durations: finalDurations, aspectRatios: finalAspectRatios, mode: payload.modes?.[0] || '' };
+      const body: any = { ...payload, resolutions: resObj, durations: finalDurations, modes: finalModes, aspectRatios: finalAspectRatios, mode: finalModes[0] || payload.modes?.[0] || '' };
       let res;
       if (editingId) res = await pricingApi.updatePricing(editingId, body);
       else res = await pricingApi.createPricing(body);

@@ -335,6 +335,7 @@ router.put("/:id", async (req, res) => {
     perSecond,
     resolutions, // ✅ TRUYỀN THẲNG
     durations,
+    modes,
   });
 
   /* ================= APPLY UPDATE ================= */
@@ -440,6 +441,7 @@ router.post("/", async (req, res) => {
     perSecond,
     resolutions,
     durations,
+    modes,
   });
 
   const doc = await ModelPricingMatrix.create({
@@ -470,16 +472,17 @@ router.patch("/:id/cell", async (req, res) => {
   const { resolution, duration, credits } = req.body;
 
   /* ================= VALIDATION ================= */
+  // duration can be a number (video: 5, 8, 10) or a string (image mode: "relaxed", "fast")
   if (
     !resolution ||
-    typeof duration !== "number" ||
+    (typeof duration !== "number" && typeof duration !== "string") ||
     typeof credits !== "number"
   ) {
     return res.status(400).json({
       error: "INVALID_CELL_PARAMS",
       required: {
         resolution: "string",
-        duration: "number",
+        duration: "number | string",
         credits: "number",
       },
     });
