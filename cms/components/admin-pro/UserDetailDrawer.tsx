@@ -31,6 +31,12 @@ const PLAN_CONFIG: Record<string, { color: string; bg: string }> = {
   studio: { color: '#0090ff', bg: '#0090ff15' },
   creator: { color: '#10b981', bg: '#10b98115' },
   starter: { color: '#f59e0b', bg: '#f59e0b15' },
+  basic: { color: '#64748b', bg: '#64748b15' },
+  BASIC: { color: '#64748b', bg: '#64748b15' },
+  pro: { color: '#6366f1', bg: '#6366f115' },
+  PRO: { color: '#6366f1', bg: '#6366f115' },
+  ultimate: { color: '#d946ef', bg: '#d946ef15' },
+  ULTIMATE: { color: '#d946ef', bg: '#d946ef15' },
 };
 
 const TX_TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {

@@ -283,9 +283,8 @@ router.get("/history/:userId", authenticate, async (req: any, res) => {
 
     const txs = await Transaction.find({
       userId,
-      type: "plan",
       status: "success",
-      planCode: { $in: ["STA", "PRO", "ULT"] },
+      planCode: { $exists: true, $ne: null },
     })
       .sort({ createdAt: -1 })
       .lean();
@@ -298,7 +297,9 @@ router.get("/history/:userId", authenticate, async (req: any, res) => {
       status:
         t.expiredAt && new Date(t.expiredAt) > new Date()
           ? "Còn hạn"
-          : "Hết hạn",
+          : t.expiredAt
+            ? "Hết hạn"
+            : "Active",
     }));
 
     res.json({ success: true, data });
@@ -346,7 +347,7 @@ router.get("/detail/:userId", authenticate, async (req: any, res) => {
     const txs = await Transaction.find({
       userId,
       status: "success",
-      planCode: { $in: ["STA", "PRO", "ULT"] },
+      planCode: { $exists: true, $ne: null },
     })
       .sort({ createdAt: 1 }) // 👈 Sắp theo thứ tự cũ -> mới để cộng dồn expire
       .lean();
