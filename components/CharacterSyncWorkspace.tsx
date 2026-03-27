@@ -144,6 +144,21 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
     else if (status === 'LOW_CREDITS') { alert("Số dư không đủ."); }
   };
 
+  const handleRetry = (res: VideoResult) => {
+    // Remove failed job from local state
+    handleDeleteJob(res.id);
+    // Put the prompt back into the first sequence
+    if (res.prompt && res.prompt.trim()) {
+      api.setSequences(prev => {
+        const updated = [...prev];
+        if (updated.length > 0) updated[0] = { ...updated[0], text: res.prompt };
+        return updated;
+      });
+    }
+    // Re-trigger generation
+    handleSynthesizeClick();
+  };
+
   // Flow for adding a new character: library → name → add
   const handleAddCharacterClick = () => {
     if (api.slots.length >= MAX_CHARACTERS) return;
@@ -460,7 +475,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                         <VideoCard key={res.id} res={res} isSelected={false} onToggleSelect={() => {}}
                           onFullscreen={(url, hs, id) => setFullscreenVideo({ url, hasSound: hs, id })}
                           onDelete={handleDeleteJob}
-                          onRetry={() => {}}
+                          onRetry={handleRetry}
                           onDownload={handleDownload}
                           onViewLogs={(r) => setSelectedLogTask(r)} />
                       ))}
@@ -506,7 +521,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                                   <VideoCard res={res} isSelected={false} onToggleSelect={() => {}}
                                     onFullscreen={(url, hs, id) => setFullscreenVideo({ url, hasSound: hs, id })}
                                     onDelete={handleDeleteJob}
-                                    onRetry={() => {}}
+                                    onRetry={handleRetry}
                                     onDownload={handleDownload}
                                     onViewLogs={(r) => setSelectedLogTask(r)} />
                                 </div>
