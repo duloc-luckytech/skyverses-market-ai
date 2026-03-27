@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Settings2, ChevronDown, ChevronUp, Settings, Zap, Loader2, List,
   Brain, GitBranch, SlidersHorizontal, Ratio, MonitorUp, Hash,
-  Volume2, Timer, Video
+  Volume2, Timer, Video, Plus
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { PricingModel } from '../../apis/pricing';
 import { ModelSelectorModal } from '../common/ModelSelectorModal';
 import { ServerSelector } from '../common/ServerSelector';
@@ -290,6 +291,13 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
               <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-violet-500 dark:text-violet-400' : 'text-slate-600 dark:text-slate-400'}`}>
                 {props.usagePreference === 'credits' ? `${props.credits.toLocaleString()} CR` : props.usagePreference === 'key' ? 'API Key' : '—'}
               </span>
+              <Link
+                to="/credits"
+                className="flex items-center gap-0.5 px-2 py-0.5 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-full text-[9px] font-semibold uppercase tracking-wider hover:brightness-110 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-indigo-500/20"
+              >
+                <Plus size={10} />
+                Nạp
+              </Link>
             </div>
             <div className="flex items-center gap-1 text-amber-500/80">
               <Zap size={10} fill="currentColor" />
