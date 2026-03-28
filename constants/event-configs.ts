@@ -1,6 +1,24 @@
 
 import { Snowflake, Flower2, Heart, Cake, LucideIcon } from 'lucide-react';
 
+/* =====================================================
+   TYPES
+====================================================== */
+export interface EventTemplate {
+  id: string;
+  name: string;
+  prompt: string;
+  style: string;
+  tags: string[];
+}
+
+export interface StylePreset {
+  id: string;
+  name: string;
+  emoji: string;
+  modifier: string;
+}
+
 export interface EventConfig {
   id: string;
   name: string;
@@ -12,11 +30,29 @@ export interface EventConfig {
   accentColor: string; 
   icon: LucideIcon;
   basePrompt: string;
+  systemPrompt: string;
   atmosphere: string;
   costBase: number;
   benefits: { t: string; d: string }[];
+  templates: EventTemplate[];
+  coupleMode?: boolean;
 }
 
+/* =====================================================
+   STYLE PRESETS (shared across all events)
+====================================================== */
+export const STYLE_PRESETS: StylePreset[] = [
+  { id: 'cinematic', name: 'Cinematic', emoji: '🎬', modifier: 'Cinematic color grading, dramatic lighting, anamorphic lens flare, film grain, shallow depth of field, movie-quality composition.' },
+  { id: 'manga', name: 'Manga', emoji: '🎌', modifier: 'Anime/manga art style, cel-shading, vibrant saturated colors, clean outlines, Japanese illustration aesthetic, Studio Ghibli inspired.' },
+  { id: 'vintage', name: 'Vintage', emoji: '📷', modifier: 'Vintage film photography look, warm faded tones, soft vignette, retro 70s/80s color palette, analog grain texture, nostalgic atmosphere.' },
+  { id: 'editorial', name: 'Editorial', emoji: '📰', modifier: 'High-fashion editorial photography, Vogue magazine quality, dramatic pose, professional studio lighting, minimal background, luxury aesthetic.' },
+  { id: 'dreamy', name: 'Dreamy', emoji: '✨', modifier: 'Ethereal dreamy atmosphere, soft focus, pastel color palette, lens flare, light leaks, fairy-tale quality, magical golden hour lighting.' },
+  { id: 'dark', name: 'Dark Mood', emoji: '🌑', modifier: 'Dark moody aesthetic, low-key lighting, deep shadows, dramatic contrast, noir photography style, mysterious atmosphere.' },
+];
+
+/* =====================================================
+   EVENT CONFIGS
+====================================================== */
 export const EVENT_CONFIGS: Record<string, EventConfig> = {
   noel: {
     id: 'noel',
@@ -29,6 +65,17 @@ export const EVENT_CONFIGS: Record<string, EventConfig> = {
     accentColor: 'rose',
     icon: Snowflake,
     basePrompt: 'Professional high-quality Christmas/Noel themed photo synthesis.',
+    systemPrompt: `You are a professional Christmas/Noel photo studio AI. Your role is to generate stunning, cinematic Christmas-themed images.
+
+RULES:
+- ALWAYS preserve the identity, facial features, and likeness of any person in the reference image with 100% accuracy
+- Generate festive Christmas/Noel themed environments: snow, warm lights, Christmas trees, fireplaces, gifts
+- Use warm, golden, and red color palettes with bokeh lighting effects
+- Maintain hyper-realistic 8K quality with professional photography composition
+- Apply cinematic lighting: warm key light, cool fill from snow/winter ambience
+- Include Christmas decorations and props naturally in the scene
+- The person should look natural and comfortable in the Christmas setting
+- DO NOT alter facial features, skin tone, or body proportions of the reference person`,
     atmosphere: 'Beautiful Christmas atmosphere, falling snow, bokeh warm lights, 4K resolution.',
     costBase: 150,
     benefits: [
@@ -36,6 +83,13 @@ export const EVENT_CONFIGS: Record<string, EventConfig> = {
       { t: 'Đồng nhất', d: 'Duy trì khuôn mặt người mẫu trong các trang phục lễ hội phức tạp.' },
       { t: 'Độ nét', d: 'Kết xuất chất lượng 4K sắc nét từng bông tuyết và ánh đèn.' },
       { t: 'Sáng tạo', d: 'Phong cách Giáng sinh độc bản giúp hình ảnh luôn nổi bật.' }
+    ],
+    templates: [
+      { id: 'noel-1', name: 'Santa Claus Premium', prompt: 'Person dressed as a stylish modern Santa Claus in a luxury red velvet suit with white fur trim, standing in a grand Christmas hall decorated with a massive Christmas tree, golden ornaments, warm candlelight, snow falling outside the window.', style: 'cinematic', tags: ['Santa', 'Luxury'] },
+      { id: 'noel-2', name: 'Winter Wonderland', prompt: 'Person standing in a magical winter wonderland forest, surrounded by snow-covered pine trees, sparkling ice crystals, northern lights in the sky, wearing an elegant winter coat with fur details, soft moonlight illumination.', style: 'dreamy', tags: ['Forest', 'Snow'] },
+      { id: 'noel-3', name: 'Cozy Fireplace', prompt: 'Person sitting by a warm crackling fireplace in a cozy cabin, Christmas stockings hanging, hot cocoa in hand, soft blanket, warm golden lighting, Christmas tree with fairy lights in the background.', style: 'vintage', tags: ['Cozy', 'Indoor'] },
+      { id: 'noel-4', name: 'Neon Christmas', prompt: 'Person in a cyberpunk-style Christmas setting, neon lights in red and green, futuristic Christmas decorations, holographic snowflakes, urban nightscape with Christmas-themed digital billboards.', style: 'cinematic', tags: ['Cyberpunk', 'Neon'] },
+      { id: 'noel-5', name: 'Christmas Market', prompt: 'Person walking through a traditional European Christmas market, wooden stalls decorated with lights, fresh snow on the ground, the aroma of mulled wine, handmade ornaments, romantic evening atmosphere.', style: 'editorial', tags: ['Outdoor', 'Market'] },
     ]
   },
   tet: {
@@ -49,6 +103,17 @@ export const EVENT_CONFIGS: Record<string, EventConfig> = {
     accentColor: 'red',
     icon: Flower2,
     basePrompt: 'Traditional Vietnamese Lunar New Year (Tet) themed professional photography.',
+    systemPrompt: `You are a professional Vietnamese Lunar New Year (Tết) photo studio AI. Your role is to generate beautiful, culturally authentic Tết-themed images.
+
+RULES:
+- ALWAYS preserve the identity, facial features, and likeness of any person in the reference image with 100% accuracy
+- Generate authentic Vietnamese Tết environments: peach blossoms (hoa đào), apricot blossoms (hoa mai), red decorations, calligraphy scrolls
+- Use vibrant red and gold color palettes with warm spring lighting
+- Include traditional Tết elements: Áo dài, bánh chưng, mâm ngũ quả, câu đối
+- Maintain hyper-realistic 8K quality with professional photography composition
+- The person should wear culturally appropriate traditional Vietnamese clothing (Áo dài, Việt phục)
+- Apply warm, celebratory lighting that captures the joyful spirit of spring
+- DO NOT alter facial features, skin tone, or body proportions of the reference person`,
     atmosphere: 'Vibrant spring colors, warm sunlight, traditional Tet decorations, 8K hyper-realistic.',
     costBase: 150,
     benefits: [
@@ -56,6 +121,13 @@ export const EVENT_CONFIGS: Record<string, EventConfig> = {
       { t: 'Bối cảnh', d: 'Tái hiện không gian chợ Tết, phố cổ, hay vườn hoa xuân lung linh.' },
       { t: 'Tiết kiệm', d: 'Không cần thuê ekip chuyên nghiệp hay phòng studio đắt đỏ.' },
       { t: 'Độc bản', d: 'Tạo ra những thiệp Tết và hình ảnh chúc xuân không đụng hàng.' }
+    ],
+    templates: [
+      { id: 'tet-1', name: 'Áo dài Đỏ Cổ điển', prompt: 'Person wearing a stunning red Áo dài with golden embroidery, standing gracefully among blooming peach blossoms (hoa đào), traditional Vietnamese garden, red lanterns hanging, sunlight streaming through petals.', style: 'cinematic', tags: ['Áo dài', 'Hoa đào'] },
+      { id: 'tet-2', name: 'Phố Ông Đồ', prompt: 'Person in elegant Vietnamese traditional clothing at a calligraphy street, old scholar writing red calligraphy scrolls (câu đối), blooming apricot blossoms, vintage Hanoi atmosphere, warm golden afternoon light.', style: 'vintage', tags: ['Phố cổ', 'Câu đối'] },
+      { id: 'tet-3', name: 'Chợ Hoa Xuân', prompt: 'Person walking through a vibrant Vietnamese spring flower market, surrounded by kumquat trees, chrysanthemums, peach blossoms, bustling crowd, colorful decorations, warm festive lighting.', style: 'editorial', tags: ['Chợ hoa', 'Sắc xuân'] },
+      { id: 'tet-4', name: 'Múa Lân Rồng', prompt: 'Person standing beside a magnificent Vietnamese lion/dragon dance performance, red and gold costumes, firecrackers, confetti, traditional drums, vibrant street festival atmosphere, dynamic action shot.', style: 'cinematic', tags: ['Múa lân', 'Lễ hội'] },
+      { id: 'tet-5', name: 'Mâm Cỗ Tết', prompt: 'Person beside a beautifully arranged traditional Tết feast table (mâm cỗ Tết) with bánh chưng, giò, mứt Tết, fresh flowers, incense, family altar in the background, warm indoor lighting.', style: 'dreamy', tags: ['Mâm cỗ', 'Gia đình'] },
     ]
   },
   wedding: {
@@ -69,13 +141,33 @@ export const EVENT_CONFIGS: Record<string, EventConfig> = {
     accentColor: 'pink',
     icon: Heart,
     basePrompt: 'Professional cinematic wedding photography production.',
+    systemPrompt: `You are a world-class wedding photography AI studio. Your role is to generate stunning, magazine-quality wedding photos.
+
+RULES:
+- ALWAYS preserve the identity, facial features, and likeness of ALL persons in the reference images with 100% accuracy
+- When multiple reference images are provided, treat them as a COUPLE — place them together naturally in the wedding scene
+- Generate romantic, high-end wedding environments: elegant venues, gardens, beaches, European architecture
+- Use soft, romantic color palettes: blush pink, ivory, gold, champagne tones
+- Apply professional wedding photography lighting: golden hour, soft diffused light, romantic backlighting
+- Include luxurious wedding elements: bridal gowns, bouquets, elegant decor, architectural details
+- Maintain cinematic composition with shallow depth of field and dreamy bokeh
+- Capture genuine emotion, elegance, and the romantic atmosphere of a premium wedding photoshoot
+- DO NOT alter facial features, skin tone, or body proportions of any reference person`,
     atmosphere: 'Hyper-realistic wedding atmosphere, high-end bridal photography, romantic soft lighting, 8K.',
     costBase: 250,
+    coupleMode: true,
     benefits: [
       { t: 'Đa dạng', d: 'Từ châu Âu cổ kính đến bờ biển Maldives hay studio Hàn Quốc.' },
       { t: 'Tùy biến', d: 'Thử hàng trăm mẫu váy cưới, veston cao cấp nhất không cần may đo.' },
       { t: 'Face-Lock', d: 'Công nghệ giữ nguyên vẹn cảm xúc và đường nét của cả hai bạn.' },
       { t: 'Tối ưu', d: 'Sở hữu bộ ảnh cưới đẳng cấp chỉ với vài trăm credits.' }
+    ],
+    templates: [
+      { id: 'wed-1', name: 'Korean Studio Classic', prompt: 'Elegant Korean-style bridal studio photo, couple in luxurious white wedding dress and black tuxedo, clean white background with soft diffused lighting, minimalist elegant composition, magazine cover quality.', style: 'editorial', tags: ['Hàn Quốc', 'Studio'] },
+      { id: 'wed-2', name: 'European Palace', prompt: 'Couple in a grand European palace ballroom, crystal chandeliers overhead, marble floors reflecting golden light, bride in a flowing cathedral-length gown, groom in a tailored suit, renaissance architecture.', style: 'cinematic', tags: ['Châu Âu', 'Cung điện'] },
+      { id: 'wed-3', name: 'Beach Sunset', prompt: 'Romantic couple on a pristine tropical beach at golden hour, waves gently touching their bare feet, bride in a flowing bohemian lace dress, warm sunset colors painting the sky, silhouette backlighting.', style: 'dreamy', tags: ['Biển', 'Hoàng hôn'] },
+      { id: 'wed-4', name: 'Indochine Garden', prompt: 'Couple in a serene Indochine-style garden with French colonial architecture, lotus pond, tropical plants, bride in elegant áo dài or fusion wedding dress, soft afternoon light filtering through trees.', style: 'vintage', tags: ['Indochine', 'Vườn'] },
+      { id: 'wed-5', name: 'Modern Urban Night', prompt: 'Stylish couple in a modern city at night, cityscape lights as bokeh background, bride in a sleek contemporary wedding gown, urban rooftop setting, neon reflections, cinematic night photography.', style: 'cinematic', tags: ['Urban', 'Night'] },
     ]
   },
   birthday: {
@@ -89,6 +181,18 @@ export const EVENT_CONFIGS: Record<string, EventConfig> = {
     accentColor: 'purple',
     icon: Cake,
     basePrompt: 'Joyful professional birthday celebration photography.',
+    systemPrompt: `You are a professional birthday celebration photo studio AI. Your role is to generate vibrant, joyful birthday-themed images.
+
+RULES:
+- ALWAYS preserve the identity, facial features, and likeness of any person in the reference image with 100% accuracy
+- Generate festive birthday environments: party decorations, balloons, confetti, birthday cakes, gifts
+- Use vibrant, celebratory color palettes with dynamic lighting effects
+- Include birthday party elements appropriate to the chosen theme (elegant, cyber, outdoor, etc.)
+- The person should look happy, celebratory, and naturally placed in the birthday setting
+- Apply professional photography lighting with festive accents: fairy lights, candle glow, colored spotlights
+- Maintain hyper-realistic 8K quality with dynamic, energetic composition
+- Capture the joy and excitement of a birthday celebration
+- DO NOT alter facial features, skin tone, or body proportions of the reference person`,
     atmosphere: 'Festive and cinematic birthday atmosphere, vibrant colors, celebratory lighting, high quality 8K.',
     costBase: 150,
     benefits: [
@@ -96,6 +200,13 @@ export const EVENT_CONFIGS: Record<string, EventConfig> = {
       { t: 'Cá nhân hóa', d: 'AI hiểu và giữ nguyên nét đẹp gương mặt bạn trong mọi concept.' },
       { t: 'Quà tặng', d: 'Tạo thiệp mời và ảnh kỷ niệm ấn tượng chỉ trong vài giây.' },
       { t: 'Tiết kiệm', d: 'Sở hữu bộ ảnh tiệc chuyên nghiệp mà không cần chuẩn bị kỳ công.' }
+    ],
+    templates: [
+      { id: 'bday-1', name: 'Luxury Ballroom', prompt: 'Person at an extravagant birthday gala in a luxury ballroom, towering multi-tier birthday cake with sparklers, golden balloon arch, confetti falling, crystal chandeliers, elegant party outfit.', style: 'cinematic', tags: ['Luxury', 'Ballroom'] },
+      { id: 'bday-2', name: 'Neon Cyber Party', prompt: 'Person at a futuristic neon-lit birthday party, UV reactive decorations, LED balloon wall, holographic "Happy Birthday" sign, cyberpunk outfit, electric blue and pink lighting, DJ stage in background.', style: 'dark', tags: ['Neon', 'Cyberpunk'] },
+      { id: 'bday-3', name: 'Garden Tea Party', prompt: 'Person at an elegant outdoor garden tea party birthday celebration, vintage china tea set, three-tier cake stand, pastel flower decorations, white lace tablecloth, afternoon sun through the trees.', style: 'vintage', tags: ['Vintage', 'Garden'] },
+      { id: 'bday-4', name: 'Manga Fantasy', prompt: 'Person in an anime/manga style birthday scene, surrounded by cute kawaii decorations, giant strawberry cake, cherry blossoms, sparkle effects, vibrant colors, whimsical fantasy setting.', style: 'manga', tags: ['Manga', 'Fantasy'] },
+      { id: 'bday-5', name: 'Fireworks Celebration', prompt: 'Person on a rooftop with spectacular birthday fireworks in the night sky, city skyline backdrop, elegant outfit, champagne toast, golden confetti, dramatic upward camera angle.', style: 'cinematic', tags: ['Fireworks', 'Night'] },
     ]
   }
 };

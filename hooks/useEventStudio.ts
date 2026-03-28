@@ -3,8 +3,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { uploadToGCS, GCSAssetMetadata } from '../services/storage';
 import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
-import { generateDemoImage } from '../services/gemini';
-import { EventConfig, COMMON_STUDIO_CONSTANTS } from '../constants/event-configs';
+import { EventConfig, COMMON_STUDIO_CONSTANTS, STYLE_PRESETS, EventTemplate } from '../constants/event-configs';
 
 export interface RenderResult {
   id: string;
@@ -13,7 +12,9 @@ export interface RenderResult {
   prompt: string;
   timestamp: string;
   cost: number;
+  seed: number;
   metadata?: any;
+  pinned?: boolean;
 }
 
 export interface SourceImage {
@@ -21,22 +22,25 @@ export interface SourceImage {
   url: string;
   mediaId: string | null;
   status: 'uploading' | 'done';
+  role?: 'anchor' | 'clothing' | 'couple';
 }
 
 export const useEventStudio = (config: EventConfig) => {
   const { credits, useCredits, addCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
   
   // -- Operation States --
-  const [isRequesting, setIsRequesting] = useState(false); // Short-lived state for button feedback
+  const [isRequesting, setIsRequesting] = useState(false);
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<'CURRENT' | 'HISTORY'>('CURRENT');
   const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
 
   // -- Content States --
   const [sourceImages, setSourceImages] = useState<SourceImage[]>([]);
+  const [clothingImages, setClothingImages] = useState<SourceImage[]>([]);
   const [prompt, setPrompt] = useState('');
   const [selectedSubject, setSelectedSubject] = useState(config.subjects[0]);
   const [selectedScenes, setSelectedScenes] = useState<string[]>([]);
+  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   
   // -- Tech Config --
   const [selectedModel, setSelectedModel] = useState(COMMON_STUDIO_CONSTANTS.AI_MODELS[0]);
@@ -49,27 +53,38 @@ export const useEventStudio = (config: EventConfig) => {
   const [historyResults, setHistoryResults] = useState<RenderResult[]>([]);
   const [isFetchingHistory, setIsFetchingHistory] = useState(false);
   const [activeResultId, setActiveResultId] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [compareMode, setCompareMode] = useState(false);
 
   // -- Modals & Preferences --
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorImage, setEditorImage] = useState<string | null>(null);
   const [showResourceModal, setShowResourceModal] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   const [usagePreference, setUsagePreference] = useState<'credits' | 'key'>(() => {
     return (localStorage.getItem('skyverses_usage_preference') as any) || 'credits';
   });
 
   const [isUploading, setIsUploading] = useState(false);
 
-  // Derived state: true if any task is currently synthesizing
+  // Derived states
   const isGenerating = useMemo(() => results.some(r => r.status === 'processing'), [results]);
+  const activeStylePreset = useMemo(() => STYLE_PRESETS.find(s => s.id === selectedStyle), [selectedStyle]);
 
-  // --- LOGIC: FETCH HISTORY ---
+  // Sorted results: pinned first
+  const sortedResults = useMemo(() => {
+    const pinned = results.filter(r => favorites.has(r.id));
+    const unpinned = results.filter(r => !favorites.has(r.id));
+    return [...pinned, ...unpinned];
+  }, [results, favorites]);
+
+  // --- FETCH HISTORY ---
   const fetchHistory = useCallback(async () => {
     if (!isAuthenticated || isFetchingHistory) return;
     setIsFetchingHistory(true);
     try {
-      const res = await imagesApi.getJobs({ limit: 20 });
+      const res = await imagesApi.getJobs({ limit: 30 });
       if (res && res.data) {
         const mapped: RenderResult[] = res.data
           .filter((job: any) => job.enginePayload?.category === config.id.toUpperCase())
@@ -80,6 +95,7 @@ export const useEventStudio = (config: EventConfig) => {
             prompt: job.input?.prompt || 'Generated Asset',
             timestamp: new Date(job.createdAt).toLocaleString(),
             cost: job.creditsUsed || 0,
+            seed: job.config?.seed || 0,
             metadata: job.config
           }));
         setHistoryResults(mapped);
@@ -92,12 +108,10 @@ export const useEventStudio = (config: EventConfig) => {
   }, [isAuthenticated, isFetchingHistory, config.id]);
 
   useEffect(() => {
-    if (activeTab === 'HISTORY') {
-      fetchHistory();
-    }
+    if (activeTab === 'HISTORY') fetchHistory();
   }, [activeTab, fetchHistory]);
 
-  // --- LOGIC: TOOLTIP ---
+  // --- TOOLTIP ---
   const generateTooltip = useMemo(() => {
     if (!isAuthenticated) return "Vui lòng đăng nhập để tiếp tục";
     const hasReadyImage = sourceImages.some(img => img.status === 'done');
@@ -108,15 +122,14 @@ export const useEventStudio = (config: EventConfig) => {
 
   const isGenerateDisabled = isRequesting || !!generateTooltip;
 
+  // --- POLL STATUS ---
   const pollStatus = useCallback(async (jobId: string, resultId: string, cost: number) => {
     try {
       const res: ImageJobResponse = await imagesApi.getJobStatus(jobId);
       const status = res.data?.status;
-
       if (status === 'done' && res.data.result?.images?.length) {
         const imageUrl = res.data.result.images[0];
         setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done' } : r));
-        // Only set active if this was the latest task
         setActiveResultId(resultId);
         refreshUserInfo();
       } else if (status === 'failed' || status === 'error') {
@@ -130,11 +143,41 @@ export const useEventStudio = (config: EventConfig) => {
     }
   }, [usagePreference, addCredits, refreshUserInfo]);
 
-  const handleGenerate = async () => {
+  // --- BUILD PROMPT ---
+  const buildFinalPrompt = useCallback((overridePrompt?: string, overrideSeed?: number) => {
+    const scenesString = selectedScenes.length > 0 ? `Bối cảnh: ${selectedScenes.join(', ')}.` : '';
+    const styleModifier = activeStylePreset ? `\nSTYLE: ${activeStylePreset.modifier}` : '';
+    const clothingRef = clothingImages.length > 0 ? '\nCLOTHING: The person should wear the exact clothing shown in the clothing reference image.' : '';
+    const coupleNote = config.coupleMode && sourceImages.filter(i => i.status === 'done').length >= 2 
+      ? '\nCOUPLE MODE: Two reference images provided — place both persons together as a romantic couple in the scene.' 
+      : '';
+
+    const userPrompt = overridePrompt || prompt || `Create a stunning ${config.id} themed photo with the theme "${selectedSubject}"`;
+
+    const parts = [
+      config.systemPrompt,
+      coupleNote,
+      clothingRef,
+      styleModifier,
+      '',
+      `EVENT TYPE: ${config.name}`,
+      `THEME: ${selectedSubject}`,
+      scenesString ? `SCENE DETAILS: ${scenesString}` : '',
+      `ATMOSPHERE: ${config.atmosphere}`,
+      '',
+      `USER REQUEST: ${userPrompt}`,
+    ].filter(Boolean);
+
+    return parts.join('\n');
+  }, [config, selectedSubject, selectedScenes, prompt, activeStylePreset, clothingImages, sourceImages]);
+
+  // --- CORE GENERATE ---
+  const executeGenerate = async (overridePrompt?: string, overrideSeed?: number, overrideQty?: number) => {
     if (!isAuthenticated) { login(); return; }
     if (isRequesting) return;
 
-    const totalCost = selectedModel.cost * quantity;
+    const qty = overrideQty || quantity;
+    const totalCost = selectedModel.cost * qty;
     if (usagePreference === 'credits' && credits < totalCost) {
       setShowLowCreditAlert(true);
       return;
@@ -144,116 +187,210 @@ export const useEventStudio = (config: EventConfig) => {
     setActiveTab('CURRENT');
     if (window.innerWidth < 1024) setIsMobileExpanded(false);
 
-    const scenesString = selectedScenes.length > 0 ? `Bối cảnh: ${selectedScenes.join(', ')}.` : "";
-    const finalPrompt = `${config.basePrompt} Chủ đề: ${selectedSubject}. ${scenesString} ${prompt}. ${config.atmosphere}`;
+    const finalPrompt = buildFinalPrompt(overridePrompt, overrideSeed);
+    const anchors = sourceImages.filter(img => img.status === 'done');
+    const clothingAnchor = clothingImages.find(img => img.status === 'done');
 
-    // Launch multiple tasks in parallel
-    const anchor = sourceImages.find(img => img.status === 'done');
-
-    for (let i = 0; i < quantity; i++) {
+    for (let i = 0; i < qty; i++) {
+      const seed = overrideSeed !== undefined ? overrideSeed + i : Math.floor(Math.random() * 999999);
       const resultId = `evt-${Date.now()}-${i}`;
       const newResult: RenderResult = {
         id: resultId,
         url: null,
         status: 'processing',
-        prompt: prompt || selectedSubject,
+        prompt: overridePrompt || prompt || selectedSubject,
         timestamp: new Date().toLocaleTimeString(),
-        cost: selectedModel.cost
+        cost: selectedModel.cost,
+        seed
       };
 
       setResults(prev => [newResult, ...prev]);
       setActiveResultId(resultId);
 
-      // Launch synthesis (Direct Gemini or Backend Job)
-      if (!anchor) {
-        // Handle background task for Direct AI
-        (async () => {
-          try {
-            const directImageUrl = await generateDemoImage({
-              prompt: finalPrompt,
-              model: 'google_image_gen_4_5',
-              aspectRatio: selectedRatio,
-              quality: selectedRes
-            });
+      try {
+        // Build image references
+        const imageRefs: string[] = [];
+        if (anchors.length > 0) imageRefs.push(anchors[0].mediaId || anchors[0].url);
+        if (config.coupleMode && anchors.length > 1) imageRefs.push(anchors[1].mediaId || anchors[1].url);
+        if (clothingAnchor) imageRefs.push(clothingAnchor.mediaId || clothingAnchor.url);
 
-            if (directImageUrl) {
-              if (usagePreference === 'credits') useCredits(selectedModel.cost);
-              setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: directImageUrl, status: 'done' } : r));
-              refreshUserInfo();
-            } else {
-              setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
-            }
-          } catch (err) {
-            setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
+        const payload: ImageJobRequest = {
+          type: anchors.length > 0 ? "image_to_image" : "text_to_image",
+          input: {
+            prompt: finalPrompt,
+            ...(imageRefs.length === 1 ? { image: imageRefs[0] } : {}),
+            ...(imageRefs.length > 1 ? { images: imageRefs } : {}),
+          },
+          config: {
+            width: 1024,
+            height: 1024,
+            aspectRatio: selectedRatio,
+            seed,
+            style: selectedStyle || 'cinematic'
+          },
+          engine: {
+            provider: 'gommo',
+            model: selectedModel.id as any
+          },
+          enginePayload: {
+            prompt: finalPrompt,
+            privacy: 'PRIVATE',
+            projectId: 'default',
+            category: config.id.toUpperCase(),
+            mode: anchors.length > 0 ? 'identity_sync' : 'text_to_image'
           }
-        })();
-      } else {
-        // MODE: IDENTITY SYNC (BACKEND PIPELINE)
-        try {
-          const payload: ImageJobRequest = {
-            type: "image_to_image",
-            input: { prompt: finalPrompt, image: anchor.mediaId || anchor.url },
-            config: { width: 1024, height: 1024, aspectRatio: selectedRatio, seed: 0, style: "cinematic" },
-            engine: { provider: "gommo", model: selectedModel.id as any },
-            enginePayload: { prompt: finalPrompt, privacy: "PRIVATE", projectId: "default", category: config.id.toUpperCase() }
-          };
+        };
 
-          const apiRes = await imagesApi.createJob(payload);
-          if (apiRes.success && apiRes.data.jobId) {
-            if (usagePreference === 'credits') useCredits(selectedModel.cost);
-            pollStatus(apiRes.data.jobId, resultId, selectedModel.cost);
-          } else {
-            setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
-          }
-        } catch (e) {
+        const apiRes = await imagesApi.createJob(payload);
+        if (apiRes.success && apiRes.data.jobId) {
+          if (usagePreference === 'credits') useCredits(selectedModel.cost);
+          pollStatus(apiRes.data.jobId, resultId, selectedModel.cost);
+        } else {
           setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
         }
+      } catch (e) {
+        setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
       }
     }
 
-    // Release button after initiating all requests
     setIsRequesting(false);
+  };
+
+  const handleGenerate = () => executeGenerate();
+
+  // --- FEATURE 5: MULTI-VARIATION (4 at once) ---
+  const handleMultiVariation = () => executeGenerate(undefined, undefined, 4);
+
+  // --- FEATURE 7: QUICK RE-GEN ---
+  const handleRegenerate = (result: RenderResult) => {
+    const newSeed = Math.floor(Math.random() * 999999);
+    executeGenerate(result.prompt, newSeed, 1);
+  };
+
+  // --- FEATURE 4: PROMPT SUGGEST ---
+  const handleSuggestPrompt = useCallback(() => {
+    const scenesString = selectedScenes.length > 0 ? ` with ${selectedScenes.join(', ')}` : '';
+    const styleStr = activeStylePreset ? ` in ${activeStylePreset.name} style` : '';
+    
+    const suggestions: Record<string, string[]> = {
+      noel: [
+        `Elegant Christmas portrait${scenesString}${styleStr}, surrounded by golden ornaments and gently falling snow, warm candlelight casting soft shadows`,
+        `Cozy holiday scene${scenesString}${styleStr}, by the fireplace with a cup of cocoa, Christmas tree twinkling, stockings hung with care`,
+        `Festive outdoor portrait${scenesString}${styleStr}, snow-dusted streets, vintage lamp posts, Christmas market in the background`,
+      ],
+      tet: [
+        `Traditional Áo dài portrait${scenesString}${styleStr}, standing among vibrant peach blossoms, golden calligraphy scrolls, spring morning light`,
+        `Elegant Tết celebration${scenesString}${styleStr}, beside a decorated kumquat tree, red lanterns and paper flowers, warm family atmosphere`,
+        `Modern Tết fusion portrait${scenesString}${styleStr}, blending traditional Vietnamese elements with contemporary fashion, artistic composition`,
+      ],
+      wedding: [
+        `Romantic couple portrait${scenesString}${styleStr}, elegant bridal gown flowing in the breeze, groom in tailored suit, golden hour backlighting`,
+        `Luxury wedding studio shot${scenesString}${styleStr}, clean ethereal background, professional fashion photography quality, perfect grooming`,
+        `Dreamy outdoor wedding${scenesString}${styleStr}, flower arch backdrop, soft bokeh, intimate embrace, magazine cover quality`,
+      ],
+      birthday: [
+        `Glamorous birthday celebration${scenesString}${styleStr}, surrounded by floating balloons and confetti, stunning multi-tier cake, party lights`,
+        `Fun vibrant birthday portrait${scenesString}${styleStr}, colorful decorations, giant gift boxes, celebratory champagne pop effect`,
+        `Elegant birthday soirée${scenesString}${styleStr}, fairy lights canopy, flower arrangements, gold accents, glamorous outfit`,
+      ]
+    };
+
+    const pool = suggestions[config.id] || suggestions['birthday'];
+    const randomIdx = Math.floor(Math.random() * pool.length);
+    setPrompt(pool[randomIdx]);
+  }, [config.id, selectedScenes, activeStylePreset]);
+
+  // --- FEATURE 2: APPLY TEMPLATE ---
+  const applyTemplate = (template: EventTemplate) => {
+    setPrompt(template.prompt);
+    setSelectedStyle(template.style);
+    setShowTemplates(false);
+  };
+
+  // --- FEATURE 9: FAVORITE/PIN ---
+  const toggleFavorite = (resultId: string) => {
+    setFavorites(prev => {
+      const next = new Set(prev);
+      if (next.has(resultId)) next.delete(resultId);
+      else next.add(resultId);
+      return next;
+    });
+  };
+
+  // --- FEATURE 8: SHARE ---
+  const handleShare = async (result: RenderResult) => {
+    if (!result.url) return;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${config.name} — Skyverses AI`,
+          text: result.prompt,
+          url: result.url,
+        });
+      } catch { /* user cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(result.url);
+    }
+  };
+
+  // --- UPLOAD ---
+  const processUploadFiles = async (files: File[], role: 'anchor' | 'clothing' | 'couple' = 'anchor') => {
+    const fileList = Array.from(files);
+    const setter = role === 'clothing' ? setClothingImages : setSourceImages;
+
+    const newPlaceholders: SourceImage[] = fileList.map((file, i) => ({
+      id: `uploading-${Date.now()}-${i}`,
+      url: URL.createObjectURL(file),
+      mediaId: null,
+      status: 'uploading',
+      role
+    }));
+
+    setter(prev => [...prev, ...newPlaceholders]);
+    setIsUploading(true);
+
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      const placeholderId = newPlaceholders[i].id;
+      try {
+        const metadata = await uploadToGCS(file);
+        setter(prev => prev.map(img =>
+          img.id === placeholderId ? {
+            ...img,
+            id: metadata.id,
+            url: metadata.url,
+            mediaId: metadata.mediaId || null,
+            status: 'done'
+          } : img
+        ));
+      } catch (err) {
+        console.error("Upload error:", err);
+        setter(prev => prev.filter(img => img.id !== placeholderId));
+      }
+    }
+
+    setIsUploading(false);
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
+    await processUploadFiles(Array.from(files), 'anchor');
+  };
 
-    const fileList = Array.from(files) as File[];
-    
-    // Add placeholders immediately for non-blocking UI
-    const newPlaceholders: SourceImage[] = fileList.map((file, i) => ({
-      id: `uploading-${Date.now()}-${i}`,
-      url: URL.createObjectURL(file),
-      mediaId: null,
-      status: 'uploading'
-    }));
-
-    setSourceImages(prev => [...prev, ...newPlaceholders]);
-
-    // Process each upload
-    fileList.forEach(async (file, i) => {
-      const placeholderId = newPlaceholders[i].id;
-      try {
-        const metadata = await uploadToGCS(file);
-        setSourceImages(prev => prev.map(img => 
-          img.id === placeholderId ? { 
-            ...img, 
-            id: metadata.id, 
-            url: metadata.url, 
-            mediaId: metadata.mediaId || null, 
-            status: 'done' 
-          } : img
-        ));
-      } catch (err) {
-        console.error("Upload error:", err);
-        setSourceImages(prev => prev.filter(img => img.id !== placeholderId));
-      }
-    });
+  const handleClothingUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    await processUploadFiles(Array.from(files), 'clothing');
   };
 
   const removeSourceImage = (id: string) => {
     setSourceImages(prev => prev.filter(img => img.id !== id));
+  };
+
+  const removeClothingImage = (id: string) => {
+    setClothingImages(prev => prev.filter(img => img.id !== id));
   };
 
   const addLibraryImages = (assets: GCSAssetMetadata[]) => {
@@ -261,42 +398,66 @@ export const useEventStudio = (config: EventConfig) => {
       id: asset.id,
       url: asset.url,
       mediaId: asset.mediaId || null,
-      status: 'done'
+      status: 'done',
+      role: 'anchor'
     }));
     setSourceImages(prev => [...prev, ...newImages]);
   };
 
   return {
-    credits,
-    isGenerating,
-    isRequesting,
+    // Auth & Credits
+    credits, isGenerating, isRequesting,
+    
+    // UI State
     isMobileExpanded, setIsMobileExpanded,
     activeTab, setActiveTab,
     showLowCreditAlert, setShowLowCreditAlert,
+    compareMode, setCompareMode,
+    showTemplates, setShowTemplates,
+    
+    // Content
     sourceImages, setSourceImages,
-    removeSourceImage,
+    clothingImages, setClothingImages,
+    removeSourceImage, removeClothingImage,
     addLibraryImages,
     prompt, setPrompt,
     selectedSubject, setSelectedSubject,
     selectedScenes, setSelectedScenes,
+    selectedStyle, setSelectedStyle,
+    
+    // Config
     selectedModel, setSelectedModel,
     selectedRatio, setSelectedRatio,
     selectedRes, setSelectedRes,
     quantity, setQuantity,
+    
+    // Results
     results, setResults,
+    sortedResults,
     historyResults,
     isFetchingHistory,
     activeResultId, setActiveResultId,
+    favorites, toggleFavorite,
+    
+    // Modals
     isLibraryOpen, setIsLibraryOpen,
     isEditorOpen, setIsEditorOpen,
     editorImage, setEditorImage,
     showResourceModal, setShowResourceModal,
     usagePreference, setUsagePreference,
     isUploading,
+    
+    // Actions
     generateTooltip,
     isGenerateDisabled,
     handleGenerate,
     handleUpload,
+    handleClothingUpload,
+    handleMultiVariation,
+    handleRegenerate,
+    handleSuggestPrompt,
+    handleShare,
+    applyTemplate,
     fetchHistory
   };
 };
