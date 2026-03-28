@@ -17,6 +17,8 @@ export interface RenderResult {
   seed: number;
   metadata?: any;
   pinned?: boolean;
+  progress?: { step: string; percent: number };
+  isUpscaled?: boolean;
 }
 
 export interface SourceImage {
@@ -101,6 +103,31 @@ export const useEventStudio = (config: EventConfig) => {
 
   const [isUploading, setIsUploading] = useState(false);
 
+  // -- NEW: Feature 1 — Fullscreen Preview --
+  const [fullscreenUrl, setFullscreenUrl] = useState<string | null>(null);
+  const [fullscreenIndex, setFullscreenIndex] = useState(0);
+
+  // -- NEW: Feature 4 — Negative Prompt --
+  const [negativePrompt, setNegativePrompt] = useState('');
+
+  // -- NEW: Feature 6 — Seed Lock --
+  const [seedLock, setSeedLock] = useState(false);
+  const [lockedSeed, setLockedSeed] = useState<number>(Math.floor(Math.random() * 999999));
+
+  // -- NEW: Feature 8 — Prompt History --
+  const [promptHistory, setPromptHistory] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem(`skyv_prompt_history_${config.id}`) || '[]'); } catch { return []; }
+  });
+
+  // -- NEW: Feature 9 — Color Theme --
+  const [colorTheme, setColorTheme] = useState<string | null>(null);
+
+  // -- NEW: Feature 10 — QR Share --
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
+
+  // -- NEW: Feature 7 — Auto-Enhance state --
+  const [isEnhancing, setIsEnhancing] = useState(false);
+
   // Derived states
   const isGenerating = useMemo(() => results.some(r => r.status === 'processing'), [results]);
   const activeStylePreset = useMemo(() => STYLE_PRESETS.find(s => s.id === selectedStyle), [selectedStyle]);
@@ -168,13 +195,27 @@ export const useEventStudio = (config: EventConfig) => {
       const status = res.data?.status;
       if (status === 'done' && res.data.result?.images?.length) {
         const imageUrl = res.data.result.images[0];
-        setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done' } : r));
+        setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done', progress: { step: 'Hoàn tất!', percent: 100 } } : r));
         setActiveResultId(resultId);
         refreshUserInfo();
       } else if (status === 'failed' || status === 'error') {
         if (usagePreference === 'credits') addCredits(cost);
         setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
       } else {
+        // Increment progress step
+        setResults(prev => prev.map(r => {
+          if (r.id !== resultId || r.status !== 'processing') return r;
+          const p = r.progress?.percent || 30;
+          const nextPercent = Math.min(p + Math.floor(Math.random() * 12 + 5), 92);
+          const stepLabels: Record<number, string> = {
+            30: 'GPU đang xử lý...',
+            50: 'Đang render hình ảnh...',
+            70: 'Tinh chỉnh chi tiết...',
+            85: 'Sắp hoàn tất...',
+          };
+          const step = Object.entries(stepLabels).reverse().find(([k]) => nextPercent >= Number(k))?.[1] || r.progress?.step || 'Đang xử lý...';
+          return { ...r, progress: { step, percent: nextPercent } };
+        }));
         setTimeout(() => pollStatus(jobId, resultId, cost), 4000);
       }
     } catch (e) {
@@ -193,11 +234,16 @@ export const useEventStudio = (config: EventConfig) => {
 
     const userPrompt = overridePrompt || prompt || `Create a stunning ${config.id} themed photo with the theme "${selectedSubject}"`;
 
+    const negLine = negativePrompt.trim() ? `\nNEGATIVE: Avoid the following elements: ${negativePrompt.trim()}` : '';
+    const colorLine = colorTheme ? `\nCOLOR THEME: Use a ${colorTheme} color palette throughout the image.` : '';
+
     const parts = [
       config.systemPrompt,
       coupleNote,
       clothingRef,
       styleModifier,
+      negLine,
+      colorLine,
       '',
       `EVENT TYPE: ${config.name}`,
       `THEME: ${selectedSubject}`,
@@ -208,7 +254,7 @@ export const useEventStudio = (config: EventConfig) => {
     ].filter(Boolean);
 
     return parts.join('\n');
-  }, [config, selectedSubject, selectedScenes, prompt, activeStylePreset, clothingImages, sourceImages]);
+  }, [config, selectedSubject, selectedScenes, prompt, activeStylePreset, clothingImages, sourceImages, negativePrompt, colorTheme]);
 
   // --- CORE GENERATE ---
   const executeGenerate = async (overridePrompt?: string, overrideSeed?: number, overrideQty?: number) => {
@@ -231,7 +277,7 @@ export const useEventStudio = (config: EventConfig) => {
     const clothingAnchor = clothingImages.find(img => img.status === 'done');
 
     for (let i = 0; i < qty; i++) {
-      const seed = overrideSeed !== undefined ? overrideSeed + i : Math.floor(Math.random() * 999999);
+      const seed = seedLock ? lockedSeed + i : (overrideSeed !== undefined ? overrideSeed + i : Math.floor(Math.random() * 999999));
       const resultId = `evt-${Date.now()}-${i}`;
       const newResult: RenderResult = {
         id: resultId,
@@ -240,8 +286,17 @@ export const useEventStudio = (config: EventConfig) => {
         prompt: overridePrompt || prompt || selectedSubject,
         timestamp: new Date().toLocaleTimeString(),
         cost: currentUnitCost,
-        seed
+        seed,
+        progress: { step: 'Đang gửi...', percent: 10 }
       };
+
+      // Save to prompt history
+      const promptText = (overridePrompt || prompt || '').trim();
+      if (promptText && !promptHistory.includes(promptText)) {
+        const updated = [promptText, ...promptHistory].slice(0, 20);
+        setPromptHistory(updated);
+        try { localStorage.setItem(`skyv_prompt_history_${config.id}`, JSON.stringify(updated)); } catch { }
+      }
 
       setResults(prev => [newResult, ...prev]);
       setActiveResultId(resultId);
@@ -282,6 +337,7 @@ export const useEventStudio = (config: EventConfig) => {
 
         const apiRes = await imagesApi.createJob(payload);
         if (apiRes.success && apiRes.data.jobId) {
+          setResults(prev => prev.map(r => r.id === resultId ? { ...r, progress: { step: 'GPU đang xử lý...', percent: 30 } } : r));
           if (usagePreference === 'credits') useCredits(currentUnitCost);
           pollStatus(apiRes.data.jobId, resultId, currentUnitCost);
         } else {
@@ -371,6 +427,93 @@ export const useEventStudio = (config: EventConfig) => {
     } else {
       await navigator.clipboard.writeText(result.url);
     }
+  };
+
+  // --- NEW FEATURE 1: FULLSCREEN PREVIEW ---
+  const openFullscreen = (result: RenderResult) => {
+    if (!result.url) return;
+    const doneResults = sortedResults.filter(r => r.status === 'done' && r.url);
+    const idx = doneResults.findIndex(r => r.id === result.id);
+    setFullscreenUrl(result.url);
+    setFullscreenIndex(idx >= 0 ? idx : 0);
+  };
+
+  const navigateFullscreen = (direction: 'prev' | 'next') => {
+    const doneResults = sortedResults.filter(r => r.status === 'done' && r.url);
+    if (doneResults.length === 0) return;
+    let newIdx = direction === 'next' ? fullscreenIndex + 1 : fullscreenIndex - 1;
+    if (newIdx < 0) newIdx = doneResults.length - 1;
+    if (newIdx >= doneResults.length) newIdx = 0;
+    setFullscreenIndex(newIdx);
+    setFullscreenUrl(doneResults[newIdx].url);
+  };
+
+  // --- NEW FEATURE 3: 1-CLICK UPSCALE ---
+  const handleUpscale = async (result: RenderResult) => {
+    if (!result.url || result.isUpscaled) return;
+    try {
+      const payload: ImageJobRequest = {
+        type: 'image_to_image' as any,
+        input: { prompt: 'Upscale this image to 4K resolution with enhanced details', image: result.url },
+        config: { width: 2048, height: 2048, aspectRatio: '1:1', seed: result.seed, style: 'cinematic' },
+        engine: { provider: selectedEngine as any, model: selectedModel.raw.modelKey as any },
+        enginePayload: { prompt: 'Upscale to 4K', privacy: 'PRIVATE', projectId: 'default', category: config.id.toUpperCase() }
+      };
+      const res = await imagesApi.createJob(payload);
+      if (res.success && res.data.jobId) {
+        setResults(prev => prev.map(r => r.id === result.id ? { ...r, isUpscaled: true, status: 'processing', progress: { step: 'Đang nâng cấp 4K...', percent: 20 } } : r));
+        if (usagePreference === 'credits') useCredits(currentUnitCost);
+        pollStatus(res.data.jobId, result.id, currentUnitCost);
+      }
+    } catch (e) {
+      console.error('Upscale failed:', e);
+    }
+  };
+
+  // --- NEW FEATURE 5: BATCH DOWNLOAD ---
+  const handleBatchDownload = async () => {
+    const doneResults = results.filter(r => r.status === 'done' && r.url);
+    for (const r of doneResults) {
+      try {
+        const resp = await fetch(r.url!);
+        const blob = await resp.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = `${config.id}_${r.seed}_${r.id.slice(-6)}.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(blobUrl);
+        await new Promise(resolve => setTimeout(resolve, 300)); // stagger downloads
+      } catch { /* skip */ }
+    }
+  };
+
+  // --- NEW FEATURE 7: AUTO-ENHANCE PROMPT ---
+  const handleAutoEnhance = useCallback(() => {
+    if (!prompt.trim() || isEnhancing) return;
+    setIsEnhancing(true);
+    // Local enhancement: expand short prompt with professional photography terms
+    setTimeout(() => {
+      const enhancements = [
+        'professional studio lighting, cinematic depth of field',
+        'ultra-detailed 8K resolution, photorealistic',
+        'golden hour backlighting, lens flare',
+        'magazine cover quality, sharp focus',
+        'dramatic chiaroscuro lighting, rich colors',
+      ];
+      const pick = enhancements[Math.floor(Math.random() * enhancements.length)];
+      const enhanced = `${prompt.trim()}, ${pick}`;
+      setPrompt(enhanced);
+      setIsEnhancing(false);
+    }, 600);
+  }, [prompt, isEnhancing]);
+
+  // --- NEW FEATURE 10: QR SHARE ---
+  const handleQrShare = (result: RenderResult) => {
+    if (!result.url) return;
+    setQrUrl(result.url);
   };
 
   // --- UPLOAD ---
@@ -499,6 +642,34 @@ export const useEventStudio = (config: EventConfig) => {
     handleSuggestPrompt,
     handleShare,
     applyTemplate,
-    fetchHistory
+    fetchHistory,
+
+    // NEW: Feature 1 — Fullscreen Preview
+    fullscreenUrl, setFullscreenUrl,
+    fullscreenIndex, openFullscreen, navigateFullscreen,
+
+    // NEW: Feature 3 — Upscale
+    handleUpscale,
+
+    // NEW: Feature 4 — Negative Prompt
+    negativePrompt, setNegativePrompt,
+
+    // NEW: Feature 5 — Batch Download
+    handleBatchDownload,
+
+    // NEW: Feature 6 — Seed Lock
+    seedLock, setSeedLock, lockedSeed, setLockedSeed,
+
+    // NEW: Feature 7 — Auto-Enhance
+    isEnhancing, handleAutoEnhance,
+
+    // NEW: Feature 8 — Prompt History
+    promptHistory,
+
+    // NEW: Feature 9 — Color Theme
+    colorTheme, setColorTheme,
+
+    // NEW: Feature 10 — QR Share
+    qrUrl, setQrUrl, handleQrShare
   };
 };

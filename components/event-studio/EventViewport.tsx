@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Sparkles, MonitorPlay, Download, Edit3, Share2, ShieldCheck, AlertTriangle, RefreshCw, Heart, SplitSquareHorizontal, Copy, Check } from 'lucide-react';
+import { Loader2, Sparkles, MonitorPlay, Download, Edit3, Share2, ShieldCheck, AlertTriangle, RefreshCw, Heart, SplitSquareHorizontal, Copy, Check, Maximize2, ArrowUpCircle, QrCode } from 'lucide-react';
 import { RenderResult, SourceImage } from '../../hooks/useEventStudio';
 import { EventConfig } from '../../constants/event-configs';
 
@@ -20,6 +20,9 @@ interface EventViewportProps {
   compareMode: boolean;
   setCompareMode: (val: boolean) => void;
   sourceImages: SourceImage[];
+  onFullscreen?: (result: RenderResult) => void;
+  onUpscale?: (result: RenderResult) => void;
+  onQrShare?: (result: RenderResult) => void;
 }
 
 /* ── Before/After Slider Component ── */
@@ -78,7 +81,8 @@ const BeforeAfterSlider: React.FC<{ before: string; after: string }> = ({ before
 /* ── Main Viewport ── */
 export const EventViewport: React.FC<EventViewportProps> = ({ 
   config, activeResult, isGenerating, onClose, accentColor, onEdit, onDownload,
-  onRegenerate, onShare, onToggleFavorite, isFavorite, compareMode, setCompareMode, sourceImages
+  onRegenerate, onShare, onToggleFavorite, isFavorite, compareMode, setCompareMode, sourceImages,
+  onFullscreen, onUpscale, onQrShare
 }) => {
   const [copied, setCopied] = useState(false);
   const firstAnchor = sourceImages.find(img => img.status === 'done');
@@ -114,8 +118,20 @@ export const EventViewport: React.FC<EventViewportProps> = ({
                     <Sparkles className={`absolute -top-1 -right-1 text-${accentColor}-400 animate-pulse`} size={16} />
                   </div>
                   <div className="text-center space-y-2">
-                    <p className={`text-xs font-bold uppercase tracking-[0.3em] text-${accentColor}-600 animate-pulse`}>Đang tổng hợp...</p>
+                    <p className={`text-xs font-bold uppercase tracking-[0.3em] text-${accentColor}-600 animate-pulse`}>
+                      {activeResult.progress?.step || 'Đang tổng hợp...'}
+                    </p>
                     <p className="text-[9px] font-medium text-slate-400 dark:text-slate-500 max-w-[200px]">AI đang xử lý qua Image Task pipeline</p>
+                    {/* Progress Bar */}
+                    <div className="w-48 h-1.5 bg-slate-200 dark:bg-white/[0.06] rounded-full overflow-hidden mx-auto mt-3">
+                      <motion.div
+                        className={`h-full bg-${accentColor}-500 rounded-full`}
+                        initial={{ width: '0%' }}
+                        animate={{ width: `${activeResult.progress?.percent || 10}%` }}
+                        transition={{ duration: 0.8, ease: 'easeOut' }}
+                      />
+                    </div>
+                    <p className="text-[8px] font-semibold text-slate-400">{activeResult.progress?.percent || 10}%</p>
                   </div>
                 </div>
               ) : activeResult.url ? (
@@ -177,6 +193,40 @@ export const EventViewport: React.FC<EventViewportProps> = ({
                     >
                       {copied ? <Check size={16} className="text-emerald-400" /> : <Share2 size={16} />}
                     </button>
+
+                    {/* Fullscreen */}
+                    {onFullscreen && (
+                      <button 
+                        onClick={() => onFullscreen(activeResult)}
+                        className="p-3 bg-white/90 dark:bg-black/60 backdrop-blur-md rounded-xl text-slate-700 dark:text-white hover:bg-indigo-500 hover:text-white transition-all shadow-lg"
+                        title="Xem toàn màn hình"
+                      >
+                        <Maximize2 size={16} />
+                      </button>
+                    )}
+
+                    {/* Upscale */}
+                    {onUpscale && (
+                      <button 
+                        onClick={() => onUpscale(activeResult)}
+                        disabled={!!activeResult.isUpscaled}
+                        className={`p-3 backdrop-blur-md rounded-xl shadow-lg transition-all ${activeResult.isUpscaled ? 'bg-emerald-500 text-white' : 'bg-white/90 dark:bg-black/60 text-slate-700 dark:text-white hover:bg-amber-500 hover:text-white'}`}
+                        title={activeResult.isUpscaled ? 'Đã nâng cấp 4K' : 'Nâng cấp 4K'}
+                      >
+                        <ArrowUpCircle size={16} />
+                      </button>
+                    )}
+
+                    {/* QR Share */}
+                    {onQrShare && (
+                      <button 
+                        onClick={() => onQrShare(activeResult)}
+                        className="p-3 bg-white/90 dark:bg-black/60 backdrop-blur-md rounded-xl text-slate-700 dark:text-white hover:bg-violet-500 hover:text-white transition-all shadow-lg"
+                        title="QR Share"
+                      >
+                        <QrCode size={16} />
+                      </button>
+                    )}
                   </div>
 
                   {/* ── Bottom info ── */}

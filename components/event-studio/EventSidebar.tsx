@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Upload, Palette, Target, Sparkles, Loader2, X, Plus, FolderOpen, Camera, Shirt, Wand2, Layout, Users, Heart, ChevronDown } from 'lucide-react';
+import { Upload, Palette, Target, Sparkles, Loader2, X, Plus, FolderOpen, Camera, Shirt, Wand2, Layout, Users, Heart, ChevronDown, Lock, Unlock, History, Zap, Ban, Droplets } from 'lucide-react';
 import { EventConfig, STYLE_PRESETS, EventTemplate } from '../../constants/event-configs';
 import { SourceImage } from '../../hooks/useEventStudio';
 
@@ -26,6 +26,18 @@ interface EventSidebarProps {
   setShowTemplates: (val: boolean) => void;
   onApplyTemplate: (t: EventTemplate) => void;
   onSuggestPrompt: () => void;
+  // NEW feature props
+  negativePrompt: string;
+  setNegativePrompt: (val: string) => void;
+  colorTheme: string | null;
+  setColorTheme: (val: string | null) => void;
+  seedLock: boolean;
+  setSeedLock: (val: boolean) => void;
+  lockedSeed: number;
+  setLockedSeed: (val: number) => void;
+  promptHistory: string[];
+  isEnhancing: boolean;
+  onAutoEnhance: () => void;
 }
 
 /* ─── Collapsible Section Wrapper ─── */
@@ -64,8 +76,12 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
   config, sourceImages, clothingImages, onUpload, onClothingUpload, removeSourceImage, removeClothingImage,
   onOpenLibrary, isUploading, selectedSubject, setSelectedSubject,
   selectedScenes, setSelectedScenes, selectedStyle, setSelectedStyle,
-  prompt, setPrompt, showTemplates, setShowTemplates, onApplyTemplate, onSuggestPrompt
+  prompt, setPrompt, showTemplates, setShowTemplates, onApplyTemplate, onSuggestPrompt,
+  negativePrompt, setNegativePrompt, colorTheme, setColorTheme,
+  seedLock, setSeedLock, lockedSeed, setLockedSeed,
+  promptHistory, isEnhancing, onAutoEnhance
 }) => {
+  const [showHistory, setShowHistory] = useState(false);
   const toggleScene = (scene: string) => {
     if (selectedScenes.includes(scene)) setSelectedScenes(selectedScenes.filter(s => s !== scene));
     else if (selectedScenes.length < 3) setSelectedScenes([...selectedScenes, scene]);
@@ -275,6 +291,24 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
           </div>
         </div>
 
+        {/* Color Theme picker */}
+        <div className="space-y-2">
+          <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider flex items-center gap-1.5">
+            <Droplets size={10} className="text-cyan-500" /> Tông màu
+          </p>
+          <div className="flex flex-wrap gap-1">
+            {['warm golden', 'cool blue', 'pastel soft', 'moody dark', 'vibrant neon', 'earthy natural'].map(theme => (
+              <button
+                key={theme}
+                onClick={() => setColorTheme(colorTheme === theme ? null : theme)}
+                className={`px-2 py-1 rounded-md text-[8px] font-bold transition-all border ${colorTheme === theme ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-600' : 'bg-white dark:bg-white/[0.02] border-black/[0.04] dark:border-white/[0.04] text-slate-500 dark:text-slate-400 hover:border-slate-300'}`}
+              >
+                {theme}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Templates */}
         <div className="space-y-2">
           <button 
@@ -317,12 +351,46 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
           <label className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-2">
             <Sparkles size={13} className={`text-${config.accentColor}-500`} /> Yêu cầu bổ sung
           </label>
-          <button
-            onClick={onSuggestPrompt}
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[8px] font-bold bg-${config.accentColor}-500/10 text-${config.accentColor}-500 hover:bg-${config.accentColor}-500/20 transition-all border border-${config.accentColor}-500/15`}
-          >
-            <Wand2 size={9} /> Gợi ý
-          </button>
+          <div className="flex items-center gap-1">
+            {/* Prompt History */}
+            <div className="relative">
+              <button
+                onClick={() => setShowHistory(!showHistory)}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[8px] font-bold transition-all border ${promptHistory.length > 0 ? 'bg-slate-100 dark:bg-white/[0.03] text-slate-500 border-black/[0.04] dark:border-white/[0.04] hover:text-brand-blue' : 'text-slate-300 border-transparent cursor-default'}`}
+                disabled={promptHistory.length === 0}
+              >
+                <History size={9} /> {promptHistory.length}
+              </button>
+              {showHistory && promptHistory.length > 0 && (
+                <div className="absolute right-0 top-full mt-1 w-56 max-h-40 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl z-50 overflow-y-auto no-scrollbar">
+                  {promptHistory.map((h, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { setPrompt(h); setShowHistory(false); }}
+                      className="w-full text-left px-3 py-2 text-[9px] text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors border-b border-black/[0.03] dark:border-white/[0.03] last:border-0 line-clamp-2"
+                    >
+                      {h}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Auto-Enhance */}
+            <button
+              onClick={onAutoEnhance}
+              disabled={!prompt.trim() || isEnhancing}
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[8px] font-bold transition-all border ${prompt.trim() ? `bg-amber-500/10 text-amber-500 border-amber-500/15 hover:bg-amber-500/20` : 'text-slate-300 border-transparent cursor-default'}`}
+            >
+              <Zap size={9} /> {isEnhancing ? '...' : 'Pro'}
+            </button>
+            {/* Suggest */}
+            <button
+              onClick={onSuggestPrompt}
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[8px] font-bold bg-${config.accentColor}-500/10 text-${config.accentColor}-500 hover:bg-${config.accentColor}-500/20 transition-all border border-${config.accentColor}-500/15`}
+            >
+              <Wand2 size={9} /> Gợi ý
+            </button>
+          </div>
         </div>
         <textarea 
           value={prompt} 
@@ -330,6 +398,43 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
           className="w-full h-20 bg-white dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] p-3 text-[11px] font-medium outline-none rounded-xl text-slate-700 dark:text-white/80 focus:border-brand-blue/40 focus:ring-1 focus:ring-brand-blue/10 transition-all resize-none leading-relaxed placeholder:text-slate-400 dark:placeholder:text-slate-600" 
           placeholder={`VD: Ánh sáng lung linh, phong cách retro, nền studio Hàn Quốc...`}
         />
+
+        {/* Negative Prompt */}
+        <div className="space-y-1.5">
+          <label className="text-[9px] font-bold uppercase text-red-400/70 tracking-wider flex items-center gap-1.5">
+            <Ban size={9} /> Không muốn có
+          </label>
+          <input
+            value={negativePrompt}
+            onChange={e => setNegativePrompt(e.target.value)}
+            className="w-full bg-white dark:bg-white/[0.02] border border-red-500/10 dark:border-red-500/10 p-2.5 text-[10px] font-medium outline-none rounded-lg text-slate-700 dark:text-white/80 focus:border-red-500/30 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
+            placeholder="VD: blur, text, bad hands..."
+          />
+        </div>
+
+        {/* Seed Lock */}
+        <div className="flex items-center justify-between bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] p-2.5 rounded-lg">
+          <div className="flex items-center gap-2">
+            {seedLock ? <Lock size={11} className="text-amber-500" /> : <Unlock size={11} className="text-slate-400" />}
+            <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400">Khóa Seed</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {seedLock && (
+              <input
+                type="number"
+                value={lockedSeed}
+                onChange={e => setLockedSeed(parseInt(e.target.value) || 0)}
+                className="w-20 bg-white dark:bg-black border border-black/[0.06] dark:border-white/[0.06] px-2 py-1 text-[9px] font-mono rounded-md outline-none text-slate-700 dark:text-white/80"
+              />
+            )}
+            <button
+              onClick={() => setSeedLock(!seedLock)}
+              className={`px-2.5 py-1 rounded-md text-[8px] font-bold transition-all ${seedLock ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-slate-100 dark:bg-white/[0.04] text-slate-400 border border-black/[0.04] dark:border-white/[0.04]'}`}
+            >
+              {seedLock ? 'ON' : 'OFF'}
+            </button>
+          </div>
+        </div>
       </section>
     </div>
   );

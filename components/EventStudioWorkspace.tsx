@@ -1,7 +1,7 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, Loader2, Zap, X, RefreshCw, History as HistoryIcon, Clock, Edit3, Download, Database, Sparkles, Heart, Layers, Share2 } from 'lucide-react';
+import { AlertTriangle, Loader2, Zap, X, RefreshCw, History as HistoryIcon, Clock, Edit3, Download, Database, Sparkles, Heart, Layers, Share2, Maximize2, QrCode, ArrowUpCircle, ChevronLeft, ChevronRight, DownloadCloud } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MobileGeneratorBar } from './common/MobileGeneratorBar';
 import ResourceAuthModal from './common/ResourceAuthModal';
@@ -95,6 +95,17 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
               setShowTemplates={s.setShowTemplates}
               onApplyTemplate={s.applyTemplate}
               onSuggestPrompt={s.handleSuggestPrompt}
+              negativePrompt={s.negativePrompt}
+              setNegativePrompt={s.setNegativePrompt}
+              colorTheme={s.colorTheme}
+              setColorTheme={s.setColorTheme}
+              seedLock={s.seedLock}
+              setSeedLock={s.setSeedLock}
+              lockedSeed={s.lockedSeed}
+              setLockedSeed={s.setLockedSeed}
+              promptHistory={s.promptHistory}
+              isEnhancing={s.isEnhancing}
+              onAutoEnhance={s.handleAutoEnhance}
             />
             
             <EventConfiguration 
@@ -198,6 +209,12 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
             
             {/* Actions */}
             <div className="flex items-center gap-1.5">
+              {/* Batch Download */}
+              {s.activeTab === 'CURRENT' && s.results.filter(r => r.status === 'done').length > 1 && (
+                <button onClick={s.handleBatchDownload} className="p-2 text-slate-400 hover:text-emerald-500 transition-colors rounded-lg hover:bg-emerald-500/5" title="Tải tất cả">
+                  <DownloadCloud size={14} />
+                </button>
+              )}
               {s.activeTab === 'HISTORY' && (
                 <button onClick={s.fetchHistory} className="p-2 text-slate-400 hover:text-brand-blue transition-colors rounded-lg hover:bg-brand-blue/5">
                   <RefreshCw size={14} className={s.isFetchingHistory ? 'animate-spin' : ''} />
@@ -229,6 +246,9 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
                     compareMode={s.compareMode}
                     setCompareMode={s.setCompareMode}
                     sourceImages={s.sourceImages}
+                    onFullscreen={s.openFullscreen}
+                    onUpscale={s.handleUpscale}
+                    onQrShare={s.handleQrShare}
                   />
                 </motion.div>
               ) : (
@@ -302,6 +322,21 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
                                   className="p-1.5 bg-brand-blue/10 text-brand-blue rounded-lg hover:bg-brand-blue hover:text-white transition-all"
                                 >
                                   <Download size={12} />
+                                </button>
+                                <button
+                                  onClick={() => s.handleUpscale(res)}
+                                  disabled={!!res.isUpscaled}
+                                  className={`p-1.5 ${res.isUpscaled ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-100 dark:bg-white/[0.03] text-slate-500 dark:text-slate-400 hover:text-amber-500 hover:bg-amber-500/10'} rounded-lg transition-all`}
+                                  title={res.isUpscaled ? 'Đã nâng cấp' : 'Nâng cấp 4K'}
+                                >
+                                  <ArrowUpCircle size={12} />
+                                </button>
+                                <button
+                                  onClick={() => s.handleQrShare(res)}
+                                  className="p-1.5 bg-slate-100 dark:bg-white/[0.03] rounded-lg text-slate-500 dark:text-slate-400 hover:text-violet-500 hover:bg-violet-500/10 transition-all"
+                                  title="QR Share"
+                                >
+                                  <QrCode size={12} />
                                 </button>
                               </div>
                             </div>
@@ -380,6 +415,91 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
               <div className="flex flex-col gap-3">
                 <Link to="/credits" className="bg-brand-blue text-white py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-wider shadow-lg hover:brightness-110 transition-all text-center">Nạp Credits</Link>
                 <button onClick={() => s.setShowLowCreditAlert(false)} className="text-[10px] font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors">Bỏ qua</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══ FULLSCREEN LIGHTBOX ═══ */}
+      <AnimatePresence>
+        {s.fullscreenUrl && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1200] bg-black/95 backdrop-blur-2xl flex items-center justify-center"
+            onClick={() => s.setFullscreenUrl(null)}
+          >
+            {/* Close */}
+            <button onClick={() => s.setFullscreenUrl(null)} className="absolute top-6 right-6 p-3 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-all z-10">
+              <X size={20} />
+            </button>
+
+            {/* Nav arrows */}
+            <button 
+              onClick={(e) => { e.stopPropagation(); s.navigateFullscreen('prev'); }}
+              className="absolute left-6 top-1/2 -translate-y-1/2 p-3 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-all z-10"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); s.navigateFullscreen('next'); }}
+              className="absolute right-6 top-1/2 -translate-y-1/2 p-3 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-all z-10"
+            >
+              <ChevronRight size={24} />
+            </button>
+
+            {/* Image */}
+            <motion.img 
+              key={s.fullscreenUrl}
+              src={s.fullscreenUrl} 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="max-w-[90vw] max-h-[85vh] object-contain rounded-2xl shadow-2xl" 
+              alt="" 
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {/* Index */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 rounded-xl text-white text-[10px] font-bold backdrop-blur-sm">
+              {s.fullscreenIndex + 1} / {s.sortedResults.filter(r => r.status === 'done' && r.url).length}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══ QR SHARE MODAL ═══ */}
+      <AnimatePresence>
+        {s.qrUrl && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1200] bg-black/80 backdrop-blur-md flex items-center justify-center p-6"
+            onClick={() => s.setQrUrl(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9 }} animate={{ scale: 1 }}
+              className="bg-white dark:bg-[#111114] p-8 rounded-2xl border border-black/[0.06] dark:border-white/[0.06] text-center space-y-4 max-w-xs w-full shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <QrCode size={28} className="mx-auto text-brand-blue" />
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">QR Share</h3>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400">Quét QR hoặc copy link để chia sẻ</p>
+              {/* QR Code via Google Chart API */}
+              <img 
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(s.qrUrl)}`}
+                className="w-48 h-48 mx-auto rounded-xl border border-black/[0.06] dark:border-white/[0.06]"
+                alt="QR Code"
+              />
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => { navigator.clipboard.writeText(s.qrUrl!); }}
+                  className="flex-1 py-2.5 bg-brand-blue text-white rounded-xl text-[10px] font-bold uppercase tracking-wider hover:brightness-110 transition-all"
+                >
+                  Copy Link
+                </button>
+                <button onClick={() => s.setQrUrl(null)} className="px-4 py-2.5 bg-slate-100 dark:bg-white/[0.04] rounded-xl text-[10px] font-bold text-slate-400 hover:text-slate-700 dark:hover:text-white transition-all">
+                  Đóng
+                </button>
               </div>
             </motion.div>
           </motion.div>
