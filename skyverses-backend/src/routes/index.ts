@@ -39,6 +39,7 @@ import aiModelRoutes from "./aiModel.admin";
 import categoryRoutes from "./category.route";
 import runninghubRoutes from "./runninghub";
 import deploybRoutes from "./deployLogs";
+import apiClientRoutes from "./apiClient";
 import express from "express";
 
 const router = Router();
@@ -85,6 +86,9 @@ router.use("/guide-videos", guideVideoRoute);
 router.use("/customer", customerRoutes);
 
 router.use("/coupon", couponRoutes);
+
+// API Client Management
+router.use("/api-client", apiClientRoutes);
 
 // Upload
 router.use(uploadMediaRoute);

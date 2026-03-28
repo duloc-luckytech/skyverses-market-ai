@@ -34,9 +34,10 @@ import { PaymentHistoryTab } from '../components/admin-pro/PaymentHistoryTab';
 import { WebhookLogsTab } from '../components/admin-pro/WebhookLogsTab';
 import { FxflowTab } from '../components/admin-pro/FxflowTab';
 import { ProductsTab } from '../components/admin-pro/ProductsTab';
+import { ApiClientsTab } from '../components/admin-pro/ApiClientsTab';
 import { SolutionDrawer } from '../components/admin-pro/solution-drawer/SolutionDrawer';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS';
 
 const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
   { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart3 size={16} />, group: 'MAIN' },
@@ -55,6 +56,7 @@ const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; gro
   { id: 'WEBHOOK_LOGS', label: 'Webhook Logs', icon: <Globe size={16} />, group: 'SYSTEM' },
   { id: 'CONFIG', label: 'Cấu hình', icon: <Cog size={16} />, group: 'SYSTEM' },
   { id: 'FXFLOW', label: 'FXFlow Engine', icon: <Zap size={16} />, group: 'SYSTEM' },
+  { id: 'API_CLIENTS', label: 'API Clients', icon: <Key size={16} />, group: 'SYSTEM' },
   { id: 'PRODUCTS', label: 'Sản phẩm', icon: <Package size={16} />, group: 'MARKET' },
 ];
 
@@ -308,6 +310,7 @@ const AdminCmsProPage = () => {
             {activeTab === 'WEBHOOK_LOGS' && <WebhookLogsTab key="webhook_logs" />}
             {activeTab === 'CONFIG' && <ConfigurationTab key="config" />}
             {activeTab === 'FXFLOW' && <FxflowTab key="fxflow" />}
+            {activeTab === 'API_CLIENTS' && <ApiClientsTab key="api_clients" />}
             {activeTab === 'PRODUCTS' && <ProductsTab key="products" />}
             {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
               <NodeRegistryTab

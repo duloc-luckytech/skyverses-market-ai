@@ -62,6 +62,11 @@ export interface IUser extends Document {
   lastDailyClaimAt?: Date | null;
   fxflowOwner?: string; // sticky owner cho FXFlow jobs
 
+  // API Token for external access
+  apiToken?: string;
+  apiTokenCreatedAt?: Date;
+  apiTokenExpiresAt?: Date | null;
+
   onboarding?: {
     role?:
       | "creative_director"
@@ -180,6 +185,9 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       type: String,
       default: null,
     },
+    apiToken: { type: String, default: null, index: true },
+    apiTokenCreatedAt: { type: Date, default: null },
+    apiTokenExpiresAt: { type: Date, default: null },
     onboarding: {
       role: {
         type: String,

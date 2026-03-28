@@ -67,6 +67,11 @@ export interface AuthUser {
 
   // FXFlow
   fxflowOwner?: string;
+
+  // API Token
+  apiToken?: string;
+  hasToken?: boolean;
+  apiTokenCreatedAt?: string;
 }
 
 export interface RegisterRequest {
