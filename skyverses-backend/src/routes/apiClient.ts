@@ -319,35 +319,42 @@ router.get("/stats", authenticate, async (req: any, res) => {
 router.post("/external/image-task", authenticateApiToken, async (req: any, res) => {
   try {
     const {
+      // Flat format (simple)
       prompt,
       negativePrompt,
       image,
       images,
       mask,
+      referenceImage,
       type = "text_to_image",
       width,
       height,
       aspectRatio,
       style,
+      // Nested format (same as internal)
+      input: rawInput,
+      config: rawConfig,
       engine = {},
       enginePayload,
     } = req.body;
 
-    if (!prompt && !image) {
+    // Support cả 2 format: flat hoặc nested (internal-style)
+    const input: any = rawInput ? { ...rawInput } : {};
+    if (prompt) input.prompt = prompt;
+    if (negativePrompt) input.negativePrompt = negativePrompt;
+    if (image) input.image = image;
+    if (images) input.images = images;
+    if (mask) input.mask = mask;
+    if (referenceImage) input.referenceImage = referenceImage;
+
+    if (!input.prompt && !input.image) {
       return res.status(400).json({
         success: false,
         message: "Cần ít nhất prompt hoặc image",
       });
     }
 
-    const input: any = {};
-    if (prompt) input.prompt = prompt;
-    if (negativePrompt) input.negativePrompt = negativePrompt;
-    if (image) input.image = image;
-    if (images) input.images = images;
-    if (mask) input.mask = mask;
-
-    const config: any = {};
+    const config: any = rawConfig ? { ...rawConfig } : {};
     if (width) config.width = width;
     if (height) config.height = height;
     if (aspectRatio) config.aspectRatio = aspectRatio;
@@ -359,7 +366,10 @@ router.post("/external/image-task", authenticateApiToken, async (req: any, res) 
       version: engine.version || undefined,
     };
 
-    const finalPayload = enginePayload || { prompt: input.prompt };
+    // ✅ Build finalPayload — giống hệt internal flow (imageJobs.ts)
+    const finalPayload = buildFinalImagePayload({ input, config, engine: finalEngine });
+    // enginePayload: nếu client gửi custom thì dùng, không thì dùng finalPayload
+    const resolvedEnginePayload = enginePayload || finalPayload;
 
     // Assign FXFlow owner
     let jobOwner: string | null = null;
@@ -374,7 +384,7 @@ router.post("/external/image-task", authenticateApiToken, async (req: any, res) 
       config,
       engine: finalEngine,
       finalPayload,
-      enginePayload: finalPayload,
+      enginePayload: resolvedEnginePayload,
       status: ImageJobStatus.PENDING,
       creditsUsed: 0,
       owner: jobOwner,
