@@ -101,6 +101,8 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
               availableModels={s.availableModels}
               selectedModel={s.selectedModel}
               setSelectedModel={s.setSelectedModel}
+              selectedEngine={s.selectedEngine}
+              setSelectedEngine={s.setSelectedEngine}
               selectedRatio={s.selectedRatio}
               setSelectedRatio={s.setSelectedRatio}
               selectedRes={s.selectedRes}
@@ -111,6 +113,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
               credits={s.credits}
               onShowResource={() => s.setShowResourceModal(true)}
               currentUnitCost={s.currentUnitCost}
+              isGenerating={s.isRequesting}
             />
           </div>
 

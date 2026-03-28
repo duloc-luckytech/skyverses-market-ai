@@ -1,12 +1,15 @@
 
 import React from 'react';
 import { Settings, ChevronDown, Cpu, Maximize2, Zap, Layers, Sparkles } from 'lucide-react';
+import { ServerSelector } from '../common/ServerSelector';
 import { COMMON_STUDIO_CONSTANTS } from '../../constants/event-configs';
 
 interface EventConfigurationProps {
   availableModels: any[];
   selectedModel: any;
   setSelectedModel: (m: any) => void;
+  selectedEngine: string;
+  setSelectedEngine: (e: string) => void;
   selectedRatio: string;
   setSelectedRatio: (r: string) => void;
   selectedRes: string;
@@ -17,11 +20,13 @@ interface EventConfigurationProps {
   credits: number;
   onShowResource: () => void;
   currentUnitCost: number;
+  isGenerating?: boolean;
 }
 
 export const EventConfiguration: React.FC<EventConfigurationProps> = ({
-  availableModels, selectedModel, setSelectedModel, selectedRatio, setSelectedRatio,
-  selectedRes, setSelectedRes, quantity, setQuantity, usagePreference, credits, onShowResource, currentUnitCost
+  availableModels, selectedModel, setSelectedModel, selectedEngine, setSelectedEngine,
+  selectedRatio, setSelectedRatio, selectedRes, setSelectedRes, 
+  quantity, setQuantity, usagePreference, credits, onShowResource, currentUnitCost, isGenerating = false
 }) => {
   const selectStyle = "w-full bg-white dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] rounded-xl p-3 text-[10px] font-bold outline-none appearance-none cursor-pointer transition-all focus:border-brand-blue/40 focus:ring-1 focus:ring-brand-blue/10 text-slate-700 dark:text-white/80";
   const labelStyle = "text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider pl-0.5 flex items-center gap-1.5";
@@ -31,42 +36,45 @@ export const EventConfiguration: React.FC<EventConfigurationProps> = ({
       {/* Section Title */}
       <div className="flex items-center gap-2">
         <Settings size={13} className="text-brand-blue" />
-        <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Cấu hình</h3>
+        <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Cấu hình AI</h3>
+      </div>
+
+      {/* Server Selector — Server 1 / Server 2 */}
+      <ServerSelector
+        selected={selectedEngine}
+        onChange={setSelectedEngine}
+        disabled={isGenerating}
+        variant="pill"
+      />
+
+      {/* Model Selector */}
+      <div className="space-y-1.5">
+        <label className={labelStyle}><Cpu size={10} className="text-brand-blue"/> Engine AI</label>
+        <div className="relative">
+          <select 
+            value={selectedModel?.id || ''} 
+            onChange={e => {
+              const found = availableModels.find(m => m.id === e.target.value);
+              if (found) setSelectedModel(found);
+            }}
+            disabled={isGenerating || availableModels.length === 0}
+            className={selectStyle}
+          >
+            {availableModels.length === 0 && <option value="">Đang tải...</option>}
+            {availableModels.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+          </select>
+          <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <label className={labelStyle}><Cpu size={10} className="text-brand-blue"/> Engine</label>
-          <div className="relative">
-            <select 
-              value={selectedModel?.id || ''} 
-              onChange={e => {
-                const found = availableModels.find(m => m.id === e.target.value);
-                if (found) setSelectedModel(found);
-              }}
-              className={selectStyle}
-            >
-              {availableModels.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-            </select>
-            <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-          </div>
-        </div>
         <div className="space-y-1.5">
           <label className={labelStyle}><Maximize2 size={10} className="text-brand-blue"/> Tỉ lệ</label>
           <div className="relative">
-            <select value={selectedRatio} onChange={e => setSelectedRatio(e.target.value)} className={selectStyle}>
+            <select value={selectedRatio} onChange={e => setSelectedRatio(e.target.value)} className={selectStyle} disabled={isGenerating}>
               {COMMON_STUDIO_CONSTANTS.RATIOS.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
             <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <label className={labelStyle}><Zap size={10} className="text-brand-blue"/> Chi phí/ảnh</label>
-          <div className="p-3 bg-white dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-[10px] font-bold text-brand-blue">
-            {currentUnitCost} CR / ảnh
           </div>
         </div>
         <div className="space-y-1.5">
@@ -76,10 +84,22 @@ export const EventConfiguration: React.FC<EventConfigurationProps> = ({
             min="1" 
             max="4" 
             value={quantity} 
+            disabled={isGenerating}
             onChange={e => setQuantity(Math.max(1, Math.min(4, parseInt(e.target.value) || 1)))}
             className="w-full bg-white dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] rounded-xl p-3 text-[10px] font-bold outline-none focus:border-brand-blue/40 focus:ring-1 focus:ring-brand-blue/10 text-slate-700 dark:text-white/80"
           />
         </div>
+      </div>
+
+      {/* Cost Info */}
+      <div className="flex items-center justify-between bg-gradient-to-r from-brand-blue/5 to-transparent border border-brand-blue/10 p-3 rounded-xl">
+        <div className="flex items-center gap-2">
+          <Zap size={12} className="text-brand-blue" />
+          <span className="text-[10px] font-bold text-brand-blue">{currentUnitCost} CR / ảnh</span>
+        </div>
+        <span className="text-[9px] font-semibold text-slate-400 dark:text-slate-500">
+          Tổng: {currentUnitCost * quantity} CR
+        </span>
       </div>
 
       {/* Resource Info */}
