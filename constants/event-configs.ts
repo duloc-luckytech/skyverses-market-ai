@@ -36,6 +36,17 @@ export interface EventConfig {
   benefits: { t: string; d: string }[];
   templates: EventTemplate[];
   coupleMode?: boolean;
+  landing: {
+    tagline: string;
+    headline: string;
+    subheadline: string;
+    stats: { value: string; label: string }[];
+    howItWorks: { step: string; title: string; desc: string }[];
+    showcaseTitle: string;
+    showcaseDesc: string;
+    ctaText: string;
+    ctaSubtext: string;
+  };
 }
 
 /* =====================================================
@@ -90,7 +101,27 @@ RULES:
       { id: 'noel-3', name: 'Cozy Fireplace', prompt: 'Person sitting by a warm crackling fireplace in a cozy cabin, Christmas stockings hanging, hot cocoa in hand, soft blanket, warm golden lighting, Christmas tree with fairy lights in the background.', style: 'vintage', tags: ['Cozy', 'Indoor'] },
       { id: 'noel-4', name: 'Neon Christmas', prompt: 'Person in a cyberpunk-style Christmas setting, neon lights in red and green, futuristic Christmas decorations, holographic snowflakes, urban nightscape with Christmas-themed digital billboards.', style: 'cinematic', tags: ['Cyberpunk', 'Neon'] },
       { id: 'noel-5', name: 'Christmas Market', prompt: 'Person walking through a traditional European Christmas market, wooden stalls decorated with lights, fresh snow on the ground, the aroma of mulled wine, handmade ornaments, romantic evening atmosphere.', style: 'editorial', tags: ['Outdoor', 'Market'] },
-    ]
+    ],
+    landing: {
+      tagline: 'NOEL STUDIO — AI CHRISTMAS ENGINE',
+      headline: 'Giáng Sinh Trong\nTầm Tay Bạn.',
+      subheadline: 'Không cần studio, không cần tuyết thật. AI tạo ra những bức ảnh Giáng Sinh mà bạn nghĩ chỉ có trong mơ — chất lượng tạp chí, giao ngay trong 30 giây.',
+      stats: [
+        { value: '5', label: 'Mẫu có sẵn' },
+        { value: '6', label: 'Phong cách AI' },
+        { value: '8K', label: 'Chất lượng' },
+        { value: '30s', label: 'Mỗi ảnh' }
+      ],
+      howItWorks: [
+        { step: '01', title: 'Tải ảnh chân dung', desc: 'Upload ảnh selfie hoặc chân dung rõ mặt. AI ghi nhớ đường nét gương mặt của bạn.' },
+        { step: '02', title: 'Chọn concept Giáng Sinh', desc: 'Chọn từ 5 mẫu có sẵn hoặc mô tả bối cảnh mong muốn. Thêm phong cách Cinematic, Vintage, hay Cyberpunk.' },
+        { step: '03', title: 'AI tổng hợp & tải về', desc: 'Engine xử lý trong 30 giây. Tải ảnh 8K về máy, chia sẻ lên mạng xã hội, hoặc in thiệp.' }
+      ],
+      showcaseTitle: 'Tác phẩm từ cộng đồng',
+      showcaseDesc: 'Những bức ảnh Noel AI đẹp nhất được tạo bởi người dùng Skyverses.',
+      ctaText: 'Mở Studio Noel',
+      ctaSubtext: 'Bắt đầu miễn phí — không cần thẻ tín dụng'
+    }
   },
   tet: {
     id: 'tet',
@@ -128,7 +159,27 @@ RULES:
       { id: 'tet-3', name: 'Chợ Hoa Xuân', prompt: 'Person walking through a vibrant Vietnamese spring flower market, surrounded by kumquat trees, chrysanthemums, peach blossoms, bustling crowd, colorful decorations, warm festive lighting.', style: 'editorial', tags: ['Chợ hoa', 'Sắc xuân'] },
       { id: 'tet-4', name: 'Múa Lân Rồng', prompt: 'Person standing beside a magnificent Vietnamese lion/dragon dance performance, red and gold costumes, firecrackers, confetti, traditional drums, vibrant street festival atmosphere, dynamic action shot.', style: 'cinematic', tags: ['Múa lân', 'Lễ hội'] },
       { id: 'tet-5', name: 'Mâm Cỗ Tết', prompt: 'Person beside a beautifully arranged traditional Tết feast table (mâm cỗ Tết) with bánh chưng, giò, mứt Tết, fresh flowers, incense, family altar in the background, warm indoor lighting.', style: 'dreamy', tags: ['Mâm cỗ', 'Gia đình'] },
-    ]
+    ],
+    landing: {
+      tagline: 'TẾT STUDIO — PHIÊN BẢN XUÂN AI',
+      headline: 'Xuân Về\nRực Rỡ Hơn.',
+      subheadline: 'Áo dài truyền thống, hoa đào nở rộ, câu đối đỏ vàng — AI tái hiện trọn vẹn không khí Tết nguyên đán trong từng bức ảnh. Giữ nguyên khuôn mặt, thay đổi cả thế giới.',
+      stats: [
+        { value: '5', label: 'Mẫu Tết' },
+        { value: '6', label: 'Phong cách' },
+        { value: '8K', label: 'Ultra HD' },
+        { value: '100%', label: 'Giữ mặt' }
+      ],
+      howItWorks: [
+        { step: '01', title: 'Tải ảnh của bạn', desc: 'Upload ảnh chân dung bất kỳ. AI sẽ ghi nhớ hoàn toàn khuôn mặt và đường nét.' },
+        { step: '02', title: 'Chọn bối cảnh Tết', desc: 'Áo dài đỏ bên hoa đào? Phố ông đồ? Chợ hoa xuân? Chọn mẫu hoặc tự mô tả.' },
+        { step: '03', title: 'Nhận ảnh Tết AI', desc: 'Ảnh chất lượng tạp chí được tạo trong 30 giây. Hoàn hảo cho thiệp Tết, ảnh bìa, hay chia sẻ gia đình.' }
+      ],
+      showcaseTitle: 'Tác phẩm Xuân AI',
+      showcaseDesc: 'Không gian Tết được tái hiện bằng trí tuệ nhân tạo — đẹp, đậm bản sắc Việt.',
+      ctaText: 'Mở Studio Tết',
+      ctaSubtext: 'Tạo ảnh Tết đầu tiên miễn phí'
+    }
   },
   wedding: {
     id: 'wedding',
@@ -168,7 +219,27 @@ RULES:
       { id: 'wed-3', name: 'Beach Sunset', prompt: 'Romantic couple on a pristine tropical beach at golden hour, waves gently touching their bare feet, bride in a flowing bohemian lace dress, warm sunset colors painting the sky, silhouette backlighting.', style: 'dreamy', tags: ['Biển', 'Hoàng hôn'] },
       { id: 'wed-4', name: 'Indochine Garden', prompt: 'Couple in a serene Indochine-style garden with French colonial architecture, lotus pond, tropical plants, bride in elegant áo dài or fusion wedding dress, soft afternoon light filtering through trees.', style: 'vintage', tags: ['Indochine', 'Vườn'] },
       { id: 'wed-5', name: 'Modern Urban Night', prompt: 'Stylish couple in a modern city at night, cityscape lights as bokeh background, bride in a sleek contemporary wedding gown, urban rooftop setting, neon reflections, cinematic night photography.', style: 'cinematic', tags: ['Urban', 'Night'] },
-    ]
+    ],
+    landing: {
+      tagline: 'WEDDING STUDIO — AI BRIDAL ENGINE',
+      headline: 'Ảnh Cưới Đẳng Cấp.\nChỉ Cần Selfie.',
+      subheadline: 'Không cần bay sang Hàn Quốc. Không cần thuê studio 50 triệu. Chỉ cần 2 tấm ảnh chân dung — AI tạo bộ ảnh cưới mà studio thật chưa chắc làm được.',
+      stats: [
+        { value: '5', label: 'Package cưới' },
+        { value: '♥', label: 'Couple Mode' },
+        { value: '8K', label: 'Điện ảnh' },
+        { value: '2', label: 'Ảnh cặp đôi' }
+      ],
+      howItWorks: [
+        { step: '01', title: 'Upload ảnh cả hai', desc: 'Upload ảnh chân dung cô dâu và chú rể. AI ghi nhớ khuôn mặt của từng người.' },
+        { step: '02', title: 'Chọn concept cưới', desc: 'Studio Hàn Quốc, cung điện Châu Âu, bờ biển hoàng hôn — hay để AI gợi ý cho bạn.' },
+        { step: '03', title: 'Nhận ảnh cưới AI', desc: 'Bộ ảnh cưới chất lượng tạp chí, giữ nguyên đường nét cả hai. Tải về và in ngay.' }
+      ],
+      showcaseTitle: 'Tình yêu qua lăng kính AI',
+      showcaseDesc: 'Những bộ ảnh cưới AI đẹp nhất — từ Hàn Quốc đến Santorini, chỉ bằng 1 click.',
+      ctaText: 'Mở Wedding Studio',
+      ctaSubtext: 'Tạo ảnh cưới đầu tiên — chỉ 250 Credits'
+    }
   },
   birthday: {
     id: 'birthday',
@@ -207,7 +278,27 @@ RULES:
       { id: 'bday-3', name: 'Garden Tea Party', prompt: 'Person at an elegant outdoor garden tea party birthday celebration, vintage china tea set, three-tier cake stand, pastel flower decorations, white lace tablecloth, afternoon sun through the trees.', style: 'vintage', tags: ['Vintage', 'Garden'] },
       { id: 'bday-4', name: 'Manga Fantasy', prompt: 'Person in an anime/manga style birthday scene, surrounded by cute kawaii decorations, giant strawberry cake, cherry blossoms, sparkle effects, vibrant colors, whimsical fantasy setting.', style: 'manga', tags: ['Manga', 'Fantasy'] },
       { id: 'bday-5', name: 'Fireworks Celebration', prompt: 'Person on a rooftop with spectacular birthday fireworks in the night sky, city skyline backdrop, elegant outfit, champagne toast, golden confetti, dramatic upward camera angle.', style: 'cinematic', tags: ['Fireworks', 'Night'] },
-    ]
+    ],
+    landing: {
+      tagline: 'BIRTHDAY STUDIO — AI PARTY ENGINE',
+      headline: 'Sinh Nhật\nĐáng Nhớ Nhất.',
+      subheadline: 'Từ tiệc trà cổ điển đến Neon Cyber Party — AI biến ngày sinh nhật của bạn thành tác phẩm nghệ thuật. Giữ nguyên khuôn mặt, thay đổi cả vũ trụ xung quanh.',
+      stats: [
+        { value: '5', label: 'Concept tiệc' },
+        { value: '6', label: 'Art style' },
+        { value: '8K', label: 'Ultra HD' },
+        { value: '4x', label: 'Biến thể' }
+      ],
+      howItWorks: [
+        { step: '01', title: 'Tải ảnh sinh nhật', desc: 'Upload ảnh chân dung của bạn hoặc người bạn muốn tặng. AI ghi nhớ mọi đường nét.' },
+        { step: '02', title: 'Chọn concept tiệc', desc: 'Luxury Ballroom? Manga Fantasy? Neon Party? Chọn mẫu hoặc mô tả tiệc sinh nhật mơ ước.' },
+        { step: '03', title: 'Tải ảnh & chia sẻ', desc: 'Ảnh sinh nhật chất lượng điện ảnh, sẵn sàng in thiệp mời hoặc đăng Instagram.' }
+      ],
+      showcaseTitle: 'Tiệc sinh nhật AI',
+      showcaseDesc: 'Những concept sinh nhật ấn tượng nhất — được tạo hoàn toàn bởi AI.',
+      ctaText: 'Mở Birthday Studio',
+      ctaSubtext: 'Tạo ảnh sinh nhật đầu tiên — chỉ 150 Credits'
+    }
   }
 };
 

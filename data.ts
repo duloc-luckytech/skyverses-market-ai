@@ -178,6 +178,68 @@ export const SOLUTIONS: Solution[] = [
     featured: true
   },
   {
+    id: 'NOEL-AI-PRO',
+    slug: 'ai-noel-generator',
+    name: { 
+      en: 'AI Noel Studio', 
+      vi: 'Ảnh Giáng Sinh AI', 
+      ko: 'AI 크리스마스 스튜디오', 
+      ja: 'AIクリスマススタジオ' 
+    },
+    category: { en: 'Festivals', vi: 'Lễ hội & Sự kiện', ko: '축제', ja: 'フェスティバル' },
+    description: { 
+      en: 'Create magical Christmas-themed photos with stunning winter wonderland concepts and AI face sync.', 
+      vi: 'Tạo ảnh Giáng sinh huyền ảo với bối cảnh mùa đông kỳ diệu và công nghệ đồng bộ khuôn mặt AI.', 
+      ko: '멋진 겨울 원더랜드 컨셉과 AI 얼굴 동기화로 마법 같은 크리스마스 사진을 만드세요.', 
+      ja: '素晴らしい冬のワンダーランドのコンセプトとAI顔同期で魔法のようなクリスマス写真を作成します。' 
+    },
+    problems: ['Expensive Christmas photoshoots', 'Limited winter scenery access', 'Generic holiday cards'],
+    industries: ['Personal Branding', 'Social Media', 'Marketing', 'Greeting Cards'],
+    imageUrl: 'https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'image',
+    tags: ['Christmas', 'Noel', 'Winter', 'Holiday'],
+    features: [
+      { en: 'Winter Scene Generation', vi: 'Tạo bối cảnh mùa đông', ko: '겨울 장면 생성', ja: '冬のシーン生成' },
+      { en: 'Festive Outfit Synthesis', vi: 'Tổng hợp trang phục lễ hội', ko: '축제 의상 합성', ja: '祝日の衣装合成' }
+    ],
+    complexity: 'Advanced',
+    priceReference: '150 CR / generation',
+    isActive: true,
+    priceCredits: 150,
+    featured: true
+  },
+  {
+    id: 'TET-AI-PRO',
+    slug: 'ai-tet-generator',
+    name: { 
+      en: 'AI Tết Studio', 
+      vi: 'Ảnh Tết AI Pro', 
+      ko: 'AI 설날 스튜디오', 
+      ja: 'AIテトスタジオ' 
+    },
+    category: { en: 'Festivals', vi: 'Lễ hội & Sự kiện', ko: '축제', ja: 'フェスティバル' },
+    description: { 
+      en: 'Create authentic Vietnamese Lunar New Year photos with traditional Áo dài, peach blossoms, and festive settings.', 
+      vi: 'Tạo ảnh Tết nguyên đán đậm chất truyền thống với Áo dài, hoa đào, hoa mai và không khí xuân rực rỡ.', 
+      ko: '전통 아오자이, 복숭아 꽃 및 축제 배경으로 정통 베트남 설날 사진을 만드세요.', 
+      ja: '伝統的なアオザイ、桃の花、お祝いの設定で本格的なベトナムの旧正月の写真を作成します。' 
+    },
+    problems: ['Expensive Tết photoshoots', 'Limited Áo dài options', 'Weather-dependent outdoor shoots'],
+    industries: ['Personal Branding', 'Social Media', 'Marketing', 'Greeting Cards'],
+    imageUrl: 'https://images.unsplash.com/photo-1611516491426-03025e6043c8?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'image',
+    tags: ['Tết', 'Lunar New Year', 'Áo dài', 'Vietnamese'],
+    features: [
+      { en: 'Áo dài Fitting AI', vi: 'Thử Áo dài ảo AI', ko: '아오자이 피팅 AI', ja: 'アオザイフィッティングAI' },
+      { en: 'Traditional Scene Engine', vi: 'Công cụ bối cảnh truyền thống', ko: '전통 장면 엔진', ja: '伝統的なシーンエンジン' }
+    ],
+    complexity: 'Advanced',
+    priceReference: '150 CR / generation',
+    isActive: true,
+    priceCredits: 150,
+    featured: true
+  },
+  {
     id: 'IMAGE-UPSCALE-AI',
     slug: 'image-upscale-ai',
     name: { 
