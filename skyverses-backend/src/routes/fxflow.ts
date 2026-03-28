@@ -169,131 +169,127 @@ router.get("/tasks/pending", async (req, res) => {
   try {
     const fxConfig = await getFxflowConfig();
     const ownerFilter = req.query.owner as string | undefined;
+    const typeFilter = req.query.type as string | undefined; // "image" | "video" | "charsync" | undefined (all)
 
-    // Build shared filter
-    const imageFilter: any = {
-      status: ImageJobStatus.PENDING,
-      "engine.provider": ImageEngineProvider.FXFLOW,
-    };
+    // Determine which types to fetch
+    const fetchImage = !typeFilter || typeFilter === "image";
+    const fetchVideo = !typeFilter || typeFilter === "video" || typeFilter === "charsync";
 
-    const videoFilter: any = {
-      status: VideoJobStatus.PENDING,
-      "engine.provider": VideoEngineProvider.FXFLOW,
-    };
-
-    // ✅ Nếu có ?owner= → chỉ lấy job của owner đó
-    if (ownerFilter) {
-      imageFilter.owner = ownerFilter;
-      videoFilter.owner = ownerFilter;
-    }
-
-    // 1️⃣ Fetch pending IMAGE jobs (fxflow)
-    const pendingImages = await ImageJob.find(imageFilter)
-      .sort({ createdAt: 1 }) // oldest first (FIFO)
-      .limit(5)
-      .lean();
-
-    // 2️⃣ Fetch pending VIDEO jobs (fxflow)
-    const pendingVideos = await VideoJob.find(videoFilter)
-      .sort({ createdAt: 1 })
-      .limit(5)
-      .lean();
-
-    // 3️⃣ Format tasks theo đúng API contract
     const tasks: any[] = [];
 
-    for (const job of pendingImages) {
-      const task: any = {
-        id: String(job._id),
-        type: "image",
-        prompt: job.enginePayload?.prompt || job.input?.prompt || "",
-        owner: job.owner || null,
+    // 1️⃣ Fetch pending IMAGE jobs
+    if (fetchImage) {
+      const imageFilter: any = {
+        status: ImageJobStatus.PENDING,
+        "engine.provider": ImageEngineProvider.FXFLOW,
       };
+      if (ownerFilter) imageFilter.owner = ownerFilter;
 
-      // Optional: model (default: NARWHAL)
-      const model = mapImageModel(job.engine?.model);
-      if (model !== "NARWHAL") task.model = model;
+      const pendingImages = await ImageJob.find(imageFilter)
+        .sort({ createdAt: 1 })
+        .limit(5)
+        .lean();
 
-      // Optional: aspectRatio (default: landscape)
-      const aspectRatio = mapAspectRatio(job.config?.aspectRatio);
-      if (aspectRatio !== "landscape") task.aspectRatio = aspectRatio;
+      for (const job of pendingImages) {
+        const task: any = {
+          id: String(job._id),
+          type: "image",
+          prompt: job.enginePayload?.prompt || job.input?.prompt || "",
+          owner: job.owner || null,
+        };
 
-      // Optional: priority (default: 1)
-      const priority = job.enginePayload?.priority;
-      if (priority != null && priority !== 1) task.priority = priority;
+        const model = mapImageModel(job.engine?.model);
+        if (model !== "NARWHAL") task.model = model;
 
-      // Optional: referenceImages — ảnh tham chiếu từ FE (input.images)
-      const refImages = job.input?.images;
-      if (Array.isArray(refImages) && refImages.length > 0) {
-        task.referenceImages = refImages;
+        const aspectRatio = mapAspectRatio(job.config?.aspectRatio);
+        if (aspectRatio !== "landscape") task.aspectRatio = aspectRatio;
+
+        const priority = job.enginePayload?.priority;
+        if (priority != null && priority !== 1) task.priority = priority;
+
+        const refImages = job.input?.images;
+        if (Array.isArray(refImages) && refImages.length > 0) {
+          task.referenceImages = refImages;
+        }
+
+        tasks.push(task);
       }
-
-      tasks.push(task);
     }
 
-    for (const job of pendingVideos) {
-      const task: any = {
-        id: String(job._id),
-        type: "video",
-        prompt: job.enginePayload?.prompt || job.input?.prompt || "",
-        owner: job.owner || null,
+    // 2️⃣ Fetch pending VIDEO jobs
+    if (fetchVideo) {
+      const videoFilter: any = {
+        status: VideoJobStatus.PENDING,
+        "engine.provider": VideoEngineProvider.FXFLOW,
       };
+      if (ownerFilter) videoFilter.owner = ownerFilter;
 
-      // Optional: videoMode (default: "text")
-      const videoMode = mapVideoMode(job.type);
-      if (videoMode !== "text") task.videoMode = videoMode;
-
-      // resolution — pass from job config (e.g. "720p", "1080p") for auto-upscale
-      const resolution = job.config?.resolution;
-      if (resolution) task.resolution = resolution;
-
-      // quality — use per-job mode from enginePayload, fallback to fxConfig default
-      const quality = mapQuality(job.enginePayload?.mode) || fxConfig.videoQuality || "relaxed";
-      if (quality !== "fast") task.quality = quality;
-
-      // Optional: aspectRatio (default: "landscape")
-      const aspectRatio = mapAspectRatio(job.config?.aspectRatio);
-      if (aspectRatio !== "landscape") task.aspectRatio = aspectRatio;
-
-      // Optional: priority (default: 1)
-      const priority = job.enginePayload?.priority;
-      if (priority != null && priority !== 1) task.priority = priority;
-
-      // startMediaId — required khi videoMode = "image" hoặc "startend"
-      // FE gửi: input.images = [startUrl, endUrl]
-      if (videoMode === "image" || videoMode === "startend") {
-        task.startMediaId =
-          job.input?.images?.[0] ||
-          job.input?.startImage ||
-          "";
+      // If type=charsync → only fetch INGREDIENT (charsync) video jobs
+      if (typeFilter === "charsync") {
+        videoFilter.type = VideoJobType.INGREDIENT;
+      }
+      // If type=video → exclude charsync (INGREDIENT) jobs
+      if (typeFilter === "video") {
+        videoFilter.type = { $ne: VideoJobType.INGREDIENT };
       }
 
-      // endMediaId — required khi videoMode = "startend"
-      // FE gửi: input.images = [startUrl, endUrl]
-      if (videoMode === "startend") {
-        task.endMediaId =
-          job.input?.images?.[1] ||
-          job.input?.endImage ||
-          "";
-      }
+      const pendingVideos = await VideoJob.find(videoFilter)
+        .sort({ createdAt: 1 })
+        .limit(5)
+        .lean();
 
-      // referenceMediaIds — required khi videoMode = "charsync" (Character Sync)
-      // FE gửi: enginePayload.referenceMediaIds = [mediaId1, mediaId2, ...]
-      // Fallback: input.images = [url1, url2, ...]
-      if (videoMode === "charsync") {
-        const mediaIds = job.enginePayload?.referenceMediaIds;
-        if (Array.isArray(mediaIds) && mediaIds.length > 0) {
-          task.referenceMediaIds = mediaIds.filter((id: any) => id != null);
-        } else {
-          // Fallback to image URLs if mediaIds not available
-          const refImages = job.input?.images;
-          if (Array.isArray(refImages) && refImages.length > 0) {
-            task.referenceMediaIds = refImages.filter((img: any) => img != null);
+      for (const job of pendingVideos) {
+        const videoMode = mapVideoMode(job.type);
+
+        const task: any = {
+          id: String(job._id),
+          type: videoMode === "charsync" ? "charsync" : "video",
+          prompt: job.enginePayload?.prompt || job.input?.prompt || "",
+          owner: job.owner || null,
+        };
+
+        if (videoMode !== "text") task.videoMode = videoMode;
+
+        const resolution = job.config?.resolution;
+        if (resolution) task.resolution = resolution;
+
+        const quality = mapQuality(job.enginePayload?.mode) || fxConfig.videoQuality || "relaxed";
+        if (quality !== "fast") task.quality = quality;
+
+        const aspectRatio = mapAspectRatio(job.config?.aspectRatio);
+        if (aspectRatio !== "landscape") task.aspectRatio = aspectRatio;
+
+        const priority = job.enginePayload?.priority;
+        if (priority != null && priority !== 1) task.priority = priority;
+
+        if (videoMode === "image" || videoMode === "startend") {
+          task.startMediaId =
+            job.input?.images?.[0] ||
+            job.input?.startImage ||
+            "";
+        }
+
+        if (videoMode === "startend") {
+          task.endMediaId =
+            job.input?.images?.[1] ||
+            job.input?.endImage ||
+            "";
+        }
+
+        if (videoMode === "charsync") {
+          const mediaIds = job.enginePayload?.referenceMediaIds;
+          if (Array.isArray(mediaIds) && mediaIds.length > 0) {
+            task.referenceMediaIds = mediaIds.filter((id: any) => id != null);
+          } else {
+            const refImages = job.input?.images;
+            if (Array.isArray(refImages) && refImages.length > 0) {
+              task.referenceMediaIds = refImages.filter((img: any) => img != null);
+            }
           }
         }
-      }
 
-      tasks.push(task);
+        tasks.push(task);
+      }
     }
 
     // Sort by priority (2=high first, 0=low last)
