@@ -3,6 +3,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { uploadToGCS, GCSAssetMetadata } from '../services/storage';
 import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
+import { pricingApi, PricingModel } from '../apis/pricing';
+import { getCostFromPricing, getResolutionsFromPricing } from '../utils/pricing-helpers';
 import { EventConfig, COMMON_STUDIO_CONSTANTS, STYLE_PRESETS, EventTemplate } from '../constants/event-configs';
 
 export interface RenderResult {
@@ -43,10 +45,41 @@ export const useEventStudio = (config: EventConfig) => {
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   
   // -- Tech Config --
-  const [selectedModel, setSelectedModel] = useState(COMMON_STUDIO_CONSTANTS.AI_MODELS[0]);
+  const [availableModels, setAvailableModels] = useState<any[]>([]);
+  const [selectedModel, setSelectedModel] = useState<any>(null);
+  const [selectedEngine, setSelectedEngine] = useState<string>('gommo');
   const [selectedRatio, setSelectedRatio] = useState(COMMON_STUDIO_CONSTANTS.RATIOS[0]);
   const [selectedRes, setSelectedRes] = useState('1k');
   const [quantity, setQuantity] = useState(1);
+
+  // -- Fetch models from PricingMatrix (same as main Image Generator) --
+  useEffect(() => {
+    setAvailableModels([]);
+    setSelectedModel(null);
+    const fetchPricing = async () => {
+      try {
+        const res = await pricingApi.getPricing({ tool: 'image', engine: selectedEngine });
+        if (res.success && res.data.length > 0) {
+          const mapped = res.data.map((m: PricingModel) => ({
+            id: m._id,
+            name: m.name,
+            modelKey: m.modelKey,
+            raw: m
+          }));
+          setAvailableModels(mapped);
+          const defaultModel = mapped.find((m: any) => m.raw.modelKey === 'google_image_gen_banana_pro') || mapped[0];
+          setSelectedModel(defaultModel);
+
+          const resOptions = getResolutionsFromPricing(defaultModel.raw.pricing);
+          if (resOptions.length > 0) setSelectedRes(resOptions[0]);
+          if (defaultModel.raw.aspectRatios && defaultModel.raw.aspectRatios.length > 0) setSelectedRatio(defaultModel.raw.aspectRatios[0]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch image pricing:', error);
+      }
+    };
+    fetchPricing();
+  }, [selectedEngine]);
   
   // -- Results & History --
   const [results, setResults] = useState<RenderResult[]>([]);
@@ -112,13 +145,19 @@ export const useEventStudio = (config: EventConfig) => {
   }, [activeTab, fetchHistory]);
 
   // --- TOOLTIP ---
+  const currentUnitCost = useMemo(() => {
+    if (!selectedModel?.raw?.pricing) return config.costBase;
+    return getCostFromPricing(selectedModel.raw.pricing, selectedRes);
+  }, [selectedModel, selectedRes, config.costBase]);
+
   const generateTooltip = useMemo(() => {
     if (!isAuthenticated) return "Vui lòng đăng nhập để tiếp tục";
+    if (!selectedModel) return "Đang tải cấu hình AI...";
     const hasReadyImage = sourceImages.some(img => img.status === 'done');
     if (!hasReadyImage && !prompt.trim()) return "Vui lòng nhập kịch bản hoặc tải ảnh mỏ neo";
-    if (usagePreference === 'credits' && credits < (selectedModel.cost * quantity)) return `Số dư không đủ (Cần ${selectedModel.cost * quantity} CR)`;
+    if (usagePreference === 'credits' && credits < (currentUnitCost * quantity)) return `Số dư không đủ (Cần ${currentUnitCost * quantity} CR)`;
     return null;
-  }, [isAuthenticated, sourceImages, prompt, usagePreference, credits, selectedModel, quantity]);
+  }, [isAuthenticated, selectedModel, sourceImages, prompt, usagePreference, credits, currentUnitCost, quantity]);
 
   const isGenerateDisabled = isRequesting || !!generateTooltip;
 
@@ -174,10 +213,10 @@ export const useEventStudio = (config: EventConfig) => {
   // --- CORE GENERATE ---
   const executeGenerate = async (overridePrompt?: string, overrideSeed?: number, overrideQty?: number) => {
     if (!isAuthenticated) { login(); return; }
-    if (isRequesting) return;
+    if (isRequesting || !selectedModel) return;
 
     const qty = overrideQty || quantity;
-    const totalCost = selectedModel.cost * qty;
+    const totalCost = currentUnitCost * qty;
     if (usagePreference === 'credits' && credits < totalCost) {
       setShowLowCreditAlert(true);
       return;
@@ -200,7 +239,7 @@ export const useEventStudio = (config: EventConfig) => {
         status: 'processing',
         prompt: overridePrompt || prompt || selectedSubject,
         timestamp: new Date().toLocaleTimeString(),
-        cost: selectedModel.cost,
+        cost: currentUnitCost,
         seed
       };
 
@@ -229,8 +268,8 @@ export const useEventStudio = (config: EventConfig) => {
             style: selectedStyle || 'cinematic'
           },
           engine: {
-            provider: 'gommo',
-            model: selectedModel.id as any
+            provider: selectedEngine as any,
+            model: selectedModel.raw.modelKey as any
           },
           enginePayload: {
             prompt: finalPrompt,
@@ -243,8 +282,8 @@ export const useEventStudio = (config: EventConfig) => {
 
         const apiRes = await imagesApi.createJob(payload);
         if (apiRes.success && apiRes.data.jobId) {
-          if (usagePreference === 'credits') useCredits(selectedModel.cost);
-          pollStatus(apiRes.data.jobId, resultId, selectedModel.cost);
+          if (usagePreference === 'credits') useCredits(currentUnitCost);
+          pollStatus(apiRes.data.jobId, resultId, currentUnitCost);
         } else {
           setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
         }
@@ -354,7 +393,7 @@ export const useEventStudio = (config: EventConfig) => {
       const file = fileList[i];
       const placeholderId = newPlaceholders[i].id;
       try {
-        const metadata = await uploadToGCS(file);
+      const metadata = await uploadToGCS(file, selectedEngine);
         setter(prev => prev.map(img =>
           img.id === placeholderId ? {
             ...img,
@@ -426,10 +465,12 @@ export const useEventStudio = (config: EventConfig) => {
     selectedStyle, setSelectedStyle,
     
     // Config
-    selectedModel, setSelectedModel,
+    availableModels, selectedModel, setSelectedModel,
+    selectedEngine, setSelectedEngine,
     selectedRatio, setSelectedRatio,
     selectedRes, setSelectedRes,
     quantity, setQuantity,
+    currentUnitCost,
     
     // Results
     results, setResults,

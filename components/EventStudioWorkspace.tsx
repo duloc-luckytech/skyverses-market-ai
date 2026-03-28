@@ -62,7 +62,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
             prompt={s.prompt} 
             setPrompt={s.setPrompt} 
             credits={s.credits} 
-            totalCost={s.selectedModel.cost * s.quantity}
+            totalCost={s.currentUnitCost * s.quantity}
             isGenerating={s.isRequesting}
             isGenerateDisabled={s.isGenerateDisabled}
             onGenerate={s.handleGenerate} 
@@ -98,6 +98,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
             />
             
             <EventConfiguration 
+              availableModels={s.availableModels}
               selectedModel={s.selectedModel}
               setSelectedModel={s.setSelectedModel}
               selectedRatio={s.selectedRatio}
@@ -109,6 +110,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
               usagePreference={s.usagePreference}
               credits={s.credits}
               onShowResource={() => s.setShowResourceModal(true)}
+              currentUnitCost={s.currentUnitCost}
             />
           </div>
 
@@ -143,7 +145,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
             >
               <Layers size={13} /> 4 Biến thể cùng lúc
               <span className="text-[8px] font-semibold text-slate-400 dark:text-slate-500 ml-1">
-                ({s.selectedModel.cost * 4} CR)
+                ({s.currentUnitCost * 4} CR)
               </span>
             </button>
 
@@ -151,7 +153,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
             <div className="flex items-center justify-center gap-4">
               <span className="text-[8px] font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1">
                 <Sparkles size={8} className={`text-${config.accentColor}-500`} />
-                {s.quantity}x = {s.selectedModel.cost * s.quantity} CR
+                {s.quantity}x = {s.currentUnitCost * s.quantity} CR
               </span>
             </div>
           </div>
@@ -369,7 +371,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">Không đủ Credits</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Bạn cần ít nhất <span className="font-bold text-amber-500">{s.selectedModel.cost * s.quantity} CR</span> để tạo hình
+                  Bạn cần ít nhất <span className="font-bold text-amber-500">{s.currentUnitCost * s.quantity} CR</span> để tạo hình
                 </p>
               </div>
               <div className="flex flex-col gap-3">

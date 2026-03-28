@@ -4,6 +4,7 @@ import { Settings, ChevronDown, Cpu, Maximize2, Zap, Layers, Sparkles } from 'lu
 import { COMMON_STUDIO_CONSTANTS } from '../../constants/event-configs';
 
 interface EventConfigurationProps {
+  availableModels: any[];
   selectedModel: any;
   setSelectedModel: (m: any) => void;
   selectedRatio: string;
@@ -15,11 +16,12 @@ interface EventConfigurationProps {
   usagePreference: string | null;
   credits: number;
   onShowResource: () => void;
+  currentUnitCost: number;
 }
 
 export const EventConfiguration: React.FC<EventConfigurationProps> = ({
-  selectedModel, setSelectedModel, selectedRatio, setSelectedRatio,
-  selectedRes, setSelectedRes, quantity, setQuantity, usagePreference, credits, onShowResource
+  availableModels, selectedModel, setSelectedModel, selectedRatio, setSelectedRatio,
+  selectedRes, setSelectedRes, quantity, setQuantity, usagePreference, credits, onShowResource, currentUnitCost
 }) => {
   const selectStyle = "w-full bg-white dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] rounded-xl p-3 text-[10px] font-bold outline-none appearance-none cursor-pointer transition-all focus:border-brand-blue/40 focus:ring-1 focus:ring-brand-blue/10 text-slate-700 dark:text-white/80";
   const labelStyle = "text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider pl-0.5 flex items-center gap-1.5";
@@ -37,11 +39,14 @@ export const EventConfiguration: React.FC<EventConfigurationProps> = ({
           <label className={labelStyle}><Cpu size={10} className="text-brand-blue"/> Engine</label>
           <div className="relative">
             <select 
-              value={selectedModel.id} 
-              onChange={e => setSelectedModel(COMMON_STUDIO_CONSTANTS.AI_MODELS.find(m => m.id === e.target.value)!)}
+              value={selectedModel?.id || ''} 
+              onChange={e => {
+                const found = availableModels.find(m => m.id === e.target.value);
+                if (found) setSelectedModel(found);
+              }}
               className={selectStyle}
             >
-              {COMMON_STUDIO_CONSTANTS.AI_MODELS.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+              {availableModels.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
             </select>
             <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           </div>
@@ -59,12 +64,9 @@ export const EventConfiguration: React.FC<EventConfigurationProps> = ({
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className={labelStyle}><Zap size={10} className="text-brand-blue"/> Chất lượng</label>
-          <div className="relative">
-            <select value={selectedRes} onChange={e => setSelectedRes(e.target.value)} className={selectStyle}>
-              {COMMON_STUDIO_CONSTANTS.QUALITY_MODES.map(q => <option key={q} value={q}>{q}</option>)}
-            </select>
-            <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <label className={labelStyle}><Zap size={10} className="text-brand-blue"/> Chi phí/ảnh</label>
+          <div className="p-3 bg-white dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-[10px] font-bold text-brand-blue">
+            {currentUnitCost} CR / ảnh
           </div>
         </div>
         <div className="space-y-1.5">
