@@ -36,6 +36,7 @@ export const getHeaders = () => {
 };
 
 import { SystemConfig } from '../types';
+import { apiCache } from '../utils/apiCache';
 
 export const systemConfigApi = {
   /**
@@ -43,15 +44,17 @@ export const systemConfigApi = {
    * GET /config
    */
   getSystemConfig: async (): Promise<{ success: boolean; data: SystemConfig }> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/config`, {
-        method: 'GET',
-        headers: getHeaders(),
-      });
-      return await response.json();
-    } catch (error) {
-      console.error('System Config Fetch Error:', error);
-      throw error;
-    }
+    return apiCache.wrap('system:config', async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/config`, {
+          method: 'GET',
+          headers: getHeaders(),
+        });
+        return await response.json();
+      } catch (error) {
+        console.error('System Config Fetch Error:', error);
+        throw error;
+      }
+    }, 5 * 60 * 1000); // 5 min TTL
   }
 };

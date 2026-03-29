@@ -1,6 +1,7 @@
 
 import { API_BASE_URL, getHeaders } from './config';
 import { Solution, Language } from '../types';
+import { apiCache } from '../utils/apiCache';
 
 export const marketApi = {
   /**
@@ -8,23 +9,26 @@ export const marketApi = {
    * GET /market?q=...&category=...&lang=...
    */
   getSolutions: async (params?: { q?: string; category?: string; lang?: Language }): Promise<{ success: boolean; data: Solution[] }> => {
-    try {
-      const queryParams = new URLSearchParams();
-      if (params?.q) queryParams.append('q', params.q);
-      if (params?.category && params.category !== 'ALL') queryParams.append('category', params.category);
-      if (params?.lang) queryParams.append('lang', params.lang);
+    const queryParams = new URLSearchParams();
+    if (params?.q) queryParams.append('q', params.q);
+    if (params?.category && params.category !== 'ALL') queryParams.append('category', params.category);
+    if (params?.lang) queryParams.append('lang', params.lang);
 
-      const url = `${API_BASE_URL}/market${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: getHeaders(),
-      });
-      return await response.json();
-    } catch (error) {
-      console.error('Market Fetch Error:', error);
-      return { success: false, data: [] };
-    }
+    const cacheKey = `market:solutions:${queryParams.toString()}`;
+
+    return apiCache.wrap(cacheKey, async () => {
+      try {
+        const url = `${API_BASE_URL}/market${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: getHeaders(),
+        });
+        return await response.json();
+      } catch (error) {
+        console.error('Market Fetch Error:', error);
+        return { success: false, data: [] };
+      }
+    }, 2 * 60 * 1000); // 2 min TTL
   },
 
   /**
@@ -32,16 +36,18 @@ export const marketApi = {
    * GET /market/random/featured
    */
   getRandomFeatured: async (): Promise<{ success: boolean; data: Solution[] }> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/market/random/featured`, {
-        method: 'GET',
-        headers: getHeaders(),
-      });
-      return await response.json();
-    } catch (error) {
-      console.error('Market Featured Fetch Error:', error);
-      return { success: false, data: [] };
-    }
+    return apiCache.wrap('market:featured', async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/market/random/featured`, {
+          method: 'GET',
+          headers: getHeaders(),
+        });
+        return await response.json();
+      } catch (error) {
+        console.error('Market Featured Fetch Error:', error);
+        return { success: false, data: [] };
+      }
+    }, 5 * 60 * 1000); // 5 min TTL
   },
 
   /**
@@ -55,7 +61,9 @@ export const marketApi = {
         headers: getHeaders(),
         body: JSON.stringify(payload),
       });
-      return await response.json();
+      const result = await response.json();
+      if (result.success) apiCache.invalidate('market:');
+      return result;
     } catch (error) {
       console.error('Market Update Error:', error);
       return { success: false, message: 'Network synchronization failed' };
@@ -73,7 +81,9 @@ export const marketApi = {
         headers: getHeaders(),
         body: JSON.stringify(payload),
       });
-      return await response.json();
+      const result = await response.json();
+      if (result.success) apiCache.invalidate('market:');
+      return result;
     } catch (error) {
       console.error('Market Create Error:', error);
       return { success: false };
@@ -90,7 +100,9 @@ export const marketApi = {
         method: 'DELETE',
         headers: getHeaders(),
       });
-      return await response.json();
+      const result = await response.json();
+      if (result.success) apiCache.invalidate('market:');
+      return result;
     } catch (error) {
       console.error('Market Delete Error:', error);
       return { success: false, message: 'Network synchronization failed' };
@@ -108,7 +120,9 @@ export const marketApi = {
         headers: getHeaders(),
         body: JSON.stringify({ isActive }),
       });
-      return await response.json();
+      const result = await response.json();
+      if (result.success) apiCache.invalidate('market:');
+      return result;
     } catch (error) {
       console.error('Market Toggle Active Error:', error);
       return { success: false };

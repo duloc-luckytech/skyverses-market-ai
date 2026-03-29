@@ -6,6 +6,7 @@ import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
 import { SearchProvider } from './context/SearchContext';
 import LoadingScreen from './components/LoadingScreen';
+import ErrorBoundary from './components/ErrorBoundary';
 import Layout from './components/Layout';
 import { ToastProvider } from './context/ToastContext';
 
@@ -173,6 +174,7 @@ const App: React.FC = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   return (
+    <ErrorBoundary>
     <ThemeProvider>
       <LanguageProvider>
         <AuthProvider>
@@ -254,6 +256,7 @@ const App: React.FC = () => {
         </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 

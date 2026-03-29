@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
   }, []);
 
   return (
-    <footer className="relative bg-[#fafbfc] dark:bg-[#060608] border-t border-black/[0.04] dark:border-white/[0.04] transition-colors duration-500 overflow-hidden">
+    <footer aria-label="Site footer" className="relative bg-[#fafbfc] dark:bg-[#060608] border-t border-black/[0.04] dark:border-white/[0.04] transition-colors duration-500 overflow-hidden">
       {/* ═══ Background Effects ═══ */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute bottom-[-30%] right-[-10%] w-[700px] h-[700px] bg-brand-blue/[0.03] dark:bg-brand-blue/[0.05] rounded-full blur-[180px]" />

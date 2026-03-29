@@ -27,7 +27,11 @@ const SolutionCardComponent: React.FC<SolutionCardProps> = ({
     <div 
       onClick={() => onClick(sol.slug)}
       onMouseEnter={() => onHover?.(sol.slug)}
-      className={`flex-shrink-0 snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/40 dark:hover:border-brand-blue/30 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-brand-blue/5 rounded-2xl overflow-hidden cursor-pointer ${
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(sol.slug); } }}
+      role="article"
+      aria-label={sol.name?.[currentLang] || sol.name?.en || 'Product'}
+      tabIndex={0}
+      className={`flex-shrink-0 snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/40 dark:hover:border-brand-blue/30 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-brand-blue/5 rounded-2xl overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/50 ${
         isGrid ? 'w-full' : 'w-[280px] md:w-[320px] xl:w-[360px]'
       }`}
     >

@@ -131,7 +131,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
       {/* Top accent line */}
       <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-blue/40 to-transparent z-[160]"></div>
 
-      <nav className={`fixed w-full z-[150] top-0 transition-all duration-300 ${
+      <nav aria-label="Main navigation" className={`fixed w-full z-[150] top-0 transition-all duration-300 ${
         scrolled 
           ? 'h-14 bg-white/90 dark:bg-[#0a0a0c]/90 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.04]' 
           : 'h-16 bg-white/50 dark:bg-transparent backdrop-blur-sm'
@@ -162,6 +162,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 <button
                   onClick={() => setShowExploreMenu(!showExploreMenu)}
                   onMouseEnter={() => setShowExploreMenu(true)}
+                  aria-expanded={showExploreMenu}
+                  aria-haspopup="true"
                   className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all flex items-center gap-1 ${
                     location.pathname.startsWith('/explorer') || location.pathname === '/models'
                       ? 'text-brand-blue bg-brand-blue/[0.06]' 
@@ -178,6 +180,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                       transition={{ duration: 0.12 }}
                       onMouseLeave={() => setShowExploreMenu(false)}
                       className="absolute top-full left-0 mt-1 w-44 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl p-1 z-[200]"
+                      role="menu"
                     >
                       <DropdownLink to="/explorer" icon={<Compass size={15} />} label={t('nav.explorer')} onClick={() => setShowExploreMenu(false)} />
                       <DropdownLink to="/models" icon={<Box size={15} />} label={t('nav.models')} onClick={() => setShowExploreMenu(false)} />
@@ -200,6 +203,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
             {/* Search Trigger — Desktop */}
             <button
               onClick={() => search.open()}
+              aria-label="Search (⌘K)"
               className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05] rounded-lg hover:border-brand-blue/20 transition-all group mr-2"
             >
               <Search size={13} className="text-slate-300 dark:text-gray-600 group-hover:text-brand-blue transition-colors" />
@@ -266,13 +270,13 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               )}
 
               {/* Theme Toggle */}
-              <button onClick={toggleTheme} className="hidden md:flex w-8 h-8 items-center justify-center text-slate-400 dark:text-gray-500 hover:text-brand-blue hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all">
+              <button onClick={toggleTheme} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} className="hidden md:flex w-8 h-8 items-center justify-center text-slate-400 dark:text-gray-500 hover:text-brand-blue hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all">
                 {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
               </button>
 
               {/* Language Switcher — Desktop */}
               <div className="hidden md:block relative" ref={langRef}>
-                <button onClick={() => setShowDesktopLang(!showDesktopLang)} className="flex items-center gap-1 w-8 h-8 justify-center text-slate-400 hover:text-brand-blue hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all">
+                <button onClick={() => setShowDesktopLang(!showDesktopLang)} aria-label="Change language" aria-expanded={showDesktopLang} aria-haspopup="true" className="flex items-center gap-1 w-8 h-8 justify-center text-slate-400 hover:text-brand-blue hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all">
                   <FlagIcon code={lang} className="w-5 h-3.5" />
                 </button>
                 <AnimatePresence>
@@ -296,7 +300,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               {/* User Menu / Login */}
               {isAuthenticated ? (
                 <div className="relative" ref={userRef}>
-                  <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-1 ml-1">
+                  <button onClick={() => setShowUserMenu(!showUserMenu)} aria-label="User menu" aria-expanded={showUserMenu} aria-haspopup="true" className="flex items-center gap-1 ml-1">
                     <img 
                       src={user?.avatar || user?.picture || DEFAULT_AVATAR} 
                       onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR; }}
@@ -378,7 +382,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               </Link>
 
               {/* Mobile Menu Toggle */}
-              <button onClick={() => setIsOpen(true)} className="md:hidden w-8 h-8 flex items-center justify-center text-slate-600 dark:text-gray-300 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all ml-1">
+              <button onClick={() => setIsOpen(true)} aria-label="Open menu" className="md:hidden w-8 h-8 flex items-center justify-center text-slate-600 dark:text-gray-300 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all ml-1">
                 <Menu size={20} />
               </button>
             </div>
@@ -387,7 +391,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
       </nav>
 
       {/* ═══════════ MOBILE DRAWER ═══════════ */}
-      <div className={`fixed inset-0 z-[500] transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+      <div className={`fixed inset-0 z-[500] transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} role="dialog" aria-modal="true" aria-label="Navigation menu">
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
         <div className={`absolute top-0 right-0 h-full w-[85%] max-w-sm bg-white dark:bg-[#0c0c10] shadow-2xl transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="flex flex-col h-full">
@@ -397,7 +401,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 <img src={logoUrl} alt="Logo" className="w-6 h-6 object-contain" />
                 <span className="text-sm font-bold text-slate-900 dark:text-white">Skyverses</span>
               </div>
-              <button onClick={() => setIsOpen(false)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-red-500 rounded-lg transition-all">
+              <button onClick={() => setIsOpen(false)} aria-label="Close menu" className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-red-500 rounded-lg transition-all">
                 <X size={18} />
               </button>
             </div>
