@@ -182,7 +182,7 @@ const AdminCmsProPage = () => {
       <aside className="w-full md:w-80 shrink-0 border-r border-slate-200 dark:border-white/5 bg-white dark:bg-[#08080a] flex flex-col z-[100] transition-all">
          <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center gap-3">
             <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center text-white shadow-lg"><ShieldCheck size={18} /></div>
-            <div><h2 className="text-sm font-black uppercase tracking-widest italic">Quản trị hệ thống</h2><p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">Core v4.5 Operational</p></div>
+            <div><h2 className="text-sm font-black uppercase tracking-widest italic">Quản trị hệ thống</h2><p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">Core v4.6 Operational</p></div>
          </div>
          <div className="flex-grow p-4 space-y-1 overflow-y-auto no-scrollbar flex flex-col">
             {sidebarItems.map((item) => (
