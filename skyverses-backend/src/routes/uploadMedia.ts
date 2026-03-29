@@ -225,6 +225,13 @@ router.get("/upload-media/list", authenticate, async (req: any, res) => {
       filter.source = source;
     }
 
+    // ⏰ filter theo maxAge (hours) — chỉ lấy hình trong N giờ gần nhất
+    const maxAge = parseFloat(req.query.maxAge as string);
+    if (maxAge > 0) {
+      const cutoff = new Date(Date.now() - maxAge * 60 * 60 * 1000);
+      filter.createdAt = { $gte: cutoff };
+    }
+
     /* ==========================
        📦 QUERY
     ========================== */

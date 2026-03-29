@@ -194,6 +194,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
         limit: ITEMS_PER_PAGE,
         search: searchQuery,
         source: sourceFilter || undefined,
+        maxAge: 1, // ⏰ Chỉ lấy hình trong 1 giờ gần nhất (hình cũ sẽ bị hết hạn)
       });
 
       if (res && res.data) {

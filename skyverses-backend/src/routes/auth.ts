@@ -93,7 +93,7 @@ router.post("/google-register", async (req, res) => {
         if (!existing) break;
       }
 
-      // ✅ Tạo user mới
+      // ✅ Tạo user mới — tự động tặng 1000 welcome credit
       user = await UserModel.create({
         email,
         name,
@@ -101,8 +101,26 @@ router.post("/google-register", async (req, res) => {
         videoCount: 0,
         inviteCode: newInviteCode,
         inviteFrom: inviter?._id || null,
-        role: "user", // 👈 thêm default role
+        role: "user",
+        creditBalance: 1000, // ⭐ Welcome credit tự động
+        claimWelcomeCredit: true, // ⭐ Đánh dấu đã nhận
       });
+
+      // 📝 Ghi log transaction welcome credit
+      try {
+        const CreditTransaction = (await import("../models/CreditTransaction.model")).default;
+        await CreditTransaction.create({
+          userId: user._id,
+          type: "WELCOME",
+          amount: 1000,
+          balanceAfter: 1000,
+          source: "system",
+          note: "Auto welcome credit on registration",
+        });
+        console.log(`🎁 [AUTH] New user ${email} → +1000 welcome credits`);
+      } catch (txErr) {
+        console.error("⚠️ [AUTH] Failed to log welcome credit transaction:", txErr);
+      }
     }
 
     // 🔐 Tạo JWT token có role

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  BarChart3, Cloud, HardDrive, DollarSign,
+  BarChart3, Cloud, DollarSign,
   Package, History, Users, Banknote, Globe,
   Filter, Compass, Bot, Cog, Key, Zap, Inbox, Sparkles,
   ShieldCheck, ChevronLeft, ChevronRight,
@@ -12,7 +12,7 @@ import {
 import { marketApi } from '../apis/market';
 import { systemConfigApi } from '../apis/config';
 import { Solution, HomeBlock } from '../types';
-import { SOLUTIONS as LOCAL_SOLUTIONS } from '../data';
+
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
@@ -39,12 +39,12 @@ import { SolutionDrawer } from '../components/admin-pro/solution-drawer/Solution
 import { SubmissionsTab } from '../components/admin-pro/SubmissionsTab';
 import { AdminDepositTab } from '../components/admin-pro/AdminDepositTab';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT';
 
 const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
   { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart3 size={16} />, group: 'MAIN' },
   { id: 'CLOUD', label: 'Sản phẩm', icon: <Cloud size={16} />, group: 'MARKET' },
-  { id: 'LOCAL', label: 'Local Market', icon: <HardDrive size={16} />, group: 'MARKET' },
+
   { id: 'SUBMISSIONS', label: 'Đề xuất SP', icon: <Inbox size={16} />, group: 'MARKET' },
   { id: 'PRICING', label: 'Bảng giá', icon: <DollarSign size={16} />, group: 'FINANCE' },
   { id: 'CREDIT_PACKS', label: 'Gói Credits', icon: <Package size={16} />, group: 'FINANCE' },
@@ -269,7 +269,7 @@ const AdminCmsProPage = () => {
             <span className="text-[9px] text-slate-400 font-medium bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded">{activeTab}</span>
           </div>
           <div className="flex items-center gap-3">
-            {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
+            {activeTab === 'CLOUD' && (
               <button
                 onClick={() => handleEdit({ id: 'NODE_' + Date.now(), slug: '', name: { en: '', vi: '', ko: '', ja: '' }, category: { en: '', vi: '', ko: '', ja: '' }, description: { en: '', vi: '', ko: '', ja: '' }, problems: [], industries: [], models: [], priceCredits: 0, isFree: false, imageUrl: '', demoType: 'text', tags: [], features: [], complexity: 'Standard', priceReference: '', isActive: true, neuralStack: [], homeBlocks: [] })}
                 className="flex items-center gap-2 px-4 py-1.5 bg-brand-blue text-white rounded-md text-[10px] font-bold hover:bg-brand-blue transition-colors shadow-sm"
@@ -314,11 +314,11 @@ const AdminCmsProPage = () => {
             {activeTab === 'PRODUCTS' && <ProductsTab key="products" />}
             {activeTab === 'SUBMISSIONS' && <SubmissionsTab key="submissions" />}
             {activeTab === 'ADMIN_DEPOSIT' && <AdminDepositTab key="admin_deposit" />}
-            {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
+            {activeTab === 'CLOUD' && (
               <NodeRegistryTab
                 key={activeTab}
                 activeTab={activeTab}
-                solutions={activeTab === 'CLOUD' ? remoteSolutions : LOCAL_SOLUTIONS}
+                solutions={remoteSolutions}
                 onEdit={handleEdit} onDelete={() => { }}
                 onToggleActive={handleToggleActive}
                 onUpdateHomeBlocks={handleQuickUpdateHomeBlocks}

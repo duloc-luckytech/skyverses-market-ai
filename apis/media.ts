@@ -28,6 +28,7 @@ export interface MediaListParams {
   limit?: number;
   search?: string;
   source?: string;
+  maxAge?: number; // hours — only fetch images created within the last N hours
 }
 
 export interface MediaListResponse {
@@ -78,7 +79,8 @@ export const mediaApi = {
         page: String(params.page || 1),
         limit: String(params.limit || 20),
         search: params.search || '',
-        ...(params.source ? { source: params.source } : {})
+        ...(params.source ? { source: params.source } : {}),
+        ...(params.maxAge ? { maxAge: String(params.maxAge) } : {})
       });
 
       const response = await fetch(`${API_BASE_URL}/upload-media/list?${query}`, {
