@@ -40,6 +40,7 @@ import categoryRoutes from "./category.route";
 import runninghubRoutes from "./runninghub";
 import deploybRoutes from "./deployLogs";
 import apiClientRoutes from "./apiClient";
+import productSubmissionRoutes from "./productSubmission";
 import express from "express";
 
 const router = Router();
@@ -89,6 +90,9 @@ router.use("/coupon", couponRoutes);
 
 // API Client Management
 router.use("/api-client", apiClientRoutes);
+
+// Product Submissions
+router.use("/product-submission", productSubmissionRoutes);
 
 // Upload
 router.use(uploadMediaRoute);
