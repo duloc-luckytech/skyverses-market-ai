@@ -903,4 +903,42 @@ router.post("/onboarding", authenticate, async (req: any, res) => {
     onboarding: user.onboarding,
   });
 });
+
+/* =====================================================
+   ADMIN: SEARCH USERS (for deposit, etc.)
+===================================================== */
+router.get("/admin/search", authenticate, async (req: any, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "FORBIDDEN" });
+  }
+
+  const q = (req.query.q as string || '').trim();
+  const limit = Math.min(Number(req.query.limit || 10), 50);
+
+  if (!q || q.length < 2) {
+    return res.json({ data: [] });
+  }
+
+  try {
+    const regex = new RegExp(q, 'i');
+    const users = await UserModel.find({
+      $or: [
+        { email: regex },
+        { name: regex },
+        { firstName: regex },
+        { lastName: regex },
+      ],
+    })
+      .select('_id email name avatar creditBalance')
+      .sort({ lastActiveAt: -1 })
+      .limit(limit)
+      .lean();
+
+    res.json({ data: users });
+  } catch (err) {
+    console.error("❌ [GET /user/admin/search]", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 export default router;

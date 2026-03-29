@@ -187,5 +187,46 @@ export const creditsApi = {
     } catch (error) {
       return { success: false, message: 'Connection failed' };
     }
-  }
+  },
+
+  /** Admin deposit/deduct credits for a user */
+  adminDeposit: async (userId: string, amount: number, note: string): Promise<{ success: boolean; creditBalance?: number; transaction?: any; message?: string }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/credits/admin/add`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ userId, amount, note }),
+      });
+      return await response.json();
+    } catch (error) {
+      return { success: false, message: 'Connection failed' };
+    }
+  },
+
+  /** Admin get user credit history */
+  adminUserHistory: async (userId: string, page = 1, limit = 20): Promise<{ success: boolean; user?: any; data?: any[]; pagination?: any }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/credits/admin/user-history/${userId}?page=${page}&limit=${limit}`, {
+        headers: getHeaders(),
+      });
+      return await response.json();
+    } catch (error) {
+      return { success: false, data: [] };
+    }
+  },
+
+  /** Admin get all top-up history */
+  adminTopUpHistory: async (page = 1, limit = 30, source?: string, search?: string): Promise<{ success: boolean; data?: any[]; pagination?: any }> => {
+    try {
+      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+      if (source) params.set('source', source);
+      if (search) params.set('search', search);
+      const response = await fetch(`${API_BASE_URL}/credits/admin/top-up-history?${params}`, {
+        headers: getHeaders(),
+      });
+      return await response.json();
+    } catch (error) {
+      return { success: false, data: [] };
+    }
+  },
 };

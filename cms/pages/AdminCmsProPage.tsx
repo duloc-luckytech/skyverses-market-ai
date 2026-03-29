@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   BarChart3, Cloud, HardDrive, DollarSign,
   Package, History, Users, Banknote, Globe,
-  Filter, Compass, Bot, Cog, Key, Zap, Inbox,
+  Filter, Compass, Bot, Cog, Key, Zap, Inbox, Sparkles,
   ShieldCheck, ChevronLeft, ChevronRight,
   Sun, Moon, LogOut, Plus, CreditCard
 } from 'lucide-react';
@@ -37,8 +37,9 @@ import { ProductsTab } from '../components/admin-pro/ProductsTab';
 import { ApiClientsTab } from '../components/admin-pro/ApiClientsTab';
 import { SolutionDrawer } from '../components/admin-pro/solution-drawer/SolutionDrawer';
 import { SubmissionsTab } from '../components/admin-pro/SubmissionsTab';
+import { AdminDepositTab } from '../components/admin-pro/AdminDepositTab';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT';
 
 const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
   { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart3 size={16} />, group: 'MAIN' },
@@ -52,6 +53,7 @@ const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; gro
   { id: 'CREDIT_PACKS', label: 'Gói Credits', icon: <Package size={16} />, group: 'FINANCE' },
   { id: 'BANKING', label: 'Banking & QR', icon: <CreditCard size={16} />, group: 'FINANCE' },
   { id: 'PAYMENT_HISTORY', label: 'Lịch sử nạp', icon: <Banknote size={16} />, group: 'FINANCE' },
+  { id: 'ADMIN_DEPOSIT', label: 'Deposit Credit', icon: <Sparkles size={16} />, group: 'FINANCE' },
   { id: 'USERS', label: 'Khách hàng', icon: <Users size={16} />, group: 'SYSTEM' },
   { id: 'LOGS', label: 'Nhật ký', icon: <History size={16} />, group: 'SYSTEM' },
   { id: 'WEBHOOK_LOGS', label: 'Webhook Logs', icon: <Globe size={16} />, group: 'SYSTEM' },
@@ -314,6 +316,7 @@ const AdminCmsProPage = () => {
             {activeTab === 'API_CLIENTS' && <ApiClientsTab key="api_clients" />}
             {activeTab === 'PRODUCTS' && <ProductsTab key="products" />}
             {activeTab === 'SUBMISSIONS' && <SubmissionsTab key="submissions" />}
+            {activeTab === 'ADMIN_DEPOSIT' && <AdminDepositTab key="admin_deposit" />}
             {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
               <NodeRegistryTab
                 key={activeTab}
