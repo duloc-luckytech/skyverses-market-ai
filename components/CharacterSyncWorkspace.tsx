@@ -34,7 +34,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   const [activeSlotIdx, setActiveSlotIdx] = useState<number | null>(null);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isAddingCharacter, setIsAddingCharacter] = useState(false);
-  const [pendingAsset, setPendingAsset] = useState<{url: string, mediaId: string | null} | null>(null);
+  const [pendingAssets, setPendingAssets] = useState<{url: string, mediaId: string | null}[]>([]);
   const [characterName, setCharacterName] = useState('');
   const [showResourceModal, setShowResourceModal] = useState(false);
   const [isResumingGenerate, setIsResumingGenerate] = useState(false);
@@ -169,15 +169,16 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
   const handleLibrarySelect = (assets: GCSAssetMetadata[]) => {
     if (assets.length === 0) { setIsLibraryOpen(false); return; }
-    const asset = assets[0];
 
     if (isAddingCharacter) {
-      // Adding new character → show naming modal
-      setPendingAsset({ url: asset.url, mediaId: asset.mediaId || null });
+      // Adding new characters → queue all selected images for naming
+      const queue = assets.map(a => ({ url: a.url, mediaId: a.mediaId || null }));
+      setPendingAssets(queue);
       setCharacterName('');
       setIsLibraryOpen(false);
     } else if (activeSlotIdx !== null && activeSlotIdx >= 0) {
       // Replacing existing slot image
+      const asset = assets[0];
       api.updateSlot(activeSlotIdx, { url: asset.url, mediaId: asset.mediaId || null });
       setIsLibraryOpen(false);
     } else {
@@ -185,17 +186,26 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
     }
   };
 
+  const currentPendingAsset = pendingAssets.length > 0 ? pendingAssets[0] : null;
+
   const handleConfirmAddCharacter = () => {
-    if (!pendingAsset) return;
+    if (!currentPendingAsset) return;
     const name = characterName.trim() || `NV ${api.slots.length + 1}`;
-    api.addCharacterFromLibrary(pendingAsset.url, pendingAsset.mediaId, name);
-    setPendingAsset(null);
+    api.addCharacterFromLibrary(currentPendingAsset.url, currentPendingAsset.mediaId, name);
+    
+    // Remove the first item from the queue
+    const remaining = pendingAssets.slice(1);
+    setPendingAssets(remaining);
     setCharacterName('');
-    setIsAddingCharacter(false);
+    
+    // If no more pending, close the flow
+    if (remaining.length === 0) {
+      setIsAddingCharacter(false);
+    }
   };
 
   const handleCancelAddCharacter = () => {
-    setPendingAsset(null);
+    setPendingAssets([]);
     setCharacterName('');
     setIsAddingCharacter(false);
   };
@@ -581,7 +591,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       </AnimatePresence>
       <TutorialModal isOpen={api.showTutorial} onClose={api.closeTutorial} />
       <ImageLibraryModal isOpen={isLibraryOpen} onClose={() => setIsLibraryOpen(false)} onConfirm={handleLibrarySelect}
-        onEdit={url => { openEditor(url); setIsLibraryOpen(false); }} maxSelect={1} />
+        onEdit={url => { openEditor(url); setIsLibraryOpen(false); }} maxSelect={isAddingCharacter ? Math.max(1, MAX_CHARACTERS - api.slots.length) : 1} />
       <ProductImageWorkspace isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)} initialImage={editorImage}
         onApply={newUrl => { if (activeSlotIdx !== null && activeSlotIdx >= 0) api.updateSlot(activeSlotIdx, { url: newUrl }); setIsEditorOpen(false); }} />
       <ResourceAuthModal isOpen={showResourceModal} onClose={() => setShowResourceModal(false)}
@@ -592,7 +602,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
       {/* ─── NAMING MODAL ─── */}
       <AnimatePresence>
-        {pendingAsset && (
+        {currentPendingAsset && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[1100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
@@ -605,7 +615,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-slate-800 dark:text-white">Đặt tên nhân vật</h3>
-                    <p className="text-[10px] text-slate-400">Nhân vật {api.slots.length + 1}/{MAX_CHARACTERS}</p>
+                    <p className="text-[10px] text-slate-400">Nhân vật {api.slots.length + 1}/{MAX_CHARACTERS} {pendingAssets.length > 1 ? `• Còn ${pendingAssets.length} ảnh` : ''}</p>
                   </div>
                 </div>
                 <button onClick={handleCancelAddCharacter} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
@@ -617,7 +627,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               <div className="p-5 space-y-4">
                 <div className="flex gap-4 items-start">
                   <div className="w-20 h-28 rounded-xl overflow-hidden border-2 border-purple-500/30 shrink-0">
-                    <img src={pendingAsset.url} className="w-full h-full object-cover" alt="" />
+                    <img src={currentPendingAsset.url} className="w-full h-full object-cover" alt="" />
                   </div>
                   <div className="flex-grow space-y-2">
                     <label className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
