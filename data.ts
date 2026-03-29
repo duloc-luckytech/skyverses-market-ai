@@ -270,6 +270,43 @@ export const SOLUTIONS: Solution[] = [
     isActive: true,
     priceCredits: 100,
     featured: true
+  },
+  {
+    id: 'NOCODE-EXPORT',
+    slug: 'nocode-export',
+    name: { 
+      en: 'NoCodeExport', 
+      vi: 'NoCodeExport — Xuất Website thành Code', 
+      ko: 'NoCodeExport', 
+      ja: 'NoCodeExport' 
+    },
+    category: { en: 'Developer Tools', vi: 'Công cụ phát triển', ko: '개발자 도구', ja: '開発者ツール' },
+    description: { 
+      en: 'Export any website to clean source code. Paste URL, get code, push to GitHub, deploy to Vercel & more.', 
+      vi: 'Xuất bất kỳ website nào thành source code sạch. Dán URL, nhận code, push GitHub, deploy Vercel và hơn thế nữa.', 
+      ko: '모든 웹사이트를 깨끗한 소스코드로 내보내기. URL 붙여넣기, 코드 받기, GitHub 푸시, Vercel 배포.', 
+      ja: 'ウェブサイトをクリーンなソースコードにエクスポート。URLを貼り付け、コードを取得、GitHubにプッシュ、Vercelにデプロイ。' 
+    },
+    problems: ['Manual website cloning', 'Complex scraping setup', 'Slow migration workflows', 'No-code to code conversion'],
+    industries: ['Web Development', 'Freelancers', 'Agencies', 'Design-to-Code'],
+    imageUrl: '/nocode-export-hero.png',
+    demoType: 'automation',
+    tags: ['Export', 'Website', 'HTML', 'GitHub', 'Deploy', 'No-Code'],
+    features: [
+      { en: 'URL-to-Code Export', vi: 'Xuất code từ URL', ko: 'URL에서 코드 내보내기', ja: 'URLからコードへエクスポート' },
+      { en: 'Static HTML & Auto Detect', vi: 'Static HTML & Tự động nhận diện', ko: '정적 HTML 및 자동 감지', ja: '静的HTML＆自動検出' },
+      { en: 'Push to GitHub & Deploy', vi: 'Push GitHub & Deploy tự động', ko: 'GitHub 푸시 및 배포', ja: 'GitHubプッシュ＆デプロイ' }
+    ],
+    complexity: 'Standard',
+    priceReference: 'Free',
+    isActive: true,
+    isFree: true,
+    priceCredits: 0,
+    featured: true,
+    neuralStack: [
+      { name: 'Web Crawler Engine', version: 'v2.0', capability: { en: 'Deep Site Parsing', vi: 'Phân tích cấu trúc website', ko: '심층 사이트 파싱', ja: 'ディープサイト解析' } },
+      { name: 'Code Clean Pipeline', version: 'v1.5', capability: { en: 'Optimized Output', vi: 'Source code tối ưu hoá', ko: '최적화된 출력', ja: '最適化された出力' } }
+    ]
   }
 ];
 

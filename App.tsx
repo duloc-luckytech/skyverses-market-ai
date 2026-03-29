@@ -61,6 +61,7 @@ const pageImports = {
   charSync: () => import('./pages/ProductCharacterSync'),
   aiAgent: () => import('./pages/ProductAIAgentWorkflow'),
   captcha: () => import('./pages/ProductCaptchaToken'),
+  noCodeExport: () => import('./pages/NoCodeExportPage'),
 };
 
 // Core pages
@@ -116,6 +117,7 @@ const SpatialArchitectPage = React.lazy(pageImports.spatial);
 const ProductCharacterSync = React.lazy(pageImports.charSync);
 const ProductAIAgentWorkflow = React.lazy(pageImports.aiAgent);
 const ProductCaptchaToken = React.lazy(pageImports.captcha);
+const NoCodeExportPage = React.lazy(pageImports.noCodeExport);
 
 // ═══ Ultra-fast page transition bar (no blank page) ═══
 const PageLoader = () => (
@@ -208,6 +210,7 @@ const App: React.FC = () => {
                       <Route path="/product/background-removal-ai" element={<BackgroundRemovalAI />} />
                       <Route path="/product/ai-agent-workflow" element={<ProductAIAgentWorkflow />} />
                       <Route path="/product/captcha-veo3" element={<ProductCaptchaToken />} />
+                      <Route path="/product/nocode-export" element={<NoCodeExportPage />} />
                       
                       {/* CÁC TUYẾN ĐƯỜNG SỰ KIỆN HỢP NHẤT */}
                       <Route path="/product/ai-birthday-generator" element={<EventStudioPage type="birthday" />} />
