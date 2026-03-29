@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -10,64 +10,131 @@ import Layout from './components/Layout';
 import { ToastProvider } from './context/ToastContext';
 
 // ═══ Lazy-loaded Pages (code-splitting) ═══
+// Store import functions for prefetching
+const pageImports = {
+  market: () => import('./pages/MarketPage'),
+  category: () => import('./pages/CategoryPage'),
+  explorer: () => import('./pages/ExplorerPage'),
+  models: () => import('./pages/ModelsPage'),
+  apps: () => import('./pages/AppsPage'),
+  appInterface: () => import('./pages/AppInterfacePage'),
+  credits: () => import('./pages/CreditsPage'),
+  creditUsage: () => import('./pages/CreditUsagePage'),
+  login: () => import('./pages/LoginPage'),
+  solutionDetail: () => import('./pages/SolutionDetail'),
+  useCases: () => import('./pages/UseCasesPage'),
+  pricing: () => import('./pages/PricingPage'),
+  booking: () => import('./pages/BookingPage'),
+  about: () => import('./pages/AboutPage'),
+  settings: () => import('./pages/SettingsPage'),
+  favorites: () => import('./pages/FavoritesPage'),
+  referral: () => import('./pages/ReferralPage'),
+  policy: () => import('./pages/PolicyPage'),
+  markets: () => import('./pages/MarketsPage'),
+  // Images
+  aiImageGenerator: () => import('./pages/images/AIImageGenerator'),
+  eventStudio: () => import('./pages/images/EventStudioPage'),
+  productImage: () => import('./pages/images/ProductImage'),
+  posterMarketing: () => import('./pages/images/PosterMarketingAI'),
+  fashionCenter: () => import('./pages/images/FashionCenterAI'),
+  imageUpscale: () => import('./pages/images/ImageUpscaleAI'),
+  product6: () => import('./pages/images/Product6Image'),
+  product7: () => import('./pages/images/Product7Comic'),
+  aiStylist: () => import('./pages/images/AIStylistPage'),
+  aiRestoration: () => import('./pages/images/AIImageRestoration'),
+  realEstate: () => import('./pages/images/RealEstateAI'),
+  bgRemoval: () => import('./pages/images/BackgroundRemovalAI'),
+  // Videos
+  aiVideo: () => import('./pages/videos/AIVideoGenerator'),
+  genyu: () => import('./pages/videos/GenyuProduct'),
+  avatarLipsync: () => import('./pages/videos/AvatarLipsyncAI'),
+  videoAnimate: () => import('./pages/videos/VideoAnimateAI'),
+  storyboard: () => import('./pages/videos/StoryboardStudioPage'),
+  // Audio
+  tts: () => import('./pages/audio/TextToSpeech'),
+  music: () => import('./pages/audio/MusicGenerator'),
+  voiceDesign: () => import('./pages/audio/VoiceDesignAI'),
+  voiceStudio: () => import('./pages/audio/VoiceStudio'),
+  // Other
+  spatial: () => import('./pages/SpatialArchitectPage'),
+  charSync: () => import('./pages/ProductCharacterSync'),
+  aiAgent: () => import('./pages/ProductAIAgentWorkflow'),
+  captcha: () => import('./pages/ProductCaptchaToken'),
+};
+
 // Core pages
-const MarketPage = React.lazy(() => import('./pages/MarketPage'));
-const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
-const ExplorerPage = React.lazy(() => import('./pages/ExplorerPage'));
-const ModelsPage = React.lazy(() => import('./pages/ModelsPage'));
-const AppsPage = React.lazy(() => import('./pages/AppsPage'));
-const AppInterfacePage = React.lazy(() => import('./pages/AppInterfacePage'));
-const CreditsPage = React.lazy(() => import('./pages/CreditsPage'));
-const CreditUsagePage = React.lazy(() => import('./pages/CreditUsagePage'));
-const LoginPage = React.lazy(() => import('./pages/LoginPage'));
-const SolutionDetail = React.lazy(() => import('./pages/SolutionDetail'));
-const UseCasesPage = React.lazy(() => import('./pages/UseCasesPage'));
-const PricingPage = React.lazy(() => import('./pages/PricingPage'));
-const BookingPage = React.lazy(() => import('./pages/BookingPage'));
-const AboutPage = React.lazy(() => import('./pages/AboutPage'));
-const SettingsPage = React.lazy(() => import('./pages/SettingsPage'));
-const FavoritesPage = React.lazy(() => import('./pages/FavoritesPage'));
-const ReferralPage = React.lazy(() => import('./pages/ReferralPage'));
-const PolicyPage = React.lazy(() => import('./pages/PolicyPage'));
-const MarketsPage = React.lazy(() => import('./pages/MarketsPage'));
+const MarketPage = React.lazy(pageImports.market);
+const CategoryPage = React.lazy(pageImports.category);
+const ExplorerPage = React.lazy(pageImports.explorer);
+const ModelsPage = React.lazy(pageImports.models);
+const AppsPage = React.lazy(pageImports.apps);
+const AppInterfacePage = React.lazy(pageImports.appInterface);
+const CreditsPage = React.lazy(pageImports.credits);
+const CreditUsagePage = React.lazy(pageImports.creditUsage);
+const LoginPage = React.lazy(pageImports.login);
+const SolutionDetail = React.lazy(pageImports.solutionDetail);
+const UseCasesPage = React.lazy(pageImports.useCases);
+const PricingPage = React.lazy(pageImports.pricing);
+const BookingPage = React.lazy(pageImports.booking);
+const AboutPage = React.lazy(pageImports.about);
+const SettingsPage = React.lazy(pageImports.settings);
+const FavoritesPage = React.lazy(pageImports.favorites);
+const ReferralPage = React.lazy(pageImports.referral);
+const PolicyPage = React.lazy(pageImports.policy);
+const MarketsPage = React.lazy(pageImports.markets);
 
 // Product pages — images
-const AIImageGenerator = React.lazy(() => import('./pages/images/AIImageGenerator'));
-const EventStudioPage = React.lazy(() => import('./pages/images/EventStudioPage'));
-const ProductImage = React.lazy(() => import('./pages/images/ProductImage'));
-const PosterMarketingAI = React.lazy(() => import('./pages/images/PosterMarketingAI'));
-const FashionCenterAI = React.lazy(() => import('./pages/images/FashionCenterAI'));
-const ImageUpscaleAI = React.lazy(() => import('./pages/images/ImageUpscaleAI'));
-const Product6Image = React.lazy(() => import('./pages/images/Product6Image'));
-const Product7Comic = React.lazy(() => import('./pages/images/Product7Comic'));
-const AIStylistPage = React.lazy(() => import('./pages/images/AIStylistPage'));
-const AIImageRestoration = React.lazy(() => import('./pages/images/AIImageRestoration'));
-const RealEstateAI = React.lazy(() => import('./pages/images/RealEstateAI'));
-const BackgroundRemovalAI = React.lazy(() => import('./pages/images/BackgroundRemovalAI'));
+const AIImageGenerator = React.lazy(pageImports.aiImageGenerator);
+const EventStudioPage = React.lazy(pageImports.eventStudio);
+const ProductImage = React.lazy(pageImports.productImage);
+const PosterMarketingAI = React.lazy(pageImports.posterMarketing);
+const FashionCenterAI = React.lazy(pageImports.fashionCenter);
+const ImageUpscaleAI = React.lazy(pageImports.imageUpscale);
+const Product6Image = React.lazy(pageImports.product6);
+const Product7Comic = React.lazy(pageImports.product7);
+const AIStylistPage = React.lazy(pageImports.aiStylist);
+const AIImageRestoration = React.lazy(pageImports.aiRestoration);
+const RealEstateAI = React.lazy(pageImports.realEstate);
+const BackgroundRemovalAI = React.lazy(pageImports.bgRemoval);
 
 // Product pages — videos
-const AIVideoGenerator = React.lazy(() => import('./pages/videos/AIVideoGenerator'));
-const GenyuProduct = React.lazy(() => import('./pages/videos/GenyuProduct'));
-const AvatarLipsyncAI = React.lazy(() => import('./pages/videos/AvatarLipsyncAI'));
-const VideoAnimateAI = React.lazy(() => import('./pages/videos/VideoAnimateAI'));
-const StoryboardStudioPage = React.lazy(() => import('./pages/videos/StoryboardStudioPage'));
+const AIVideoGenerator = React.lazy(pageImports.aiVideo);
+const GenyuProduct = React.lazy(pageImports.genyu);
+const AvatarLipsyncAI = React.lazy(pageImports.avatarLipsync);
+const VideoAnimateAI = React.lazy(pageImports.videoAnimate);
+const StoryboardStudioPage = React.lazy(pageImports.storyboard);
 
 // Product pages — audio
-const TextToSpeech = React.lazy(() => import('./pages/audio/TextToSpeech'));
-const MusicGenerator = React.lazy(() => import('./pages/audio/MusicGenerator'));
-const VoiceDesignAI = React.lazy(() => import('./pages/audio/VoiceDesignAI'));
-const VoiceStudio = React.lazy(() => import('./pages/audio/VoiceStudio'));
+const TextToSpeech = React.lazy(pageImports.tts);
+const MusicGenerator = React.lazy(pageImports.music);
+const VoiceDesignAI = React.lazy(pageImports.voiceDesign);
+const VoiceStudio = React.lazy(pageImports.voiceStudio);
 
 // Product pages — other
-const SpatialArchitectPage = React.lazy(() => import('./pages/SpatialArchitectPage'));
-const ProductCharacterSync = React.lazy(() => import('./pages/ProductCharacterSync'));
-const ProductAIAgentWorkflow = React.lazy(() => import('./pages/ProductAIAgentWorkflow'));
-const ProductCaptchaToken = React.lazy(() => import('./pages/ProductCaptchaToken'));
+const SpatialArchitectPage = React.lazy(pageImports.spatial);
+const ProductCharacterSync = React.lazy(pageImports.charSync);
+const ProductAIAgentWorkflow = React.lazy(pageImports.aiAgent);
+const ProductCaptchaToken = React.lazy(pageImports.captcha);
 
-// ═══ Suspense fallback ═══
+// ═══ Ultra-fast page transition bar (no blank page) ═══
 const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-[60vh]">
-    <div className="w-8 h-8 border-2 border-brand-blue/30 border-t-brand-blue rounded-full animate-spin" />
+  <div className="fixed top-0 left-0 right-0 z-[999] pointer-events-none">
+    <div className="h-[2px] bg-brand-blue/20 w-full overflow-hidden">
+      <div
+        className="h-full rounded-full"
+        style={{
+          width: '40%',
+          background: 'linear-gradient(90deg, transparent, #0090ff, transparent)',
+          animation: 'pageLoadShimmer 0.8s ease-in-out infinite',
+        }}
+      />
+    </div>
+    <style>{`
+      @keyframes pageLoadShimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(350%); }
+      }
+    `}</style>
   </div>
 );
 
@@ -78,6 +145,29 @@ const ScrollToTop = () => {
   }, [pathname]);
   return null;
 };
+
+// ═══ Prefetch critical routes on idle ═══
+const prefetchCriticalRoutes = () => {
+  const critical = [
+    pageImports.markets,
+    pageImports.credits,
+    pageImports.solutionDetail,
+    pageImports.aiImageGenerator,
+    pageImports.aiVideo,
+  ];
+  critical.forEach((importFn) => {
+    try { importFn(); } catch { /* silently swallow */ }
+  });
+};
+
+// Prefetch when browser is idle
+if (typeof window !== 'undefined') {
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(() => prefetchCriticalRoutes(), { timeout: 3000 });
+  } else {
+    setTimeout(prefetchCriticalRoutes, 2000);
+  }
+}
 
 const App: React.FC = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);

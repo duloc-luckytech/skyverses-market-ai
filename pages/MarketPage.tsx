@@ -168,6 +168,14 @@ const MarketPage = () => {
     else navigate(`/product/${slug}`);
   }, [isAuthenticated, navigate]);
 
+  // Prefetch product page chunk on hover for instant navigation
+  const prefetchedSlugs = useRef(new Set<string>());
+  const handlePrefetchOnHover = useCallback((slug: string) => {
+    if (prefetchedSlugs.current.has(slug)) return;
+    prefetchedSlugs.current.add(slug);
+    import('../pages/SolutionDetail').catch(() => {});
+  }, []);
+
   const filteredSolutions = useMemo(() => {
     return solutions.filter(sol => {
       if (secondary === 'ALL') return true;
@@ -176,7 +184,7 @@ const MarketPage = () => {
     });
   }, [solutions, secondary]);
 
-  const logoUrl = "https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268";
+  const logoUrl = "/assets/skyverses-logo.png";
   const currentLang = lang as Language;
   const activeFeatured = featuredSolutions[featuredIdx];
 
@@ -326,7 +334,7 @@ const MarketPage = () => {
                         ];
                         return [...col1Images, ...col1Images].map((url, i) => (
                           <div key={`up-${i}`} className="rounded-2xl overflow-hidden group cursor-pointer relative flex-shrink-0">
-                            <img src={url} alt="" loading="lazy" className="w-full h-[180px] md:h-[220px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
+                            <img src={url} alt="" loading={i < 3 ? 'eager' : 'lazy'} fetchPriority={i < 2 ? 'high' : 'auto'} className="w-full h-[180px] md:h-[220px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           </div>
                         ));
@@ -345,7 +353,7 @@ const MarketPage = () => {
                         ];
                         return [...col2Images, ...col2Images].map((url, i) => (
                           <div key={`down-${i}`} className="rounded-2xl overflow-hidden group cursor-pointer relative flex-shrink-0">
-                            <img src={url} alt="" loading="lazy" className="w-full h-[200px] md:h-[240px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
+                            <img src={url} alt="" loading={i < 3 ? 'eager' : 'lazy'} fetchPriority={i < 2 ? 'high' : 'auto'} className="w-full h-[200px] md:h-[240px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           </div>
                         ));
@@ -591,6 +599,7 @@ const MarketPage = () => {
                             onToggleFavorite={toggleFavorite}
                             onToggleLike={toggleLike}
                             onClick={handleNavigate}
+                            onHover={handlePrefetchOnHover}
                             stats={getFakeStats(sol._id || sol.id)}
                           />
                         ))}

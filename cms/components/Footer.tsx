@@ -7,7 +7,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 
 const Footer: React.FC = () => {
-  const logoUrl = "https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268";
+  const logoUrl = "/assets/skyverses-logo.png";
   const { t } = useLanguage();
 
   return (

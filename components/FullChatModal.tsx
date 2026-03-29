@@ -250,7 +250,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                 <div className="relative group">
                   <div className="absolute inset-0 bg-brand-blue blur-[40px] opacity-10 rounded-full animate-pulse"></div>
                   <div className="w-12 h-12 md:w-16 md:h-16 bg-slate-100 dark:bg-[#333] rounded-2xl flex items-center justify-center shadow-2xl relative z-10">
-                     <img src="https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268" className="w-8 h-8 md:w-10 md:h-10 object-contain" alt="" />
+                     <img src="/assets/skyverses-logo.png" className="w-8 h-8 md:w-10 md:h-10 object-contain" alt="" />
                   </div>
                 </div>
                 <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-tight italic text-center text-slate-900 dark:text-white">Làm thế nào tôi có thể <br /> giúp <span className="text-brand-blue">bạn xây dựng?</span></h2>
@@ -279,7 +279,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                         <img src={user?.picture || "https://i.pravatar.cc/100"} className="w-full h-full rounded-full" alt="" />
                       ) : (
                         <div className="w-7 h-7 md:w-8 md:h-8 bg-slate-100 dark:bg-[#333] rounded-lg flex items-center justify-center border border-slate-200 dark:border-white/5 p-1">
-                            <img src="https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268" className="w-full h-full object-contain" alt="" />
+                            <img src="/assets/skyverses-logo.png" className="w-full h-full object-contain" alt="" />
                         </div>
                       )}
                     </div>

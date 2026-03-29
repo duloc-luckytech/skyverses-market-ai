@@ -12,12 +12,13 @@ interface SolutionCardProps {
   onToggleFavorite: (e: React.MouseEvent, id: string) => void;
   onToggleLike: (e: React.MouseEvent, id: string) => void;
   onClick: (slug: string) => void;
+  onHover?: (slug: string) => void;
   stats: { users: string; likes: string };
   isGrid?: boolean;
 }
 
 const SolutionCardComponent: React.FC<SolutionCardProps> = ({ 
-  sol, idx, lang, isLiked, isFavorited, onToggleFavorite, onToggleLike, onClick, stats, isGrid = false 
+  sol, idx, lang, isLiked, isFavorited, onToggleFavorite, onToggleLike, onClick, onHover, stats, isGrid = false 
 }) => {
   const targetId = sol._id || sol.id;
   const currentLang = lang as Language;
@@ -25,6 +26,7 @@ const SolutionCardComponent: React.FC<SolutionCardProps> = ({
   return (
     <div 
       onClick={() => onClick(sol.slug)}
+      onMouseEnter={() => onHover?.(sol.slug)}
       className={`flex-shrink-0 snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/40 dark:hover:border-brand-blue/30 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-brand-blue/5 rounded-2xl overflow-hidden cursor-pointer ${
         isGrid ? 'w-full' : 'w-[280px] md:w-[320px] xl:w-[360px]'
       }`}

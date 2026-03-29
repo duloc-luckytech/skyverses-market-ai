@@ -197,7 +197,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   ];
 
   const logoUrl =
-    "https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268";
+    "/assets/skyverses-logo.png";
 
   return (
     <>

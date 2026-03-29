@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Twitter, Linkedin, Mail, Github, Facebook,
@@ -8,8 +8,19 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 
 const Footer: React.FC = () => {
-  const logoUrl = "https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268";
+  const logoUrl = "/assets/skyverses-logo.png";
   const { t } = useLanguage();
+
+  // Prefetch route chunks on hover
+  const prefetched = useRef(new Set<string>());
+  const handleLinkHover = useCallback((to: string) => {
+    if (prefetched.current.has(to)) return;
+    prefetched.current.add(to);
+    // Prefetch the SolutionDetail page (handles /product/* routes)
+    if (to.startsWith('/product/')) {
+      import('../pages/SolutionDetail').catch(() => {});
+    }
+  }, []);
 
   return (
     <footer className="relative bg-[#fafbfc] dark:bg-[#060608] border-t border-black/[0.04] dark:border-white/[0.04] transition-colors duration-500 overflow-hidden">
@@ -97,7 +108,7 @@ const Footer: React.FC = () => {
                   { label: 'All Products', to: '/apps' },
                 ].map(link => (
                   <li key={link.label}>
-                    <Link to={link.to} className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
+                    <Link to={link.to} onMouseEnter={() => handleLinkHover(link.to)} className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
                       <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-gray-600 group-hover:bg-brand-blue group-hover:scale-150 transition-all duration-300" />
                       {link.label}
                     </Link>

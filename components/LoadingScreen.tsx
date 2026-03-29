@@ -6,7 +6,7 @@ const LoadingScreen: React.FC<{ onFinished: () => void }> = ({ onFinished }) => 
   const [isExiting, setIsExiting] = useState(false);
   const hasTriggered = useRef(false);
 
-  const logoUrl = "https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png?width=366&height=268";
+  const logoUrl = "/assets/skyverses-logo.png";
 
   useEffect(() => {
     if (hasTriggered.current) return;
