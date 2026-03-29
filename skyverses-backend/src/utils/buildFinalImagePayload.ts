@@ -21,15 +21,18 @@ export function mapFxlabAspectRatio(aspectRatio?: string) {
 }
 
 const buildFxlabPayload = ({ config, input, engine }: { config: any; input: any; engine: any }) => {
+  // Normalize: support both input.images (array) and input.image (singular)
+  const refImages = Array.isArray(input.images) && input.images.length > 0
+    ? input.images
+    : (input.image ? [input.image] : []);
+
   return {
     imageAspectRatio: mapFxlabAspectRatio(config.aspectRatio),
     imageModelName: engine.model,
-    imageInputs: Array.isArray(input.images)
-      ? input.images.map((url: any) => ({
-        imageInputType: "IMAGE_INPUT_TYPE_REFERENCE",
-        name: url,
-      }))
-      : [],
+    imageInputs: refImages.map((url: any) => ({
+      imageInputType: "IMAGE_INPUT_TYPE_REFERENCE",
+      name: url,
+    })),
     prompt: input.prompt,
     seed: 38653,
   };

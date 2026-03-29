@@ -64,7 +64,12 @@ export async function runFxlabRequest(job: any) {
   // IMAGE → IMAGE (REFERENCE)
   // =========================
   if (job.type === "image_to_image") {
-    if (!Array.isArray(job.input?.images) || !job.input.images.length) {
+    // Normalize: support both input.images (array) and input.image (singular)
+    const refImages = Array.isArray(job.input?.images) && job.input.images.length > 0
+      ? job.input.images
+      : (job.input?.image ? [job.input.image] : []);
+
+    if (!refImages.length) {
       throw new Error("LABS_IMAGE_MISSING_REFERENCE_IMAGE");
     }
 
@@ -89,7 +94,7 @@ export async function runFxlabRequest(job: any) {
       prompt: job.enginePayload.prompt,
 
       // 🔥 REFERENCE IMAGE
-      imageInputs: job.input.images.map((mediaId: string) => ({
+      imageInputs: refImages.map((mediaId: string) => ({
         name: mediaId,
         imageInputType: "IMAGE_INPUT_TYPE_REFERENCE",
       })),

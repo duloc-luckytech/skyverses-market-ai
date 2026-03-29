@@ -207,8 +207,10 @@ router.get("/tasks/pending", async (req, res) => {
         const priority = job.enginePayload?.priority;
         if (priority != null && priority !== 1) task.priority = priority;
 
-        const refImages = job.input?.images;
-        if (Array.isArray(refImages) && refImages.length > 0) {
+        const refImages = Array.isArray(job.input?.images) && job.input.images.length > 0
+          ? job.input.images
+          : (job.input?.image ? [job.input.image] : []);
+        if (refImages.length > 0) {
           task.referenceImages = refImages;
         }
 

@@ -312,8 +312,7 @@ export const useEventStudio = (config: EventConfig) => {
           type: anchors.length > 0 ? "image_to_image" : "text_to_image",
           input: {
             prompt: finalPrompt,
-            ...(imageRefs.length === 1 ? { image: imageRefs[0] } : {}),
-            ...(imageRefs.length > 1 ? { images: imageRefs } : {}),
+            ...(imageRefs.length > 0 ? { image: imageRefs[0], images: imageRefs } : {}),
           },
           config: {
             width: 1024,
