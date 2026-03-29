@@ -115,7 +115,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
   const navLinks = [
     { name: t('nav.browse'), path: '/market' },
-    { name: t('nav.apps'), path: '/apps' },
+    ...(isAuthenticated ? [{ name: 'Create', path: '/apps' }] : []),
   ];
 
   const languages: { code: Language; name: string }[] = [
@@ -147,9 +147,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
             {/* Nav Links — Desktop */}
             <div className="hidden md:flex items-center gap-1">
-              {/* Market */}
-              <Link to="/market" className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive('/market') ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}>
-                {t('nav.browse')}
+              {/* Home */}
+              <Link to="/" className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive('/') ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}>
+                Home
               </Link>
 
               {/* Marketplace */}
@@ -410,10 +410,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
             <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6 no-scrollbar">
               {/* Nav Links */}
               <div className="space-y-1">
-                <Link to="/market" onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between px-3 py-3 rounded-xl transition-all ${isActive('/market') ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
+                <Link to="/" onClick={() => setIsOpen(false)}
+                  className={`flex items-center justify-between px-3 py-3 rounded-xl transition-all ${isActive('/') ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
                 >
-                  <span className="text-sm font-bold">{t('nav.browse')}</span>
+                  <span className="text-sm font-bold">Home</span>
                   <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
                 </Link>
 
