@@ -73,7 +73,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
     console.log("✅ MongoDB connected!");
 
     /* ------------------------------ Seed Admin ------------------------------ */
-    // await seedAdmin(); // ✅ Đã reset xong — uncomment khi cần reset lại
+    await seedAdmin(); // ✅ Đã reset xong — uncomment khi cần reset lại
 
     /* ------------------------------ Pricing x2 ------------------------------ */
     // import('./scripts/updatePricingX2'); // ✅ Đã update xong
