@@ -166,7 +166,6 @@ const AdminCmsProPage = () => {
     { id: 'CLOUD', label: 'Thị trường Cloud', icon: <Cloud size={20} /> },
     { id: 'LOCAL', label: 'Thị trường Local', icon: <HardDrive size={20} /> },
     { id: 'SUBMISSIONS', label: 'Đề xuất sản phẩm', icon: <Inbox size={20} /> },
-    { id: 'MARKET_FILTERS', label: 'Bộ lọc sản phẩm', icon: <Filter size={20} /> },
     { id: 'EXPLORER', label: 'Thư viện mẫu', icon: <Compass size={20} /> },
     { id: 'AI_MODELS', label: 'Danh sách Models AI', icon: <Bot size={20} /> },
     { id: 'PROVIDER_TOKENS', label: 'Token nhà cung cấp', icon: <Key size={20} /> },
@@ -211,7 +210,6 @@ const AdminCmsProPage = () => {
            <AnimatePresence mode="wait">
              {activeTab === 'DASHBOARD' && <DashboardTab key="dashboard" />}
              {activeTab === 'EXPLORER' && <ExplorerTab key="explorer" />}
-             {activeTab === 'MARKET_FILTERS' && <MarketFiltersTab key="market_filters" />}
              {activeTab === 'CREDIT_PACKS' && <CreditPacksTab key="packs" />}
              {activeTab === 'PRICING' && <PricingTab key="pricing" />}
              {activeTab === 'AI_MODELS' && <AIModelsTab key="ai_models" />}
