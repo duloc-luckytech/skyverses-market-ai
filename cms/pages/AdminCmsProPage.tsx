@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   BarChart3, Cloud, HardDrive, DollarSign,
   Package, History, Users, Banknote, Globe,
-  Filter, Compass, Bot, Cog, Key, Zap,
+  Filter, Compass, Bot, Cog, Key, Zap, Inbox,
   ShieldCheck, ChevronLeft, ChevronRight,
   Sun, Moon, LogOut, Plus, CreditCard
 } from 'lucide-react';
@@ -36,14 +36,15 @@ import { FxflowTab } from '../components/admin-pro/FxflowTab';
 import { ProductsTab } from '../components/admin-pro/ProductsTab';
 import { ApiClientsTab } from '../components/admin-pro/ApiClientsTab';
 import { SolutionDrawer } from '../components/admin-pro/solution-drawer/SolutionDrawer';
+import { SubmissionsTab } from '../components/admin-pro/SubmissionsTab';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'LOCAL' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS';
 
 const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
   { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart3 size={16} />, group: 'MAIN' },
   { id: 'CLOUD', label: 'Sản phẩm', icon: <Cloud size={16} />, group: 'MARKET' },
   { id: 'LOCAL', label: 'Local Market', icon: <HardDrive size={16} />, group: 'MARKET' },
-  { id: 'MARKET_FILTERS', label: 'Bộ lọc SP', icon: <Filter size={16} />, group: 'MARKET' },
+  { id: 'SUBMISSIONS', label: 'Đề xuất SP', icon: <Inbox size={16} />, group: 'MARKET' },
   { id: 'EXPLORER', label: 'Thư viện mẫu', icon: <Compass size={16} />, group: 'CONTENT' },
   { id: 'AI_MODELS', label: 'AI Models', icon: <Bot size={16} />, group: 'CONTENT' },
   { id: 'PROVIDER_TOKENS', label: 'Provider Tokens', icon: <Key size={16} />, group: 'CONTENT' },
@@ -312,6 +313,7 @@ const AdminCmsProPage = () => {
             {activeTab === 'FXFLOW' && <FxflowTab key="fxflow" />}
             {activeTab === 'API_CLIENTS' && <ApiClientsTab key="api_clients" />}
             {activeTab === 'PRODUCTS' && <ProductsTab key="products" />}
+            {activeTab === 'SUBMISSIONS' && <SubmissionsTab key="submissions" />}
             {(activeTab === 'CLOUD' || activeTab === 'LOCAL') && (
               <NodeRegistryTab
                 key={activeTab}
