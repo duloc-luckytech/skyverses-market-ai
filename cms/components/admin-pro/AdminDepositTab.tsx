@@ -46,6 +46,10 @@ const formatDate = (d: string) => {
 
 // ═══ Component ═══
 export const AdminDepositTab: React.FC = () => {
+  // Default user list
+  const [defaultUsers, setDefaultUsers] = useState<UserResult[]>([]);
+  const [defaultLoading, setDefaultLoading] = useState(true);
+
   // Search & Select user
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<UserResult[]>([]);
@@ -72,6 +76,23 @@ export const AdminDepositTab: React.FC = () => {
 
   // Active view
   const [activeView, setActiveView] = useState<'deposit' | 'history'>('deposit');
+
+  // ═══ Fetch default users on mount ═══
+  const fetchDefaultUsers = useCallback(async () => {
+    setDefaultLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/user/list-u?page=1&pageSize=30&sortBy=lastActiveAt&sortOrder=desc`, {
+        headers: getHeaders(),
+      });
+      const data = await res.json();
+      setDefaultUsers((data.data || []).map((u: any) => ({
+        _id: u._id, email: u.email, name: u.name, avatar: u.avatar, creditBalance: u.creditBalance || 0,
+      })));
+    } catch { setDefaultUsers([]); }
+    setDefaultLoading(false);
+  }, []);
+
+  useEffect(() => { fetchDefaultUsers(); }, [fetchDefaultUsers]);
 
   // ═══ Search Users ═══
   const searchUsers = useCallback(async (q: string) => {
@@ -205,27 +226,40 @@ export const AdminDepositTab: React.FC = () => {
                     {isSearching && <Loader2 size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-blue animate-spin" />}
                   </div>
 
-                  {/* Search Results */}
-                  {searchResults.length > 0 && !selectedUser && (
-                    <div className="mt-3 space-y-1 max-h-[200px] overflow-y-auto no-scrollbar">
-                      {searchResults.map(u => (
-                        <button
-                          key={u._id}
-                          onClick={() => { setSelectedUser(u); setSearchResults([]); setSearchQuery(''); }}
-                          className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-brand-blue/5 transition-all text-left group"
-                        >
-                          <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue text-[10px] font-bold shrink-0">
-                            {u.email?.[0]?.toUpperCase() || 'U'}
+                  {/* User List (search results or default) */}
+                  {!selectedUser && (() => {
+                    const displayUsers = searchQuery.length >= 2 ? searchResults : defaultUsers;
+                    const isLoading = searchQuery.length >= 2 ? isSearching : defaultLoading;
+                    return (
+                      <div className="mt-3">
+                        {!searchQuery && <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2">Khách hàng gần đây ({defaultUsers.length})</p>}
+                        {isLoading ? (
+                          <div className="text-center py-6"><Loader2 size={16} className="mx-auto text-brand-blue animate-spin" /></div>
+                        ) : displayUsers.length === 0 ? (
+                          <p className="text-center py-4 text-[10px] text-slate-400">{searchQuery ? 'Không tìm thấy' : 'Chưa có khách hàng'}</p>
+                        ) : (
+                          <div className="space-y-1 max-h-[400px] overflow-y-auto no-scrollbar">
+                            {displayUsers.map(u => (
+                              <button
+                                key={u._id}
+                                onClick={() => { setSelectedUser(u); setSearchResults([]); setSearchQuery(''); }}
+                                className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-brand-blue/5 transition-all text-left group"
+                              >
+                                <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue text-[10px] font-bold shrink-0">
+                                  {u.avatar ? <img src={u.avatar} className="w-8 h-8 rounded-lg object-cover" alt="" /> : (u.email?.[0]?.toUpperCase() || 'U')}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-bold text-slate-800 dark:text-white truncate">{u.name || u.email}</p>
+                                  <p className="text-[10px] text-slate-400 truncate">{u.email}</p>
+                                </div>
+                                <span className="text-[10px] font-bold text-brand-blue">{(u.creditBalance || 0).toLocaleString()} CR</span>
+                              </button>
+                            ))}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-slate-800 dark:text-white truncate">{u.name || u.email}</p>
-                            <p className="text-[10px] text-slate-400 truncate">{u.email}</p>
-                          </div>
-                          <span className="text-[10px] font-bold text-brand-blue">{(u.creditBalance || 0).toLocaleString()} CR</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Selected User + Deposit Form */}
