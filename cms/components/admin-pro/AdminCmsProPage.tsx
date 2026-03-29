@@ -165,6 +165,7 @@ const AdminCmsProPage = () => {
     { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart3 size={20} /> },
     { id: 'CLOUD', label: 'Thị trường Cloud', icon: <Cloud size={20} /> },
     { id: 'LOCAL', label: 'Thị trường Local', icon: <HardDrive size={20} /> },
+    { id: 'SUBMISSIONS', label: 'Đề xuất sản phẩm', icon: <Inbox size={20} /> },
     { id: 'MARKET_FILTERS', label: 'Bộ lọc sản phẩm', icon: <Filter size={20} /> },
     { id: 'EXPLORER', label: 'Thư viện mẫu', icon: <Compass size={20} /> },
     { id: 'AI_MODELS', label: 'Danh sách Models AI', icon: <Bot size={20} /> },
@@ -175,7 +176,6 @@ const AdminCmsProPage = () => {
     { id: 'LOGS', label: 'Nhật ký hệ thống', icon: <History size={20} /> },
     { id: 'CONFIG', label: 'Cấu hình chung', icon: <Cog size={20} /> },
     { id: 'PRODUCTS', label: 'Sản phẩm', icon: <Package size={20} /> },
-    { id: 'SUBMISSIONS', label: 'Đề xuất sản phẩm', icon: <Inbox size={20} /> },
   ];
 
   return (
