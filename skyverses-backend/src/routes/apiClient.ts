@@ -3,6 +3,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import UserModel from "../models/UserModel";
 import ImageJob, { ImageJobStatus, ImageJobType } from "../models/ImageJob";
+import VideoJob, { VideoJobStatus, VideoJobType, VideoEngineProvider } from "../models/VideoJobModelV2";
 import { authenticate } from "./auth";
 import { getOrAssignOwnerForUser } from "./fxflow";
 import { buildFinalImagePayload } from "../utils/buildFinalImagePayload";
@@ -295,15 +296,23 @@ router.get("/stats", authenticate, async (req: any, res) => {
     const activeTokens = allTokens - expiredTokens;
     
     // Pending image tasks
-    const pendingTasks = await ImageJob.countDocuments({ status: ImageJobStatus.PENDING });
-    const totalTasks = await ImageJob.countDocuments();
+    const pendingImageTasks = await ImageJob.countDocuments({ status: ImageJobStatus.PENDING });
+    const totalImageTasks = await ImageJob.countDocuments();
+
+    // Pending video tasks
+    const pendingVideoTasks = await VideoJob.countDocuments({ status: VideoJobStatus.PENDING });
+    const totalVideoTasks = await VideoJob.countDocuments();
 
     return res.json({
       success: true,
       totalClients,
       activeTokens,
-      pendingTasks,
-      totalTasks,
+      pendingTasks: pendingImageTasks + pendingVideoTasks,
+      totalTasks: totalImageTasks + totalVideoTasks,
+      pendingImageTasks,
+      totalImageTasks,
+      pendingVideoTasks,
+      totalVideoTasks,
     });
   } catch (err: any) {
     console.error("❌ [GET /api-client/stats]", err);
@@ -473,6 +482,180 @@ router.get("/external/image-task/:id", authenticateApiToken, async (req: any, re
     });
   } catch (err: any) {
     console.error("❌ [GET /api-client/external/image-task/:id]", err);
+    return res.status(500).json({ success: false, message: "Internal error" });
+  }
+});
+
+/* ============================================================
+   🎬 9️⃣ External API: Tạo Video Pending Task
+   POST /api-client/external/video-task
+   — Auth bằng Bearer Token (apiToken)
+============================================================ */
+router.post("/external/video-task", authenticateApiToken, async (req: any, res) => {
+  try {
+    const {
+      // Flat format (simple)
+      prompt,
+      type = "text-to-video",
+      startImage,
+      endImage,
+      images,
+      referenceVideo,
+      audio,
+      duration,
+      aspectRatio,
+      resolution,
+      fps,
+      style,
+      mode,
+      // Nested format (same as internal)
+      input: rawInput,
+      config: rawConfig,
+      engine = {},
+      enginePayload,
+    } = req.body;
+
+    // Support cả 2 format: flat hoặc nested (internal-style)
+    const input: any = rawInput ? { ...rawInput } : {};
+    if (prompt) input.prompt = prompt;
+    if (startImage) input.startImage = startImage;
+    if (endImage) input.endImage = endImage;
+    if (images) input.images = images;
+    if (referenceVideo) input.referenceVideo = referenceVideo;
+    if (audio) input.audio = audio;
+
+    if (!input.prompt && !input.startImage && !input.images?.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Cần ít nhất prompt, startImage hoặc images",
+      });
+    }
+
+    const config: any = rawConfig ? { ...rawConfig } : {};
+    if (duration) config.duration = duration;
+    if (aspectRatio) config.aspectRatio = aspectRatio;
+    if (resolution) config.resolution = resolution;
+    if (fps) config.fps = fps;
+    if (style) config.style = style;
+    // Defaults
+    if (!config.duration) config.duration = 5;
+    if (!config.aspectRatio) config.aspectRatio = "16:9";
+    if (!config.resolution) config.resolution = "720p";
+
+    const finalEngine = {
+      provider: engine.provider || "fxflow",
+      model: engine.model || "veo_3_generate",
+      version: engine.version || undefined,
+    };
+
+    // Build enginePayload for video (simple prompt-based)
+    const builtEnginePayload = enginePayload || {
+      prompt: input.prompt || "",
+      mode: mode || "relaxed",
+    };
+
+    // Assign FXFlow owner
+    let jobOwner: string | null = null;
+    if (finalEngine.provider === "fxflow") {
+      jobOwner = await getOrAssignOwnerForUser(req.user.userId);
+    }
+
+    const job = await VideoJob.create({
+      userId: req.user.userId,
+      type,
+      input,
+      config,
+      engine: finalEngine,
+      enginePayload: builtEnginePayload,
+      status: VideoJobStatus.PENDING,
+      creditsUsed: 0,
+      owner: jobOwner,
+    });
+
+    console.log(`🎬 [EXT-API] Video task created: ${job._id} by ${req.user.email} type=${type} owner=${jobOwner}`);
+
+    return res.json({
+      success: true,
+      data: {
+        jobId: job._id,
+        status: job.status,
+        type: job.type,
+        engine: finalEngine,
+        owner: jobOwner,
+        createdAt: job.createdAt,
+      },
+    });
+  } catch (err: any) {
+    console.error("❌ [POST /api-client/external/video-task]", err);
+    return res.status(500).json({ success: false, message: err.message || "Internal error" });
+  }
+});
+
+/* ============================================================
+   📋 🔟 External API: List video jobs của user
+   GET /api-client/external/video-tasks
+============================================================ */
+router.get("/external/video-tasks", authenticateApiToken, async (req: any, res) => {
+  try {
+    const { page = 1, limit = 20, status, type } = req.query;
+    const query: any = { userId: req.user.userId };
+    if (status) query.status = status;
+    if (type) query.type = type;
+
+    const data = await VideoJob.find(query)
+      .sort({ createdAt: -1 })
+      .skip((+page - 1) * +limit)
+      .limit(+limit)
+      .select("_id type status engine input config result progress error creditsUsed owner createdAt updatedAt")
+      .lean();
+
+    const total = await VideoJob.countDocuments(query);
+
+    return res.json({
+      success: true,
+      data,
+      pagination: { page: +page, limit: +limit, total },
+    });
+  } catch (err: any) {
+    console.error("❌ [GET /api-client/external/video-tasks]", err);
+    return res.status(500).json({ success: false, message: "Internal error" });
+  }
+});
+
+/* ============================================================
+   🔍 1️⃣1️⃣ External API: Get video job detail
+   GET /api-client/external/video-task/:id
+============================================================ */
+router.get("/external/video-task/:id", authenticateApiToken, async (req: any, res) => {
+  try {
+    const job = await VideoJob.findOne({
+      _id: req.params.id,
+      userId: req.user.userId,
+    }).lean();
+
+    if (!job) {
+      return res.status(404).json({ success: false, message: "Job not found" });
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        jobId: job._id,
+        type: job.type,
+        status: job.status,
+        engine: job.engine,
+        input: job.input,
+        config: job.config,
+        result: job.result,
+        progress: job.progress,
+        error: job.error,
+        owner: job.owner,
+        createdAt: job.createdAt,
+        updatedAt: job.updatedAt,
+      },
+    });
+  } catch (err: any) {
+    console.error("❌ [GET /api-client/external/video-task/:id]", err);
     return res.status(500).json({ success: false, message: "Internal error" });
   }
 });

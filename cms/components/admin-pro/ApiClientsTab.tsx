@@ -548,6 +548,7 @@ export const ApiClientsTab: React.FC = () => {
                   </div>
                   <code className="block text-[9px] font-mono text-slate-500 dark:text-gray-400 bg-black/[0.03] dark:bg-white/[0.03] p-3 rounded-lg leading-relaxed">
                     POST /api-client/external/image-task<br />
+                    POST /api-client/external/video-task<br />
                     Authorization: Bearer {'<token>'}
                   </code>
                 </div>
@@ -612,7 +613,7 @@ export const ApiClientsTab: React.FC = () => {
                   </div>
                 </div>
 
-                {/* List Tasks */}
+                {/* List Image Tasks */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[9px] font-black uppercase rounded">GET</span>
@@ -621,7 +622,7 @@ export const ApiClientsTab: React.FC = () => {
                   <p className="text-[10px] text-slate-400">Liệt kê tất cả tác vụ hình ảnh. Params: ?status=pending&page=1&limit=20</p>
                 </div>
 
-                {/* Get Task Detail */}
+                {/* Get Image Task Detail */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[9px] font-black uppercase rounded">GET</span>
@@ -629,6 +630,76 @@ export const ApiClientsTab: React.FC = () => {
                   </div>
                   <p className="text-[10px] text-slate-400">Xem chi tiết một tác vụ — kết quả, trạng thái, lỗi</p>
                 </div>
+
+                {/* Divider */}
+                <div className="border-t border-black/[0.04] dark:border-white/[0.04]" />
+
+                {/* Create Video Task */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 bg-violet-500/10 text-violet-500 text-[9px] font-black uppercase rounded">POST</span>
+                    <code className="text-[11px] font-mono text-slate-600 dark:text-gray-400">/api-client/external/video-task</code>
+                  </div>
+                  <p className="text-[10px] text-slate-400">Tạo tác vụ video AI (pending → chờ worker xử lý)</p>
+                  <div className="bg-slate-50 dark:bg-black/40 rounded-xl p-4 border border-black/[0.04] dark:border-white/[0.04]">
+                    <p className="text-[9px] font-bold uppercase text-slate-400 mb-2">Request Body — Text to Video</p>
+                    <pre className="text-[10px] font-mono text-slate-600 dark:text-gray-400 leading-relaxed overflow-x-auto">{`{
+  "prompt": "A cinematic drone shot of neon city",
+  "type": "text-to-video",
+  "duration": 5,
+  "aspectRatio": "16:9",
+  "resolution": "720p",
+  "mode": "relaxed",
+  "engine": {
+    "provider": "fxflow",
+    "model": "veo_3_generate"
+  }
+}`}</pre>
+                  </div>
+                  <div className="bg-slate-50 dark:bg-black/40 rounded-xl p-4 border border-black/[0.04] dark:border-white/[0.04]">
+                    <p className="text-[9px] font-bold uppercase text-slate-400 mb-2">Request Body — Image to Video</p>
+                    <pre className="text-[10px] font-mono text-slate-600 dark:text-gray-400 leading-relaxed overflow-x-auto">{`{
+  "prompt": "Zoom into the product with soft lighting",
+  "type": "image-to-video",
+  "startImage": "https://cdn.example.com/img.jpg",
+  "duration": 5,
+  "aspectRatio": "16:9",
+  "engine": {
+    "provider": "fxflow",
+    "model": "veo_3_generate"
+  }
+}`}</pre>
+                  </div>
+                  <div className="bg-slate-50 dark:bg-black/40 rounded-xl p-3 border border-black/[0.04] dark:border-white/[0.04]">
+                    <p className="text-[9px] font-bold uppercase text-slate-400 mb-1.5">Supported Types</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['text-to-video', 'image-to-video', 'start-end-image', 'image-to-animation', 'ingredient'].map(t => (
+                        <span key={t} className="px-1.5 py-0.5 text-[8px] font-mono font-bold bg-violet-500/5 text-violet-500 border border-violet-500/10 rounded">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* List Video Tasks */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[9px] font-black uppercase rounded">GET</span>
+                    <code className="text-[11px] font-mono text-slate-600 dark:text-gray-400">/api-client/external/video-tasks</code>
+                  </div>
+                  <p className="text-[10px] text-slate-400">Liệt kê tất cả tác vụ video. Params: ?status=pending&type=text-to-video&page=1&limit=20</p>
+                </div>
+
+                {/* Get Video Task Detail */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[9px] font-black uppercase rounded">GET</span>
+                    <code className="text-[11px] font-mono text-slate-600 dark:text-gray-400">/api-client/external/video-task/:id</code>
+                  </div>
+                  <p className="text-[10px] text-slate-400">Xem chi tiết một tác vụ video — kết quả, trạng thái, lỗi</p>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-black/[0.04] dark:border-white/[0.04]" />
 
                 {/* Auth Info */}
                 <div className="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4 space-y-2">
@@ -639,9 +710,9 @@ export const ApiClientsTab: React.FC = () => {
                   </code>
                 </div>
 
-                {/* cURL Example */}
+                {/* cURL Examples */}
                 <div className="space-y-2">
-                  <p className="text-[10px] font-bold text-slate-500">cURL Example</p>
+                  <p className="text-[10px] font-bold text-slate-500">cURL Example — Image</p>
                   <div className="bg-[#1a1a2e] rounded-xl p-4 relative">
                     <button onClick={() => handleCopy(`curl -X POST https://your-domain.com/api-client/external/image-task \\
   -H "Content-Type: application/json" \\
@@ -657,6 +728,31 @@ export const ApiClientsTab: React.FC = () => {
     "engine": {
       "provider": "fxflow",
       "model": "google_image_gen_4_5"
+    }
+  }'`}</pre>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-slate-500">cURL Example — Video</p>
+                  <div className="bg-[#1a1a2e] rounded-xl p-4 relative">
+                    <button onClick={() => handleCopy(`curl -X POST https://your-domain.com/api-client/external/video-task \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer skv_your_token_here" \\
+  -d '{"prompt":"A cinematic drone shot of neon city at night","type":"text-to-video","duration":5,"aspectRatio":"16:9","mode":"relaxed","engine":{"provider":"fxflow","model":"veo_3_generate"}}'`, 'cURL')} className="absolute top-3 right-3 p-1.5 text-gray-500 hover:text-white transition-colors"><Copy size={12} /></button>
+                    <pre className="text-[9px] font-mono text-violet-400 leading-relaxed overflow-x-auto">{`curl -X POST \\
+  https://your-domain.com/api-client/external/video-task \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer skv_your_token_here" \\
+  -d '{
+    "prompt": "A cinematic drone shot of neon city",
+    "type": "text-to-video",
+    "duration": 5,
+    "aspectRatio": "16:9",
+    "mode": "relaxed",
+    "engine": {
+      "provider": "fxflow",
+      "model": "veo_3_generate"
     }
   }'`}</pre>
                   </div>
