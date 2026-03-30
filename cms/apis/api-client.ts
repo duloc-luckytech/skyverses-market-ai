@@ -8,6 +8,7 @@ export interface ApiClient {
   creditBalance: number;
   role: string;
   apiToken?: string;
+  apiTokenFull?: string;
   hasToken: boolean;
   tokenExpired?: boolean;
   apiTokenCreatedAt?: string;

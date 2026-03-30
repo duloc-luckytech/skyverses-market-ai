@@ -292,7 +292,7 @@ export const ApiClientsTab: React.FC = () => {
                     {c.hasToken ? (
                       <div className="flex items-center gap-1.5">
                         <span className="text-[9px] font-mono text-emerald-500 bg-emerald-500/5 px-1.5 py-0.5 rounded border border-emerald-500/10">{c.apiToken}</span>
-                        <button onClick={() => handleCopy(c.apiToken || '', 'Token')} className="p-1 hover:bg-brand-blue/10 hover:text-brand-blue rounded transition-all" title="Copy masked token">
+                        <button onClick={() => handleCopy(c.apiTokenFull || c.apiToken || '', 'Token')} className="p-1 hover:bg-brand-blue/10 hover:text-brand-blue rounded transition-all" title="Copy full token">
                           <Copy size={10} />
                         </button>
                       </div>

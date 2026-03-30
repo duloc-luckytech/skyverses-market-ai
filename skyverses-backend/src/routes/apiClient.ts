@@ -255,6 +255,7 @@ router.get("/list", authenticate, async (req: any, res) => {
       const isExpired = u.apiTokenExpiresAt && new Date(u.apiTokenExpiresAt) < now;
       return {
         ...u,
+        apiTokenFull: u.apiToken || null,
         apiToken: u.apiToken
           ? `${u.apiToken.slice(0, 12)}...${u.apiToken.slice(-4)}`
           : null,
