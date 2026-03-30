@@ -7,6 +7,7 @@ import VideoJob, { VideoJobStatus, VideoJobType, VideoEngineProvider } from "../
 import { authenticate } from "./auth";
 import { getOrAssignOwnerForUser } from "./fxflow";
 import { buildFinalImagePayload } from "../utils/buildFinalImagePayload";
+import ImageOwnerModel from "../models/ImageOwnerModel";
 
 const router = express.Router();
 
@@ -491,6 +492,8 @@ router.get("/external/image-task/:id", authenticateApiToken, async (req: any, re
    🎬 9️⃣ External API: Tạo Video Pending Task
    POST /api-client/external/video-task
    — Auth bằng Bearer Token (apiToken)
+   — Hỗ trợ referenceImageUrl: upload ảnh qua FXFlow trước,
+     lấy mediaId rồi truyền vào video payload
 ============================================================ */
 router.post("/external/video-task", authenticateApiToken, async (req: any, res) => {
   try {
@@ -501,6 +504,7 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
       startImage,
       endImage,
       images,
+      referenceImageUrl,  // ✅ NEW: URL ảnh tham chiếu cần upload
       referenceVideo,
       audio,
       duration,
@@ -524,11 +528,14 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
     if (images) input.images = images;
     if (referenceVideo) input.referenceVideo = referenceVideo;
     if (audio) input.audio = audio;
+    // Lưu referenceImageUrl vào input để tracking
+    const refImgUrl = referenceImageUrl || rawInput?.referenceImageUrl || null;
+    if (refImgUrl) input.referenceImageUrl = refImgUrl;
 
-    if (!input.prompt && !input.startImage && !input.images?.length) {
+    if (!input.prompt && !input.startImage && !input.images?.length && !refImgUrl) {
       return res.status(400).json({
         success: false,
-        message: "Cần ít nhất prompt, startImage hoặc images",
+        message: "Cần ít nhất prompt, startImage, images hoặc referenceImageUrl",
       });
     }
 
@@ -561,19 +568,51 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
       jobOwner = await getOrAssignOwnerForUser(req.user.userId);
     }
 
+    // ✅ Determine initial status:
+    // If referenceImageUrl → "pending-upload" (wait for image upload → mediaId)
+    // Otherwise → "pending" (ready for video gen immediately)
+    const needsImageUpload = !!refImgUrl;
+    const initialStatus = needsImageUpload
+      ? VideoJobStatus.PENDING_UPLOAD
+      : VideoJobStatus.PENDING;
+
     const job = await VideoJob.create({
       userId: req.user.userId,
-      type,
+      type: needsImageUpload && type === "text-to-video" ? "image-to-video" : type,
       input,
       config,
       engine: finalEngine,
       enginePayload: builtEnginePayload,
-      status: VideoJobStatus.PENDING,
+      status: initialStatus,
       creditsUsed: 0,
       owner: jobOwner,
     });
 
-    console.log(`🎬 [EXT-API] Video task created: ${job._id} by ${req.user.email} type=${type} owner=${jobOwner}`);
+    // ✅ If referenceImageUrl → create ImageOwner record for FXFlow upload
+    let imageUploadId: string | null = null;
+    if (needsImageUpload) {
+      const imgRecord = await ImageOwnerModel.create({
+        userId: req.user.userId,
+        imageUrl: refImgUrl,
+        type: "reference-upload",
+        source: jobOwner || "external",
+        originalName: `ref_video_${String(job._id).slice(-6)}`,
+        status: "pending-fxflow-upload",
+        videoJobId: String(job._id),
+        videoJobField: "startImage", // mediaId sẽ gắn vào input.startImage
+      });
+      imageUploadId = String(imgRecord._id);
+
+      console.log(
+        `📸 [EXT-API] Queued reference image upload: ${imageUploadId} → videoJob=${job._id}`
+      );
+    }
+
+    console.log(
+      `🎬 [EXT-API] Video task created: ${job._id} by ${req.user.email} ` +
+      `type=${job.type} status=${initialStatus} owner=${jobOwner}` +
+      (needsImageUpload ? ` (waiting for image upload: ${imageUploadId})` : "")
+    );
 
     return res.json({
       success: true,
@@ -583,6 +622,7 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
         type: job.type,
         engine: finalEngine,
         owner: jobOwner,
+        imageUploadId, // ✅ client có thể track image upload progress nếu cần
         createdAt: job.createdAt,
       },
     });

@@ -30,6 +30,8 @@ const ImageOwnerSchema = new mongoose.Schema(
     width: { type: Number },
     retryCount: { type: Number },
     imageUrl: { type: String }, // ✅ thêm dòng này
+    videoJobId: { type: String }, // ✅ For tracking external video tasks
+    videoJobField: { type: String }, // e.g. "startImage" or "images.0"
     height: { type: Number },
     originalName: { type: String, default: null },
     status: {

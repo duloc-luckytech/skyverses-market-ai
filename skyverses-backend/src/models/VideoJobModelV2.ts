@@ -12,6 +12,7 @@ export enum VideoJobStatus {
   CANCELLED = "cancelled",
   POLLING = "polling",
   CAPCHA = "capcha",
+  PENDING_UPLOAD = "pending-upload",
 }
 
 export enum VideoJobType {
