@@ -757,7 +757,8 @@ router.post("/image/upload-result", async (req, res) => {
 /* =====================================================
    CHAIN MEDIA ID → VIDEO JOB
    Khi image upload xong → gắn mediaId vào VideoJob
-   và chuyển status pending-upload → pending
+   Chỉ chuyển status pending-upload → pending khi TẤT CẢ
+   image uploads của video job đã done
 ===================================================== */
 async function chainMediaIdToVideoJob(record: any, mediaId: string) {
   try {
@@ -801,14 +802,27 @@ async function chainMediaIdToVideoJob(record: any, mediaId: string) {
       };
     }
 
-    // Chuyển status → pending để FXFlow worker pick up cho video gen
-    videoJob.status = VideoJobStatus.PENDING;
-    await videoJob.save();
+    // Check xem TẤT CẢ image uploads của video job đã done chưa
+    const pendingUploads = await ImageOwnerModel.countDocuments({
+      videoJobId: videoJobId,
+      status: { $in: ["pending-fxflow-upload", "processing"] },
+    });
 
-    console.log(
-      `🔗 [FXFlow] Chained mediaId=${mediaId} → VideoJob ${videoJobId} ` +
-      `(field=${field}). Status: pending-upload → pending ✅`
-    );
+    if (pendingUploads === 0) {
+      // Tất cả đã done → chuyển video job sang pending
+      videoJob.status = VideoJobStatus.PENDING;
+      console.log(
+        `🔗 [FXFlow] ALL images uploaded → VideoJob ${videoJobId} ready! ` +
+        `Status: pending-upload → pending ✅`
+      );
+    } else {
+      console.log(
+        `🔗 [FXFlow] Chained mediaId=${mediaId} → VideoJob ${videoJobId} ` +
+        `(field=${field}). Still waiting ${pendingUploads} more upload(s)...`
+      );
+    }
+
+    await videoJob.save();
   } catch (err) {
     console.error(`❌ [FXFlow] chainMediaIdToVideoJob error:`, err);
   }

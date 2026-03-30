@@ -492,8 +492,8 @@ router.get("/external/image-task/:id", authenticateApiToken, async (req: any, re
    🎬 9️⃣ External API: Tạo Video Pending Task
    POST /api-client/external/video-task
    — Auth bằng Bearer Token (apiToken)
-   — Hỗ trợ referenceImageUrl: upload ảnh qua FXFlow trước,
-     lấy mediaId rồi truyền vào video payload
+   — startImage/endImage/images chỉ nhận URL ảnh
+   — Backend tự upload URL qua FXFlow → lấy mediaId → tạo video
 ============================================================ */
 router.post("/external/video-task", authenticateApiToken, async (req: any, res) => {
   try {
@@ -501,10 +501,9 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
       // Flat format (simple)
       prompt,
       type = "text-to-video",
-      startImage,
-      endImage,
-      images,
-      referenceImageUrl,  // ✅ NEW: URL ảnh tham chiếu cần upload
+      startImage,    // URL ảnh (https://...)
+      endImage,      // URL ảnh (https://...)
+      images,        // Array URL ảnh
       referenceVideo,
       audio,
       duration,
@@ -528,14 +527,11 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
     if (images) input.images = images;
     if (referenceVideo) input.referenceVideo = referenceVideo;
     if (audio) input.audio = audio;
-    // Lưu referenceImageUrl vào input để tracking
-    const refImgUrl = referenceImageUrl || rawInput?.referenceImageUrl || null;
-    if (refImgUrl) input.referenceImageUrl = refImgUrl;
 
-    if (!input.prompt && !input.startImage && !input.images?.length && !refImgUrl) {
+    if (!input.prompt && !input.startImage && !input.images?.length) {
       return res.status(400).json({
         success: false,
-        message: "Cần ít nhất prompt, startImage, images hoặc referenceImageUrl",
+        message: "Cần ít nhất prompt, startImage hoặc images",
       });
     }
 
@@ -568,17 +564,38 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
       jobOwner = await getOrAssignOwnerForUser(req.user.userId);
     }
 
-    // ✅ Determine initial status:
-    // If referenceImageUrl → "pending-upload" (wait for image upload → mediaId)
-    // Otherwise → "pending" (ready for video gen immediately)
-    const needsImageUpload = !!refImgUrl;
+    // ✅ Detect which image fields are URLs → cần upload trước
+    const isUrl = (v: any) => typeof v === "string" && v.startsWith("http");
+    const imageUrlsToUpload: { url: string; field: string }[] = [];
+
+    if (isUrl(input.startImage)) {
+      imageUrlsToUpload.push({ url: input.startImage, field: "startImage" });
+    }
+    if (isUrl(input.endImage)) {
+      imageUrlsToUpload.push({ url: input.endImage, field: "endImage" });
+    }
+    if (Array.isArray(input.images)) {
+      input.images.forEach((img: any, idx: number) => {
+        if (isUrl(img)) {
+          imageUrlsToUpload.push({ url: img, field: `images.${idx}` });
+        }
+      });
+    }
+
+    const needsImageUpload = imageUrlsToUpload.length > 0;
     const initialStatus = needsImageUpload
       ? VideoJobStatus.PENDING_UPLOAD
       : VideoJobStatus.PENDING;
 
+    // Auto-detect type nếu có image
+    let finalType = type;
+    if (needsImageUpload && type === "text-to-video") {
+      finalType = "image-to-video";
+    }
+
     const job = await VideoJob.create({
       userId: req.user.userId,
-      type: needsImageUpload && type === "text-to-video" ? "image-to-video" : type,
+      type: finalType,
       input,
       config,
       engine: finalEngine,
@@ -588,30 +605,33 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
       owner: jobOwner,
     });
 
-    // ✅ If referenceImageUrl → create ImageOwner record for FXFlow upload
-    let imageUploadId: string | null = null;
+    // ✅ Queue tất cả image URLs cho FXFlow upload
+    const imageUploadIds: string[] = [];
     if (needsImageUpload) {
-      const imgRecord = await ImageOwnerModel.create({
-        userId: req.user.userId,
-        imageUrl: refImgUrl,
-        type: "reference-upload",
-        source: jobOwner || "external",
-        originalName: `ref_video_${String(job._id).slice(-6)}`,
-        status: "pending-fxflow-upload",
-        videoJobId: String(job._id),
-        videoJobField: "startImage", // mediaId sẽ gắn vào input.startImage
-      });
-      imageUploadId = String(imgRecord._id);
+      for (const { url, field } of imageUrlsToUpload) {
+        const imgRecord = await ImageOwnerModel.create({
+          userId: req.user.userId,
+          imageUrl: url,
+          type: "reference-upload",
+          source: jobOwner || "external",
+          originalName: `ref_${field}_${String(job._id).slice(-6)}`,
+          status: "pending-fxflow-upload",
+          videoJobId: String(job._id),
+          videoJobField: field,
+        });
+        imageUploadIds.push(String(imgRecord._id));
+      }
 
       console.log(
-        `📸 [EXT-API] Queued reference image upload: ${imageUploadId} → videoJob=${job._id}`
+        `📸 [EXT-API] Queued ${imageUrlsToUpload.length} image upload(s) → videoJob=${job._id}: ` +
+        imageUrlsToUpload.map(u => u.field).join(", ")
       );
     }
 
     console.log(
       `🎬 [EXT-API] Video task created: ${job._id} by ${req.user.email} ` +
-      `type=${job.type} status=${initialStatus} owner=${jobOwner}` +
-      (needsImageUpload ? ` (waiting for image upload: ${imageUploadId})` : "")
+      `type=${finalType} status=${initialStatus} owner=${jobOwner}` +
+      (needsImageUpload ? ` (waiting for ${imageUrlsToUpload.length} image upload(s))` : "")
     );
 
     return res.json({
@@ -622,7 +642,12 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
         type: job.type,
         engine: finalEngine,
         owner: jobOwner,
-        imageUploadId, // ✅ client có thể track image upload progress nếu cần
+        ...(needsImageUpload && {
+          pendingImageUploads: imageUrlsToUpload.map((u, i) => ({
+            field: u.field,
+            imageUploadId: imageUploadIds[i],
+          })),
+        }),
         createdAt: job.createdAt,
       },
     });
