@@ -647,7 +647,7 @@ export const ApiClientsTab: React.FC = () => {
   "prompt": "A cinematic drone shot of neon city",
   "type": "text-to-video",
   "duration": 5,
-  "aspectRatio": "16:9",
+  "aspectRatio": "16:9", // "16:9" (Ngang) hoặc "9:16" (Dọc)
   "resolution": "720p",
   "mode": "relaxed",
   "engine": {
@@ -663,7 +663,7 @@ export const ApiClientsTab: React.FC = () => {
   "type": "image-to-video",
   "startImage": "https://cdn.example.com/img.jpg",
   "duration": 5,
-  "aspectRatio": "16:9",
+  "aspectRatio": "16:9", // "16:9" (Ngang) hoặc "9:16" (Dọc)
   "engine": {
     "provider": "fxflow",
     "model": "veo_3_generate"

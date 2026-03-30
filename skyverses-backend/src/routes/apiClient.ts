@@ -562,70 +562,23 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
       jobOwner = await getOrAssignOwnerForUser(req.user.userId);
     }
 
-    // ✅ Detect URLs cần upload
-    const isUrl = (v: any) => typeof v === "string" && v.startsWith("http");
-    const hasImageUrls =
-      isUrl(input.startImage) ||
-      isUrl(input.endImage) ||
-      (Array.isArray(input.images) && input.images.some(isUrl));
+    // ✅ Nếu có image URL (startImage/endImage/images) → vẫn tạo VideoJob trực tiếp
+    // FXFlow worker sẽ nhận URL qua startMediaId trong GET /tasks/pending
+    // KHÔNG còn queue qua FXFlow image upload (gây cancel)
+    const finalType =
+      (input.startImage || input.endImage || input.images?.length)
+      && type === "text-to-video"
+        ? "image-to-video"
+        : type;
 
-    // ──────────────────────────────────────
-    // CASE 1: Có image URL → queue upload trước, chưa tạo VideoJob
-    // ──────────────────────────────────────
-    if (hasImageUrls) {
-      const finalType = type === "text-to-video" ? "image-to-video" : type;
+    console.log(
+      `🎬 [EXT-API] Creating VideoJob directly: type=${finalType} ` +
+      `startImage=${input.startImage || "none"} owner=${jobOwner}`
+    );
 
-      // Lưu toàn bộ video config vào pendingVideoPayload
-      const pendingVideoPayload = {
-        userId: req.user.userId,
-        type: finalType,
-        input, // lưu nguyên input (URL sẽ replace bằng mediaId sau)
-        config,
-        engine: finalEngine,
-        enginePayload: builtEnginePayload,
-        owner: jobOwner,
-      };
-
-      // Tạo ImageOwner cho ảnh cần upload
-      const imageUrl = input.startImage || input.images?.[0] || input.endImage;
-      const field = input.startImage ? "startImage"
-        : input.images?.[0] ? "images.0"
-        : "endImage";
-
-      const imgRecord = await ImageOwnerModel.create({
-        userId: req.user.userId,
-        imageUrl,
-        type: "reference-upload",
-        source: jobOwner || "external",
-        originalName: `ref_${field}_${Date.now()}`,
-        status: "pending-fxflow-upload",
-        videoJobField: field,
-        pendingVideoPayload,
-      });
-
-      console.log(
-        `📸 [EXT-API] Queued image upload: ${imgRecord._id} (${field}) → ` +
-        `video task will be created after mediaId is ready`
-      );
-
-      return res.json({
-        success: true,
-        data: {
-          imageUploadId: imgRecord._id,
-          status: "uploading-image",
-          message: "Ảnh đang được upload. Video task sẽ tự động tạo sau khi có mediaId.",
-          field,
-          createdAt: imgRecord.createdAt,
-        },
-      });
-    }
-
-    // ──────────────────────────────────────
-    // CASE 2: Không có URL ảnh → tạo VideoJob trực tiếp (text-to-video)
-    // ──────────────────────────────────────
     const job = await VideoJob.create({
       userId: req.user.userId,
-      type,
+      type: finalType,
       input,
       config,
       engine: finalEngine,
@@ -637,7 +590,7 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
 
     console.log(
       `🎬 [EXT-API] Video task created: ${job._id} by ${req.user.email} ` +
-      `type=${type} owner=${jobOwner}`
+      `type=${finalType} owner=${jobOwner}`
     );
 
     return res.json({
