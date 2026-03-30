@@ -5,7 +5,7 @@ const CreditTransactionSchema = new Schema(
     userId: { type: Types.ObjectId, ref: "User", index: true },
     type: {
       type: String,
-      enum: ["DAILY","TOP_UP", "CONSUME", "BONUS", "REFUND", "WELCOME"],
+      enum: ["DAILY","TOP_UP", "CONSUME", "BONUS", "REFUND", "WELCOME", "EVENT_BONUS"],
       required: true,
     },
     amount: Number,

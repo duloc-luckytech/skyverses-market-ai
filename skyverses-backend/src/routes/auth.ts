@@ -121,6 +121,31 @@ router.post("/google-register", async (req, res) => {
       } catch (txErr) {
         console.error("⚠️ [AUTH] Failed to log welcome credit transaction:", txErr);
       }
+
+      // 🌍 Global Event April 2026 — 100 free images bonus (+500 credits)
+      const EVENT_END = new Date("2026-04-30T23:59:59+07:00");
+      if (new Date() <= EVENT_END) {
+        const EVENT_BONUS_CREDITS = 500; // ≈ 100 images @ ~5 credits each
+        try {
+          const CreditTransaction = (await import("../models/CreditTransaction.model")).default;
+          user.creditBalance += EVENT_BONUS_CREDITS;
+          user.globalEventBonus2026 = true;
+          await user.save();
+
+          await CreditTransaction.create({
+            userId: user._id,
+            type: "EVENT_BONUS",
+            amount: EVENT_BONUS_CREDITS,
+            balanceAfter: user.creditBalance,
+            source: "system",
+            note: "🌍 Global Event April 2026 — 100 free images bonus",
+            meta: { event: "global_2026_april", freeImages: 100 },
+          });
+          console.log(`🌍 [AUTH] Global Event 2026: ${email} → +${EVENT_BONUS_CREDITS} event bonus credits (100 free images)`);
+        } catch (evtErr) {
+          console.error("⚠️ [AUTH] Failed to grant event bonus:", evtErr);
+        }
+      }
     }
 
     // 🔐 Tạo JWT token có role

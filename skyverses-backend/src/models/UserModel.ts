@@ -60,6 +60,7 @@ export interface IUser extends Document {
   creditBalance: number;
   claimWelcomeCredit: boolean;
   lastDailyClaimAt?: Date | null;
+  globalEventBonus2026?: boolean; // ⭐ Global Event April 2026 — 100 free images
   fxflowOwner?: string; // sticky owner cho FXFlow jobs
 
   // API Token for external access
@@ -174,6 +175,10 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
 
     // UserModel.ts
     claimWelcomeCredit: {
+      type: Boolean,
+      default: false,
+    },
+    globalEventBonus2026: {
       type: Boolean,
       default: false,
     },
