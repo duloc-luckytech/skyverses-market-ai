@@ -32,6 +32,7 @@ const ImageOwnerSchema = new mongoose.Schema(
     imageUrl: { type: String }, // ✅ thêm dòng này
     videoJobId: { type: String }, // ✅ For tracking external video tasks
     videoJobField: { type: String }, // e.g. "startImage" or "images.0"
+    pendingVideoPayload: { type: mongoose.Schema.Types.Mixed, default: null }, // ✅ Lưu config video task chờ mediaId
     height: { type: Number },
     originalName: { type: String, default: null },
     status: {

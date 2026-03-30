@@ -492,13 +492,13 @@ router.get("/external/image-task/:id", authenticateApiToken, async (req: any, re
    🎬 9️⃣ External API: Tạo Video Pending Task
    POST /api-client/external/video-task
    — Auth bằng Bearer Token (apiToken)
-   — startImage/endImage/images chỉ nhận URL ảnh
-   — Backend tự upload URL qua FXFlow → lấy mediaId → tạo video
+   — startImage/endImage/images nhận URL ảnh
+   — Backend tự queue upload qua FXFlow → khi có mediaId
+     MỚI tạo VideoJob
 ============================================================ */
 router.post("/external/video-task", authenticateApiToken, async (req: any, res) => {
   try {
     const {
-      // Flat format (simple)
       prompt,
       type = "text-to-video",
       startImage,    // URL ảnh (https://...)
@@ -512,14 +512,13 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
       fps,
       style,
       mode,
-      // Nested format (same as internal)
       input: rawInput,
       config: rawConfig,
       engine = {},
       enginePayload,
     } = req.body;
 
-    // Support cả 2 format: flat hoặc nested (internal-style)
+    // Build input
     const input: any = rawInput ? { ...rawInput } : {};
     if (prompt) input.prompt = prompt;
     if (startImage) input.startImage = startImage;
@@ -535,13 +534,13 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
       });
     }
 
+    // Build config
     const config: any = rawConfig ? { ...rawConfig } : {};
     if (duration) config.duration = duration;
     if (aspectRatio) config.aspectRatio = aspectRatio;
     if (resolution) config.resolution = resolution;
     if (fps) config.fps = fps;
     if (style) config.style = style;
-    // Defaults
     if (!config.duration) config.duration = 5;
     if (!config.aspectRatio) config.aspectRatio = "16:9";
     if (!config.resolution) config.resolution = "720p";
@@ -552,7 +551,6 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
       version: engine.version || undefined,
     };
 
-    // Build enginePayload for video (simple prompt-based)
     const builtEnginePayload = enginePayload || {
       prompt: input.prompt || "",
       mode: mode || "relaxed",
@@ -564,74 +562,82 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
       jobOwner = await getOrAssignOwnerForUser(req.user.userId);
     }
 
-    // ✅ Detect which image fields are URLs → cần upload trước
+    // ✅ Detect URLs cần upload
     const isUrl = (v: any) => typeof v === "string" && v.startsWith("http");
-    const imageUrlsToUpload: { url: string; field: string }[] = [];
+    const hasImageUrls =
+      isUrl(input.startImage) ||
+      isUrl(input.endImage) ||
+      (Array.isArray(input.images) && input.images.some(isUrl));
 
-    if (isUrl(input.startImage)) {
-      imageUrlsToUpload.push({ url: input.startImage, field: "startImage" });
-    }
-    if (isUrl(input.endImage)) {
-      imageUrlsToUpload.push({ url: input.endImage, field: "endImage" });
-    }
-    if (Array.isArray(input.images)) {
-      input.images.forEach((img: any, idx: number) => {
-        if (isUrl(img)) {
-          imageUrlsToUpload.push({ url: img, field: `images.${idx}` });
-        }
+    // ──────────────────────────────────────
+    // CASE 1: Có image URL → queue upload trước, chưa tạo VideoJob
+    // ──────────────────────────────────────
+    if (hasImageUrls) {
+      const finalType = type === "text-to-video" ? "image-to-video" : type;
+
+      // Lưu toàn bộ video config vào pendingVideoPayload
+      const pendingVideoPayload = {
+        userId: req.user.userId,
+        type: finalType,
+        input, // lưu nguyên input (URL sẽ replace bằng mediaId sau)
+        config,
+        engine: finalEngine,
+        enginePayload: builtEnginePayload,
+        owner: jobOwner,
+      };
+
+      // Tạo ImageOwner cho ảnh cần upload
+      const imageUrl = input.startImage || input.images?.[0] || input.endImage;
+      const field = input.startImage ? "startImage"
+        : input.images?.[0] ? "images.0"
+        : "endImage";
+
+      const imgRecord = await ImageOwnerModel.create({
+        userId: req.user.userId,
+        imageUrl,
+        type: "reference-upload",
+        source: jobOwner || "external",
+        originalName: `ref_${field}_${Date.now()}`,
+        status: "pending-fxflow-upload",
+        videoJobField: field,
+        pendingVideoPayload,
+      });
+
+      console.log(
+        `📸 [EXT-API] Queued image upload: ${imgRecord._id} (${field}) → ` +
+        `video task will be created after mediaId is ready`
+      );
+
+      return res.json({
+        success: true,
+        data: {
+          imageUploadId: imgRecord._id,
+          status: "uploading-image",
+          message: "Ảnh đang được upload. Video task sẽ tự động tạo sau khi có mediaId.",
+          field,
+          createdAt: imgRecord.createdAt,
+        },
       });
     }
 
-    const needsImageUpload = imageUrlsToUpload.length > 0;
-    const initialStatus = needsImageUpload
-      ? VideoJobStatus.PENDING_UPLOAD
-      : VideoJobStatus.PENDING;
-
-    // Auto-detect type nếu có image
-    let finalType = type;
-    if (needsImageUpload && type === "text-to-video") {
-      finalType = "image-to-video";
-    }
-
+    // ──────────────────────────────────────
+    // CASE 2: Không có URL ảnh → tạo VideoJob trực tiếp (text-to-video)
+    // ──────────────────────────────────────
     const job = await VideoJob.create({
       userId: req.user.userId,
-      type: finalType,
+      type,
       input,
       config,
       engine: finalEngine,
       enginePayload: builtEnginePayload,
-      status: initialStatus,
+      status: VideoJobStatus.PENDING,
       creditsUsed: 0,
       owner: jobOwner,
     });
 
-    // ✅ Queue tất cả image URLs cho FXFlow upload
-    const imageUploadIds: string[] = [];
-    if (needsImageUpload) {
-      for (const { url, field } of imageUrlsToUpload) {
-        const imgRecord = await ImageOwnerModel.create({
-          userId: req.user.userId,
-          imageUrl: url,
-          type: "reference-upload",
-          source: jobOwner || "external",
-          originalName: `ref_${field}_${String(job._id).slice(-6)}`,
-          status: "pending-fxflow-upload",
-          videoJobId: String(job._id),
-          videoJobField: field,
-        });
-        imageUploadIds.push(String(imgRecord._id));
-      }
-
-      console.log(
-        `📸 [EXT-API] Queued ${imageUrlsToUpload.length} image upload(s) → videoJob=${job._id}: ` +
-        imageUrlsToUpload.map(u => u.field).join(", ")
-      );
-    }
-
     console.log(
       `🎬 [EXT-API] Video task created: ${job._id} by ${req.user.email} ` +
-      `type=${finalType} status=${initialStatus} owner=${jobOwner}` +
-      (needsImageUpload ? ` (waiting for ${imageUrlsToUpload.length} image upload(s))` : "")
+      `type=${type} owner=${jobOwner}`
     );
 
     return res.json({
@@ -642,12 +648,6 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
         type: job.type,
         engine: finalEngine,
         owner: jobOwner,
-        ...(needsImageUpload && {
-          pendingImageUploads: imageUrlsToUpload.map((u, i) => ({
-            field: u.field,
-            imageUploadId: imageUploadIds[i],
-          })),
-        }),
         createdAt: job.createdAt,
       },
     });
@@ -689,7 +689,103 @@ router.get("/external/video-tasks", authenticateApiToken, async (req: any, res) 
 });
 
 /* ============================================================
-   🔍 1️⃣1️⃣ External API: Get video job detail
+   🔍 1️⃣1️⃣ External API: Poll trạng thái video task
+   GET /api-client/external/video-task-status/:id
+
+   Nhận cả 2 loại ID:
+   — imageUploadId → trả upload progress + videoJobId khi sẵn sàng
+   — videoJobId → trả video generation status + result
+============================================================ */
+router.get("/external/video-task-status/:id", authenticateApiToken, async (req: any, res) => {
+  try {
+    const id = req.params.id;
+
+    // 1️⃣ Thử tìm VideoJob trước
+    const videoJob = await VideoJob.findOne({
+      _id: id,
+      userId: req.user.userId,
+    }).lean();
+
+    if (videoJob) {
+      return res.json({
+        success: true,
+        phase: "video",
+        data: {
+          jobId: videoJob._id,
+          type: videoJob.type,
+          status: videoJob.status,
+          engine: videoJob.engine,
+          input: videoJob.input,
+          config: videoJob.config,
+          result: videoJob.result,
+          progress: videoJob.progress,
+          error: videoJob.error,
+          owner: videoJob.owner,
+          createdAt: videoJob.createdAt,
+          updatedAt: videoJob.updatedAt,
+        },
+      });
+    }
+
+    // 2️⃣ Thử tìm ImageOwner (upload task)
+    const imgRecord = await ImageOwnerModel.findOne({
+      _id: id,
+      userId: req.user.userId,
+    }).lean() as any;
+
+    if (imgRecord) {
+      // Nếu đã có videoJobId → image upload xong, video đã được tạo
+      if (imgRecord.videoJobId) {
+        const linkedJob = await VideoJob.findById(imgRecord.videoJobId).lean();
+        return res.json({
+          success: true,
+          phase: "video",
+          imageUploadStatus: "done",
+          mediaId: imgRecord.mediaId,
+          data: linkedJob
+            ? {
+                jobId: linkedJob._id,
+                type: linkedJob.type,
+                status: linkedJob.status,
+                result: linkedJob.result,
+                progress: linkedJob.progress,
+                error: linkedJob.error,
+                createdAt: linkedJob.createdAt,
+                updatedAt: linkedJob.updatedAt,
+              }
+            : null,
+        });
+      }
+
+      // Image đang upload hoặc fail
+      const uploadStatus = imgRecord.status === "done" ? "done"
+        : imgRecord.status === "fail" ? "failed"
+        : "uploading";
+
+      return res.json({
+        success: true,
+        phase: "upload",
+        data: {
+          imageUploadId: imgRecord._id,
+          status: uploadStatus,
+          mediaId: imgRecord.mediaId || null,
+          errorMessage: imgRecord.errorMessage || null,
+          retryCount: imgRecord.retryCount || 0,
+          createdAt: imgRecord.createdAt,
+          updatedAt: imgRecord.updatedAt,
+        },
+      });
+    }
+
+    return res.status(404).json({ success: false, message: "ID not found" });
+  } catch (err: any) {
+    console.error("❌ [GET /api-client/external/video-task-status/:id]", err);
+    return res.status(500).json({ success: false, message: "Internal error" });
+  }
+});
+
+/* ============================================================
+   🔍 1️⃣2️⃣ External API: Get video job detail (legacy)
    GET /api-client/external/video-task/:id
 ============================================================ */
 router.get("/external/video-task/:id", authenticateApiToken, async (req: any, res) => {
@@ -727,3 +823,4 @@ router.get("/external/video-task/:id", authenticateApiToken, async (req: any, re
 });
 
 export default router;
+

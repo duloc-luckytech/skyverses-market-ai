@@ -755,103 +755,73 @@ router.post("/image/upload-result", async (req, res) => {
 });
 
 /* =====================================================
-   CHAIN MEDIA ID → VIDEO JOB
-   Khi image upload xong → gắn mediaId vào VideoJob
-   Chỉ chuyển status pending-upload → pending khi TẤT CẢ
-   image uploads của video job đã done
+   CREATE VIDEO JOB FROM PENDING PAYLOAD
+   Khi image upload xong → đọc pendingVideoPayload từ ImageOwner
+   → replace URL bằng mediaId → TẠO MỚI VideoJob
 ===================================================== */
 async function chainMediaIdToVideoJob(record: any, mediaId: string) {
   try {
-    const videoJobId = record.videoJobId;
-    if (!videoJobId) return; // Không link video job → skip
-
-    const videoJob = await VideoJob.findById(videoJobId);
-    if (!videoJob) {
-      console.warn(`⚠️ [FXFlow] Linked VideoJob not found: ${videoJobId}`);
-      return;
-    }
-
-    // Chỉ chain nếu video job đang chờ upload
-    if (videoJob.status !== VideoJobStatus.PENDING_UPLOAD) {
-      console.warn(
-        `⚠️ [FXFlow] VideoJob ${videoJobId} status=${videoJob.status}, skip chain`
-      );
-      return;
-    }
+    const payload = record.pendingVideoPayload;
+    if (!payload) return; // Không có pending video → skip (upload thường)
 
     const field = record.videoJobField || "startImage";
+    const input = { ...payload.input };
 
-    // Gắn mediaId vào đúng field trong input
+    // Replace URL bằng mediaId trong đúng field
     if (field === "startImage") {
-      videoJob.input = {
-        ...videoJob.input,
-        startImage: mediaId,
-      };
+      input.startImage = mediaId;
     } else if (field === "endImage") {
-      videoJob.input = {
-        ...videoJob.input,
-        endImage: mediaId,
-      };
+      input.endImage = mediaId;
     } else if (field.startsWith("images.")) {
       const idx = parseInt(field.split(".")[1] || "0");
-      const imgs = [...(videoJob.input?.images || [])];
+      const imgs = [...(input.images || [])];
       imgs[idx] = mediaId;
-      videoJob.input = {
-        ...videoJob.input,
-        images: imgs,
-      };
+      input.images = imgs;
     }
 
-    // Check xem TẤT CẢ image uploads của video job đã done chưa
-    const pendingUploads = await ImageOwnerModel.countDocuments({
-      videoJobId: videoJobId,
-      status: { $in: ["pending-fxflow-upload", "processing"] },
+    // Tạo VideoJob MỚI với mediaId đã có
+    const videoJob = await VideoJob.create({
+      userId: payload.userId,
+      type: payload.type,
+      input,
+      config: payload.config,
+      engine: payload.engine,
+      enginePayload: payload.enginePayload,
+      status: VideoJobStatus.PENDING,
+      creditsUsed: 0,
+      owner: payload.owner,
     });
 
-    if (pendingUploads === 0) {
-      // Tất cả đã done → chuyển video job sang pending
-      videoJob.status = VideoJobStatus.PENDING;
-      console.log(
-        `🔗 [FXFlow] ALL images uploaded → VideoJob ${videoJobId} ready! ` +
-        `Status: pending-upload → pending ✅`
-      );
-    } else {
-      console.log(
-        `🔗 [FXFlow] Chained mediaId=${mediaId} → VideoJob ${videoJobId} ` +
-        `(field=${field}). Still waiting ${pendingUploads} more upload(s)...`
-      );
-    }
+    // Lưu videoJobId vào ImageOwner để tracking
+    record.videoJobId = String(videoJob._id);
+    await record.save();
 
-    await videoJob.save();
+    console.log(
+      `🔗 [FXFlow] Created VideoJob ${videoJob._id} with mediaId=${mediaId} ` +
+      `(field=${field}, type=${payload.type}, owner=${payload.owner}) ✅`
+    );
   } catch (err) {
     console.error(`❌ [FXFlow] chainMediaIdToVideoJob error:`, err);
   }
 }
 
 /* =====================================================
-   FAIL LINKED VIDEO JOB
-   Khi image upload fail max retries → fail VideoJob
+   FAIL PENDING VIDEO PAYLOAD
+   Khi image upload fail max retries → log lỗi
+   (VideoJob chưa tồn tại nên không cần update)
 ===================================================== */
 async function failLinkedVideoJob(record: any, errorMsg: string) {
   try {
-    const videoJobId = record.videoJobId;
-    if (!videoJobId) return;
+    if (!record.pendingVideoPayload) return; // Không link video → skip
 
-    const videoJob = await VideoJob.findById(videoJobId);
-    if (!videoJob || videoJob.status !== VideoJobStatus.PENDING_UPLOAD) return;
+    console.log(
+      `❌ [FXFlow] Image upload FAILED for pending video task. ` +
+      `ImageOwner=${record._id} Error: ${errorMsg}`
+    );
 
-    videoJob.status = VideoJobStatus.ERROR;
-    videoJob.error = {
-      code: "REFERENCE_IMAGE_UPLOAD_FAILED",
-      message: errorMsg,
-      userMessage: "Ảnh tham chiếu upload thất bại. Vui lòng thử lại.",
-    };
-    await videoJob.save();
-
-    // Auto-refund nếu có
-    await refundFxflowCredits(videoJob, "ref_image_upload_failed");
-
-    console.log(`❌ [FXFlow] VideoJob ${videoJobId} FAILED due to image upload failure`);
+    // Clear pending payload — video sẽ không được tạo
+    record.pendingVideoPayload = null;
+    await record.save();
   } catch (err) {
     console.error(`❌ [FXFlow] failLinkedVideoJob error:`, err);
   }
