@@ -148,21 +148,73 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (g && g.accounts) {
       setAuthError(null);
       try {
+        // Strategy 1: Try One Tap prompt first with safe notification handling
         g.accounts.id.prompt((notification: any) => {
-          if (notification.isNotDisplayed()) {
-            console.warn("[AUTH] Google One Tap not displayed, reason:", notification.getNotDisplayedReason());
-            setAuthError("GOOGLE_PROMPT_FAILED");
-          } else if (notification.isSkipped()) {
-            console.warn("[AUTH] Google One Tap skipped, reason:", notification.getSkippedReason());
+          // Safe-check: notification object may not have all methods when FedCM is blocked
+          const isNotDisplayed = typeof notification?.isNotDisplayed === 'function' && notification.isNotDisplayed();
+          const isSkipped = typeof notification?.isSkipped === 'function' && notification.isSkipped();
+
+          if (isNotDisplayed || isSkipped) {
+            const reason = isNotDisplayed 
+              ? (typeof notification.getNotDisplayedReason === 'function' ? notification.getNotDisplayedReason() : 'unknown')
+              : (typeof notification.getSkippedReason === 'function' ? notification.getSkippedReason() : 'unknown');
+            console.warn("[AUTH] One Tap failed/skipped, falling back to popup. Reason:", reason);
+            
+            // Strategy 2: Fallback to hidden renderButton click
+            loginWithPopupFallback(g);
           }
         });
       } catch (err) {
-        console.error("[AUTH] Google prompt error:", err);
-        setAuthError("GOOGLE_PROMPT_FAILED");
+        console.error("[AUTH] Google prompt error, falling back to popup:", err);
+        // Strategy 2: Fallback to hidden renderButton click
+        loginWithPopupFallback(g);
       }
     } else {
       console.warn("[AUTH] Google SDK not loaded");
       setAuthError("GOOGLE_NOT_LOADED");
+    }
+  };
+
+  const loginWithPopupFallback = (g: any) => {
+    try {
+      // Create a temporary hidden container for the Google button
+      let container = document.getElementById('g_id_signin_fallback');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'g_id_signin_fallback';
+        container.style.position = 'fixed';
+        container.style.top = '-9999px';
+        container.style.left = '-9999px';
+        container.style.opacity = '0';
+        container.style.pointerEvents = 'none';
+        document.body.appendChild(container);
+      }
+
+      g.accounts.id.renderButton(container, {
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+        width: 300,
+      });
+
+      // Click the rendered button to trigger popup
+      setTimeout(() => {
+        const btn = container?.querySelector('[role="button"]') as HTMLElement
+          || container?.querySelector('div[style]') as HTMLElement
+          || container?.querySelector('iframe')?.contentDocument?.querySelector('[role="button"]') as HTMLElement;
+        if (btn) {
+          // Re-enable pointer events briefly for the click
+          container!.style.pointerEvents = 'auto';
+          btn.click();
+          setTimeout(() => { if (container) container.style.pointerEvents = 'none'; }, 100);
+        } else {
+          console.error("[AUTH] Could not find Google button to click");
+          setAuthError("GOOGLE_PROMPT_FAILED");
+        }
+      }, 500);
+    } catch (err) {
+      console.error("[AUTH] Popup fallback failed:", err);
+      setAuthError("GOOGLE_PROMPT_FAILED");
     }
   };
 

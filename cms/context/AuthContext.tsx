@@ -141,7 +141,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         g.accounts.id.prompt((notification: any) => {
           promptTriggered = true;
-          if (notification.isNotDisplayed() || notification.isSkipped()) {
+          // Safe-check: notification may not have these methods when FedCM is blocked
+          const isNotDisplayed = typeof notification?.isNotDisplayed === 'function' && notification.isNotDisplayed();
+          const isSkipped = typeof notification?.isSkipped === 'function' && notification.isSkipped();
+          if (isNotDisplayed || isSkipped) {
             mockLogin();
           }
         });
