@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { authApi, RegisterRequest, AuthUser } from '../apis/auth';
 import { creditsApi } from '../apis/credits';
 
@@ -42,6 +42,9 @@ const decodeJwt = (token: string) => {
 
 const DEFAULT_AVATAR_URL = "https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png";
 
+const GOOGLE_CLIENT_ID = "942039901611-v51aehr4s94ajbk6rc6lbsiqkq2qto3l.apps.googleusercontent.com";
+const GOOGLE_OAUTH_SCOPES = "openid email profile";
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -68,33 +71,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (token) {
       refreshUserInfo();
     } else {
-      const savedUser = localStorage.getItem('skyverses_auth');
-      if (savedUser) {
-        const parsed = JSON.parse(savedUser);
-        setUser(parsed);
-        setCredits(parsed.creditBalance || 0);
+      // Check for pending OAuth token (redirect fallback when popup was blocked)
+      const pendingToken = sessionStorage.getItem('pending_google_token');
+      if (pendingToken) {
+        sessionStorage.removeItem('pending_google_token');
+        const payload = decodeJwt(pendingToken);
+        if (payload) {
+          const storedRefCode = localStorage.getItem('skyverses_ref_code') || undefined;
+          loginWithEmail(payload.email, payload.name, storedRefCode, payload.picture).then(() => {
+            localStorage.removeItem('skyverses_ref_code');
+          });
+        }
+      } else {
+        const savedUser = localStorage.getItem('skyverses_auth');
+        if (savedUser) {
+          const parsed = JSON.parse(savedUser);
+          setUser(parsed);
+          setCredits(parsed.creditBalance || 0);
+        }
       }
     }
 
+    // Optional: Try to initialize GSI for auto-select (non-critical)
     const initGoogle = () => {
       const g = (window as any).google;
       if (g && g.accounts) {
         try {
           g.accounts.id.initialize({
-            client_id: "942039901611-v51aehr4s94ajbk6rc6lbsiqkq2qto3l.apps.googleusercontent.com",
+            client_id: GOOGLE_CLIENT_ID,
             callback: handleCredentialResponse,
             auto_select: false,
             use_fedcm_for_prompt: false, 
           });
         } catch (err) {
-          setAuthError("ORIGIN_NOT_ALLOWED");
+          // Non-critical: OAuth popup fallback will handle login
+          console.warn("[AUTH] GSI init failed (non-critical):", err);
         }
-      } else {
-        setTimeout(initGoogle, 300);
       }
     };
 
+    // Listen for OAuth popup callback message
+    const handleOAuthMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'GOOGLE_OAUTH_CALLBACK' && event.data?.credential) {
+        const payload = decodeJwt(event.data.credential);
+        if (payload) {
+          const storedRefCode = localStorage.getItem('skyverses_ref_code') || undefined;
+          loginWithEmail(payload.email, payload.name, storedRefCode, payload.picture).then(() => {
+            localStorage.removeItem('skyverses_ref_code');
+          });
+        }
+      }
+    };
+
+    window.addEventListener('message', handleOAuthMessage);
     initGoogle();
+
+    return () => {
+      window.removeEventListener('message', handleOAuthMessage);
+    };
   }, []);
 
   const refreshUserInfo = async () => {
@@ -139,82 +173,84 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const login = () => {
-    const g = (window as any).google;
     if (isSandboxEnv) {
       mockLogin();
       return;
     }
 
-    if (g && g.accounts) {
-      setAuthError(null);
-      try {
-        // Strategy 1: Try One Tap prompt first with safe notification handling
-        g.accounts.id.prompt((notification: any) => {
-          // Safe-check: notification object may not have all methods when FedCM is blocked
-          const isNotDisplayed = typeof notification?.isNotDisplayed === 'function' && notification.isNotDisplayed();
-          const isSkipped = typeof notification?.isSkipped === 'function' && notification.isSkipped();
+    setAuthError(null);
+    const g = (window as any).google;
 
-          if (isNotDisplayed || isSkipped) {
-            const reason = isNotDisplayed 
-              ? (typeof notification.getNotDisplayedReason === 'function' ? notification.getNotDisplayedReason() : 'unknown')
-              : (typeof notification.getSkippedReason === 'function' ? notification.getSkippedReason() : 'unknown');
-            console.warn("[AUTH] One Tap failed/skipped, falling back to popup. Reason:", reason);
-            
-            // Strategy 2: Fallback to hidden renderButton click
-            loginWithPopupFallback(g);
-          }
+    if (g && g.accounts) {
+      // Use renderButton popup approach - does NOT require FedCM
+      try {
+        // Ensure GSI is initialized
+        g.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleCredentialResponse,
+          auto_select: false,
+          use_fedcm_for_prompt: false,
         });
+
+        // Create/reuse hidden container for Google button
+        let container = document.getElementById('g_id_signin_hidden');
+        if (container) container.remove();
+        
+        container = document.createElement('div');
+        container.id = 'g_id_signin_hidden';
+        container.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;z-index:-1;';
+        document.body.appendChild(container);
+
+        // Render the official Google Sign-In button (uses popup, NOT FedCM)
+        g.accounts.id.renderButton(container, {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          width: 300,
+          click_listener: () => {
+            console.log("[AUTH] Google button clicked, popup opening...");
+          },
+        });
+
+        // Wait for iframe to render, then click the button
+        setTimeout(() => {
+          // Google renders the button inside an iframe or a div
+          const iframe = container?.querySelector('iframe');
+          if (iframe) {
+            // For iframe-based button: simulate click on the iframe container
+            const wrapper = iframe.parentElement;
+            if (wrapper) {
+              wrapper.style.pointerEvents = 'auto';
+              wrapper.click();
+            }
+          }
+          
+          // Also try direct button click
+          const allClickable = container?.querySelectorAll('[role="button"], [tabindex="0"]');
+          if (allClickable && allClickable.length > 0) {
+            (allClickable[0] as HTMLElement).click();
+          }
+          
+          // Final fallback: find and click any div that looks like a button  
+          if (!iframe && (!allClickable || allClickable.length === 0)) {
+            const firstChild = container?.firstElementChild as HTMLElement;
+            if (firstChild) {
+              firstChild.style.pointerEvents = 'auto';
+              firstChild.click();
+            }
+          }
+
+          // Cleanup after a delay
+          setTimeout(() => container?.remove(), 5000);
+        }, 300);
+
       } catch (err) {
-        console.error("[AUTH] Google prompt error, falling back to popup:", err);
-        // Strategy 2: Fallback to hidden renderButton click
-        loginWithPopupFallback(g);
+        console.error("[AUTH] Google renderButton failed:", err);
+        setAuthError("GOOGLE_PROMPT_FAILED");
       }
     } else {
       console.warn("[AUTH] Google SDK not loaded");
       setAuthError("GOOGLE_NOT_LOADED");
-    }
-  };
-
-  const loginWithPopupFallback = (g: any) => {
-    try {
-      // Create a temporary hidden container for the Google button
-      let container = document.getElementById('g_id_signin_fallback');
-      if (!container) {
-        container = document.createElement('div');
-        container.id = 'g_id_signin_fallback';
-        container.style.position = 'fixed';
-        container.style.top = '-9999px';
-        container.style.left = '-9999px';
-        container.style.opacity = '0';
-        container.style.pointerEvents = 'none';
-        document.body.appendChild(container);
-      }
-
-      g.accounts.id.renderButton(container, {
-        type: 'standard',
-        theme: 'outline',
-        size: 'large',
-        width: 300,
-      });
-
-      // Click the rendered button to trigger popup
-      setTimeout(() => {
-        const btn = container?.querySelector('[role="button"]') as HTMLElement
-          || container?.querySelector('div[style]') as HTMLElement
-          || container?.querySelector('iframe')?.contentDocument?.querySelector('[role="button"]') as HTMLElement;
-        if (btn) {
-          // Re-enable pointer events briefly for the click
-          container!.style.pointerEvents = 'auto';
-          btn.click();
-          setTimeout(() => { if (container) container.style.pointerEvents = 'none'; }, 100);
-        } else {
-          console.error("[AUTH] Could not find Google button to click");
-          setAuthError("GOOGLE_PROMPT_FAILED");
-        }
-      }, 500);
-    } catch (err) {
-      console.error("[AUTH] Popup fallback failed:", err);
-      setAuthError("GOOGLE_PROMPT_FAILED");
     }
   };
 
