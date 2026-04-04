@@ -264,20 +264,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (data.success && data.token) {
       localStorage.setItem('skyverses_auth_token', data.token);
       await refreshUserInfo();
-
-      // ⭐ Sau khi login, check nếu user mới có free images → mở QuickImageGen modal
-      const freshRes = await authApi.getUserInfo();
-      if (freshRes.success && freshRes.user) {
-        const remaining = freshRes.user.freeImageRemaining || 0;
-        if (remaining > 0 && !localStorage.getItem('skyverses_free_img_claimed')) {
-          localStorage.setItem('skyverses_free_img_claimed', 'true');
-          // Dispatch event sau 2.5s để chờ onboarding xong
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('openQuickImageGen'));
-          }, 2500);
-        }
-      }
-
       return true;
     }
     return false;

@@ -6,6 +6,7 @@ import {
   X, Sparkles, Gift, ArrowRight, Image, Zap, Star,
   Clock, Trophy, Camera, Flame
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const STORAGE_KEY = 'skyverses_global_event_2026_seen';
@@ -79,6 +80,9 @@ const GlobalEventBonusModal: React.FC = () => {
   const navigate = useNavigate();
   const countdown = useCountdown(EVENT_END_DATE);
 
+  // ⭐ Auth state to check if user is logged in with free images
+  const { isAuthenticated, freeImageRemaining } = useAuth();
+
   useEffect(() => {
     // Don't show if event ended
     if (countdown.expired) return;
@@ -97,7 +101,12 @@ const GlobalEventBonusModal: React.FC = () => {
 
   const handleSignUp = () => {
     handleClose();
-    navigate('/login');
+    // ⭐ Nếu user đã đăng nhập + có free images → mở QuickImageGen trực tiếp
+    if (isAuthenticated && freeImageRemaining > 0) {
+      window.dispatchEvent(new CustomEvent('openQuickImageGen'));
+    } else {
+      navigate('/login');
+    }
   };
 
   // Particle config
