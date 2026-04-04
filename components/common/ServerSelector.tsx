@@ -10,6 +10,7 @@ import { pricingApi } from '../../apis/pricing';
 export const SERVER_OPTIONS = [
   { key: 'gommo', label: 'Server 1' },
   { key: 'fxflow', label: 'Server 2' },
+  { key: 'grok', label: 'Server 3' },
 ] as const;
 
 export type ServerKey = typeof SERVER_OPTIONS[number]['key'];

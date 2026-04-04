@@ -34,7 +34,7 @@ export const EventConfiguration: React.FC<EventConfigurationProps> = ({
 
   // Summary text when collapsed
   const modelName = selectedModel?.name || 'Loading...';
-  const serverLabel = selectedEngine === 'fxflow' ? 'S2' : 'S1';
+  const serverLabel = selectedEngine === 'fxflow' ? 'S2' : selectedEngine === 'grok' ? 'S3' : 'S1';
 
   return (
     <div className="border-t border-black/[0.04] dark:border-white/[0.04]">

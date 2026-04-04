@@ -263,7 +263,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           <div className="flex flex-col items-end gap-0.5">
             <span className="text-[7px] font-medium text-slate-400 dark:text-[#333] text-right">{res.model}</span>
             {res.engine && (
-              <span className="text-[7px] font-medium text-slate-400/60 dark:text-[#2a2a2a] uppercase">{res.engine === 'gommo' ? 'SV1' : res.engine === 'fxflow' ? 'SV2' : res.engine}</span>
+              <span className="text-[7px] font-medium text-slate-400/60 dark:text-[#2a2a2a] uppercase">{res.engine === 'gommo' ? 'SV1' : res.engine === 'fxflow' ? 'SV2' : res.engine === 'grok' ? 'SV3' : res.engine}</span>
             )}
           </div>
         </div>

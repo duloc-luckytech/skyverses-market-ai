@@ -22,6 +22,7 @@ const TOOL_CONFIG: Record<string, { label: string; icon: React.ReactNode; color:
 const ENGINE_COLORS: Record<string, string> = {
   gommo: '#8b5cf6',
   fxflow: '#06b6d4',
+  grok: '#f97316',
   fxlab: '#f59e0b',
   wan: '#10b981',
   veo: '#3b82f6',
@@ -237,6 +238,18 @@ export const PricingTab: React.FC = () => {
     } catch (e) { console.error(e); }
   };
 
+  const handleCloneToServer3 = async (id: string) => {
+    try {
+      const res = await pricingApi.clonePricing(id, 'grok');
+      if (res.success) {
+        fetchData();
+        alert(`✅ Đã clone sang Server 3 (grok): ${res.modelKey}`);
+      } else {
+        alert(`❌ Clone thất bại: ${res.error || 'Unknown error'}`);
+      }
+    } catch (e) { console.error(e); }
+  };
+
   const addMode = () => {
     if (!newModeInput.trim()) return;
     if (payload.modes?.includes(newModeInput.trim())) return;
@@ -311,7 +324,7 @@ export const PricingTab: React.FC = () => {
 
           {/* Engine filter */}
           <div className="flex bg-slate-100 dark:bg-white/5 rounded-lg border border-black/[0.04] dark:border-white/[0.04] p-0.5">
-            {['', 'gommo', 'fxflow', 'fxlab', 'wan'].map(e => (
+            {['', 'gommo', 'fxflow', 'grok', 'fxlab', 'wan'].map(e => (
               <button
                 key={e}
                 onClick={() => setEngineFilter(e)}
@@ -364,6 +377,7 @@ export const PricingTab: React.FC = () => {
               onDuplicate={handleDuplicate}
               onDelete={handleDelete}
               onCloneToServer2={handleCloneToServer2}
+              onCloneToServer3={handleCloneToServer3}
               isLive={serverStatus[engine] !== false}
               isToggling={togglingEngine === engine}
               onToggleStatus={(isLive) => handleToggleServerStatus(engine, isLive)}
@@ -486,11 +500,12 @@ const EngineGroup: React.FC<{
   onDuplicate: (m: PricingModel) => void;
   onDelete: (id: string) => void;
   onCloneToServer2: (id: string) => void;
+  onCloneToServer3: (id: string) => void;
   isLive: boolean;
   isToggling: boolean;
   onToggleStatus: (isLive: boolean) => void;
   onCellUpdate: (id: string, res: string, dur: string, val: number) => Promise<any>;
-}> = ({ engine, models, expandedIds, toggleExpand, onEdit, onDuplicate, onDelete, onCloneToServer2, isLive, isToggling, onToggleStatus, onCellUpdate }) => {
+}> = ({ engine, models, expandedIds, toggleExpand, onEdit, onDuplicate, onDelete, onCloneToServer2, onCloneToServer3, isLive, isToggling, onToggleStatus, onCellUpdate }) => {
   const engineColor = ENGINE_COLORS[engine] || '#6b7280';
   const videoCount = models.filter(m => m.tool === 'video').length;
   const imageCount = models.filter(m => m.tool === 'image').length;
@@ -504,7 +519,7 @@ const EngineGroup: React.FC<{
             <Server size={16} style={{ color: engineColor }} />
           </div>
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: engineColor }}>{engine === 'gommo' ? 'Server 1 (gommo)' : engine === 'fxflow' ? 'Server 2 (fxflow)' : engine}</h3>
+            <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: engineColor }}>{engine === 'gommo' ? 'Server 1 (gommo)' : engine === 'fxflow' ? 'Server 2 (fxflow)' : engine === 'grok' ? 'Server 3 (grok)' : engine}</h3>
             <p className="text-[10px] text-slate-400 font-medium">{models.length} models</p>
           </div>
         </div>
@@ -548,7 +563,8 @@ const EngineGroup: React.FC<{
             onEdit={() => onEdit(model)}
             onDuplicate={() => onDuplicate(model)}
             onDelete={() => onDelete(model._id)}
-            onCloneToServer2={engine !== 'fxflow' ? () => onCloneToServer2(model._id) : undefined}
+            onCloneToServer2={engine !== 'fxflow' && engine !== 'grok' ? () => onCloneToServer2(model._id) : undefined}
+            onCloneToServer3={engine !== 'grok' ? () => onCloneToServer3(model._id) : undefined}
             onCellUpdate={onCellUpdate}
           />
         ))}
@@ -569,8 +585,9 @@ const ModelCard: React.FC<{
   onDuplicate: () => void;
   onDelete: () => void;
   onCloneToServer2?: () => void;
+  onCloneToServer3?: () => void;
   onCellUpdate: (id: string, res: string, dur: string, val: number) => Promise<any>;
-}> = ({ model, engineColor, isExpanded, toggleExpand, onEdit, onDuplicate, onDelete, onCloneToServer2, onCellUpdate }) => {
+}> = ({ model, engineColor, isExpanded, toggleExpand, onEdit, onDuplicate, onDelete, onCloneToServer2, onCloneToServer3, onCellUpdate }) => {
   const toolCfg = TOOL_CONFIG[model.tool] || TOOL_CONFIG.video;
   const resolutions = Object.keys(model.pricing || {});
   const firstRes = resolutions[0];
@@ -646,6 +663,9 @@ const ModelCard: React.FC<{
         <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
           {onCloneToServer2 && (
             <button onClick={e => { e.stopPropagation(); onCloneToServer2(); }} title="Clone → Server 2" className="p-2 rounded-md hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-500 transition-all"><ServerCog size={13} /></button>
+          )}
+          {onCloneToServer3 && (
+            <button onClick={e => { e.stopPropagation(); onCloneToServer3(); }} title="Clone → Server 3 (Grok)" className="p-2 rounded-md hover:bg-orange-500/10 text-slate-400 hover:text-orange-500 transition-all"><ServerCog size={13} /></button>
           )}
           <button onClick={e => { e.stopPropagation(); onDuplicate(); }} title="Nhân bản" className="p-2 rounded-md hover:bg-emerald-500/10 text-slate-400 hover:text-emerald-500 transition-all"><Copy size={13} /></button>
           <button onClick={e => { e.stopPropagation(); onEdit(); }} title="Chỉnh sửa" className="p-2 rounded-md hover:bg-brand-blue/10 text-slate-400 hover:text-brand-blue transition-all"><Edit3 size={13} /></button>
