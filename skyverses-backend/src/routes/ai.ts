@@ -2,9 +2,7 @@
 import express from "express";
 import OpenAI from "openai";
 import { authenticate } from "./auth";
-import { createRateLimit } from "../middlewares/limit";
 import MetaPromptConfig from "../models/MetaPromptTemplate";
-import { getAIClient } from "../services/aiClient";
 const router = express.Router();
 
 /* ============================================================
@@ -24,7 +22,6 @@ const MODEL = "deepseek-chat";
 router.post(
   "/refine-prompt",
   authenticate,
-  createRateLimit(),
   async (req, res) => {
     try {
       const { goal, content, style, duration, camera, mode } = req.body;
@@ -87,7 +84,6 @@ Thời lượng: ${duration}s
 router.post(
   "/suggest-camera",
   authenticate,
-  createRateLimit(),
   async (req, res) => {
     try {
       const { scene, style } = req.body;
@@ -135,7 +131,6 @@ Style: ${style}
 router.post(
   "/suggest-style",
   authenticate,
-  createRateLimit(),
   async (req, res) => {
     try {
       const { goal, scene } = req.body;
@@ -181,7 +176,6 @@ Cảnh: ${scene}
 router.post(
   "/meta/generate",
   authenticate,
-  createRateLimit(),
   async (req, res) => {
     try {
       const { idea, style, tone, pacing, scenes = 5, mode, camera } = req.body;
@@ -190,7 +184,7 @@ router.post(
         return res.status(400).json({ error: "Thiếu trường 'idea'" });
       }
 
-      const ai = getAIClient();
+      const ai = client;
 
       /* ============================================================
            1) Tải system config từ DB

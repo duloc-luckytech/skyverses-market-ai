@@ -1,6 +1,4 @@
 import ProviderToken from "../models/ProviderToken.model";
-import { sendTelegramMessage } from "./telegram";
-
 function extractSessionHead(token?: string | null) {
   if (!token) return null;
 
@@ -25,9 +23,9 @@ export async function getCookieForJob(provider: string = "labs") {
 
   if (!token?.cookieToken) {
     if (provider === "labs") {
-      sendTelegramMessage(
-        `⚠️ <b>CẢNH BÁO:</b> Hệ thống không tìm thấy bất kỳ token <b>FXLAB</b> nào đang hoạt động! (Provider: ${provider})`
-      ).catch(console.error);
+      console.warn(
+        `⚠️ CẢNH BÁO: Hệ thống không tìm thấy bất kỳ token FXLAB nào đang hoạt động! (Provider: ${provider})`
+      );
     }
 
     throw new Error("FXLAB_NO_ACTIVE_TOKEN");

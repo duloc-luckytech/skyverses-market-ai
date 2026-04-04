@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import Plan from "../models/PlanModel"; // ✅ Model MongoDB
 import { SYSTEM_CONFIG } from "../constanst/index";
-import { HOME_BLOCKS_CONFIG } from "../config/marketHomeBlocks";
 import { listKeyGommoGenmini } from "../config/keyGenminiGommo";
 import { authenticate } from "./auth";
 import SystemSetting from "../models/SystemSetting.model";
@@ -76,7 +75,7 @@ router.get("/", async (req, res) => {
         projectExpireHours: SYSTEM_CONFIG.projectExpireHours,
         videoExpireHours: SYSTEM_CONFIG.videoExpireHours,
         imageExpireHours: SYSTEM_CONFIG.imageExpireHours,
-        marketHomeBlock: HOME_BLOCKS_CONFIG,
+        marketHomeBlock: [],
         listKeyGommoGenmini,
         welcomeBonusCredits,
         productLocks,

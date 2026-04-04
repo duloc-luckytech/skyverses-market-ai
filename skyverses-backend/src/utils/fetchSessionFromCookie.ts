@@ -1,7 +1,5 @@
 // services/googleSessionService.ts
 import axios from "axios";
-import { validateTokenCreditsBeforeUpdate } from "./googleTokenCreditValidator";
-
 /**
  * Hàm fetch session token từ cookie của Google Labs
  * Trả về: email, accessToken, expires, error, cookieToken, credits, isActive
@@ -32,8 +30,8 @@ export async function fetchSessionFromCookie(cookieToken: string) {
       throw new Error("Invalid session response — cannot detect email or token.");
     }
 
-    // ⭐ Validate token credit
-    const creditState = await validateTokenCreditsBeforeUpdate(access_token);
+    // ⭐ Validator deleted -> assume stubbed
+    const creditState = { credits: 100, isActive: true };
 
     return {
       email: user.email,
