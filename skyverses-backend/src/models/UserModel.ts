@@ -61,6 +61,7 @@ export interface IUser extends Document {
   claimWelcomeCredit: boolean;
   lastDailyClaimAt?: Date | null;
   globalEventBonus2026?: boolean; // ⭐ Global Event April 2026 — 100 free images
+  freeImageRemaining: number; // ⭐ Hard counter: 100 free images on registration
   fxflowOwner?: string; // sticky owner cho FXFlow jobs
 
   // API Token for external access
@@ -186,6 +187,7 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    freeImageRemaining: { type: Number, default: 0 },
     fxflowOwner: {
       type: String,
       default: null,

@@ -93,7 +93,7 @@ router.post("/google-register", async (req, res) => {
         if (!existing) break;
       }
 
-      // ✅ Tạo user mới — tự động tặng 1000 welcome credit
+      // ✅ Tạo user mới — tự động tặng 1000 welcome credit + 100 free images
       user = await UserModel.create({
         email,
         name,
@@ -104,6 +104,7 @@ router.post("/google-register", async (req, res) => {
         role: "user",
         creditBalance: 1000, // ⭐ Welcome credit tự động
         claimWelcomeCredit: true, // ⭐ Đánh dấu đã nhận
+        freeImageRemaining: 100, // ⭐ Fix cứng 100 hình miễn phí
       });
 
       // 📝 Ghi log transaction welcome credit
@@ -281,6 +282,7 @@ router.get("/user/info", authenticate, async (req: any, res) => {
 
         creditBalance: user.creditBalance,
         claimWelcomeCredit: user.claimWelcomeCredit || false,
+        freeImageRemaining: user.freeImageRemaining || 0,
 
         // 👇 PLAN INFO
         plan: user.plan || null,

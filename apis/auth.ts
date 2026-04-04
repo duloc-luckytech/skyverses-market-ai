@@ -10,6 +10,7 @@ export interface AuthUser {
   inviteFrom?: string;
   creditBalance: number;
   claimWelcomeCredit: boolean;
+  freeImageRemaining?: number;
   canDailyClaim?: boolean; // New field for daily rewards
   plan?: string;
   planExpiresAt?: string;

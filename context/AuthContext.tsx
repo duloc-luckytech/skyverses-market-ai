@@ -18,6 +18,7 @@ interface AuthContextType {
   authError: string | null;
   isSandboxEnv: boolean;
   credits: number;
+  freeImageRemaining: number;
   addCredits: (amount: number) => void;
   useCredits: (amount: number) => boolean;
 }
@@ -50,6 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [authError, setAuthError] = useState<string | null>(null);
   const [isSandboxEnv, setIsSandboxEnv] = useState(false);
   const [credits, setCredits] = useState<number>(0);
+  const [freeImageRemaining, setFreeImageRemaining] = useState<number>(0);
 
   // Hydrate user info on mount (F5)
   useEffect(() => {
@@ -140,6 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
       setUser(userData);
       setCredits(res.user.creditBalance || 0);
+      setFreeImageRemaining(res.user.freeImageRemaining || 0);
       localStorage.setItem('skyverses_auth', JSON.stringify(userData));
     } else if (res.message === 'Unauthorized' || !res.success) {
       logout();
@@ -261,6 +264,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (data.success && data.token) {
       localStorage.setItem('skyverses_auth_token', data.token);
       await refreshUserInfo();
+
+      // ⭐ Sau khi login, check nếu user mới có free images → mở QuickImageGen modal
+      const freshRes = await authApi.getUserInfo();
+      if (freshRes.success && freshRes.user) {
+        const remaining = freshRes.user.freeImageRemaining || 0;
+        if (remaining > 0 && !localStorage.getItem('skyverses_free_img_claimed')) {
+          localStorage.setItem('skyverses_free_img_claimed', 'true');
+          // Dispatch event sau 2.5s để chờ onboarding xong
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('openQuickImageGen'));
+          }, 2500);
+        }
+      }
+
       return true;
     }
     return false;
@@ -311,7 +328,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <AuthContext.Provider value={{ 
       user, login, mockLogin, loginWithEmail, refreshUserInfo, claimWelcomeCredits, logout, isAuthenticated: !!user, authError, 
-      isSandboxEnv, credits, addCredits, useCredits 
+      isSandboxEnv, credits, freeImageRemaining, addCredits, useCredits 
     }}>
       {children}
     </AuthContext.Provider>

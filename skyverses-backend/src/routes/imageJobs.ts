@@ -107,46 +107,56 @@ router.post("/", authenticate, async (req: any, res) => {
     return res.status(400).json({ message: "Invalid payload" });
   }
 
-  // ─── CREDIT DEDUCTION ───────────────────────────────
-  const pricingModel = await ModelPricingMatrix.findOne({
-    modelKey: engine.model,
-    status: "active",
-  });
-
-  let creditCost = 0;
-  if (pricingModel?.pricing) {
-    // Get cost from pricing matrix: pricing[resolution]["0"] for images
-    const resolutions = Object.keys(pricingModel.pricing);
-    if (resolutions.length > 0) {
-      const firstRes = resolutions[0];
-      const durations = pricingModel.pricing[firstRes];
-      creditCost = typeof durations === "number" ? durations : (durations?.["0"] || durations?.["1"] || Object.values(durations || {})[0] || 0);
-    }
+  // ─── FREE IMAGE CHECK + CREDIT DEDUCTION ──────────────
+  const userForCredit = await User.findById(req.user.userId);
+  if (!userForCredit) {
+    return res.status(404).json({ message: "USER_NOT_FOUND" });
   }
 
-  if (creditCost > 0) {
-    const user = await User.findById(req.user.userId);
-    if (!user) {
-      return res.status(404).json({ message: "USER_NOT_FOUND" });
-    }
-    if (user.creditBalance < creditCost) {
-      return res.status(400).json({ message: "INSUFFICIENT_CREDITS", required: creditCost, balance: user.creditBalance });
-    }
+  let creditCost = 0;
+  let usedFreeImage = false;
 
-    // Atomic deduction
-    user.creditBalance -= creditCost;
-    await user.save();
-
-    await CreditTransaction.create({
-      userId: user._id,
-      type: "CONSUME",
-      amount: -creditCost,
-      balanceAfter: user.creditBalance,
-      source: "image_generation",
-      note: `Image: ${engine.model} | ${type}`,
+  // ⭐ Ưu tiên free image counter trước
+  if (userForCredit.freeImageRemaining > 0) {
+    userForCredit.freeImageRemaining -= 1;
+    await userForCredit.save();
+    usedFreeImage = true;
+    console.log(`🎁 [FREE-IMG] ${userForCredit.email} used 1 free image → remaining: ${userForCredit.freeImageRemaining}`);
+  } else {
+    // Tính credit cost từ pricing matrix
+    const pricingModel = await ModelPricingMatrix.findOne({
+      modelKey: engine.model,
+      status: "active",
     });
 
-    console.log(`💳 [CREDIT] ${user.email} -${creditCost} CR (image: ${engine.model}) → balance: ${user.creditBalance}`);
+    if (pricingModel?.pricing) {
+      const resolutions = Object.keys(pricingModel.pricing);
+      if (resolutions.length > 0) {
+        const firstRes = resolutions[0];
+        const durations = pricingModel.pricing[firstRes];
+        creditCost = typeof durations === "number" ? durations : (durations?.["0"] || durations?.["1"] || Object.values(durations || {})[0] || 0);
+      }
+    }
+
+    if (creditCost > 0) {
+      if (userForCredit.creditBalance < creditCost) {
+        return res.status(400).json({ message: "INSUFFICIENT_CREDITS", required: creditCost, balance: userForCredit.creditBalance });
+      }
+
+      userForCredit.creditBalance -= creditCost;
+      await userForCredit.save();
+
+      await CreditTransaction.create({
+        userId: userForCredit._id,
+        type: "CONSUME",
+        amount: -creditCost,
+        balanceAfter: userForCredit.creditBalance,
+        source: "image_generation",
+        note: `Image: ${engine.model} | ${type}`,
+      });
+
+      console.log(`💳 [CREDIT] ${userForCredit.email} -${creditCost} CR (image: ${engine.model}) → balance: ${userForCredit.creditBalance}`);
+    }
   }
   // ─── END CREDIT DEDUCTION ───────────────────────────
 

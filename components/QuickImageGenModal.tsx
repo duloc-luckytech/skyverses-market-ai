@@ -18,7 +18,7 @@ const RATIOS = ['1:1', '16:9', '9:16', '4:3', '3:4'];
 const RESOLUTIONS = ['1k', '2k', '4k'];
 
 export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, onClose, onSuccess }) => {
-  const { credits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
+  const { credits, useCredits, isAuthenticated, login, refreshUserInfo, freeImageRemaining } = useAuth();
   
   // -- Model & Pricing States --
   const [availableModels, setAvailableModels] = useState<PricingModel[]>([]);
@@ -116,7 +116,8 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
     if (!prompt.trim() || isGenerating || !selectedModel) return;
     if (!isAuthenticated) { login(); return; }
     
-    if (usagePreference === 'credits' && credits < currentUnitCost) {
+    // ⭐ Skip credit check if user has free images
+    if (freeImageRemaining <= 0 && usagePreference === 'credits' && credits < currentUnitCost) {
       alert(`Hạn ngạch node không đủ (Cần ${currentUnitCost} credits)`);
       return;
     }
@@ -207,7 +208,12 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
               <div className="p-2 bg-brand-blue/10 rounded-lg text-brand-blue">
                 <Wand2 size={18} />
               </div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Tạo nhanh bằng AI</h3>
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Tạo nhanh bằng AI</h3>
+                {freeImageRemaining > 0 && (
+                  <span className="text-[10px] font-bold text-emerald-500">🎁 Còn {freeImageRemaining} ảnh miễn phí</span>
+                )}
+              </div>
             </div>
             <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
               <X size={20} />
@@ -296,9 +302,11 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
 
           <div className="p-6 bg-slate-50 dark:bg-black/40 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
             <div className="flex flex-col gap-1">
-               <div className="flex items-center gap-2 text-orange-500 font-black italic text-xs">
-                 <Zap size={14} fill="currentColor" />
-                 <span>{currentUnitCost} CR</span>
+               <div className="flex items-center gap-2 font-black italic text-xs">
+                 <Zap size={14} fill="currentColor" className={freeImageRemaining > 0 ? 'text-emerald-500' : 'text-orange-500'} />
+                 <span className={freeImageRemaining > 0 ? 'text-emerald-500' : 'text-orange-500'}>
+                   {freeImageRemaining > 0 ? 'MIỄN PHÍ' : `${currentUnitCost} CR`}
+                 </span>
                </div>
                <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400">
                   <Activity size={10} className={isGenerating ? 'animate-pulse text-brand-blue' : ''} />
