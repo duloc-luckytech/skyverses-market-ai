@@ -20,7 +20,7 @@ export async function processImageJobs() {
 
   const pendingJobs = await ImageJob.find({
     status: ImageJobStatus.PENDING,
-    "engine.provider": { $ne: ImageEngineProvider.FXFLOW }, // fxflow dùng flow riêng
+    "engine.provider": { $nin: [ImageEngineProvider.FXFLOW, ImageEngineProvider.GROK] }, // fxflow/grok dùng flow riêng (external worker)
   })
     .sort({ createdAt: -1 }) // 🔥 mới nhất trước
     .limit(MAX_CONCURRENCY);

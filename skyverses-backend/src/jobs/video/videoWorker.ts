@@ -22,7 +22,7 @@ export async function processVideoJobs() {
     type: { $ne: VideoJobType.TEXT_TO_MUSIC },
     status: VideoJobStatus.PENDING,
     "engine.provider": {
-      $nin: [VideoEngineProvider.FXLAB, VideoEngineProvider.FXFLOW],
+      $nin: [VideoEngineProvider.FXLAB, VideoEngineProvider.FXFLOW, VideoEngineProvider.GROK],
     },
   })
     .sort({ createdAt: -1 })
