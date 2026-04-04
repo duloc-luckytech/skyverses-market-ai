@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Wand2, Zap, Plus, Loader2, Sparkles, ChevronDown, Activity, Gift, Image, Camera, Star, ArrowRight } from 'lucide-react';
+import { X, Wand2, Zap, Plus, Loader2, Sparkles, ChevronDown, Activity, Gift, Image, Camera, Star, ArrowRight, Download } from 'lucide-react';
 import { uploadToGCS } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
 import { pricingApi, PricingModel } from '../apis/pricing';
@@ -447,12 +447,34 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                     <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
                       <Star size={10} fill="currentColor" /> Ảnh đã tạo thành công
                     </span>
-                    <button
-                      onClick={() => { setGeneratedImage(null); setPrompt(''); }}
-                      className="text-[10px] font-bold text-white/40 hover:text-brand-blue transition-colors flex items-center gap-1"
-                    >
-                      Tạo thêm <ArrowRight size={10} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={async () => {
+                          try {
+                            const res = await fetch(generatedImage!);
+                            const blob = await res.blob();
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `skyverses_${Date.now()}.png`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                          } catch { window.open(generatedImage!, '_blank'); }
+                        }}
+                        className="px-3 py-1.5 rounded-lg text-[10px] font-bold text-white flex items-center gap-1.5 transition-all hover:brightness-110"
+                        style={{ background: 'linear-gradient(135deg, #0090ff, #0070cc)' }}
+                      >
+                        <Download size={10} /> Tải về
+                      </button>
+                      <button
+                        onClick={() => { setGeneratedImage(null); setPrompt(''); }}
+                        className="text-[10px] font-bold text-white/40 hover:text-brand-blue transition-colors flex items-center gap-1"
+                      >
+                        Tạo thêm <ArrowRight size={10} />
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               )}
