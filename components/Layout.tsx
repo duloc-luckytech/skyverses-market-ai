@@ -6,7 +6,6 @@ import AISupportChat from './AISupportChat';
 import ImageLibraryModal from './ImageLibraryModal';
 import ProductImageWorkspace from './ProductImageWorkspace';
 import CommandPalette from './CommandPalette';
-import WelcomeBonusModal from './WelcomeBonusModal';
 import GlobalEventBonusModal from './GlobalEventBonusModal';
 import { QuickImageGenModal } from './QuickImageGenModal';
 
@@ -16,7 +15,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
   const [showQuickImageGen, setShowQuickImageGen] = useState(false);
 
-  // ⭐ Listen for 'openQuickImageGen' event from AuthContext (new user first login)
+  // ⭐ Listen for 'openQuickImageGen' event from GlobalEventBonusModal
   useEffect(() => {
     const handler = () => setShowQuickImageGen(true);
     window.addEventListener('openQuickImageGen', handler);
@@ -26,11 +25,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const handleOpenEditorFromLibrary = (url: string) => {
     setSelectedImageUrl(url);
     setIsEditorOpen(true);
-    setIsLibraryOpen(false); // Đóng thư viện để tập trung vào việc chỉnh sửa
+    setIsLibraryOpen(false);
   };
 
   const handleResetSearch = () => {
-    // Phát ra event để MarketPage lắng nghe và reset
     window.dispatchEvent(new CustomEvent('resetMarketSearch'));
   };
 
@@ -43,7 +41,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <Footer />
       <AISupportChat />
       <CommandPalette />
-      <WelcomeBonusModal />
       <GlobalEventBonusModal />
 
       {/* ⭐ Quick Image Gen Modal — opens after new user claims 100 free images */}
