@@ -63,6 +63,7 @@ export interface IUser extends Document {
   globalEventBonus2026?: boolean; // ⭐ Global Event April 2026 — 100 free images
   freeImageRemaining: number; // ⭐ Hard counter: 100 free images on registration
   fxflowOwner?: string; // sticky owner cho FXFlow jobs
+  grokOwner?: string; // sticky owner cho Grok jobs
 
   // API Token for external access
   apiToken?: string;
@@ -189,6 +190,10 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     },
     freeImageRemaining: { type: Number, default: 0 },
     fxflowOwner: {
+      type: String,
+      default: null,
+    },
+    grokOwner: {
       type: String,
       default: null,
     },

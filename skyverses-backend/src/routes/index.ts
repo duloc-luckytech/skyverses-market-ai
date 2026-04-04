@@ -32,6 +32,7 @@ import explorerMediaRoutes from "./explorerMedia.router";
 import imageRoutes from "./imageJobs";
 import audioRoutes from "./audio";
 import fxflowRoutes from "./fxflow";
+import grokRoutes from "./grok";
 import upscaleJobRoutes from "./upscaleJobs";
 
 import providerTokenRoutes from "./providerToken";
@@ -58,6 +59,7 @@ router.use("/image-jobs", imageRoutes);
 router.use("/image", upscaleJobRoutes);
 router.use("/runninghub", runninghubRoutes);
 router.use("/fxflow", fxflowRoutes);
+router.use("/grok", grokRoutes);
 router.use("/audio", audioRoutes);
 router.use("/explorer", explorerMediaRoutes);
 router.use("/market", marketRoutes);

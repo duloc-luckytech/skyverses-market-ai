@@ -11,6 +11,7 @@ export interface IFxflowOwner extends Document {
   name: string;         // "acc1", "acc2", "acc3"
   status: "active" | "inactive";
   description?: string; // ghi chú
+  provider?: string;    // "fxflow" | "grok" | null (legacy/shared)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,6 +33,11 @@ const FxflowOwnerSchema = new Schema<IFxflowOwner>(
     description: {
       type: String,
       default: "",
+    },
+    provider: {
+      type: String,
+      default: null,
+      index: true,
     },
   },
   { timestamps: true }

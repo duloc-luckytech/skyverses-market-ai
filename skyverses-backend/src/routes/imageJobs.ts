@@ -174,27 +174,39 @@ router.post("/", authenticate, async (req: any, res) => {
   const isGoogleImageModel = imgModelKey.includes("imagen") || imgModelKey.includes("google_image_gen") || imgModelKey.includes("banana");
 
   // Chỉ random routing khi provider = gommo (Server 1)
-  // Khi user chọn fxflow (Server 2) trực tiếp → giữ nguyên
+  // Khi user chọn fxflow/grok trực tiếp → giữ nguyên
   if (finalEngine.provider === "gommo" && isGoogleImageModel) {
     try {
       const mongoose = require("mongoose");
       const SystemSetting = mongoose.models.SystemSetting;
-      const setting = SystemSetting ? await SystemSetting.findOne({ key: "fxflow" }).lean() : null;
-      const fxConfig = { enabled: true, routingPercent: 100, ...(setting?.value || {}) };
 
-      if (fxConfig.enabled && Math.random() * 100 < fxConfig.routingPercent) {
+      // Check fxflow routing first
+      const fxSetting = SystemSetting ? await SystemSetting.findOne({ key: "fxflow" }).lean() : null;
+      const fxConfig = { enabled: true, routingPercent: 100, ...(fxSetting?.value || {}) };
+
+      // Check grok routing
+      const grokSetting = SystemSetting ? await SystemSetting.findOne({ key: "grok" }).lean() : null;
+      const grokConfig = { enabled: true, routingPercent: 0, ...(grokSetting?.value || {}) };
+
+      // Combined routing: fxflow gets first priority, then grok
+      // Ví dụ: fxflow 60%, grok 20%, gommo 20%
+      const roll = Math.random() * 100;
+      if (fxConfig.enabled && roll < fxConfig.routingPercent) {
         finalEngine.provider = "fxflow";
         console.log(`🎲 [IMG] ${imgModelKey} → fxflow (routing: ${fxConfig.routingPercent}%)`);
+      } else if (grokConfig.enabled && roll < (fxConfig.routingPercent + grokConfig.routingPercent)) {
+        finalEngine.provider = "grok";
+        console.log(`🎲 [IMG] ${imgModelKey} → grok (routing: ${grokConfig.routingPercent}%)`);
       }
     } catch {
       // Fallback: giữ gommo nếu lỗi đọc config
     }
   }
 
-  // ✅ Sticky assign owner per user (nếu provider là fxflow)
+  // ✅ Sticky assign owner per user (nếu provider là fxflow hoặc grok)
   let jobOwner: string | null = null;
-  if (finalEngine.provider === "fxflow") {
-    jobOwner = await getOrAssignOwnerForUser(req.user.userId);
+  if (finalEngine.provider === "fxflow" || finalEngine.provider === "grok") {
+    jobOwner = await getOrAssignOwnerForUser(req.user.userId, finalEngine.provider);
   }
 
   const job = await ImageJob.create({

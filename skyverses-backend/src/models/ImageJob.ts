@@ -33,6 +33,7 @@ export enum ImageEngineProvider {
   LEONARDO = "leonardo",
   FXLAB = "fxlab",
   FXFLOW = "fxflow",
+  GROK = "grok",
 }
 
 /* ================================

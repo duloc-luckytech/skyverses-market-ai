@@ -33,6 +33,7 @@ export enum VideoEngineProvider {
   FXLAB = "fxlab",
   WAN = "wan",
   FXFLOW = "fxflow",
+  GROK = "grok",
 }
 
 /* ================================
