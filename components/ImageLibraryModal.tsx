@@ -35,7 +35,7 @@ const SOURCE_FILTERS = [
   { key: 'upload', label: 'Upload' },
   { key: 'gommo', label: 'Server 1' },
   { key: 'fxflow', label: 'Server 2' },
-  { key: 'grok', label: 'Server 3' },
+  { key: 'grok', label: 'Grok' },
 ];
 
 const SORT_OPTIONS = [
