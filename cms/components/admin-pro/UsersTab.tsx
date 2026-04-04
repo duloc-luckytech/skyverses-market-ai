@@ -4,7 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import {
   Users, Search, Filter, ArrowUpDown, ChevronLeft, ChevronRight,
   Sparkles, RefreshCw, Loader2, SearchX, Crown, Shield,
-  UserCheck, UserX, Film, TrendingUp, Download, Clock
+  UserCheck, UserX, Film, TrendingUp, Download, Clock, Image
 } from 'lucide-react';
 import { AuthUser, UserListResponse, UserListParams, authApi } from '../../apis/auth';
 import { UserDetailDrawer } from './UserDetailDrawer';
@@ -111,8 +111,8 @@ export const UsersTab: React.FC<UsersTabProps> = () => {
   };
 
   const handleExportCSV = () => {
-    const headers = ['Name', 'Email', 'Plan', 'Credits', 'Role', 'VideoUsed', 'MaxVideo', 'CreatedAt', 'LastActive'];
-    const rows = users.map(u => [u.name, u.email, u.plan || 'Free', u.creditBalance, u.role, u.videoUsed || 0, u.maxVideo || 0, u.createdAt || '', u.lastActiveAt || '']);
+    const headers = ['Name', 'Email', 'Plan', 'Credits', 'FreeImages', 'Role', 'VideoUsed', 'MaxVideo', 'CreatedAt', 'LastActive'];
+    const rows = users.map(u => [u.name, u.email, u.plan || 'Free', u.creditBalance, u.freeImageRemaining || 0, u.role, u.videoUsed || 0, u.maxVideo || 0, u.createdAt || '', u.lastActiveAt || '']);
     const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -181,6 +181,7 @@ export const UsersTab: React.FC<UsersTabProps> = () => {
                 <th className="px-4 py-3">Người dùng</th>
                 <th className="px-3 py-3">Role</th>
                 <th className="px-3 py-3 cursor-pointer hover:text-brand-blue" onClick={() => handleSort('creditBalance')}>Credits <ArrowUpDown size={7} className="inline ml-0.5" /></th>
+                <th className="px-3 py-3 cursor-pointer hover:text-brand-blue" onClick={() => handleSort('freeImageRemaining')}>Free Img <ArrowUpDown size={7} className="inline ml-0.5" /></th>
                 <th className="px-3 py-3 cursor-pointer hover:text-brand-blue" onClick={() => handleSort('plan')}>Gói <ArrowUpDown size={7} className="inline ml-0.5" /></th>
                 <th className="px-3 py-3">Worker</th>
                 <th className="px-3 py-3">Video</th>
@@ -191,9 +192,9 @@ export const UsersTab: React.FC<UsersTabProps> = () => {
             </thead>
             <tbody className="divide-y divide-black/[0.02] dark:divide-white/[0.02]">
               {loading ? (
-                <tr><td colSpan={9} className="py-20 text-center"><Loader2 className="animate-spin mx-auto text-brand-blue mb-2" size={24} /><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Đang tải...</p></td></tr>
+                <tr><td colSpan={10} className="py-20 text-center"><Loader2 className="animate-spin mx-auto text-brand-blue mb-2" size={24} /><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Đang tải...</p></td></tr>
               ) : users.length === 0 ? (
-                <tr><td colSpan={9} className="py-20 text-center"><SearchX size={36} className="mx-auto mb-2 text-slate-200 dark:text-gray-700" /><p className="text-sm font-bold text-slate-400">Không tìm thấy</p></td></tr>
+                <tr><td colSpan={10} className="py-20 text-center"><SearchX size={36} className="mx-auto mb-2 text-slate-200 dark:text-gray-700" /><p className="text-sm font-bold text-slate-400">Không tìm thấy</p></td></tr>
               ) : users.map(u => {
                 const planExpiry = u.planExpiresAt ? new Date(u.planExpiresAt) : null;
                 const expired = planExpiry && planExpiry < new Date();
@@ -220,6 +221,15 @@ export const UsersTab: React.FC<UsersTabProps> = () => {
                         <Sparkles size={11} className="text-brand-blue" fill="currentColor" />
                         <span className="text-sm font-black text-brand-blue tabular-nums">{(u.creditBalance || 0).toLocaleString()}</span>
                       </div>
+                    </td>
+                    {/* Free Images */}
+                    <td className="px-3 py-3">
+                      {(u.freeImageRemaining || 0) > 0 ? (
+                        <div className="flex items-center gap-1">
+                          <Image size={11} className="text-emerald-500" />
+                          <span className="text-sm font-black text-emerald-500 tabular-nums">{(u.freeImageRemaining || 0)}</span>
+                        </div>
+                      ) : <span className="text-[9px] text-slate-300">0</span>}
                     </td>
                     {/* Plan */}
                     <td className="px-3 py-3">

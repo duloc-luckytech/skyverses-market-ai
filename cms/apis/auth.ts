@@ -32,6 +32,7 @@ export interface AuthUser {
 
   // Credits & Finance
   creditBalance: number;
+  freeImageRemaining?: number;
   affiliateTotal?: number;
   affiliatePending?: number;
   pendingShopPayment?: {
