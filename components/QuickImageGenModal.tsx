@@ -217,6 +217,33 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
           0%   { background-position: -200% center; }
           100% { background-position: 200% center; }
         }
+        @keyframes qimgOrbit {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        @keyframes qimgScanline {
+          0%   { transform: translateY(-100%); }
+          100% { transform: translateY(100%); }
+        }
+        @keyframes qimgFloat {
+          0%, 100% { transform: translateY(0) scale(1); opacity: 0.4; }
+          50%       { transform: translateY(-20px) scale(1.3); opacity: 0.9; }
+        }
+        @keyframes qimgProgress {
+          0%   { width: 5%; }
+          20%  { width: 25%; }
+          50%  { width: 55%; }
+          80%  { width: 80%; }
+          100% { width: 95%; }
+        }
+        @keyframes qimgBreath {
+          0%, 100% { transform: scale(1); opacity: 0.8; }
+          50%       { transform: scale(1.12); opacity: 1; }
+        }
+        @keyframes qimgGridPulse {
+          0%, 100% { opacity: 0.03; }
+          50%       { opacity: 0.07; }
+        }
       `}</style>
 
       <AnimatePresence>
@@ -244,6 +271,140 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
               maxHeight: '92vh',
             }}
           >
+            {/* ═══ AI LOADING OVERLAY ═══ */}
+            <AnimatePresence>
+              {isGenerating && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute inset-0 z-50 flex flex-col items-center justify-center"
+                  style={{
+                    background: 'linear-gradient(180deg, rgba(8,10,20,0.97) 0%, rgba(6,8,18,0.99) 100%)',
+                    borderRadius: '1.5rem',
+                  }}
+                >
+                  {/* Animated Grid Background */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ borderRadius: '1.5rem' }}>
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      backgroundImage: `
+                        linear-gradient(rgba(0,144,255,0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0,144,255,0.04) 1px, transparent 1px)
+                      `,
+                      backgroundSize: '40px 40px',
+                      animation: 'qimgGridPulse 4s ease-in-out infinite',
+                    }} />
+                    {/* Scanline */}
+                    <div style={{
+                      position: 'absolute', left: 0, right: 0, height: '120px',
+                      background: 'linear-gradient(180deg, transparent, rgba(0,144,255,0.06), transparent)',
+                      animation: 'qimgScanline 3s ease-in-out infinite',
+                    }} />
+                  </div>
+
+                  {/* Floating Particles */}
+                  {[
+                    { x: '15%', y: '20%', d: 0, color: 'bg-brand-blue', size: 'w-1.5 h-1.5' },
+                    { x: '80%', y: '15%', d: 0.4, color: 'bg-violet-400', size: 'w-1 h-1' },
+                    { x: '25%', y: '75%', d: 0.8, color: 'bg-cyan-400', size: 'w-1 h-1' },
+                    { x: '70%', y: '80%', d: 1.2, color: 'bg-emerald-400', size: 'w-1.5 h-1.5' },
+                    { x: '50%', y: '10%', d: 1.6, color: 'bg-amber-400', size: 'w-1 h-1' },
+                    { x: '90%', y: '50%', d: 2.0, color: 'bg-pink-400', size: 'w-1 h-1' },
+                  ].map((p, i) => (
+                    <div key={i}
+                      className={`absolute rounded-full ${p.color} ${p.size}`}
+                      style={{ left: p.x, top: p.y, animation: `qimgFloat ${2.5 + i * 0.3}s ease-in-out infinite ${p.d}s` }}
+                    />
+                  ))}
+
+                  {/* Center: Icon + Orbit */}
+                  <div className="relative mb-8">
+                    {/* Orbit Ring */}
+                    <div className="absolute -inset-6" style={{ animation: 'qimgOrbit 4s linear infinite' }}>
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-brand-blue shadow-lg" style={{ boxShadow: '0 0 12px rgba(0,144,255,0.6)' }} />
+                    </div>
+                    <div className="absolute -inset-10" style={{ animation: 'qimgOrbit 6s linear infinite reverse' }}>
+                      <div className="absolute bottom-0 right-0 w-1.5 h-1.5 rounded-full bg-violet-400 shadow-lg" style={{ boxShadow: '0 0 10px rgba(139,92,246,0.5)' }} />
+                    </div>
+
+                    {/* Glow */}
+                    <div className="absolute -inset-8 rounded-full" style={{ background: 'radial-gradient(circle, rgba(0,144,255,0.15) 0%, transparent 70%)' }} />
+
+                    {/* Icon */}
+                    <div className="relative w-16 h-16 rounded-2xl flex items-center justify-center"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(0,144,255,0.2), rgba(139,92,246,0.1))',
+                        border: '1px solid rgba(0,144,255,0.25)',
+                        animation: 'qimgBreath 2.5s ease-in-out infinite',
+                        boxShadow: '0 8px 32px rgba(0,144,255,0.2)',
+                      }}
+                    >
+                      <Wand2 size={26} className="text-brand-blue" />
+                    </div>
+                  </div>
+
+                  {/* Status Text */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-center relative z-10"
+                  >
+                    <p className="text-base font-bold text-white mb-1">
+                      {statusText}
+                    </p>
+                    <p className="text-[11px] text-white/25 max-w-[240px] leading-relaxed">
+                      AI đang phân tích prompt và render hình ảnh của bạn. Quá trình này có thể mất 10-30 giây.
+                    </p>
+                  </motion.div>
+
+                  {/* Progress Bar */}
+                  <div className="w-48 h-1 rounded-full mt-6 overflow-hidden relative z-10"
+                    style={{ background: 'rgba(255,255,255,0.04)' }}
+                  >
+                    <div className="h-full rounded-full"
+                      style={{
+                        background: 'linear-gradient(90deg, #0090ff, #7c3aed, #0090ff)',
+                        backgroundSize: '200% 100%',
+                        animation: 'qimgProgress 25s ease-out forwards, qimgShimmer 1.5s linear infinite',
+                      }}
+                    />
+                  </div>
+
+                  {/* Pipeline Steps */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="flex items-center gap-3 mt-5 relative z-10"
+                  >
+                    {[
+                      { label: 'Prompt', done: true },
+                      { label: 'GPU', done: statusText.includes('render') || statusText.includes('Hoàn') },
+                      { label: 'Output', done: statusText.includes('Hoàn') },
+                    ].map((step, i) => (
+                      <div key={i} className="flex items-center gap-1.5">
+                        <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold transition-all duration-500 ${
+                          step.done
+                            ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/30'
+                            : 'bg-white/5 text-white/20'
+                        }`}
+                        >
+                          {step.done ? '✓' : (i + 1)}
+                        </div>
+                        <span className={`text-[9px] font-bold transition-colors ${step.done ? 'text-brand-blue' : 'text-white/15'}`}>
+                          {step.label}
+                        </span>
+                        {i < 2 && <div className={`w-4 h-px transition-colors ${step.done ? 'bg-brand-blue/40' : 'bg-white/5'}`} />}
+                      </div>
+                    ))}
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* ═══ HEADER ═══ */}
             <div className="p-5 flex items-center justify-between shrink-0"
               style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: 'linear-gradient(180deg, rgba(0,144,255,0.04) 0%, transparent 100%)' }}
