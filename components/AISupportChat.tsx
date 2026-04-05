@@ -1,12 +1,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Send, Bot, 
-  Loader2, Activity, Terminal, 
-  ChevronDown, User as UserIcon,
-  Shield, Sparkles, Paperclip, ImageIcon, Trash2,
-  Maximize2, MessageCircle, ExternalLink
+  Loader2, ChevronDown, User as UserIcon,
+  Sparkles, Paperclip, Maximize2,
+  MessageCircle, Copy, Terminal
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { GoogleGenAI } from "@google/genai";
@@ -36,15 +35,14 @@ const AISupportChat: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<{data: string, mimeType: string, preview: string} | null>(null);
   const [apiKeys, setApiKeys] = useState<GeminiKey[]>([]);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const inputRef = useRef<HTMLInputElement>(null);
   const logoUrl = "/assets/skyverses-logo.png";
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
   useEffect(() => {
     const loadConfig = async () => {
@@ -53,18 +51,18 @@ const AISupportChat: React.FC = () => {
         if (res?.success && res.data?.listKeyGommoGenmini) {
           setApiKeys(res.data.listKeyGommoGenmini);
         }
-      } catch (err) {
-        console.error("Failed to load AI keys from config", err);
-      }
+      } catch (err) { console.error("Failed to load AI keys", err); }
     };
     loadConfig();
   }, []);
 
   useEffect(() => {
-    if (isOpen || isFull) {
-      scrollToBottom();
-    }
+    if (isOpen || isFull) scrollToBottom();
   }, [messages, isOpen, isFull, isLoading]);
+
+  useEffect(() => {
+    if (isOpen) setTimeout(() => inputRef.current?.focus(), 300);
+  }, [isOpen]);
 
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -78,56 +76,40 @@ const AISupportChat: React.FC = () => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File size exceeds 5MB limit.");
-        return;
-      }
+      if (file.size > 5 * 1024 * 1024) { alert("File size exceeds 5MB limit."); return; }
       const base64 = await fileToBase64(file);
-      setSelectedFile({
-        data: base64.split(',')[1],
-        mimeType: file.type,
-        preview: base64
-      });
+      setSelectedFile({ data: base64.split(',')[1], mimeType: file.type, preview: base64 });
     }
   };
 
-  const handleClearChat = () => {
-    setMessages([]);
-    setSelectedFile(null);
-    setInput('');
-  };
+  const handleClearChat = () => { setMessages([]); setSelectedFile(null); setInput(''); };
 
   const getRandomKey = () => {
     const activeKeys = apiKeys.filter(k => k.isActive && k.key);
-    if (activeKeys.length > 0) {
-      const randomIndex = Math.floor(Math.random() * activeKeys.length);
-      return activeKeys[randomIndex].key;
-    }
+    if (activeKeys.length > 0) return activeKeys[Math.floor(Math.random() * activeKeys.length)].key;
     return process.env.API_KEY || '';
+  };
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   const handleSendMessage = async (customText?: string, customFile?: {data: string, mimeType: string}) => {
     const userText = customText || input.trim();
     const currentFile = customFile || selectedFile;
-    
     if ((!userText && !currentFile) || isLoading) return;
 
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const userParts: ChatContentPart[] = [];
     if (userText) userParts.push({ type: 'text', content: userText });
     if (currentFile) {
-        const previewUrl = currentFile.data.startsWith('data:') ? currentFile.data : `data:${currentFile.mimeType};base64,${currentFile.data}`;
-        userParts.push({ type: 'image', content: previewUrl });
+      const previewUrl = currentFile.data.startsWith('data:') ? currentFile.data : `data:${currentFile.mimeType};base64,${currentFile.data}`;
+      userParts.push({ type: 'image', content: previewUrl });
     }
 
-    const newUserMessage: ChatMessage = { 
-      id: Date.now().toString(),
-      role: 'user', 
-      parts: userParts,
-      timestamp
-    };
-
-    setMessages(prev => [...prev, newUserMessage]);
+    setMessages(prev => [...prev, { id: Date.now().toString(), role: 'user', parts: userParts, timestamp }]);
     setInput('');
     setSelectedFile(null);
     setIsLoading(true);
@@ -135,16 +117,13 @@ const AISupportChat: React.FC = () => {
     try {
       const selectedKey = getRandomKey();
       const ai = new GoogleGenAI({ apiKey: selectedKey });
-      
       const apiParts: any[] = [];
       if (userText) apiParts.push({ text: userText });
       if (currentFile) {
-        apiParts.push({
-          inlineData: {
-            data: currentFile.data.includes('base64,') ? currentFile.data.split('base64,')[1] : currentFile.data,
-            mimeType: currentFile.mimeType
-          }
-        });
+        apiParts.push({ inlineData: {
+          data: currentFile.data.includes('base64,') ? currentFile.data.split('base64,')[1] : currentFile.data,
+          mimeType: currentFile.mimeType
+        }});
       }
 
       const response = await ai.models.generateContent({
@@ -157,143 +136,262 @@ const AISupportChat: React.FC = () => {
         },
       });
 
-      const botParts: ChatContentPart[] = [];
       const botText = response.text || "I encountered an issue generating a response.";
-      
-      botParts.push({ type: 'text', content: botText });
-
-      setMessages(prev => [...prev, { 
-        id: (Date.now() + 1).toString(),
-        role: 'bot', 
-        parts: botParts, 
-        timestamp 
-      }]);
+      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'bot', parts: [{ type: 'text', content: botText }], timestamp }]);
     } catch (error) {
       console.error("Gemini Error:", error);
-      setMessages(prev => [...prev, { 
-        id: (Date.now() + 1).toString(),
-        role: 'bot', 
-        parts: [{ type: 'text', content: "Hệ thống đang bận hoặc giới hạn API đã đạt ngưỡng. Vui lòng thử lại sau giây lát." }], 
-        timestamp 
-      }]);
+      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'bot', parts: [{ type: 'text', content: "Hệ thống đang bận. Vui lòng thử lại sau giây lát." }], timestamp }]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // ═══ Render markdown-lite for bot messages ═══
+  const renderBotText = (text: string) => {
+    const blocks = text.split(/(```[\s\S]*?```)/g);
+    return blocks.map((block, idx) => {
+      if (block.startsWith('```')) {
+        const match = block.match(/```(\w*)\n?([\s\S]*?)```/);
+        const lang = match?.[1] || 'code';
+        const code = match?.[2] || '';
+        return (
+          <div key={idx} className="my-2 rounded-lg overflow-hidden border border-black/[0.06] dark:border-white/[0.06] bg-[#f8f9fa] dark:bg-[#0e0e12]">
+            <div className="flex items-center justify-between px-3 py-1.5 bg-black/[0.02] dark:bg-white/[0.03] border-b border-black/[0.04] dark:border-white/[0.04]">
+              <span className="text-[8px] font-bold uppercase text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
+                <Terminal size={9} /> {lang}
+              </span>
+              <button onClick={() => handleCopy(code, `code-${idx}`)} className="text-[8px] font-bold text-slate-400 hover:text-brand-blue transition-colors flex items-center gap-1">
+                <Copy size={9} /> Copy
+              </button>
+            </div>
+            <pre className="p-3 overflow-x-auto font-mono text-[10px] leading-relaxed text-slate-700 dark:text-gray-300 max-h-[200px]">
+              <code>{code}</code>
+            </pre>
+          </div>
+        );
+      }
+
+      let html = block
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+        .replace(/^\d+\. (.*)$/gm, '<li class="ml-4 list-decimal text-[11px] leading-relaxed mb-1">$1</li>')
+        .replace(/^\- (.*)$/gm, '<li class="ml-4 list-disc text-[11px] leading-relaxed mb-1">$1</li>');
+
+      return <div key={idx} className="text-[11px] leading-relaxed whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: html }} />;
+    });
+  };
+
+  const QUICK_PROMPTS = [
+    { emoji: '💡', text: 'Tư vấn chọn model AI phù hợp nhu cầu' },
+    { emoji: '🎬', text: 'Hướng dẫn tạo video AI chất lượng cao' },
+    { emoji: '🖼️', text: 'Cách viết prompt tạo ảnh đẹp' },
+    { emoji: '💰', text: 'Bảng giá credits và các gói dịch vụ' },
+  ];
+
   return (
     <>
+      {/* ═══════════ FAB BUTTON ═══════════ */}
       <div className="fixed bottom-[5.5rem] right-[1.65rem] z-[600]">
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Support Assistant"
-          className={`relative w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 ${
+          className={`relative w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
             isOpen 
-            ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-xl' 
-            : 'bg-white dark:bg-[#161618] text-brand-blue shadow-lg hover:shadow-xl'
+              ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-2xl rotate-90' 
+              : 'bg-white dark:bg-[#161618] text-brand-blue shadow-xl hover:shadow-2xl'
           }`}
         >
-          {/* AI Orbiting Ring */}
+          {/* Animated border ring */}
           {!isOpen && (
-            <div className="absolute -inset-[3px] rounded-full animate-[ai-orbit_3s_linear_infinite]" style={{
-              background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, #0090ff 300deg, #a855f7 330deg, transparent 360deg)',
-              mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-              WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-            }} />
-          )}
-          {/* Glow */}
-          {!isOpen && (
-            <div className="absolute inset-0 rounded-full bg-brand-blue/15 blur-md animate-pulse" />
+            <>
+              <div className="absolute -inset-[3px] rounded-2xl animate-[ai-orbit_3s_linear_infinite]" style={{
+                background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, #0090ff 300deg, #a855f7 330deg, transparent 360deg)',
+                mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+                WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
+              }} />
+              <div className="absolute inset-0 rounded-2xl bg-brand-blue/10 blur-lg animate-pulse" />
+            </>
           )}
           {/* Border */}
-          <div className={`absolute inset-0 rounded-full border ${isOpen ? 'border-transparent' : 'border-black/[0.06] dark:border-white/[0.08]'}`} />
-          {/* Icon */}
+          <div className={`absolute inset-0 rounded-2xl border ${isOpen ? 'border-transparent' : 'border-black/[0.06] dark:border-white/[0.08]'}`} />
           <div className="relative z-10">
-            {isOpen ? <X size={18} /> : <Bot size={18} />}
+            <AnimatePresence mode="wait">
+              {isOpen ? (
+                <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
+                  <X size={18} />
+                </motion.div>
+              ) : (
+                <motion.div key="open" initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.5, opacity: 0 }} transition={{ duration: 0.15 }}>
+                  <Bot size={18} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
+          {/* Notification dot */}
+          {!isOpen && messages.length === 0 && (
+            <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-brand-blue rounded-full border-2 border-white dark:border-[#161618] animate-pulse" />
+          )}
         </motion.button>
-
-        <style>{`
-          @keyframes ai-orbit {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-        `}</style>
+        <style>{`@keyframes ai-orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
 
+      {/* ═══════════ MINI CHAT MODAL ═══════════ */}
       <AnimatePresence>
         {isOpen && !isFull && (
           <motion.div
-            initial={{ opacity: 0, y: "10%", x: "-50%", scale: 0.95 }}
-            animate={{ opacity: 1, y: "-50%", x: "-50%", scale: 1 }}
-            exit={{ opacity: 0, y: "10%", x: "-50%", scale: 0.95 }}
-            className="fixed top-1/2 left-1/2 md:left-auto md:right-8 md:translate-x-0 w-[calc(100vw-2rem)] md:w-[400px] h-[600px] max-h-[85dvh] flex flex-col overflow-hidden bg-white dark:bg-[#0c0c0e] border border-black/5 dark:border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.2)] rounded-[2rem] md:rounded-lg z-[700]"
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 300 }}
+            className="fixed bottom-[9rem] right-6 md:right-8 w-[calc(100vw-3rem)] md:w-[420px] h-[560px] max-h-[75dvh] flex flex-col overflow-hidden z-[700] rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_80px_rgba(0,0,0,0.5)]"
           >
-            <div className="px-6 py-5 border-b border-black/5 dark:border-white/5 bg-[#fafafa] dark:bg-[#111114] flex items-center justify-between shrink-0">
+            {/* Glass background */}
+            <div className="absolute inset-0 bg-white/95 dark:bg-[#0d0d10]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] rounded-2xl" />
+
+            {/* ─── HEADER ─── */}
+            <div className="relative z-10 px-5 py-4 flex items-center justify-between shrink-0 border-b border-black/[0.04] dark:border-white/[0.04]">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-md flex items-center justify-center p-1 bg-brand-blue/5 border border-brand-blue/10">
-                  <img src={logoUrl} alt="Skyverses" className="w-full h-full object-contain" />
+                <div className="relative">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 flex items-center justify-center p-1.5">
+                    <img src={logoUrl} alt="S" className="w-full h-full object-contain" />
+                  </div>
+                  {/* Online dot */}
+                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-[#0d0d10]" />
                 </div>
-                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-black dark:text-white">Skyverses AI</h3>
+                <div>
+                  <h3 className="text-[12px] font-bold text-slate-900 dark:text-white tracking-tight">Skyverses AI</h3>
+                  <p className="text-[9px] font-medium text-emerald-500 flex items-center gap-1">
+                    <span className="w-1 h-1 rounded-full bg-emerald-500 inline-block animate-pulse" /> Online · Gemini 3.0
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => { setIsFull(true); setIsOpen(false); }} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full text-gray-400 hover:text-brand-blue transition-all"><Maximize2 size={16} /></button>
-                <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-all"><ChevronDown size={20} className="text-gray-400" /></button>
+              <div className="flex items-center gap-1">
+                <button onClick={() => { setIsFull(true); setIsOpen(false); }} 
+                  className="w-8 h-8 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.04] flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all" title="Expand">
+                  <Maximize2 size={14} />
+                </button>
+                <button onClick={() => setIsOpen(false)} 
+                  className="w-8 h-8 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.04] flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all">
+                  <ChevronDown size={16} />
+                </button>
               </div>
             </div>
 
-            <div className="flex-grow p-5 md:p-6 overflow-y-auto bg-white dark:bg-[#0c0c0e] flex flex-col gap-6 no-scrollbar relative">
+            {/* ─── MESSAGES AREA ─── */}
+            <div className="relative z-10 flex-grow overflow-y-auto no-scrollbar px-4 py-4 flex flex-col gap-4">
+
+              {/* Welcome state */}
               {messages.length === 0 && (
-                <div className="flex flex-col gap-4">
-                  <div className="flex gap-3 items-start relative z-10">
-                    <div className="w-7 h-7 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center shrink-0"><Sparkles size={14} /></div>
-                    <div className="bg-gray-50 dark:bg-white/[0.03] border border-black/5 dark:border-white/5 p-4 rounded-xl rounded-tl-none shadow-sm max-w-[85%]">
-                      <p className="text-[12px] font-medium leading-relaxed text-slate-600 dark:text-slate-300 italic">{t('chat.welcome')}</p>
+                <div className="flex-1 flex flex-col items-center justify-center gap-5 py-4">
+                  {/* Logo + greeting */}
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-brand-blue/10 blur-[20px] rounded-full animate-pulse" />
+                    <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-white/[0.04] dark:to-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center shadow-lg p-2.5">
+                      <img src={logoUrl} alt="Skyverses" className="w-full h-full object-contain" />
                     </div>
                   </div>
+                  <div className="text-center space-y-1.5">
+                    <h4 className="text-[14px] font-bold text-slate-900 dark:text-white">Xin chào! 👋</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-gray-500 font-medium max-w-[260px] leading-relaxed">
+                      {t('chat.welcome')}
+                    </p>
+                  </div>
+
+                  {/* Quick prompts */}
+                  <div className="w-full space-y-1.5 px-1">
+                    {QUICK_PROMPTS.map((p, i) => (
+                      <button key={i} onClick={() => handleSendMessage(p.text)}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/20 hover:bg-brand-blue/[0.03] transition-all text-left group">
+                        <span className="text-sm shrink-0">{p.emoji}</span>
+                        <span className="text-[10px] font-semibold text-slate-600 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors leading-snug">{p.text}</span>
+                      </button>
+                    ))}
+                  </div>
+
                   {/* Support channels */}
-                  <div className="px-2 space-y-2">
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-600">Hỗ trợ kỹ thuật trực tiếp</p>
+                  <div className="w-full px-1 pt-1">
                     <div className="flex gap-2">
                       <a href="https://t.me/nhomhotrokythuat" target="_blank" rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-[#2AABEE]/[0.08] border border-[#2AABEE]/15 hover:border-[#2AABEE]/40 hover:bg-[#2AABEE]/15 transition-all group">
-                        <Send size={13} className="text-[#2AABEE] group-hover:scale-110 transition-transform" />
-                        <span className="text-[10px] font-bold text-[#2AABEE]">Telegram</span>
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-[#2AABEE]/[0.06] border border-[#2AABEE]/12 hover:border-[#2AABEE]/30 transition-all group">
+                        <Send size={11} className="text-[#2AABEE]" />
+                        <span className="text-[9px] font-bold text-[#2AABEE]">Telegram</span>
                       </a>
                       <a href="https://zalo.me/g/brzhpkvbxtnvicdtgpkv" target="_blank" rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-[#0068FF]/[0.08] border border-[#0068FF]/15 hover:border-[#0068FF]/40 hover:bg-[#0068FF]/15 transition-all group">
-                        <MessageCircle size={13} className="text-[#0068FF] group-hover:scale-110 transition-transform" />
-                        <span className="text-[10px] font-bold text-[#0068FF]">Zalo</span>
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-[#0068FF]/[0.06] border border-[#0068FF]/12 hover:border-[#0068FF]/30 transition-all group">
+                        <MessageCircle size={11} className="text-[#0068FF]" />
+                        <span className="text-[9px] font-bold text-[#0068FF]">Zalo</span>
                       </a>
                     </div>
                   </div>
                 </div>
               )}
-              {messages.map((msg, idx) => (
-                <div key={idx} className={`flex gap-3 items-start relative z-10 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${msg.role === 'user' ? 'bg-black dark:bg-white text-white dark:text-black border-transparent' : 'bg-brand-blue/5 dark:bg-brand-blue/10 text-brand-blue border-brand-blue/10'}`}>{msg.role === 'user' ? <UserIcon size={14} /> : <Bot size={14} />}</div>
-                  <div className={`space-y-2 max-w-[85%] ${msg.role === 'user' ? 'text-right' : ''}`}>
-                    <div className={`p-4 rounded-xl shadow-sm border ${msg.role === 'user' ? 'bg-brand-blue text-white border-transparent text-left rounded-tr-none' : 'bg-gray-50 dark:bg-white/[0.02] border-black/5 dark:border-white/10 text-slate-700 dark:text-slate-200 rounded-tl-none'}`}>
+
+              {/* Messages */}
+              {messages.map((msg) => (
+                <div key={msg.id} className={`flex gap-2.5 items-start ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                  {/* Avatar */}
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                    msg.role === 'user' 
+                      ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black'
+                      : 'bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 p-1'
+                  }`}>
+                    {msg.role === 'user' 
+                      ? <UserIcon size={12} /> 
+                      : <img src={logoUrl} alt="" className="w-full h-full object-contain" />
+                    }
+                  </div>
+
+                  {/* Bubble */}
+                  <div className={`max-w-[80%] group ${msg.role === 'user' ? 'text-right' : ''}`}>
+                    <div className={`px-4 py-3 rounded-2xl ${
+                      msg.role === 'user'
+                        ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black rounded-tr-lg'
+                        : 'bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] text-slate-700 dark:text-gray-200 rounded-tl-lg'
+                    }`}>
                       {msg.parts.map((part, pIdx) => (
                         <div key={pIdx}>
-                          {part.type === 'image' && <img src={part.content} className="w-full rounded-lg mb-3 border border-white/10" alt="" />}
-                          {part.type === 'text' && <p className="text-[12px] font-bold leading-relaxed whitespace-pre-wrap">{part.content}</p>}
+                          {part.type === 'image' && <img src={part.content} className="w-full rounded-lg mb-2 border border-white/10" alt="" />}
+                          {part.type === 'text' && (
+                            msg.role === 'bot' 
+                              ? renderBotText(part.content) 
+                              : <p className="text-[11px] font-medium leading-relaxed whitespace-pre-wrap">{part.content}</p>
+                          )}
                         </div>
                       ))}
                     </div>
+                    {/* Actions */}
+                    {msg.role === 'bot' && (
+                      <div className="flex items-center gap-2 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => handleCopy(msg.parts.map(p => p.content).join('\n'), msg.id)} 
+                          className="flex items-center gap-1 text-[8px] font-semibold text-slate-400 hover:text-brand-blue transition-colors">
+                          <Copy size={9} /> {copiedId === msg.id ? 'Copied!' : 'Copy'}
+                        </button>
+                        <span className="text-[8px] text-slate-300 dark:text-gray-700">{msg.timestamp}</span>
+                      </div>
+                    )}
+                    {msg.role === 'user' && (
+                      <p className="text-[8px] text-slate-400 dark:text-gray-600 mt-1 mr-1">{msg.timestamp}</p>
+                    )}
                   </div>
                 </div>
               ))}
+
+              {/* Loading */}
               {isLoading && (
-                <div className="flex gap-3 items-start animate-pulse">
-                  <div className="w-7 h-7 rounded-lg bg-brand-blue/5 border border-brand-blue/10 flex items-center justify-center text-brand-blue"><Loader2 size={12} className="animate-spin" /></div>
-                  <div className="bg-gray-50 dark:bg-white/[0.02] p-4 rounded-xl rounded-tl-none w-16">
-                    <div className="flex gap-1.5 justify-center">
-                      <div className="w-1 h-1 bg-brand-blue/40 rounded-full animate-bounce" />
-                      <div className="w-1 h-1 bg-brand-blue/40 rounded-full animate-bounce delay-75" />
-                      <div className="w-1 h-1 bg-brand-blue/40 rounded-full animate-bounce delay-150" />
+                <div className="flex gap-2.5 items-start">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 flex items-center justify-center p-1 shrink-0">
+                    <img src={logoUrl} alt="" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="px-4 py-3.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl rounded-tl-lg">
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1">
+                        <div className="w-1.5 h-1.5 bg-brand-blue/40 rounded-full animate-bounce" />
+                        <div className="w-1.5 h-1.5 bg-brand-blue/40 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
+                        <div className="w-1.5 h-1.5 bg-brand-blue/40 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
+                      </div>
+                      <span className="text-[9px] font-medium text-slate-400 dark:text-gray-500">Đang suy nghĩ...</span>
                     </div>
                   </div>
                 </div>
@@ -301,25 +399,63 @@ const AISupportChat: React.FC = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-5 md:p-6 border-t border-black/5 dark:border-white/5 bg-[#fafafa] dark:bg-[#111114] shrink-0 space-y-3">
-              {/* Quick support links */}
-              <div className="flex items-center justify-center gap-3">
-                <a href="https://t.me/nhomhotrokythuat" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[9px] font-semibold text-[#2AABEE] hover:underline transition-all">
-                  <Send size={10} /> Telegram
-                </a>
-                <span className="text-slate-300 dark:text-gray-700">·</span>
-                <a href="https://zalo.me/g/brzhpkvbxtnvicdtgpkv" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[9px] font-semibold text-[#0068FF] hover:underline transition-all">
-                  <MessageCircle size={10} /> Zalo
-                </a>
-              </div>
-              <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="relative flex items-center gap-3">
-                <div className="relative flex-grow">
-                  <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder={t('chat.placeholder')} disabled={isLoading} className="w-full bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl pl-5 pr-12 py-4 text-[12px] font-bold focus:ring-1 focus:ring-brand-blue outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-700 text-black dark:text-white shadow-sm" />
-                  <button type="button" onClick={() => fileInputRef.current?.click()} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-blue transition-colors"><Paperclip size={18} /></button>
-                  <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+            {/* ─── INPUT BAR ─── */}
+            <div className="relative z-10 px-4 pb-4 pt-2 shrink-0">
+              {/* File preview */}
+              <AnimatePresence>
+                {selectedFile && (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                    className="flex items-center gap-2.5 mb-2 px-3 py-2 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
+                    <img src={selectedFile.preview} className="w-10 h-10 rounded-lg object-cover border border-black/[0.06] dark:border-white/[0.06]" alt="" />
+                    <p className="text-[9px] font-medium text-slate-400 dark:text-gray-500 flex-1">Ảnh đính kèm</p>
+                    <button onClick={() => setSelectedFile(null)} className="w-5 h-5 rounded-md bg-red-500/10 text-red-500 hover:bg-red-500/20 flex items-center justify-center transition-all">
+                      <X size={10} />
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Support mini links — persistent when messages exist */}
+              {messages.length > 0 && (
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <a href="https://t.me/nhomhotrokythuat" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[8px] font-semibold text-[#2AABEE] hover:underline">
+                    <Send size={8} /> Telegram
+                  </a>
+                  <span className="text-slate-300 dark:text-gray-700 text-[8px]">·</span>
+                  <a href="https://zalo.me/g/brzhpkvbxtnvicdtgpkv" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[8px] font-semibold text-[#0068FF] hover:underline">
+                    <MessageCircle size={8} /> Zalo
+                  </a>
                 </div>
-                <button type="submit" className="w-14 h-14 bg-brand-blue text-white rounded-xl flex items-center justify-center hover:brightness-110 shadow-lg disabled:opacity-30" disabled={(!input.trim() && !selectedFile) || isLoading}>{isLoading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} fill="currentColor" />}</button>
+              )}
+
+              {/* Input pill */}
+              <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
+                className="flex items-center gap-2 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-1.5 pl-2 focus-within:border-brand-blue/30 transition-all">
+                <button type="button" onClick={() => fileInputRef.current?.click()} 
+                  className="w-8 h-8 rounded-xl bg-white dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all shrink-0 hover:scale-105 active:scale-95">
+                  <Paperclip size={14} />
+                </button>
+                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+                <input 
+                  ref={inputRef}
+                  type="text" value={input} onChange={(e) => setInput(e.target.value)} 
+                  placeholder={t('chat.placeholder')} disabled={isLoading}
+                  className="flex-grow bg-transparent border-none py-2.5 px-2 text-[12px] font-medium focus:outline-none placeholder:text-slate-400 dark:placeholder:text-gray-600 text-slate-900 dark:text-white" 
+                />
+                <button type="submit"
+                  disabled={(!input.trim() && !selectedFile) || isLoading}
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all shrink-0 ${
+                    input.trim() || selectedFile 
+                      ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/20 hover:brightness-110 active:scale-95' 
+                      : 'bg-black/[0.03] dark:bg-white/[0.03] text-slate-300 dark:text-gray-700'
+                  }`}>
+                  {isLoading ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
+                </button>
               </form>
+
+              <p className="text-center text-[7px] font-medium text-slate-300 dark:text-gray-700 mt-2">
+                Powered by Gemini · <span className="text-brand-blue">Skyverses</span>
+              </p>
             </div>
           </motion.div>
         )}
