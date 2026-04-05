@@ -48,6 +48,12 @@ const AISupportChat: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const logoUrl = "/assets/skyverses-logo.png";
 
+  // Rate limiting: max 10 messages per 60s
+  const RATE_LIMIT = 10;
+  const RATE_WINDOW = 60; // seconds
+  const sendTimestamps = useRef<number[]>([]);
+  const [rateCooldown, setRateCooldown] = useState(0);
+
   // Persist messages to localStorage (keep last 50)
   useEffect(() => {
     try {
@@ -117,6 +123,20 @@ const AISupportChat: React.FC = () => {
     const userText = customText || input.trim();
     const currentFile = customFile || selectedFile;
     if ((!userText && !currentFile) || isLoading) return;
+
+    // Rate limit check
+    const now = Date.now();
+    sendTimestamps.current = sendTimestamps.current.filter(t => now - t < RATE_WINDOW * 1000);
+    if (sendTimestamps.current.length >= RATE_LIMIT) {
+      const oldest = sendTimestamps.current[0];
+      const waitSec = Math.ceil((oldest + RATE_WINDOW * 1000 - now) / 1000);
+      setRateCooldown(waitSec);
+      const timer = setInterval(() => {
+        setRateCooldown(prev => { if (prev <= 1) { clearInterval(timer); return 0; } return prev - 1; });
+      }, 1000);
+      return;
+    }
+    sendTimestamps.current.push(now);
 
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const userParts: ChatContentPart[] = [];
@@ -578,7 +598,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                   className="w-8 h-8 rounded-xl bg-white dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all shrink-0 hover:scale-105 active:scale-95">
                   <Paperclip size={14} />
                 </button>
-                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+                <input type="file" ref={fileInputRef} className="hidden" accept="image/*,.pdf,.doc,.docx,.txt,.csv" onChange={handleFileChange} />
                 <input 
                   ref={inputRef}
                   type="text" value={input} onChange={(e) => setInput(e.target.value)} 
@@ -596,9 +616,15 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                 </button>
               </form>
 
-              <p className="text-center text-[7px] font-medium text-slate-300 dark:text-gray-700 mt-2">
-                Powered by Gemini · <span className="text-brand-blue">Skyverses</span>
-              </p>
+              {rateCooldown > 0 ? (
+                <p className="text-center text-[8px] font-semibold text-amber-500 mt-2 animate-pulse">
+                  ⏳ Bạn đang gửi quá nhanh. Vui lòng chờ {rateCooldown}s...
+                </p>
+              ) : (
+                <p className="text-center text-[7px] font-medium text-slate-300 dark:text-gray-700 mt-2">
+                  Powered by Claude · <span className="text-brand-blue">Skyverses</span>
+                </p>
+              )}
             </div>
           </motion.div>
         )}
