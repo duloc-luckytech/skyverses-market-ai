@@ -314,45 +314,36 @@ const MarketPage = () => {
               {/* Right: Vertical Scrolling Gallery — Desktop marquee / Mobile compact horizontal */}
               {/* ═══ MOBILE: Trending Products Slide ═══ */}
               <div className="md:hidden mt-3 -mx-4 px-4">
-                <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex items-center gap-1.5 mb-2.5">
                   <Zap size={10} className="text-orange-500" fill="currentColor" />
                   <span className="text-[8px] font-black uppercase tracking-[0.25em] text-orange-500">Trending</span>
                 </div>
-                <div className="flex gap-2.5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1">
+                <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2">
                   {(filteredSolutions.length > 0
                     ? filteredSolutions.filter(s => s.homeBlocks?.includes('top_trending')).slice(0, 8)
                     : solutions.slice(0, 6)
                   ).map((sol, idx) => (
-                    <div
+                    <SolutionCard
                       key={sol._id || sol.id}
-                      onClick={() => handleNavigate(sol.slug)}
-                      className="flex-shrink-0 snap-start w-[140px] rounded-xl overflow-hidden bg-white dark:bg-[#0a0a0c] border border-black/[0.06] dark:border-white/[0.06] cursor-pointer group"
-                    >
-                      <div className="relative h-[85px] overflow-hidden">
-                        <img src={sol.imageUrl} alt={sol.name[currentLang]} loading={idx < 3 ? 'eager' : 'lazy'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        <div className="absolute top-1.5 left-1.5">
-                          <span className="bg-black/80 backdrop-blur text-white px-1.5 py-0.5 text-[6px] font-black uppercase tracking-wider rounded-sm">{sol.category[currentLang]}</span>
-                        </div>
-                      </div>
-                      <div className="p-2 space-y-1">
-                        <p className="text-[10px] font-black text-slate-900 dark:text-white truncate leading-tight">{sol.name[currentLang]}</p>
-                        <div className="flex items-center justify-between">
-                          {sol.isFree ? (
-                            <span className="text-[7px] font-black text-emerald-500 uppercase">Free</span>
-                          ) : (
-                            <div className="flex items-center gap-0.5">
-                              <Zap size={8} className="text-brand-blue" fill="currentColor" />
-                              <span className="text-[8px] font-black text-slate-600 dark:text-gray-400">{sol.priceCredits}</span>
-                            </div>
-                          )}
-                          <span className="text-[7px] text-slate-400 dark:text-gray-600">{getFakeStats(sol._id || sol.id).users} users</span>
-                        </div>
-                      </div>
-                    </div>
+                      sol={sol}
+                      idx={idx}
+                      lang={lang}
+                      isLiked={likedItems.includes(sol._id || sol.id)}
+                      isFavorited={favorites.includes(sol.id)}
+                      onToggleFavorite={toggleFavorite}
+                      onToggleLike={toggleLike}
+                      onClick={handleNavigate}
+                      onHover={handlePrefetchOnHover}
+                      stats={getFakeStats(sol._id || sol.id)}
+                    />
                   ))}
-                  <div onClick={() => navigate('/markets')} className="flex-shrink-0 snap-start w-[80px] rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] flex flex-col items-center justify-center gap-1 cursor-pointer">
-                    <ArrowRight size={14} className="text-brand-blue" />
-                    <span className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Tất cả</span>
+                  <div onClick={() => navigate('/markets')} className="flex-shrink-0 snap-start w-[140px] flex flex-col items-center justify-center bg-slate-50 dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] rounded-xl cursor-pointer hover:border-brand-blue/40 transition-all p-4 text-center space-y-3">
+                    <div className="w-10 h-10 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue">
+                      <ArrowRight size={18} />
+                    </div>
+                    <div className="space-y-0.5">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-800 dark:text-white">Xem tất cả</p>
+                    </div>
                   </div>
                 </div>
               </div>
