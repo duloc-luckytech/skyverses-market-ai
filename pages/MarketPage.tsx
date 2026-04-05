@@ -223,6 +223,7 @@ const MarketPage = () => {
                   initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   transition={{ duration: 0.6, delay: 0.1 }}
+                  className="hidden md:block"
                 >
                   <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25">
                     <div className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-pulse" />
