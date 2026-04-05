@@ -10,7 +10,7 @@ import {
   Sparkles, LucideIcon, ArrowRight, ChevronRight, Play, Zap, Shield, Globe2, Cpu,
   MousePointerClick, Wand2, Rocket, Megaphone, ShoppingBag, Clapperboard,
   Building2, Shirt, GraduationCap, Brain, Wrench, Plug, CreditCard, RefreshCw,
-  MonitorPlay, Palette, UserCircle, Landmark, TrendingDown
+  MonitorPlay, Palette, UserCircle, Landmark, TrendingDown, Share2, UserPlus, Check, Users
 } from 'lucide-react';
 
 import { useLanguage } from '../context/LanguageContext';
@@ -766,74 +766,92 @@ const MarketPage = () => {
             </section>
           )}
 
-          {/* ═══════════════════ SHOWCASE GALLERY ═══════════════════ */}
+          {/* ═══════════════════ INVITE FRIENDS & EARN ═══════════════════ */}
           {!query && (
             <section className="py-8 md:py-24">
-              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-6 md:mb-12">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-pink-500/8 dark:bg-pink-500/15 border border-pink-500/15 dark:border-pink-500/25 rounded-full mb-3 md:mb-5">
-                  <ImageIcon size={12} className="text-pink-500" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-pink-500">AI Gallery</span>
+              <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-brand-blue/10 via-purple-500/10 to-pink-500/10 dark:from-brand-blue/5 dark:via-purple-500/5 dark:to-pink-500/5 border border-brand-blue/10 dark:border-white/[0.06]">
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  <div className="absolute -top-20 -right-20 w-60 md:w-80 h-60 md:h-80 bg-brand-blue/10 rounded-full blur-3xl" />
+                  <div className="absolute -bottom-20 -left-20 w-60 md:w-80 h-60 md:h-80 bg-purple-500/10 rounded-full blur-3xl" />
                 </div>
-                <h2 className="text-xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                  Tạo bởi <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">Skyverses AI</span>
-                </h2>
-                <p className="text-xs md:text-sm text-slate-400 dark:text-gray-500 max-w-md mx-auto hidden md:block">Khám phá những tác phẩm ấn tượng từ cộng đồng người dùng.</p>
-              </motion.div>
 
-              {/* ═══ MOBILE: Horizontal scroll gallery ═══ */}
-              <div className="md:hidden flex gap-2.5 overflow-x-auto no-scrollbar -mx-4 px-4 pb-2 snap-x snap-mandatory">
-                {[
-                  'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/955c04bf-959f-4832-843a-dfbaad2d82a3_min.webp',
-                  'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/6571fcff-b67e-4537-98fe-0301d9051c57_min.webp',
-                  'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/596c139a-7cd8-4c10-9305-bad2f9b6ab1f_min.webp',
-                  'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/640d8657-22e1-4ec7-adcf-d2b99f4e25e0_min.webp',
-                  'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/1354a1b1-5ef3-46d7-8cb2-17268db2d7f7_min.webp',
-                ].map((url, idx) => (
-                  <div key={idx} className="flex-shrink-0 snap-start w-[200px] h-[140px] rounded-xl overflow-hidden">
-                    <img src={url} alt="" loading="lazy" className="w-full h-full object-cover" />
-                  </div>
-                ))}
-                <div onClick={() => navigate('/explorer')} className="flex-shrink-0 snap-start w-[100px] h-[140px] rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] flex flex-col items-center justify-center gap-1.5 cursor-pointer">
-                  <ArrowRight size={18} className="text-brand-blue" />
-                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-wider">Xem thêm</span>
-                </div>
-              </div>
-
-              {/* ═══ DESKTOP: Original masonry gallery ═══ */}
-              <div className="hidden md:block columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4">
-                {[
-                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/955c04bf-959f-4832-843a-dfbaad2d82a3_min.webp', h: 'h-[220px] md:h-[280px]' },
-                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/6571fcff-b67e-4537-98fe-0301d9051c57_min.webp', h: 'h-[280px] md:h-[360px]' },
-                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/596c139a-7cd8-4c10-9305-bad2f9b6ab1f_min.webp', h: 'h-[200px] md:h-[240px]' },
-                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/640d8657-22e1-4ec7-adcf-d2b99f4e25e0_min.webp', h: 'h-[260px] md:h-[320px]' },
-                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/1354a1b1-5ef3-46d7-8cb2-17268db2d7f7_min.webp', h: 'h-[240px] md:h-[300px]' },
-                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/82e86e0d-db5a-4bcf-8f7b-142ff21f8442_min.webp', h: 'h-[200px] md:h-[260px]' },
-                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_2wKQUGex0SWTDax9bngGeSqhuK7/bd7a9af7-87da-430f-ae2e-efb223e28cf3_min.webp', h: 'h-[280px] md:h-[340px]' },
-                  { url: 'https://d8j0ntlcm91z4.cloudfront.net/user_32VMvlSstxcIMk6hBmtAY4gHyan/3ca5245a-2aac-4903-a528-6bfb222533ac_min.webp', h: 'h-[220px] md:h-[270px]' },
-                ].map((img, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, scale: 0.85, y: 30 }}
-                    whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-30px' }}
-                    transition={{ delay: idx * 0.08, duration: 0.6, type: 'spring', stiffness: 100 }}
-                    whileHover={{ scale: 1.03, y: -5, transition: { duration: 0.3 } }}
-                    className={`mb-3 md:mb-4 break-inside-avoid rounded-2xl overflow-hidden group cursor-pointer relative ${img.h}`}
-                  >
-                    <img src={img.url} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-3 group-hover:translate-y-0">
-                      <span className="px-2.5 py-1 bg-black/60 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-widest rounded-md border border-white/10 shadow-lg">AI Generated</span>
+                <div className="relative z-10 p-6 md:p-16 flex flex-col md:flex-row items-center gap-6 md:gap-16">
+                  <div className="flex-1 text-center md:text-left space-y-4 md:space-y-6">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/10 dark:bg-brand-blue/15 border border-brand-blue/20 rounded-full">
+                      <Users size={12} className="text-brand-blue" />
+                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">Invite & Earn</span>
                     </div>
-                  </motion.div>
-                ))}
+                    <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1]">
+                      Mời bạn bè,{' '}
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">nhận Credits miễn phí</span>
+                    </h2>
+                    <p className="text-xs md:text-base text-slate-500 dark:text-gray-400 max-w-lg leading-relaxed">
+                      Chia sẻ link giới thiệu của bạn. Khi bạn bè đăng ký và sử dụng, cả hai đều nhận được Credits miễn phí.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 md:gap-6 pt-2">
+                      {[
+                        { num: '1', text: 'Chia sẻ link', icon: <Share2 size={16} /> },
+                        { num: '2', text: 'Bạn bè đăng ký', icon: <UserPlus size={16} /> },
+                        { num: '3', text: 'Nhận Credits', icon: <Gift size={16} /> },
+                      ].map((s) => (
+                        <div key={s.num} className="flex items-center gap-2.5 px-3 py-2 bg-white/50 dark:bg-white/[0.03] rounded-xl border border-black/[0.04] dark:border-white/[0.06]">
+                          <div className="w-7 h-7 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue shrink-0">{s.icon}</div>
+                          <span className="text-[11px] font-bold text-slate-700 dark:text-gray-300">{s.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                      <button
+                        onClick={() => navigate(isAuthenticated ? '/referral' : '/pricing')}
+                        className="inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-brand-blue to-purple-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-brand-blue/20 hover:shadow-xl hover:shadow-brand-blue/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                      >
+                        <Gift size={14} />
+                        {isAuthenticated ? 'Lấy link giới thiệu' : 'Đăng ký & nhận Credits'}
+                        <ArrowRight size={14} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex-shrink-0 w-full md:w-[340px] lg:w-[400px]">
+                    <div className="space-y-3">
+                      {[
+                        { label: 'Bạn nhận được', amount: '+50 Credits', color: 'from-brand-blue to-blue-600', icon: <Zap size={18} fill="currentColor" /> },
+                        { label: 'Bạn bè nhận được', amount: '+50 Credits', color: 'from-purple-500 to-pink-500', icon: <Gift size={18} /> },
+                      ].map((reward, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, x: 30 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.2 + idx * 0.15, type: 'spring', stiffness: 120 }}
+                          className="flex items-center gap-4 p-4 md:p-5 bg-white dark:bg-[#0d0d0f] rounded-xl md:rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl"
+                        >
+                          <div className={`w-11 h-11 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br ${reward.color} flex items-center justify-center text-white shadow-lg shrink-0`}>
+                            {reward.icon}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-[10px] md:text-xs text-slate-400 dark:text-gray-500 font-medium">{reward.label}</p>
+                            <p className="text-lg md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">{reward.amount}</p>
+                          </div>
+                          <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                            <Check size={16} className="text-emerald-500" />
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-center gap-6 mt-4 md:mt-6 py-3 px-4 bg-white/50 dark:bg-white/[0.02] rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
+                      <div className="text-center">
+                        <p className="text-base md:text-xl font-black text-slate-900 dark:text-white">2,847</p>
+                        <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-wider">Người tham gia</p>
+                      </div>
+                      <div className="w-px h-8 bg-black/[0.06] dark:bg-white/[0.06]" />
+                      <div className="text-center">
+                        <p className="text-base md:text-xl font-black text-brand-blue">142K</p>
+                        <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-wider">Credits đã tặng</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-
-              <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mt-6 md:mt-10 hidden md:block">
-                <button onClick={() => navigate('/explorer')} className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-white dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl text-sm font-bold text-slate-700 dark:text-white hover:border-brand-blue/30 hover:shadow-lg transition-all">
-                  Xem thêm tại Explorer <ArrowRight size={14} className="text-brand-blue" />
-                </button>
-              </motion.div>
             </section>
           )}
 
