@@ -1055,12 +1055,12 @@ const MarketPage = () => {
                     </button>
                   </div>
 
-                  {/* Credit Flow Steps */}
+                  {/* Credit Flow Steps — Image Cards */}
                   <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-12 overflow-x-auto no-scrollbar -mx-5 px-5 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
                     {[
-                      { step: '01', title: 'Mua Credits', desc: 'Chọn gói phù hợp hoặc nạp tuỳ ý. Nhận bonus khi mua gói lớn.', icon: <CreditCard size={20} />, iconBg: 'bg-amber-500/15 text-amber-400' },
-                      { step: '02', title: 'Sử dụng mọi nơi', desc: 'Dùng Credits cho bất kỳ sản phẩm nào — Video, Image, Voice, Music, Workflow...', icon: <Zap size={20} />, iconBg: 'bg-amber-500/15 text-amber-400' },
-                      { step: '03', title: 'Nạp thêm khi cần', desc: 'Credits không hết hạn. Nạp thêm bất cứ lúc nào, chỉ trả cho những gì bạn dùng.', icon: <RefreshCw size={20} />, iconBg: 'bg-amber-500/15 text-amber-400' },
+                      { step: '01', title: 'Mua Credits', desc: 'Chọn gói phù hợp hoặc nạp tuỳ ý. Nhận bonus khi mua gói lớn.', image: '/assets/credits/step-01-buy.webp' },
+                      { step: '02', title: 'Sử dụng mọi nơi', desc: 'Dùng Credits cho bất kỳ sản phẩm nào — Video, Image, Voice, Music, Workflow...', image: '/assets/credits/step-02-use.webp' },
+                      { step: '03', title: 'Nạp thêm khi cần', desc: 'Credits không hết hạn. Nạp thêm bất cứ lúc nào, chỉ trả cho những gì bạn dùng.', image: '/assets/credits/step-03-topup.webp' },
                     ].map((item, idx) => (
                       <motion.div
                         key={item.step}
@@ -1068,17 +1068,20 @@ const MarketPage = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: idx * 0.15 }}
-                        className="relative flex-shrink-0 w-[240px] md:w-auto snap-start p-4 md:p-6 rounded-xl md:rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.1] transition-all group"
+                        className="relative flex-shrink-0 w-[260px] md:w-auto snap-start rounded-xl md:rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-amber-500/20 transition-all group overflow-hidden"
                       >
-                        <div className="flex items-start gap-4">
-                          <div className={`w-10 h-10 rounded-xl ${item.iconBg} flex items-center justify-center`}>{item.icon}</div>
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[9px] font-black text-amber-400/60 uppercase tracking-widest">Step {item.step}</span>
-                            </div>
-                            <h4 className="text-sm font-bold text-white">{item.title}</h4>
-                            <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
+                        {/* Image */}
+                        <div className="relative aspect-[16/9] overflow-hidden">
+                          <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                          <div className="absolute top-2 left-2 md:top-3 md:left-3">
+                            <span className="px-2 py-0.5 bg-amber-500/20 backdrop-blur-sm border border-amber-500/30 text-[8px] font-black text-amber-400 uppercase tracking-widest rounded-md">Step {item.step}</span>
                           </div>
+                        </div>
+                        {/* Text */}
+                        <div className="p-3 md:p-5 space-y-1.5 md:space-y-2">
+                          <h4 className="text-sm md:text-base font-bold text-white">{item.title}</h4>
+                          <p className="text-[10px] md:text-xs text-white/35 leading-relaxed">{item.desc}</p>
                         </div>
                         {idx < 2 && (
                           <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
