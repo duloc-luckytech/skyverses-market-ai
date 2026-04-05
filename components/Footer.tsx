@@ -3,7 +3,7 @@ import React, { useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Twitter, Linkedin, Mail, Github, Facebook,
-  Zap, ArrowRight, Globe2, Sparkles
+  Zap, ArrowRight, Globe2, Sparkles, MessageCircle, Send
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -84,9 +84,14 @@ const Footer: React.FC = () => {
                 { icon: <Linkedin size={16} />, href: 'https://linkedin.com/', label: 'LinkedIn' },
                 { icon: <Github size={16} />, href: 'https://github.com/', label: 'GitHub' },
                 { icon: <Mail size={16} />, href: 'mailto:support@skyverses.com', label: 'Email' },
+                { icon: <Send size={16} />, href: 'https://t.me/nhomhotrokythuat', label: 'Telegram', accent: true },
               ].map(social => (
                 <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" title={social.label}
-                  className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center text-slate-400 dark:text-gray-500 hover:bg-brand-blue hover:border-brand-blue hover:text-white hover:shadow-lg hover:shadow-brand-blue/20 hover:scale-110 transition-all duration-300">
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 ${
+                    (social as any).accent
+                      ? 'bg-[#2AABEE]/10 border border-[#2AABEE]/20 text-[#2AABEE] hover:bg-[#2AABEE] hover:border-[#2AABEE] hover:text-white hover:shadow-lg hover:shadow-[#2AABEE]/20'
+                      : 'bg-slate-100 dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.04] text-slate-400 dark:text-gray-500 hover:bg-brand-blue hover:border-brand-blue hover:text-white hover:shadow-lg hover:shadow-brand-blue/20'
+                  }`}>
                   {social.icon}
                 </a>
               ))}
@@ -142,9 +147,9 @@ const Footer: React.FC = () => {
               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white">{t('footer.support_title')}</h4>
               <ul className="space-y-3">
                 {[
-                  { label: t('footer.contact'), href: 'https://skyverses.com/contact' },
-                  { label: t('footer.center'), href: 'https://skyverses.com/support' },
-                  { label: t('footer.partners'), href: 'https://skyverses.com/partners' },
+                  { label: t('footer.contact'), href: 'https://skyverses.com/contact', icon: null },
+                  { label: t('footer.center'), href: 'https://skyverses.com/support', icon: null },
+                  { label: t('footer.partners'), href: 'https://skyverses.com/partners', icon: null },
                 ].map(link => (
                   <li key={link.label}>
                     <a href={link.href} target="_blank" rel="noopener noreferrer" className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
@@ -154,6 +159,20 @@ const Footer: React.FC = () => {
                   </li>
                 ))}
               </ul>
+              {/* Telegram & Zalo Support */}
+              <div className="pt-2 space-y-2">
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-600">Hỗ trợ kỹ thuật</p>
+                <a href="https://t.me/nhomhotrokythuat" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#2AABEE]/[0.06] border border-[#2AABEE]/15 hover:border-[#2AABEE]/40 hover:bg-[#2AABEE]/10 transition-all group">
+                  <Send size={14} className="text-[#2AABEE] group-hover:scale-110 transition-transform" />
+                  <span className="text-[11px] font-semibold text-[#2AABEE]">Telegram Support</span>
+                </a>
+                <a href="https://zalo.me/g/skyverses" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#0068FF]/[0.06] border border-[#0068FF]/15 hover:border-[#0068FF]/40 hover:bg-[#0068FF]/10 transition-all group">
+                  <MessageCircle size={14} className="text-[#0068FF] group-hover:scale-110 transition-transform" />
+                  <span className="text-[11px] font-semibold text-[#0068FF]">Zalo Support</span>
+                </a>
+              </div>
             </div>
 
             {/* Legal */}
