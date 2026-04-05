@@ -223,7 +223,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
               </button>
               
               <div className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-all cursor-pointer group border border-transparent hover:border-slate-200 dark:hover:border-white/10">
-                 <span className="text-[12px] md:text-[13px] font-black text-slate-600 dark:text-gray-300 group-hover:text-slate-900 dark:group-hover:text-white italic truncate max-w-[120px] sm:max-w-none">Gemini 3.0 Pro</span>
+                 <span className="text-[12px] md:text-[13px] font-black text-slate-600 dark:text-gray-300 group-hover:text-slate-900 dark:group-hover:text-white italic truncate max-w-[120px] sm:max-w-none">Claude Sonnet 4.5</span>
                  <ChevronDown size={14} className="text-slate-400 dark:text-gray-500 shrink-0" />
               </div>
            </div>
@@ -387,7 +387,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
              
              <div className="flex flex-row justify-between items-center px-4 gap-2">
                <p className="text-[8px] md:text-[9px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-[0.2em] italic truncate max-w-[150px] sm:max-w-none">
-                  Model: GEMINI_3_PRO_ULTRA
+                  Model: CLAUDE_SONNET_4.5
                </p>
                <div className="flex items-center gap-3 md:gap-4 text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600">
                   <div className="flex items-center gap-1"><Shield size={10} /> <span className="hidden xs:inline">Secure</span></div>

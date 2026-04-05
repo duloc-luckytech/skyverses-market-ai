@@ -8,7 +8,6 @@ import {
   MessageCircle, Copy, Terminal
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { GoogleGenAI } from "@google/genai";
 import FullChatModal from './FullChatModal';
 import { systemConfigApi } from '../apis/config';
 import { GeminiKey } from '../types';
@@ -116,27 +115,44 @@ const AISupportChat: React.FC = () => {
 
     try {
       const selectedKey = getRandomKey();
-      const ai = new GoogleGenAI({ apiKey: selectedKey });
       const apiParts: any[] = [];
-      if (userText) apiParts.push({ text: userText });
+      
+      // Build messages array (OpenAI format)
+      const apiMessages: any[] = [
+        { role: 'system', content: 'You are a helpful and professional AI Assistant of Skyverses. Format your output using Markdown. Use code blocks for code, tables for data, and lists for steps. Always be concise and efficient.' }
+      ];
+
+      // Add user message
       if (currentFile) {
-        apiParts.push({ inlineData: {
-          data: currentFile.data.includes('base64,') ? currentFile.data.split('base64,')[1] : currentFile.data,
-          mimeType: currentFile.mimeType
-        }});
+        // Vision: send image as base64 content part
+        const imgData = currentFile.data.includes('base64,') ? currentFile.data.split('base64,')[1] : currentFile.data;
+        apiMessages.push({
+          role: 'user',
+          content: [
+            ...(userText ? [{ type: 'text', text: userText }] : []),
+            { type: 'image_url', image_url: { url: `data:${currentFile.mimeType};base64,${imgData}` } }
+          ]
+        });
+      } else {
+        apiMessages.push({ role: 'user', content: userText });
       }
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: { parts: apiParts },
-        config: {
-          systemInstruction: `You are a helpful and professional AI Assistant of Skyverses.
-          Format your output using Markdown. Use code blocks for code, tables for data, and lists for steps.
-          Always be concise and efficient.`,
+      const response = await fetch('https://ezaiapi.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${selectedKey}`,
         },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          messages: apiMessages,
+          max_tokens: 4096,
+        }),
       });
 
-      const botText = response.text || "I encountered an issue generating a response.";
+      const data = await response.json();
+      const botText = data?.choices?.[0]?.message?.content || 'Không nhận được phản hồi. Vui lòng thử lại.';
+
       setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'bot', parts: [{ type: 'text', content: botText }], timestamp }]);
     } catch (error) {
       console.error("Gemini Error:", error);
@@ -263,7 +279,7 @@ const AISupportChat: React.FC = () => {
                 <div>
                   <h3 className="text-[12px] font-bold text-slate-900 dark:text-white tracking-tight">Skyverses AI</h3>
                   <p className="text-[9px] font-medium text-emerald-500 flex items-center gap-1">
-                    <span className="w-1 h-1 rounded-full bg-emerald-500 inline-block animate-pulse" /> Online · Gemini 3.0
+                    <span className="w-1 h-1 rounded-full bg-emerald-500 inline-block animate-pulse" /> Online · Claude 4.5
                   </p>
                 </div>
               </div>
