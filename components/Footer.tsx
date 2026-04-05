@@ -167,7 +167,7 @@ const Footer: React.FC = () => {
                   <Send size={14} className="text-[#2AABEE] group-hover:scale-110 transition-transform" />
                   <span className="text-[11px] font-semibold text-[#2AABEE]">Telegram Support</span>
                 </a>
-                <a href="https://zalo.me/g/skyverses" target="_blank" rel="noopener noreferrer"
+                <a href="https://zalo.me/g/brzhpkvbxtnvicdtgpkv" target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#0068FF]/[0.06] border border-[#0068FF]/15 hover:border-[#0068FF]/40 hover:bg-[#0068FF]/10 transition-all group">
                   <MessageCircle size={14} className="text-[#0068FF] group-hover:scale-110 transition-transform" />
                   <span className="text-[11px] font-semibold text-[#0068FF]">Zalo Support</span>
