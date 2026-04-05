@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { usePageMeta } from '../hooks/usePageMeta';
 
-const PRODUCT_URL = 'https://ai-api.skyverses.com';
+const PRODUCT_URL = 'https://ai-qwen.skyverses.com/';
 
 // ═══ HERO DATA ═══
 const MODEL_FAMILIES = [
