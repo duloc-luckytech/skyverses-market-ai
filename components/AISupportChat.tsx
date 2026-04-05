@@ -1,11 +1,11 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Send, Bot, 
   Loader2, ChevronDown, User as UserIcon,
   Sparkles, Paperclip, Maximize2,
-  MessageCircle, Copy, Terminal, Download, LogIn
+  MessageCircle, Copy, Terminal, Download, LogIn, RotateCcw, Trash2, AlertTriangle
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -42,6 +42,10 @@ const AISupportChat: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<{data: string, mimeType: string, preview: string} | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [cmsContext, setCmsContext] = useState<string>('');
+  const [typingMsgId, setTypingMsgId] = useState<string | null>(null);
+  const [typingText, setTypingText] = useState('');
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const typingRef = useRef<{ fullText: string; index: number; timer: ReturnType<typeof setTimeout> | null }>({ fullText: '', index: 0, timer: null });
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -102,7 +106,62 @@ const AISupportChat: React.FC = () => {
     }
   };
 
-  const handleClearChat = () => { setMessages([]); setSelectedFile(null); setInput(''); localStorage.removeItem(STORAGE_KEY); };
+  const handleClearChat = () => { setShowClearConfirm(true); };
+  const confirmClearChat = () => { setMessages([]); setSelectedFile(null); setInput(''); localStorage.removeItem(STORAGE_KEY); setShowClearConfirm(false); };
+
+  // ═══ Sound notification ═══
+  const playNotificationSound = useCallback(() => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.setValueAtTime(1047, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.25);
+    } catch { /* silent fail */ }
+  }, []);
+
+  // ═══ Typewriter effect ═══
+  const startTypewriter = useCallback((msgId: string, fullText: string) => {
+    setTypingMsgId(msgId);
+    setTypingText('');
+    typingRef.current = { fullText, index: 0, timer: null };
+    const tick = () => {
+      const ref = typingRef.current;
+      if (ref.index >= ref.fullText.length) {
+        setTypingMsgId(null);
+        return;
+      }
+      // Speed: 2-4 chars per tick for natural feel
+      const charsPerTick = ref.fullText.length > 500 ? 4 : ref.fullText.length > 200 ? 3 : 2;
+      ref.index = Math.min(ref.index + charsPerTick, ref.fullText.length);
+      setTypingText(ref.fullText.slice(0, ref.index));
+      ref.timer = setTimeout(tick, 12);
+    };
+    tick();
+  }, []);
+
+  // ═══ Retry failed message ═══
+  const handleRetry = useCallback((msgId: string) => {
+    // Find the user message right before this bot error
+    const idx = messages.findIndex(m => m.id === msgId);
+    if (idx <= 0) return;
+    const prevUserMsg = messages[idx - 1];
+    if (prevUserMsg.role !== 'user') return;
+    // Remove error message
+    setMessages(prev => prev.filter(m => m.id !== msgId));
+    // Re-send
+    const text = prevUserMsg.parts.find(p => p.type === 'text')?.content || '';
+    const img = prevUserMsg.parts.find(p => p.type === 'image');
+    if (text || img) {
+      handleSendMessage(text, img ? { data: img.content, mimeType: 'image/png' } : undefined);
+    }
+  }, [messages]);
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -266,9 +325,13 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
       const botText = data?.choices?.[0]?.message?.content || 'Không nhận được phản hồi. Vui lòng thử lại.';
 
       setMessages(prev => [...prev, { id: botMsgId, role: 'bot', parts: [{ type: 'text', content: botText }], timestamp }]);
+      startTypewriter(botMsgId, botText);
+      playNotificationSound();
     } catch (error: any) {
       console.error("AI Error:", error);
-      setMessages(prev => [...prev, { id: botMsgId, role: 'bot', parts: [{ type: 'text', content: `Lỗi: ${error?.message || 'Hệ thống đang bận. Vui lòng thử lại.'}` }], timestamp }]);
+      const errText = `⚠️ ${error?.message || 'Hệ thống đang bận. Vui lòng thử lại.'}`;
+      setMessages(prev => [...prev, { id: botMsgId, role: 'bot', parts: [{ type: 'text', content: errText }], timestamp }]);
+      playNotificationSound();
     } finally {
       setIsLoading(false);
     }
@@ -302,6 +365,10 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
       let html = block
         .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>')
         .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+        .replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 bg-black/[0.04] dark:bg-white/[0.06] rounded text-[10px] font-mono text-brand-blue">$1</code>')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" class="text-brand-blue underline underline-offset-2 hover:brightness-110">$1</a>')
+        .replace(/^### (.*)$/gm, '<h4 class="text-[11px] font-bold text-slate-800 dark:text-white mt-2 mb-1">$1</h4>')
+        .replace(/^## (.*)$/gm, '<h3 class="text-[12px] font-bold text-slate-800 dark:text-white mt-3 mb-1">$1</h3>')
         .replace(/^\d+\. (.*)$/gm, '<li class="ml-4 list-decimal text-[11px] leading-relaxed mb-1">$1</li>')
         .replace(/^\- (.*)$/gm, '<li class="ml-4 list-disc text-[11px] leading-relaxed mb-1">$1</li>');
 
@@ -411,6 +478,12 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                   <button onClick={handleExportChat}
                     className="w-8 h-8 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.04] flex items-center justify-center text-slate-400 hover:text-emerald-500 transition-all" title="Export Chat">
                     <Download size={13} />
+                  </button>
+                )}
+                {messages.length > 0 && (
+                  <button onClick={handleClearChat}
+                    className="w-8 h-8 rounded-lg hover:bg-red-500/10 flex items-center justify-center text-slate-400 hover:text-red-500 transition-all" title="Clear Chat">
+                    <Trash2 size={13} />
                   </button>
                 )}
                 <button onClick={() => { setIsFull(true); setIsOpen(false); }} 
@@ -525,11 +598,15 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                           {part.type === 'image' && <img src={part.content} className="w-full rounded-lg mb-2 border border-white/10" alt="" />}
                           {part.type === 'text' && (
                             msg.role === 'bot' 
-                              ? renderBotText(part.content) 
+                              ? renderBotText(typingMsgId === msg.id ? typingText : part.content) 
                               : <p className="text-[11px] font-medium leading-relaxed whitespace-pre-wrap">{part.content}</p>
                           )}
                         </div>
                       ))}
+                      {/* Typing cursor */}
+                      {typingMsgId === msg.id && (
+                        <span className="inline-block w-[2px] h-[13px] bg-brand-blue animate-pulse ml-0.5 align-middle" />
+                      )}
                     </motion.div>
                     {/* Actions */}
                     {msg.role === 'bot' && (
@@ -539,6 +616,13 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                           className="flex items-center gap-1 text-[8px] font-semibold text-slate-400 hover:text-brand-blue transition-colors">
                           <Copy size={9} /> {copiedId === msg.id ? 'Copied!' : 'Copy'}
                         </button>
+                        {/* Retry button for error messages */}
+                        {msg.parts.some(p => p.content.startsWith('⚠️')) && (
+                          <button onClick={() => handleRetry(msg.id)}
+                            className="flex items-center gap-1 text-[8px] font-semibold text-amber-500 hover:text-amber-400 transition-colors">
+                            <RotateCcw size={9} /> Thử lại
+                          </button>
+                        )}
                         <span className="text-[8px] text-slate-300 dark:text-gray-700">{msg.timestamp}</span>
                       </motion.div>
                     )}
@@ -664,6 +748,42 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
         onSendMessage={handleSendMessage}
         onClearChat={handleClearChat}
       />
+
+      {/* ═══════════ CLEAR CHAT CONFIRMATION ═══════════ */}
+      <AnimatePresence>
+        {showClearConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[900] flex items-center justify-center bg-black/40 dark:bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowClearConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-[#161618] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-[320px] shadow-2xl text-center space-y-4"
+            >
+              <div className="w-12 h-12 mx-auto rounded-xl bg-red-500/10 flex items-center justify-center">
+                <AlertTriangle size={22} className="text-red-500" />
+              </div>
+              <div>
+                <h4 className="text-[14px] font-bold text-slate-900 dark:text-white">Xóa lịch sử chat?</h4>
+                <p className="text-[11px] text-slate-500 dark:text-gray-500 mt-1">Toàn bộ tin nhắn sẽ bị xóa và không thể khôi phục.</p>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setShowClearConfirm(false)}
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-black/[0.06] dark:border-white/[0.06] text-[11px] font-semibold text-slate-600 dark:text-gray-400 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-all">
+                  Hủy
+                </button>
+                <button onClick={confirmClearChat}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-red-500 text-white text-[11px] font-semibold hover:bg-red-600 transition-all shadow-md shadow-red-500/20">
+                  Xóa tất cả
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

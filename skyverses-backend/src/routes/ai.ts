@@ -10,8 +10,27 @@ const router = express.Router();
    SUPPORT CHAT — Proxy to ezaiapi.com (avoids CORS from browser)
    POST /ai/chat
    Body: { messages: [...], stream?: boolean }
+   Rate limit: 10 requests per 60 seconds per user
 =============================================================== */
+const chatRateMap = new Map<string, number[]>();
+const CHAT_RATE_LIMIT = 10;
+const CHAT_RATE_WINDOW = 60 * 1000; // 60s in ms
+
 router.post("/chat", authenticate, async (req: any, res: any) => {
+  // Server-side rate limiting
+  const userId = req.user?._id?.toString() || req.ip || "unknown";
+  const now = Date.now();
+  const timestamps = (chatRateMap.get(userId) || []).filter(t => now - t < CHAT_RATE_WINDOW);
+  
+  if (timestamps.length >= CHAT_RATE_LIMIT) {
+    const waitSec = Math.ceil((timestamps[0] + CHAT_RATE_WINDOW - now) / 1000);
+    return res.status(429).json({ 
+      error: `Bạn đang gửi quá nhanh. Vui lòng chờ ${waitSec}s.`,
+      retryAfter: waitSec 
+    });
+  }
+  timestamps.push(now);
+  chatRateMap.set(userId, timestamps);
   try {
     const { messages, stream = true } = req.body;
     if (!messages || !Array.isArray(messages)) {
