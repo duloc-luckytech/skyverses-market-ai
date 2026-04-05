@@ -62,6 +62,7 @@ const pageImports = {
   aiAgent: () => import('./pages/ProductAIAgentWorkflow'),
   captcha: () => import('./pages/ProductCaptchaToken'),
   noCodeExport: () => import('./pages/NoCodeExportPage'),
+  qwenChat: () => import('./pages/QwenChatAIPage'),
 };
 
 // Core pages
@@ -118,6 +119,7 @@ const ProductCharacterSync = React.lazy(pageImports.charSync);
 const ProductAIAgentWorkflow = React.lazy(pageImports.aiAgent);
 const ProductCaptchaToken = React.lazy(pageImports.captcha);
 const NoCodeExportPage = React.lazy(pageImports.noCodeExport);
+const QwenChatAIPage = React.lazy(pageImports.qwenChat);
 
 // ═══ Ultra-fast page transition bar (no blank page) ═══
 const PageLoader = () => (
@@ -211,6 +213,7 @@ const App: React.FC = () => {
                       <Route path="/product/ai-agent-workflow" element={<ProductAIAgentWorkflow />} />
                       <Route path="/product/captcha-veo3" element={<ProductCaptchaToken />} />
                       <Route path="/product/nocode-export" element={<NoCodeExportPage />} />
+                      <Route path="/product/qwen-chat-ai" element={<QwenChatAIPage />} />
                       
                       {/* CÁC TUYẾN ĐƯỜNG SỰ KIỆN HỢP NHẤT */}
                       <Route path="/product/ai-birthday-generator" element={<EventStudioPage type="birthday" />} />

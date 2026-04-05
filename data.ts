@@ -307,6 +307,43 @@ export const SOLUTIONS: Solution[] = [
       { name: 'Web Crawler Engine', version: 'v2.0', capability: { en: 'Deep Site Parsing', vi: 'Phân tích cấu trúc website', ko: '심층 사이트 파싱', ja: 'ディープサイト解析' } },
       { name: 'Code Clean Pipeline', version: 'v1.5', capability: { en: 'Optimized Output', vi: 'Source code tối ưu hoá', ko: '최적화된 출력', ja: '最適化された出力' } }
     ]
+  },
+  {
+    id: 'QWEN-CHAT-AI',
+    slug: 'qwen-chat-ai',
+    name: {
+      en: 'Qwen AI Chat',
+      vi: 'Chat AI Qwen',
+      ko: 'Qwen AI 채팅',
+      ja: 'Qwen AIチャット'
+    },
+    category: { en: 'AI Chat', vi: 'AI Chat', ko: 'AI 채팅', ja: 'AIチャット' },
+    description: {
+      en: 'Free AI chat powered by Qwen 3.5 running 100% local. Fast, private, with Vision and Deep Reasoning support.',
+      vi: 'Chat AI miễn phí với Qwen 3.5 chạy 100% local. Nhanh, riêng tư, hỗ trợ Vision và Deep Reasoning.',
+      ko: '100% 로컬에서 실행되는 Qwen 3.5 기반 무료 AI 채팅. 빠르고 개인정보를 보호하며 Vision과 딥 리즈닝 지원.',
+      ja: '100%ローカルで動作するQwen 3.5搭載の無料AIチャット。高速でプライベート、VisionとDeep Reasoning対応。'
+    },
+    problems: ['Expensive AI chat subscriptions', 'Data privacy concerns', 'Limited local AI options', 'No API access'],
+    industries: ['Developers', 'Content Creators', 'Education', 'Research'],
+    imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'text' as const,
+    tags: ['Chat', 'Qwen', 'Local AI', 'Free', 'Vision', 'API'],
+    features: [
+      { en: '100% Local & Private', vi: 'Chạy hoàn toàn local, riêng tư', ko: '100% 로컬 및 프라이빗', ja: '100%ローカル＆プライベート' },
+      { en: 'Multi-Model Support', vi: 'Hỗ trợ đa model Qwen', ko: '다중 모델 지원', ja: 'マルチモデルサポート' },
+      { en: 'OpenAI-Compatible API', vi: 'API chuẩn OpenAI', ko: 'OpenAI 호환 API', ja: 'OpenAI互換API' }
+    ],
+    complexity: 'Standard' as const,
+    priceReference: 'Free',
+    isActive: true,
+    isFree: true,
+    priceCredits: 0,
+    featured: true,
+    neuralStack: [
+      { name: 'Qwen3.5 4B', version: 'v3.5', capability: { en: 'Fast Chat & Vision', vi: 'Chat nhanh & Thị giác', ko: '빠른 채팅 및 비전', ja: '高速チャット＆ビジョン' } },
+      { name: 'Qwen3.5 9B', version: 'v3.5', capability: { en: 'Deep Reasoning', vi: 'Suy luận chuyên sâu', ko: '딥 리즈닝', ja: 'ディープリーズニング' } }
+    ]
   }
 ];
 

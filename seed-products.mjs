@@ -1,5 +1,5 @@
 const API = 'https://api.skyverses.com/market';
-const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWM4ZDhjYWQ4MWZhNWRlN2JkMTA2MTYiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQHNreXZlcnNlcy5jb20iLCJpYXQiOjE3NzQ3NzA0ODEsImV4cCI6MTc3NTM3NTI4MX0.5sWLqUkzr30pFVNe00dci_wZNO_cTkR1RcpFOGWAfig';
+const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWM4ZDhjYWQ4MWZhNWRlN2JkMTA2MTYiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQHNreXZlcnNlcy5jb20iLCJpYXQiOjE3NzUzODAyMTQsImV4cCI6MTc3NTk4NTAxNH0.mzhv44q4dVTdo-Zb3nCfhyrTA9BWhM50tleu5MyEoCM';
 const products = [
   {
     id: '3D-SPATIAL-ARCHITECT', slug: '3d-spatial-architect',
@@ -156,6 +156,22 @@ const products = [
       { en: 'Human-like Realism', vi: 'Tái tạo chân thực', ko: '인간과 같은 사실감', ja: '人間のようなリアルさ' }
     ],
     complexity: 'Advanced', priceReference: '100 CR / upscaling', isActive: true, priceCredits: 100, featured: true
+  },
+  {
+    id: 'QWEN-CHAT-AI', slug: 'qwen-chat-ai',
+    name: { en: 'Qwen AI Chat', vi: 'Chat AI Qwen', ko: 'Qwen AI 채팅', ja: 'Qwen AIチャット' },
+    category: { en: 'AI Chat', vi: 'AI Chat', ko: 'AI 채팅', ja: 'AIチャット' },
+    description: { en: 'Free AI chat powered by Qwen 3.5 running 100% local. Fast, private, Vision & Deep Reasoning.', vi: 'Chat AI miễn phí với Qwen 3.5 chạy 100% local. Nhanh, riêng tư, hỗ trợ Vision và Deep Reasoning.', ko: '100% 로컬 Qwen 3.5 기반 무료 AI 채팅. 빠르고 프라이빗.', ja: '100%ローカルQwen 3.5搭載の無料AIチャット。' },
+    problems: ['Expensive AI subscriptions', 'Data privacy concerns', 'Limited local AI', 'No API access'],
+    industries: ['Developers', 'Content Creators', 'Education', 'Research'],
+    imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'text', tags: ['Chat', 'Qwen', 'Local AI', 'Free', 'Vision', 'API'],
+    features: [
+      { en: '100% Local & Private', vi: 'Chạy hoàn toàn local, riêng tư', ko: '100% 로컬 및 프라이빗', ja: '100%ローカル＆プライベート' },
+      { en: 'Multi-Model Support', vi: 'Hỗ trợ đa model Qwen', ko: '다중 모델 지원', ja: 'マルチモデルサポート' },
+      { en: 'OpenAI-Compatible API', vi: 'API chuẩn OpenAI', ko: 'OpenAI 호환 API', ja: 'OpenAI互換API' }
+    ],
+    complexity: 'Standard', priceReference: 'Free', isActive: true, isFree: true, priceCredits: 0, featured: true
   }
 ];
 
