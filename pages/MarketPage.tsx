@@ -310,7 +310,31 @@ const MarketPage = () => {
                 </motion.div>
               </div>
 
-              {/* Right: Vertical Scrolling Gallery — HIDDEN on mobile */}
+              {/* Right: Vertical Scrolling Gallery — Desktop marquee / Mobile compact horizontal */}
+              {/* ═══ MOBILE: Compact horizontal gallery ═══ */}
+              <div className="md:hidden mt-2 -mx-4 px-4">
+                <div className="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1">
+                  {[
+                    'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/955c04bf-959f-4832-843a-dfbaad2d82a3_min.webp',
+                    'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/6571fcff-b67e-4537-98fe-0301d9051c57_min.webp',
+                    'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/596c139a-7cd8-4c10-9305-bad2f9b6ab1f_min.webp',
+                    'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/640d8657-22e1-4ec7-adcf-d2b99f4e25e0_min.webp',
+                    'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/1354a1b1-5ef3-46d7-8cb2-17268db2d7f7_min.webp',
+                    'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/82e86e0d-db5a-4bcf-8f7b-142ff21f8442_min.webp',
+                  ].map((url, idx) => (
+                    <div key={idx} className="flex-shrink-0 snap-start w-[130px] h-[100px] rounded-xl overflow-hidden relative group">
+                      <img src={url} alt="" loading={idx < 3 ? 'eager' : 'lazy'} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-center gap-2 mt-2">
+                  <Sparkles size={10} className="text-brand-blue" />
+                  <span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Powered by 50+ AI Models</span>
+                </div>
+              </div>
+
+              {/* ═══ DESKTOP: Vertical Scrolling Gallery ═══ */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
