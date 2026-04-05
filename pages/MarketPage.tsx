@@ -318,7 +318,7 @@ const MarketPage = () => {
                   <Zap size={10} className="text-orange-500" fill="currentColor" />
                   <span className="text-[8px] font-black uppercase tracking-[0.25em] text-orange-500">Trending</span>
                 </div>
-                {solutions.length === 0 ? (
+                {filteredSolutions.length === 0 ? (
                   <div className="flex gap-3 overflow-hidden">
                     {[1,2,3].map(i => (
                       <div key={i} className="flex-shrink-0 w-[280px] h-[200px] rounded-2xl bg-slate-100 dark:bg-white/[0.03] animate-pulse" />
@@ -326,11 +326,7 @@ const MarketPage = () => {
                   </div>
                 ) : (
                 <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2">
-                  {(() => {
-                    const trendingItems = solutions.filter(s => s.homeBlocks?.includes('top_trending'));
-                    const displayItems = trendingItems.length > 0 ? trendingItems.slice(0, 8) : solutions.slice(0, 8);
-                    return displayItems;
-                  })().map((sol, idx) => (
+                  {filteredSolutions.filter(s => s.homeBlocks?.includes('top_trending')).slice(0, 8).map((sol, idx) => (
                     <SolutionCard
                       key={sol._id || sol.id}
                       sol={sol}
