@@ -269,7 +269,16 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
         { role: 'system', content: finalContext }
       ];
 
-      // Add user message
+      // Add conversation history (last 20 messages for context)
+      const history = messages.slice(-20);
+      for (const msg of history) {
+        const textParts = msg.parts.filter(p => p.type === 'text').map(p => p.content).join('\n');
+        if (textParts) {
+          apiMessages.push({ role: msg.role === 'user' ? 'user' : 'assistant', content: textParts });
+        }
+      }
+
+      // Add current user message
       if (currentFile) {
         // Vision: send image as base64 content part
         const imgData = currentFile.data.includes('base64,') ? currentFile.data.split('base64,')[1] : currentFile.data;
