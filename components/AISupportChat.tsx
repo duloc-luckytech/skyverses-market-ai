@@ -6,7 +6,7 @@ import {
   Loader2, Activity, Terminal, 
   ChevronDown, User as UserIcon,
   Shield, Sparkles, Paperclip, ImageIcon, Trash2,
-  Maximize2
+  Maximize2, MessageCircle, ExternalLink
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { GoogleGenAI } from "@google/genai";
@@ -246,10 +246,28 @@ const AISupportChat: React.FC = () => {
 
             <div className="flex-grow p-5 md:p-6 overflow-y-auto bg-white dark:bg-[#0c0c0e] flex flex-col gap-6 no-scrollbar relative">
               {messages.length === 0 && (
-                <div className="flex gap-3 items-start relative z-10">
-                  <div className="w-7 h-7 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center shrink-0"><Sparkles size={14} /></div>
-                  <div className="bg-gray-50 dark:bg-white/[0.03] border border-black/5 dark:border-white/5 p-4 rounded-xl rounded-tl-none shadow-sm max-w-[85%]">
-                    <p className="text-[12px] font-medium leading-relaxed text-slate-600 dark:text-slate-300 italic">{t('chat.welcome')}</p>
+                <div className="flex flex-col gap-4">
+                  <div className="flex gap-3 items-start relative z-10">
+                    <div className="w-7 h-7 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center shrink-0"><Sparkles size={14} /></div>
+                    <div className="bg-gray-50 dark:bg-white/[0.03] border border-black/5 dark:border-white/5 p-4 rounded-xl rounded-tl-none shadow-sm max-w-[85%]">
+                      <p className="text-[12px] font-medium leading-relaxed text-slate-600 dark:text-slate-300 italic">{t('chat.welcome')}</p>
+                    </div>
+                  </div>
+                  {/* Support channels */}
+                  <div className="px-2 space-y-2">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-600">Hỗ trợ kỹ thuật trực tiếp</p>
+                    <div className="flex gap-2">
+                      <a href="https://t.me/nhomhotrokythuat" target="_blank" rel="noopener noreferrer"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-[#2AABEE]/[0.08] border border-[#2AABEE]/15 hover:border-[#2AABEE]/40 hover:bg-[#2AABEE]/15 transition-all group">
+                        <Send size={13} className="text-[#2AABEE] group-hover:scale-110 transition-transform" />
+                        <span className="text-[10px] font-bold text-[#2AABEE]">Telegram</span>
+                      </a>
+                      <a href="https://zalo.me/g/brzhpkvbxtnvicdtgpkv" target="_blank" rel="noopener noreferrer"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-[#0068FF]/[0.08] border border-[#0068FF]/15 hover:border-[#0068FF]/40 hover:bg-[#0068FF]/15 transition-all group">
+                        <MessageCircle size={13} className="text-[#0068FF] group-hover:scale-110 transition-transform" />
+                        <span className="text-[10px] font-bold text-[#0068FF]">Zalo</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}
@@ -283,7 +301,17 @@ const AISupportChat: React.FC = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-5 md:p-6 border-t border-black/5 dark:border-white/5 bg-[#fafafa] dark:bg-[#111114] shrink-0 space-y-4">
+            <div className="p-5 md:p-6 border-t border-black/5 dark:border-white/5 bg-[#fafafa] dark:bg-[#111114] shrink-0 space-y-3">
+              {/* Quick support links */}
+              <div className="flex items-center justify-center gap-3">
+                <a href="https://t.me/nhomhotrokythuat" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[9px] font-semibold text-[#2AABEE] hover:underline transition-all">
+                  <Send size={10} /> Telegram
+                </a>
+                <span className="text-slate-300 dark:text-gray-700">·</span>
+                <a href="https://zalo.me/g/brzhpkvbxtnvicdtgpkv" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[9px] font-semibold text-[#0068FF] hover:underline transition-all">
+                  <MessageCircle size={10} /> Zalo
+                </a>
+              </div>
               <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="relative flex items-center gap-3">
                 <div className="relative flex-grow">
                   <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder={t('chat.placeholder')} disabled={isLoading} className="w-full bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl pl-5 pr-12 py-4 text-[12px] font-bold focus:ring-1 focus:ring-brand-blue outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-700 text-black dark:text-white shadow-sm" />
