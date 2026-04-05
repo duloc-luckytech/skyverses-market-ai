@@ -326,7 +326,7 @@ const MarketPage = () => {
                   </div>
                 ) : (
                 <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2">
-                  {filteredSolutions.filter(s => s.homeBlocks?.includes('top_trending')).slice(0, 8).map((sol, idx) => (
+                  {filteredSolutions.slice(0, 8).map((sol, idx) => (
                     <SolutionCard
                       key={sol._id || sol.id}
                       sol={sol}
