@@ -5,7 +5,8 @@ import {
   X, Send, Bot, 
   Loader2, ChevronDown, User as UserIcon,
   Sparkles, Paperclip, Maximize2,
-  MessageCircle, Copy, Terminal, Download, LogIn, RotateCcw, Trash2, AlertTriangle
+  MessageCircle, Copy, Terminal, Download, LogIn, RotateCcw, Trash2, AlertTriangle,
+  WifiOff, History, Plus, ChevronRight
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -32,8 +33,25 @@ const AISupportChat: React.FC = () => {
   const [isFull, setIsFull] = useState(false);
   const [input, setInput] = useState('');
   const STORAGE_KEY = 'skyverses_ai_chat_history';
+  const SESSIONS_KEY = 'skyverses_ai_sessions';
+  const ACTIVE_SESSION_KEY = 'skyverses_ai_active_session';
+
+  // Multi-session management
+  interface ChatSession { id: string; title: string; messages: ChatMessage[]; updatedAt: number; }
+  const [sessions, setSessions] = useState<ChatSession[]>(() => {
+    try { return JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]'); } catch { return []; }
+  });
+  const [activeSessionId, setActiveSessionId] = useState<string>(() => {
+    return localStorage.getItem(ACTIVE_SESSION_KEY) || Date.now().toString();
+  });
+
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     try {
+      // Try loading from active session first
+      const allSessions: ChatSession[] = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
+      const active = allSessions.find(s => s.id === localStorage.getItem(ACTIVE_SESSION_KEY));
+      if (active) return active.messages;
+      // Fallback to legacy single-session
       const saved = localStorage.getItem(STORAGE_KEY);
       return saved ? JSON.parse(saved) : [];
     } catch { return []; }
@@ -45,6 +63,8 @@ const AISupportChat: React.FC = () => {
   const [typingMsgId, setTypingMsgId] = useState<string | null>(null);
   const [typingText, setTypingText] = useState('');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [suggestedFollowUps, setSuggestedFollowUps] = useState<string[]>([]);
   const typingRef = useRef<{ fullText: string; index: number; timer: ReturnType<typeof setTimeout> | null }>({ fullText: '', index: 0, timer: null });
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -58,13 +78,42 @@ const AISupportChat: React.FC = () => {
   const sendTimestamps = useRef<number[]>([]);
   const [rateCooldown, setRateCooldown] = useState(0);
 
-  // Persist messages to localStorage (keep last 50)
+  // Persist messages to session + localStorage
   useEffect(() => {
     try {
       const toSave = messages.slice(-50);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
-    } catch { /* quota exceeded, ignore */ }
-  }, [messages]);
+      // Update active session
+      setSessions(prev => {
+        const title = messages.find(m => m.role === 'user')?.parts.find(p => p.type === 'text')?.content.slice(0, 30) || 'New Chat';
+        const updated = prev.filter(s => s.id !== activeSessionId);
+        if (messages.length > 0) {
+          updated.unshift({ id: activeSessionId, title, messages: toSave, updatedAt: Date.now() });
+        }
+        const capped = updated.slice(0, 10); // keep max 10 sessions
+        localStorage.setItem(SESSIONS_KEY, JSON.stringify(capped));
+        return capped;
+      });
+    } catch { /* quota exceeded */ }
+  }, [messages, activeSessionId]);
+
+  // Online/Offline detection
+  useEffect(() => {
+    const goOnline = () => setIsOnline(true);
+    const goOffline = () => setIsOnline(false);
+    window.addEventListener('online', goOnline);
+    window.addEventListener('offline', goOffline);
+    return () => { window.removeEventListener('online', goOnline); window.removeEventListener('offline', goOffline); };
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !isFull) { setIsOpen(false); }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [isOpen, isFull]);
 
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
@@ -107,7 +156,47 @@ const AISupportChat: React.FC = () => {
   };
 
   const handleClearChat = () => { setShowClearConfirm(true); };
-  const confirmClearChat = () => { setMessages([]); setSelectedFile(null); setInput(''); localStorage.removeItem(STORAGE_KEY); setShowClearConfirm(false); };
+  const confirmClearChat = () => { 
+    setMessages([]); setSelectedFile(null); setInput(''); setSuggestedFollowUps([]);
+    localStorage.removeItem(STORAGE_KEY); setShowClearConfirm(false);
+  };
+
+  // Multi-session: start new chat
+  const startNewSession = () => {
+    const newId = Date.now().toString();
+    setActiveSessionId(newId);
+    localStorage.setItem(ACTIVE_SESSION_KEY, newId);
+    setMessages([]); setInput(''); setSelectedFile(null); setSuggestedFollowUps([]);
+  };
+
+  // Multi-session: switch to existing session
+  const switchSession = (sessionId: string) => {
+    const session = sessions.find(s => s.id === sessionId);
+    if (session) {
+      setActiveSessionId(sessionId);
+      localStorage.setItem(ACTIVE_SESSION_KEY, sessionId);
+      setMessages(session.messages);
+      setSuggestedFollowUps([]);
+    }
+  };
+
+  // Generate follow-up suggestions based on last bot message
+  const generateFollowUps = useCallback((botText: string) => {
+    const followUps: string[] = [];
+    if (botText.includes('credit') || botText.includes('Credits') || botText.includes('giá')) {
+      followUps.push('Cách nạp credits?', 'Có ưu đãi gì không?');
+    } else if (botText.includes('video') || botText.includes('Video')) {
+      followUps.push('So sánh các model video', 'Giá tạo video bao nhiêu?');
+    } else if (botText.includes('image') || botText.includes('ảnh') || botText.includes('Image')) {
+      followUps.push('Viết prompt ảnh đẹp', 'Model nào tạo ảnh tốt nhất?');
+    } else if (botText.includes('API') || botText.includes('tích hợp')) {
+      followUps.push('Tài liệu API ở đâu?', 'Có SDK cho Python không?');
+    } else {
+      followUps.push('Cho tôi biết thêm', 'Có tính năng gì khác?');
+    }
+    if (followUps.length > 0) followUps.push('Liên hệ hỗ trợ');
+    setSuggestedFollowUps(followUps.slice(0, 3));
+  }, []);
 
   // ═══ Sound notification ═══
   const playNotificationSound = useCallback(() => {
@@ -228,6 +317,7 @@ const AISupportChat: React.FC = () => {
     setInput('');
     setSelectedFile(null);
     setIsLoading(true);
+    setSuggestedFollowUps([]); // Clear follow-ups when user sends
 
     // Bot message placeholder for streaming
     const botMsgId = (Date.now() + 1).toString();
@@ -239,26 +329,26 @@ You help users navigate the platform, answer questions about products, pricing, 
 Always respond in the SAME LANGUAGE the user uses (Vietnamese, English, Korean, Japanese, etc.).
 Format output using Markdown. Be concise, professional, and friendly.
 
-## \ud83c\udfe2 ABOUT SKYVERSES
+## 🏢 ABOUT SKYVERSES
 Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI models. It offers tools for video generation, image generation, voice/music creation, and automation — all in one place, at ~70% lower cost than competitors.
 
-## \ud83c\udfac AI VIDEO GENERATION
+## 🎬 AI VIDEO GENERATION
 - **Supported Models**: VEO3, Kling 2.1/2.0/1.6, Wan2.1 (1.3B/14B), Hailuo, Sora, Genyu, Pika
 - **Features**: Text-to-Video, Image-to-Video, Start+End Frame, Video Extend, Character Sync (face swap in video)
 - **Engines**: veo, gommo, kling, fxlab, wan, fxflow, grok
 - **Route**: /product/ai-video-generator → AI Video Studio
 
-## \ud83d\uddbc AI IMAGE GENERATION
+## 🖼 AI IMAGE GENERATION
 - **Supported Models**: Gemini, Midjourney, Flux, Stable Diffusion, DALL-E, Leonardo, Grok
 - **Special**: Users get **100 FREE images** on registration
 - **Route**: /product/ai-image-generator → AI Image Studio
 
-## \ud83d\udcb0 CREDIT SYSTEM
+## 💰 CREDIT SYSTEM
 - Skyverses sử dụng hệ thống **Credits** để thanh toán.
 - **Free perks**: 100 ảnh miễn phí khi đăng ký mới, daily claim.
 - Route: /credits, /usage
 
-## \ud83d\udcde SUPPORT CHANNELS
+## 📞 SUPPORT CHANNELS
 - **Telegram**: https://t.me/nhomhotrokythuat
 - **Zalo**: https://zalo.me/g/brzhpkvbxtnvicdtgpkv
 - **Email**: support@skyverses.com
@@ -318,7 +408,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
 
       if (!response.ok) {
         const errData = await response.json().catch(() => null);
-        throw new Error(errData?.error?.message || errData?.detail || `HTTP ${response.status}`);
+        throw new Error(errData?.error?.message || errData?.detail || errData?.error || `HTTP ${response.status}`);
       }
 
       const data = await response.json();
@@ -327,6 +417,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
       setMessages(prev => [...prev, { id: botMsgId, role: 'bot', parts: [{ type: 'text', content: botText }], timestamp }]);
       startTypewriter(botMsgId, botText);
       playNotificationSound();
+      generateFollowUps(botText);
     } catch (error: any) {
       console.error("AI Error:", error);
       const errText = `⚠️ ${error?.message || 'Hệ thống đang bận. Vui lòng thử lại.'}`;
@@ -497,6 +588,26 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
               </div>
             </div>
 
+            {/* Session switcher bar */}
+            {sessions.length > 1 && (
+              <div className="relative z-10 px-3 py-2 flex items-center gap-1.5 border-b border-black/[0.04] dark:border-white/[0.04] overflow-x-auto no-scrollbar shrink-0">
+                <button onClick={startNewSession}
+                  className="shrink-0 w-6 h-6 rounded-md bg-brand-blue/10 text-brand-blue flex items-center justify-center hover:bg-brand-blue/20 transition-all" title="New Chat">
+                  <Plus size={12} />
+                </button>
+                {sessions.slice(0, 5).map(s => (
+                  <button key={s.id} onClick={() => switchSession(s.id)}
+                    className={`shrink-0 px-2.5 py-1 rounded-lg text-[8px] font-semibold truncate max-w-[100px] transition-all border ${
+                      s.id === activeSessionId 
+                        ? 'bg-brand-blue/10 border-brand-blue/20 text-brand-blue' 
+                        : 'bg-black/[0.01] dark:bg-white/[0.02] border-black/[0.04] dark:border-white/[0.04] text-slate-400 dark:text-gray-500 hover:border-brand-blue/15'
+                    }`}>
+                    {s.title.slice(0, 20)}{s.title.length > 20 ? '...' : ''}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* ─── MESSAGES AREA ─── */}
             <div className="relative z-10 flex-grow overflow-y-auto no-scrollbar px-4 py-4 flex flex-col gap-4">
 
@@ -659,8 +770,43 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                   </div>
                 </motion.div>
               )}
+
+              {/* Follow-up suggestions */}
+              <AnimatePresence>
+                {suggestedFollowUps.length > 0 && !isLoading && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                    transition={{ delay: 0.5 }}
+                    className="flex flex-wrap gap-1.5 mt-1"
+                  >
+                    {suggestedFollowUps.map((q, i) => (
+                      <motion.button key={i}
+                        initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.6 + i * 0.1 }}
+                        whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                        onClick={() => { handleSendMessage(q); setSuggestedFollowUps([]); }}
+                        className="px-3 py-1.5 text-[9px] font-semibold text-brand-blue bg-brand-blue/[0.05] border border-brand-blue/15 rounded-full hover:bg-brand-blue/10 hover:border-brand-blue/25 transition-all flex items-center gap-1"
+                      >
+                        {q} <ChevronRight size={10} />
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <div ref={messagesEndRef} />
             </div>
+
+            {/* Offline indicator */}
+            <AnimatePresence>
+              {!isOnline && (
+                <motion.div initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -30, opacity: 0 }}
+                  className="absolute top-14 left-0 right-0 z-50 flex items-center justify-center gap-2 py-2 bg-amber-500/10 border-b border-amber-500/20 backdrop-blur-sm">
+                  <WifiOff size={12} className="text-amber-500" />
+                  <span className="text-[9px] font-semibold text-amber-600 dark:text-amber-400">Mất kết nối internet</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* ─── INPUT BAR ─── */}
             <div className="relative z-10 px-4 pb-4 pt-2 shrink-0">

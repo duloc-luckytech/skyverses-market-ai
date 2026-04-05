@@ -98,6 +98,74 @@ router.post("/chat", authenticate, async (req: any, res: any) => {
 });
 
 /* ============================================================
+   CHAT ANALYTICS — In-memory tracker + stats endpoint
+   GET /ai/chat/stats (admin only)
+=============================================================== */
+interface ChatLog { userId: string; question: string; timestamp: number; }
+const chatLogs: ChatLog[] = [];
+const MAX_LOGS = 1000;
+
+// Track each chat (called internally from /chat handler doesn't need separate call)
+// We augment the /chat route with a post-hook via middleware-less approach:
+router.use("/chat", (req: any, _res: any, next: any) => {
+  if (req.method === 'POST' && req.body?.messages) {
+    const userMsg = req.body.messages.filter((m: any) => m.role === 'user').pop();
+    const question = typeof userMsg?.content === 'string' 
+      ? userMsg.content.slice(0, 100) 
+      : (userMsg?.content?.[0]?.text || '').slice(0, 100);
+    if (question) {
+      chatLogs.push({ 
+        userId: req.user?._id?.toString() || 'anon', 
+        question, 
+        timestamp: Date.now() 
+      });
+      if (chatLogs.length > MAX_LOGS) chatLogs.splice(0, chatLogs.length - MAX_LOGS);
+    }
+  }
+  next();
+});
+
+router.get("/chat/stats", authenticate, async (req: any, res: any) => {
+  try {
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+    const today = chatLogs.filter(l => now - l.timestamp < day);
+    const week = chatLogs.filter(l => now - l.timestamp < 7 * day);
+    
+    // Top questions (frequency count)
+    const freq: Record<string, number> = {};
+    for (const log of chatLogs) {
+      const key = log.question.slice(0, 50).toLowerCase();
+      freq[key] = (freq[key] || 0) + 1;
+    }
+    const topQuestions = Object.entries(freq)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([q, count]) => ({ question: q, count }));
+
+    // Unique users
+    const uniqueUsers = new Set(chatLogs.map(l => l.userId)).size;
+
+    return res.json({
+      success: true,
+      data: {
+        totalChats: chatLogs.length,
+        todayChats: today.length,
+        weekChats: week.length,
+        uniqueUsers,
+        topQuestions,
+        recentChats: chatLogs.slice(-20).reverse().map(l => ({
+          question: l.question,
+          timestamp: new Date(l.timestamp).toISOString(),
+        })),
+      }
+    });
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to get stats" });
+  }
+});
+
+/* ============================================================
    DeepSeek Client
 =============================================================== */
 const client = new OpenAI({
