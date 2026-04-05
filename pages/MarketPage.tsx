@@ -728,9 +728,9 @@ const MarketPage = () => {
               <div className="relative">
                 <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-8 overflow-x-auto no-scrollbar pb-2 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory">
                   {[
-                    { step: '01', title: 'Chọn công cụ AI', desc: 'Duyệt qua 30+ sản phẩm AI — Video, Image, Voice, Music, Workflow — tìm đúng công cụ bạn cần.', icon: <MousePointerClick size={28} />, iconBg: 'bg-brand-blue/10 text-brand-blue', gradient: 'from-brand-blue/10 to-purple-500/10', border: 'hover:border-brand-blue/30', pulse: 'brand-blue' },
-                    { step: '02', title: 'Nhập nội dung của bạn', desc: 'Upload ảnh, nhập prompt, hoặc chọn template có sẵn. AI sẽ xử lý phần còn lại.', icon: <Wand2 size={28} />, iconBg: 'bg-purple-500/10 text-purple-500', gradient: 'from-purple-500/10 to-pink-500/10', border: 'hover:border-purple-500/30', pulse: 'purple-500' },
-                    { step: '03', title: 'Nhận kết quả chuyên nghiệp', desc: 'Tải về ảnh, video, audio chất lượng cao trong vài giây. Chỉnh sửa và xuất bản ngay.', icon: <Rocket size={28} />, iconBg: 'bg-pink-500/10 text-pink-500', gradient: 'from-pink-500/10 to-amber-500/10', border: 'hover:border-pink-500/30', pulse: 'pink-500' },
+                    { step: '01', title: 'Chọn công cụ AI', desc: 'Duyệt qua 30+ sản phẩm AI — Video, Image, Voice, Music, Workflow — tìm đúng công cụ bạn cần.', image: '/assets/homepage/hiw-01-choose.webp', gradient: 'from-brand-blue/10 to-purple-500/10', border: 'hover:border-brand-blue/30' },
+                    { step: '02', title: 'Nhập nội dung của bạn', desc: 'Upload ảnh, nhập prompt, hoặc chọn template có sẵn. AI sẽ xử lý phần còn lại.', image: '/assets/homepage/hiw-02-input.webp', gradient: 'from-purple-500/10 to-pink-500/10', border: 'hover:border-purple-500/30' },
+                    { step: '03', title: 'Nhận kết quả chuyên nghiệp', desc: 'Tải về ảnh, video, audio chất lượng cao trong vài giây. Chỉnh sửa và xuất bản ngay.', image: '/assets/homepage/hiw-03-result.webp', gradient: 'from-pink-500/10 to-amber-500/10', border: 'hover:border-pink-500/30' },
                   ].map((item, idx) => (
                     <motion.div
                       key={item.step}
@@ -738,26 +738,21 @@ const MarketPage = () => {
                       whileInView={{ opacity: 1, y: 0, scale: 1 }}
                       viewport={{ once: true, margin: '-50px' }}
                       transition={{ delay: idx * 0.2, duration: 0.7, type: 'spring', stiffness: 100 }}
-                      whileHover={{ y: -8, rotateY: 3, transition: { duration: 0.4 } }}
-                      className={`relative flex-shrink-0 w-[260px] md:w-auto snap-start p-5 md:p-10 rounded-2xl md:rounded-3xl bg-gradient-to-br ${item.gradient} dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.05] dark:border-white/[0.05] ${item.border} transition-all duration-500 group`}
-                      style={{ perspective: '800px' }}
+                      whileHover={{ y: -8, transition: { duration: 0.4 } }}
+                      className={`relative flex-shrink-0 w-[260px] md:w-auto snap-start rounded-2xl md:rounded-3xl bg-gradient-to-br ${item.gradient} dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.05] dark:border-white/[0.05] ${item.border} transition-all duration-500 group overflow-hidden`}
                     >
-                      {/* Step number watermark */}
-                      <div className="absolute top-4 right-4 md:top-6 md:right-6 text-[40px] md:text-[80px] font-black text-black/[0.03] dark:text-white/[0.03] leading-none select-none">{item.step}</div>
-                      {/* Pulsing step indicator */}
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex">
-                        <div className={`w-10 h-10 rounded-full bg-white dark:bg-[#0a0a0c] border-2 border-${item.pulse}/30 flex items-center justify-center shadow-lg z-10`}>
-                          <span className={`text-[11px] font-black text-${item.pulse}`}>{item.step}</span>
+                      {/* Image */}
+                      <div className="relative aspect-[16/9] overflow-hidden">
+                        <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        <div className="absolute top-2 left-2 md:top-3 md:left-3">
+                          <span className="px-2 py-0.5 bg-brand-blue/20 backdrop-blur-sm border border-brand-blue/30 text-[8px] font-black text-brand-blue uppercase tracking-widest rounded-md">Step {item.step}</span>
                         </div>
-                        <div className={`absolute inset-0 rounded-full bg-${item.pulse}/20 animate-ping`} />
                       </div>
-                      <div className="relative z-10 space-y-3 md:space-y-5">
-                        <div className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-xl transition-all duration-500 [&_svg]:w-5 [&_svg]:h-5 md:[&_svg]:w-7 md:[&_svg]:h-7`}>{item.icon}</div>
-                        <div className="space-y-1 md:space-y-2">
-                          <span className="text-[8px] md:text-[9px] font-black text-brand-blue uppercase tracking-[0.3em]">Step {item.step}</span>
-                          <h3 className="text-base md:text-xl font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
-                        </div>
-                        <p className="text-xs md:text-sm text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-3 md:line-clamp-none">{item.desc}</p>
+                      {/* Text */}
+                      <div className="p-4 md:p-6 space-y-1.5 md:space-y-3">
+                        <h3 className="text-sm md:text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
+                        <p className="text-[10px] md:text-sm text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-3 md:line-clamp-none">{item.desc}</p>
                       </div>
                       {idx < 2 && (
                         <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#0a0a0c] border border-black/[0.06] dark:border-white/[0.06] items-center justify-center shadow-lg">
@@ -858,12 +853,12 @@ const MarketPage = () => {
 
               <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
                 {[
-                  { icon: <Megaphone size={24} />, iconBg: 'bg-blue-500/10 text-blue-500', industry: 'Marketing & Agency', desc: 'Tạo hàng trăm content visual mỗi tuần — video, banner, thumbnail.', tools: ['Video AI', 'Image AI', 'Poster AI'], color: 'from-blue-500/10 to-cyan-500/10', borderColor: 'hover:border-blue-500/30' },
-                  { icon: <ShoppingBag size={24} />, iconBg: 'bg-amber-500/10 text-amber-500', industry: 'E-commerce', desc: 'Ảnh sản phẩm chuyên nghiệp, xoá nền hàng loạt cho catalog.', tools: ['Product Image', 'BG Removal', 'Upscale'], color: 'from-amber-500/10 to-orange-500/10', borderColor: 'hover:border-amber-500/30' },
-                  { icon: <Clapperboard size={24} />, iconBg: 'bg-purple-500/10 text-purple-500', industry: 'Content Creator', desc: 'Video script-to-screen, nhạc nền, voiceover cho YouTube, TikTok.', tools: ['Video AI', 'Music AI', 'Voice'], color: 'from-purple-500/10 to-pink-500/10', borderColor: 'hover:border-purple-500/30' },
-                  { icon: <Building2 size={24} />, iconBg: 'bg-emerald-500/10 text-emerald-500', industry: 'Bất động sản', desc: 'Render nội thất AI, staging ảo, video tour bất động sản.', tools: ['Real Estate AI', 'Image AI'], color: 'from-emerald-500/10 to-teal-500/10', borderColor: 'hover:border-emerald-500/30' },
-                  { icon: <Shirt size={24} />, iconBg: 'bg-pink-500/10 text-pink-500', industry: 'Thời trang', desc: 'Thử trang phục ảo, tạo lookbook, chụp model AI.', tools: ['Fashion AI', 'Stylist AI'], color: 'from-pink-500/10 to-rose-500/10', borderColor: 'hover:border-pink-500/30' },
-                  { icon: <GraduationCap size={24} />, iconBg: 'bg-indigo-500/10 text-indigo-500', industry: 'Giáo dục', desc: 'Bài giảng video, podcast, hình minh hoạ cho khoá học online.', tools: ['Voice AI', 'Video AI'], color: 'from-indigo-500/10 to-violet-500/10', borderColor: 'hover:border-indigo-500/30' },
+                  { image: '/assets/homepage/uc-marketing.webp', industry: 'Marketing & Agency', desc: 'Tạo hàng trăm content visual mỗi tuần — video, banner, thumbnail.', tools: ['Video AI', 'Image AI', 'Poster AI'], borderColor: 'hover:border-blue-500/30' },
+                  { image: '/assets/homepage/uc-ecommerce.webp', industry: 'E-commerce', desc: 'Ảnh sản phẩm chuyên nghiệp, xoá nền hàng loạt cho catalog.', tools: ['Product Image', 'BG Removal', 'Upscale'], borderColor: 'hover:border-amber-500/30' },
+                  { image: '/assets/homepage/uc-creator.webp', industry: 'Content Creator', desc: 'Video script-to-screen, nhạc nền, voiceover cho YouTube, TikTok.', tools: ['Video AI', 'Music AI', 'Voice'], borderColor: 'hover:border-purple-500/30' },
+                  { image: '/assets/homepage/uc-realestate.webp', industry: 'Bất động sản', desc: 'Render nội thất AI, staging ảo, video tour bất động sản.', tools: ['Real Estate AI', 'Image AI'], borderColor: 'hover:border-emerald-500/30' },
+                  { image: '/assets/homepage/uc-fashion.webp', industry: 'Thời trang', desc: 'Thử trang phục ảo, tạo lookbook, chụp model AI.', tools: ['Fashion AI', 'Stylist AI'], borderColor: 'hover:border-pink-500/30' },
+                  { image: '/assets/homepage/uc-education.webp', industry: 'Giáo dục', desc: 'Bài giảng video, podcast, hình minh hoạ cho khoá học online.', tools: ['Voice AI', 'Video AI'], borderColor: 'hover:border-indigo-500/30' },
                 ].map((item, idx) => (
                   <motion.div
                     key={item.industry}
@@ -871,17 +866,21 @@ const MarketPage = () => {
                     whileInView={{ opacity: 1, y: 0, scale: 1 }}
                     viewport={{ once: true, margin: '-40px' }}
                     transition={{ delay: idx * 0.1, duration: 0.6, type: 'spring', stiffness: 120 }}
-                    whileHover={{ y: -6, scale: 1.02, rotateY: 2, transition: { duration: 0.35 } }}
-                    className={`flex-shrink-0 w-[220px] md:w-auto snap-start p-4 md:p-8 rounded-xl md:rounded-2xl bg-gradient-to-br ${item.color} dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.05] dark:border-white/[0.05] ${item.borderColor} transition-all duration-500 group`}
-                    style={{ perspective: '600px' }}
+                    whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.35 } }}
+                    className={`flex-shrink-0 w-[220px] md:w-auto snap-start rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] ${item.borderColor} transition-all duration-500 group overflow-hidden`}
                   >
-                    <div className="space-y-2.5 md:space-y-4">
-                      <div className={`w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 [&_svg]:w-5 [&_svg]:h-5 md:[&_svg]:w-6 md:[&_svg]:h-6`}>{item.icon}</div>
+                    {/* Image */}
+                    <div className="relative aspect-[16/9] overflow-hidden">
+                      <img src={item.image} alt={item.industry} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                    </div>
+                    {/* Text */}
+                    <div className="p-3 md:p-5 space-y-2 md:space-y-3">
                       <h3 className="text-sm md:text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.industry}</h3>
                       <p className="text-[10px] md:text-xs text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-2 md:line-clamp-none">{item.desc}</p>
-                      <div className="flex flex-wrap gap-1 md:gap-1.5 pt-1 md:pt-2">
+                      <div className="flex flex-wrap gap-1 md:gap-1.5 pt-1">
                         {item.tools.map(tool => (
-                          <span key={tool} className="px-2 py-0.5 md:px-2.5 md:py-1 bg-white dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.06] text-[7px] md:text-[9px] font-bold text-slate-500 dark:text-gray-400 rounded-md md:rounded-lg uppercase tracking-wider">{tool}</span>
+                          <span key={tool} className="px-2 py-0.5 md:px-2.5 md:py-1 bg-slate-100 dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.06] text-[7px] md:text-[9px] font-bold text-slate-500 dark:text-gray-400 rounded-md md:rounded-lg uppercase tracking-wider">{tool}</span>
                         ))}
                       </div>
                     </div>
