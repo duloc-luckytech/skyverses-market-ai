@@ -418,34 +418,46 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
 
               {/* Welcome state */}
               {messages.length === 0 && (
-                <div className="flex-1 flex flex-col items-center justify-center gap-5 py-4">
+                <motion.div 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
+                  className="flex-1 flex flex-col items-center justify-center gap-5 py-4"
+                >
                   {/* Logo + greeting */}
-                  <div className="relative">
+                  <motion.div className="relative"
+                    initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 0.1 }}>
                     <div className="absolute inset-0 bg-brand-blue/10 blur-[20px] rounded-full animate-pulse" />
                     <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-white/[0.04] dark:to-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center shadow-lg p-2.5">
                       <img src={logoUrl} alt="Skyverses" className="w-full h-full object-contain" />
                     </div>
-                  </div>
-                  <div className="text-center space-y-1.5">
+                  </motion.div>
+                  <motion.div className="text-center space-y-1.5"
+                    initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2, duration: 0.4 }}>
                     <h4 className="text-[14px] font-bold text-slate-900 dark:text-white">Xin chào! 👋</h4>
                     <p className="text-[11px] text-slate-500 dark:text-gray-500 font-medium max-w-[260px] leading-relaxed">
                       {t('chat.welcome')}
                     </p>
-                  </div>
+                  </motion.div>
 
                   {/* Quick prompts */}
                   <div className="w-full space-y-1.5 px-1">
                     {QUICK_PROMPTS.map((p, i) => (
-                      <button key={i} onClick={() => handleSendMessage(p.text)}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/20 hover:bg-brand-blue/[0.03] transition-all text-left group">
+                      <motion.button key={i} onClick={() => handleSendMessage(p.text)}
+                        initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.3 + i * 0.08, type: 'spring', damping: 20 }}
+                        whileHover={{ scale: 1.02, x: 4 }} whileTap={{ scale: 0.98 }}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/20 hover:bg-brand-blue/[0.03] transition-colors text-left group">
                         <span className="text-sm shrink-0">{p.emoji}</span>
                         <span className="text-[10px] font-semibold text-slate-600 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors leading-snug">{p.text}</span>
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
 
                   {/* Support channels */}
-                  <div className="w-full px-1 pt-1">
+                  <motion.div className="w-full px-1 pt-1"
+                    initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.6, duration: 0.3 }}>
                     <div className="flex gap-2">
                       <a href="https://t.me/nhomhotrokythuat" target="_blank" rel="noopener noreferrer"
                         className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-[#2AABEE]/[0.06] border border-[#2AABEE]/12 hover:border-[#2AABEE]/30 transition-all group">
@@ -458,28 +470,41 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                         <span className="text-[9px] font-bold text-[#0068FF]">Zalo</span>
                       </a>
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               )}
 
               {/* Messages */}
-              {messages.map((msg) => (
-                <div key={msg.id} className={`flex gap-2.5 items-start ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+              {messages.map((msg, idx) => (
+                <motion.div key={msg.id} 
+                  initial={{ opacity: 0, x: msg.role === 'user' ? 30 : -30, y: 8 }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  transition={{ type: 'spring', damping: 22, stiffness: 280, delay: idx === messages.length - 1 ? 0.05 : 0 }}
+                  className={`flex gap-2.5 items-start ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+                >
                   {/* Avatar */}
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                  <motion.div 
+                    initial={{ scale: 0.5 }} animate={{ scale: 1 }}
+                    transition={{ type: 'spring', damping: 15, delay: 0.1 }}
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 overflow-hidden ${
                     msg.role === 'user' 
                       ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black'
                       : 'bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 p-1'
                   }`}>
                     {msg.role === 'user' 
-                      ? <UserIcon size={12} /> 
+                      ? (user?.picture 
+                        ? <img src={user.picture} alt="" className="w-full h-full object-cover rounded-lg" />
+                        : <UserIcon size={12} />)
                       : <img src={logoUrl} alt="" className="w-full h-full object-contain" />
                     }
-                  </div>
+                  </motion.div>
 
                   {/* Bubble */}
                   <div className={`max-w-[80%] group ${msg.role === 'user' ? 'text-right' : ''}`}>
-                    <div className={`px-4 py-3 rounded-2xl ${
+                    <motion.div 
+                      initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.2, delay: 0.08 }}
+                      className={`px-4 py-3 rounded-2xl ${
                       msg.role === 'user'
                         ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black rounded-tr-lg'
                         : 'bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] text-slate-700 dark:text-gray-200 rounded-tl-lg'
@@ -494,30 +519,39 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                           )}
                         </div>
                       ))}
-                    </div>
+                    </motion.div>
                     {/* Actions */}
                     {msg.role === 'bot' && (
-                      <div className="flex items-center gap-2 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+                        className="flex items-center gap-2 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => handleCopy(msg.parts.map(p => p.content).join('\n'), msg.id)} 
                           className="flex items-center gap-1 text-[8px] font-semibold text-slate-400 hover:text-brand-blue transition-colors">
                           <Copy size={9} /> {copiedId === msg.id ? 'Copied!' : 'Copy'}
                         </button>
                         <span className="text-[8px] text-slate-300 dark:text-gray-700">{msg.timestamp}</span>
-                      </div>
+                      </motion.div>
                     )}
                     {msg.role === 'user' && (
                       <p className="text-[8px] text-slate-400 dark:text-gray-600 mt-1 mr-1">{msg.timestamp}</p>
                     )}
                   </div>
-                </div>
+                </motion.div>
               ))}
 
               {/* Loading */}
               {isLoading && (
-                <div className="flex gap-2.5 items-start">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 flex items-center justify-center p-1 shrink-0">
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+                  transition={{ type: 'spring', damping: 20 }}
+                  className="flex gap-2.5 items-start"
+                >
+                  <motion.div 
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                    className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 flex items-center justify-center p-1 shrink-0"
+                  >
                     <img src={logoUrl} alt="" className="w-full h-full object-contain" />
-                  </div>
+                  </motion.div>
                   <div className="px-4 py-3.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl rounded-tl-lg">
                     <div className="flex items-center gap-2">
                       <div className="flex gap-1">
@@ -528,7 +562,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                       <span className="text-[9px] font-medium text-slate-400 dark:text-gray-500">Đang suy nghĩ...</span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               )}
               <div ref={messagesEndRef} />
             </div>

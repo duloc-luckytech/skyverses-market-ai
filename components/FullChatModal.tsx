@@ -285,21 +285,24 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
           <div className="max-w-3xl mx-auto w-full px-4 md:px-8 py-8 md:py-12 flex flex-col">
             {messages.length === 0 ? (
               /* ═══ WELCOME STATE ═══ */
-              <div className="flex-grow flex flex-col items-center justify-center space-y-8 mt-10 md:mt-20">
-                <div className="relative">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }} className="flex-grow flex flex-col items-center justify-center space-y-8 mt-10 md:mt-20">
+                <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 0.1 }} className="relative">
                   <div className="absolute inset-0 bg-brand-blue/10 blur-[30px] rounded-full animate-pulse" />
                   <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-white/[0.04] dark:to-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center shadow-lg p-3">
                     <img src={logoUrl} className="w-full h-full object-contain" alt="" />
                   </div>
-                </div>
-                <div className="text-center space-y-2">
+                </motion.div>
+                <motion.div initial={{ y: 15, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-center space-y-2">
                   <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Xin chào! 👋</h2>
                   <p className="text-sm text-slate-500 dark:text-gray-500 font-medium max-w-md">Skyverses AI sẵn sàng hỗ trợ bạn. Hỏi bất cứ điều gì về sản phẩm, tính năng, hoặc cách sử dụng.</p>
-                </div>
+                </motion.div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl px-2">
                   {suggestions.map((s, i) => (
-                    <button 
+                    <motion.button 
+                      initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 + i * 0.08, type: 'spring', damping: 20 }}
+                      whileHover={{ scale: 1.02, x: 4 }} whileTap={{ scale: 0.98 }}
                       key={i}
                       onClick={() => onSendMessage(s.text)}
                       className="p-4 border border-black/[0.04] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.02] hover:border-brand-blue/20 hover:bg-brand-blue/[0.03] rounded-2xl text-left transition-all group flex items-center gap-3"
@@ -307,12 +310,12 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                       <span className="text-lg shrink-0">{s.emoji}</span>
                       <p className="text-[12px] font-semibold text-slate-500 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white leading-relaxed flex-1">{s.text}</p>
                       <ArrowRight size={14} className="text-slate-300 dark:text-gray-700 group-hover:text-brand-blue transition-all shrink-0" />
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
 
                 {/* Support channels */}
-                <div className="flex gap-3 pt-2">
+                <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.6, duration: 0.3 }} className="flex gap-3 pt-2">
                   <a href="https://t.me/nhomhotrokythuat" target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#2AABEE]/[0.06] border border-[#2AABEE]/12 hover:border-[#2AABEE]/30 transition-all">
                     <Send size={12} className="text-[#2AABEE]" />
@@ -323,17 +326,24 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                     <MessageCircle size={12} className="text-[#0068FF]" />
                     <span className="text-[10px] font-bold text-[#0068FF]">Zalo</span>
                   </a>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             ) : (
               /* ═══ MESSAGES ═══ */
               <div className="space-y-6 pb-40">
-                {messages.map((msg) => (
-                  <div key={msg.id} className={`flex gap-4 items-start group/msg ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                {messages.map((msg, idx) => (
+                  <motion.div 
+                    initial={{ opacity: 0, x: msg.role === 'user' ? 40 : -40, y: 10 }}
+                    animate={{ opacity: 1, x: 0, y: 0 }}
+                    transition={{ type: 'spring', damping: 22, stiffness: 280, delay: idx === messages.length - 1 ? 0.05 : 0 }}
+                    key={msg.id} className={`flex gap-4 items-start group/msg ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+                  >
                     {/* Avatar */}
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
+                    <motion.div 
+                      initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ type: 'spring', damping: 15, delay: 0.1 }}
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 overflow-hidden ${
                       msg.role === 'user' 
-                        ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black overflow-hidden'
+                        ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black'
                         : 'bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 p-1.5'
                     }`}>
                       {msg.role === 'user' 
@@ -342,7 +352,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                           : <UserIcon size={14} />)
                         : <img src={logoUrl} alt="" className="w-full h-full object-contain" />
                       }
-                    </div>
+                    </motion.div>
                     
                     {/* Content */}
                     <div className={`max-w-[85%] ${msg.role === 'user' ? 'text-right' : ''}`}>
@@ -354,7 +364,9 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                       </p>
                       
                       {/* Bubble */}
-                      <div className={`px-5 py-4 rounded-2xl ${
+                      <motion.div 
+                        initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.2, delay: 0.08 }}
+                        className={`px-5 py-4 rounded-2xl ${
                         msg.role === 'user'
                           ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black rounded-tr-lg'
                           : 'bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] text-slate-700 dark:text-gray-200 rounded-tl-lg'
@@ -369,11 +381,12 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                             )}
                           </div>
                         ))}
-                      </div>
+                      </motion.div>
 
                       {/* Actions */}
                       {msg.role === 'bot' && (
-                        <div className="flex items-center gap-3 mt-2 ml-1 opacity-0 group-hover/msg:opacity-100 transition-opacity">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+                          className="flex items-center gap-3 mt-2 ml-1 opacity-0 group-hover/msg:opacity-100 transition-opacity">
                            <button onClick={() => handleCopy(msg.parts.map(p => p.content).join('\n'), msg.id)} 
                              className="flex items-center gap-1 text-[9px] font-semibold text-slate-400 hover:text-brand-blue transition-colors">
                              <Copy size={10} /> {copiedId === msg.id ? 'Copied!' : 'Copy'}
@@ -386,21 +399,27 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                            <button className="text-slate-400 hover:text-emerald-500 transition-colors"><ThumbsUp size={11} /></button>
                            <button className="text-slate-400 hover:text-red-400 transition-colors"><ThumbsDown size={11} /></button>
                            <span className="text-[8px] text-slate-300 dark:text-gray-700 ml-1">{msg.timestamp}</span>
-                        </div>
+                        </motion.div>
                       )}
                       {msg.role === 'user' && (
                         <p className="text-[8px] text-slate-400 dark:text-gray-600 mt-1.5 mr-1">{msg.timestamp}</p>
                       )}
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
 
                 {/* Loading */}
                 {isLoading && (
-                  <div className="flex gap-4 items-start">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 flex items-center justify-center p-1.5 shrink-0">
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ type: 'spring', damping: 20 }}
+                    className="flex gap-4 items-start"
+                  >
+                    <motion.div 
+                      animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                      className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 flex items-center justify-center p-1.5 shrink-0"
+                    >
                       <img src={logoUrl} alt="" className="w-full h-full object-contain" />
-                    </div>
+                    </motion.div>
                     <div>
                       <p className="text-[10px] font-semibold text-brand-blue/60 mb-1.5 ml-1">Skyverses AI</p>
                       <div className="px-5 py-4 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl rounded-tl-lg">
@@ -414,7 +433,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
                 <div ref={messagesEndRef} />
               </div>
