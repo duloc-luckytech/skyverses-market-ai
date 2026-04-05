@@ -368,13 +368,24 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
       {/* ═══════════ MINI CHAT MODAL ═══════════ */}
       <AnimatePresence>
         {isOpen && !isFull && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-            className="fixed bottom-[9rem] right-6 md:right-8 w-[calc(100vw-3rem)] md:w-[420px] h-[560px] max-h-[75dvh] flex flex-col overflow-hidden z-[700] rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_80px_rgba(0,0,0,0.5)]"
-          >
+          <>
+            {/* Backdrop Layer */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 z-[690] bg-black/20 dark:bg-black/40 backdrop-blur-[2px]"
+            />
+            
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ type: 'spring', damping: 26, stiffness: 300 }}
+              className="fixed bottom-[9rem] right-6 md:right-8 w-[calc(100vw-3rem)] md:w-[420px] h-[560px] max-h-[75dvh] flex flex-col overflow-hidden z-[700] rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_80px_rgba(0,0,0,0.5)]"
+            >
             {/* Glass background */}
             <div className="absolute inset-0 bg-white/95 dark:bg-[#0d0d10]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] rounded-2xl" />
 
@@ -641,6 +652,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
               )}
             </div>
           </motion.div>
+          </>
         )}
       </AnimatePresence>
 
