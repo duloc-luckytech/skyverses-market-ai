@@ -3,7 +3,80 @@ import express from "express";
 import OpenAI from "openai";
 import { authenticate } from "./auth";
 import MetaPromptConfig from "../models/MetaPromptTemplate";
+import { listKeyGommoGenmini } from "../config/keyGenminiGommo";
 const router = express.Router();
+
+/* ============================================================
+   SUPPORT CHAT — Proxy to ezaiapi.com (avoids CORS from browser)
+   POST /ai/chat
+   Body: { messages: [...], stream?: boolean }
+=============================================================== */
+router.post("/chat", authenticate, async (req: any, res: any) => {
+  try {
+    const { messages, stream = true } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: "messages array required" });
+    }
+
+    // Pick random active key
+    const activeKeys = listKeyGommoGenmini.filter((k: any) => k.isActive && k.key);
+    if (activeKeys.length === 0) {
+      return res.status(500).json({ error: "No active API keys" });
+    }
+    const selectedKey = activeKeys[Math.floor(Math.random() * activeKeys.length)].key;
+
+    const apiResponse = await fetch("https://ezaiapi.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${selectedKey}`,
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-5",
+        messages,
+        max_tokens: 4096,
+        stream,
+      }),
+    });
+
+    if (!apiResponse.ok) {
+      const errBody = await apiResponse.text().catch(() => "");
+      console.error("[AI Chat] API error:", apiResponse.status, errBody);
+      return res.status(apiResponse.status).json({ error: "AI API error", detail: errBody });
+    }
+
+    if (stream && apiResponse.body) {
+      // SSE streaming: pipe chunks to client
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+      res.setHeader("X-Accel-Buffering", "no"); // disable nginx buffering
+      res.flushHeaders();
+
+      const reader = (apiResponse.body as any).getReader();
+      const decoder = new TextDecoder();
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          res.write(decoder.decode(value, { stream: true }));
+        }
+      } catch (streamErr) {
+        console.error("[AI Chat] Stream error:", streamErr);
+      } finally {
+        res.end();
+      }
+    } else {
+      // Non-streaming: return JSON
+      const data = await apiResponse.json();
+      return res.json(data);
+    }
+  } catch (err) {
+    console.error("[AI Chat] Error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 /* ============================================================
    DeepSeek Client

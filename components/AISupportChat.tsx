@@ -11,7 +11,6 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import FullChatModal from './FullChatModal';
 import { systemConfigApi } from '../apis/config';
-import { GeminiKey } from '../types';
 
 export interface ChatContentPart {
   type: 'text' | 'image' | 'code' | 'table';
@@ -41,7 +40,6 @@ const AISupportChat: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<{data: string, mimeType: string, preview: string} | null>(null);
-  const [apiKeys, setApiKeys] = useState<GeminiKey[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [cmsContext, setCmsContext] = useState<string>('');
   
@@ -70,13 +68,10 @@ const AISupportChat: React.FC = () => {
     const loadConfig = async () => {
       try {
         const res = await systemConfigApi.getSystemConfig();
-        if (res?.success && res.data?.listKeyGommoGenmini) {
-          setApiKeys(res.data.listKeyGommoGenmini);
-        }
         if (res?.success && res.data?.aiSupportContext) {
           setCmsContext(res.data.aiSupportContext);
         }
-      } catch (err) { console.error("Failed to load AI keys", err); }
+      } catch (err) { console.error("Failed to load AI config", err); }
     };
     loadConfig();
   }, []);
@@ -108,12 +103,6 @@ const AISupportChat: React.FC = () => {
   };
 
   const handleClearChat = () => { setMessages([]); setSelectedFile(null); setInput(''); localStorage.removeItem(STORAGE_KEY); };
-
-  const getRandomKey = () => {
-    const activeKeys = apiKeys.filter(k => k.isActive && k.key);
-    if (activeKeys.length > 0) return activeKeys[Math.floor(Math.random() * activeKeys.length)].key;
-    return process.env.API_KEY || '';
-  };
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -185,8 +174,6 @@ const AISupportChat: React.FC = () => {
     const botMsgId = (Date.now() + 1).toString();
 
     try {
-      const selectedKey = getRandomKey();
-      
       // Build messages array (OpenAI format)
       const SYSTEM_CONTEXT = `You are **Skyverses AI Assistant** — the official support chatbot for Skyverses Marketplace (https://skyverses.io).
 You help users navigate the platform, answer questions about products, pricing, credits, and troubleshoot issues.
@@ -254,17 +241,18 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
         apiMessages.push({ role: 'user', content: userText });
       }
 
-      // ═══ STREAMING RESPONSE ═══
-      const response = await fetch('https://ezaiapi.com/v1/chat/completions', {
+      // ═══ STREAMING via backend proxy (avoids CORS) ═══
+      const token = localStorage.getItem('skyverses_auth_token');
+      const API_BASE = import.meta.env.VITE_API_URL || 'https://api.skyverses.com';
+      
+      const response = await fetch(`${API_BASE}/ai/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${selectedKey}`,
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-5',
           messages: apiMessages,
-          max_tokens: 4096,
           stream: true,
         }),
       });
