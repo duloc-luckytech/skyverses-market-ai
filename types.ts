@@ -39,6 +39,7 @@ export interface SystemConfig {
   marketHomeBlock: HomeBlock[];
   listKeyGommoGenmini?: GeminiKey[];
   welcomeBonusCredits?: number;
+  aiSupportContext?: string;
 }
 
 export interface Solution {

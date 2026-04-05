@@ -60,6 +60,15 @@ router.get("/", async (req, res) => {
     } catch (e) { /* fallback to empty */ }
 
     /* ---------------------------------------
+     * 🤖 AI Support Context (CMS editable system prompt)
+     * --------------------------------------- */
+    let aiSupportContext = '';
+    try {
+      const ctxSetting: any = await SystemSetting.findOne({ key: 'aiSupportContext' }).lean();
+      if (ctxSetting?.value) aiSupportContext = ctxSetting.value;
+    } catch (e) { /* fallback to empty — frontend will use hardcoded */ }
+
+    /* ---------------------------------------
      * ✅ Phản hồi kết quả
      * --------------------------------------- */
     return res.json({
@@ -79,6 +88,7 @@ router.get("/", async (req, res) => {
         listKeyGommoGenmini,
         welcomeBonusCredits,
         productLocks,
+        aiSupportContext,
       },
     });
   } catch (err: any) {
@@ -205,6 +215,36 @@ router.put("/crypto", authenticate, async (req: any, res) => {
     const result = await SystemSetting.findOneAndUpdate(
       { key: "crypto" },
       { $set: { value: req.body } },
+      { upsert: true, new: true }
+    );
+    res.json({ success: true, data: result.value });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/* =====================================================
+   AI SUPPORT CONTEXT - GET & UPDATE
+   CMS quản lý system prompt cho AI Support Chat
+===================================================== */
+
+router.get("/ai-support-context", async (_req, res) => {
+  try {
+    const setting: any = await SystemSetting.findOne({ key: "aiSupportContext" }).lean();
+    res.json({ success: true, data: setting?.value || '' });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.put("/ai-support-context", authenticate, async (req: any, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Forbidden" });
+    }
+    const result = await SystemSetting.findOneAndUpdate(
+      { key: "aiSupportContext" },
+      { $set: { value: req.body.context || req.body.value || '' } },
       { upsert: true, new: true }
     );
     res.json({ success: true, data: result.value });

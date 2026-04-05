@@ -30,16 +30,31 @@ const AISupportChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFull, setIsFull] = useState(false);
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const STORAGE_KEY = 'skyverses_ai_chat_history';
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<{data: string, mimeType: string, preview: string} | null>(null);
   const [apiKeys, setApiKeys] = useState<GeminiKey[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [cmsContext, setCmsContext] = useState<string>('');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const logoUrl = "/assets/skyverses-logo.png";
+
+  // Persist messages to localStorage (keep last 50)
+  useEffect(() => {
+    try {
+      const toSave = messages.slice(-50);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    } catch { /* quota exceeded, ignore */ }
+  }, [messages]);
 
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
@@ -49,6 +64,9 @@ const AISupportChat: React.FC = () => {
         const res = await systemConfigApi.getSystemConfig();
         if (res?.success && res.data?.listKeyGommoGenmini) {
           setApiKeys(res.data.listKeyGommoGenmini);
+        }
+        if (res?.success && res.data?.aiSupportContext) {
+          setCmsContext(res.data.aiSupportContext);
         }
       } catch (err) { console.error("Failed to load AI keys", err); }
     };
@@ -81,7 +99,7 @@ const AISupportChat: React.FC = () => {
     }
   };
 
-  const handleClearChat = () => { setMessages([]); setSelectedFile(null); setInput(''); };
+  const handleClearChat = () => { setMessages([]); setSelectedFile(null); setInput(''); localStorage.removeItem(STORAGE_KEY); };
 
   const getRandomKey = () => {
     const activeKeys = apiKeys.filter(k => k.isActive && k.key);
@@ -224,8 +242,11 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
 4. Khi user gặp lỗi, hỏi thêm chi tiết (model nào, ảnh hay video, error message).
 5. Khuyến khích user tham gia nhóm Telegram để được hỗ trợ nhanh hơn.`;
 
+      // Use CMS context if available, otherwise use hardcoded fallback
+      const finalContext = cmsContext || SYSTEM_CONTEXT;
+
       const apiMessages: any[] = [
-        { role: 'system', content: SYSTEM_CONTEXT }
+        { role: 'system', content: finalContext }
       ];
 
       // Add user message
