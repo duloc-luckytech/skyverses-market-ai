@@ -7,7 +7,7 @@ import {
   Plus, Sun, Moon, ChevronDown, User as UserIcon,
   MessageSquare, MessageCircle, History,
   Sidebar as SidebarIcon,
-  Copy, RotateCcw, Terminal,
+  Copy, RotateCcw, Terminal, Download,
   ArrowRight, ThumbsUp, ThumbsDown,
   Edit3, Shield
 } from 'lucide-react';
@@ -40,6 +40,26 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
   const logoUrl = "/assets/skyverses-logo.png";
 
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  // Export chat
+  const handleExportChat = () => {
+    if (messages.length === 0) return;
+    const lines: string[] = [`# Skyverses AI Chat — ${new Date().toLocaleDateString()}\n`];
+    for (const msg of messages) {
+      const label = msg.role === 'user' ? '👤 You' : '🤖 Skyverses AI';
+      lines.push(`## ${label} (${msg.timestamp})`);
+      for (const p of msg.parts) {
+        if (p.type === 'text') lines.push(p.content);
+        if (p.type === 'image') lines.push('[Image Attachment]');
+      }
+      lines.push('');
+    }
+    const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `skyverses-chat-${Date.now()}.md`;
+    a.click(); URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -246,6 +266,11 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                 <MessageCircle size={14} />
               </a>
               <div className="w-px h-5 bg-black/[0.06] dark:bg-white/[0.06] mx-1 hidden sm:block" />
+              {messages.length > 0 && (
+                <button onClick={handleExportChat} className="w-8 h-8 rounded-lg hover:bg-emerald-500/10 flex items-center justify-center text-slate-400 hover:text-emerald-500 transition-all" title="Export Chat">
+                   <Download size={14} />
+                </button>
+              )}
               <button onClick={toggleTheme} className="w-8 h-8 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.03] flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all">
                  {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
               </button>

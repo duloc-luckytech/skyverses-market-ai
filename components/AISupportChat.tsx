@@ -5,9 +5,10 @@ import {
   X, Send, Bot, 
   Loader2, ChevronDown, User as UserIcon,
   Sparkles, Paperclip, Maximize2,
-  MessageCircle, Copy, Terminal
+  MessageCircle, Copy, Terminal, Download, LogIn
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import FullChatModal from './FullChatModal';
 import { systemConfigApi } from '../apis/config';
 import { GeminiKey } from '../types';
@@ -27,6 +28,7 @@ export interface ChatMessage {
 
 const AISupportChat: React.FC = () => {
   const { t } = useLanguage();
+  const { user, isAuthenticated, login } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isFull, setIsFull] = useState(false);
   const [input, setInput] = useState('');
@@ -119,7 +121,35 @@ const AISupportChat: React.FC = () => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  // ═══ Export chat to Markdown ═══
+  const handleExportChat = () => {
+    if (messages.length === 0) return;
+    const lines: string[] = [`# Skyverses AI Chat — ${new Date().toLocaleDateString()}\n`];
+    for (const msg of messages) {
+      const label = msg.role === 'user' ? '👤 You' : '🤖 Skyverses AI';
+      lines.push(`## ${label} (${msg.timestamp})`);
+      for (const p of msg.parts) {
+        if (p.type === 'text') lines.push(p.content);
+        if (p.type === 'image') lines.push('[Image Attachment]');
+      }
+      lines.push('');
+    }
+    const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `skyverses-chat-${Date.now()}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleSendMessage = async (customText?: string, customFile?: {data: string, mimeType: string}) => {
+    // Login gate
+    if (!isAuthenticated) {
+      login();
+      return;
+    }
+
     const userText = customText || input.trim();
     const currentFile = customFile || selectedFile;
     if ((!userText && !currentFile) || isLoading) return;
@@ -151,9 +181,11 @@ const AISupportChat: React.FC = () => {
     setSelectedFile(null);
     setIsLoading(true);
 
+    // Bot message placeholder for streaming
+    const botMsgId = (Date.now() + 1).toString();
+
     try {
       const selectedKey = getRandomKey();
-      const apiParts: any[] = [];
       
       // Build messages array (OpenAI format)
       const SYSTEM_CONTEXT = `You are **Skyverses AI Assistant** — the official support chatbot for Skyverses Marketplace (https://skyverses.io).
@@ -161,106 +193,36 @@ You help users navigate the platform, answer questions about products, pricing, 
 Always respond in the SAME LANGUAGE the user uses (Vietnamese, English, Korean, Japanese, etc.).
 Format output using Markdown. Be concise, professional, and friendly.
 
-## 🏢 ABOUT SKYVERSES
+## \ud83c\udfe2 ABOUT SKYVERSES
 Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI models. It offers tools for video generation, image generation, voice/music creation, and automation — all in one place, at ~70% lower cost than competitors.
 
-## 🎬 AI VIDEO GENERATION
+## \ud83c\udfac AI VIDEO GENERATION
 - **Supported Models**: VEO3, Kling 2.1/2.0/1.6, Wan2.1 (1.3B/14B), Hailuo, Sora, Genyu, Pika
 - **Features**: Text-to-Video, Image-to-Video, Start+End Frame, Video Extend, Character Sync (face swap in video)
 - **Engines**: veo, gommo, kling, fxlab, wan, fxflow, grok
-- **Resolutions**: 480p, 720p, 1080p (tùy model)
-- **Duration**: 5s, 8s, 10s (tùy model & plan)
 - **Route**: /product/ai-video-generator → AI Video Studio
 
-## 🖼 AI IMAGE GENERATION
+## \ud83d\uddbc AI IMAGE GENERATION
 - **Supported Models**: Gemini, Midjourney, Flux, Stable Diffusion, DALL-E, Leonardo, Grok
-- **Features**: Text-to-Image, Image-to-Image, Image Variation, Image Edit, Batch Generation
-- **Engines**: gemini, gommo, midjourney, running, stable_diffusion, leonardo, fxlab, fxflow, grok
-- **Special**: Users get **100 FREE images** on registration (freeImageRemaining)
+- **Special**: Users get **100 FREE images** on registration
 - **Route**: /product/ai-image-generator → AI Image Studio
 
-## 🎵 AI AUDIO & VOICE
-- **AI Music Generator**: Tạo nhạc từ text (route: /product/ai-music-generator)
-- **Text-to-Speech**: Chuyển text thành giọng nói (route: /product/text-to-speech)
-- **AI Voice Studio**: Thiết kế giọng nói AI (route: /product/ai-voice-studio)
-- **Voice Design AI**: Tạo giọng nói chuyên nghiệp (route: /product/voice-design-ai)
-
-## 🎨 AI IMAGE TOOLS
-- **Background Remover**: Xóa nền ảnh chuyên nghiệp (50 CR/ảnh, route: /product/background-removal-ai)
-- **Image Upscale AI**: Nâng cấp ảnh 4K/12K (100 CR, route: /product/image-upscale-ai)
-- **AI Image Restorer**: Phục chế ảnh cũ (route: /product/ai-image-restorer)
-- **Product Image AI**: Ảnh sản phẩm chuyên nghiệp (route: /product/product-image)
-- **Poster Marketing AI**: Thiết kế poster marketing (route: /product/poster-marketing-ai)
-- **Fashion Center AI**: Thời trang AI (route: /product/fashion-center-ai)
-
-## 🎭 AI PORTRAIT & EVENT STUDIOS
-- **Birthday Studio**: Ảnh sinh nhật AI (150 CR, route: /product/ai-birthday-generator)
-- **Wedding Studio**: Ảnh cưới AI Pro (150 CR, route: /product/ai-wedding-generator)
-- **Noel Studio**: Ảnh Giáng sinh AI (150 CR, route: /product/ai-noel-generator)
-- **Tết Studio**: Ảnh Tết AI (150 CR, route: /product/ai-tet-generator)
-
-## 🤖 ADVANCED TOOLS
-- **Character Sync AI**: Đồng bộ nhân vật AI trong video (route: /product/character-sync-ai)
-- **Avatar Lipsync AI**: Đồng bộ khẩu hình nhân vật (route: /product/avatar-sync-ai)
-- **Video Animate AI**: Animation từ ảnh tĩnh (route: /product/video-animate-ai)
-- **Storyboard Studio**: Tạo storyboard AI (route: /product/storyboard-studio)
-- **AI Stylist**: Tư vấn phong cách AI (route: /product/ai-stylist)
-- **3D Spatial Architect**: Kiến trúc 3D AI (route: /product/3d-spatial-architect)
-- **Aether Flow Orchestrator**: AI Agent Workflow (500 CR, route: /product/ai-agent-workflow)
-- **NoCodeExport**: Xuất website thành code (FREE, route: /product/nocode-export)
-- **Bất động sản AI**: Ảnh BĐS chuyên nghiệp (route: /product/bat-dong-san-ai)
-
-## 💬 AI CHAT (FREE)
-- **Qwen AI Chat**: Chat AI miễn phí chạy 100% local (route: /product/qwen-chat-ai)
-- Models: Qwen3.5 4B (fastest), Qwen3.5 9B (smartest), Qwen2.5 VL 3B (vision)
-- API: OpenAI-compatible REST API tại https://ai-api.skyverses.com
-- Không cần đăng ký, không cần API key
-
-## 💰 CREDIT SYSTEM
+## \ud83d\udcb0 CREDIT SYSTEM
 - Skyverses sử dụng hệ thống **Credits** để thanh toán.
-- Mỗi tác vụ AI tiêu tốn một số credits nhất định (tuỳ model, resolution, duration).
-- Pricing: basePricing × priceMultiplier (thường x5 giá gốc).
 - **Free perks**: 100 ảnh miễn phí khi đăng ký mới, daily claim.
-- Thanh toán: Chuyển khoản ngân hàng VN (auto detect via webhook), hoặc mua gói credit trên web.
-- Route xem credits: /credits, lịch sử sử dụng: /usage
+- Route: /credits, /usage
 
-## 📋 CREDIT PACKAGES (Gói mua credits)
-- Packages: Basic, Pro, Ultimate, Creator (quản lý trong CMS)
-- Mỗi gói có: credits/tháng, bonus%, giá, billingCycle (monthly/annual)
-- Hỗ trợ ribbon (MOST POPULAR), badge (+25% BONUS), unlimited models
-
-## 👤 USER SYSTEM
-- Đăng nhập: Google OAuth
-- Roles: user, sub, master, admin
-- Plan: free / starter / pro (có thời hạn)
-- Referral/Affiliate: Mỗi user có inviteCode, nhận hoa hồng khi giới thiệu
-- Route referral: /referral
-
-## 🔧 PAGES & NAVIGATION
-- Home: / (MarketPage)
-- Marketplace: /markets (danh sách sản phẩm)
-- Apps: /apps (tất cả ứng dụng AI)
-- Models: /models (danh sách AI models)
-- Explorer: /explorer (thư viện media)
-- Credits: /credits (mua credits)
-- Usage: /usage (lịch sử sử dụng)
-- Referral: /referral
-- Settings: /settings
-- Favorites: /favorites
-- Policy: /policy
-
-## 📞 SUPPORT CHANNELS
-- **Telegram**: https://t.me/nhomhotrokythuat (Nhóm Hỗ Trợ Kỹ Thuật)
+## \ud83d\udcde SUPPORT CHANNELS
+- **Telegram**: https://t.me/nhomhotrokythuat
 - **Zalo**: https://zalo.me/g/brzhpkvbxtnvicdtgpkv
 - **Email**: support@skyverses.com
-- **Website**: https://skyverses.com
 
 ## ⚠️ RULES
 1. Luôn trả lời bằng ngôn ngữ người dùng sử dụng.
 2. Không bịa thông tin. Nếu không biết, hướng dẫn liên hệ Telegram/Zalo.
-3. Khi user hỏi về giá, luôn nhắc họ kiểm tra trang /credits để xem bảng giá mới nhất.
-4. Khi user gặp lỗi, hỏi thêm chi tiết (model nào, ảnh hay video, error message).
-5. Khuyến khích user tham gia nhóm Telegram để được hỗ trợ nhanh hơn.`;
+3. Khi user hỏi về giá, luôn nhắc họ kiểm tra trang /credits.
+4. Khi user gặp lỗi, hỏi thêm chi tiết.
+5. Khuyến khích user tham gia nhóm Telegram.`;
 
       // Use CMS context if available, otherwise use hardcoded fallback
       const finalContext = cmsContext || SYSTEM_CONTEXT;
@@ -280,7 +242,6 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
 
       // Add current user message
       if (currentFile) {
-        // Vision: send image as base64 content part
         const imgData = currentFile.data.includes('base64,') ? currentFile.data.split('base64,')[1] : currentFile.data;
         apiMessages.push({
           role: 'user',
@@ -293,6 +254,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
         apiMessages.push({ role: 'user', content: userText });
       }
 
+      // ═══ STREAMING RESPONSE ═══
       const response = await fetch('https://ezaiapi.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -303,16 +265,63 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
           model: 'claude-sonnet-4-5',
           messages: apiMessages,
           max_tokens: 4096,
+          stream: true,
         }),
       });
 
-      const data = await response.json();
-      const botText = data?.choices?.[0]?.message?.content || 'Không nhận được phản hồi. Vui lòng thử lại.';
+      if (!response.ok || !response.body) {
+        // Fallback to non-stream
+        const errData = await response.json().catch(() => null);
+        throw new Error(errData?.error?.message || `HTTP ${response.status}`);
+      }
 
-      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'bot', parts: [{ type: 'text', content: botText }], timestamp }]);
+      // Add empty bot message, then stream into it
+      setMessages(prev => [...prev, { id: botMsgId, role: 'bot', parts: [{ type: 'text', content: '' }], timestamp }]);
+      setIsLoading(false); // hide dots, show streaming text
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = '';
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed === 'data: [DONE]') continue;
+          if (!trimmed.startsWith('data: ')) continue;
+          try {
+            const json = JSON.parse(trimmed.slice(6));
+            const delta = json?.choices?.[0]?.delta?.content;
+            if (delta) {
+              accumulated += delta;
+              const current = accumulated;
+              setMessages(prev => prev.map(m => m.id === botMsgId ? { ...m, parts: [{ type: 'text', content: current }] } : m));
+            }
+          } catch { /* skip malformed */ }
+        }
+      }
+
+      // Final update if accumulated is empty (edge case)
+      if (!accumulated) {
+        setMessages(prev => prev.map(m => m.id === botMsgId ? { ...m, parts: [{ type: 'text', content: 'Không nhận được phản hồi. Vui lòng thử lại.' }] } : m));
+      }
     } catch (error) {
-      console.error("Gemini Error:", error);
-      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'bot', parts: [{ type: 'text', content: "Hệ thống đang bận. Vui lòng thử lại sau giây lát." }], timestamp }]);
+      console.error("AI Error:", error);
+      // If botMsg was added (streaming failed mid-way), update it; otherwise add error msg
+      setMessages(prev => {
+        const hasBotMsg = prev.some(m => m.id === botMsgId);
+        if (hasBotMsg) {
+          return prev.map(m => m.id === botMsgId ? { ...m, parts: [{ type: 'text', content: 'Hệ thống đang bận. Vui lòng thử lại sau giây lát.' }] } : m);
+        }
+        return [...prev, { id: botMsgId, role: 'bot', parts: [{ type: 'text', content: 'Hệ thống đang bận. Vui lòng thử lại sau giây lát.' }], timestamp }];
+      });
     } finally {
       setIsLoading(false);
     }
@@ -440,6 +449,12 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                 </div>
               </div>
               <div className="flex items-center gap-1">
+                {messages.length > 0 && (
+                  <button onClick={handleExportChat}
+                    className="w-8 h-8 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.04] flex items-center justify-center text-slate-400 hover:text-emerald-500 transition-all" title="Export Chat">
+                    <Download size={13} />
+                  </button>
+                )}
                 <button onClick={() => { setIsFull(true); setIsOpen(false); }} 
                   className="w-8 h-8 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.04] flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all" title="Expand">
                   <Maximize2 size={14} />
@@ -601,6 +616,15 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
               )}
 
               {/* Input pill */}
+              {/* Login gate overlay */}
+              {!isAuthenticated && (
+                <div className="mb-3 px-4 py-3 bg-brand-blue/[0.04] border border-brand-blue/10 rounded-xl flex items-center gap-3">
+                  <LogIn size={14} className="text-brand-blue shrink-0" />
+                  <p className="text-[10px] font-medium text-slate-600 dark:text-gray-400 flex-1">Đăng nhập để bắt đầu chat với AI</p>
+                  <button onClick={login} className="px-3 py-1.5 bg-brand-blue text-white text-[9px] font-bold uppercase rounded-lg hover:brightness-110 transition-all">Đăng nhập</button>
+                </div>
+              )}
+
               <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
                 className="flex items-center gap-2 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-1.5 pl-2 focus-within:border-brand-blue/30 transition-all">
                 <button type="button" onClick={() => fileInputRef.current?.click()} 
@@ -611,7 +635,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                 <input 
                   ref={inputRef}
                   type="text" value={input} onChange={(e) => setInput(e.target.value)} 
-                  placeholder={t('chat.placeholder')} disabled={isLoading}
+                  placeholder={isAuthenticated ? t('chat.placeholder') : 'Vui lòng đăng nhập...'} disabled={isLoading || !isAuthenticated}
                   className="flex-grow bg-transparent border-none py-2.5 px-2 text-[12px] font-medium focus:outline-none placeholder:text-slate-400 dark:placeholder:text-gray-600 text-slate-900 dark:text-white" 
                 />
                 <button type="submit"
