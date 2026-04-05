@@ -253,63 +253,22 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
         },
         body: JSON.stringify({
           messages: apiMessages,
-          stream: true,
+          stream: false,
         }),
       });
 
-      if (!response.ok || !response.body) {
-        // Fallback to non-stream
+      if (!response.ok) {
         const errData = await response.json().catch(() => null);
-        throw new Error(errData?.error?.message || `HTTP ${response.status}`);
+        throw new Error(errData?.error?.message || errData?.detail || `HTTP ${response.status}`);
       }
 
-      // Add empty bot message, then stream into it
-      setMessages(prev => [...prev, { id: botMsgId, role: 'bot', parts: [{ type: 'text', content: '' }], timestamp }]);
-      setIsLoading(false); // hide dots, show streaming text
+      const data = await response.json();
+      const botText = data?.choices?.[0]?.message?.content || 'Không nhận được phản hồi. Vui lòng thử lại.';
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let accumulated = '';
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed || trimmed === 'data: [DONE]') continue;
-          if (!trimmed.startsWith('data: ')) continue;
-          try {
-            const json = JSON.parse(trimmed.slice(6));
-            const delta = json?.choices?.[0]?.delta?.content;
-            if (delta) {
-              accumulated += delta;
-              const current = accumulated;
-              setMessages(prev => prev.map(m => m.id === botMsgId ? { ...m, parts: [{ type: 'text', content: current }] } : m));
-            }
-          } catch { /* skip malformed */ }
-        }
-      }
-
-      // Final update if accumulated is empty (edge case)
-      if (!accumulated) {
-        setMessages(prev => prev.map(m => m.id === botMsgId ? { ...m, parts: [{ type: 'text', content: 'Không nhận được phản hồi. Vui lòng thử lại.' }] } : m));
-      }
-    } catch (error) {
+      setMessages(prev => [...prev, { id: botMsgId, role: 'bot', parts: [{ type: 'text', content: botText }], timestamp }]);
+    } catch (error: any) {
       console.error("AI Error:", error);
-      // If botMsg was added (streaming failed mid-way), update it; otherwise add error msg
-      setMessages(prev => {
-        const hasBotMsg = prev.some(m => m.id === botMsgId);
-        if (hasBotMsg) {
-          return prev.map(m => m.id === botMsgId ? { ...m, parts: [{ type: 'text', content: 'Hệ thống đang bận. Vui lòng thử lại sau giây lát.' }] } : m);
-        }
-        return [...prev, { id: botMsgId, role: 'bot', parts: [{ type: 'text', content: 'Hệ thống đang bận. Vui lòng thử lại sau giây lát.' }], timestamp }];
-      });
+      setMessages(prev => [...prev, { id: botMsgId, role: 'bot', parts: [{ type: 'text', content: `Lỗi: ${error?.message || 'Hệ thống đang bận. Vui lòng thử lại.'}` }], timestamp }]);
     } finally {
       setIsLoading(false);
     }
