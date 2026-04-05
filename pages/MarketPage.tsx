@@ -312,26 +312,48 @@ const MarketPage = () => {
               </div>
 
               {/* Right: Vertical Scrolling Gallery — Desktop marquee / Mobile compact horizontal */}
-              {/* ═══ MOBILE: Compact horizontal gallery ═══ */}
-              <div className="md:hidden mt-2 -mx-4 px-4">
-                <div className="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1">
-                  {[
-                    'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/955c04bf-959f-4832-843a-dfbaad2d82a3_min.webp',
-                    'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/6571fcff-b67e-4537-98fe-0301d9051c57_min.webp',
-                    'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/596c139a-7cd8-4c10-9305-bad2f9b6ab1f_min.webp',
-                    'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/640d8657-22e1-4ec7-adcf-d2b99f4e25e0_min.webp',
-                    'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/1354a1b1-5ef3-46d7-8cb2-17268db2d7f7_min.webp',
-                    'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/82e86e0d-db5a-4bcf-8f7b-142ff21f8442_min.webp',
-                  ].map((url, idx) => (
-                    <div key={idx} className="flex-shrink-0 snap-start w-[130px] h-[100px] rounded-xl overflow-hidden relative group">
-                      <img src={url} alt="" loading={idx < 3 ? 'eager' : 'lazy'} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              {/* ═══ MOBILE: Trending Products Slide ═══ */}
+              <div className="md:hidden mt-3 -mx-4 px-4">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Zap size={10} className="text-orange-500" fill="currentColor" />
+                  <span className="text-[8px] font-black uppercase tracking-[0.25em] text-orange-500">Trending</span>
+                </div>
+                <div className="flex gap-2.5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1">
+                  {(filteredSolutions.length > 0
+                    ? filteredSolutions.filter(s => s.homeBlocks?.includes('top_trending')).slice(0, 8)
+                    : solutions.slice(0, 6)
+                  ).map((sol, idx) => (
+                    <div
+                      key={sol._id || sol.id}
+                      onClick={() => handleNavigate(sol.slug)}
+                      className="flex-shrink-0 snap-start w-[140px] rounded-xl overflow-hidden bg-white dark:bg-[#0a0a0c] border border-black/[0.06] dark:border-white/[0.06] cursor-pointer group"
+                    >
+                      <div className="relative h-[85px] overflow-hidden">
+                        <img src={sol.imageUrl} alt={sol.name[currentLang]} loading={idx < 3 ? 'eager' : 'lazy'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <div className="absolute top-1.5 left-1.5">
+                          <span className="bg-black/80 backdrop-blur text-white px-1.5 py-0.5 text-[6px] font-black uppercase tracking-wider rounded-sm">{sol.category[currentLang]}</span>
+                        </div>
+                      </div>
+                      <div className="p-2 space-y-1">
+                        <p className="text-[10px] font-black text-slate-900 dark:text-white truncate leading-tight">{sol.name[currentLang]}</p>
+                        <div className="flex items-center justify-between">
+                          {sol.isFree ? (
+                            <span className="text-[7px] font-black text-emerald-500 uppercase">Free</span>
+                          ) : (
+                            <div className="flex items-center gap-0.5">
+                              <Zap size={8} className="text-brand-blue" fill="currentColor" />
+                              <span className="text-[8px] font-black text-slate-600 dark:text-gray-400">{sol.priceCredits}</span>
+                            </div>
+                          )}
+                          <span className="text-[7px] text-slate-400 dark:text-gray-600">{getFakeStats(sol._id || sol.id).users} users</span>
+                        </div>
+                      </div>
                     </div>
                   ))}
-                </div>
-                <div className="flex items-center justify-center gap-2 mt-2">
-                  <Sparkles size={10} className="text-brand-blue" />
-                  <span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500">Powered by 50+ AI Models</span>
+                  <div onClick={() => navigate('/markets')} className="flex-shrink-0 snap-start w-[80px] rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] flex flex-col items-center justify-center gap-1 cursor-pointer">
+                    <ArrowRight size={14} className="text-brand-blue" />
+                    <span className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Tất cả</span>
+                  </div>
                 </div>
               </div>
 
