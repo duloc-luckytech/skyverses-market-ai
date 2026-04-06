@@ -1102,8 +1102,8 @@ const MarketPage = () => {
                 </p>
               </motion.div>
 
-              {/* ─── Image Service Cards — Horizontal scroll on mobile, 2x2 grid on desktop ─── */}
-              <div className="flex md:grid md:grid-cols-2 gap-3 md:gap-5 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory mb-6 md:mb-10">
+              {/* ─── Image Service Cards — Horizontal scroll ─── */}
+              <div className="flex gap-3 md:gap-5 overflow-x-auto no-scrollbar -mx-4 px-4 md:-mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory mb-6 md:mb-10">
                 {[
                   { image: '/assets/homepage/ent-ai-strategy.webp', icon: <Brain size={18} />, accentColor: 'from-blue-500 to-cyan-500', borderHover: 'hover:border-blue-500/30', tagBg: 'bg-blue-500/20 border-blue-500/30 text-blue-400', title: 'Tư vấn AI Strategy', desc: 'Phân tích nhu cầu, đề xuất giải pháp AI phù hợp cho quy trình kinh doanh của bạn.', tag: 'Strategy' },
                   { image: '/assets/homepage/ent-custom-tools.webp', icon: <Wrench size={18} />, accentColor: 'from-purple-500 to-pink-500', borderHover: 'hover:border-purple-500/30', tagBg: 'bg-purple-500/20 border-purple-500/30 text-purple-400', title: 'Build Custom Tools', desc: 'Phát triển công cụ AI theo spec riêng — image gen, video pipeline, chatbot, voice clone.', tag: 'Development' },
@@ -1117,7 +1117,7 @@ const MarketPage = () => {
                     viewport={{ once: true, margin: '-40px' }}
                     transition={{ delay: idx * 0.12, duration: 0.6, type: 'spring', stiffness: 120 }}
                     whileHover={{ y: -6, transition: { duration: 0.35 } }}
-                    className={`flex-shrink-0 w-[280px] md:w-auto snap-start rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] ${item.borderHover} transition-all duration-500 group overflow-hidden`}
+                    className={`flex-shrink-0 w-[280px] md:w-[320px] snap-start rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] ${item.borderHover} transition-all duration-500 group overflow-hidden`}
                   >
                     {/* Image with overlay */}
                     <div className="relative aspect-[16/9] overflow-hidden">
