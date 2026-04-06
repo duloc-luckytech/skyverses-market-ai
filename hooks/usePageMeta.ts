@@ -6,16 +6,18 @@ interface PageMetaOptions {
   keywords?: string;
   ogImage?: string;
   canonical?: string;
+  type?: string; // og:type - default 'website'
+  jsonLd?: Record<string, any>; // Optional extra JSON-LD
 }
 
 const DEFAULT_OG_IMAGE = 'https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png';
-const BASE_URL = 'https://skyverses.io';
+const BASE_URL = 'https://ai.skyverses.com';
 
 /**
  * Hook to dynamically update page meta tags for SEO.
- * Updates: document.title, meta description, keywords, og:*, twitter:*, canonical
+ * Updates: document.title, meta description, keywords, og:*, twitter:*, canonical, JSON-LD
  */
-export function usePageMeta({ title, description, keywords, ogImage, canonical }: PageMetaOptions) {
+export function usePageMeta({ title, description, keywords, ogImage, canonical, type, jsonLd }: PageMetaOptions) {
   useEffect(() => {
     // Title
     document.title = title;
@@ -43,6 +45,7 @@ export function usePageMeta({ title, description, keywords, ogImage, canonical }
     setMeta('property', 'og:title', title);
     setMeta('property', 'og:description', description);
     setMeta('property', 'og:image', ogImage || DEFAULT_OG_IMAGE);
+    setMeta('property', 'og:type', type || 'website');
     if (canonical) setMeta('property', 'og:url', `${BASE_URL}${canonical}`);
 
     // Twitter
@@ -62,5 +65,22 @@ export function usePageMeta({ title, description, keywords, ogImage, canonical }
         document.head.appendChild(link);
       }
     }
-  }, [title, description, keywords, ogImage, canonical]);
+
+    // Dynamic JSON-LD (page-specific structured data)
+    if (jsonLd) {
+      // Remove previous dynamic JSON-LD
+      const prevScript = document.querySelector('script[data-page-jsonld]');
+      if (prevScript) prevScript.remove();
+
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-page-jsonld', 'true');
+      script.textContent = JSON.stringify({ '@context': 'https://schema.org', ...jsonLd });
+      document.head.appendChild(script);
+
+      return () => {
+        script.remove();
+      };
+    }
+  }, [title, description, keywords, ogImage, canonical, type, jsonLd]);
 }

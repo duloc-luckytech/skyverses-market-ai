@@ -63,8 +63,8 @@ const MarketPage = () => {
 
   usePageMeta({
     title: 'Skyverses | Marketplace AI — Mọi công cụ AI trong một nền tảng',
-    description: 'Skyverses Marketplace — 30+ ứng dụng AI, 50+ model (VEO3, Kling, Sora, Midjourney, Flux). Tiết kiệm ~70% chi phí. Tạo video, ảnh, nhạc, giọng nói & tự động hoá trong một nơi.',
-    keywords: 'AI marketplace, hệ sinh thái AI, ứng dụng AI, VEO3, Kling, Sora, Midjourney, Flux, tạo video AI, tạo ảnh AI, AI giá rẻ, 50+ model AI, Skyverses',
+    description: 'Skyverses Marketplace — 30+ ứng dụng AI, 50+ model (Veo3, Seedance, Grok, Kling, Sora, Gemini, GPT-4o, Midjourney, Flux). Tiết kiệm ~70% chi phí. Tạo video, ảnh, nhạc, giọng nói & tự động hoá. Giải pháp AI cho doanh nghiệp.',
+    keywords: 'AI marketplace, Skyverses, Veo3, Seedance, Grok, Kling, Sora, Gemini, GPT-4o, Midjourney, Flux, Qwen, tạo video AI, tạo ảnh AI, AI giá rẻ, giải pháp AI doanh nghiệp, xây dựng ứng dụng AI, enterprise AI, 50+ model AI',
     canonical: '/'
   });
 
@@ -269,6 +269,7 @@ const MarketPage = () => {
                   <button
                     onClick={() => navigate('/markets')}
                     className="group relative inline-flex items-center gap-2 md:gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-5 py-3 md:px-7 md:py-4 rounded-xl md:rounded-2xl text-[13px] md:text-sm font-bold shadow-xl hover:shadow-2xl hover:shadow-brand-blue/20 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
+                    aria-label="Khám phá sản phẩm AI"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-brand-blue to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <span className="relative z-10 flex items-center gap-3 group-hover:text-white">
@@ -279,6 +280,7 @@ const MarketPage = () => {
                   <button
                     onClick={() => navigate('/markets')}
                     className="inline-flex items-center gap-2 md:gap-3 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-5 py-3 md:px-7 md:py-4 rounded-xl md:rounded-2xl text-[13px] md:text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/10 hover:border-brand-blue/30 transition-all duration-300"
+                    aria-label="Xem demo sản phẩm"
                   >
                     <Play size={14} className="text-brand-blue" fill="currentColor" />
                     Xem demo
@@ -378,7 +380,7 @@ const MarketPage = () => {
                         ];
                         return [...col1Images, ...col1Images].map((url, i) => (
                           <div key={`up-${i}`} className="rounded-2xl overflow-hidden group cursor-pointer relative flex-shrink-0">
-                            <img src={url} alt="" loading={i < 3 ? 'eager' : 'lazy'} fetchPriority={i < 2 ? 'high' : 'auto'} className="w-full h-[180px] md:h-[220px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
+                            <img src={url} alt="Tác phẩm AI được tạo bởi Skyverses" loading={i < 3 ? 'eager' : 'lazy'} fetchPriority={i < 2 ? 'high' : 'auto'} className="w-full h-[180px] md:h-[220px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           </div>
                         ));
@@ -397,7 +399,7 @@ const MarketPage = () => {
                         ];
                         return [...col2Images, ...col2Images].map((url, i) => (
                           <div key={`down-${i}`} className="rounded-2xl overflow-hidden group cursor-pointer relative flex-shrink-0">
-                            <img src={url} alt="" loading={i < 3 ? 'eager' : 'lazy'} fetchPriority={i < 2 ? 'high' : 'auto'} className="w-full h-[200px] md:h-[240px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
+                            <img src={url} alt="Ảnh AI sáng tạo từ Skyverses" loading={i < 3 ? 'eager' : 'lazy'} fetchPriority={i < 2 ? 'high' : 'auto'} className="w-full h-[200px] md:h-[240px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           </div>
                         ));
@@ -768,7 +770,8 @@ const MarketPage = () => {
 
           {/* ═══════════════════ INVITE FRIENDS & EARN ═══════════════════ */}
           {!query && (
-            <section className="py-8 md:py-24">
+            <section className="py-8 md:py-24 space-y-4 md:space-y-6">
+              {/* ─── MAIN REFERRAL BLOCK ─── */}
               <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-brand-blue/10 via-purple-500/10 to-pink-500/10 dark:from-brand-blue/5 dark:via-purple-500/5 dark:to-pink-500/5 border border-brand-blue/10 dark:border-white/[0.06]">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                   <div className="absolute -top-20 -right-20 w-60 md:w-80 h-60 md:h-80 bg-brand-blue/10 rounded-full blur-3xl" />
@@ -786,7 +789,7 @@ const MarketPage = () => {
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">nhận Credits miễn phí</span>
                     </h2>
                     <p className="text-xs md:text-base text-slate-500 dark:text-gray-400 max-w-lg leading-relaxed">
-                      Chia sẻ link giới thiệu của bạn. Khi bạn bè đăng ký và sử dụng, cả hai đều nhận được Credits miễn phí.
+                      Chia sẻ link giới thiệu của bạn. Khi bạn bè đăng ký và sử dụng, cả hai đều nhận được Credits miễn phí để sáng tạo với AI.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-6 pt-2">
                       {[
@@ -851,6 +854,146 @@ const MarketPage = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* ─── 5% COMMISSION TEASER ─── */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-[#0c0e18] via-[#0e1225] to-[#120c20] border border-white/[0.06] p-5 md:p-10"
+              >
+                {/* Glow effects */}
+                <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-amber-500/8 rounded-full blur-[100px] pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-[180px] h-[180px] bg-purple-500/8 rounded-full blur-[80px] pointer-events-none" />
+
+                <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center gap-6 lg:gap-10">
+                  <div className="flex-1 space-y-4">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/15 border border-amber-500/25 rounded-full">
+                        <Rocket size={11} className="text-amber-400" />
+                        <span className="text-[8px] font-black uppercase tracking-widest text-amber-400">Coming Q2 2026</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
+                        <CreditCard size={10} className="text-white/40" />
+                        <span className="text-[8px] font-bold uppercase tracking-widest text-white/40">Passive Income</span>
+                      </div>
+                    </div>
+                    <h3 className="text-lg md:text-2xl font-black tracking-tight text-white leading-tight">
+                      Nhận <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">5% hoa hồng vĩnh viễn</span> khi bạn bè nạp Credits
+                    </h3>
+                    <p className="text-[11px] md:text-sm text-white/40 max-w-lg leading-relaxed">
+                      Mỗi khi bạn bè bạn giới thiệu nạp Credits, bạn tự động nhận <strong className="text-white/60">5% giá trị</strong> — không giới hạn số lần, không giới hạn số người. Thu nhập thụ động thực sự.
+                    </p>
+
+                    {/* Feature pills */}
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { icon: <CreditCard size={11} />, text: '5% mỗi giao dịch' },
+                        { icon: <RefreshCw size={11} />, text: 'Thu nhập vĩnh viễn' },
+                        { icon: <Users size={11} />, text: 'Không giới hạn' },
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 border border-white/[0.06] rounded-lg">
+                          <span className="text-amber-400">{item.icon}</span>
+                          <span className="text-[9px] font-bold text-white/50">{item.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Earn Example Card */}
+                  <div className="shrink-0 w-full lg:w-auto">
+                    <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-3">
+                      <p className="text-[9px] font-black text-white/30 uppercase tracking-widest">Ví dụ thu nhập</p>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2.5 px-3 py-2 bg-white/[0.03] rounded-xl border border-white/[0.05]">
+                          <Users size={13} className="text-brand-blue shrink-0" />
+                          <span className="text-[11px] font-medium text-white/60">10 bạn bè giới thiệu</span>
+                        </div>
+                        <div className="flex items-center justify-center">
+                          <ChevronRight size={12} className="text-white/15 rotate-90" />
+                        </div>
+                        <div className="flex items-center gap-2.5 px-3 py-2 bg-white/[0.03] rounded-xl border border-white/[0.05]">
+                          <CreditCard size={13} className="text-purple-400 shrink-0" />
+                          <span className="text-[11px] font-medium text-white/60">Mỗi người nạp 100K CR/tháng</span>
+                        </div>
+                        <div className="flex items-center justify-center">
+                          <ChevronRight size={12} className="text-white/15 rotate-90" />
+                        </div>
+                        <div className="flex items-center gap-2.5 px-3 py-2.5 bg-amber-500/10 rounded-xl border border-amber-500/20">
+                          <Zap size={14} className="text-amber-400 shrink-0" fill="currentColor" />
+                          <span className="text-[12px] font-black text-amber-400">Bạn nhận 50,000 CR/tháng</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* ─── BENEFITS DUAL COLUMNS ─── */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                {/* You Get */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.15 }}
+                  className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-5 md:p-7 hover:shadow-lg hover:border-brand-blue/15 transition-all duration-500 group"
+                >
+                  <div className="flex items-center gap-3 mb-4 md:mb-5">
+                    <div className="w-9 h-9 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
+                      <Zap size={18} fill="currentColor" />
+                    </div>
+                    <h3 className="text-sm md:text-base font-black text-slate-900 dark:text-white">Bạn nhận được</h3>
+                  </div>
+                  <div className="space-y-3">
+                    {[
+                      { icon: <Gift size={14} />, title: '+50 Credits mỗi lượt mời', desc: 'Nhận ngay khi bạn bè đăng ký thành công' },
+                      { icon: <CreditCard size={14} />, title: '5% hoa hồng vĩnh viễn', desc: 'Nhận 5% mỗi khi bạn bè nạp Credits (sắp ra mắt)' },
+                      { icon: <Sparkles size={14} />, title: 'Badge "Referrer"', desc: 'Mở khóa đặc quyền và ưu tiên tính năng mới' },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-start gap-2.5">
+                        <div className="w-7 h-7 rounded-lg bg-brand-blue/8 flex items-center justify-center text-brand-blue shrink-0 mt-0.5">{item.icon}</div>
+                        <div>
+                          <p className="text-[12px] font-bold text-slate-800 dark:text-white">{item.title}</p>
+                          <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-relaxed">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Friend Gets */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.25 }}
+                  className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-5 md:p-7 hover:shadow-lg hover:border-emerald-500/15 transition-all duration-500 group"
+                >
+                  <div className="flex items-center gap-3 mb-4 md:mb-5">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                      <Gift size={18} />
+                    </div>
+                    <h3 className="text-sm md:text-base font-black text-slate-900 dark:text-white">Bạn bè nhận được</h3>
+                  </div>
+                  <div className="space-y-3">
+                    {[
+                      { icon: <Gift size={14} />, title: '+50 Welcome Credits', desc: 'Bắt đầu trải nghiệm ngay khi đăng ký' },
+                      { icon: <Cpu size={14} />, title: '30+ công cụ AI miễn phí', desc: 'Truy cập Ảnh, Video, Nhạc, Giọng nói và hơn thế nữa' },
+                      { icon: <Shield size={14} />, title: 'Hỗ trợ ưu tiên', desc: 'Được hỗ trợ kỹ thuật ưu tiên từ đội ngũ Skyverses' },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-start gap-2.5">
+                        <div className="w-7 h-7 rounded-lg bg-emerald-500/8 flex items-center justify-center text-emerald-500 shrink-0 mt-0.5">{item.icon}</div>
+                        <div>
+                          <p className="text-[12px] font-bold text-slate-800 dark:text-white">{item.title}</p>
+                          <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-relaxed">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
               </div>
             </section>
           )}

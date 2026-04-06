@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /settings
+Disallow: /usage
+Disallow: /favorites
+Disallow: /credits
+Disallow: /auth/
+
+Sitemap: https://ai.skyverses.com/sitemap.xml
