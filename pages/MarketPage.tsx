@@ -257,23 +257,23 @@ const MarketPage = () => {
                   className="space-y-3"
                 >
                   <h1 className="text-[1.6rem] md:text-[3.5rem] lg:text-[4.2rem] font-black tracking-[-0.04em] leading-[1.1] md:leading-[1.05] text-slate-900 dark:text-white">
-                    Nền tảng{' '}
+                    {t('home.hero.title1')}{' '}
                     <span className="relative inline-block">
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500 bg-[length:200%_auto] animate-[gradient_4s_ease_infinite]">
-                        sản phẩm AI
+                        {t('home.hero.title_highlight')}
                       </span>
                     </span>
                     <br className="hidden md:block" />
                     <span className="md:hidden"> </span>
-                    cho mọi nhu cầu sáng tạo
+                    {t('home.hero.title2')}
                   </h1>
                   <motion.p
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                     transition={{ delay: 0.6, duration: 0.8 }}
                     className="text-[13px] md:text-lg text-slate-500 dark:text-gray-400 leading-relaxed max-w-xl"
                   >
-                    30+ sản phẩm AI — Video, Ảnh, Giọng nói, Nhạc & Workflow tự động.
-                    <span className="hidden md:inline"> Được phát triển bởi đội ngũ Skyverses.</span>
+                    {t('home.hero.subtitle')}
+                    <span className="hidden md:inline">{t('home.hero.subtitle2')}</span>
                   </motion.p>
                 </motion.div>
 
@@ -287,21 +287,21 @@ const MarketPage = () => {
                   <button
                     onClick={() => navigate('/markets')}
                     className="group relative inline-flex items-center gap-2 md:gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-5 py-3 md:px-7 md:py-4 rounded-xl md:rounded-2xl text-[13px] md:text-sm font-bold shadow-xl hover:shadow-2xl hover:shadow-brand-blue/20 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
-                    aria-label="Khám phá sản phẩm AI"
+                    aria-label={t('home.hero.cta1')}
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-brand-blue to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <span className="relative z-10 flex items-center gap-3 group-hover:text-white">
-                      Khám phá sản phẩm
+                      {t('home.hero.cta1')}
                       <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform duration-300" />
                     </span>
                   </button>
                   <button
                     onClick={() => navigate('/markets')}
                     className="inline-flex items-center gap-2 md:gap-3 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-5 py-3 md:px-7 md:py-4 rounded-xl md:rounded-2xl text-[13px] md:text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/10 hover:border-brand-blue/30 transition-all duration-300"
-                    aria-label="Xem demo sản phẩm"
+                    aria-label={t('home.hero.cta2')}
                   >
                     <Play size={14} className="text-brand-blue" fill="currentColor" />
-                    Xem demo
+                    {t('home.hero.cta2')}
                   </button>
                 </motion.div>
 
@@ -366,7 +366,8 @@ const MarketPage = () => {
                       <ArrowRight size={18} />
                     </div>
                     <div className="space-y-0.5">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-800 dark:text-white">Xem tất cả</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-800 dark:text-white">{t('home.hero.view_all')}</p>
+                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tight">{solutions.length} {t('home.grid.solutions')}</p>
                     </div>
                   </div>
                 </div>
@@ -375,7 +376,7 @@ const MarketPage = () => {
 
               {/* ═══ DESKTOP: Hero Spotlight Showcase ═══ */}
               <div className="relative hidden md:block">
-                <h2 className="sr-only">Sản phẩm AI nổi bật</h2>
+                <h2 className="sr-only">{t('home.hero.featured_sr')}</h2>
                 {/* Background ambient glow */}
                 <div className="absolute -inset-12 pointer-events-none">
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[300px] bg-brand-blue/[0.06] rounded-full blur-[100px]" />
@@ -483,7 +484,7 @@ const MarketPage = () => {
                           <div className="mt-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                             <div className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg flex items-center gap-2">
                               <Sparkles size={11} className="text-brand-blue" fill="currentColor" />
-                              <span className="text-[9px] font-black text-white uppercase tracking-wider">Khám phá ngay</span>
+                              <span className="text-[9px] font-black text-white uppercase tracking-wider">{t('home.hero.explore_now')}</span>
                               <ArrowRight size={11} className="text-white/60" />
                             </div>
                           </div>
@@ -558,7 +559,7 @@ const MarketPage = () => {
                       onClick={() => navigate('/markets')}
                       className="group inline-flex items-center gap-2 px-4 py-2 text-[10px] font-bold text-slate-400 dark:text-gray-500 hover:text-brand-blue transition-all duration-300"
                     >
-                      Xem tất cả 30+ sản phẩm
+                      {t('home.hero.view_all_products')}
                       <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform duration-300" />
                     </button>
                   </motion.div>
@@ -579,10 +580,10 @@ const MarketPage = () => {
             {/* ═══ MOBILE: Horizontal scroll compact chips ═══ */}
             <div className="md:hidden flex gap-2.5 overflow-x-auto no-scrollbar pb-2 -mx-4 px-4">
               {[
-                { icon: <Zap size={14} />, stat: '0.5s', title: 'Siêu nhanh', color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/15' },
-                { icon: <TrendingDown size={14} />, stat: '~70%', title: 'Tiết kiệm', color: 'text-rose-500', bg: 'bg-rose-500/10', border: 'border-rose-500/15' },
-                { icon: <Shield size={14} />, stat: '100%', title: 'Bảo mật', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/15' },
-                { icon: <Globe2 size={14} />, stat: '4+', title: 'Ngôn ngữ', color: 'text-brand-blue', bg: 'bg-brand-blue/10', border: 'border-brand-blue/15' },
+                { icon: <Zap size={14} />, stat: '0.5s', title: t('home.trust.fast'), color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/15' },
+                { icon: <TrendingDown size={14} />, stat: '~70%', title: t('home.trust.save'), color: 'text-rose-500', bg: 'bg-rose-500/10', border: 'border-rose-500/15' },
+                { icon: <Shield size={14} />, stat: '100%', title: t('home.trust.secure'), color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/15' },
+                { icon: <Globe2 size={14} />, stat: '4+', title: t('home.trust.lang'), color: 'text-brand-blue', bg: 'bg-brand-blue/10', border: 'border-brand-blue/15' },
                 { icon: <Cpu size={14} />, stat: '50+', title: 'AI Models', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/15' },
               ].map((item) => (
                 <div key={item.title} className={`flex-shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-xl ${item.bg} border ${item.border} backdrop-blur-sm`}>
@@ -597,14 +598,14 @@ const MarketPage = () => {
 
             {/* ═══ DESKTOP: Original full trust pillars ═══ */}
             <div className="hidden md:block relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-r from-slate-50 via-white to-slate-50 dark:from-[#0a0c12] dark:via-[#0c0e16] dark:to-[#0a0c12] border border-black/[0.04] dark:border-white/[0.04] p-8 md:p-12 lg:p-14">
-              <h2 className="sr-only">Tại sao chọn Skyverses</h2>
+              <h2 className="sr-only">{t('home.trust.sr_title')}</h2>
               <div className="relative z-10 grid grid-cols-2 lg:grid-cols-5 gap-6 md:gap-0">
                 {[
-                  { icon: <Zap size={24} />, stat: '0.5s', statLabel: 'Avg Response', title: 'Xử lý siêu nhanh', desc: 'GPU A100/H100 cloud — render video, image, voice trong tích tắc.', color: 'text-amber-500', bg: 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/15 dark:to-orange-500/15', ring: 'ring-amber-500/20' },
-                  { icon: <TrendingDown size={24} />, stat: '~70%', statLabel: 'Save', title: 'Tiết kiệm chi phí', desc: 'Chi phí hợp lý hơn nhiều so với Runway, Midjourney, ElevenLabs — chất lượng tương đương.', color: 'text-rose-500', bg: 'bg-gradient-to-br from-rose-500/10 to-red-500/10 dark:from-rose-500/15 dark:to-red-500/15', ring: 'ring-rose-500/20' },
-                  { icon: <Shield size={24} />, stat: '100%', statLabel: 'Encrypted', title: 'Bảo mật tuyệt đối', desc: 'Mã hoá end-to-end. Dữ liệu được xoá sau 24h nếu người dùng yêu cầu.', color: 'text-emerald-500', bg: 'bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/15 dark:to-teal-500/15', ring: 'ring-emerald-500/20' },
-                  { icon: <Globe2 size={24} />, stat: '4+', statLabel: 'Languages', title: 'Đa ngôn ngữ', desc: 'Hỗ trợ Tiếng Việt, English, 한국어, 日本語 — UX bản địa hoá hoàn toàn.', color: 'text-brand-blue', bg: 'bg-gradient-to-br from-brand-blue/10 to-cyan-500/10 dark:from-brand-blue/15 dark:to-cyan-500/15', ring: 'ring-brand-blue/20' },
-                  { icon: <Cpu size={24} />, stat: '50+', statLabel: 'AI Models', title: 'Multi-engine AI', desc: 'Kết hợp GPT, Flux, Wan, Kling, ElevenLabs, Suno và 50+ model khác.', color: 'text-purple-500', bg: 'bg-gradient-to-br from-purple-500/10 to-pink-500/10 dark:from-purple-500/15 dark:to-pink-500/15', ring: 'ring-purple-500/20' },
+                  { icon: <Zap size={24} />, stat: '0.5s', statLabel: 'Avg Response', title: t('home.trust.fast_title'), desc: t('home.trust.fast_desc'), color: 'text-amber-500', bg: 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/15 dark:to-orange-500/15', ring: 'ring-amber-500/20' },
+                  { icon: <TrendingDown size={24} />, stat: '~70%', statLabel: 'Save', title: t('home.trust.save_title'), desc: t('home.trust.save_desc'), color: 'text-rose-500', bg: 'bg-gradient-to-br from-rose-500/10 to-red-500/10 dark:from-rose-500/15 dark:to-red-500/15', ring: 'ring-rose-500/20' },
+                  { icon: <Shield size={24} />, stat: '100%', statLabel: 'Encrypted', title: t('home.trust.secure_title'), desc: t('home.trust.secure_desc'), color: 'text-emerald-500', bg: 'bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/15 dark:to-teal-500/15', ring: 'ring-emerald-500/20' },
+                  { icon: <Globe2 size={24} />, stat: '4+', statLabel: 'Languages', title: t('home.trust.lang_title'), desc: t('home.trust.lang_desc'), color: 'text-brand-blue', bg: 'bg-gradient-to-br from-brand-blue/10 to-cyan-500/10 dark:from-brand-blue/15 dark:to-cyan-500/15', ring: 'ring-brand-blue/20' },
+                  { icon: <Cpu size={24} />, stat: '50+', statLabel: 'AI Models', title: t('home.trust.ai_title'), desc: t('home.trust.ai_desc'), color: 'text-purple-500', bg: 'bg-gradient-to-br from-purple-500/10 to-pink-500/10 dark:from-purple-500/15 dark:to-pink-500/15', ring: 'ring-purple-500/20' },
                 ].map((item, idx, arr) => (
                   <motion.div
                     key={item.title}
@@ -645,18 +646,18 @@ const MarketPage = () => {
                     <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">How It Works</span>
                   </div>
                   <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                    Bắt đầu trong <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">3 bước</span>
+                    {t('home.hiw.title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">{t('home.hiw.title_highlight')}</span>
                   </h2>
-                  <p className="text-xs md:text-base text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">Không cần cài đặt, không cần kỹ năng. Chỉ cần đăng nhập và bắt đầu sáng tạo.</p>
+                  <p className="text-xs md:text-base text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">{t('home.hiw.subtitle')}</p>
                 </motion.div>
               </div>
 
               <div className="relative">
                 <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-8 overflow-x-auto no-scrollbar pb-2 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory">
                   {[
-                    { step: '01', title: 'Chọn công cụ AI', desc: 'Duyệt qua 30+ sản phẩm AI — Video, Image, Voice, Music, Workflow — tìm đúng công cụ bạn cần.', image: '/assets/homepage/hiw-01-choose.webp', gradient: 'from-brand-blue/10 to-purple-500/10', border: 'hover:border-brand-blue/30' },
-                    { step: '02', title: 'Nhập nội dung của bạn', desc: 'Upload ảnh, nhập prompt, hoặc chọn template có sẵn. AI sẽ xử lý phần còn lại.', image: '/assets/homepage/hiw-02-input.webp', gradient: 'from-purple-500/10 to-pink-500/10', border: 'hover:border-purple-500/30' },
-                    { step: '03', title: 'Nhận kết quả chuyên nghiệp', desc: 'Tải về ảnh, video, audio chất lượng cao trong vài giây. Chỉnh sửa và xuất bản ngay.', image: '/assets/homepage/hiw-03-result.webp', gradient: 'from-pink-500/10 to-amber-500/10', border: 'hover:border-pink-500/30' },
+                    { step: '01', title: t('home.hiw.step1_title'), desc: t('home.hiw.step1_desc'), image: '/assets/homepage/hiw-01-choose.webp', gradient: 'from-brand-blue/10 to-purple-500/10', border: 'hover:border-brand-blue/30' },
+                    { step: '02', title: t('home.hiw.step2_title'), desc: t('home.hiw.step2_desc'), image: '/assets/homepage/hiw-02-input.webp', gradient: 'from-purple-500/10 to-pink-500/10', border: 'hover:border-purple-500/30' },
+                    { step: '03', title: t('home.hiw.step3_title'), desc: t('home.hiw.step3_desc'), image: '/assets/homepage/hiw-03-result.webp', gradient: 'from-pink-500/10 to-amber-500/10', border: 'hover:border-pink-500/30' },
                   ].map((item, idx) => (
                     <motion.div
                       key={item.step}
@@ -699,15 +700,15 @@ const MarketPage = () => {
             >
               <Search size={14} className="text-brand-blue shrink-0" />
               <span className="text-xs font-medium text-slate-500 dark:text-gray-400">
-                {query && <>Kết quả cho "<span className="font-bold text-slate-900 dark:text-white">{query}</span>"</>}
-                {query && primary !== 'ALL' && ' trong '}
+                {query && <>{t('home.filter.results_for')} "<span className="font-bold text-slate-900 dark:text-white">{query}</span>"</>}
+                {query && primary !== 'ALL' && t('home.filter.in')}
                 {primary !== 'ALL' && <span className="font-bold text-brand-blue">{primary}</span>}
               </span>
               <button
                 onClick={resetSearch}
                 className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-white/5 rounded-lg text-[10px] font-bold text-slate-400 hover:text-red-500 transition-colors"
               >
-                <X size={10} /> Xoá bộ lọc
+                <X size={10} /> {t('home.filter.clear')}
               </button>
             </motion.div>
           )}
@@ -761,8 +762,8 @@ const MarketPage = () => {
                             <ArrowRight size={24} />
                           </div>
                           <div className="space-y-1">
-                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-800 dark:text-white">Xem tất cả</p>
-                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tight">{blockSolutions.length} giải pháp</p>
+                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-800 dark:text-white">{t('home.hero.view_all')}</p>
+                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tight">{blockSolutions.length} {t('home.grid.solutions')}</p>
                           </div>
                         </div>
                       </div>
@@ -788,19 +789,19 @@ const MarketPage = () => {
                   <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500">Use Cases</span>
                 </div>
                 <h2 className="text-xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                  Giải pháp cho <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-brand-blue">mọi ngành nghề</span>
+                  {t('home.usecase.title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-brand-blue">{t('home.usecase.title_highlight')}</span>
                 </h2>
-                <p className="text-xs md:text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">Từ Marketing đến E-commerce, Giáo dục đến Giải trí — AI đang thay đổi cách mọi người làm việc.</p>
+                <p className="text-xs md:text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">{t('home.usecase.subtitle')}</p>
               </motion.div>
 
               <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
                 {[
-                  { image: '/assets/homepage/uc-marketing.webp', industry: 'Marketing & Agency', desc: 'Tạo hàng trăm content visual mỗi tuần — video, banner, thumbnail.', tools: ['Video AI', 'Image AI', 'Poster AI'], borderColor: 'hover:border-blue-500/30' },
-                  { image: '/assets/homepage/uc-ecommerce.webp', industry: 'E-commerce', desc: 'Ảnh sản phẩm chuyên nghiệp, xoá nền hàng loạt cho catalog.', tools: ['Product Image', 'BG Removal', 'Upscale'], borderColor: 'hover:border-amber-500/30' },
-                  { image: '/assets/homepage/uc-creator.webp', industry: 'Content Creator', desc: 'Video script-to-screen, nhạc nền, voiceover cho YouTube, TikTok.', tools: ['Video AI', 'Music AI', 'Voice'], borderColor: 'hover:border-purple-500/30' },
-                  { image: '/assets/homepage/uc-realestate.webp', industry: 'Bất động sản', desc: 'Render nội thất AI, staging ảo, video tour bất động sản.', tools: ['Real Estate AI', 'Image AI'], borderColor: 'hover:border-emerald-500/30' },
-                  { image: '/assets/homepage/uc-fashion.webp', industry: 'Thời trang', desc: 'Thử trang phục ảo, tạo lookbook, chụp model AI.', tools: ['Fashion AI', 'Stylist AI'], borderColor: 'hover:border-pink-500/30' },
-                  { image: '/assets/homepage/uc-education.webp', industry: 'Giáo dục', desc: 'Bài giảng video, podcast, hình minh hoạ cho khoá học online.', tools: ['Voice AI', 'Video AI'], borderColor: 'hover:border-indigo-500/30' },
+                  { image: '/assets/homepage/uc-marketing.webp', industry: 'Marketing & Agency', desc: t('home.usecase.marketing_desc'), tools: ['Video AI', 'Image AI', 'Poster AI'], borderColor: 'hover:border-blue-500/30' },
+                  { image: '/assets/homepage/uc-ecommerce.webp', industry: 'E-commerce', desc: t('home.usecase.ecommerce_desc'), tools: ['Product Image', 'BG Removal', 'Upscale'], borderColor: 'hover:border-amber-500/30' },
+                  { image: '/assets/homepage/uc-creator.webp', industry: 'Content Creator', desc: t('home.usecase.creator_desc'), tools: ['Video AI', 'Music AI', 'Voice'], borderColor: 'hover:border-purple-500/30' },
+                  { image: '/assets/homepage/uc-realestate.webp', industry: t('home.usecase.realestate'), desc: t('home.usecase.realestate_desc'), tools: ['Real Estate AI', 'Image AI'], borderColor: 'hover:border-emerald-500/30' },
+                  { image: '/assets/homepage/uc-fashion.webp', industry: t('home.usecase.fashion'), desc: t('home.usecase.fashion_desc'), tools: ['Fashion AI', 'Stylist AI'], borderColor: 'hover:border-pink-500/30' },
+                  { image: '/assets/homepage/uc-education.webp', industry: t('home.usecase.education'), desc: t('home.usecase.education_desc'), tools: ['Voice AI', 'Video AI'], borderColor: 'hover:border-indigo-500/30' },
                 ].map((item, idx) => (
                   <motion.div
                     key={item.industry}
@@ -841,15 +842,15 @@ const MarketPage = () => {
                   <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">Testimonials</span>
                 </div>
                 <h2 className="text-xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                  Tin dùng bởi <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">hàng nghìn người</span>
+                  {t('home.testimonial.title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">{t('home.testimonial.title_highlight')}</span>
                 </h2>
               </motion.div>
 
               <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-6 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
                 {[
-                  { name: 'Minh Tuấn', role: 'Content Creator', initials: 'MT', avatarBg: 'bg-brand-blue/10 text-brand-blue', quote: 'Skyverses giúp tôi sản xuất 5 video/ngày thay vì 1. Chất lượng AI tạo ra không thua gì studio chuyên nghiệp.', rating: 5 },
-                  { name: 'Thu Hà', role: 'Marketing Manager', initials: 'TH', avatarBg: 'bg-purple-500/10 text-purple-500', quote: 'Trước đây thuê photographer mỗi tháng tốn $2000. Giờ chỉ cần vài trăm Credits là có đủ ảnh cho cả tháng.', rating: 5 },
-                  { name: 'David Nguyễn', role: 'E-commerce Owner', initials: 'DN', avatarBg: 'bg-emerald-500/10 text-emerald-500', quote: 'Background Removal AI xử lý 500 ảnh sản phẩm trong 30 phút. Image Upscale nâng chất lượng ảnh lên 4K cực nhanh.', rating: 5 },
+                  { name: 'Minh Tuấn', role: 'Content Creator', initials: 'MT', avatarBg: 'bg-brand-blue/10 text-brand-blue', quote: t('home.testimonial.t1_quote'), rating: 5 },
+                  { name: 'Thu Hà', role: 'Marketing Manager', initials: 'TH', avatarBg: 'bg-purple-500/10 text-purple-500', quote: t('home.testimonial.t2_quote'), rating: 5 },
+                  { name: 'David Nguyễn', role: 'E-commerce Owner', initials: 'DN', avatarBg: 'bg-emerald-500/10 text-emerald-500', quote: t('home.testimonial.t3_quote'), rating: 5 },
                 ].map((item, idx) => (
                   <motion.div
                     key={item.name}
