@@ -375,6 +375,7 @@ const MarketPage = () => {
 
               {/* ═══ DESKTOP: Hero Spotlight Showcase ═══ */}
               <div className="relative hidden md:block">
+                <h2 className="sr-only">Sản phẩm AI nổi bật</h2>
                 {/* Background ambient glow */}
                 <div className="absolute -inset-12 pointer-events-none">
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[300px] bg-brand-blue/[0.06] rounded-full blur-[100px]" />
@@ -517,9 +518,9 @@ const MarketPage = () => {
                             {/* Content */}
                             <div className="flex-1 p-3 lg:p-4 flex flex-col justify-center gap-1.5">
                               <span className="text-[7px] font-black uppercase tracking-[0.2em] text-brand-blue/60">{sol.category[lang as Language]}</span>
-                              <h4 className="text-[11px] lg:text-[13px] font-black text-slate-900 dark:text-white tracking-tight leading-snug line-clamp-1">
+                              <h3 className="text-[11px] lg:text-[13px] font-black text-slate-900 dark:text-white tracking-tight leading-snug line-clamp-1">
                                 {sol.name[lang as Language]}
-                              </h4>
+                              </h3>
                               <div className="flex items-center gap-3 mt-auto">
                                 <div className="flex items-center gap-1 text-slate-400 dark:text-gray-600">
                                   <Users size={9} />
@@ -595,6 +596,7 @@ const MarketPage = () => {
 
             {/* ═══ DESKTOP: Original full trust pillars ═══ */}
             <div className="hidden md:block relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-r from-slate-50 via-white to-slate-50 dark:from-[#0a0c12] dark:via-[#0c0e16] dark:to-[#0a0c12] border border-black/[0.04] dark:border-white/[0.04] p-8 md:p-12 lg:p-14">
+              <h2 className="sr-only">Tại sao chọn Skyverses</h2>
               <div className="relative z-10 grid grid-cols-2 lg:grid-cols-5 gap-6 md:gap-0">
                 {[
                   { icon: <Zap size={24} />, stat: '0.5s', statLabel: 'Avg Response', title: 'Xử lý siêu nhanh', desc: 'GPU A100/H100 cloud — render video, image, voice trong tích tắc.', color: 'text-amber-500', bg: 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/15 dark:to-orange-500/15', ring: 'ring-amber-500/20' },
@@ -619,7 +621,7 @@ const MarketPage = () => {
                       <span className={`text-3xl md:text-4xl font-black tracking-tight ${item.color}`}>{item.stat}</span>
                       <span className="block text-[8px] font-bold text-slate-400 dark:text-gray-600 uppercase tracking-[0.3em] mt-1">{item.statLabel}</span>
                     </div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">{item.title}</h4>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">{item.title}</h3>
                     <p className="text-xs text-slate-400 dark:text-gray-500 leading-relaxed">{item.desc}</p>
                   </motion.div>
                 ))}
@@ -941,7 +943,7 @@ const MarketPage = () => {
                           </div>
                         </div>
                         <div className="p-3 md:p-5 space-y-1.5 md:space-y-2">
-                          <h4 className="text-sm md:text-base font-bold text-white">{item.title}</h4>
+                          <h3 className="text-sm md:text-base font-bold text-white">{item.title}</h3>
                           <p className="text-[10px] md:text-xs text-white/35 leading-relaxed">{item.desc}</p>
                         </div>
                         {idx < 2 && (
@@ -1122,7 +1124,7 @@ const MarketPage = () => {
                       >
                         <div className="space-y-4">
                           <div className={`w-12 h-12 rounded-xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform`}>{item.icon}</div>
-                          <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                          <h3 className="text-sm font-bold text-white">{item.title}</h3>
                           <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
                         </div>
                       </motion.div>
