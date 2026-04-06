@@ -248,4 +248,14 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Tự động làm sạch dữ liệu cũ khi gọi save()
+UserSchema.pre("validate", function (next) {
+  if (this.onboarding) {
+    if ((this.onboarding as any).role === "") this.onboarding.role = undefined;
+    if ((this.onboarding as any).workStyle === "") this.onboarding.workStyle = undefined;
+    if ((this.onboarding as any).experienceLevel === "") this.onboarding.experienceLevel = undefined;
+  }
+  next();
+});
+
 export default mongoose.model<IUser>("User", UserSchema);
