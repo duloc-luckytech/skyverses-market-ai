@@ -60,10 +60,7 @@ const BlogHeader: React.FC = () => {
       {/* Top accent line */}
       <div className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-blue to-transparent z-[200]" />
 
-      <header className={`fixed top-[2px] left-0 right-0 z-[150] transition-all duration-300 ${scrolled
-          ? 'bg-white/90 dark:bg-[#080809]/90 backdrop-blur-2xl border-b border-black/[0.06] dark:border-white/[0.06] shadow-sm'
-          : 'bg-transparent'
-        }`}>
+      <header className={`fixed top-[2px] left-0 right-0 z-[150] transition-all duration-300 bg-white/90 dark:bg-[#080809]/90 backdrop-blur-2xl border-b border-black/[0.06] dark:border-white/[0.06] ${scrolled ? 'shadow-sm' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="h-16 flex items-center gap-6">
 
@@ -75,7 +72,7 @@ const BlogHeader: React.FC = () => {
                 className="w-7 h-7 object-contain group-hover:scale-110 transition-transform duration-200"
               />
               <div className="hidden sm:flex items-baseline gap-1">
-                <span className={`text-[15px] font-black tracking-tight ${scrolled || theme === 'light' ? 'text-slate-900 dark:text-white' : 'text-white'}`}>Skyverses</span>
+                <span className="text-[15px] font-black tracking-tight text-slate-900 dark:text-white">Skyverses</span>
                 <span className="text-[15px] font-black text-brand-blue">Insights</span>
               </div>
             </Link>
@@ -84,12 +81,11 @@ const BlogHeader: React.FC = () => {
             <nav className="hidden md:flex items-center gap-1">
               {NAV_LINKS.map(link => (
                 <Link key={link.to} to={link.to}
-                  className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive(link.to)
+                  className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${
+                    isActive(link.to)
                       ? 'text-brand-blue bg-brand-blue/[0.07]'
-                      : scrolled
-                        ? 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
-                        : 'text-white/70 hover:text-white hover:bg-white/[0.07]'
-                    }`}>
+                      : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                  }`}>
                   {link.label}
                 </Link>
               ))}

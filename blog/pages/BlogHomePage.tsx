@@ -224,13 +224,8 @@ const BlogHomePage: React.FC = () => {
           )}
 
           {/* Wave separator */}
-          <div className="h-12 bg-slate-950 relative">
-            <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 48" fill="none" preserveAspectRatio="none">
-              <path d="M0 48 L0 24 Q360 0 720 24 Q1080 48 1440 24 L1440 48 Z" fill="#f8fafc" />
-            </svg>
-            <svg className="absolute bottom-0 w-full hidden dark:block" viewBox="0 0 1440 48" fill="none" preserveAspectRatio="none">
-              <path d="M0 48 L0 24 Q360 0 720 24 Q1080 48 1440 24 L1440 48 Z" fill="#080809" />
-            </svg>
+          <div className="h-12 bg-slate-950 relative overflow-hidden">
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-[#f8fafc] dark:bg-[#080809] [clip-path:ellipse(55%_100%_at_50%_100%)]" />
           </div>
         </section>
       )}
