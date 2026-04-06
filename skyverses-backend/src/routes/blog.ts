@@ -5,6 +5,40 @@ import { authenticate } from "./auth";
 const router = express.Router();
 
 /* =====================================================
+   PRESET CREATORS — 5 seeded authors for blog posts
+===================================================== */
+export const PRESET_CREATORS = [
+  {
+    name: "Alex Morgan",
+    avatar: "https://api.dicebear.com/9.x/lorelei/svg?seed=AlexMorgan&backgroundColor=b6e3f4",
+    role: "AI Content Strategist",
+  },
+  {
+    name: "Skyverses Team",
+    avatar: "https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png",
+    role: "Official Editor",
+  },
+  {
+    name: "Jordan Lee",
+    avatar: "https://api.dicebear.com/9.x/lorelei/svg?seed=JordanLee&backgroundColor=ffd5dc",
+    role: "Creative AI Writer",
+  },
+  {
+    name: "David Kim",
+    avatar: "https://api.dicebear.com/9.x/lorelei/svg?seed=DavidKim&backgroundColor=d1f4cc",
+    role: "Tech Researcher",
+  },
+  {
+    name: "Sophia Chen",
+    avatar: "https://api.dicebear.com/9.x/lorelei/svg?seed=SophiaChen&backgroundColor=ffefd5",
+    role: "AI Product Reviewer",
+  },
+];
+
+const getRandomCreator = () =>
+  PRESET_CREATORS[Math.floor(Math.random() * PRESET_CREATORS.length)];
+
+/* =====================================================
    PUBLIC — LIST PUBLISHED POSTS
    GET /blog?page=1&limit=10&category=tutorials&tag=ai&q=search&lang=en
 ===================================================== */
@@ -121,6 +155,14 @@ router.get("/categories", async (_req, res) => {
 });
 
 /* =====================================================
+   PUBLIC — GET PRESET CREATORS
+   GET /blog/creators
+===================================================== */
+router.get("/creators", (_req, res) => {
+  res.json({ success: true, data: PRESET_CREATORS });
+});
+
+/* =====================================================
    PUBLIC — GET SINGLE POST BY SLUG
    GET /blog/:slug
 ===================================================== */
@@ -189,7 +231,19 @@ router.get("/admin/:id", authenticate, async (req: any, res) => {
 ===================================================== */
 router.post("/", authenticate, async (req: any, res) => {
   try {
-    const post = await BlogPost.create(req.body);
+    const body = { ...req.body };
+
+    // Auto-assign random creator if author not provided
+    if (!body.author || !body.author.name) {
+      body.author = getRandomCreator();
+    }
+
+    // Auto-set publishedAt if publishing now
+    if (body.isPublished && !body.publishedAt) {
+      body.publishedAt = new Date();
+    }
+
+    const post = await BlogPost.create(body);
     res.json({ success: true, data: post });
   } catch (err: any) {
     console.error("[Blog Create]", err);
