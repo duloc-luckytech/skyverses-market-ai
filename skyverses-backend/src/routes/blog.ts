@@ -233,10 +233,8 @@ router.post("/", authenticate, async (req: any, res) => {
   try {
     const body = { ...req.body };
 
-    // Auto-assign random creator if author not provided
-    if (!body.author || !body.author.name) {
-      body.author = getRandomCreator();
-    }
+    // Always auto-assign a random creator (server-side, not overridable by caller)
+    body.author = getRandomCreator();
 
     // Auto-set publishedAt if publishing now
     if (body.isPublished && !body.publishedAt) {
