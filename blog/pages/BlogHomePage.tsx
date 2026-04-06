@@ -18,8 +18,8 @@ const BlogHomePage: React.FC = () => {
 
   usePageMeta({
     title: urlCategory
-      ? `${urlCategory} — Skyverses Blog`
-      : 'Skyverses Blog — AI Insights, Tutorials & News',
+      ? `${urlCategory} — Skyverses Insights`
+      : 'Skyverses Insights — AI Tutorials, News & Workflows',
     description: t('blog.subtitle'),
     keywords: 'Skyverses blog, AI tutorials, AI tools, creative AI, video AI, image generation',
     canonical: urlCategory ? `/category/${urlCategory}` : '/',

@@ -55,7 +55,7 @@ const BlogPostPage: React.FC = () => {
   const metaDesc = post?.seo?.metaDescription?.[currentLang] || post?.seo?.metaDescription?.en || excerpt;
 
   usePageMeta({
-    title: metaTitle ? `${metaTitle} — Skyverses Blog` : 'Skyverses Blog',
+    title: metaTitle ? `${metaTitle} — Skyverses Insights` : 'Skyverses Insights',
     description: metaDesc,
     keywords: post?.seo?.keywords?.join(', ') || post?.tags?.join(', '),
     ogImage: post?.seo?.ogImage || post?.coverImage,

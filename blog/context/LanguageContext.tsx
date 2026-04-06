@@ -9,7 +9,7 @@ interface LanguageContextType {
 
 const translations: Record<Language, Record<string, string>> = {
   en: {
-    'blog.title': 'Blog',
+    'blog.title': 'Insights',
     'blog.subtitle': 'Insights, tutorials & news from the Skyverses ecosystem',
     'blog.search': 'Search articles...',
     'blog.all': 'All',
@@ -19,7 +19,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.views': 'views',
     'blog.share': 'Share',
     'blog.related': 'Related Articles',
-    'blog.back': 'Back to Blog',
+    'blog.back': 'Back to Insights',
     'blog.toc': 'Table of Contents',
     'blog.no_posts': 'No articles found',
     'blog.load_more': 'Load More',
@@ -38,7 +38,7 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.description': 'Leading AI production studio for work and creativity.',
   },
   vi: {
-    'blog.title': 'Blog',
+    'blog.title': 'Insights',
     'blog.subtitle': 'Kiến thức, hướng dẫn & tin tức từ hệ sinh thái Skyverses',
     'blog.search': 'Tìm kiếm bài viết...',
     'blog.all': 'Tất cả',
@@ -48,7 +48,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.views': 'lượt xem',
     'blog.share': 'Chia sẻ',
     'blog.related': 'Bài viết liên quan',
-    'blog.back': 'Quay lại Blog',
+    'blog.back': 'Quay lại Insights',
     'blog.toc': 'Mục lục',
     'blog.no_posts': 'Không tìm thấy bài viết',
     'blog.load_more': 'Xem thêm',
@@ -67,7 +67,7 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.description': 'Studio sản xuất AI hàng đầu cho công việc và sáng tạo.',
   },
   ko: {
-    'blog.title': '블로그',
+    'blog.title': 'Insights',
     'blog.subtitle': 'Skyverses 생태계의 인사이트, 튜토리얼 및 뉴스',
     'blog.search': '기사 검색...',
     'blog.all': '전체',
@@ -77,7 +77,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.views': '조회수',
     'blog.share': '공유',
     'blog.related': '관련 기사',
-    'blog.back': '블로그로 돌아가기',
+    'blog.back': 'Insights로 돌아가기',
     'blog.toc': '목차',
     'blog.no_posts': '기사를 찾을 수 없습니다',
     'blog.load_more': '더 보기',
@@ -96,7 +96,7 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.description': '업무와 창작을 위한 최고의 AI 제작 스튜디오.',
   },
   ja: {
-    'blog.title': 'ブログ',
+    'blog.title': 'Insights',
     'blog.subtitle': 'Skyversesエコシステムからのインサイト、チュートリアル、ニュース',
     'blog.search': '記事を検索...',
     'blog.all': 'すべて',
@@ -106,7 +106,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.views': '閲覧数',
     'blog.share': '共有',
     'blog.related': '関連記事',
-    'blog.back': 'ブログに戻る',
+    'blog.back': 'Insightsに戻る',
     'blog.toc': '目次',
     'blog.no_posts': '記事が見つかりません',
     'blog.load_more': 'もっと見る',

@@ -190,7 +190,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               </div>
 
               {/* Blog */}
-              <a href="/blog/" target="_blank" rel="noopener noreferrer"
+              <a href="https://insights.skyverses.com" target="_blank" rel="noopener noreferrer"
                 className="px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all flex items-center gap-1 text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
                 <FileText size={13} /> Blog
               </a>
@@ -443,7 +443,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   </div>
                 </div>
 
-                <a href="/blog/" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)}
+                <a href="https://insights.skyverses.com" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)}
                   className="flex items-center justify-between px-3 py-3 rounded-xl transition-all text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
                   <span className="text-sm font-bold flex items-center gap-2"><FileText size={15} /> Blog</span>
                   <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />

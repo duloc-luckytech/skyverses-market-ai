@@ -34,9 +34,7 @@ const BlogHeader: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center text-white shadow-lg shadow-brand-blue/20 group-hover:shadow-brand-blue/40 transition-shadow">
-            <BookOpen size={16} />
-          </div>
+          <img src="https://ai.skyverses.com/assets/skyverses-logo.png" alt="Skyverses" className="w-7 h-7 object-contain group-hover:scale-105 transition-transform" />
           <div className="hidden sm:block">
             <span className="text-sm font-bold text-slate-900 dark:text-white">Skyverses</span>
             <span className="text-sm font-bold text-brand-blue ml-1">{t('blog.title')}</span>
