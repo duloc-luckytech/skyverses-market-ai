@@ -25,7 +25,7 @@ export const userApi = {
   submitOnboarding: async (payload: {
     role: string;
     goals: string[];
-    workStyle: string;
+    workStyle?: string;
     experienceLevel: string;
     complete: boolean;
   }) => {

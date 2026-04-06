@@ -210,6 +210,7 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
           "studio_founder",
         ],
         default: null,
+        set: (v: any) => v === "" ? null : v
       },
     
       goals: {
@@ -228,12 +229,14 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
         type: String,
         enum: ["solo", "small_team", "studio", "hybrid"],
         default: null,
+        set: (v: any) => v === "" ? null : v
       },
 
       experienceLevel: {
         type: String,
         enum: ["beginner", "intermediate", "advanced", "expert"],
         default: null,
+        set: (v: any) => v === "" ? null : v
       },
 
       completedAt: {

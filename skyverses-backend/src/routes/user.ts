@@ -878,10 +878,10 @@ router.post("/onboarding", authenticate, async (req: any, res) => {
   /* ================= UPDATE ================= */
   const update: any = {};
 
-  if (role !== undefined) update["onboarding.role"] = role;
+  if (role) update["onboarding.role"] = role;
   if (goals !== undefined) update["onboarding.goals"] = goals;
-  if (workStyle !== undefined) update["onboarding.workStyle"] = workStyle;
-  if (experienceLevel !== undefined)
+  if (workStyle) update["onboarding.workStyle"] = workStyle;
+  if (experienceLevel)
     update["onboarding.experienceLevel"] = experienceLevel;
 
   if (complete === true) {

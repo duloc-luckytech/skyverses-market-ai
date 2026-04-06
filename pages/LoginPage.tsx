@@ -144,7 +144,7 @@ const LoginPage = () => {
       try {
         await userApi.submitOnboarding({
           role: surveyData.role, goals: surveyData.goals,
-          workStyle: '', experienceLevel: surveyData.experience, complete: true
+          experienceLevel: surveyData.experience, complete: true
         });
         localStorage.setItem(`onboarding_complete_${user?.email}`, 'true');
         navigateWithTransition('/');
