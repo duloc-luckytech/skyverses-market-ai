@@ -63,19 +63,16 @@ const HomepageSkeleton: React.FC = () => (
           <div className="hidden md:block animate-pulse">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-3 h-3 rounded-sm bg-orange-500/30" />
-              <div className="h-2.5 w-28 bg-orange-500/20 rounded" />
-              <div className="flex-1 h-px bg-orange-500/10" />
+              <div className="h-2.5 w-20 bg-orange-500/20 rounded" />
+              <div className="flex-1 h-px bg-white/5" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className={`rounded-2xl bg-slate-100 dark:bg-white/[0.03] overflow-hidden ${shimmer}`}>
-                  <div className="aspect-[16/10] bg-slate-200/60 dark:bg-white/[0.03]" />
-                  <div className="p-4 space-y-3">
-                    <div className="h-5 bg-slate-200/50 dark:bg-white/[0.04] rounded w-3/4" />
-                    <div className="h-3 bg-slate-100 dark:bg-white/[0.02] rounded w-full" />
-                  </div>
-                </div>
-              ))}
+            <div className="flex gap-3 h-[380px]">
+              <div className={`flex-[3] rounded-2xl bg-slate-100 dark:bg-white/[0.03] ${shimmer}`} />
+              <div className="flex-[2] flex flex-col gap-3">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className={`flex-1 rounded-xl bg-slate-100 dark:bg-white/[0.03] ${shimmer}`} />
+                ))}
+              </div>
             </div>
           </div>
         </div>

@@ -10,7 +10,7 @@ import {
   Sparkles, LucideIcon, ArrowRight, ChevronRight, Play, Zap, Shield, Globe2, Cpu,
   MousePointerClick, Wand2, Rocket, Megaphone, ShoppingBag, Clapperboard,
   Building2, Shirt, GraduationCap, Brain, Wrench, Plug, CreditCard, RefreshCw,
-  MonitorPlay, Palette, UserCircle, Landmark, TrendingDown, Share2, UserPlus, Check, Users
+  MonitorPlay, Palette, UserCircle, Landmark, TrendingDown, Share2, UserPlus, Check, Users, Bookmark
 } from 'lucide-react';
 
 import { useLanguage } from '../context/LanguageContext';
@@ -373,96 +373,191 @@ const MarketPage = () => {
                 )}
               </div>
 
-              {/* ═══ DESKTOP: Trending Product Cards Grid ═══ */}
+              {/* ═══ DESKTOP: Hero Spotlight Showcase ═══ */}
               <div className="relative hidden md:block">
-                {/* Decorative glow behind cards */}
-                <div className="absolute -inset-8 bg-gradient-to-br from-brand-blue/[0.03] via-transparent to-purple-500/[0.03] rounded-3xl blur-2xl pointer-events-none" />
+                {/* Background ambient glow */}
+                <div className="absolute -inset-12 pointer-events-none">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[300px] bg-brand-blue/[0.06] rounded-full blur-[100px]" />
+                  <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-purple-500/[0.04] rounded-full blur-[80px]" />
+                </div>
 
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
                   className="relative"
                 >
-                  {/* Header with animated accent */}
-                  <div className="flex items-center gap-2.5 mb-5">
+                  {/* Section label */}
+                  <div className="flex items-center gap-2.5 mb-4">
                     <motion.div
                       initial={{ scale: 0, rotate: -90 }}
                       animate={{ scale: 1, rotate: 0 }}
                       transition={{ delay: 0.5, type: 'spring', stiffness: 300, damping: 15 }}
-                      className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/20"
+                      className="w-6 h-6 rounded-md bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-md shadow-orange-500/20"
                     >
-                      <Zap size={14} className="text-white" fill="currentColor" />
+                      <Zap size={12} className="text-white" fill="currentColor" />
                     </motion.div>
                     <motion.span
-                      initial={{ opacity: 0, x: -10 }}
+                      initial={{ opacity: 0, x: -8 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.6, duration: 0.4 }}
-                      className="text-[10px] font-black uppercase tracking-[0.25em] text-orange-500"
-                    >Trending Products</motion.span>
-                    <motion.div
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ delay: 0.7, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                      className="flex-1 h-px bg-gradient-to-r from-orange-500/25 via-orange-500/10 to-transparent ml-2 origin-left"
-                    />
+                      className="text-[9px] font-black uppercase tracking-[0.25em] text-orange-500/80"
+                    >Trending</motion.span>
+                    <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.7, duration: 0.6 }} className="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent ml-1 origin-left" />
                   </div>
 
                   {featuredSolutions.length === 0 ? (
-                    <div className="grid grid-cols-2 gap-4">
-                      {[1,2,3,4].map(i => (
-                        <div key={i} className="h-[220px] rounded-2xl bg-slate-100 dark:bg-white/[0.03] animate-pulse" />
-                      ))}
+                    /* Skeleton */
+                    <div className="flex gap-3 h-[380px]">
+                      <div className="flex-[3] rounded-2xl bg-white/[0.03] animate-pulse" />
+                      <div className="flex-[2] flex flex-col gap-3">
+                        {[1,2,3].map(i => <div key={i} className="flex-1 rounded-xl bg-white/[0.03] animate-pulse" />)}
+                      </div>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 gap-3 lg:gap-4">
-                      {featuredSolutions.slice(0, 4).map((sol, idx) => (
-                        <motion.div
-                          key={sol._id || sol.id}
-                          initial={{ opacity: 0, y: 40, scale: 0.92, filter: 'blur(8px)' }}
-                          animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                          transition={{
-                            duration: 0.7,
-                            delay: 0.5 + idx * 0.12,
-                            ease: [0.22, 1, 0.36, 1]
-                          }}
-                          whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                          className="relative group"
+                    <div className="flex gap-3 h-[380px] lg:h-[420px]">
+                      {/* ── SPOTLIGHT: Featured Card ── */}
+                      <motion.div
+                        initial={{ opacity: 0, x: -30, scale: 0.95 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+                        onClick={() => handleNavigate(featuredSolutions[0]?.slug)}
+                        className="flex-[3] relative rounded-2xl overflow-hidden cursor-pointer group"
+                      >
+                        {/* Full image */}
+                        <img
+                          src={featuredSolutions[0]?.imageUrl}
+                          alt={featuredSolutions[0]?.name[lang as Language]}
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+                        />
+                        {/* Gradient overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+
+                        {/* Category badge */}
+                        <div className="absolute top-4 left-4 z-10">
+                          <span className="px-2.5 py-1 bg-brand-blue/90 backdrop-blur-sm text-white text-[8px] font-black uppercase tracking-[0.2em] rounded-md">
+                            {featuredSolutions[0]?.category[lang as Language]}
+                          </span>
+                        </div>
+
+                        {/* Bookmark */}
+                        <button
+                          onClick={(e) => toggleFavorite(e, featuredSolutions[0]?.id)}
+                          className={`absolute top-4 right-4 p-2.5 bg-black/40 backdrop-blur-md rounded-full border transition-all z-10 ${favorites.includes(featuredSolutions[0]?.id) ? 'text-brand-blue border-brand-blue/50' : 'text-white/40 border-white/10 hover:text-brand-blue'}`}
                         >
-                          {/* Hover glow effect */}
-                          <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-brand-blue/0 via-purple-500/0 to-pink-500/0 group-hover:from-brand-blue/20 group-hover:via-purple-500/10 group-hover:to-pink-500/20 transition-all duration-500 opacity-0 group-hover:opacity-100 blur-sm" />
-                          <div className="relative">
-                            <SolutionCard
-                              sol={sol}
-                              idx={idx}
-                              lang={lang}
-                              isLiked={likedItems.includes(sol._id || sol.id)}
-                              isFavorited={favorites.includes(sol.id)}
-                              onToggleFavorite={toggleFavorite}
-                              onToggleLike={toggleLike}
-                              onClick={handleNavigate}
-                              onHover={handlePrefetchOnHover}
-                              stats={getFakeStats(sol._id || sol.id)}
-                            />
+                          <Bookmark fill="currentColor" size={16} />
+                        </button>
+
+                        {/* Bottom content overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 p-5 lg:p-6 z-10">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-emerald-400/90">Featured</span>
                           </div>
-                        </motion.div>
-                      ))}
+                          <h3 className="text-lg lg:text-2xl font-black text-white tracking-tight leading-tight mb-2">
+                            {featuredSolutions[0]?.name[lang as Language]}
+                          </h3>
+                          <p className="text-[11px] lg:text-xs text-white/60 leading-relaxed line-clamp-2 max-w-xs mb-3">
+                            {featuredSolutions[0]?.description[lang as Language]}
+                          </p>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1.5 text-white/40">
+                              <Users size={11} />
+                              <span className="text-[9px] font-bold">{getFakeStats(featuredSolutions[0]?._id || featuredSolutions[0]?.id).users}</span>
+                            </div>
+                            {featuredSolutions[0]?.isFree ? (
+                              <span className="px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[8px] font-black uppercase tracking-widest rounded-sm">Free</span>
+                            ) : (
+                              <div className="flex items-center gap-1 px-2 py-0.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/10">
+                                <Zap size={9} className="text-brand-blue" fill="currentColor" />
+                                <span className="text-[9px] font-black text-white">{featuredSolutions[0]?.priceCredits}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* CTA shimmer on hover */}
+                          <div className="mt-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                            <div className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg flex items-center gap-2">
+                              <Sparkles size={11} className="text-brand-blue" fill="currentColor" />
+                              <span className="text-[9px] font-black text-white uppercase tracking-wider">Khám phá ngay</span>
+                              <ArrowRight size={11} className="text-white/60" />
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+
+                      {/* ── SIDE: 3 Compact Cards ── */}
+                      <div className="flex-[2] flex flex-col gap-3">
+                        {featuredSolutions.slice(1, 4).map((sol, idx) => (
+                          <motion.div
+                            key={sol._id || sol.id}
+                            initial={{ opacity: 0, x: 20, filter: 'blur(6px)' }}
+                            animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                            transition={{
+                              duration: 0.6,
+                              delay: 0.6 + idx * 0.15,
+                              ease: [0.22, 1, 0.36, 1]
+                            }}
+                            whileHover={{ x: -4, transition: { duration: 0.2 } }}
+                            onClick={() => handleNavigate(sol.slug)}
+                            className="flex-1 relative rounded-xl overflow-hidden cursor-pointer group bg-white dark:bg-[#0a0a0c] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 transition-all duration-300 flex"
+                          >
+                            {/* Mini thumbnail */}
+                            <div className="w-[38%] relative overflow-hidden">
+                              <img
+                                src={sol.imageUrl}
+                                alt={sol.name[lang as Language]}
+                                loading="lazy"
+                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/5 dark:to-[#0a0a0c]/20" />
+                            </div>
+                            {/* Content */}
+                            <div className="flex-1 p-3 lg:p-4 flex flex-col justify-center gap-1.5">
+                              <span className="text-[7px] font-black uppercase tracking-[0.2em] text-brand-blue/60">{sol.category[lang as Language]}</span>
+                              <h4 className="text-[11px] lg:text-[13px] font-black text-slate-900 dark:text-white tracking-tight leading-snug line-clamp-1">
+                                {sol.name[lang as Language]}
+                              </h4>
+                              <div className="flex items-center gap-3 mt-auto">
+                                <div className="flex items-center gap-1 text-slate-400 dark:text-gray-600">
+                                  <Users size={9} />
+                                  <span className="text-[8px] font-bold">{getFakeStats(sol._id || sol.id).users}</span>
+                                </div>
+                                {sol.isFree ? (
+                                  <span className="text-[7px] font-black text-emerald-500 uppercase">Free</span>
+                                ) : (
+                                  <div className="flex items-center gap-0.5">
+                                    <Zap size={8} className="text-brand-blue" fill="currentColor" />
+                                    <span className="text-[9px] font-bold text-slate-600 dark:text-gray-300">{sol.priceCredits}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {/* Hover arrow */}
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+                              <ArrowRight size={14} className="text-brand-blue" />
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
                     </div>
                   )}
 
-                  {/* View all — animated entrance */}
+                  {/* View all */}
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.1, duration: 0.5 }}
-                    className="flex justify-end mt-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.2, duration: 0.5 }}
+                    className="flex justify-end mt-3"
                   >
                     <button
                       onClick={() => navigate('/markets')}
-                      className="group inline-flex items-center gap-2 px-5 py-2.5 text-[11px] font-bold text-slate-500 dark:text-gray-400 hover:text-brand-blue bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 hover:shadow-lg hover:shadow-brand-blue/5 rounded-xl transition-all duration-300"
+                      className="group inline-flex items-center gap-2 px-4 py-2 text-[10px] font-bold text-slate-400 dark:text-gray-500 hover:text-brand-blue transition-all duration-300"
                     >
-                      Xem tất cả sản phẩm
-                      <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform duration-300" />
+                      Xem tất cả 30+ sản phẩm
+                      <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform duration-300" />
                     </button>
                   </motion.div>
                 </motion.div>
