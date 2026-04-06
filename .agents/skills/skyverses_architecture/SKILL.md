@@ -331,5 +331,6 @@ This skill covers the **architectural skeleton** of the platform. For deeper con
 |-------|-------------|
 | `skyverses_ui_pages` | Working on homepage, markets page, product cards, filters, or any FE page component |
 | `skyverses_business_flows` | Working on payment flows, AI generation pipeline, credit system, worker routing, or pricing |
+| `skyverses_cms` | Working on any CMS tab, drawer, admin component, or the CMS admin panel |
 
 
