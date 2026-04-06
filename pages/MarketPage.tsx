@@ -1081,78 +1081,88 @@ const MarketPage = () => {
             </section>
           )}
 
-          {/* ═══════════════════ CUSTOM SOLUTIONS ═══════════════════ */}
+          {/* ═══════════════════ CUSTOM SOLUTIONS — Enterprise ═══════════════════ */}
           {!query && (
             <section className="py-6 md:py-24">
-              <div className="relative overflow-hidden rounded-2xl md:rounded-[2.5rem] bg-gradient-to-br from-[#0a0e1a] via-[#0c1225] to-[#0a0e1a] dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-5 md:p-14 lg:p-16">
-
-                <div className="relative z-10">
-                  {/* Header */}
-                  <div className="text-center mb-6 md:mb-16">
-                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6">
-                        <Cpu size={14} className="text-brand-blue" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/70">Custom AI Solutions</span>
-                      </div>
-                      <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-white leading-[1.1] mb-3 md:mb-5">
-                        Giải pháp AI{' '}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-400 to-pink-400">
-                          riêng cho doanh nghiệp
-                        </span>
-                      </h2>
-                      <p className="text-xs md:text-base text-white/40 max-w-2xl mx-auto leading-relaxed hidden md:block">
-                        Skyverses chuyên tư vấn, thiết kế và xây dựng các công cụ AI theo yêu cầu.
-                        Từ chatbot, xử lý ảnh/video, workflow tự động đến hệ thống AI hoàn chỉnh cho doanh nghiệp.
-                      </p>
-                    </motion.div>
-                  </div>
-
-                  {/* Service Cards — Desktop only */}
-                  <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-12">
-                    {[
-                      { icon: <Brain size={22} />, iconBg: 'bg-brand-blue/10 text-brand-blue', title: 'Tư vấn AI Strategy', desc: 'Phân tích nhu cầu, đề xuất giải pháp AI phù hợp cho quy trình kinh doanh của bạn.' },
-                      { icon: <Wrench size={22} />, iconBg: 'bg-purple-500/10 text-purple-500', title: 'Build Custom Tools', desc: 'Phát triển công cụ AI theo spec riêng — image gen, video pipeline, chatbot, voice clone...' },
-                      { icon: <Plug size={22} />, iconBg: 'bg-emerald-500/10 text-emerald-500', title: 'API & Integration', desc: 'Tích hợp AI vào hệ thống hiện có qua API. Hỗ trợ webhook, SDK và tài liệu đầy đủ.' },
-                      { icon: <Rocket size={22} />, iconBg: 'bg-amber-500/10 text-amber-500', title: 'Deploy & Scale', desc: 'Triển khai lên cloud, tối ưu hiệu năng, hỗ trợ scale tự động theo nhu cầu sử dụng.' },
-                    ].map((item, idx) => (
-                      <motion.div
-                        key={item.title}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: idx * 0.1 }}
-                        className="p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.05] transition-all duration-500 group"
-                      >
-                        <div className="space-y-4">
-                          <div className={`w-12 h-12 rounded-xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform`}>{item.icon}</div>
-                          <h3 className="text-sm font-bold text-white">{item.title}</h3>
-                          <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* CTA */}
-                  <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
-                    <button
-                      onClick={() => navigate('/booking')}
-                      className="group inline-flex items-center gap-2 md:gap-3 bg-white text-black px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl text-xs md:text-sm font-bold hover:shadow-2xl hover:shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all w-full sm:w-auto justify-center"
-                    >
-                      Liên hệ tư vấn miễn phí
-                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                    </button>
-                    <a
-                      href="mailto:support@skyverses.com"
-                      className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
-                    >
-                      <span className="text-[10px] font-bold uppercase tracking-wider">hoặc email:</span>
-                      <span className="font-bold text-brand-blue">support@skyverses.com</span>
-                    </a>
-                  </motion.div>
-
-                  <p className="text-center text-[10px] font-medium text-white/20 mt-6">✦ Tư vấn miễn phí • Phản hồi trong 24 giờ • Hỗ trợ dài hạn</p>
+              {/* ─── Section Header ─── */}
+              <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="text-center mb-6 md:mb-14">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/8 dark:bg-amber-500/15 border border-amber-500/15 dark:border-amber-500/25 rounded-full mb-3 md:mb-5">
+                  <Cpu size={12} className="text-amber-500" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">Enterprise Solutions</span>
                 </div>
+                <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
+                  Giải pháp AI{' '}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500">
+                    riêng cho doanh nghiệp
+                  </span>
+                </h2>
+                <p className="text-xs md:text-sm text-slate-400 dark:text-gray-500 max-w-2xl mx-auto hidden md:block">
+                  Skyverses chuyên tư vấn, thiết kế và xây dựng các công cụ AI theo yêu cầu.
+                  Từ chatbot, xử lý ảnh/video, workflow tự động đến hệ thống AI hoàn chỉnh cho doanh nghiệp.
+                </p>
+              </motion.div>
+
+              {/* ─── Image Service Cards — Horizontal scroll on mobile, 2x2 grid on desktop ─── */}
+              <div className="flex md:grid md:grid-cols-2 gap-3 md:gap-5 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory mb-6 md:mb-10">
+                {[
+                  { image: '/assets/homepage/ent-ai-strategy.webp', icon: <Brain size={18} />, accentColor: 'from-blue-500 to-cyan-500', borderHover: 'hover:border-blue-500/30', tagBg: 'bg-blue-500/20 border-blue-500/30 text-blue-400', title: 'Tư vấn AI Strategy', desc: 'Phân tích nhu cầu, đề xuất giải pháp AI phù hợp cho quy trình kinh doanh của bạn.', tag: 'Strategy' },
+                  { image: '/assets/homepage/ent-custom-tools.webp', icon: <Wrench size={18} />, accentColor: 'from-purple-500 to-pink-500', borderHover: 'hover:border-purple-500/30', tagBg: 'bg-purple-500/20 border-purple-500/30 text-purple-400', title: 'Build Custom Tools', desc: 'Phát triển công cụ AI theo spec riêng — image gen, video pipeline, chatbot, voice clone.', tag: 'Development' },
+                  { image: '/assets/homepage/ent-api-integration.webp', icon: <Plug size={18} />, accentColor: 'from-emerald-500 to-teal-500', borderHover: 'hover:border-emerald-500/30', tagBg: 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400', title: 'API & Integration', desc: 'Tích hợp AI vào hệ thống hiện có qua API. Hỗ trợ webhook, SDK và tài liệu đầy đủ.', tag: 'Integration' },
+                  { image: '/assets/homepage/ent-deploy-scale.webp', icon: <Rocket size={18} />, accentColor: 'from-amber-500 to-orange-500', borderHover: 'hover:border-amber-500/30', tagBg: 'bg-amber-500/20 border-amber-500/30 text-amber-400', title: 'Deploy & Scale', desc: 'Triển khai lên cloud, tối ưu hiệu năng, hỗ trợ scale tự động theo nhu cầu sử dụng.', tag: 'Infrastructure' },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.title}
+                    initial={{ opacity: 0, y: 30, scale: 0.92 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ delay: idx * 0.12, duration: 0.6, type: 'spring', stiffness: 120 }}
+                    whileHover={{ y: -6, transition: { duration: 0.35 } }}
+                    className={`flex-shrink-0 w-[280px] md:w-auto snap-start rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] ${item.borderHover} transition-all duration-500 group overflow-hidden`}
+                  >
+                    {/* Image with overlay */}
+                    <div className="relative aspect-[16/9] overflow-hidden">
+                      <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      {/* Tag badge */}
+                      <div className="absolute top-2 left-2 md:top-3 md:left-3">
+                        <span className={`px-2 py-0.5 backdrop-blur-sm border text-[8px] font-black uppercase tracking-widest rounded-md ${item.tagBg}`}>{item.tag}</span>
+                      </div>
+                      {/* Icon in bottom-right of overlay */}
+                      <div className="absolute bottom-2.5 right-2.5 md:bottom-4 md:right-4">
+                        <div className={`w-9 h-9 md:w-11 md:h-11 rounded-xl bg-gradient-to-br ${item.accentColor} flex items-center justify-center text-white shadow-lg shadow-black/30 group-hover:scale-110 transition-transform duration-300`}>
+                          {item.icon}
+                        </div>
+                      </div>
+                    </div>
+                    {/* Text content */}
+                    <div className="p-3 md:p-5 space-y-1.5 md:space-y-2">
+                      <h3 className="text-sm md:text-base font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
+                      <p className="text-[10px] md:text-xs text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-2 md:line-clamp-none">{item.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
+
+              {/* ─── CTA — amber/warm tone ─── */}
+              <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
+                <button
+                  onClick={() => navigate('/booking')}
+                  className="group inline-flex items-center gap-2 md:gap-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl text-xs md:text-sm font-bold shadow-lg shadow-amber-500/20 hover:shadow-2xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all w-full sm:w-auto justify-center"
+                >
+                  <Building2 size={16} />
+                  Liên hệ tư vấn miễn phí
+                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+                <a
+                  href="mailto:support@skyverses.com"
+                  className="inline-flex items-center gap-2 text-sm text-slate-400 dark:text-white/50 hover:text-slate-900 dark:hover:text-white transition-colors"
+                >
+                  <span className="text-[10px] font-bold uppercase tracking-wider">hoặc email:</span>
+                  <span className="font-bold text-amber-500">support@skyverses.com</span>
+                </a>
+              </motion.div>
+
+              <p className="text-center text-[10px] font-medium text-slate-300 dark:text-white/20 mt-4 md:mt-6">✦ Tư vấn miễn phí • Phản hồi trong 24 giờ • Hỗ trợ dài hạn</p>
             </section>
           )}
 
