@@ -52,6 +52,7 @@ const pageImports = {
   avatarLipsync: () => import('./pages/videos/AvatarLipsyncAI'),
   videoAnimate: () => import('./pages/videos/VideoAnimateAI'),
   storyboard: () => import('./pages/videos/StoryboardStudioPage'),
+  fibusVideo: () => import('./pages/videos/FibusVideoStudio'),
   // Audio
   tts: () => import('./pages/audio/TextToSpeech'),
   music: () => import('./pages/audio/MusicGenerator'),
@@ -107,6 +108,7 @@ const GenyuProduct = React.lazy(pageImports.genyu);
 const AvatarLipsyncAI = React.lazy(pageImports.avatarLipsync);
 const VideoAnimateAI = React.lazy(pageImports.videoAnimate);
 const StoryboardStudioPage = React.lazy(pageImports.storyboard);
+const FibusVideoStudio = React.lazy(pageImports.fibusVideo);
 
 // Product pages — audio
 const TextToSpeech = React.lazy(pageImports.tts);
@@ -226,6 +228,7 @@ const App: React.FC = () => {
                       <Route path="/product/ai-music-generator" element={<MusicGenerator />} />
                       <Route path="/product/ai-image-restorer" element={<AIImageRestoration />} />
                       <Route path="/product/storyboard-studio" element={<StoryboardStudioPage />} />
+                      <Route path="/product/fibus-video-studio" element={<FibusVideoStudio />} />
                       <Route path="/product/ai-stylist" element={<AIStylistPage />} />
                       <Route path="/product/character-sync-ai" element={<ProductCharacterSync />} />
                       <Route path="/product/ai-video-generator" element={<AIVideoGenerator />} />
