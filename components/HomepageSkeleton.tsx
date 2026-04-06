@@ -99,63 +99,8 @@ const HomepageSkeleton: React.FC = () => (
         </div>
       </section>
 
-      {/* ═══ PAYMENT SKELETON ═══ */}
-      <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-3 md:py-10 animate-pulse">
-        {/* Mobile */}
-        <div className="md:hidden h-16 rounded-2xl bg-slate-50 dark:bg-[#0a0c12] border border-black/[0.05] dark:border-white/[0.05]" />
-        {/* Desktop */}
-        <div className={`hidden md:block rounded-[2rem] bg-slate-50 dark:bg-[#0a0c12] border border-black/[0.05] dark:border-white/[0.05] p-10 ${shimmer}`}>
-          <div className="flex items-center gap-12">
-            <div className="space-y-3 w-[200px]">
-              <div className="h-6 w-24 bg-emerald-500/10 rounded-full" />
-              <div className="h-8 w-40 bg-slate-200/50 dark:bg-white/[0.04] rounded-lg" />
-              <div className="h-8 w-48 bg-slate-200/50 dark:bg-white/[0.04] rounded-lg" />
-            </div>
-            <div className="flex-1 grid grid-cols-2 gap-4">
-              <div className="h-40 bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl" />
-              <div className="h-40 bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ PRODUCT GRID SKELETON ═══ */}
+      {/* ═══ HOW IT WORKS SKELETON ═══ */}
       <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
-        <div className="space-y-16 md:space-y-24 pt-8">
-          {/* Section header skeleton */}
-          <div className="animate-pulse space-y-5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-orange-500/10 rounded-xl" />
-                <div className="space-y-1.5">
-                  <div className="h-5 w-40 bg-slate-200/60 dark:bg-white/[0.04] rounded-lg" />
-                  <div className="h-3 w-56 bg-slate-100 dark:bg-white/[0.03] rounded" />
-                </div>
-              </div>
-              <div className="hidden md:flex gap-2">
-                <div className="w-8 h-8 bg-slate-100 dark:bg-white/[0.03] rounded-lg" />
-                <div className="w-8 h-8 bg-slate-100 dark:bg-white/[0.03] rounded-lg" />
-              </div>
-            </div>
-            {/* Cards */}
-            <div className="flex gap-4 md:gap-8 overflow-hidden">
-              {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className={`flex-shrink-0 w-[280px] md:w-[320px] xl:w-[360px] flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden ${shimmer}`}>
-                  <div className="aspect-[16/10] bg-slate-200/60 dark:bg-white/[0.03]" />
-                  <div className="p-4 md:p-6 space-y-4">
-                    <div className="h-6 bg-slate-200/60 dark:bg-white/[0.04] rounded w-3/4" />
-                    <div className="space-y-2">
-                      <div className="h-3 bg-slate-100 dark:bg-white/[0.03] rounded w-full" />
-                      <div className="h-3 bg-slate-100 dark:bg-white/[0.03] rounded w-5/6" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* ═══ HOW IT WORKS SKELETON ═══ */}
         <div className="py-10 md:py-28 animate-pulse">
           <div className="text-center mb-6 md:mb-20 space-y-3">
             <div className="h-7 w-28 bg-brand-blue/8 rounded-full mx-auto" />
@@ -175,8 +120,41 @@ const HomepageSkeleton: React.FC = () => (
           </div>
         </div>
 
-        {/* ═══ REFERRAL SKELETON ═══ */}
-        <div className={`rounded-2xl md:rounded-3xl h-48 md:h-72 bg-gradient-to-br from-brand-blue/5 via-purple-500/5 to-pink-500/5 border border-brand-blue/10 dark:border-white/[0.06] animate-pulse ${shimmer}`} />
+        {/* ═══ PRODUCT GRID SKELETON ═══ */}
+        <div className="space-y-16 md:space-y-24 pt-8 animate-pulse">
+          <div className="space-y-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-orange-500/10 rounded-xl" />
+                <div className="space-y-1.5">
+                  <div className="h-5 w-40 bg-slate-200/60 dark:bg-white/[0.04] rounded-lg" />
+                  <div className="h-3 w-56 bg-slate-100 dark:bg-white/[0.03] rounded" />
+                </div>
+              </div>
+              <div className="hidden md:flex gap-2">
+                <div className="w-8 h-8 bg-slate-100 dark:bg-white/[0.03] rounded-lg" />
+                <div className="w-8 h-8 bg-slate-100 dark:bg-white/[0.03] rounded-lg" />
+              </div>
+            </div>
+            <div className="flex gap-4 md:gap-8 overflow-hidden">
+              {[1, 2, 3, 4, 5].map(i => (
+                <div key={i} className={`flex-shrink-0 w-[280px] md:w-[320px] xl:w-[360px] flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden ${shimmer}`}>
+                  <div className="aspect-[16/10] bg-slate-200/60 dark:bg-white/[0.03]" />
+                  <div className="p-4 md:p-6 space-y-4">
+                    <div className="h-6 bg-slate-200/60 dark:bg-white/[0.04] rounded w-3/4" />
+                    <div className="space-y-2">
+                      <div className="h-3 bg-slate-100 dark:bg-white/[0.03] rounded w-full" />
+                      <div className="h-3 bg-slate-100 dark:bg-white/[0.03] rounded w-5/6" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ USE CASES SKELETON ═══ */}
+        <div className={`mt-16 rounded-2xl md:rounded-3xl h-48 md:h-72 bg-gradient-to-br from-brand-blue/5 via-purple-500/5 to-pink-500/5 border border-brand-blue/10 dark:border-white/[0.06] animate-pulse ${shimmer}`} />
       </div>
     </div>
 

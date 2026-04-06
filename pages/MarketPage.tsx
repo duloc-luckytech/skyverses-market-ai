@@ -65,7 +65,25 @@ const MarketPage = () => {
     title: 'Skyverses | Marketplace AI — Mọi công cụ AI trong một nền tảng',
     description: 'Skyverses Marketplace — 30+ ứng dụng AI, 50+ model (Veo3, Seedance, Grok, Kling, Sora, Gemini, GPT-4o, Midjourney, Flux). Tiết kiệm ~70% chi phí. Tạo video, ảnh, nhạc, giọng nói & tự động hoá. Giải pháp AI cho doanh nghiệp.',
     keywords: 'AI marketplace, Skyverses, Veo3, Seedance, Grok, Kling, Sora, Gemini, GPT-4o, Midjourney, Flux, Qwen, tạo video AI, tạo ảnh AI, AI giá rẻ, giải pháp AI doanh nghiệp, xây dựng ứng dụng AI, enterprise AI, 50+ model AI',
-    canonical: '/'
+    canonical: '/',
+    jsonLd: {
+      '@type': 'ItemList',
+      name: 'Top AI Products — Skyverses Marketplace',
+      description: 'Bộ sưu tập 30+ công cụ AI hàng đầu: Video, Image, Voice, Music, Chat & Automation',
+      numberOfItems: 10,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'AI Video Generator', url: 'https://ai.skyverses.com/product/ai-video-generator' },
+        { '@type': 'ListItem', position: 2, name: 'AI Image Generator', url: 'https://ai.skyverses.com/product/ai-image-generator' },
+        { '@type': 'ListItem', position: 3, name: 'AI Music Generator', url: 'https://ai.skyverses.com/product/ai-music-generator' },
+        { '@type': 'ListItem', position: 4, name: 'Text to Speech AI', url: 'https://ai.skyverses.com/product/text-to-speech' },
+        { '@type': 'ListItem', position: 5, name: 'Qwen Chat AI', url: 'https://ai.skyverses.com/product/qwen-chat-ai' },
+        { '@type': 'ListItem', position: 6, name: 'Background Removal AI', url: 'https://ai.skyverses.com/product/background-removal-ai' },
+        { '@type': 'ListItem', position: 7, name: 'Studio Architect', url: 'https://ai.skyverses.com/product/studio-architect' },
+        { '@type': 'ListItem', position: 8, name: 'AI Agent Workflow', url: 'https://ai.skyverses.com/product/ai-agent-workflow' },
+        { '@type': 'ListItem', position: 9, name: 'Voice Design AI', url: 'https://ai.skyverses.com/product/voice-design-ai' },
+        { '@type': 'ListItem', position: 10, name: 'Poster Marketing AI', url: 'https://ai.skyverses.com/product/poster-marketing-ai' },
+      ]
+    }
   });
 
   const [solutions, setSolutions] = useState<Solution[]>([]);
@@ -482,148 +500,67 @@ const MarketPage = () => {
           </section>
         )}
 
-
-
-        {/* ═══════════════════ PAYMENT METHODS ═══════════════════ */}
-        {!query && (
-          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-3 md:py-10">
-            {/* ═══ MOBILE: Compact payment banner ═══ */}
-            <div 
-              className="md:hidden flex items-center gap-3 p-3.5 rounded-2xl bg-gradient-to-r from-slate-50 to-white dark:from-[#0a0c12] dark:to-[#0c0f18] border border-black/[0.05] dark:border-white/[0.05] cursor-pointer active:scale-[0.98] transition-all"
-              onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
-            >
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
-                  <Sparkles size={16} fill="currentColor" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-black text-slate-900 dark:text-white truncate">Nạp Credits — Linh hoạt & An toàn</p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <div className="flex items-center gap-1">
-                      <Landmark size={10} className="text-brand-blue" />
-                      <span className="text-[8px] font-bold text-slate-400">Bank</span>
-                    </div>
-                    <div className="w-px h-2.5 bg-slate-200 dark:bg-white/10" />
-                    <div className="flex items-center gap-1">
-                      <span className="text-[8px] font-bold text-emerald-500">USDT</span>
-                    </div>
-                    <div className="w-px h-2.5 bg-slate-200 dark:bg-white/10" />
-                    <div className="flex items-center gap-1">
-                      <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-[7px] font-bold text-emerald-500 uppercase">Auto</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <ArrowRight size={16} className="text-brand-blue shrink-0" />
-            </div>
-
-            {/* ═══ DESKTOP: Original full payment section ═══ */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="hidden md:block relative overflow-hidden rounded-[2rem] border border-black/[0.05] dark:border-white/[0.05] bg-gradient-to-br from-slate-50 to-white dark:from-[#0a0c12] dark:to-[#0c0f18] p-7 md:p-10"
-            >
-              <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-12">
-                <div className="shrink-0">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/8 dark:bg-emerald-500/15 border border-emerald-500/15 dark:border-emerald-500/25 rounded-full mb-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400">Thanh toán</span>
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-                    Nạp credits<br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-emerald-500">linh hoạt & an toàn</span>
-                  </h3>
-                  <p className="text-xs text-slate-400 dark:text-gray-500 mt-2 max-w-[200px] leading-relaxed">
-                    Hỗ trợ chuyển khoản ngân hàng và thanh toán crypto USDT.
-                  </p>
-                </div>
-
-                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                  <motion.div
-                    whileHover={{ y: -4, scale: 1.02 }}
-                    transition={{ duration: 0.25 }}
-                    onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
-                    className="group relative cursor-pointer p-5 rounded-2xl bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 hover:shadow-lg hover:shadow-brand-blue/5 transition-all duration-300"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-blue/10 to-cyan-500/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform duration-300 shrink-0">
-                        <Landmark size={20} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-black text-slate-900 dark:text-white mb-1">Chuyển khoản ngân hàng</p>
-                        <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-relaxed">VietQR — Tự động xác nhận qua webhook</p>
-                        <div className="flex flex-wrap gap-1.5 mt-3">
-                          {['Vietcombank', 'Techcombank', 'MB Bank', 'BIDV'].map(b => (
-                            <span key={b} className="px-2 py-0.5 bg-slate-50 dark:bg-white/5 border border-black/[0.05] dark:border-white/[0.06] text-[8px] font-bold text-slate-400 dark:text-gray-500 rounded-md">{b}</span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-black/[0.04] dark:border-white/[0.04]">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Tự động · 1-3 phút</span>
-                      </div>
-                      <ArrowRight size={14} className="text-slate-300 dark:text-gray-600 group-hover:text-brand-blue group-hover:translate-x-1 transition-all duration-300" />
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ y: -4, scale: 1.02 }}
-                    transition={{ duration: 0.25 }}
-                    onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
-                    className="group relative cursor-pointer p-5 rounded-2xl bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform duration-300 shrink-0">
-                        <svg viewBox="0 0 32 32" fill="none" className="w-5 h-5">
-                          <circle cx="16" cy="16" r="16" fill="#26A17B" fillOpacity="0.12"/>
-                          <path d="M17.922 17.383v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003C9.85 17.17 7 16.42 7 15.5c0-.92 2.85-1.672 6.009-1.883v2.387c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.386C19.908 13.83 22.75 14.58 22.75 15.5c0 .92-2.842 1.67-6.828 1.883zM13.009 13.375v-2.127h-3.36V9h12.702v2.248h-3.36v2.124c3.514.26 6.009 1.17 6.009 2.251 0 1.08-2.495 1.99-6.009 2.25v4.03H13.01v-4.031c-3.514-.26-6.009-1.17-6.009-2.25 0-1.08 2.495-1.99 6.009-2.25z" fill="#26A17B"/>
-                        </svg>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-black text-slate-900 dark:text-white mb-1">Crypto USDT</p>
-                        <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-relaxed">BSC / ETH — MetaMask, Trust Wallet, Coinbase</p>
-                        <div className="flex flex-wrap gap-1.5 mt-3">
-                          {['BEP-20', 'ERC-20', 'MetaMask', 'WalletConnect'].map(b => (
-                            <span key={b} className="px-2 py-0.5 bg-slate-50 dark:bg-white/5 border border-black/[0.05] dark:border-white/[0.06] text-[8px] font-bold text-slate-400 dark:text-gray-500 rounded-md">{b}</span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-black/[0.04] dark:border-white/[0.04]">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                        <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">On-chain · 5-10 phút</span>
-                      </div>
-                      <ArrowRight size={14} className="text-slate-300 dark:text-gray-600 group-hover:text-amber-500 group-hover:translate-x-1 transition-all duration-300" />
-                    </div>
-                  </motion.div>
-                </div>
-
-                <div className="shrink-0 self-center">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
-                    className="group relative inline-flex flex-col items-center gap-1.5 px-6 py-4 rounded-2xl bg-gradient-to-br from-brand-blue to-purple-600 text-white shadow-xl shadow-brand-blue/20 hover:shadow-2xl hover:shadow-brand-blue/30 transition-all duration-300 overflow-hidden"
-                  >
-                    <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <Sparkles size={20} className="relative z-10" fill="currentColor" />
-                    <span className="relative z-10 text-xs font-black whitespace-nowrap">Nạp Credits</span>
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-          </section>
-        )}
-
         {/* ═══════════════════ ACTIVE FILTER BAR ═══════════════════ */}
 
         <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
+
+          {/* ═══════════════════ HOW IT WORKS ═══════════════════ */}
+          {!query && (
+            <section className="py-10 md:py-28">
+              <div className="text-center mb-6 md:mb-20">
+                <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full mb-3 md:mb-5">
+                    <Sparkles size={12} className="text-brand-blue" />
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">How It Works</span>
+                  </div>
+                  <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
+                    Bắt đầu trong <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">3 bước</span>
+                  </h2>
+                  <p className="text-xs md:text-base text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">Không cần cài đặt, không cần kỹ năng. Chỉ cần đăng nhập và bắt đầu sáng tạo.</p>
+                </motion.div>
+              </div>
+
+              <div className="relative">
+                <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-8 overflow-x-auto no-scrollbar pb-2 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory">
+                  {[
+                    { step: '01', title: 'Chọn công cụ AI', desc: 'Duyệt qua 30+ sản phẩm AI — Video, Image, Voice, Music, Workflow — tìm đúng công cụ bạn cần.', image: '/assets/homepage/hiw-01-choose.webp', gradient: 'from-brand-blue/10 to-purple-500/10', border: 'hover:border-brand-blue/30' },
+                    { step: '02', title: 'Nhập nội dung của bạn', desc: 'Upload ảnh, nhập prompt, hoặc chọn template có sẵn. AI sẽ xử lý phần còn lại.', image: '/assets/homepage/hiw-02-input.webp', gradient: 'from-purple-500/10 to-pink-500/10', border: 'hover:border-purple-500/30' },
+                    { step: '03', title: 'Nhận kết quả chuyên nghiệp', desc: 'Tải về ảnh, video, audio chất lượng cao trong vài giây. Chỉnh sửa và xuất bản ngay.', image: '/assets/homepage/hiw-03-result.webp', gradient: 'from-pink-500/10 to-amber-500/10', border: 'hover:border-pink-500/30' },
+                  ].map((item, idx) => (
+                    <motion.div
+                      key={item.step}
+                      initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                      viewport={{ once: true, margin: '-50px' }}
+                      transition={{ delay: idx * 0.2, duration: 0.7, type: 'spring', stiffness: 100 }}
+                      whileHover={{ y: -8, transition: { duration: 0.4 } }}
+                      className={`relative flex-shrink-0 w-[260px] md:w-auto snap-start rounded-2xl md:rounded-3xl bg-gradient-to-br ${item.gradient} dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.05] dark:border-white/[0.05] ${item.border} transition-all duration-500 group overflow-hidden`}
+                    >
+                      {/* Image */}
+                      <div className="relative aspect-[16/9] overflow-hidden">
+                        <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        <div className="absolute top-2 left-2 md:top-3 md:left-3">
+                          <span className="px-2 py-0.5 bg-brand-blue/20 backdrop-blur-sm border border-brand-blue/30 text-[8px] font-black text-brand-blue uppercase tracking-widest rounded-md">Step {item.step}</span>
+                        </div>
+                      </div>
+                      {/* Text */}
+                      <div className="p-4 md:p-6 space-y-1.5 md:space-y-3">
+                        <h3 className="text-sm md:text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
+                        <p className="text-[10px] md:text-sm text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-3 md:line-clamp-none">{item.desc}</p>
+                      </div>
+                      {idx < 2 && (
+                        <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#0a0a0c] border border-black/[0.06] dark:border-white/[0.06] items-center justify-center shadow-lg">
+                          <ChevronRight size={14} className="text-brand-blue animate-[pulse_2s_ease-in-out_infinite]" />
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
           {(query || primary !== 'ALL') && (
             <motion.div
               initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
@@ -711,58 +648,378 @@ const MarketPage = () => {
             )}
           </div>
 
-          {/* ═══════════════════ HOW IT WORKS ═══════════════════ */}
+          {/* ═══════════════════ USE CASES BY INDUSTRY ═══════════════════ */}
           {!query && (
-            <section className="py-10 md:py-28">
-              <div className="text-center mb-6 md:mb-20">
-                <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full mb-3 md:mb-5">
-                    <Sparkles size={12} className="text-brand-blue" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">How It Works</span>
-                  </div>
-                  <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                    Bắt đầu trong <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">3 bước</span>
-                  </h2>
-                  <p className="text-xs md:text-base text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">Không cần cài đặt, không cần kỹ năng. Chỉ cần đăng nhập và bắt đầu sáng tạo.</p>
-                </motion.div>
-              </div>
+            <section className="py-8 md:py-24">
+              <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="text-center mb-6 md:mb-14">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/8 dark:bg-emerald-500/15 border border-emerald-500/15 dark:border-emerald-500/25 rounded-full mb-3 md:mb-5">
+                  <Globe2 size={12} className="text-emerald-500" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500">Use Cases</span>
+                </div>
+                <h2 className="text-xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
+                  Giải pháp cho <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-brand-blue">mọi ngành nghề</span>
+                </h2>
+                <p className="text-xs md:text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">Từ Marketing đến E-commerce, Giáo dục đến Giải trí — AI đang thay đổi cách mọi người làm việc.</p>
+              </motion.div>
 
-              <div className="relative">
-                <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-8 overflow-x-auto no-scrollbar pb-2 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory">
-                  {[
-                    { step: '01', title: 'Chọn công cụ AI', desc: 'Duyệt qua 30+ sản phẩm AI — Video, Image, Voice, Music, Workflow — tìm đúng công cụ bạn cần.', image: '/assets/homepage/hiw-01-choose.webp', gradient: 'from-brand-blue/10 to-purple-500/10', border: 'hover:border-brand-blue/30' },
-                    { step: '02', title: 'Nhập nội dung của bạn', desc: 'Upload ảnh, nhập prompt, hoặc chọn template có sẵn. AI sẽ xử lý phần còn lại.', image: '/assets/homepage/hiw-02-input.webp', gradient: 'from-purple-500/10 to-pink-500/10', border: 'hover:border-purple-500/30' },
-                    { step: '03', title: 'Nhận kết quả chuyên nghiệp', desc: 'Tải về ảnh, video, audio chất lượng cao trong vài giây. Chỉnh sửa và xuất bản ngay.', image: '/assets/homepage/hiw-03-result.webp', gradient: 'from-pink-500/10 to-amber-500/10', border: 'hover:border-pink-500/30' },
-                  ].map((item, idx) => (
-                    <motion.div
-                      key={item.step}
-                      initial={{ opacity: 0, y: 40, scale: 0.9 }}
-                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                      viewport={{ once: true, margin: '-50px' }}
-                      transition={{ delay: idx * 0.2, duration: 0.7, type: 'spring', stiffness: 100 }}
-                      whileHover={{ y: -8, transition: { duration: 0.4 } }}
-                      className={`relative flex-shrink-0 w-[260px] md:w-auto snap-start rounded-2xl md:rounded-3xl bg-gradient-to-br ${item.gradient} dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.05] dark:border-white/[0.05] ${item.border} transition-all duration-500 group overflow-hidden`}
+              <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
+                {[
+                  { image: '/assets/homepage/uc-marketing.webp', industry: 'Marketing & Agency', desc: 'Tạo hàng trăm content visual mỗi tuần — video, banner, thumbnail.', tools: ['Video AI', 'Image AI', 'Poster AI'], borderColor: 'hover:border-blue-500/30' },
+                  { image: '/assets/homepage/uc-ecommerce.webp', industry: 'E-commerce', desc: 'Ảnh sản phẩm chuyên nghiệp, xoá nền hàng loạt cho catalog.', tools: ['Product Image', 'BG Removal', 'Upscale'], borderColor: 'hover:border-amber-500/30' },
+                  { image: '/assets/homepage/uc-creator.webp', industry: 'Content Creator', desc: 'Video script-to-screen, nhạc nền, voiceover cho YouTube, TikTok.', tools: ['Video AI', 'Music AI', 'Voice'], borderColor: 'hover:border-purple-500/30' },
+                  { image: '/assets/homepage/uc-realestate.webp', industry: 'Bất động sản', desc: 'Render nội thất AI, staging ảo, video tour bất động sản.', tools: ['Real Estate AI', 'Image AI'], borderColor: 'hover:border-emerald-500/30' },
+                  { image: '/assets/homepage/uc-fashion.webp', industry: 'Thời trang', desc: 'Thử trang phục ảo, tạo lookbook, chụp model AI.', tools: ['Fashion AI', 'Stylist AI'], borderColor: 'hover:border-pink-500/30' },
+                  { image: '/assets/homepage/uc-education.webp', industry: 'Giáo dục', desc: 'Bài giảng video, podcast, hình minh hoạ cho khoá học online.', tools: ['Voice AI', 'Video AI'], borderColor: 'hover:border-indigo-500/30' },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.industry}
+                    initial={{ opacity: 0, y: 30, scale: 0.92 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ delay: idx * 0.1, duration: 0.6, type: 'spring', stiffness: 120 }}
+                    whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.35 } }}
+                    className={`flex-shrink-0 w-[220px] md:w-auto snap-start rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] ${item.borderColor} transition-all duration-500 group overflow-hidden`}
+                  >
+                    {/* Image */}
+                    <div className="relative aspect-[16/9] overflow-hidden">
+                      <img src={item.image} alt={item.industry} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                    </div>
+                    {/* Text */}
+                    <div className="p-3 md:p-5 space-y-2 md:space-y-3">
+                      <h3 className="text-sm md:text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.industry}</h3>
+                      <p className="text-[10px] md:text-xs text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-2 md:line-clamp-none">{item.desc}</p>
+                      <div className="flex flex-wrap gap-1 md:gap-1.5 pt-1">
+                        {item.tools.map(tool => (
+                          <span key={tool} className="px-2 py-0.5 md:px-2.5 md:py-1 bg-slate-100 dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.06] text-[7px] md:text-[9px] font-bold text-slate-500 dark:text-gray-400 rounded-md md:rounded-lg uppercase tracking-wider">{tool}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ═══════════════════ TESTIMONIALS ═══════════════════ */}
+          {!query && (
+            <section className="py-8 md:py-24">
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-6 md:mb-14">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/8 dark:bg-amber-500/15 border border-amber-500/15 dark:border-amber-500/25 rounded-full mb-3 md:mb-5">
+                  <Sparkles size={12} className="text-amber-500" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">Testimonials</span>
+                </div>
+                <h2 className="text-xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
+                  Tin dùng bởi <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">hàng nghìn người</span>
+                </h2>
+              </motion.div>
+
+              <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-6 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
+                {[
+                  { name: 'Minh Tuấn', role: 'Content Creator', initials: 'MT', avatarBg: 'bg-brand-blue/10 text-brand-blue', quote: 'Skyverses giúp tôi sản xuất 5 video/ngày thay vì 1. Chất lượng AI tạo ra không thua gì studio chuyên nghiệp.', rating: 5 },
+                  { name: 'Thu Hà', role: 'Marketing Manager', initials: 'TH', avatarBg: 'bg-purple-500/10 text-purple-500', quote: 'Trước đây thuê photographer mỗi tháng tốn $2000. Giờ chỉ cần vài trăm Credits là có đủ ảnh cho cả tháng.', rating: 5 },
+                  { name: 'David Nguyễn', role: 'E-commerce Owner', initials: 'DN', avatarBg: 'bg-emerald-500/10 text-emerald-500', quote: 'Background Removal AI xử lý 500 ảnh sản phẩm trong 30 phút. Image Upscale nâng chất lượng ảnh lên 4K cực nhanh.', rating: 5 },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.name}
+                    initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ delay: idx * 0.15, type: 'spring', stiffness: 120 }}
+                    whileHover={{ y: -5, scale: 1.02, transition: { duration: 0.3 } }}
+                    className="flex-shrink-0 w-[280px] md:w-auto snap-start p-5 md:p-8 rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 group"
+                  >
+                    <div className="space-y-5">
+                      <div className="flex items-center gap-1">
+                        {[...Array(item.rating)].map((_, i) => (
+                          <motion.span key={i} className="text-amber-400 text-sm"
+                            initial={{ opacity: 0, scale: 0 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 + idx * 0.15 + i * 0.05, type: 'spring', stiffness: 300 }}
+                          >★</motion.span>
+                        ))}
+                      </div>
+                      <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed italic">"{item.quote}"</p>
+                      <div className="flex items-center gap-3 pt-2 border-t border-black/[0.04] dark:border-white/[0.04]">
+                        <div className={`relative w-10 h-10 rounded-full ${item.avatarBg} flex items-center justify-center text-sm font-black`}>
+                          {item.initials}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</p>
+                          <p className="text-[10px] font-medium text-slate-400 dark:text-gray-500 uppercase tracking-wider">{item.role}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ═══════════════════ CREDITS & PAYMENT ═══════════════════ */}
+          {!query && (
+            <section className="py-6 md:py-20">
+              <div className="relative overflow-hidden rounded-2xl md:rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-5 md:p-14 lg:p-16">
+
+                <div className="relative z-10">
+                  {/* Header */}
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-6 md:mb-12">
+                    <div className="space-y-2 md:space-y-3">
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full">
+                        <Zap size={12} className="text-amber-400" fill="currentColor" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-400">Universal Credits</span>
+                      </div>
+                      <h2 className="text-xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
+                        1 Credit,{' '}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
+                          dùng cho tất cả
+                        </span>
+                      </h2>
+                      <p className="text-xs md:text-sm text-white/40 max-w-lg leading-relaxed hidden md:block">
+                        Không cần đăng ký riêng cho từng sản phẩm. Mua Credits một lần — sử dụng cho Video AI, Image AI, Voice, Music, Workflow và hơn 30 sản phẩm khác.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => navigate(isAuthenticated ? '/credits' : '/pricing')}
+                      className="shrink-0 inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
-                      {/* Image */}
-                      <div className="relative aspect-[16/9] overflow-hidden">
-                        <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                        <div className="absolute top-2 left-2 md:top-3 md:left-3">
-                          <span className="px-2 py-0.5 bg-brand-blue/20 backdrop-blur-sm border border-brand-blue/30 text-[8px] font-black text-brand-blue uppercase tracking-widest rounded-md">Step {item.step}</span>
+                      <Zap size={14} fill="currentColor" />
+                      {isAuthenticated ? 'Nạp Credits' : 'Xem bảng giá'}
+                      <ArrowRight size={14} />
+                    </button>
+                  </div>
+
+                  {/* Credit Flow Steps — Image Cards */}
+                  <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-12 overflow-x-auto no-scrollbar -mx-5 px-5 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
+                    {[
+                      { step: '01', title: 'Mua Credits', desc: 'Chọn gói phù hợp hoặc nạp tuỳ ý. Nhận bonus khi mua gói lớn.', image: '/assets/credits/step-01-buy.webp' },
+                      { step: '02', title: 'Sử dụng mọi nơi', desc: 'Dùng Credits cho bất kỳ sản phẩm nào — Video, Image, Voice, Music, Workflow...', image: '/assets/credits/step-02-use.webp' },
+                      { step: '03', title: 'Nạp thêm khi cần', desc: 'Credits không hết hạn. Nạp thêm bất cứ lúc nào, chỉ trả cho những gì bạn dùng.', image: '/assets/credits/step-03-topup.webp' },
+                    ].map((item, idx) => (
+                      <motion.div
+                        key={item.step}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: idx * 0.15 }}
+                        className="relative flex-shrink-0 w-[260px] md:w-auto snap-start rounded-xl md:rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-amber-500/20 transition-all group overflow-hidden"
+                      >
+                        <div className="relative aspect-[16/9] overflow-hidden">
+                          <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                          <div className="absolute top-2 left-2 md:top-3 md:left-3">
+                            <span className="px-2 py-0.5 bg-amber-500/20 backdrop-blur-sm border border-amber-500/30 text-[8px] font-black text-amber-400 uppercase tracking-widest rounded-md">Step {item.step}</span>
+                          </div>
+                        </div>
+                        <div className="p-3 md:p-5 space-y-1.5 md:space-y-2">
+                          <h4 className="text-sm md:text-base font-bold text-white">{item.title}</h4>
+                          <p className="text-[10px] md:text-xs text-white/35 leading-relaxed">{item.desc}</p>
+                        </div>
+                        {idx < 2 && (
+                          <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
+                            <ChevronRight size={16} className="text-white/10" />
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* ─── Payment Methods (merged) ─── */}
+                  <div className="border-t border-white/[0.06] pt-6 md:pt-10">
+                    {/* Mobile: compact payment row */}
+                    <div
+                      className="md:hidden flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] cursor-pointer active:scale-[0.98] transition-all"
+                      onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
+                    >
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
+                          <Landmark size={16} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-white truncate">Thanh toán linh hoạt & an toàn</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <div className="flex items-center gap-1">
+                              <Landmark size={10} className="text-brand-blue" />
+                              <span className="text-[8px] font-bold text-white/40">Bank</span>
+                            </div>
+                            <div className="w-px h-2.5 bg-white/10" />
+                            <div className="flex items-center gap-1">
+                              <span className="text-[8px] font-bold text-emerald-400">USDT</span>
+                            </div>
+                            <div className="w-px h-2.5 bg-white/10" />
+                            <div className="flex items-center gap-1">
+                              <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                              <span className="text-[7px] font-bold text-emerald-400 uppercase">Auto</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      {/* Text */}
-                      <div className="p-4 md:p-6 space-y-1.5 md:space-y-3">
-                        <h3 className="text-sm md:text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
-                        <p className="text-[10px] md:text-sm text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-3 md:line-clamp-none">{item.desc}</p>
-                      </div>
-                      {idx < 2 && (
-                        <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#0a0a0c] border border-black/[0.06] dark:border-white/[0.06] items-center justify-center shadow-lg">
-                          <ChevronRight size={14} className="text-brand-blue animate-[pulse_2s_ease-in-out_infinite]" />
+                      <ArrowRight size={16} className="text-brand-blue shrink-0" />
+                    </div>
+
+                    {/* Desktop: payment cards */}
+                    <div className="hidden md:flex items-center gap-8">
+                      <div className="shrink-0 space-y-2">
+                        <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400">Thanh toán</span>
                         </div>
-                      )}
+                        <p className="text-sm font-bold text-white/60 max-w-[160px] leading-relaxed">
+                          Hỗ trợ chuyển khoản ngân hàng và crypto USDT
+                        </p>
+                      </div>
+
+                      <div className="flex-1 grid grid-cols-2 gap-4">
+                        <motion.div
+                          whileHover={{ y: -3, scale: 1.01 }}
+                          transition={{ duration: 0.25 }}
+                          onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
+                          className="group cursor-pointer p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-brand-blue/30 transition-all duration-300"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-blue/15 to-cyan-500/15 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform duration-300 shrink-0">
+                              <Landmark size={20} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-black text-white mb-1">Chuyển khoản ngân hàng</p>
+                              <p className="text-[10px] text-white/35 leading-relaxed">VietQR — Tự động xác nhận qua webhook</p>
+                              <div className="flex flex-wrap gap-1.5 mt-3">
+                                {['Vietcombank', 'Techcombank', 'MB Bank', 'BIDV'].map(b => (
+                                  <span key={b} className="px-2 py-0.5 bg-white/5 border border-white/[0.06] text-[8px] font-bold text-white/40 rounded-md">{b}</span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-white/[0.04]">
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">Tự động · 1-3 phút</span>
+                            </div>
+                            <ArrowRight size={14} className="text-white/20 group-hover:text-brand-blue group-hover:translate-x-1 transition-all duration-300" />
+                          </div>
+                        </motion.div>
+
+                        <motion.div
+                          whileHover={{ y: -3, scale: 1.01 }}
+                          transition={{ duration: 0.25 }}
+                          onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
+                          className="group cursor-pointer p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-amber-500/30 transition-all duration-300"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/15 to-orange-500/15 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform duration-300 shrink-0">
+                              <svg viewBox="0 0 32 32" fill="none" className="w-5 h-5">
+                                <circle cx="16" cy="16" r="16" fill="#26A17B" fillOpacity="0.12"/>
+                                <path d="M17.922 17.383v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003C9.85 17.17 7 16.42 7 15.5c0-.92 2.85-1.672 6.009-1.883v2.387c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.386C19.908 13.83 22.75 14.58 22.75 15.5c0 .92-2.842 1.67-6.828 1.883zM13.009 13.375v-2.127h-3.36V9h12.702v2.248h-3.36v2.124c3.514.26 6.009 1.17 6.009 2.251 0 1.08-2.495 1.99-6.009 2.25v4.03H13.01v-4.031c-3.514-.26-6.009-1.17-6.009-2.25 0-1.08 2.495-1.99 6.009-2.25z" fill="#26A17B"/>
+                              </svg>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-black text-white mb-1">Crypto USDT</p>
+                              <p className="text-[10px] text-white/35 leading-relaxed">BSC / ETH — MetaMask, Trust Wallet, Coinbase</p>
+                              <div className="flex flex-wrap gap-1.5 mt-3">
+                                {['BEP-20', 'ERC-20', 'MetaMask', 'WalletConnect'].map(b => (
+                                  <span key={b} className="px-2 py-0.5 bg-white/5 border border-white/[0.06] text-[8px] font-bold text-white/40 rounded-md">{b}</span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-white/[0.04]">
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                              <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wider">On-chain · 5-10 phút</span>
+                            </div>
+                            <ArrowRight size={14} className="text-white/20 group-hover:text-amber-500 group-hover:translate-x-1 transition-all duration-300" />
+                          </div>
+                        </motion.div>
+                      </div>
+
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
+                        className="group shrink-0 relative inline-flex flex-col items-center gap-1.5 px-6 py-4 rounded-2xl bg-gradient-to-br from-brand-blue to-purple-600 text-white shadow-xl shadow-brand-blue/20 hover:shadow-2xl hover:shadow-brand-blue/30 transition-all duration-300 overflow-hidden"
+                      >
+                        <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <Sparkles size={20} className="relative z-10" fill="currentColor" />
+                        <span className="relative z-10 text-xs font-black whitespace-nowrap">Nạp Credits</span>
+                      </motion.button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* ═══════════════════ CUSTOM SOLUTIONS ═══════════════════ */}
+          {!query && (
+            <section className="py-6 md:py-24">
+              <div className="relative overflow-hidden rounded-2xl md:rounded-[2.5rem] bg-gradient-to-br from-[#0a0e1a] via-[#0c1225] to-[#0a0e1a] dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-5 md:p-14 lg:p-16">
+
+                <div className="relative z-10">
+                  {/* Header */}
+                  <div className="text-center mb-6 md:mb-16">
+                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6">
+                        <Cpu size={14} className="text-brand-blue" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/70">Custom AI Solutions</span>
+                      </div>
+                      <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-white leading-[1.1] mb-3 md:mb-5">
+                        Giải pháp AI{' '}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-400 to-pink-400">
+                          riêng cho doanh nghiệp
+                        </span>
+                      </h2>
+                      <p className="text-xs md:text-base text-white/40 max-w-2xl mx-auto leading-relaxed hidden md:block">
+                        Skyverses chuyên tư vấn, thiết kế và xây dựng các công cụ AI theo yêu cầu.
+                        Từ chatbot, xử lý ảnh/video, workflow tự động đến hệ thống AI hoàn chỉnh cho doanh nghiệp.
+                      </p>
                     </motion.div>
-                  ))}
+                  </div>
+
+                  {/* Service Cards — Desktop only */}
+                  <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-12">
+                    {[
+                      { icon: <Brain size={22} />, iconBg: 'bg-brand-blue/10 text-brand-blue', title: 'Tư vấn AI Strategy', desc: 'Phân tích nhu cầu, đề xuất giải pháp AI phù hợp cho quy trình kinh doanh của bạn.' },
+                      { icon: <Wrench size={22} />, iconBg: 'bg-purple-500/10 text-purple-500', title: 'Build Custom Tools', desc: 'Phát triển công cụ AI theo spec riêng — image gen, video pipeline, chatbot, voice clone...' },
+                      { icon: <Plug size={22} />, iconBg: 'bg-emerald-500/10 text-emerald-500', title: 'API & Integration', desc: 'Tích hợp AI vào hệ thống hiện có qua API. Hỗ trợ webhook, SDK và tài liệu đầy đủ.' },
+                      { icon: <Rocket size={22} />, iconBg: 'bg-amber-500/10 text-amber-500', title: 'Deploy & Scale', desc: 'Triển khai lên cloud, tối ưu hiệu năng, hỗ trợ scale tự động theo nhu cầu sử dụng.' },
+                    ].map((item, idx) => (
+                      <motion.div
+                        key={item.title}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.05] transition-all duration-500 group"
+                      >
+                        <div className="space-y-4">
+                          <div className={`w-12 h-12 rounded-xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform`}>{item.icon}</div>
+                          <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                          <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* CTA */}
+                  <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
+                    <button
+                      onClick={() => navigate('/booking')}
+                      className="group inline-flex items-center gap-2 md:gap-3 bg-white text-black px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl text-xs md:text-sm font-bold hover:shadow-2xl hover:shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all w-full sm:w-auto justify-center"
+                    >
+                      Liên hệ tư vấn miễn phí
+                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </button>
+                    <a
+                      href="mailto:support@skyverses.com"
+                      className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
+                    >
+                      <span className="text-[10px] font-bold uppercase tracking-wider">hoặc email:</span>
+                      <span className="font-bold text-brand-blue">support@skyverses.com</span>
+                    </a>
+                  </motion.div>
+
+                  <p className="text-center text-[10px] font-medium text-white/20 mt-6">✦ Tư vấn miễn phí • Phản hồi trong 24 giờ • Hỗ trợ dài hạn</p>
                 </div>
               </div>
             </section>
@@ -1022,328 +1279,7 @@ const MarketPage = () => {
                 </div>
               </motion.div>
 
-              {/* ─── BENEFITS DUAL COLUMNS (Desktop only) ─── */}
-              <div className="hidden md:grid grid-cols-2 gap-4">
-                {/* You Get */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.15 }}
-                  className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-7 hover:shadow-lg hover:border-brand-blue/15 transition-all duration-500 group"
-                >
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-9 h-9 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
-                      <Zap size={18} fill="currentColor" />
-                    </div>
-                    <h3 className="text-base font-black text-slate-900 dark:text-white">Bạn nhận được</h3>
-                  </div>
-                  <div className="space-y-3">
-                    {[
-                      { icon: <Gift size={14} />, title: '+50 Credits mỗi lượt mời', desc: 'Nhận ngay khi bạn bè đăng ký thành công' },
-                      { icon: <CreditCard size={14} />, title: '5% hoa hồng vĩnh viễn', desc: 'Nhận 5% mỗi khi bạn bè nạp Credits (sắp ra mắt)' },
-                      { icon: <Sparkles size={14} />, title: 'Badge "Referrer"', desc: 'Mở khóa đặc quyền và ưu tiên tính năng mới' },
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-start gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-brand-blue/8 flex items-center justify-center text-brand-blue shrink-0 mt-0.5">{item.icon}</div>
-                        <div>
-                          <p className="text-[12px] font-bold text-slate-800 dark:text-white">{item.title}</p>
-                          <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-relaxed">{item.desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
 
-                {/* Friend Gets */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.25 }}
-                  className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-7 hover:shadow-lg hover:border-emerald-500/15 transition-all duration-500 group"
-                >
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-                      <Gift size={18} />
-                    </div>
-                    <h3 className="text-base font-black text-slate-900 dark:text-white">Bạn bè nhận được</h3>
-                  </div>
-                  <div className="space-y-3">
-                    {[
-                      { icon: <Gift size={14} />, title: '+50 Welcome Credits', desc: 'Bắt đầu trải nghiệm ngay khi đăng ký' },
-                      { icon: <Cpu size={14} />, title: '30+ công cụ AI miễn phí', desc: 'Truy cập Ảnh, Video, Nhạc, Giọng nói và hơn thế nữa' },
-                      { icon: <Shield size={14} />, title: 'Hỗ trợ ưu tiên', desc: 'Được hỗ trợ kỹ thuật ưu tiên từ đội ngũ Skyverses' },
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-start gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-emerald-500/8 flex items-center justify-center text-emerald-500 shrink-0 mt-0.5">{item.icon}</div>
-                        <div>
-                          <p className="text-[12px] font-bold text-slate-800 dark:text-white">{item.title}</p>
-                          <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-relaxed">{item.desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
-            </section>
-          )}
-
-          {/* ═══════════════════ USE CASES BY INDUSTRY ═══════════════════ */}
-          {!query && (
-            <section className="py-8 md:py-24">
-              <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="text-center mb-6 md:mb-14">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/8 dark:bg-emerald-500/15 border border-emerald-500/15 dark:border-emerald-500/25 rounded-full mb-3 md:mb-5">
-                  <Globe2 size={12} className="text-emerald-500" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500">Use Cases</span>
-                </div>
-                <h2 className="text-xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                  Giải pháp cho <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-brand-blue">mọi ngành nghề</span>
-                </h2>
-                <p className="text-xs md:text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">Từ Marketing đến E-commerce, Giáo dục đến Giải trí — AI đang thay đổi cách mọi người làm việc.</p>
-              </motion.div>
-
-              <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
-                {[
-                  { image: '/assets/homepage/uc-marketing.webp', industry: 'Marketing & Agency', desc: 'Tạo hàng trăm content visual mỗi tuần — video, banner, thumbnail.', tools: ['Video AI', 'Image AI', 'Poster AI'], borderColor: 'hover:border-blue-500/30' },
-                  { image: '/assets/homepage/uc-ecommerce.webp', industry: 'E-commerce', desc: 'Ảnh sản phẩm chuyên nghiệp, xoá nền hàng loạt cho catalog.', tools: ['Product Image', 'BG Removal', 'Upscale'], borderColor: 'hover:border-amber-500/30' },
-                  { image: '/assets/homepage/uc-creator.webp', industry: 'Content Creator', desc: 'Video script-to-screen, nhạc nền, voiceover cho YouTube, TikTok.', tools: ['Video AI', 'Music AI', 'Voice'], borderColor: 'hover:border-purple-500/30' },
-                  { image: '/assets/homepage/uc-realestate.webp', industry: 'Bất động sản', desc: 'Render nội thất AI, staging ảo, video tour bất động sản.', tools: ['Real Estate AI', 'Image AI'], borderColor: 'hover:border-emerald-500/30' },
-                  { image: '/assets/homepage/uc-fashion.webp', industry: 'Thời trang', desc: 'Thử trang phục ảo, tạo lookbook, chụp model AI.', tools: ['Fashion AI', 'Stylist AI'], borderColor: 'hover:border-pink-500/30' },
-                  { image: '/assets/homepage/uc-education.webp', industry: 'Giáo dục', desc: 'Bài giảng video, podcast, hình minh hoạ cho khoá học online.', tools: ['Voice AI', 'Video AI'], borderColor: 'hover:border-indigo-500/30' },
-                ].map((item, idx) => (
-                  <motion.div
-                    key={item.industry}
-                    initial={{ opacity: 0, y: 30, scale: 0.92 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ delay: idx * 0.1, duration: 0.6, type: 'spring', stiffness: 120 }}
-                    whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.35 } }}
-                    className={`flex-shrink-0 w-[220px] md:w-auto snap-start rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] ${item.borderColor} transition-all duration-500 group overflow-hidden`}
-                  >
-                    {/* Image */}
-                    <div className="relative aspect-[16/9] overflow-hidden">
-                      <img src={item.image} alt={item.industry} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                    </div>
-                    {/* Text */}
-                    <div className="p-3 md:p-5 space-y-2 md:space-y-3">
-                      <h3 className="text-sm md:text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.industry}</h3>
-                      <p className="text-[10px] md:text-xs text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-2 md:line-clamp-none">{item.desc}</p>
-                      <div className="flex flex-wrap gap-1 md:gap-1.5 pt-1">
-                        {item.tools.map(tool => (
-                          <span key={tool} className="px-2 py-0.5 md:px-2.5 md:py-1 bg-slate-100 dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.06] text-[7px] md:text-[9px] font-bold text-slate-500 dark:text-gray-400 rounded-md md:rounded-lg uppercase tracking-wider">{tool}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* ═══════════════════ TESTIMONIALS ═══════════════════ */}
-          {!query && (
-            <section className="py-8 md:py-24">
-              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-6 md:mb-14">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/8 dark:bg-amber-500/15 border border-amber-500/15 dark:border-amber-500/25 rounded-full mb-3 md:mb-5">
-                  <Sparkles size={12} className="text-amber-500" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">Testimonials</span>
-                </div>
-                <h2 className="text-xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                  Tin dùng bởi <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">hàng nghìn người</span>
-                </h2>
-              </motion.div>
-
-              <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-6 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
-                {[
-                  { name: 'Minh Tuấn', role: 'Content Creator', initials: 'MT', avatarBg: 'bg-brand-blue/10 text-brand-blue', quote: 'Skyverses giúp tôi sản xuất 5 video/ngày thay vì 1. Chất lượng AI tạo ra không thua gì studio chuyên nghiệp.', rating: 5 },
-                  { name: 'Thu Hà', role: 'Marketing Manager', initials: 'TH', avatarBg: 'bg-purple-500/10 text-purple-500', quote: 'Trước đây thuê photographer mỗi tháng tốn $2000. Giờ chỉ cần vài trăm Credits là có đủ ảnh cho cả tháng.', rating: 5 },
-                  { name: 'David Nguyễn', role: 'E-commerce Owner', initials: 'DN', avatarBg: 'bg-emerald-500/10 text-emerald-500', quote: 'Background Removal AI xử lý 500 ảnh sản phẩm trong 30 phút. Image Upscale nâng chất lượng ảnh lên 4K cực nhanh.', rating: 5 },
-                ].map((item, idx) => (
-                  <motion.div
-                    key={item.name}
-                    initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ delay: idx * 0.15, type: 'spring', stiffness: 120 }}
-                    whileHover={{ y: -5, scale: 1.02, transition: { duration: 0.3 } }}
-                    className="flex-shrink-0 w-[280px] md:w-auto snap-start p-5 md:p-8 rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 group"
-                  >
-                    <div className="space-y-5">
-                      <div className="flex items-center gap-1">
-                        {[...Array(item.rating)].map((_, i) => (
-                          <motion.span key={i} className="text-amber-400 text-sm"
-                            initial={{ opacity: 0, scale: 0 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.3 + idx * 0.15 + i * 0.05, type: 'spring', stiffness: 300 }}
-                          >★</motion.span>
-                        ))}
-                      </div>
-                      <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed italic">"{item.quote}"</p>
-                      <div className="flex items-center gap-3 pt-2 border-t border-black/[0.04] dark:border-white/[0.04]">
-                        <div className={`relative w-10 h-10 rounded-full ${item.avatarBg} flex items-center justify-center text-sm font-black`}>
-                          {item.initials}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</p>
-                          <p className="text-[10px] font-medium text-slate-400 dark:text-gray-500 uppercase tracking-wider">{item.role}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* ═══════════════════ CUSTOM SOLUTIONS ═══════════════════ */}
-          {!query && (
-            <section className="py-6 md:py-24">
-              <div className="relative overflow-hidden rounded-2xl md:rounded-[2.5rem] bg-gradient-to-br from-[#0a0e1a] via-[#0c1225] to-[#0a0e1a] dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-5 md:p-14 lg:p-16">
-
-                <div className="relative z-10">
-                  {/* Header */}
-                  <div className="text-center mb-6 md:mb-16">
-                    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6">
-                        <Cpu size={14} className="text-brand-blue" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/70">Custom AI Solutions</span>
-                      </div>
-                      <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-white leading-[1.1] mb-3 md:mb-5">
-                        Giải pháp AI{' '}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-400 to-pink-400">
-                          riêng cho doanh nghiệp
-                        </span>
-                      </h2>
-                      <p className="text-xs md:text-base text-white/40 max-w-2xl mx-auto leading-relaxed hidden md:block">
-                        Skyverses chuyên tư vấn, thiết kế và xây dựng các công cụ AI theo yêu cầu.
-                        Từ chatbot, xử lý ảnh/video, workflow tự động đến hệ thống AI hoàn chỉnh cho doanh nghiệp.
-                      </p>
-                    </motion.div>
-                  </div>
-
-                  {/* Service Cards — Desktop only */}
-                  <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-12">
-                    {[
-                      { icon: <Brain size={22} />, iconBg: 'bg-brand-blue/10 text-brand-blue', title: 'Tư vấn AI Strategy', desc: 'Phân tích nhu cầu, đề xuất giải pháp AI phù hợp cho quy trình kinh doanh của bạn.' },
-                      { icon: <Wrench size={22} />, iconBg: 'bg-purple-500/10 text-purple-500', title: 'Build Custom Tools', desc: 'Phát triển công cụ AI theo spec riêng — image gen, video pipeline, chatbot, voice clone...' },
-                      { icon: <Plug size={22} />, iconBg: 'bg-emerald-500/10 text-emerald-500', title: 'API & Integration', desc: 'Tích hợp AI vào hệ thống hiện có qua API. Hỗ trợ webhook, SDK và tài liệu đầy đủ.' },
-                      { icon: <Rocket size={22} />, iconBg: 'bg-amber-500/10 text-amber-500', title: 'Deploy & Scale', desc: 'Triển khai lên cloud, tối ưu hiệu năng, hỗ trợ scale tự động theo nhu cầu sử dụng.' },
-                    ].map((item, idx) => (
-                      <motion.div
-                        key={item.title}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: idx * 0.1 }}
-                        className="p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.05] transition-all duration-500 group"
-                      >
-                        <div className="space-y-4">
-                          <div className={`w-12 h-12 rounded-xl ${item.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform`}>{item.icon}</div>
-                          <h4 className="text-sm font-bold text-white">{item.title}</h4>
-                          <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* CTA */}
-                  <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
-                    <button
-                      onClick={() => navigate('/booking')}
-                      className="group inline-flex items-center gap-2 md:gap-3 bg-white text-black px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl text-xs md:text-sm font-bold hover:shadow-2xl hover:shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all w-full sm:w-auto justify-center"
-                    >
-                      Liên hệ tư vấn miễn phí
-                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                    </button>
-                    <a
-                      href="mailto:support@skyverses.com"
-                      className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
-                    >
-                      <span className="text-[10px] font-bold uppercase tracking-wider">hoặc email:</span>
-                      <span className="font-bold text-brand-blue">support@skyverses.com</span>
-                    </a>
-                  </motion.div>
-
-                  <p className="text-center text-[10px] font-medium text-white/20 mt-6">✦ Tư vấn miễn phí • Phản hồi trong 24 giờ • Hỗ trợ dài hạn</p>
-                </div>
-              </div>
-            </section>
-          )}
-
-          {/* ═══════════════════ CREDITS SYSTEM ═══════════════════ */}
-          {!query && (
-            <section className="py-6 md:py-20">
-              <div className="relative overflow-hidden rounded-2xl md:rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-5 md:p-14 lg:p-16">
-
-                <div className="relative z-10">
-                  {/* Header */}
-                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-6 md:mb-12">
-                    <div className="space-y-2 md:space-y-3">
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full">
-                        <Zap size={12} className="text-amber-400" fill="currentColor" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-400">Universal Credits</span>
-                      </div>
-                      <h2 className="text-xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
-                        1 Credit,{' '}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
-                          dùng cho tất cả
-                        </span>
-                      </h2>
-                      <p className="text-xs md:text-sm text-white/40 max-w-lg leading-relaxed hidden md:block">
-                        Không cần đăng ký riêng cho từng sản phẩm. Mua Credits một lần — sử dụng cho Video AI, Image AI, Voice, Music, Workflow và hơn 30 sản phẩm khác.
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => navigate(isAuthenticated ? '/credits' : '/pricing')}
-                      className="shrink-0 inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                    >
-                      <Zap size={14} fill="currentColor" />
-                      {isAuthenticated ? 'Nạp Credits' : 'Xem bảng giá'}
-                      <ArrowRight size={14} />
-                    </button>
-                  </div>
-
-                  {/* Credit Flow Steps — Image Cards */}
-                  <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-12 overflow-x-auto no-scrollbar -mx-5 px-5 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
-                    {[
-                      { step: '01', title: 'Mua Credits', desc: 'Chọn gói phù hợp hoặc nạp tuỳ ý. Nhận bonus khi mua gói lớn.', image: '/assets/credits/step-01-buy.webp' },
-                      { step: '02', title: 'Sử dụng mọi nơi', desc: 'Dùng Credits cho bất kỳ sản phẩm nào — Video, Image, Voice, Music, Workflow...', image: '/assets/credits/step-02-use.webp' },
-                      { step: '03', title: 'Nạp thêm khi cần', desc: 'Credits không hết hạn. Nạp thêm bất cứ lúc nào, chỉ trả cho những gì bạn dùng.', image: '/assets/credits/step-03-topup.webp' },
-                    ].map((item, idx) => (
-                      <motion.div
-                        key={item.step}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: idx * 0.15 }}
-                        className="relative flex-shrink-0 w-[260px] md:w-auto snap-start rounded-xl md:rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-amber-500/20 transition-all group overflow-hidden"
-                      >
-                        {/* Image */}
-                        <div className="relative aspect-[16/9] overflow-hidden">
-                          <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                          <div className="absolute top-2 left-2 md:top-3 md:left-3">
-                            <span className="px-2 py-0.5 bg-amber-500/20 backdrop-blur-sm border border-amber-500/30 text-[8px] font-black text-amber-400 uppercase tracking-widest rounded-md">Step {item.step}</span>
-                          </div>
-                        </div>
-                        {/* Text */}
-                        <div className="p-3 md:p-5 space-y-1.5 md:space-y-2">
-                          <h4 className="text-sm md:text-base font-bold text-white">{item.title}</h4>
-                          <p className="text-[10px] md:text-xs text-white/35 leading-relaxed">{item.desc}</p>
-                        </div>
-                        {idx < 2 && (
-                          <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                            <ChevronRight size={16} className="text-white/10" />
-                          </div>
-                        )}
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              </div>
             </section>
           )}
         </div>

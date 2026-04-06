@@ -7,6 +7,7 @@
   <url><loc>https://ai.skyverses.com/apps</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ai.skyverses.com/explorer</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://ai.skyverses.com/pricing</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ai.skyverses.com/credits</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://ai.skyverses.com/about</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://ai.skyverses.com/use-cases</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://ai.skyverses.com/referral</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
@@ -15,31 +16,39 @@
   <url><loc>https://ai.skyverses.com/login</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
 
   <!-- ═══ Product Pages — Image AI ═══ -->
-  <url><loc>https://ai.skyverses.com/product/agent-image</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://ai.skyverses.com/product/background-removal-ai</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://ai.skyverses.com/product/ai-image-restorer</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ai.skyverses.com/product/ai-image-generator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ai.skyverses.com/product/product-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://ai.skyverses.com/product/poster-marketing-ai</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://ai.skyverses.com/product/fashion-center-ai</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ai.skyverses.com/product/image-upscale-ai</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ai.skyverses.com/product/background-removal-ai</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ai.skyverses.com/product/ai-image-restorer</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ai.skyverses.com/product/ai-stylist</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://ai.skyverses.com/product/bat-dong-san-ai</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ai.skyverses.com/product/character-sync-studio</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ai.skyverses.com/product/banana-pro-comic-engine</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
 
   <!-- ═══ Product Pages — Video AI ═══ -->
-  <url><loc>https://ai.skyverses.com/product/captcha-veo3</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://ai.skyverses.com/product/genyu-video</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ai.skyverses.com/product/ai-video-generator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ai.skyverses.com/product/studio-architect</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ai.skyverses.com/product/avatar-sync-ai</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ai.skyverses.com/product/video-animate-ai</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://ai.skyverses.com/product/storyboard-studio</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://ai.skyverses.com/product/avatar-lipsync-ai</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ai.skyverses.com/product/captcha-veo3</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
 
   <!-- ═══ Product Pages — Audio/Voice AI ═══ -->
+  <url><loc>https://ai.skyverses.com/product/text-to-speech</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ai.skyverses.com/product/music-generator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://ai.skyverses.com/product/ai-music-generator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://ai.skyverses.com/product/voice-studio</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://ai.skyverses.com/product/voice-design-ai</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ai.skyverses.com/product/ai-voice-studio</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
 
   <!-- ═══ Product Pages — AI Tools ═══ -->
   <url><loc>https://ai.skyverses.com/product/qwen-chat-ai</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://ai.skyverses.com/product/ai-agent-workflow</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://ai.skyverses.com/product/nocode-export</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://ai.skyverses.com/product/prompt-architect</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://ai.skyverses.com/product/character-sync-ai</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://ai.skyverses.com/product/ai-stylist</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ai.skyverses.com/product/3d-spatial-architect</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
 
   <!-- ═══ Product Pages — Events ═══ -->
   <url><loc>https://ai.skyverses.com/product/ai-birthday-generator</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
