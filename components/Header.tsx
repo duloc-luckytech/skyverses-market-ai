@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Menu, X, Moon, Sun, ChevronRight, Languages, LogOut,
@@ -14,7 +14,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { Language } from '../types';
-import CreditPurchaseModal from './CreditPurchaseModal';
+const CreditPurchaseModal = lazy(() => import('./CreditPurchaseModal'));
 import { creditsApi } from '../apis/credits';
 import { useSearch } from '../context/SearchContext';
 
@@ -487,7 +487,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
       <AnimatePresence>
         {isPurchaseModalOpen && (
-          <CreditPurchaseModal isOpen={isPurchaseModalOpen} onClose={() => setIsPurchaseModalOpen(false)} />
+          <Suspense fallback={null}>
+            <CreditPurchaseModal isOpen={isPurchaseModalOpen} onClose={() => setIsPurchaseModalOpen(false)} />
+          </Suspense>
         )}
       </AnimatePresence>
     </>

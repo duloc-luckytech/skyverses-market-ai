@@ -1,13 +1,15 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import Header from './Header';
 import Footer from './Footer';
-import AISupportChat from './AISupportChat';
-import ImageLibraryModal from './ImageLibraryModal';
-import ProductImageWorkspace from './ProductImageWorkspace';
-import CommandPalette from './CommandPalette';
-import GlobalEventBonusModal from './GlobalEventBonusModal';
-import { QuickImageGenModal } from './QuickImageGenModal';
+
+// ═══ Lazy-loaded overlays (not needed for first paint) ═══
+const AISupportChat = lazy(() => import('./AISupportChat'));
+const ImageLibraryModal = lazy(() => import('./ImageLibraryModal'));
+const ProductImageWorkspace = lazy(() => import('./ProductImageWorkspace'));
+const CommandPalette = lazy(() => import('./CommandPalette'));
+const GlobalEventBonusModal = lazy(() => import('./GlobalEventBonusModal'));
+const QuickImageGenModal = lazy(() => import('./QuickImageGenModal').then(m => ({ default: m.QuickImageGenModal })));
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -39,36 +41,36 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {children}
       </main>
       <Footer />
-      <AISupportChat />
-      <CommandPalette />
-      <GlobalEventBonusModal />
+      <Suspense fallback={null}>
+        <AISupportChat />
+        <CommandPalette />
+        <GlobalEventBonusModal />
 
-      {/* ⭐ Quick Image Gen Modal — opens after new user claims 100 free images */}
-      <QuickImageGenModal 
-        isOpen={showQuickImageGen} 
-        onClose={() => setShowQuickImageGen(false)} 
-        onSuccess={() => setShowQuickImageGen(false)} 
-      />
-      
-      {/* Thư viện hình ảnh toàn cục */}
-      <ImageLibraryModal 
-        isOpen={isLibraryOpen} 
-        onClose={() => setIsLibraryOpen(false)} 
-        onEdit={handleOpenEditorFromLibrary}
-      />
+        {/* ⭐ Quick Image Gen Modal — opens after new user claims 100 free images */}
+        <QuickImageGenModal 
+          isOpen={showQuickImageGen} 
+          onClose={() => setShowQuickImageGen(false)} 
+          onSuccess={() => setShowQuickImageGen(false)} 
+        />
+        
+        {/* Thư viện hình ảnh toàn cục */}
+        <ImageLibraryModal 
+          isOpen={isLibraryOpen} 
+          onClose={() => setIsLibraryOpen(false)} 
+          onEdit={handleOpenEditorFromLibrary}
+        />
 
-      {/* Trình biên tập ảnh toàn cục (Product Image Editor) */}
-      <ProductImageWorkspace 
-        isOpen={isEditorOpen} 
-        onClose={() => setIsEditorOpen(false)} 
-        initialImage={selectedImageUrl}
-        onApply={(editedUrl) => {
-          // Xử lý sau khi ảnh được áp dụng chỉnh sửa thành công
-          // Thường là cập nhật lại danh sách hoặc thông báo cho người dùng
-          setIsEditorOpen(false);
-          setIsLibraryOpen(true); // Quay lại thư viện để xem kết quả
-        }}
-      />
+        {/* Trình biên tập ảnh toàn cục (Product Image Editor) */}
+        <ProductImageWorkspace 
+          isOpen={isEditorOpen} 
+          onClose={() => setIsEditorOpen(false)} 
+          initialImage={selectedImageUrl}
+          onApply={(editedUrl) => {
+            setIsEditorOpen(false);
+            setIsLibraryOpen(true);
+          }}
+        />
+      </Suspense>
     </div>
   );
 };
