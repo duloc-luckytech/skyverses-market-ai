@@ -771,27 +771,118 @@ const MarketPage = () => {
           {/* ═══════════════════ INVITE FRIENDS & EARN ═══════════════════ */}
           {!query && (
             <section className="py-8 md:py-24 space-y-4 md:space-y-6">
-              {/* ─── MAIN REFERRAL BLOCK ─── */}
-              <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-brand-blue/10 via-purple-500/10 to-pink-500/10 dark:from-brand-blue/5 dark:via-purple-500/5 dark:to-pink-500/5 border border-brand-blue/10 dark:border-white/[0.06]">
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute -top-20 -right-20 w-60 md:w-80 h-60 md:h-80 bg-brand-blue/10 rounded-full blur-3xl" />
-                  <div className="absolute -bottom-20 -left-20 w-60 md:w-80 h-60 md:h-80 bg-purple-500/10 rounded-full blur-3xl" />
+
+              {/* ═══ MOBILE: Compact referral card ═══ */}
+              <div className="md:hidden space-y-3">
+                {/* Main compact card */}
+                <div
+                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-blue/10 via-purple-500/10 to-pink-500/10 dark:from-brand-blue/5 dark:via-purple-500/5 dark:to-pink-500/5 border border-brand-blue/10 dark:border-white/[0.06] p-5 cursor-pointer active:scale-[0.98] transition-all"
+                  onClick={() => navigate(isAuthenticated ? '/referral' : '/pricing')}
+                >
+                  <div className="absolute -top-12 -right-12 w-40 h-40 bg-brand-blue/10 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                  <div className="relative z-10 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue/10 dark:bg-brand-blue/15 border border-brand-blue/20 rounded-full">
+                        <Users size={10} className="text-brand-blue" />
+                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-blue">Invite & Earn</span>
+                      </div>
+                      <ArrowRight size={16} className="text-brand-blue" />
+                    </div>
+
+                    <h2 className="text-lg font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                      Mời bạn bè, <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">nhận Credits</span>
+                    </h2>
+
+                    {/* Reward pills inline */}
+                    <div className="flex gap-2">
+                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[#0d0d0f] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
+                        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-blue to-blue-600 flex items-center justify-center text-white shrink-0">
+                          <Zap size={16} fill="currentColor" />
+                        </div>
+                        <div>
+                          <p className="text-[8px] text-slate-400 font-medium">Bạn nhận</p>
+                          <p className="text-sm font-black text-slate-900 dark:text-white">+50 CR</p>
+                        </div>
+                      </div>
+                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[#0d0d0f] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
+                        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white shrink-0">
+                          <Gift size={16} />
+                        </div>
+                        <div>
+                          <p className="text-[8px] text-slate-400 font-medium">Bạn bè nhận</p>
+                          <p className="text-sm font-black text-slate-900 dark:text-white">+50 CR</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CTA button */}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); navigate(isAuthenticated ? '/referral' : '/pricing'); }}
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-blue to-purple-500 text-white py-3 rounded-xl text-[11px] font-bold shadow-lg shadow-brand-blue/15 active:scale-[0.97] transition-all"
+                    >
+                      <Gift size={13} />
+                      {isAuthenticated ? 'Lấy link giới thiệu' : 'Đăng ký & nhận Credits'}
+                      <ArrowRight size={13} />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="relative z-10 p-6 md:p-16 flex flex-col md:flex-row items-center gap-6 md:gap-16">
-                  <div className="flex-1 text-center md:text-left space-y-4 md:space-y-6">
+                {/* Horizontal scroll benefit chips */}
+                <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1">
+                  {[
+                    { icon: <Zap size={12} fill="currentColor" />, text: '+50 CR mỗi lượt mời', color: 'text-brand-blue', bg: 'bg-brand-blue/10', border: 'border-brand-blue/15' },
+                    { icon: <CreditCard size={12} />, text: '5% hoa hồng (Coming)', color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/15' },
+                    { icon: <Sparkles size={12} />, text: 'Badge Referrer', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/15' },
+                    { icon: <Users size={12} />, text: 'Không giới hạn', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/15' },
+                    { icon: <RefreshCw size={12} />, text: 'Thu nhập vĩnh viễn', color: 'text-rose-500', bg: 'bg-rose-500/10', border: 'border-rose-500/15' },
+                  ].map((item) => (
+                    <div key={item.text} className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl ${item.bg} border ${item.border}`}>
+                      <span className={item.color}>{item.icon}</span>
+                      <span className="text-[9px] font-bold text-slate-600 dark:text-gray-400 whitespace-nowrap">{item.text}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Mini stats bar */}
+                <div className="flex items-center justify-center gap-5 py-2.5 px-4 bg-slate-50 dark:bg-white/[0.02] rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
+                  <div className="flex items-center gap-1.5">
+                    <Users size={11} className="text-brand-blue" />
+                    <span className="text-xs font-black text-slate-900 dark:text-white">2,847</span>
+                    <span className="text-[7px] font-bold text-slate-400 uppercase">tham gia</span>
+                  </div>
+                  <div className="w-px h-4 bg-black/[0.06] dark:bg-white/[0.06]" />
+                  <div className="flex items-center gap-1.5">
+                    <Zap size={11} className="text-amber-500" fill="currentColor" />
+                    <span className="text-xs font-black text-brand-blue">142K</span>
+                    <span className="text-[7px] font-bold text-slate-400 uppercase">CR tặng</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* ═══ DESKTOP: Full referral section ═══ */}
+              {/* ─── MAIN REFERRAL BLOCK ─── */}
+              <div className="hidden md:block relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-blue/10 via-purple-500/10 to-pink-500/10 dark:from-brand-blue/5 dark:via-purple-500/5 dark:to-pink-500/5 border border-brand-blue/10 dark:border-white/[0.06]">
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  <div className="absolute -top-20 -right-20 w-80 h-80 bg-brand-blue/10 rounded-full blur-3xl" />
+                  <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
+                </div>
+
+                <div className="relative z-10 p-16 flex flex-row items-center gap-16">
+                  <div className="flex-1 text-left space-y-6">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/10 dark:bg-brand-blue/15 border border-brand-blue/20 rounded-full">
                       <Users size={12} className="text-brand-blue" />
                       <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">Invite & Earn</span>
                     </div>
-                    <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1]">
+                    <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1]">
                       Mời bạn bè,{' '}
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">nhận Credits miễn phí</span>
                     </h2>
-                    <p className="text-xs md:text-base text-slate-500 dark:text-gray-400 max-w-lg leading-relaxed">
+                    <p className="text-base text-slate-500 dark:text-gray-400 max-w-lg leading-relaxed">
                       Chia sẻ link giới thiệu của bạn. Khi bạn bè đăng ký và sử dụng, cả hai đều nhận được Credits miễn phí để sáng tạo với AI.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-3 md:gap-6 pt-2">
+                    <div className="flex flex-row gap-6 pt-2">
                       {[
                         { num: '1', text: 'Chia sẻ link', icon: <Share2 size={16} /> },
                         { num: '2', text: 'Bạn bè đăng ký', icon: <UserPlus size={16} /> },
@@ -803,7 +894,7 @@ const MarketPage = () => {
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                    <div className="flex flex-row gap-3 pt-2">
                       <button
                         onClick={() => navigate(isAuthenticated ? '/referral' : '/pricing')}
                         className="inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-brand-blue to-purple-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-brand-blue/20 hover:shadow-xl hover:shadow-brand-blue/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
@@ -814,7 +905,7 @@ const MarketPage = () => {
                       </button>
                     </div>
                   </div>
-                  <div className="flex-shrink-0 w-full md:w-[340px] lg:w-[400px]">
+                  <div className="flex-shrink-0 w-[340px] lg:w-[400px]">
                     <div className="space-y-3">
                       {[
                         { label: 'Bạn nhận được', amount: '+50 Credits', color: 'from-brand-blue to-blue-600', icon: <Zap size={18} fill="currentColor" /> },
@@ -826,14 +917,14 @@ const MarketPage = () => {
                           whileInView={{ opacity: 1, x: 0 }}
                           viewport={{ once: true }}
                           transition={{ delay: 0.2 + idx * 0.15, type: 'spring', stiffness: 120 }}
-                          className="flex items-center gap-4 p-4 md:p-5 bg-white dark:bg-[#0d0d0f] rounded-xl md:rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl"
+                          className="flex items-center gap-4 p-5 bg-white dark:bg-[#0d0d0f] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl"
                         >
-                          <div className={`w-11 h-11 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br ${reward.color} flex items-center justify-center text-white shadow-lg shrink-0`}>
+                          <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${reward.color} flex items-center justify-center text-white shadow-lg shrink-0`}>
                             {reward.icon}
                           </div>
                           <div className="flex-1">
-                            <p className="text-[10px] md:text-xs text-slate-400 dark:text-gray-500 font-medium">{reward.label}</p>
-                            <p className="text-lg md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">{reward.amount}</p>
+                            <p className="text-xs text-slate-400 dark:text-gray-500 font-medium">{reward.label}</p>
+                            <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{reward.amount}</p>
                           </div>
                           <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
                             <Check size={16} className="text-emerald-500" />
@@ -841,15 +932,15 @@ const MarketPage = () => {
                         </motion.div>
                       ))}
                     </div>
-                    <div className="flex items-center justify-center gap-6 mt-4 md:mt-6 py-3 px-4 bg-white/50 dark:bg-white/[0.02] rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
+                    <div className="flex items-center justify-center gap-6 mt-6 py-3 px-4 bg-white/50 dark:bg-white/[0.02] rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
                       <div className="text-center">
-                        <p className="text-base md:text-xl font-black text-slate-900 dark:text-white">2,847</p>
-                        <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-wider">Người tham gia</p>
+                        <p className="text-xl font-black text-slate-900 dark:text-white">2,847</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Người tham gia</p>
                       </div>
                       <div className="w-px h-8 bg-black/[0.06] dark:bg-white/[0.06]" />
                       <div className="text-center">
-                        <p className="text-base md:text-xl font-black text-brand-blue">142K</p>
-                        <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-wider">Credits đã tặng</p>
+                        <p className="text-xl font-black text-brand-blue">142K</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Credits đã tặng</p>
                       </div>
                     </div>
                   </div>
@@ -862,7 +953,7 @@ const MarketPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-[#0c0e18] via-[#0e1225] to-[#120c20] border border-white/[0.06] p-5 md:p-10"
+                className="hidden md:block relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0c0e18] via-[#0e1225] to-[#120c20] border border-white/[0.06] p-10"
               >
                 {/* Glow effects */}
                 <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-amber-500/8 rounded-full blur-[100px] pointer-events-none" />
@@ -880,10 +971,10 @@ const MarketPage = () => {
                         <span className="text-[8px] font-bold uppercase tracking-widest text-white/40">Passive Income</span>
                       </div>
                     </div>
-                    <h3 className="text-lg md:text-2xl font-black tracking-tight text-white leading-tight">
+                    <h3 className="text-2xl font-black tracking-tight text-white leading-tight">
                       Nhận <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">5% hoa hồng vĩnh viễn</span> khi bạn bè nạp Credits
                     </h3>
-                    <p className="text-[11px] md:text-sm text-white/40 max-w-lg leading-relaxed">
+                    <p className="text-sm text-white/40 max-w-lg leading-relaxed">
                       Mỗi khi bạn bè bạn giới thiệu nạp Credits, bạn tự động nhận <strong className="text-white/60">5% giá trị</strong> — không giới hạn số lần, không giới hạn số người. Thu nhập thụ động thực sự.
                     </p>
 
@@ -904,7 +995,7 @@ const MarketPage = () => {
 
                   {/* Earn Example Card */}
                   <div className="shrink-0 w-full lg:w-auto">
-                    <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-4 md:p-5 space-y-3">
+                    <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5 space-y-3">
                       <p className="text-[9px] font-black text-white/30 uppercase tracking-widest">Ví dụ thu nhập</p>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2.5 px-3 py-2 bg-white/[0.03] rounded-xl border border-white/[0.05]">
@@ -931,21 +1022,21 @@ const MarketPage = () => {
                 </div>
               </motion.div>
 
-              {/* ─── BENEFITS DUAL COLUMNS ─── */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+              {/* ─── BENEFITS DUAL COLUMNS (Desktop only) ─── */}
+              <div className="hidden md:grid grid-cols-2 gap-4">
                 {/* You Get */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.15 }}
-                  className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-5 md:p-7 hover:shadow-lg hover:border-brand-blue/15 transition-all duration-500 group"
+                  className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-7 hover:shadow-lg hover:border-brand-blue/15 transition-all duration-500 group"
                 >
-                  <div className="flex items-center gap-3 mb-4 md:mb-5">
+                  <div className="flex items-center gap-3 mb-5">
                     <div className="w-9 h-9 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
                       <Zap size={18} fill="currentColor" />
                     </div>
-                    <h3 className="text-sm md:text-base font-black text-slate-900 dark:text-white">Bạn nhận được</h3>
+                    <h3 className="text-base font-black text-slate-900 dark:text-white">Bạn nhận được</h3>
                   </div>
                   <div className="space-y-3">
                     {[
@@ -970,13 +1061,13 @@ const MarketPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.25 }}
-                  className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-5 md:p-7 hover:shadow-lg hover:border-emerald-500/15 transition-all duration-500 group"
+                  className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-7 hover:shadow-lg hover:border-emerald-500/15 transition-all duration-500 group"
                 >
-                  <div className="flex items-center gap-3 mb-4 md:mb-5">
+                  <div className="flex items-center gap-3 mb-5">
                     <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
                       <Gift size={18} />
                     </div>
-                    <h3 className="text-sm md:text-base font-black text-slate-900 dark:text-white">Bạn bè nhận được</h3>
+                    <h3 className="text-base font-black text-slate-900 dark:text-white">Bạn bè nhận được</h3>
                   </div>
                   <div className="space-y-3">
                     {[
