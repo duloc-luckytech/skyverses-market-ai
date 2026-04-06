@@ -430,6 +430,7 @@ const MarketPage = () => {
                         <img
                           src={featuredSolutions[0]?.imageUrl}
                           alt={featuredSolutions[0]?.name[lang as Language]}
+                          fetchPriority="high"
                           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                         />
                         {/* Gradient overlay */}
