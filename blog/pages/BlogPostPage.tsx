@@ -1,12 +1,132 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Eye, Calendar, User, Tag, Share2, Copy, Check, ChevronRight, Sparkles } from 'lucide-react';
+import {
+  ArrowLeft, Clock, Eye, Calendar, User, Tag, Share2,
+  Copy, Check, ChevronRight, Sparkles, ArrowUp, List, X, Twitter, Facebook
+} from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { blogApi } from '../apis/blog';
 import { BlogPost, Language } from '../types';
 import PostCard from '../components/PostCard';
 
+// ── Reading progress bar ──────────────────────────
+const ReadingProgress: React.FC<{ contentRef: React.RefObject<HTMLElement> }> = ({ contentRef }) => {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const el = contentRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const total = el.offsetHeight;
+      const scrolled = Math.max(0, -rect.top);
+      const pct = Math.min(100, (scrolled / total) * 100);
+      setProgress(pct);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <div className="fixed top-0 left-0 right-0 h-[3px] z-[300] bg-slate-200/30 dark:bg-white/[0.05]">
+      <div
+        className="h-full bg-gradient-to-r from-brand-blue via-blue-400 to-purple-500 transition-all duration-100"
+        style={{ width: `${progress}%` }}
+      />
+    </div>
+  );
+};
+
+// ── Table of Contents ─────────────────────────────
+interface TocItem { id: string; text: string; level: number }
+
+const extractToc = (html: string): TocItem[] => {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  const headings = div.querySelectorAll('h1, h2, h3, h4');
+  return Array.from(headings).map(h => ({
+    id: h.id || h.textContent!.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+    text: h.textContent || '',
+    level: parseInt(h.tagName.slice(1)),
+  }));
+};
+
+// Inject IDs into HTML headings for anchor navigation
+const injectHeadingIds = (html: string): string => {
+  return html.replace(/<(h[1-4])([^>]*)>(.*?)<\/h[1-4]>/gi, (_, tag, attrs, text) => {
+    const plainText = text.replace(/<[^>]+>/g, '');
+    const id = plainText.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    return `<${tag}${attrs} id="${id}">${text}</${tag}>`;
+  });
+};
+
+const TableOfContents: React.FC<{ items: TocItem[]; activeId: string }> = ({ items, activeId }) => {
+  if (items.length < 2) return null;
+
+  const handleClick = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 90;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <nav className="sticky top-20 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 no-scrollbar">
+      <div className="bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <List size={13} className="text-brand-blue" />
+          <p className="text-[11px] font-black text-slate-700 dark:text-white uppercase tracking-wider">
+            Contents
+          </p>
+        </div>
+        <ul className="space-y-0.5">
+          {items.map(item => (
+            <li key={item.id}>
+              <button
+                onClick={() => handleClick(item.id)}
+                style={{ paddingLeft: `${(item.level - 1) * 12}px` }}
+                className={`w-full text-left px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all ${activeId === item.id
+                    ? 'bg-brand-blue/[0.08] text-brand-blue font-semibold'
+                    : 'text-slate-500 dark:text-gray-400 hover:text-brand-blue hover:bg-brand-blue/[0.04]'
+                  }`}
+              >
+                {item.level > 1 && <span className="text-slate-300 dark:text-gray-600 mr-1">›</span>}
+                <span className="line-clamp-2">{item.text}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>
+  );
+};
+
+// ── Back to top button ────────────────────────────
+const BackToTop: React.FC = () => {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 600);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      className="fixed bottom-6 right-6 z-[100] w-11 h-11 bg-brand-blue text-white rounded-2xl flex items-center justify-center shadow-xl shadow-brand-blue/30 hover:brightness-110 hover:scale-110 active:scale-95 transition-all"
+      title="Back to top"
+    >
+      <ArrowUp size={18} />
+    </button>
+  );
+};
+
+// ── Main page component ───────────────────────────
 const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { lang, t } = useLanguage();
@@ -17,6 +137,10 @@ const BlogPostPage: React.FC = () => {
   const [related, setRelated] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [activeHeading, setActiveHeading] = useState('');
+  const [tocOpen, setTocOpen] = useState(false);
+
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -26,19 +150,14 @@ const BlogPostPage: React.FC = () => {
         const res = await blogApi.getPost(slug);
         if (res?.success && res.data) {
           setPost(res.data);
-
-          // Fetch related posts by same category
           if (res.data.category) {
-            const relRes = await blogApi.getPosts({ category: res.data.category, limit: 3, lang: currentLang });
-            if (relRes?.data) {
-              setRelated(relRes.data.filter(p => p.slug !== slug).slice(0, 3));
-            }
+            const relRes = await blogApi.getPosts({ category: res.data.category, limit: 4, lang: currentLang });
+            if (relRes?.data) setRelated(relRes.data.filter(p => p.slug !== slug).slice(0, 3));
           }
         } else {
           navigate('/', { replace: true });
         }
-      } catch (err) {
-        console.error('Blog post fetch:', err);
+      } catch {
         navigate('/', { replace: true });
       } finally {
         setLoading(false);
@@ -48,11 +167,27 @@ const BlogPostPage: React.FC = () => {
     window.scrollTo(0, 0);
   }, [slug, currentLang]);
 
+  // Track active heading
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(e => { if (e.isIntersecting) setActiveHeading(e.target.id); });
+      },
+      { rootMargin: '-20% 0% -70% 0%' }
+    );
+    contentRef.current.querySelectorAll('h1, h2, h3, h4').forEach(h => observer.observe(h));
+    return () => observer.disconnect();
+  }, [post]);
+
   const title = post?.title[currentLang] || post?.title.en || '';
-  const content = post?.content[currentLang] || post?.content.en || '';
+  const rawContent = post?.content[currentLang] || post?.content.en || '';
+  const content = useMemo(() => injectHeadingIds(rawContent), [rawContent]);
   const excerpt = post?.excerpt[currentLang] || post?.excerpt.en || '';
   const metaTitle = post?.seo?.metaTitle?.[currentLang] || post?.seo?.metaTitle?.en || title;
   const metaDesc = post?.seo?.metaDescription?.[currentLang] || post?.seo?.metaDescription?.en || excerpt;
+
+  const toc = useMemo(() => (content ? extractToc(content) : []), [content]);
 
   usePageMeta({
     title: metaTitle ? `${metaTitle} — Skyverses Insights` : 'Skyverses Insights',
@@ -89,26 +224,25 @@ const BlogPostPage: React.FC = () => {
   };
 
   const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({ title, text: excerpt, url: window.location.href }).catch(() => {});
-    } else {
-      handleCopyLink();
-    }
+    if (navigator.share) navigator.share({ title, text: excerpt, url: window.location.href }).catch(() => {});
+    else handleCopyLink();
   };
 
+  const shareTwitter = () => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+  const shareFacebook = () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+
+  // ── Loading skeleton ───────────────────────────
   if (loading) {
     return (
-      <div className="pt-20 pb-16 min-h-screen bg-[#fafafa] dark:bg-[#0a0a0c]">
+      <div className="pt-20 pb-16 min-h-screen bg-[#f8fafc] dark:bg-[#080809]">
         <div className="max-w-3xl mx-auto px-4 md:px-6 animate-pulse">
-          <div className="h-4 bg-slate-100 dark:bg-white/[0.04] rounded w-24 mb-6" />
-          <div className="h-8 bg-slate-100 dark:bg-white/[0.04] rounded w-3/4 mb-4" />
+          <div className="h-4 bg-slate-100 dark:bg-white/[0.04] rounded w-40 mb-8" />
+          <div className="h-10 bg-slate-100 dark:bg-white/[0.04] rounded-xl w-4/5 mb-4" />
           <div className="h-4 bg-slate-100 dark:bg-white/[0.03] rounded w-1/2 mb-8" />
-          <div className="h-[400px] bg-slate-100 dark:bg-white/[0.03] rounded-2xl mb-8" />
-          <div className="space-y-3">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-3 bg-slate-100 dark:bg-white/[0.02] rounded" style={{ width: `${75 + Math.random() * 25}%` }} />
-            ))}
-          </div>
+          <div className="h-[400px] bg-slate-100 dark:bg-white/[0.03] rounded-3xl mb-10" />
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="h-3.5 bg-slate-100 dark:bg-white/[0.02] rounded mb-3" style={{ width: `${65 + Math.random() * 35}%` }} />
+          ))}
         </div>
       </div>
     );
@@ -117,102 +251,200 @@ const BlogPostPage: React.FC = () => {
   if (!post) return null;
 
   return (
-    <div className="pt-20 pb-16 min-h-screen bg-[#fafafa] dark:bg-[#0a0a0c]">
-      <article className="max-w-3xl mx-auto px-4 md:px-6">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#080809]">
+      <ReadingProgress contentRef={contentRef as React.RefObject<HTMLElement>} />
+      <BackToTop />
 
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 mb-6 text-[12px] text-slate-400">
-          <Link to="/" className="hover:text-brand-blue transition-colors">{t('blog.title')}</Link>
-          <ChevronRight size={12} />
-          <Link to={`/category/${post.category}`} className="hover:text-brand-blue transition-colors">{post.category}</Link>
-          <ChevronRight size={12} />
-          <span className="text-slate-600 dark:text-gray-300 truncate max-w-[200px]">{title}</span>
-        </nav>
+      {/* ── Hero cover image ───────────────────── */}
+      <div className="relative w-full h-[55vh] min-h-[360px] max-h-[600px] overflow-hidden bg-slate-900">
+        <img
+          src={post.coverImage}
+          alt={title}
+          className="absolute inset-0 w-full h-full object-cover opacity-80"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
 
-        {/* Title */}
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white leading-tight mb-4">
-          {title}
-        </h1>
+        {/* Top shimmer */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-        {/* Meta bar */}
-        <div className="flex flex-wrap items-center gap-4 mb-6 text-[12px] text-slate-500 dark:text-gray-400">
-          <div className="flex items-center gap-2">
-            {post.author?.avatar ? (
-              <img src={post.author.avatar} alt={post.author.name} className="w-7 h-7 rounded-full object-cover" />
-            ) : (
-              <div className="w-7 h-7 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue"><User size={13} /></div>
+        {/* Category + breadcrumb */}
+        <div className="absolute top-24 left-0 right-0 max-w-7xl mx-auto px-4 md:px-8">
+          <nav className="flex items-center gap-1.5 text-[12px] text-white/60 mb-4">
+            <Link to="/" className="hover:text-white transition-colors">Insights</Link>
+            <ChevronRight size={12} />
+            <Link to={`/category/${post.category}`} className="hover:text-white transition-colors">{post.category}</Link>
+            <ChevronRight size={12} />
+            <span className="text-white/80 truncate max-w-[200px]">{title}</span>
+          </nav>
+        </div>
+
+        {/* Title overlay */}
+        <div className="absolute bottom-0 left-0 right-0 max-w-7xl mx-auto px-4 md:px-8 pb-8">
+          <div className="flex gap-2 mb-4">
+            <span className="px-3 py-1 bg-brand-blue text-white text-[10px] font-black tracking-widest uppercase rounded-full shadow-lg shadow-brand-blue/30">
+              {post.category}
+            </span>
+            {post.isFeatured && (
+              <span className="flex items-center gap-1 px-3 py-1 bg-amber-500/80 text-white text-[10px] font-black rounded-full">
+                <Sparkles size={9} fill="currentColor" /> Featured
+              </span>
             )}
-            <span className="font-medium text-slate-700 dark:text-gray-200">{post.author?.name || 'Skyverses Team'}</span>
           </div>
-          <span className="flex items-center gap-1"><Calendar size={12} /> {date}</span>
-          <span className="flex items-center gap-1"><Clock size={12} /> {post.readTime} {t('blog.min_read')}</span>
-          <span className="flex items-center gap-1"><Eye size={12} /> {post.viewCount.toLocaleString()} {t('blog.views')}</span>
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-white leading-[1.1] max-w-4xl mb-4">
+            {title}
+          </h1>
+          <p className="text-[15px] text-white/60 max-w-2xl line-clamp-2">{excerpt}</p>
         </div>
+      </div>
 
-        {/* Cover image */}
-        <div className="rounded-2xl overflow-hidden mb-8 shadow-lg shadow-black/[0.04]">
-          <img src={post.coverImage} alt={title} className="w-full h-auto max-h-[500px] object-cover" />
-        </div>
+      {/* ── Content area ──────────────────────── */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+        <div className="flex gap-12">
 
-        {/* Tags */}
-        {post.tags && post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-8">
-            {post.tags.map(tag => (
-              <Link key={tag} to={`/?q=${encodeURIComponent(tag)}`}
-                className="px-2.5 py-1 bg-slate-100 dark:bg-white/[0.04] text-slate-500 dark:text-gray-400 rounded-lg text-[11px] font-medium border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/30 hover:text-brand-blue transition-all">
-                <Tag size={10} className="inline mr-1" />{tag}
-              </Link>
-            ))}
-          </div>
-        )}
-
-        {/* Content */}
-        <div className="prose max-w-none text-[15px]" dangerouslySetInnerHTML={{ __html: content }} />
-
-        {/* Share bar */}
-        <div className="mt-10 pt-6 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
-          <button onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-[13px] font-medium text-slate-500 hover:text-brand-blue transition-colors">
-            <ArrowLeft size={14} /> {t('blog.back')}
-          </button>
-          <div className="flex items-center gap-2">
-            <button onClick={handleCopyLink}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all ${copied ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-slate-100 dark:bg-white/[0.04] text-slate-500 dark:text-gray-400 border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/20 hover:text-brand-blue'}`}>
-              {copied ? <Check size={13} /> : <Copy size={13} />}
-              {copied ? t('blog.copied') : t('blog.copy_link')}
-            </button>
-            <button onClick={handleShare}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-blue text-white rounded-lg text-[12px] font-semibold hover:brightness-110 active:scale-[0.98] transition-all shadow-sm shadow-brand-blue/20">
-              <Share2 size={13} /> {t('blog.share')}
-            </button>
-          </div>
-        </div>
-
-        {/* Author card */}
-        <div className="mt-8 p-6 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl flex items-center gap-4">
-          {post.author?.avatar ? (
-            <img src={post.author.avatar} alt={post.author.name} className="w-14 h-14 rounded-xl object-cover" />
-          ) : (
-            <div className="w-14 h-14 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue">
-              <User size={24} />
+          {/* ── Left: main article ────────────── */}
+          <article className="flex-1 min-w-0">
+            {/* Meta bar */}
+            <div className="flex flex-wrap items-center gap-4 pb-6 mb-8 border-b border-black/[0.06] dark:border-white/[0.06]">
+              {/* Author */}
+              <div className="flex items-center gap-2.5">
+                {post.author?.avatar ? (
+                  <img src={post.author.avatar} alt={post.author.name}
+                    className="w-10 h-10 rounded-full object-cover ring-2 ring-black/[0.06] dark:ring-white/[0.08]" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-brand-blue/10 flex items-center justify-center">
+                    <User size={16} className="text-brand-blue" />
+                  </div>
+                )}
+                <div>
+                  <p className="text-[13px] font-bold text-slate-800 dark:text-white">{post.author?.name || 'Skyverses Team'}</p>
+                  <p className="text-[11px] text-slate-400">{post.author?.role || 'Editor'}</p>
+                </div>
+              </div>
+              <div className="h-6 w-px bg-slate-200 dark:bg-white/[0.08] hidden sm:block" />
+              <span className="flex items-center gap-1.5 text-[12px] text-slate-500 dark:text-gray-400">
+                <Calendar size={13} /> {date}
+              </span>
+              <span className="flex items-center gap-1.5 text-[12px] text-slate-500 dark:text-gray-400">
+                <Clock size={13} /> {post.readTime} {t('blog.min_read')}
+              </span>
+              <span className="flex items-center gap-1.5 text-[12px] text-slate-500 dark:text-gray-400">
+                <Eye size={13} /> {post.viewCount.toLocaleString()} {t('blog.views')}
+              </span>
             </div>
-          )}
-          <div>
-            <p className="text-[14px] font-bold text-slate-800 dark:text-white">{post.author?.name || 'Skyverses Team'}</p>
-            <p className="text-[12px] text-slate-400 dark:text-gray-500">{post.author?.role || 'Editor'}</p>
-          </div>
-        </div>
-      </article>
 
-      {/* Related posts */}
+            {/* Mobile TOC toggle */}
+            {toc.length >= 2 && (
+              <div className="lg:hidden mb-6">
+                <button onClick={() => setTocOpen(!tocOpen)}
+                  className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl text-[12px] font-bold text-slate-700 dark:text-white">
+                  <span className="flex items-center gap-2"><List size={14} className="text-brand-blue" /> Table of Contents</span>
+                  <ChevronRight size={14} className={`text-slate-400 transition-transform ${tocOpen ? 'rotate-90' : ''}`} />
+                </button>
+                {tocOpen && (
+                  <div className="mt-2 bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-4">
+                    {toc.map(item => (
+                      <button key={item.id}
+                        onClick={() => { const el = document.getElementById(item.id); el?.scrollIntoView({ behavior: 'smooth', block: 'start' }); setTocOpen(false); }}
+                        style={{ paddingLeft: `${(item.level - 1) * 12}px` }}
+                        className="w-full text-left py-1.5 text-[12px] text-slate-500 hover:text-brand-blue transition-colors">
+                        {item.level > 1 && '› '}{item.text}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Tags */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-8">
+                {post.tags.map(tag => (
+                  <Link key={tag} to={`/?q=${encodeURIComponent(tag)}`}
+                    className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 dark:bg-white/[0.05] text-slate-500 dark:text-gray-400 rounded-full text-[11px] font-semibold border border-black/[0.05] dark:border-white/[0.05] hover:border-brand-blue/30 hover:text-brand-blue transition-all">
+                    <Tag size={10} />{tag}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Main content */}
+            <div
+              ref={contentRef}
+              className="prose max-w-none text-[15px] leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+
+            {/* ── Share bar ── */}
+            <div className="mt-12 pt-8 border-t border-black/[0.06] dark:border-white/[0.06]">
+              <p className="text-[12px] font-black text-slate-400 uppercase tracking-widest mb-4">Share this article</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button onClick={shareTwitter}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#1DA1F2]/10 text-[#1DA1F2] border border-[#1DA1F2]/20 hover:bg-[#1DA1F2] hover:text-white rounded-xl text-[12px] font-bold transition-all">
+                  <Twitter size={13} /> Twitter
+                </button>
+                <button onClick={shareFacebook}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#1877F2]/10 text-[#1877F2] border border-[#1877F2]/20 hover:bg-[#1877F2] hover:text-white rounded-xl text-[12px] font-bold transition-all">
+                  <Facebook size={13} /> Facebook
+                </button>
+                <button onClick={handleCopyLink}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-bold transition-all border ${copied
+                      ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                      : 'bg-slate-100 dark:bg-white/[0.04] text-slate-600 dark:text-gray-300 border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 hover:text-brand-blue'
+                    }`}>
+                  {copied ? <Check size={13} /> : <Copy size={13} />}
+                  {copied ? t('blog.copied') : t('blog.copy_link')}
+                </button>
+                <button onClick={handleShare}
+                  className="flex items-center gap-2 px-4 py-2 bg-brand-blue text-white rounded-xl text-[12px] font-bold hover:brightness-110 active:scale-[0.97] transition-all shadow-md shadow-brand-blue/20">
+                  <Share2 size={13} /> {t('blog.share')}
+                </button>
+              </div>
+            </div>
+
+            {/* ── Author card ── */}
+            <div className="mt-8 p-5 bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl flex items-center gap-4">
+              {post.author?.avatar ? (
+                <img src={post.author.avatar} alt={post.author.name}
+                  className="w-16 h-16 rounded-2xl object-cover shrink-0 ring-2 ring-black/[0.04] dark:ring-white/[0.05]" />
+              ) : (
+                <div className="w-16 h-16 rounded-2xl bg-brand-blue/10 flex items-center justify-center shrink-0">
+                  <User size={26} className="text-brand-blue" />
+                </div>
+              )}
+              <div>
+                <p className="text-[14px] font-bold text-slate-900 dark:text-white">{post.author?.name || 'Skyverses Team'}</p>
+                <p className="text-[12px] text-slate-400 mb-1">{post.author?.role || 'Editor'}</p>
+                <p className="text-[12px] text-slate-500 dark:text-gray-400">AI content creator at Skyverses Insights</p>
+              </div>
+            </div>
+
+            {/* ── Back nav ── */}
+            <div className="mt-8 flex items-center justify-between">
+              <button onClick={() => navigate(-1)}
+                className="flex items-center gap-2 text-[13px] font-semibold text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors">
+                <ArrowLeft size={15} /> {t('blog.back')}
+              </button>
+            </div>
+          </article>
+
+          {/* ── Right: TOC sidebar ──────────────── */}
+          <aside className="hidden lg:block w-[240px] xl:w-[280px] shrink-0">
+            <TableOfContents items={toc} activeId={activeHeading} />
+          </aside>
+        </div>
+      </div>
+
+      {/* ── Related posts ──────────────────────── */}
       {related.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 md:px-6 mt-16">
-          <div className="flex items-center gap-2 mb-6">
-            <Sparkles size={16} className="text-brand-blue" />
-            <h2 className="text-[16px] font-bold text-slate-800 dark:text-white">{t('blog.related')}</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {related.map(p => <PostCard key={p._id} post={p} />)}
+        <section className="max-w-7xl mx-auto px-4 md:px-8 pb-16">
+          <div className="pt-10 border-t border-black/[0.06] dark:border-white/[0.06]">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-1 h-6 bg-gradient-to-b from-brand-blue to-purple-500 rounded-full" />
+              <h2 className="text-[18px] font-black text-slate-900 dark:text-white">{t('blog.related')}</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {related.map(p => <PostCard key={p._id} post={p} size="normal" />)}
+            </div>
           </div>
         </section>
       )}
