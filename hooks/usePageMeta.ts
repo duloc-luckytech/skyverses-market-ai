@@ -10,7 +10,7 @@ interface PageMetaOptions {
   jsonLd?: Record<string, any>; // Optional extra JSON-LD
 }
 
-const DEFAULT_OG_IMAGE = 'https://framerusercontent.com/images/GyMtocumMA0iElsHB6CRyb2GQ.png';
+const DEFAULT_OG_IMAGE = 'https://ai.skyverses.com/assets/seo/seo-og-thumbnail-v2.png';
 const BASE_URL = 'https://ai.skyverses.com';
 
 /**
