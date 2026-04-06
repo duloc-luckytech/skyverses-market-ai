@@ -6,6 +6,7 @@ import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
 import { SearchProvider } from './context/SearchContext';
 import LoadingScreen from './components/LoadingScreen';
+import HomepageSkeleton from './components/HomepageSkeleton';
 import ErrorBoundary from './components/ErrorBoundary';
 import Layout from './components/Layout';
 import { ToastProvider } from './context/ToastContext';
@@ -193,7 +194,7 @@ const App: React.FC = () => {
                   <Layout>
                     <Suspense fallback={<PageLoader />}>
                     <Routes>
-                      <Route path="/" element={<MarketPage />} />
+                      <Route path="/" element={<Suspense fallback={<HomepageSkeleton />}><MarketPage /></Suspense>} />
                       <Route path="/category/:id" element={<CategoryPage />} />
                       <Route path="/explorer" element={<ExplorerPage />} />
                       <Route path="/markets" element={<MarketsPage />} />
