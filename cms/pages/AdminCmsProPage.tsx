@@ -38,8 +38,9 @@ import { ApiClientsTab } from '../components/admin-pro/ApiClientsTab';
 import { SolutionDrawer } from '../components/admin-pro/solution-drawer/SolutionDrawer';
 import { SubmissionsTab } from '../components/admin-pro/SubmissionsTab';
 import { AdminDepositTab } from '../components/admin-pro/AdminDepositTab';
+import { BlogTab } from '../components/admin-pro/BlogTab';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG';
 
 const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
   { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart3 size={16} />, group: 'MAIN' },
@@ -58,6 +59,7 @@ const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; gro
   { id: 'FXFLOW', label: 'FXFlow Engine', icon: <Zap size={16} />, group: 'SYSTEM' },
   { id: 'API_CLIENTS', label: 'API Clients', icon: <Key size={16} />, group: 'SYSTEM' },
   { id: 'PRODUCTS', label: 'Sản phẩm', icon: <Package size={16} />, group: 'MARKET' },
+  { id: 'BLOG', label: 'Blog', icon: <Globe size={16} />, group: 'CONTENT' },
 ];
 
 const GROUP_LABELS: Record<string, string> = {
@@ -314,6 +316,7 @@ const AdminCmsProPage = () => {
             {activeTab === 'PRODUCTS' && <ProductsTab key="products" />}
             {activeTab === 'SUBMISSIONS' && <SubmissionsTab key="submissions" />}
             {activeTab === 'ADMIN_DEPOSIT' && <AdminDepositTab key="admin_deposit" />}
+            {activeTab === 'BLOG' && <BlogTab key="blog" />}
             {activeTab === 'CLOUD' && (
               <NodeRegistryTab
                 key={activeTab}

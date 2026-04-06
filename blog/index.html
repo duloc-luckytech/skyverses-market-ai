@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skyverses Blog — AI Insights, Tutorials & News</title>
+    <meta name="description" content="Latest insights, tutorials, and news about AI tools, creative workflows, and the Skyverses ecosystem. Learn how to leverage AI for video, image, voice, and automation." />
+    <meta name="keywords" content="Skyverses blog, AI tutorials, AI tools news, creative AI, video AI, image generation, voice AI, automation" />
+    <link rel="icon" type="image/png" href="https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Skyverses Blog — AI Insights & Tutorials" />
+    <meta property="og:description" content="Latest insights, tutorials, and news about AI tools and creative workflows." />
+    <meta property="og:image" content="https://ai.skyverses.com/assets/seo/seo-og-thumbnail-v2.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Skyverses Blog" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Skyverses Blog — AI Insights & Tutorials" />
+    <meta name="twitter:description" content="Latest insights, tutorials, and news about AI tools and creative workflows." />
+    <meta name="twitter:image" content="https://ai.skyverses.com/assets/seo/seo-og-thumbnail-v2.png" />
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "Skyverses Blog",
+      "description": "AI Insights, Tutorials & News from Skyverses",
+      "url": "https://blog.skyverses.com",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Skyverses",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png"
+        }
+      }
+    }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: { blue: '#0090ff' }
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { font-family: 'Inter', sans-serif; background: #fafafa; color: #0f172a; }
+      .dark body { background: #0a0a0c; color: #e2e8f0; }
+      ::-webkit-scrollbar { width: 4px; height: 4px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+      .dark ::-webkit-scrollbar-thumb { background: #334155; }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      /* Prose styles for blog content */
+      .prose { line-height: 1.8; color: #334155; }
+      .dark .prose { color: #cbd5e1; }
+      .prose h1 { font-size: 2rem; font-weight: 800; margin: 2rem 0 1rem; color: #0f172a; }
+      .dark .prose h1 { color: #f1f5f9; }
+      .prose h2 { font-size: 1.5rem; font-weight: 700; margin: 1.75rem 0 0.75rem; color: #0f172a; }
+      .dark .prose h2 { color: #f1f5f9; }
+      .prose h3 { font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: #1e293b; }
+      .dark .prose h3 { color: #e2e8f0; }
+      .prose p { margin: 0.75rem 0; }
+      .prose ul, .prose ol { margin: 0.75rem 0; padding-left: 1.5rem; }
+      .prose li { margin: 0.25rem 0; }
+      .prose blockquote { border-left: 3px solid #0090ff; padding: 0.75rem 1rem; margin: 1rem 0; background: rgba(0,144,255,0.04); border-radius: 0 0.5rem 0.5rem 0; font-style: italic; }
+      .dark .prose blockquote { background: rgba(0,144,255,0.08); }
+      .prose code { background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 0.25rem; font-size: 0.9em; }
+      .dark .prose code { background: rgba(255,255,255,0.06); }
+      .prose pre { background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.75rem; overflow-x: auto; margin: 1rem 0; }
+      .prose pre code { background: none; padding: 0; }
+      .prose img { border-radius: 0.75rem; margin: 1.5rem 0; max-width: 100%; }
+      .prose a { color: #0090ff; text-decoration: underline; text-underline-offset: 2px; }
+      .prose a:hover { color: #006fcc; }
+      .prose hr { border: none; border-top: 1px solid #e2e8f0; margin: 2rem 0; }
+      .dark .prose hr { border-color: rgba(255,255,255,0.06); }
+      .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+      .prose th, .prose td { border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; }
+      .dark .prose th, .dark .prose td { border-color: rgba(255,255,255,0.06); }
+      .prose th { background: #f1f5f9; font-weight: 600; }
+      .dark .prose th { background: rgba(255,255,255,0.04); }
+    </style>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.3",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react-router-dom": "https://esm.sh/react-router-dom@^7.11.0",
+        "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+        "framer-motion": "https://esm.sh/framer-motion@^12.23.26",
+        "react-dom": "https://esm.sh/react-dom@^19.2.4"
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

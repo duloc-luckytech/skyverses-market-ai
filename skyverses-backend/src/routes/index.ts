@@ -28,6 +28,7 @@ import runninghubRoutes from "./runninghub";
 import deploybRoutes from "./deployLogs";
 import apiClientRoutes from "./apiClient";
 import productSubmissionRoutes from "./productSubmission";
+import blogRoutes from "./blog";
 
 const router = Router();
 
@@ -54,6 +55,7 @@ router.use("/grok", grokRoutes);
 // ─── Content & Media ───
 router.use("/explorer", explorerMediaRoutes);
 router.use("/market", marketRoutes);
+router.use("/blog", blogRoutes);
 router.use("/runninghub", runninghubRoutes);
 router.use("/category", categoryRoutes);
 router.use(uploadMediaRoute);

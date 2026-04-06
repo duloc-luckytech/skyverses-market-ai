@@ -66,6 +66,29 @@ module.exports = {
       error_file: './logs/api-error.log',
       out_file: './logs/api-out.log',
       merge_logs: true,
+    },
+
+    // ── 4. Blog (Vite SPA) ──
+    {
+      name: 'skyverses-blog',
+      cwd: './blog',
+      script: 'npx',
+      args: 'vite preview --port 5303 --host',
+      env: {
+        NODE_ENV: 'production',
+        PORT: 5303
+      },
+      instances: 1,
+      exec_mode: 'fork',
+      autorestart: true,
+      max_restarts: 10,
+      restart_delay: 3000,
+      watch: false,
+      max_memory_restart: '500M',
+      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+      error_file: './logs/blog-error.log',
+      out_file: './logs/blog-out.log',
+      merge_logs: true,
     }
   ]
 };

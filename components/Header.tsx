@@ -7,7 +7,7 @@ import {
   Zap, ArrowRight, BarChart3,
   ChevronDown, Bookmark, Loader2, Sparkles,
   Database, HelpCircle, Users, Gift, Plus,
-  Compass, Box, Search, Command, Layers
+  Compass, Box, Search, Command, Layers, FileText
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
@@ -188,6 +188,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   )}
                 </AnimatePresence>
               </div>
+
+              {/* Blog */}
+              <a href="/blog/" target="_blank" rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all flex items-center gap-1 text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
+                <FileText size={13} /> Blog
+              </a>
 
               {/* Other nav links */}
               {navLinks.slice(1).map((link) => (
@@ -436,6 +442,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                     </Link>
                   </div>
                 </div>
+
+                <a href="/blog/" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-between px-3 py-3 rounded-xl transition-all text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
+                  <span className="text-sm font-bold flex items-center gap-2"><FileText size={15} /> Blog</span>
+                  <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
+                </a>
 
                 {navLinks.slice(1).map((link) => (
                   <Link key={link.name} to={link.path} onClick={() => setIsOpen(false)}
