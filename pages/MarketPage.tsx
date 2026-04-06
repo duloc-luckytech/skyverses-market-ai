@@ -373,67 +373,100 @@ const MarketPage = () => {
                 )}
               </div>
 
-              {/* ═══ DESKTOP: Vertical Scrolling Gallery ═══ */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="relative h-[420px] md:h-[520px] lg:h-[580px] overflow-hidden rounded-3xl hidden md:block"
-              >
+              {/* ═══ DESKTOP: Trending Product Cards Grid ═══ */}
+              <div className="relative hidden md:block">
+                {/* Decorative glow behind cards */}
+                <div className="absolute -inset-8 bg-gradient-to-br from-brand-blue/[0.03] via-transparent to-purple-500/[0.03] rounded-3xl blur-2xl pointer-events-none" />
 
-                {/* Fade masks top & bottom */}
-                <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-[#fcfcfd] dark:from-[#030304] to-transparent z-20 pointer-events-none" />
-                <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#fcfcfd] dark:from-[#030304] to-transparent z-20 pointer-events-none" />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="relative"
+                >
+                  {/* Header with animated accent */}
+                  <div className="flex items-center gap-2.5 mb-5">
+                    <motion.div
+                      initial={{ scale: 0, rotate: -90 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ delay: 0.5, type: 'spring', stiffness: 300, damping: 15 }}
+                      className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/20"
+                    >
+                      <Zap size={14} className="text-white" fill="currentColor" />
+                    </motion.div>
+                    <motion.span
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.6, duration: 0.4 }}
+                      className="text-[10px] font-black uppercase tracking-[0.25em] text-orange-500"
+                    >Trending Products</motion.span>
+                    <motion.div
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ delay: 0.7, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                      className="flex-1 h-px bg-gradient-to-r from-orange-500/25 via-orange-500/10 to-transparent ml-2 origin-left"
+                    />
+                  </div>
 
-                {/* Two-column vertical marquee */}
-                <div className="relative z-10 grid grid-cols-2 gap-3 h-full">
-                  {/* Column 1 — scrolls UP */}
-                  <div className="overflow-hidden relative">
-                    <div className="animate-[marqueeUp_25s_linear_infinite] flex flex-col gap-3">
-                      {(() => {
-                        const col1Images = [
-                          'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/955c04bf-959f-4832-843a-dfbaad2d82a3_min.webp',
-                          'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/596c139a-7cd8-4c10-9305-bad2f9b6ab1f_min.webp',
-                          'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/640d8657-22e1-4ec7-adcf-d2b99f4e25e0_min.webp',
-                        ];
-                        return [...col1Images, ...col1Images].map((url, i) => (
-                          <div key={`up-${i}`} className="rounded-2xl overflow-hidden group cursor-pointer relative flex-shrink-0">
-                            <img src={url} alt="Tác phẩm AI được tạo bởi Skyverses" loading={i < 3 ? 'eager' : 'lazy'} fetchPriority={i < 2 ? 'high' : 'auto'} className="w-full h-[180px] md:h-[220px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          </div>
-                        ));
-                      })()}
+                  {featuredSolutions.length === 0 ? (
+                    <div className="grid grid-cols-2 gap-4">
+                      {[1,2,3,4].map(i => (
+                        <div key={i} className="h-[220px] rounded-2xl bg-slate-100 dark:bg-white/[0.03] animate-pulse" />
+                      ))}
                     </div>
-                  </div>
-
-                  {/* Column 2 — scrolls DOWN */}
-                  <div className="overflow-hidden relative">
-                    <div className="animate-[marqueeDown_30s_linear_infinite] flex flex-col gap-3">
-                      {(() => {
-                        const col2Images = [
-                          'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/6571fcff-b67e-4537-98fe-0301d9051c57_min.webp',
-                          'https://d8j0ntlcm91z4.cloudfront.net/user_2wktMsxjtKgSKtgICToGYmGGjfw/1354a1b1-5ef3-46d7-8cb2-17268db2d7f7_min.webp',
-                          'https://d8j0ntlcm91z4.cloudfront.net/user_2vV68Ukpv101mL5Dprsk6JvfLMI/82e86e0d-db5a-4bcf-8f7b-142ff21f8442_min.webp',
-                        ];
-                        return [...col2Images, ...col2Images].map((url, i) => (
-                          <div key={`down-${i}`} className="rounded-2xl overflow-hidden group cursor-pointer relative flex-shrink-0">
-                            <img src={url} alt="Ảnh AI sáng tạo từ Skyverses" loading={i < 3 ? 'eager' : 'lazy'} fetchPriority={i < 2 ? 'high' : 'auto'} className="w-full h-[200px] md:h-[240px] object-cover group-hover:scale-105 transition-transform duration-500 ease-out" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3 lg:gap-4">
+                      {featuredSolutions.slice(0, 4).map((sol, idx) => (
+                        <motion.div
+                          key={sol._id || sol.id}
+                          initial={{ opacity: 0, y: 40, scale: 0.92, filter: 'blur(8px)' }}
+                          animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                          transition={{
+                            duration: 0.7,
+                            delay: 0.5 + idx * 0.12,
+                            ease: [0.22, 1, 0.36, 1]
+                          }}
+                          whileHover={{ y: -6, transition: { duration: 0.25 } }}
+                          className="relative group"
+                        >
+                          {/* Hover glow effect */}
+                          <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-brand-blue/0 via-purple-500/0 to-pink-500/0 group-hover:from-brand-blue/20 group-hover:via-purple-500/10 group-hover:to-pink-500/20 transition-all duration-500 opacity-0 group-hover:opacity-100 blur-sm" />
+                          <div className="relative">
+                            <SolutionCard
+                              sol={sol}
+                              idx={idx}
+                              lang={lang}
+                              isLiked={likedItems.includes(sol._id || sol.id)}
+                              isFavorited={favorites.includes(sol.id)}
+                              onToggleFavorite={toggleFavorite}
+                              onToggleLike={toggleLike}
+                              onClick={handleNavigate}
+                              onHover={handlePrefetchOnHover}
+                              stats={getFakeStats(sol._id || sol.id)}
+                            />
                           </div>
-                        ));
-                      })()}
+                        </motion.div>
+                      ))}
                     </div>
-                  </div>
-                </div>
+                  )}
 
-                {/* Floating badge */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-black/5 dark:border-white/10 rounded-full shadow-xl">
-                    <Sparkles size={12} className="text-brand-blue" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-700 dark:text-white/80">Powered by 50+ AI Models</span>
-                  </div>
-                </div>
-              </motion.div>
+                  {/* View all — animated entrance */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.1, duration: 0.5 }}
+                    className="flex justify-end mt-4"
+                  >
+                    <button
+                      onClick={() => navigate('/markets')}
+                      className="group inline-flex items-center gap-2 px-5 py-2.5 text-[11px] font-bold text-slate-500 dark:text-gray-400 hover:text-brand-blue bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 hover:shadow-lg hover:shadow-brand-blue/5 rounded-xl transition-all duration-300"
+                    >
+                      Xem tất cả sản phẩm
+                      <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform duration-300" />
+                    </button>
+                  </motion.div>
+                </motion.div>
+              </div>
             </div>
           </section>
         )}
