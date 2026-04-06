@@ -43,12 +43,12 @@ const Footer: React.FC = () => {
                   <Sparkles size={22} className="text-brand-blue" />
                 </div>
                 <div>
-                  <h3 className="text-lg md:text-xl font-black text-white tracking-tight">Sẵn sàng sáng tạo với AI?</h3>
-                  <p className="text-[12px] text-white/40 mt-0.5">Đăng ký miễn phí và nhận 50 Credits trải nghiệm ngay hôm nay.</p>
+                  <h3 className="text-lg md:text-xl font-black text-white tracking-tight">{t('footer.cta_title')}</h3>
+                  <p className="text-[12px] text-white/40 mt-0.5">{t('footer.cta_desc')}</p>
                 </div>
               </div>
               <Link to="/login" className="group shrink-0 inline-flex items-center gap-3 bg-white text-black px-7 py-3.5 rounded-xl text-sm font-bold hover:shadow-2xl hover:shadow-white/10 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300">
-                Bắt đầu miễn phí
+                {t('footer.cta_btn')}
                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -92,12 +92,12 @@ const Footer: React.FC = () => {
           {/* Compact links — 2 columns */}
           <div className="grid grid-cols-2 gap-x-6 gap-y-3">
             {[
-              { label: 'Sản phẩm AI', to: '/apps' },
+              { label: t('footer.ai_products'), to: '/apps' },
               { label: 'Credits & Pricing', to: '/credits' },
               { label: 'Explorer', to: '/explorer' },
               { label: 'Referral', to: '/referral' },
               { label: 'Terms & Policy', to: '/policy' },
-              { label: 'Liên hệ', href: 'https://skyverses.com/contact' },
+              { label: t('footer.contact_us'), href: 'https://skyverses.com/contact' },
             ].map(link => (
               'to' in link ? (
                 <Link key={link.label} to={link.to!} className="text-[11px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors">
@@ -114,7 +114,7 @@ const Footer: React.FC = () => {
           {/* Mobile CTA */}
           <Link to="/login" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-slate-900 dark:bg-white/5 border border-black/5 dark:border-white/10 text-white text-xs font-bold">
             <Sparkles size={12} className="text-brand-blue" />
-            Bắt đầu miễn phí — Nhận 50 Credits
+            {t('footer.mobile_cta')}
           </Link>
 
           {/* Copyright */}
@@ -162,7 +162,7 @@ const Footer: React.FC = () => {
             {/* Links Columns */}
             <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8 lg:gap-10">
               <div className="space-y-5">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white">Sản phẩm</h4>
+                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white">{t('footer.products')}</h4>
                 <ul className="space-y-3">
                   {[
                     { label: 'AI Video Studio', to: '/product/ai-video-generator' },
@@ -215,7 +215,7 @@ const Footer: React.FC = () => {
                   ))}
                 </ul>
                 <div className="pt-2 space-y-2">
-                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-600">Hỗ trợ kỹ thuật</p>
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-600">{t('footer.tech_support')}</p>
                   <a href="https://t.me/nhomhotrokythuat" target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#2AABEE]/[0.06] border border-[#2AABEE]/15 hover:border-[#2AABEE]/40 hover:bg-[#2AABEE]/10 transition-all group">
                     <Send size={14} className="text-[#2AABEE] group-hover:scale-110 transition-transform" />

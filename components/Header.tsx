@@ -207,7 +207,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05] rounded-lg hover:border-brand-blue/20 transition-all group mr-2"
             >
               <Search size={13} className="text-slate-300 dark:text-gray-600 group-hover:text-brand-blue transition-colors" />
-              <span className="text-[11px] text-slate-300 dark:text-gray-600 w-16">Search...</span>
+              <span className="text-[11px] text-slate-300 dark:text-gray-600 w-16">{t('header.search')}</span>
               <kbd className="text-[9px] font-medium text-slate-300 dark:text-gray-600 bg-white dark:bg-white/5 px-1 py-0.5 rounded border border-black/[0.04] dark:border-white/[0.06] flex items-center gap-0.5">
                 <Command size={8} />K
               </kbd>
@@ -231,7 +231,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                         className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-lg text-xs font-bold hover:bg-amber-500/15 transition-all"
                       >
                         {isClaimingDaily ? <Loader2 size={13} className="animate-spin" /> : <Gift size={13} />}
-                        <span className="text-[11px]">Quà</span>
+                        <span className="text-[11px]">{t('header.daily_gift')}</span>
                       </motion.button>
                     )}
                   </AnimatePresence>
@@ -341,7 +341,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                               onClick={() => { setIsPurchaseModalOpen(true); setShowUserMenu(false); }} 
                               className="text-[10px] font-bold text-brand-blue hover:underline flex items-center gap-0.5"
                             >
-                              <Plus size={10} /> Nạp
+                              <Plus size={10} /> {t('header.topup')}
                             </button>
                           </div>
                         </div>

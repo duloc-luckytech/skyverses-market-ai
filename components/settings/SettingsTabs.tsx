@@ -80,7 +80,7 @@ export const ProfileTab = ({ logic }: any) => {
 
   const handleSave = async () => {
     await logic.handleSaveProfile();
-    showToast('Đã lưu thông tin!', 'success');
+    showToast(t('settings.profile.saved'), 'success');
   };
 
   const setField = (key: string, val: string) => {
@@ -118,19 +118,19 @@ export const ProfileTab = ({ logic }: any) => {
         <InputGroup label={t('settings.profile.email')} value={logic.user?.email || ''} disabled />
         <InputGroup label="Invite Code" value={logic.user?.inviteCode || '—'} disabled />
         <InputGroup
-          label="Họ"
+          label={t('settings.profile.first_name')}
           value={logic.profileFields.firstName ?? logic.user?.firstName ?? ''}
           onChange={(e: any) => setField('firstName', e.target.value)}
-          placeholder="Nhập họ"
+          placeholder={t('settings.profile.first_name_ph')}
         />
         <InputGroup
-          label="Tên"
+          label={t('settings.profile.last_name')}
           value={logic.profileFields.lastName ?? logic.user?.lastName ?? ''}
           onChange={(e: any) => setField('lastName', e.target.value)}
-          placeholder="Nhập tên"
+          placeholder={t('settings.profile.last_name_ph')}
         />
         <InputGroup
-          label="Số điện thoại"
+          label={t('settings.profile.phone')}
           value={logic.profileFields.phone ?? logic.user?.phone ?? ''}
           onChange={(e: any) => setField('phone', e.target.value)}
           placeholder="0912 xxx xxx"
@@ -154,7 +154,7 @@ export const ProfileTab = ({ logic }: any) => {
         <div className="flex items-center gap-3">
           {theme === 'dark' ? <Moon size={16} className="text-purple-400" /> : <Sun size={16} className="text-amber-500" />}
           <div>
-            <p className="text-sm font-semibold text-slate-800 dark:text-white">Giao diện</p>
+            <p className="text-sm font-semibold text-slate-800 dark:text-white">{t('settings.profile.theme')}</p>
             <p className="text-[10px] text-slate-400">{theme === 'dark' ? 'Dark mode' : 'Light mode'}</p>
           </div>
         </div>
@@ -209,12 +209,12 @@ export const ComputeTab = ({ logic }: any) => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <StatBox label="Plan" val={logic.user?.plan || 'Free'} icon={<Shield size={14} />} color="text-purple-500" />
           <StatBox
-            label="Video đã dùng"
+            label={t('settings.compute.video_used')}
             val={maxVideo > 0 ? `${logic.user?.videoUsed || 0} / ${maxVideo}` : `${logic.user?.videoUsed || 0}`}
             icon={<Zap size={14} />}
           />
           <StatBox
-            label="Hết hạn"
+            label={t('settings.compute.expires')}
             val={logic.user?.planExpiresAt ? new Date(logic.user.planExpiresAt).toLocaleDateString('vi-VN') : '—'}
             icon={<Calendar size={14} />}
             color="text-amber-500"
@@ -250,7 +250,7 @@ export const ModelKeysTab = ({ logic }: any) => {
 
   const handleSave = async () => {
     await logic.handleSaveKeys();
-    showToast('Đã lưu API Keys!', 'success');
+    showToast(t('settings.keys.saved'), 'success');
   };
 
   return (
@@ -299,7 +299,7 @@ export const SecurityTab = ({ logic }: any) => {
     <motion.div key="security" {...tabAnimation} className="space-y-4">
       {/* Account info */}
       <div className="p-5 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl space-y-3">
-        <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Thông tin tài khoản</h4>
+        <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('settings.security.account_info')}</h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="flex items-center gap-3 p-3 bg-white dark:bg-white/[0.02] rounded-lg border border-black/[0.03] dark:border-white/[0.03]">
             <Globe size={14} className="text-brand-blue" />
@@ -311,7 +311,7 @@ export const SecurityTab = ({ logic }: any) => {
           <div className="flex items-center gap-3 p-3 bg-white dark:bg-white/[0.02] rounded-lg border border-black/[0.03] dark:border-white/[0.03]">
             <Clock size={14} className="text-emerald-500" />
             <div>
-              <p className="text-[10px] text-slate-400 font-medium">Ngày tham gia</p>
+              <p className="text-[10px] text-slate-400 font-medium">{t('settings.security.join_date')}</p>
               <p className="text-xs font-semibold text-slate-700 dark:text-white">
                 {logic.user?.createdAt ? new Date(logic.user.createdAt).toLocaleDateString('vi-VN') : '—'}
               </p>
@@ -320,9 +320,9 @@ export const SecurityTab = ({ logic }: any) => {
           <div className="flex items-center gap-3 p-3 bg-white dark:bg-white/[0.02] rounded-lg border border-black/[0.03] dark:border-white/[0.03]">
             <Activity size={14} className="text-amber-500" />
             <div>
-              <p className="text-[10px] text-slate-400 font-medium">Hoạt động lần cuối</p>
+              <p className="text-[10px] text-slate-400 font-medium">{t('settings.security.last_active')}</p>
               <p className="text-xs font-semibold text-slate-700 dark:text-white">
-                {logic.user?.lastActiveAt ? new Date(logic.user.lastActiveAt).toLocaleDateString('vi-VN') : 'Hôm nay'}
+                {logic.user?.lastActiveAt ? new Date(logic.user.lastActiveAt).toLocaleDateString('vi-VN') : t('settings.security.today')}
               </p>
             </div>
           </div>
@@ -369,9 +369,9 @@ export const SecurityTab = ({ logic }: any) => {
 
       {/* Danger zone */}
       <div className="p-5 bg-red-500/[0.03] border border-red-500/10 rounded-xl space-y-3 mt-2">
-        <h4 className="text-xs font-bold text-red-500 uppercase tracking-wider">Danger Zone</h4>
+        <h4 className="text-xs font-bold text-red-500 uppercase tracking-wider">{t('settings.security.danger_zone')}</h4>
         <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-          Để xóa tài khoản vĩnh viễn, vui lòng liên hệ support@skyverses.io. Toàn bộ dữ liệu sẽ không thể khôi phục.
+          {t('settings.security.delete_desc')}
         </p>
       </div>
     </motion.div>
@@ -400,13 +400,13 @@ export const BillingTab = ({ logic }: any) => {
             <p className="text-xs text-slate-400 dark:text-gray-500">
               {logic.user?.planExpiresAt
                 ? `${t('settings.billing.expires')} ${new Date(logic.user.planExpiresAt).toLocaleDateString('vi-VN')}`
-                : 'Gói miễn phí — không giới hạn thời gian'
+                : t('settings.compute.free_plan')
               }
             </p>
           </div>
         </div>
         <Link to="/credits" className="bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl text-xs font-bold hover:bg-brand-blue dark:hover:bg-brand-blue hover:text-white transition-all">
-          Nâng cấp
+          {t('settings.billing.upgrade')}
         </Link>
       </div>
 
@@ -414,7 +414,7 @@ export const BillingTab = ({ logic }: any) => {
       {logic.purchaseHistory.length > 0 && (
         <div>
           <h4 className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Coins size={14} /> Lịch sử mua gói
+            <Coins size={14} /> {t('settings.billing.purchase_history')}
           </h4>
           <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
             <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
@@ -444,13 +444,13 @@ export const BillingTab = ({ logic }: any) => {
       {/* Credit transaction history */}
       <div>
         <h4 className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-          <HistoryIcon size={14} /> Lịch sử giao dịch Credits
+          <HistoryIcon size={14} /> {t('settings.billing.credit_history')}
         </h4>
 
         {logic.creditHistoryLoading ? (
           <div className="flex items-center justify-center py-12 gap-3">
             <Loader2 className="animate-spin text-brand-blue" size={18} />
-            <span className="text-xs text-slate-400">Đang tải...</span>
+            <span className="text-xs text-slate-400">{t('settings.billing.loading')}</span>
           </div>
         ) : logic.creditHistory.length > 0 ? (
           <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
@@ -487,7 +487,7 @@ export const BillingTab = ({ logic }: any) => {
         ) : (
           <div className="py-12 text-center">
             <HistoryIcon size={32} className="mx-auto text-slate-300 dark:text-slate-600 mb-3" />
-            <p className="text-xs text-slate-400">Chưa có giao dịch nào</p>
+            <p className="text-xs text-slate-400">{t('settings.billing.no_transactions')}</p>
           </div>
         )}
       </div>
@@ -507,7 +507,7 @@ export const ReferralsTab = ({ logic }: any) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
-    showToast('Đã sao chép link!', 'success');
+    showToast(t('settings.referrals.link_copied'), 'success');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -522,7 +522,7 @@ export const ReferralsTab = ({ logic }: any) => {
           </h4>
         </div>
         <div className="p-5 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Mã giới thiệu</p>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('settings.referrals.code')}</p>
           <h4 className="text-3xl font-black text-purple-500 tracking-tight font-mono">
             {referralCode || '—'}
           </h4>
@@ -553,8 +553,8 @@ export const ReferralsTab = ({ logic }: any) => {
             <ExternalLink size={16} />
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-800 dark:text-white">Xem chi tiết chương trình Referral</p>
-            <p className="text-[10px] text-slate-400">Bao gồm hoa hồng 5% — coming soon</p>
+            <p className="text-sm font-semibold text-slate-800 dark:text-white">{t('settings.referrals.view_program')}</p>
+            <p className="text-[10px] text-slate-400">{t('settings.referrals.commission_note')}</p>
           </div>
         </div>
         <ArrowRight size={14} className="text-slate-400 group-hover:text-brand-blue group-hover:translate-x-1 transition-all" />
@@ -563,13 +563,13 @@ export const ReferralsTab = ({ logic }: any) => {
       {/* Friends list from API */}
       <div>
         <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-          <Users size={14} /> Danh sách bạn bè ({logic.referralTotal})
+          <Users size={14} /> {t('settings.referrals.friends_list')} ({logic.referralTotal})
         </h4>
 
         {logic.referralLoading ? (
           <div className="flex items-center justify-center py-12 gap-3">
             <Loader2 className="animate-spin text-brand-blue" size={18} />
-            <span className="text-xs text-slate-400">Đang tải...</span>
+            <span className="text-xs text-slate-400">{t('settings.referrals.loading')}</span>
           </div>
         ) : logic.referralFriends.length > 0 ? (
           <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
@@ -585,7 +585,7 @@ export const ReferralsTab = ({ logic }: any) => {
                       </div>
                     )}
                     <div>
-                      <p className="font-semibold text-slate-800 dark:text-white">{f.name || 'Người dùng'}</p>
+                      <p className="font-semibold text-slate-800 dark:text-white">{f.name || t('settings.referrals.user')}</p>
                       <p className="text-[10px] text-slate-400">{f.email}</p>
                     </div>
                   </div>
@@ -604,8 +604,8 @@ export const ReferralsTab = ({ logic }: any) => {
         ) : (
           <div className="py-12 text-center">
             <Users size={32} className="mx-auto text-slate-300 dark:text-slate-600 mb-3" />
-            <p className="text-xs text-slate-400">Chưa có bạn bè nào</p>
-            <p className="text-[10px] text-slate-400 mt-1">Chia sẻ link giới thiệu để bắt đầu!</p>
+            <p className="text-xs text-slate-400">{t('settings.referrals.no_friends')}</p>
+            <p className="text-[10px] text-slate-400 mt-1">{t('settings.referrals.share_to_start')}</p>
           </div>
         )}
       </div>
@@ -641,10 +641,9 @@ export const CloudStorageTab = () => {
         <div className="flex items-start gap-3">
           <ShieldCheck className="text-emerald-500 shrink-0 mt-0.5" size={18} />
           <div>
-            <p className="text-xs font-bold text-slate-700 dark:text-gray-300 mb-0.5">Lưu trữ tự động</p>
+            <p className="text-xs font-bold text-slate-700 dark:text-gray-300 mb-0.5">{t('settings.cloud.auto_save')}</p>
             <p className="text-[11px] text-slate-400 dark:text-gray-500 leading-relaxed">
-              Tất cả hình ảnh và video được lưu tự động trên cloud.
-              Truy cập "Thư viện" để quản lý và tải xuống bất cứ lúc nào.
+              {t('settings.cloud.auto_save_desc')}
             </p>
           </div>
         </div>
@@ -657,8 +656,8 @@ export const CloudStorageTab = () => {
             <Cloud size={16} />
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-800 dark:text-white">Quản lý thư viện</p>
-            <p className="text-[10px] text-slate-400">Xem, tải xuống, xóa hình ảnh & video</p>
+            <p className="text-sm font-semibold text-slate-800 dark:text-white">{t('settings.cloud.manage')}</p>
+            <p className="text-[10px] text-slate-400">{t('settings.cloud.manage_desc')}</p>
           </div>
         </div>
         <ArrowRight size={14} className="text-slate-400 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
