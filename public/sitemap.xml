@@ -36,6 +36,9 @@
   <url><loc>https://ai.skyverses.com/product/storyboard-studio</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://ai.skyverses.com/product/captcha-veo3</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
 
+  <!-- ═══ Product Pages — Sky Partners ═══ -->
+  <url><loc>https://ai.skyverses.com/product/fibus-video-studio</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+
   <!-- ═══ Product Pages — Audio/Voice AI ═══ -->
   <url><loc>https://ai.skyverses.com/product/text-to-speech</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://ai.skyverses.com/product/music-generator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
