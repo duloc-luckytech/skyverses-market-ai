@@ -133,7 +133,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
       <nav aria-label="Main navigation" className={`fixed w-full z-[150] top-0 transition-all duration-300 ${
         scrolled 
-          ? 'h-14 bg-white/90 dark:bg-[#0a0a0c]/90 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.04]' 
+          ? 'h-14 bg-white/95 dark:bg-[#0a0a0c]/95 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.04] shadow-sm shadow-black/[0.03] dark:shadow-black/20' 
           : 'h-16 bg-white/50 dark:bg-transparent backdrop-blur-sm'
       }`}>
         <div className="max-w-[1440px] mx-auto px-4 lg:px-8 h-full">
