@@ -508,6 +508,14 @@ const MarketsPage: React.FC = () => {
     });
     if (sortBy === 'name') filtered.sort((a, b) => (a.name[currentLang] || '').localeCompare(b.name[currentLang] || ''));
     else if (sortBy === 'newest') filtered.reverse();
+    // Sky Partners always at the end when viewing ALL (not when specifically filtered)
+    if (activeCategory === 'ALL') {
+      filtered.sort((a, b) => {
+        const aIsPartner = a.tags?.includes('Sky Partners') ? 1 : 0;
+        const bIsPartner = b.tags?.includes('Sky Partners') ? 1 : 0;
+        return aIsPartner - bIsPartner;
+      });
+    }
     return filtered;
   }, [solutions, search, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, currentLang]);
 
