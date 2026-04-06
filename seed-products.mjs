@@ -1,5 +1,5 @@
 const API = 'https://api.skyverses.com/market';
-const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWM4ZDhjYWQ4MWZhNWRlN2JkMTA2MTYiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQHNreXZlcnNlcy5jb20iLCJpYXQiOjE3NzUzODAyMTQsImV4cCI6MTc3NTk4NTAxNH0.mzhv44q4dVTdo-Zb3nCfhyrTA9BWhM50tleu5MyEoCM';
+const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWM4ZDhjYWQ4MWZhNWRlN2JkMTA2MTYiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQHNreXZlcnNlcy5jb20iLCJpYXQiOjE3NzU0OTIzOTQsImV4cCI6MTc3NjA5NzE5NH0.3c7nZ2JOFwDtaw6cn9zg7xnA6HyUohbC6jpQ4Q_mUZI';
 const products = [
   {
     id: '3D-SPATIAL-ARCHITECT', slug: '3d-spatial-architect',
@@ -172,6 +172,38 @@ const products = [
       { en: 'OpenAI-Compatible API', vi: 'API chuẩn OpenAI', ko: 'OpenAI 호환 API', ja: 'OpenAI互換API' }
     ],
     complexity: 'Standard', priceReference: 'Free', isActive: true, isFree: true, priceCredits: 0, featured: true
+  },
+  {
+    id: 'FIBUS-VIDEO-STUDIO', slug: 'fibus-video-studio',
+    name: { en: 'Fibus Video Studio', vi: 'Fibus Video Studio', ko: 'Fibus 비디오 스튜디오', ja: 'Fibusビデオスタジオ' },
+    category: { en: 'Video', vi: 'Video', ko: '비디오', ja: 'ビデオ' },
+    description: {
+      en: 'Powerful desktop app to create AI Videos & Images. Text-to-Video, Image-to-Video powered by Google VEO3. Multi-account, multi-queue processing.',
+      vi: 'Ứng dụng desktop tạo Video AI & Hình ảnh AI mạnh nhất. Text-to-Video, Image-to-Video với Google VEO3. Hỗ trợ đa tài khoản, đa hàng đợi.',
+      ko: 'Google VEO3 기반 AI 동영상 및 이미지 생성 데스크톱 앱. 텍스트-비디오, 이미지-비디오, 멀티 계정 지원.',
+      ja: 'Google VEO3搭載のAI動画・画像生成デスクトップアプリ。テキスト→動画、画像→動画、マルチアカウント対応。'
+    },
+    problems: ['Expensive video production', 'Complex editing software', 'No AI video tools', 'Slow content creation'],
+    industries: ['Content Creation', 'Marketing', 'Social Media', 'E-commerce', 'Education'],
+    imageUrl: 'https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'video',
+    tags: ['Video AI', 'VEO3', 'Google AI', 'Desktop App', 'Text-to-Video', 'Image-to-Video', 'Banana Pro'],
+    features: [
+      { en: 'Text-to-Video (VEO 3.1)', vi: 'Text-to-Video với VEO 3.1', ko: '텍스트→동영상 (VEO 3.1)', ja: 'テキスト→動画 (VEO 3.1)' },
+      { en: 'Image-to-Video (Start & End Frame)', vi: 'Image-to-Video (Start & End Frame)', ko: '이미지→동영상 (시작/끝 프레임)', ja: '画像→動画 (開始/終了フレーム)' },
+      { en: 'Multi-Account VEO3 Switching', vi: 'Chuyển đổi đa tài khoản VEO3', ko: 'VEO3 멀티 계정 전환', ja: 'VEO3マルチアカウント切替' },
+      { en: 'AI Image Generation (Banana Pro)', vi: 'Tạo hình ảnh AI (Banana Pro)', ko: 'AI 이미지 생성 (Banana Pro)', ja: 'AI画像生成 (Banana Pro)' },
+      { en: 'Media Library Management', vi: 'Quản lý thư viện media', ko: '미디어 라이브러리 관리', ja: 'メディアライブラリ管理' },
+      { en: 'Multi-Queue Parallel Processing', vi: 'Xử lý hàng đợi song song', ko: '멀티 큐 병렬 처리', ja: 'マルチキュー並列処理' }
+    ],
+    neuralStack: [
+      { name: 'Google VEO', version: '3.1', capability: { en: 'Video Generation Engine', vi: 'Engine tạo video', ko: '영상 생성 엔진', ja: '動画生成エンジン' } },
+      { name: 'Banana Pro', version: '2.0', capability: { en: 'Image Generation Model', vi: 'Model tạo hình ảnh', ko: '이미지 생성 모델', ja: '画像生成モデル' } },
+      { name: 'Nano Banana', version: '2', capability: { en: 'Fast Image Synthesis', vi: 'Tổng hợp ảnh nhanh', ko: '빠른 이미지 합성', ja: '高速画像合成' } }
+    ],
+    homeBlocks: ['video_studio', 'top_trending'],
+    complexity: 'Advanced', priceReference: 'License Key', isActive: true, isFree: false, priceCredits: 0, featured: true,
+    platforms: ['web']
   }
 ];
 

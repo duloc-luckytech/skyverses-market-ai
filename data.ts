@@ -291,7 +291,7 @@ export const SOLUTIONS: Solution[] = [
     industries: ['Web Development', 'Freelancers', 'Agencies', 'Design-to-Code'],
     imageUrl: '/nocode-export-hero.png',
     demoType: 'automation',
-    tags: ['Export', 'Website', 'HTML', 'GitHub', 'Deploy', 'No-Code'],
+    tags: ['Export', 'Website', 'HTML', 'GitHub', 'Deploy', 'No-Code', 'Sky Partners'],
     features: [
       { en: 'URL-to-Code Export', vi: 'Xuất code từ URL', ko: 'URL에서 코드 내보내기', ja: 'URLからコードへエクスポート' },
       { en: 'Static HTML & Auto Detect', vi: 'Static HTML & Tự động nhận diện', ko: '정적 HTML 및 자동 감지', ja: '静的HTML＆自動検出' },
@@ -328,7 +328,7 @@ export const SOLUTIONS: Solution[] = [
     industries: ['Developers', 'Content Creators', 'Education', 'Research'],
     imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1600',
     demoType: 'text' as const,
-    tags: ['Chat', 'Qwen', 'Local AI', 'Free', 'Vision', 'API'],
+    tags: ['Chat', 'Qwen', 'Local AI', 'Free', 'Vision', 'API', 'Sky Partners'],
     features: [
       { en: '100% Local & Private', vi: 'Chạy hoàn toàn local, riêng tư', ko: '100% 로컬 및 프라이빗', ja: '100%ローカル＆プライベート' },
       { en: 'Multi-Model Support', vi: 'Hỗ trợ đa model Qwen', ko: '다중 모델 지원', ja: 'マルチモデルサポート' },
@@ -343,6 +343,47 @@ export const SOLUTIONS: Solution[] = [
     neuralStack: [
       { name: 'Qwen3.5 4B', version: 'v3.5', capability: { en: 'Fast Chat & Vision', vi: 'Chat nhanh & Thị giác', ko: '빠른 채팅 및 비전', ja: '高速チャット＆ビジョン' } },
       { name: 'Qwen3.5 9B', version: 'v3.5', capability: { en: 'Deep Reasoning', vi: 'Suy luận chuyên sâu', ko: '딥 리즈닝', ja: 'ディープリーズニング' } }
+    ]
+  },
+  {
+    id: 'FIBUS-VIDEO-STUDIO',
+    slug: 'fibus-video-studio',
+    name: {
+      en: 'Fibus Video Studio',
+      vi: 'Fibus Video Studio',
+      ko: 'Fibus 비디오 스튜디오',
+      ja: 'Fibusビデオスタジオ'
+    },
+    category: { en: 'Video', vi: 'Video', ko: '비디오', ja: 'ビデオ' },
+    description: {
+      en: 'Powerful desktop app to create AI Videos & Images. Text-to-Video, Image-to-Video powered by Google VEO3. Multi-account, multi-queue processing.',
+      vi: 'Ứng dụng desktop tạo Video AI & Hình ảnh AI mạnh nhất. Text-to-Video, Image-to-Video với Google VEO3. Hỗ trợ đa tài khoản, đa hàng đợi.',
+      ko: 'Google VEO3 기반 AI 동영상 및 이미지 생성 데스크톱 앱. 텍스트-비디오, 이미지-비디오, 멀티 계정 지원.',
+      ja: 'Google VEO3搭載のAI動画・画像生成デスクトップアプリ。テキスト→動画、画像→動画、マルチアカウント対応。'
+    },
+    problems: ['Expensive video production', 'Complex editing software', 'No AI video tools', 'Slow content creation'],
+    industries: ['Content Creation', 'Marketing', 'Social Media', 'E-commerce', 'Education'],
+    imageUrl: 'https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'video' as const,
+    tags: ['Video AI', 'VEO3', 'Google AI', 'Desktop App', 'Text-to-Video', 'Image-to-Video', 'Banana Pro', 'Sky Partners'],
+    features: [
+      { en: 'Text-to-Video (VEO 3.1)', vi: 'Text-to-Video với VEO 3.1', ko: '텍스트→동영상 (VEO 3.1)', ja: 'テキスト→動画 (VEO 3.1)' },
+      { en: 'Image-to-Video (Start & End Frame)', vi: 'Image-to-Video (Start & End Frame)', ko: '이미지→동영상 (시작/끝 프레임)', ja: '画像→動画 (開始/終了フレーム)' },
+      { en: 'Multi-Account VEO3 Switching', vi: 'Chuyển đổi đa tài khoản VEO3', ko: 'VEO3 멀티 계정 전환', ja: 'VEO3マルチアカウント切替' },
+      { en: 'AI Image Generation (Banana Pro)', vi: 'Tạo hình ảnh AI (Banana Pro)', ko: 'AI 이미지 생성 (Banana Pro)', ja: 'AI画像生成 (Banana Pro)' },
+      { en: 'Media Library Management', vi: 'Quản lý thư viện media', ko: '미디어 라이브러리 관리', ja: 'メディアライブラリ管理' },
+      { en: 'Multi-Queue Parallel Processing', vi: 'Xử lý hàng đợi song song', ko: '멀티 큐 병렬 처리', ja: 'マルチキュー並列処理' }
+    ],
+    complexity: 'Advanced' as const,
+    priceReference: 'License Key',
+    isActive: true,
+    isFree: false,
+    priceCredits: 0,
+    featured: true,
+    neuralStack: [
+      { name: 'Google VEO', version: '3.1', capability: { en: 'Video Generation Engine', vi: 'Engine tạo video', ko: '영상 생성 엔진', ja: '動画生成エンジン' } },
+      { name: 'Banana Pro', version: '2.0', capability: { en: 'Image Generation Model', vi: 'Model tạo hình ảnh', ko: '이미지 생성 모델', ja: '画像生성모델' } },
+      { name: 'Nano Banana', version: '2', capability: { en: 'Fast Image Synthesis', vi: 'Tổng hợp ảnh nhanh', ko: '빠른 이미지 합성', ja: '高速画像合成' } }
     ]
   }
 ];

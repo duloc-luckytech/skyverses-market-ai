@@ -9,7 +9,7 @@ import {
   X, Layers, Box, Cpu, SlidersHorizontal,
   Check, Grid3X3, List, ArrowUp, Clock, Tag, ChevronUp, ChevronDown,
   Eye, GitCompare, Command,
-  Globe, Smartphone, Tablet
+  Globe, Smartphone, Tablet, BadgeCheck
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -43,6 +43,7 @@ const CATEGORIES = [
   { key: 'Music', label: 'Nhạc AI', icon: Music },
   { key: 'Automation', label: 'Tự động hóa', icon: Zap },
   { key: '3D', label: '3D & Game', icon: Box },
+  { key: 'Sky Partners', label: 'Sky Partners', icon: BadgeCheck, isPartner: true },
 ];
 const COMPLEXITY_LEVELS = ['Standard', 'Advanced', 'Enterprise'];
 const PLATFORMS = [
@@ -490,9 +491,14 @@ const MarketsPage: React.FC = () => {
         sol.description[currentLang]?.toLowerCase().includes(search.toLowerCase()) ||
         sol.tags?.some(t => t.toLowerCase().includes(search.toLowerCase()));
       const matchCat = activeCategory === 'ALL' ||
-        sol.category[currentLang]?.toLowerCase().includes(activeCategory.toLowerCase()) ||
-        sol.tags?.some(t => t.toLowerCase().includes(activeCategory.toLowerCase())) ||
-        sol.demoType?.toLowerCase() === activeCategory.toLowerCase();
+        (activeCategory === 'Sky Partners'
+          ? sol.tags?.some(t => t === 'Sky Partners')
+          : (
+              sol.category[currentLang]?.toLowerCase().includes(activeCategory.toLowerCase()) ||
+              sol.tags?.some(t => t.toLowerCase().includes(activeCategory.toLowerCase())) ||
+              sol.demoType?.toLowerCase() === activeCategory.toLowerCase()
+            )
+        );
       const matchFree = !showFreeOnly || sol.isFree;
       const matchFeatured = !showFeaturedOnly || sol.featured;
       const matchComplexity = !activeComplexity || sol.complexity === activeComplexity;
@@ -512,11 +518,15 @@ const MarketsPage: React.FC = () => {
     const counts: Record<string, number> = { ALL: solutions.length };
     CATEGORIES.forEach(c => {
       if (c.key !== 'ALL') {
-        counts[c.key] = solutions.filter(s =>
-          s.category[currentLang]?.toLowerCase().includes(c.key.toLowerCase()) ||
-          s.tags?.some(t => t.toLowerCase().includes(c.key.toLowerCase())) ||
-          s.demoType?.toLowerCase() === c.key.toLowerCase()
-        ).length;
+        if (c.key === 'Sky Partners') {
+          counts[c.key] = solutions.filter(s => s.tags?.some(t => t === 'Sky Partners')).length;
+        } else {
+          counts[c.key] = solutions.filter(s =>
+            s.category[currentLang]?.toLowerCase().includes(c.key.toLowerCase()) ||
+            s.tags?.some(t => t.toLowerCase().includes(c.key.toLowerCase())) ||
+            s.demoType?.toLowerCase() === c.key.toLowerCase()
+          ).length;
+        }
       }
     });
     return counts;
@@ -573,17 +583,25 @@ const MarketsPage: React.FC = () => {
             const Icon = cat.icon;
             const isActive = activeCategory === cat.key;
             const count = catCounts[cat.key] || 0;
+            const isExternal = (cat as any).isPartner;
             return (
               <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all ${isActive
-                  ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
-                  : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.03]'
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all ${
+                  isActive
+                    ? isExternal
+                      ? 'bg-gradient-to-r from-brand-blue to-purple-500 text-white shadow-sm shadow-brand-blue/20'
+                      : 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
+                    : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.03]'
                 }`}>
-                <Icon size={14} className={isActive ? 'text-white' : ''} />
+                <Icon size={14} className={isActive ? 'text-white' : isExternal ? 'text-brand-blue' : ''} />
                 <span className="flex-1 text-left">{cat.label}</span>
-                <span className={`text-[10px] font-semibold min-w-[20px] text-center py-0.5 rounded-full ${isActive
-                  ? 'bg-white/20 text-white'
-                  : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-500'
+                {isExternal && !isActive && (
+                  <span className="text-[8px] font-bold text-brand-blue bg-brand-blue/[0.07] border border-brand-blue/15 px-1.5 py-0.5 rounded-full uppercase tracking-wider mr-1">Partner</span>
+                )}
+                <span className={`text-[10px] font-semibold min-w-[20px] text-center py-0.5 rounded-full ${
+                  isActive
+                    ? 'bg-white/20 text-white'
+                    : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-500'
                 }`}>{count}</span>
               </button>
             );
