@@ -902,13 +902,13 @@ const MarketPage = () => {
                         <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-400">Universal Credits</span>
                       </div>
                       <h2 className="text-xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
-                        1 Credit,{' '}
+                        {t('home.credits.title1')}{' '}
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
-                          dùng cho tất cả
+                          {t('home.credits.title_highlight')}
                         </span>
                       </h2>
                       <p className="text-xs md:text-sm text-white/40 max-w-lg leading-relaxed hidden md:block">
-                        Không cần đăng ký riêng cho từng sản phẩm. Mua Credits một lần — sử dụng cho Video AI, Image AI, Voice, Music, Workflow và hơn 30 sản phẩm khác.
+                        {t('home.credits.subtitle')}
                       </p>
                     </div>
                     <button
@@ -916,7 +916,7 @@ const MarketPage = () => {
                       className="shrink-0 inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
                       <Zap size={14} fill="currentColor" />
-                      {isAuthenticated ? 'Nạp Credits' : 'Xem bảng giá'}
+                      {isAuthenticated ? t('home.credits.topup') : t('home.credits.pricing')}
                       <ArrowRight size={14} />
                     </button>
                   </div>
@@ -924,9 +924,9 @@ const MarketPage = () => {
                   {/* Credit Flow Steps — Image Cards */}
                   <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-12 overflow-x-auto no-scrollbar -mx-5 px-5 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
                     {[
-                      { step: '01', title: 'Mua Credits', desc: 'Chọn gói phù hợp hoặc nạp tuỳ ý. Nhận bonus khi mua gói lớn.', image: '/assets/credits/step-01-buy.webp' },
-                      { step: '02', title: 'Sử dụng mọi nơi', desc: 'Dùng Credits cho bất kỳ sản phẩm nào — Video, Image, Voice, Music, Workflow...', image: '/assets/credits/step-02-use.webp' },
-                      { step: '03', title: 'Nạp thêm khi cần', desc: 'Credits không hết hạn. Nạp thêm bất cứ lúc nào, chỉ trả cho những gì bạn dùng.', image: '/assets/credits/step-03-topup.webp' },
+                      { step: '01', title: t('home.credits.step1_title'), desc: t('home.credits.step1_desc'), image: '/assets/credits/step-01-buy.webp' },
+                      { step: '02', title: t('home.credits.step2_title'), desc: t('home.credits.step2_desc'), image: '/assets/credits/step-02-use.webp' },
+                      { step: '03', title: t('home.credits.step3_title'), desc: t('home.credits.step3_desc'), image: '/assets/credits/step-03-topup.webp' },
                     ].map((item, idx) => (
                       <motion.div
                         key={item.step}
@@ -968,7 +968,7 @@ const MarketPage = () => {
                           <Landmark size={16} />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-bold text-white truncate">Thanh toán linh hoạt & an toàn</p>
+                          <p className="text-xs font-bold text-white truncate">{t('home.credits.payment_flexible')}</p>
                           <div className="flex items-center gap-2 mt-0.5">
                             <div className="flex items-center gap-1">
                               <Landmark size={10} className="text-brand-blue" />
@@ -994,10 +994,10 @@ const MarketPage = () => {
                       <div className="shrink-0 space-y-2">
                         <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
                           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400">Thanh toán</span>
+                          <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400">{t('home.credits.payment')}</span>
                         </div>
                         <p className="text-sm font-bold text-white/60 max-w-[160px] leading-relaxed">
-                          Hỗ trợ chuyển khoản ngân hàng và crypto USDT
+                          {t('home.credits.payment_desc')}
                         </p>
                       </div>
 
@@ -1013,8 +1013,8 @@ const MarketPage = () => {
                               <Landmark size={20} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-black text-white mb-1">Chuyển khoản ngân hàng</p>
-                              <p className="text-[10px] text-white/35 leading-relaxed">VietQR — Tự động xác nhận qua webhook</p>
+                              <p className="text-sm font-black text-white mb-1">{t('home.credits.bank')}</p>
+                              <p className="text-[10px] text-white/35 leading-relaxed">{t('home.credits.bank_desc')}</p>
                               <div className="flex flex-wrap gap-1.5 mt-3">
                                 {['Vietcombank', 'Techcombank', 'MB Bank', 'BIDV'].map(b => (
                                   <span key={b} className="px-2 py-0.5 bg-white/5 border border-white/[0.06] text-[8px] font-bold text-white/40 rounded-md">{b}</span>
@@ -1025,7 +1025,7 @@ const MarketPage = () => {
                           <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-white/[0.04]">
                             <div className="flex items-center gap-1.5">
                               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">Tự động · 1-3 phút</span>
+                              <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">{t('home.credits.bank_time')}</span>
                             </div>
                             <ArrowRight size={14} className="text-white/20 group-hover:text-brand-blue group-hover:translate-x-1 transition-all duration-300" />
                           </div>
@@ -1057,7 +1057,7 @@ const MarketPage = () => {
                           <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-white/[0.04]">
                             <div className="flex items-center gap-1.5">
                               <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                              <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wider">On-chain · 5-10 phút</span>
+                              <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wider">{t('home.credits.crypto_time')}</span>
                             </div>
                             <ArrowRight size={14} className="text-white/20 group-hover:text-amber-500 group-hover:translate-x-1 transition-all duration-300" />
                           </div>
@@ -1072,7 +1072,7 @@ const MarketPage = () => {
                       >
                         <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <Sparkles size={20} className="relative z-10" fill="currentColor" />
-                        <span className="relative z-10 text-xs font-black whitespace-nowrap">Nạp Credits</span>
+                        <span className="relative z-10 text-xs font-black whitespace-nowrap">{t('home.credits.topup')}</span>
                       </motion.button>
                     </div>
                   </div>
@@ -1091,24 +1091,23 @@ const MarketPage = () => {
                   <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">Enterprise Solutions</span>
                 </div>
                 <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                  Giải pháp AI{' '}
+                  {t('home.enterprise.title1')}{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500">
-                    riêng cho doanh nghiệp
+                    {t('home.enterprise.title_highlight')}
                   </span>
                 </h2>
                 <p className="text-xs md:text-sm text-slate-400 dark:text-gray-500 max-w-2xl mx-auto hidden md:block">
-                  Skyverses chuyên tư vấn, thiết kế và xây dựng các công cụ AI theo yêu cầu.
-                  Từ chatbot, xử lý ảnh/video, workflow tự động đến hệ thống AI hoàn chỉnh cho doanh nghiệp.
+                  {t('home.enterprise.subtitle')}
                 </p>
               </motion.div>
 
               {/* ─── Image Service Cards — Horizontal scroll ─── */}
               <div className="flex gap-3 md:gap-5 overflow-x-auto no-scrollbar -mx-4 px-4 md:-mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory mb-6 md:mb-10">
                 {[
-                  { image: '/assets/homepage/ent-ai-strategy.webp', icon: <Brain size={18} />, accentColor: 'from-blue-500 to-cyan-500', borderHover: 'hover:border-blue-500/30', tagBg: 'bg-blue-500/20 border-blue-500/30 text-blue-400', title: 'Tư vấn AI Strategy', desc: 'Phân tích nhu cầu, đề xuất giải pháp AI phù hợp cho quy trình kinh doanh của bạn.', tag: 'Strategy' },
-                  { image: '/assets/homepage/ent-custom-tools.webp', icon: <Wrench size={18} />, accentColor: 'from-purple-500 to-pink-500', borderHover: 'hover:border-purple-500/30', tagBg: 'bg-purple-500/20 border-purple-500/30 text-purple-400', title: 'Build Custom Tools', desc: 'Phát triển công cụ AI theo spec riêng — image gen, video pipeline, chatbot, voice clone.', tag: 'Development' },
-                  { image: '/assets/homepage/ent-api-integration.webp', icon: <Plug size={18} />, accentColor: 'from-emerald-500 to-teal-500', borderHover: 'hover:border-emerald-500/30', tagBg: 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400', title: 'API & Integration', desc: 'Tích hợp AI vào hệ thống hiện có qua API. Hỗ trợ webhook, SDK và tài liệu đầy đủ.', tag: 'Integration' },
-                  { image: '/assets/homepage/ent-deploy-scale.webp', icon: <Rocket size={18} />, accentColor: 'from-amber-500 to-orange-500', borderHover: 'hover:border-amber-500/30', tagBg: 'bg-amber-500/20 border-amber-500/30 text-amber-400', title: 'Deploy & Scale', desc: 'Triển khai lên cloud, tối ưu hiệu năng, hỗ trợ scale tự động theo nhu cầu sử dụng.', tag: 'Infrastructure' },
+                  { image: '/assets/homepage/ent-ai-strategy.webp', icon: <Brain size={18} />, accentColor: 'from-blue-500 to-cyan-500', borderHover: 'hover:border-blue-500/30', tagBg: 'bg-blue-500/20 border-blue-500/30 text-blue-400', title: t('home.enterprise.s1_title'), desc: t('home.enterprise.s1_desc'), tag: 'Strategy' },
+                  { image: '/assets/homepage/ent-custom-tools.webp', icon: <Wrench size={18} />, accentColor: 'from-purple-500 to-pink-500', borderHover: 'hover:border-purple-500/30', tagBg: 'bg-purple-500/20 border-purple-500/30 text-purple-400', title: t('home.enterprise.s2_title'), desc: t('home.enterprise.s2_desc'), tag: 'Development' },
+                  { image: '/assets/homepage/ent-api-integration.webp', icon: <Plug size={18} />, accentColor: 'from-emerald-500 to-teal-500', borderHover: 'hover:border-emerald-500/30', tagBg: 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400', title: 'API & Integration', desc: t('home.enterprise.s3_desc'), tag: 'Integration' },
+                  { image: '/assets/homepage/ent-deploy-scale.webp', icon: <Rocket size={18} />, accentColor: 'from-amber-500 to-orange-500', borderHover: 'hover:border-amber-500/30', tagBg: 'bg-amber-500/20 border-amber-500/30 text-amber-400', title: 'Deploy & Scale', desc: t('home.enterprise.s4_desc'), tag: 'Infrastructure' },
                 ].map((item, idx) => (
                   <motion.div
                     key={item.title}
@@ -1150,19 +1149,19 @@ const MarketPage = () => {
                   className="group inline-flex items-center gap-2 md:gap-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl text-xs md:text-sm font-bold shadow-lg shadow-amber-500/20 hover:shadow-2xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all w-full sm:w-auto justify-center"
                 >
                   <Building2 size={16} />
-                  Liên hệ tư vấn miễn phí
+                  {t('home.enterprise.cta')}
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </button>
                 <a
                   href="mailto:support@skyverses.com"
                   className="inline-flex items-center gap-2 text-sm text-slate-400 dark:text-white/50 hover:text-slate-900 dark:hover:text-white transition-colors"
                 >
-                  <span className="text-[10px] font-bold uppercase tracking-wider">hoặc email:</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">{t('home.enterprise.or_email')}</span>
                   <span className="font-bold text-amber-500">support@skyverses.com</span>
                 </a>
               </motion.div>
 
-              <p className="text-center text-[10px] font-medium text-slate-300 dark:text-white/20 mt-4 md:mt-6">✦ Tư vấn miễn phí • Phản hồi trong 24 giờ • Hỗ trợ dài hạn</p>
+              <p className="text-center text-[10px] font-medium text-slate-300 dark:text-white/20 mt-4 md:mt-6">{t('home.enterprise.footer')}</p>
             </section>
           )}
 
@@ -1184,13 +1183,13 @@ const MarketPage = () => {
                     <div className="flex items-center justify-between">
                       <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue/10 dark:bg-brand-blue/15 border border-brand-blue/20 rounded-full">
                         <Users size={10} className="text-brand-blue" />
-                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-blue">Invite & Earn</span>
+                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-blue">{t('home.referral.badge')}</span>
                       </div>
                       <ArrowRight size={16} className="text-brand-blue" />
                     </div>
 
                     <h2 className="text-lg font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-                      Mời bạn bè, <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">nhận Credits</span>
+                      {t('home.referral.title_mobile1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">{t('home.referral.title_mobile_highlight')}</span>
                     </h2>
 
                     {/* Reward pills inline */}
@@ -1200,7 +1199,7 @@ const MarketPage = () => {
                           <Zap size={16} fill="currentColor" />
                         </div>
                         <div>
-                          <p className="text-[8px] text-slate-400 font-medium">Bạn nhận</p>
+                          <p className="text-[8px] text-slate-400 font-medium">{t('home.referral.you_get')}</p>
                           <p className="text-sm font-black text-slate-900 dark:text-white">+50 CR</p>
                         </div>
                       </div>
@@ -1209,7 +1208,7 @@ const MarketPage = () => {
                           <Gift size={16} />
                         </div>
                         <div>
-                          <p className="text-[8px] text-slate-400 font-medium">Bạn bè nhận</p>
+                          <p className="text-[8px] text-slate-400 font-medium">{t('home.referral.friend_gets')}</p>
                           <p className="text-sm font-black text-slate-900 dark:text-white">+50 CR</p>
                         </div>
                       </div>
@@ -1221,7 +1220,7 @@ const MarketPage = () => {
                       className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-blue to-purple-500 text-white py-3 rounded-xl text-[11px] font-bold shadow-lg shadow-brand-blue/15 active:scale-[0.97] transition-all"
                     >
                       <Gift size={13} />
-                      {isAuthenticated ? 'Lấy link giới thiệu' : 'Đăng ký & nhận Credits'}
+                      {isAuthenticated ? t('home.referral.cta_auth') : t('home.referral.cta_noauth')}
                       <ArrowRight size={13} />
                     </button>
                   </div>
@@ -1230,11 +1229,11 @@ const MarketPage = () => {
                 {/* Horizontal scroll benefit chips */}
                 <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1">
                   {[
-                    { icon: <Zap size={12} fill="currentColor" />, text: '+50 CR mỗi lượt mời', color: 'text-brand-blue', bg: 'bg-brand-blue/10', border: 'border-brand-blue/15' },
-                    { icon: <CreditCard size={12} />, text: '5% hoa hồng (Coming)', color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/15' },
-                    { icon: <Sparkles size={12} />, text: 'Badge Referrer', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/15' },
-                    { icon: <Users size={12} />, text: 'Không giới hạn', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/15' },
-                    { icon: <RefreshCw size={12} />, text: 'Thu nhập vĩnh viễn', color: 'text-rose-500', bg: 'bg-rose-500/10', border: 'border-rose-500/15' },
+                    { icon: <Zap size={12} fill="currentColor" />, text: t('home.referral.chip1'), color: 'text-brand-blue', bg: 'bg-brand-blue/10', border: 'border-brand-blue/15' },
+                    { icon: <CreditCard size={12} />, text: t('home.referral.chip2'), color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/15' },
+                    { icon: <Sparkles size={12} />, text: t('home.referral.chip3'), color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/15' },
+                    { icon: <Users size={12} />, text: t('home.referral.chip4'), color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/15' },
+                    { icon: <RefreshCw size={12} />, text: t('home.referral.chip5'), color: 'text-rose-500', bg: 'bg-rose-500/10', border: 'border-rose-500/15' },
                   ].map((item) => (
                     <div key={item.text} className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl ${item.bg} border ${item.border}`}>
                       <span className={item.color}>{item.icon}</span>
@@ -1248,13 +1247,13 @@ const MarketPage = () => {
                   <div className="flex items-center gap-1.5">
                     <Users size={11} className="text-brand-blue" />
                     <span className="text-xs font-black text-slate-900 dark:text-white">2,847</span>
-                    <span className="text-[7px] font-bold text-slate-400 uppercase">tham gia</span>
+                    <span className="text-[7px] font-bold text-slate-400 uppercase">{t('home.referral.stat_joined')}</span>
                   </div>
                   <div className="w-px h-4 bg-black/[0.06] dark:bg-white/[0.06]" />
                   <div className="flex items-center gap-1.5">
                     <Zap size={11} className="text-amber-500" fill="currentColor" />
                     <span className="text-xs font-black text-brand-blue">142K</span>
-                    <span className="text-[7px] font-bold text-slate-400 uppercase">CR tặng</span>
+                    <span className="text-[7px] font-bold text-slate-400 uppercase">{t('home.referral.stat_given')}</span>
                   </div>
                 </div>
               </div>
@@ -1271,20 +1270,20 @@ const MarketPage = () => {
                   <div className="flex-1 text-left space-y-6">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/10 dark:bg-brand-blue/15 border border-brand-blue/20 rounded-full">
                       <Users size={12} className="text-brand-blue" />
-                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">Invite & Earn</span>
+                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">{t('home.referral.badge')}</span>
                     </div>
                     <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1]">
-                      Mời bạn bè,{' '}
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">nhận Credits miễn phí</span>
+                      {t('home.referral.title_desktop1')}{' '}
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">{t('home.referral.title_desktop_highlight')}</span>
                     </h2>
                     <p className="text-base text-slate-500 dark:text-gray-400 max-w-lg leading-relaxed">
-                      Chia sẻ link giới thiệu của bạn. Khi bạn bè đăng ký và sử dụng, cả hai đều nhận được Credits miễn phí để sáng tạo với AI.
+                      {t('home.referral.desktop_desc')}
                     </p>
                     <div className="flex flex-row gap-6 pt-2">
                       {[
-                        { num: '1', text: 'Chia sẻ link', icon: <Share2 size={16} /> },
-                        { num: '2', text: 'Bạn bè đăng ký', icon: <UserPlus size={16} /> },
-                        { num: '3', text: 'Nhận Credits', icon: <Gift size={16} /> },
+                        { num: '1', text: t('home.referral.step1'), icon: <Share2 size={16} /> },
+                        { num: '2', text: t('home.referral.step2'), icon: <UserPlus size={16} /> },
+                        { num: '3', text: t('home.referral.step3'), icon: <Gift size={16} /> },
                       ].map((s) => (
                         <div key={s.num} className="flex items-center gap-2.5 px-3 py-2 bg-white/50 dark:bg-white/[0.03] rounded-xl border border-black/[0.04] dark:border-white/[0.06]">
                           <div className="w-7 h-7 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue shrink-0">{s.icon}</div>
@@ -1298,7 +1297,7 @@ const MarketPage = () => {
                         className="inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-brand-blue to-purple-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-brand-blue/20 hover:shadow-xl hover:shadow-brand-blue/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
                       >
                         <Gift size={14} />
-                        {isAuthenticated ? 'Lấy link giới thiệu' : 'Đăng ký & nhận Credits'}
+                        {isAuthenticated ? t('home.referral.cta_auth') : t('home.referral.cta_noauth')}
                         <ArrowRight size={14} />
                       </button>
                     </div>
@@ -1306,8 +1305,8 @@ const MarketPage = () => {
                   <div className="flex-shrink-0 w-[340px] lg:w-[400px]">
                     <div className="space-y-3">
                       {[
-                        { label: 'Bạn nhận được', amount: '+50 Credits', color: 'from-brand-blue to-blue-600', icon: <Zap size={18} fill="currentColor" /> },
-                        { label: 'Bạn bè nhận được', amount: '+50 Credits', color: 'from-purple-500 to-pink-500', icon: <Gift size={18} /> },
+                        { label: t('home.referral.you_get'), amount: '+50 Credits', color: 'from-brand-blue to-blue-600', icon: <Zap size={18} fill="currentColor" /> },
+                        { label: t('home.referral.friend_gets'), amount: '+50 Credits', color: 'from-purple-500 to-pink-500', icon: <Gift size={18} /> },
                       ].map((reward, idx) => (
                         <motion.div
                           key={idx}
@@ -1333,12 +1332,12 @@ const MarketPage = () => {
                     <div className="flex items-center justify-center gap-6 mt-6 py-3 px-4 bg-white/50 dark:bg-white/[0.02] rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
                       <div className="text-center">
                         <p className="text-xl font-black text-slate-900 dark:text-white">2,847</p>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Người tham gia</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{t('home.referral.stat_participants')}</p>
                       </div>
                       <div className="w-px h-8 bg-black/[0.06] dark:bg-white/[0.06]" />
                       <div className="text-center">
                         <p className="text-xl font-black text-brand-blue">142K</p>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Credits đã tặng</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{t('home.referral.stat_credits_given')}</p>
                       </div>
                     </div>
                   </div>
@@ -1370,18 +1369,18 @@ const MarketPage = () => {
                       </div>
                     </div>
                     <h3 className="text-2xl font-black tracking-tight text-white leading-tight">
-                      Nhận <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">5% hoa hồng vĩnh viễn</span> khi bạn bè nạp Credits
+                      {t('home.referral.commission_title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">{t('home.referral.commission_highlight')}</span>{t('home.referral.commission_title2')}
                     </h3>
                     <p className="text-sm text-white/40 max-w-lg leading-relaxed">
-                      Mỗi khi bạn bè bạn giới thiệu nạp Credits, bạn tự động nhận <strong className="text-white/60">5% giá trị</strong> — không giới hạn số lần, không giới hạn số người. Thu nhập thụ động thực sự.
+                      {t('home.referral.commission_desc')}
                     </p>
 
                     {/* Feature pills */}
                     <div className="flex flex-wrap gap-2">
                       {[
-                        { icon: <CreditCard size={11} />, text: '5% mỗi giao dịch' },
-                        { icon: <RefreshCw size={11} />, text: 'Thu nhập vĩnh viễn' },
-                        { icon: <Users size={11} />, text: 'Không giới hạn' },
+                        { icon: <CreditCard size={11} />, text: t('home.referral.comm_chip1') },
+                        { icon: <RefreshCw size={11} />, text: t('home.referral.comm_chip2') },
+                        { icon: <Users size={11} />, text: t('home.referral.comm_chip3') },
                       ].map((item, i) => (
                         <div key={i} className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 border border-white/[0.06] rounded-lg">
                           <span className="text-amber-400">{item.icon}</span>
@@ -1394,25 +1393,25 @@ const MarketPage = () => {
                   {/* Earn Example Card */}
                   <div className="shrink-0 w-full lg:w-auto">
                     <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5 space-y-3">
-                      <p className="text-[9px] font-black text-white/30 uppercase tracking-widest">Ví dụ thu nhập</p>
+                      <p className="text-[9px] font-black text-white/30 uppercase tracking-widest">{t('home.referral.example_title')}</p>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2.5 px-3 py-2 bg-white/[0.03] rounded-xl border border-white/[0.05]">
                           <Users size={13} className="text-brand-blue shrink-0" />
-                          <span className="text-[11px] font-medium text-white/60">10 bạn bè giới thiệu</span>
+                          <span className="text-[11px] font-medium text-white/60">{t('home.referral.example_friends')}</span>
                         </div>
                         <div className="flex items-center justify-center">
                           <ChevronRight size={12} className="text-white/15 rotate-90" />
                         </div>
                         <div className="flex items-center gap-2.5 px-3 py-2 bg-white/[0.03] rounded-xl border border-white/[0.05]">
                           <CreditCard size={13} className="text-purple-400 shrink-0" />
-                          <span className="text-[11px] font-medium text-white/60">Mỗi người nạp 100K CR/tháng</span>
+                          <span className="text-[11px] font-medium text-white/60">{t('home.referral.example_each')}</span>
                         </div>
                         <div className="flex items-center justify-center">
                           <ChevronRight size={12} className="text-white/15 rotate-90" />
                         </div>
                         <div className="flex items-center gap-2.5 px-3 py-2.5 bg-amber-500/10 rounded-xl border border-amber-500/20">
                           <Zap size={14} className="text-amber-400 shrink-0" fill="currentColor" />
-                          <span className="text-[12px] font-black text-amber-400">Bạn nhận 50,000 CR/tháng</span>
+                          <span className="text-[12px] font-black text-amber-400">{t('home.referral.example_earn')}</span>
                         </div>
                       </div>
                     </div>
