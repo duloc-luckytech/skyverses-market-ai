@@ -334,6 +334,7 @@ const BlogPostPage: React.FC = () => {
     ogImage: post?.seo?.ogImage || post?.coverImage,
     canonical: `/${slug}`,
     type: 'article',
+    lang: currentLang,
     jsonLd: post ? {
       '@type': 'Article',
       headline: title,

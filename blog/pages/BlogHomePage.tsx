@@ -55,6 +55,7 @@ const BlogHomePage: React.FC = () => {
     description: t('blog.subtitle'),
     keywords: 'Skyverses insights, AI tutorials, AI tools, creative AI, video AI, image generation',
     canonical: urlCategory ? `/category/${urlCategory}` : '/',
+    lang: currentLang,
   });
 
   const [posts, setPosts] = useState<BlogPost[]>([]);

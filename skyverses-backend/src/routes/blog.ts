@@ -114,6 +114,76 @@ router.get("/", async (req, res) => {
 });
 
 /* =====================================================
+   PUBLIC — SITEMAP XML
+   GET /blog/sitemap.xml
+   Trả về XML với tất cả published posts + hreflang EN/VI
+===================================================== */
+router.get("/sitemap.xml", async (_req, res) => {
+  try {
+    const BASE = "https://insights.skyverses.com";
+
+    const posts = await BlogPost.find({ isPublished: true })
+      .select("slug updatedAt publishedAt title")
+      .sort({ publishedAt: -1 })
+      .lean();
+
+    const staticPages = [
+      { url: BASE, priority: "1.0", changefreq: "daily" },
+      { url: `${BASE}/category/Tutorials`, priority: "0.8", changefreq: "weekly" },
+      { url: `${BASE}/category/News`, priority: "0.8", changefreq: "weekly" },
+      { url: `${BASE}/category/Tips & Tricks`, priority: "0.7", changefreq: "weekly" },
+      { url: `${BASE}/category/Case Studies`, priority: "0.7", changefreq: "weekly" },
+    ];
+
+    const urlSet = [
+      // Static pages
+      ...staticPages.map(p => `
+  <url>
+    <loc>${p.url}</loc>
+    <changefreq>${p.changefreq}</changefreq>
+    <priority>${p.priority}</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="${p.url}"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="${p.url}?lang=vi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${p.url}"/>
+  </url>`),
+      // Blog posts
+      ...posts.map(post => {
+        const lastmod = (post.updatedAt || post.publishedAt || new Date()).toISOString().split("T")[0];
+        const postUrl = `${BASE}/${post.slug}`;
+        return `
+  <url>
+    <loc>${postUrl}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="${postUrl}"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="${postUrl}?lang=vi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${postUrl}"/>
+  </url>`;
+      }),
+    ].join("");
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urlSet}
+</urlset>`;
+
+    res.set("Content-Type", "application/xml; charset=utf-8");
+    res.set("Cache-Control", "public, max-age=3600"); // cache 1h
+    return res.send(xml);
+  } catch (err: any) {
+    console.error("[Blog Sitemap]", err);
+    return res.status(500).send("<?xml version=\"1.0\"?><error>Internal error</error>");
+  }
+});
+
+/* =====================================================
+   PUBLIC — ROBOTS.TXT (fallback nếu static file không serve được)
+   GET /blog/robots-check
+===================================================== */
+
+/* =====================================================
    PUBLIC — GET FEATURED POSTS
    GET /blog/featured
 ===================================================== */
