@@ -41,8 +41,9 @@ const BlogFooter: React.FC = () => {
   return (
     <footer className="bg-white dark:bg-[#080809] border-t border-black/[0.05] dark:border-white/[0.06]">
 
-      {/* ══════════ Newsletter CTA ══════════ */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-16 pb-12">
+      {/* ══════════ Newsletter CTA — desktop only ══════════ */}
+      <div className="hidden md:block max-w-7xl mx-auto px-4 md:px-8 pt-16 pb-12">
+
         <div className="relative overflow-hidden rounded-3xl bg-slate-950 border border-white/[0.06] shadow-2xl">
           {/* Glow layers */}
           <div className="absolute -top-32 left-1/4 w-[500px] h-[300px] bg-brand-blue/15 rounded-full blur-[120px]" />
@@ -103,8 +104,9 @@ const BlogFooter: React.FC = () => {
         </div>
       </div>
 
-      {/* ══════════ Link Grid ══════════ */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pb-4">
+      {/* ══════════ Link Grid — desktop only ══════════ */}
+      <div className="hidden md:block max-w-7xl mx-auto px-4 md:px-8 pb-4">
+
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 py-12 border-t border-black/[0.05] dark:border-white/[0.05]">
 
           {/* Brand col */}
@@ -199,6 +201,38 @@ const BlogFooter: React.FC = () => {
             <span className="text-slate-400 dark:text-gray-600">Built by Skyverses</span>
           </div>
         </div>
+      </div>
+
+      {/* ══════════ Mobile compact footer ══════════ */}
+      <div className="md:hidden px-4 py-6 border-t border-black/[0.05] dark:border-white/[0.05]">
+        <div className="flex items-center justify-between mb-4">
+          {/* Mini logo */}
+          <div className="flex items-center gap-2">
+            <img src="https://ai.skyverses.com/assets/skyverses-logo.png" alt="Skyverses" className="w-6 h-6 object-contain" />
+            <div>
+              <p className="text-[13px] font-black text-slate-900 dark:text-white leading-none">Skyverses</p>
+              <p className="text-[10px] font-bold text-brand-blue">Insights</p>
+            </div>
+          </div>
+          {/* Social icons */}
+          <div className="flex items-center gap-2">
+            <a href="https://twitter.com/skyverses" target="_blank" rel="noopener noreferrer"
+              className="w-8 h-8 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-black/[0.07] dark:border-white/[0.07] flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all">
+              <Twitter size={13} />
+            </a>
+            <a href="https://t.me/skyverses" target="_blank" rel="noopener noreferrer"
+              className="w-8 h-8 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-black/[0.07] dark:border-white/[0.07] flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all">
+              <MessageCircle size={13} />
+            </a>
+            <a href="https://ai.skyverses.com" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1 h-8 px-3 rounded-xl bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[11px] font-bold">
+              <ArrowRight size={11} /> Try AI
+            </a>
+          </div>
+        </div>
+        <p className="text-[10px] text-slate-400 dark:text-gray-600 text-center">{t('footer.copyright')}</p>
+        {/* Spacer for bottom nav bars: 60px nav + 52px article toolbar (post page) */}
+        <div className="h-[72px]" />
       </div>
     </footer>
   );

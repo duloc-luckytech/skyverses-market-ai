@@ -118,11 +118,149 @@ const BackToTop: React.FC = () => {
   return (
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      className="fixed bottom-6 right-6 z-[100] w-11 h-11 bg-brand-blue text-white rounded-2xl flex items-center justify-center shadow-xl shadow-brand-blue/30 hover:brightness-110 hover:scale-110 active:scale-95 transition-all"
+      // On mobile: raised above bottom nav (60px) + article bar (52px) = bottom-[120px]
+      // On desktop: bottom-6 as before
+      className="fixed bottom-[120px] md:bottom-6 right-4 md:right-6 z-[100] w-10 h-10 md:w-11 md:h-11 bg-brand-blue text-white rounded-2xl flex items-center justify-center shadow-xl shadow-brand-blue/30 hover:brightness-110 hover:scale-110 active:scale-95 transition-all"
       title="Back to top"
     >
-      <ArrowUp size={18} />
+      <ArrowUp size={16} />
     </button>
+  );
+};
+
+// ── Mobile Article Toolbar (sticky) ───────────────
+interface MobileArticleBarProps {
+  toc: TocItem[];
+  title: string;
+  excerpt: string;
+  onCopy: () => void;
+  copied: boolean;
+  onShare: () => void;
+}
+
+const MobileArticleBar: React.FC<MobileArticleBarProps> = ({ toc, title, excerpt, onCopy, copied, onShare }) => {
+  const { t } = useLanguage();
+  const navigate = useNavigate();
+  const [tocSheetOpen, setTocSheetOpen] = useState(false);
+  const [shareSheetOpen, setShareSheetOpen] = useState(false);
+
+  const shareTwitter = () => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+  const shareFacebook = () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+
+  return (
+    <>
+      {/* Sticky bottom toolbar */}
+      <div className="md:hidden fixed bottom-[60px] left-0 right-0 z-[130] bg-white/95 dark:bg-[#0d0d12]/95 backdrop-blur-xl border-t border-black/[0.07] dark:border-white/[0.07] shadow-lg">
+        <div className="flex items-stretch h-[52px] px-2">
+          {/* Back */}
+          <button onClick={() => navigate(-1)}
+            className="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500 dark:text-gray-400 active:text-brand-blue transition-colors">
+            <ArrowLeft size={17} strokeWidth={2} />
+            <span className="text-[8px] font-bold">{t('blog.back')}</span>
+          </button>
+
+          <div className="w-px bg-black/[0.06] dark:bg-white/[0.06] my-2" />
+
+          {/* TOC */}
+          {toc.length >= 2 && (
+            <>
+              <button
+                onClick={() => setTocSheetOpen(true)}
+                className="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500 dark:text-gray-400 active:text-brand-blue transition-colors">
+                <List size={17} strokeWidth={2} />
+                <span className="text-[8px] font-bold">Contents</span>
+              </button>
+              <div className="w-px bg-black/[0.06] dark:bg-white/[0.06] my-2" />
+            </>
+          )}
+
+          {/* Copy link */}
+          <button onClick={onCopy}
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${copied ? 'text-emerald-500' : 'text-slate-500 dark:text-gray-400 active:text-brand-blue'}`}>
+            {copied ? <Check size={17} strokeWidth={2} /> : <Copy size={17} strokeWidth={2} />}
+            <span className="text-[8px] font-bold">{copied ? t('blog.copied') : t('blog.copy_link')}</span>
+          </button>
+
+          <div className="w-px bg-black/[0.06] dark:bg-white/[0.06] my-2" />
+
+          {/* Share */}
+          <button onClick={() => setShareSheetOpen(true)}
+            className="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500 dark:text-gray-400 active:text-brand-blue transition-colors">
+            <Share2 size={17} strokeWidth={2} />
+            <span className="text-[8px] font-bold">{t('blog.share')}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* TOC Bottom Sheet */}
+      {tocSheetOpen && (
+        <>
+          <div className="md:hidden fixed inset-0 z-[148] bg-black/40 backdrop-blur-sm" onClick={() => setTocSheetOpen(false)} />
+          <div className="md:hidden fixed bottom-[112px] left-0 right-0 z-[149] bg-white dark:bg-[#0d0d12] rounded-t-3xl border-t border-l border-r border-black/[0.08] dark:border-white/[0.08] shadow-2xl animate-in slide-in-from-bottom duration-200 max-h-[65vh] flex flex-col">
+            <div className="flex items-center justify-between px-5 pt-4 pb-3 shrink-0">
+              <div className="flex items-center gap-2">
+                <List size={14} className="text-brand-blue" />
+                <p className="text-[13px] font-black text-slate-800 dark:text-white">Table of Contents</p>
+              </div>
+              <button onClick={() => setTocSheetOpen(false)}
+                className="w-7 h-7 rounded-full bg-slate-100 dark:bg-white/[0.08] flex items-center justify-center text-slate-400">
+                <X size={13} />
+              </button>
+            </div>
+            <div className="overflow-y-auto px-4 pb-6">
+              {toc.map(item => (
+                <button key={item.id}
+                  onClick={() => {
+                    const el = document.getElementById(item.id);
+                    if (el) {
+                      const top = el.getBoundingClientRect().top + window.scrollY - 130;
+                      window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                    setTocSheetOpen(false);
+                  }}
+                  style={{ paddingLeft: `${(item.level - 1) * 14}px` }}
+                  className="w-full text-left py-2.5 px-3 my-0.5 rounded-xl text-[13px] text-slate-600 dark:text-gray-300 hover:text-brand-blue hover:bg-brand-blue/[0.04] transition-all">
+                  {item.level > 1 && <span className="text-slate-300 dark:text-gray-600 mr-1.5">›</span>}
+                  <span className="line-clamp-2">{item.text}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Share Bottom Sheet */}
+      {shareSheetOpen && (
+        <>
+          <div className="md:hidden fixed inset-0 z-[148] bg-black/40 backdrop-blur-sm" onClick={() => setShareSheetOpen(false)} />
+          <div className="md:hidden fixed bottom-[112px] left-0 right-0 z-[149] bg-white dark:bg-[#0d0d12] rounded-t-3xl border-t border-l border-r border-black/[0.08] dark:border-white/[0.08] shadow-2xl animate-in slide-in-from-bottom duration-200">
+            <div className="flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-slate-200 dark:bg-white/[0.12]" />
+            </div>
+            <div className="px-5 pt-2 pb-8">
+              <p className="text-[10px] font-black tracking-[0.18em] text-slate-400 uppercase mb-4">Share Article</p>
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={shareTwitter}
+                  className="flex items-center justify-center gap-2 p-3.5 bg-[#1DA1F2]/10 text-[#1DA1F2] border border-[#1DA1F2]/20 rounded-2xl text-[13px] font-bold">
+                  <Twitter size={15} /> Twitter / X
+                </button>
+                <button onClick={shareFacebook}
+                  className="flex items-center justify-center gap-2 p-3.5 bg-[#1877F2]/10 text-[#1877F2] border border-[#1877F2]/20 rounded-2xl text-[13px] font-bold">
+                  <Facebook size={15} /> Facebook
+                </button>
+                <button onClick={() => { onCopy(); setShareSheetOpen(false); }}
+                  className={`col-span-2 flex items-center justify-center gap-2 p-3.5 rounded-2xl text-[13px] font-bold border transition-all ${
+                    copied ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-slate-50 dark:bg-white/[0.04] text-slate-700 dark:text-gray-200 border-black/[0.06] dark:border-white/[0.06]'
+                  }`}>
+                  {copied ? <Check size={15} /> : <Copy size={15} />}
+                  {copied ? t('blog.copied') : t('blog.copy_link')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 };
 
@@ -254,6 +392,16 @@ const BlogPostPage: React.FC = () => {
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#080809]">
       <ReadingProgress contentRef={contentRef as React.RefObject<HTMLElement>} />
       <BackToTop />
+      {/* Mobile article toolbar (above bottom nav) */}
+      <MobileArticleBar
+        toc={toc}
+        title={title}
+        excerpt={excerpt}
+        onCopy={handleCopyLink}
+        copied={copied}
+        onShare={handleShare}
+      />
+
 
       {/* ── Hero cover image ───────────────────── */}
       <div className="relative w-full h-[55vh] min-h-[360px] max-h-[600px] overflow-hidden bg-slate-900">
@@ -332,9 +480,10 @@ const BlogPostPage: React.FC = () => {
               </span>
             </div>
 
-            {/* Mobile TOC toggle */}
+            {/* Mobile TOC — handled by MobileArticleBar bottom sheet */}
+            {/* Desktop MD TOC inline toggle for lg breakpoint */}
             {toc.length >= 2 && (
-              <div className="lg:hidden mb-6">
+              <div className="hidden md:block lg:hidden mb-6">
                 <button onClick={() => setTocOpen(!tocOpen)}
                   className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl text-[12px] font-bold text-slate-700 dark:text-white">
                   <span className="flex items-center gap-2"><List size={14} className="text-brand-blue" /> Table of Contents</span>
@@ -355,6 +504,7 @@ const BlogPostPage: React.FC = () => {
               </div>
             )}
 
+
             {/* Tags */}
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-8">
@@ -374,8 +524,8 @@ const BlogPostPage: React.FC = () => {
               dangerouslySetInnerHTML={{ __html: content }}
             />
 
-            {/* ── Share bar ── */}
-            <div className="mt-12 pt-8 border-t border-black/[0.06] dark:border-white/[0.06]">
+            {/* ── Share bar — desktop only (mobile uses bottom sheet) ── */}
+            <div className="hidden md:block mt-12 pt-8 border-t border-black/[0.06] dark:border-white/[0.06]">
               <p className="text-[12px] font-black text-slate-400 uppercase tracking-widest mb-4">Share this article</p>
               <div className="flex items-center gap-2 flex-wrap">
                 <button onClick={shareTwitter}
@@ -401,6 +551,7 @@ const BlogPostPage: React.FC = () => {
               </div>
             </div>
 
+
             {/* ── Author card ── */}
             <div className="mt-8 p-5 bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl flex items-center gap-4">
               {post.author?.avatar ? (
@@ -418,14 +569,18 @@ const BlogPostPage: React.FC = () => {
               </div>
             </div>
 
-            {/* ── Back nav ── */}
-            <div className="mt-8 flex items-center justify-between">
+            {/* ── Back nav — desktop only (mobile uses toolbar) ── */}
+            <div className="hidden md:flex mt-8 items-center justify-between">
               <button onClick={() => navigate(-1)}
                 className="flex items-center gap-2 text-[13px] font-semibold text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors">
                 <ArrowLeft size={15} /> {t('blog.back')}
               </button>
             </div>
+
+            {/* Extra padding on mobile for double nav bars */}
+            <div className="md:hidden h-[120px]" />
           </article>
+
 
           {/* ── Right: TOC sidebar ──────────────── */}
           <aside className="hidden lg:block w-[240px] xl:w-[280px] shrink-0">
@@ -437,15 +592,24 @@ const BlogPostPage: React.FC = () => {
       {/* ── Related posts ──────────────────────── */}
       {related.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 md:px-8 pb-16">
-          <div className="pt-10 border-t border-black/[0.06] dark:border-white/[0.06]">
-            <div className="flex items-center gap-3 mb-8">
+        <div className="pt-10 border-t border-black/[0.06] dark:border-white/[0.06]">
+            <div className="flex items-center gap-3 mb-6">
               <div className="w-1 h-6 bg-gradient-to-b from-brand-blue to-purple-500 rounded-full" />
               <h2 className="text-[18px] font-black text-slate-900 dark:text-white">{t('blog.related')}</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Desktop: 3-col grid / Mobile: horizontal scroll */}
+            <div className="hidden md:grid grid-cols-3 gap-6">
               {related.map(p => <PostCard key={p._id} post={p} size="normal" />)}
             </div>
+            <div className="flex md:hidden gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2">
+              {related.map(p => (
+                <div key={p._id} className="snap-start shrink-0 w-[78vw]">
+                  <PostCard post={p} size="normal" />
+                </div>
+              ))}
+            </div>
           </div>
+
         </section>
       )}
     </div>
