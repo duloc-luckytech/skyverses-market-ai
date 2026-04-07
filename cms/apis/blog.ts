@@ -81,4 +81,49 @@ export const blogApi = {
       return { success: false };
     }
   },
+
+  /** PATCH /blog/:id/featured — Quick toggle featured */
+  toggleFeatured: async (id: string, isFeatured: boolean): Promise<{ success: boolean; data?: any }> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/blog/${id}/featured`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify({ isFeatured }),
+      });
+      return await res.json();
+    } catch (error) {
+      console.error('Blog Featured Toggle Error:', error);
+      return { success: false };
+    }
+  },
+
+  /** DELETE /blog/bulk — Bulk delete posts */
+  bulkDelete: async (ids: string[]): Promise<{ success: boolean; deleted?: number }> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/blog/bulk`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+        body: JSON.stringify({ ids }),
+      });
+      return await res.json();
+    } catch (error) {
+      console.error('Blog Bulk Delete Error:', error);
+      return { success: false };
+    }
+  },
+
+  /** POST /blog/reorder — Bulk reorder posts */
+  reorder: async (orders: Array<{ id: string; order: number }>): Promise<{ success: boolean }> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/blog/reorder`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ orders }),
+      });
+      return await res.json();
+    } catch (error) {
+      console.error('Blog Reorder Error:', error);
+      return { success: false };
+    }
+  },
 };

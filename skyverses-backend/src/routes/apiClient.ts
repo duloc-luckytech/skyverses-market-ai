@@ -8,6 +8,8 @@ import { authenticate } from "./auth";
 import { getOrAssignOwnerForUser } from "./fxflow";
 import { buildFinalImagePayload } from "../utils/buildFinalImagePayload";
 import ImageOwnerModel from "../models/ImageOwnerModel";
+import BlogPost from "../models/BlogPost.model";
+import { PRESET_CREATORS } from "./blog";
 
 const router = express.Router();
 
@@ -772,6 +774,233 @@ router.get("/external/video-task/:id", authenticateApiToken, async (req: any, re
   } catch (err: any) {
     console.error("❌ [GET /api-client/external/video-task/:id]", err);
     return res.status(500).json({ success: false, message: "Internal error" });
+  }
+});
+
+/* ============================================================
+   📰 EXTERNAL BLOG API — Dành cho bên thứ 3
+   Auth bằng Bearer Token (apiToken giống image/video tasks)
+   
+   Mục đích:
+   - Search/query danh sách blog → check duplicate trước khi viết
+   - Tạo blog post mới qua API (AI writer, automation tools...)
+============================================================ */
+
+/* ─── GET /api-client/external/blog/search ─────────────────
+   Search blog posts (all statuses visible to token owner)
+   Query params:
+     q        — keyword tìm trong title EN/VI, slug, excerpt
+     slug     — exact slug match (check duplicate)
+     category — filter theo category
+     status   — "published" | "draft" | "all" (default: all)
+     page     — trang (default: 1)
+     limit    — số kết quả (default: 20, max: 50)
+─────────────────────────────────────────────────────────── */
+router.get("/external/blog/search", authenticateApiToken, async (req: any, res) => {
+  try {
+    const {
+      q,
+      slug,
+      category,
+      status = "all",
+      page = "1",
+      limit = "20",
+    } = req.query;
+
+    const pageNum = Math.max(1, parseInt(page as string));
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit as string)));
+    const skip = (pageNum - 1) * limitNum;
+
+    const filter: any = {};
+
+    // Status filter
+    if (status === "published") filter.isPublished = true;
+    if (status === "draft") filter.isPublished = false;
+
+    // Exact slug match (duplicate check)
+    if (slug) {
+      filter.slug = String(slug).trim().toLowerCase();
+    }
+
+    // Category filter
+    if (category) {
+      filter.category = { $regex: new RegExp(String(category), "i") };
+    }
+
+    // Keyword search across title + slug + excerpt
+    if (q && !slug) {
+      const keyword = String(q).trim();
+      const regex = new RegExp(keyword, "i");
+      filter.$or = [
+        { "title.en": regex },
+        { "title.vi": regex },
+        { slug: regex },
+        { "excerpt.en": regex },
+        { "excerpt.vi": regex },
+        { tags: regex },
+      ];
+    }
+
+    const [items, total] = await Promise.all([
+      BlogPost.find(filter)
+        .select("_id slug title excerpt category tags isPublished isFeatured viewCount publishedAt createdAt order")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum)
+        .lean(),
+      BlogPost.countDocuments(filter),
+    ]);
+
+    console.log(`📰 [EXT-BLOG] Search by ${req.user.email}: q="${q || ""}" slug="${slug || ""}" → ${items.length} results`);
+
+    return res.json({
+      success: true,
+      data: items,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
+  } catch (err: any) {
+    console.error("❌ [GET /api-client/external/blog/search]", err);
+    return res.status(500).json({ success: false, message: err.message || "Internal error" });
+  }
+});
+
+/* ─── POST /api-client/external/blog ───────────────────────
+   Tạo blog post mới (AI writer / automation gửi lên)
+   Body:
+     slug*         — unique URL slug
+     title*        — { en: string, vi?: string, ko?: string, ja?: string }
+     content*      — { en: string, vi?: string, ko?: string, ja?: string }
+     excerpt       — { en: string, ... }
+     coverImage    — URL ảnh bìa
+     category      — mặc định "AI Tools"
+     tags          — string[]
+     isPublished   — mặc định false (tạo nháp trước)
+     isFeatured    — mặc định false
+     readTime      — số phút (default 5)
+     seo           — { metaTitle, metaDescription, ogImage, keywords }
+─────────────────────────────────────────────────────────── */
+router.post("/external/blog", authenticateApiToken, async (req: any, res) => {
+  try {
+    const {
+      slug,
+      title,
+      content,
+      excerpt,
+      coverImage,
+      category = "AI Tools",
+      tags = [],
+      isPublished = false,
+      isFeatured = false,
+      readTime = 5,
+      seo,
+      order = 0,
+    } = req.body;
+
+    // Validate required fields
+    if (!slug || !title?.en || !content?.en) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu field bắt buộc: slug, title.en, content.en",
+      });
+    }
+
+    // Check slug duplicate
+    const existing = await BlogPost.findOne({ slug: slug.trim().toLowerCase() });
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        message: "Slug đã tồn tại",
+        existingId: existing._id,
+        existingTitle: (existing as any).title?.en,
+      });
+    }
+
+    // Auto-assign random creator (same as internal blog.ts)
+    const author = PRESET_CREATORS[Math.floor(Math.random() * PRESET_CREATORS.length)];
+
+    const post = await BlogPost.create({
+      slug: slug.trim().toLowerCase(),
+      title,
+      content,
+      excerpt: excerpt || { en: "", vi: "", ko: "", ja: "" },
+      coverImage: coverImage || "",
+      category,
+      tags,
+      author,
+      isPublished,
+      isFeatured,
+      readTime,
+      order,
+      seo: seo || {
+        metaTitle: title,
+        metaDescription: excerpt || { en: "", vi: "" },
+        ogImage: coverImage || "",
+        keywords: tags,
+      },
+      publishedAt: isPublished ? new Date() : null,
+      viewCount: 0,
+    });
+
+    console.log(`📰 [EXT-BLOG] Created post: "${post.slug}" by ${req.user.email} (published=${isPublished})`);
+
+    return res.json({
+      success: true,
+      data: {
+        _id: post._id,
+        slug: (post as any).slug,
+        title: (post as any).title,
+        isPublished: (post as any).isPublished,
+        createdAt: post.createdAt,
+      },
+    });
+  } catch (err: any) {
+    console.error("❌ [POST /api-client/external/blog]", err);
+    return res.status(500).json({ success: false, message: err.message || "Internal error" });
+  }
+});
+
+/* ─── PUT /api-client/external/blog/:id ────────────────────
+   Cập nhật blog post đã tạo
+   Chỉ hỗ trợ update các field nội dung, không đổi được author/viewCount
+─────────────────────────────────────────────────────────── */
+router.put("/external/blog/:id", authenticateApiToken, async (req: any, res) => {
+  try {
+    const allowedFields = [
+      "title", "content", "excerpt", "coverImage", "category",
+      "tags", "isPublished", "isFeatured", "readTime", "seo", "order",
+    ];
+
+    const update: any = {};
+    for (const key of allowedFields) {
+      if (req.body[key] !== undefined) update[key] = req.body[key];
+    }
+
+    // Auto-set publishedAt once when first publishing
+    if (update.isPublished === true) {
+      const existing = await BlogPost.findById(req.params.id);
+      if (existing && !(existing as any).publishedAt) {
+        update.publishedAt = new Date();
+      }
+    }
+
+    const post = await BlogPost.findByIdAndUpdate(req.params.id, update, { new: true })
+      .select("_id slug title isPublished isFeatured updatedAt");
+
+    if (!post) {
+      return res.status(404).json({ success: false, message: "Blog post not found" });
+    }
+
+    console.log(`📰 [EXT-BLOG] Updated post: "${(post as any).slug}" by ${req.user.email}`);
+
+    return res.json({ success: true, data: post });
+  } catch (err: any) {
+    console.error("❌ [PUT /api-client/external/blog/:id]", err);
+    return res.status(500).json({ success: false, message: err.message || "Internal error" });
   }
 });
 

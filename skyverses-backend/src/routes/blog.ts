@@ -283,6 +283,66 @@ router.delete("/:id", authenticate, async (req: any, res) => {
 });
 
 /* =====================================================
+   ADMIN — BULK DELETE POSTS
+   DELETE /blog/bulk  { ids: string[] }
+===================================================== */
+router.delete("/bulk", authenticate, async (req: any, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ success: false, message: "ids is required" });
+    }
+    const result = await BlogPost.deleteMany({ _id: { $in: ids } });
+    res.json({ success: true, deleted: result.deletedCount });
+  } catch (err: any) {
+    console.error("[Blog Bulk Delete]", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/* =====================================================
+   ADMIN — QUICK TOGGLE FEATURED
+   PATCH /blog/:id/featured  { isFeatured: boolean }
+===================================================== */
+router.patch("/:id/featured", authenticate, async (req: any, res) => {
+  try {
+    const { isFeatured } = req.body;
+    const post = await BlogPost.findByIdAndUpdate(
+      req.params.id,
+      { isFeatured: !!isFeatured },
+      { new: true }
+    );
+    if (!post) return res.status(404).json({ success: false, message: "Post not found" });
+    res.json({ success: true, data: post });
+  } catch (err: any) {
+    console.error("[Blog Featured Toggle]", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/* =====================================================
+   ADMIN — BULK REORDER POSTS
+   POST /blog/reorder  { orders: Array<{ id: string; order: number }> }
+===================================================== */
+router.post("/reorder", authenticate, async (req: any, res) => {
+  try {
+    const { orders } = req.body;
+    if (!Array.isArray(orders) || orders.length === 0) {
+      return res.status(400).json({ success: false, message: "orders is required" });
+    }
+    await Promise.all(
+      orders.map(({ id, order }: { id: string; order: number }) =>
+        BlogPost.findByIdAndUpdate(id, { order })
+      )
+    );
+    res.json({ success: true });
+  } catch (err: any) {
+    console.error("[Blog Reorder]", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/* =====================================================
    ADMIN — TOGGLE PUBLISH STATUS
    POST /blog/:id/publish
 ===================================================== */
