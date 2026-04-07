@@ -7,8 +7,9 @@ import {
   Zap, ArrowRight, BarChart3,
   ChevronDown, Bookmark, Loader2, Sparkles,
   Database, HelpCircle, Users, Gift, Plus,
-  Compass, Box, Search, Command, Layers, FileText
+  Search, Command
 } from 'lucide-react';
+
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
@@ -34,14 +35,15 @@ const FlagIcon = ({ code, className = "w-5 h-3.5" }: { code: string; className?:
 const DropdownLink = ({
   to, icon, label, onClick, external = false
 }: {
-  to: string; icon: React.ReactNode; label: string; onClick: () => void; external?: boolean;
+  to: string; icon: React.ReactNode | null; label: string; onClick: () => void; external?: boolean;
 }) => {
-  const cls = "w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-slate-600 dark:text-gray-300 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white transition-all rounded-lg";
+  const cls = `w-full flex items-center gap-2.5 px-3 py-2 text-[12px] font-semibold text-slate-600 dark:text-gray-300 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white transition-all rounded-lg`;
   if (external) {
-    return <a href={to} target="_blank" rel="noopener noreferrer" onClick={onClick} className={cls}>{icon} {label}</a>;
+    return <a href={to} target="_blank" rel="noopener noreferrer" onClick={onClick} className={cls}>{icon}{label}</a>;
   }
-  return <Link to={to} onClick={onClick} className={cls}>{icon} {label}</Link>;
+  return <Link to={to} onClick={onClick} className={cls}>{icon}{label}</Link>;
 };
+
 
 interface HeaderProps {
   onOpenLibrary: () => void;
@@ -146,18 +148,14 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
             </Link>
 
             {/* Nav Links — Desktop */}
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-0.5">
+
               {/* Home */}
               <Link to="/" className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive('/') ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}>
                 Home
               </Link>
 
-              {/* Marketplace */}
-              <Link to="/markets" className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive('/markets') ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}>
-                Marketplace
-              </Link>
-
-              {/* Explore Dropdown */}
+              {/* Explore Dropdown — groups: Marketplace / Discover */}
               <div className="relative" ref={exploreRef}>
                 <button
                   onClick={() => setShowExploreMenu(!showExploreMenu)}
@@ -165,13 +163,13 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   aria-expanded={showExploreMenu}
                   aria-haspopup="true"
                   className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all flex items-center gap-1 ${
-                    location.pathname.startsWith('/explorer') || location.pathname === '/models'
-                      ? 'text-brand-blue bg-brand-blue/[0.06]' 
+                    location.pathname.startsWith('/market') || location.pathname.startsWith('/explorer') || location.pathname === '/models'
+                      ? 'text-brand-blue bg-brand-blue/[0.06]'
                       : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
                   }`}
                 >
-                  {t('nav.explore')}
-                  <ChevronDown size={12} className={`transition-transform duration-200 ${showExploreMenu ? 'rotate-180' : ''}`} />
+                  Explore
+                  <ChevronDown size={11} className={`transition-transform duration-200 ${showExploreMenu ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence>
                   {showExploreMenu && (
@@ -179,11 +177,22 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                       initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
                       transition={{ duration: 0.12 }}
                       onMouseLeave={() => setShowExploreMenu(false)}
-                      className="absolute top-full left-0 mt-1 w-44 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl p-1 z-[200]"
+                      className="absolute top-full left-0 mt-1 w-52 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl p-2 z-[200]"
                       role="menu"
                     >
-                      <DropdownLink to="/explorer" icon={<Compass size={15} />} label={t('nav.explorer')} onClick={() => setShowExploreMenu(false)} />
-                      <DropdownLink to="/models" icon={<Box size={15} />} label={t('nav.models')} onClick={() => setShowExploreMenu(false)} />
+                      {/* Group: Marketplace */}
+                      <p className="text-[9px] font-black tracking-[0.15em] uppercase text-slate-400 px-2 pb-1.5 pt-0.5">Marketplace</p>
+                      <DropdownLink to="/markets" icon={null} label="Browse AI Tools" onClick={() => setShowExploreMenu(false)} />
+                      {isAuthenticated && (
+                        <DropdownLink to="/apps" icon={null} label="My Workspace" onClick={() => setShowExploreMenu(false)} />
+                      )}
+
+                      <div className="h-px bg-black/[0.04] dark:bg-white/[0.04] mx-1 my-1.5" />
+
+                      {/* Group: Discover */}
+                      <p className="text-[9px] font-black tracking-[0.15em] uppercase text-slate-400 px-2 pb-1.5">Discover</p>
+                      <DropdownLink to="/explorer" icon={null} label="Explorer Gallery" onClick={() => setShowExploreMenu(false)} />
+                      <DropdownLink to="/models" icon={null} label="AI Models" onClick={() => setShowExploreMenu(false)} />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -191,17 +200,19 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
               {/* Insights */}
               <a href="https://insights.skyverses.com" target="_blank" rel="noopener noreferrer"
-                className="px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all flex items-center gap-1 text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
-                <FileText size={13} /> Insights
+                className="px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
+                Insights
               </a>
 
-              {/* Other nav links */}
-              {navLinks.slice(1).map((link) => (
-                <Link key={link.name} to={link.path}
-                  className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive(link.path) ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
-                >{link.name}</Link>
-              ))}
+              {/* Create (authenticated only) */}
+              {isAuthenticated && (
+                <Link to="/apps"
+                  className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive('/apps') ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}>
+                  Create
+                </Link>
+              )}
             </div>
+
 
             {/* Spacer */}
             <div className="flex-1" />
@@ -430,33 +441,34 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
                 </Link>
 
-                {/* Explore Sub-links */}
+                {/* Discover group */}
                 <div className="px-3 py-2">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('nav.explore')}</p>
-                  <div className="pl-3 space-y-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Discover</p>
+                  <div className="pl-2 space-y-1">
                     <Link to="/explorer" onClick={() => setIsOpen(false)} className={`flex items-center justify-between py-2 text-sm font-medium ${isActive('/explorer') ? 'text-brand-blue' : 'text-slate-600 dark:text-gray-300'}`}>
-                      {t('nav.explorer')} <ArrowRight size={14} className="text-slate-300" />
+                      Explorer Gallery <ArrowRight size={14} className="text-slate-300" />
                     </Link>
                     <Link to="/models" onClick={() => setIsOpen(false)} className={`flex items-center justify-between py-2 text-sm font-medium ${isActive('/models') ? 'text-brand-blue' : 'text-slate-600 dark:text-gray-300'}`}>
-                      {t('nav.models')} <ArrowRight size={14} className="text-slate-300" />
+                      AI Models <ArrowRight size={14} className="text-slate-300" />
                     </Link>
                   </div>
                 </div>
 
                 <a href="https://insights.skyverses.com" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)}
                   className="flex items-center justify-between px-3 py-3 rounded-xl transition-all text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
-                  <span className="text-sm font-bold flex items-center gap-2"><FileText size={15} /> Insights</span>
+                  <span className="text-sm font-bold">Insights</span>
                   <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
                 </a>
 
-                {navLinks.slice(1).map((link) => (
-                  <Link key={link.name} to={link.path} onClick={() => setIsOpen(false)}
-                    className={`flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold transition-all ${isActive(link.path) ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
+                {isAuthenticated && (
+                  <Link to="/apps" onClick={() => setIsOpen(false)}
+                    className={`flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold transition-all ${isActive('/apps') ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
                   >
-                    {link.name} <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
+                    Create <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
                   </Link>
-                ))}
+                )}
               </div>
+
 
               {/* Language */}
               <div className="space-y-2">
