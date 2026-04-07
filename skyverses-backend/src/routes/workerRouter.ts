@@ -478,6 +478,10 @@ export function createWorkerRouter(provider: string) {
           const refImages = Array.isArray(job.input?.images) && job.input.images.length > 0
             ? job.input.images
             : (job.input?.image ? [job.input.image] : []);
+          // ✅ Also include input.referenceImage (style/reference image URL)
+          if (job.input?.referenceImage && !refImages.includes(job.input.referenceImage)) {
+            refImages.push(job.input.referenceImage);
+          }
           if (refImages.length > 0) {
             task.referenceImages = refImages;
           }
