@@ -143,6 +143,7 @@ const BOT_META_HTML = (post: any, lang: string = "en") => {
   <meta property="og:url" content="${url}"/>
   <meta property="og:type" content="article"/>
   <meta property="og:site_name" content="Skyverses Insights"/>
+  <meta property="fb:app_id" content="966242223397198"/>
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:title" content="${metaTitle.replace(/"/g, "&quot;")}"/>
   <meta name="twitter:description" content="${description.replace(/"/g, "&quot;")}"/>
