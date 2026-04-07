@@ -4,11 +4,12 @@ import { AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   BarChart3, Cloud, DollarSign,
-  Package, History, Users, Banknote, Globe,
-  Filter, Compass, Bot, Cog, Key, Zap, Inbox, Sparkles,
+  Package, Users, Banknote, Globe,
+  Compass, Bot, Key, Zap, Inbox, Sparkles,
   ShieldCheck, ChevronLeft, ChevronRight,
-  Sun, Moon, LogOut, Plus, CreditCard
+  Sun, Moon, LogOut, Plus, CreditCard, FileText, Webhook
 } from 'lucide-react';
+
 import { marketApi } from '../apis/market';
 import { systemConfigApi } from '../apis/config';
 import { Solution, HomeBlock } from '../types';
@@ -43,32 +44,38 @@ import { BlogTab } from '../components/admin-pro/BlogTab';
 type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG';
 
 const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
-  { id: 'DASHBOARD', label: 'Tổng quan', icon: <BarChart3 size={16} />, group: 'MAIN' },
-  { id: 'CLOUD', label: 'Sản phẩm', icon: <Cloud size={16} />, group: 'MARKET' },
+  // ── MAIN ──
+  { id: 'DASHBOARD',       label: 'Tổng quan',      icon: <BarChart3 size={16} />,  group: 'MAIN' },
 
-  { id: 'SUBMISSIONS', label: 'Đề xuất SP', icon: <Inbox size={16} />, group: 'MARKET' },
-  { id: 'PRICING', label: 'Bảng giá', icon: <DollarSign size={16} />, group: 'FINANCE' },
-  { id: 'CREDIT_PACKS', label: 'Gói Credits', icon: <Package size={16} />, group: 'FINANCE' },
-  { id: 'BANKING', label: 'Banking & QR', icon: <CreditCard size={16} />, group: 'FINANCE' },
-  { id: 'PAYMENT_HISTORY', label: 'Lịch sử nạp', icon: <Banknote size={16} />, group: 'FINANCE' },
-  { id: 'ADMIN_DEPOSIT', label: 'Deposit Credit', icon: <Sparkles size={16} />, group: 'FINANCE' },
-  { id: 'USERS', label: 'Khách hàng', icon: <Users size={16} />, group: 'SYSTEM' },
-  { id: 'LOGS', label: 'Nhật ký', icon: <History size={16} />, group: 'SYSTEM' },
-  { id: 'WEBHOOK_LOGS', label: 'Webhook Logs', icon: <Globe size={16} />, group: 'SYSTEM' },
-  { id: 'CONFIG', label: 'Cấu hình', icon: <Cog size={16} />, group: 'SYSTEM' },
-  { id: 'FXFLOW', label: 'FXFlow Engine', icon: <Zap size={16} />, group: 'SYSTEM' },
-  { id: 'API_CLIENTS', label: 'API Clients', icon: <Key size={16} />, group: 'SYSTEM' },
-  { id: 'PRODUCTS', label: 'Sản phẩm', icon: <Package size={16} />, group: 'MARKET' },
-  { id: 'BLOG', label: 'Blog', icon: <Globe size={16} />, group: 'CONTENT' },
+  // ── MARKET ──
+  { id: 'CLOUD',           label: 'Sản phẩm Cloud', icon: <Cloud size={16} />,      group: 'MARKET' },
+  { id: 'SUBMISSIONS',     label: 'Đề xuất SP',     icon: <Inbox size={16} />,      group: 'MARKET' },
+  { id: 'BLOG',            label: 'Blog',            icon: <FileText size={16} />,   group: 'MARKET' },
+
+  // ── FINANCE ──
+  { id: 'PRICING',         label: 'Bảng giá',       icon: <DollarSign size={16} />, group: 'FINANCE' },
+  { id: 'CREDIT_PACKS',    label: 'Gói Credits',    icon: <Package size={16} />,    group: 'FINANCE' },
+  { id: 'BANKING',         label: 'Banking & QR',   icon: <CreditCard size={16} />, group: 'FINANCE' },
+  { id: 'PAYMENT_HISTORY', label: 'Lịch sử nạp',   icon: <Banknote size={16} />,   group: 'FINANCE' },
+  { id: 'ADMIN_DEPOSIT',   label: 'Nạp Credit',     icon: <Sparkles size={16} />,   group: 'FINANCE' },
+
+  // ── SYSTEM ──
+  { id: 'USERS',           label: 'Khách hàng',     icon: <Users size={16} />,      group: 'SYSTEM' },
+  { id: 'WEBHOOK_LOGS',    label: 'Webhook Logs',   icon: <Webhook size={16} />,    group: 'SYSTEM' },
+
+  // ── TOOLS ──
+  { id: 'FXFLOW',          label: 'FXFlow Engine',  icon: <Zap size={16} />,        group: 'TOOLS' },
+  { id: 'API_CLIENTS',     label: 'API Clients',    icon: <Key size={16} />,        group: 'TOOLS' },
 ];
 
 const GROUP_LABELS: Record<string, string> = {
-  MAIN: '',
-  MARKET: 'Thị trường',
-  CONTENT: 'Nội dung',
+  MAIN:    '',
+  MARKET:  'Thị trường',
   FINANCE: 'Tài chính',
-  SYSTEM: 'Hệ thống',
+  SYSTEM:  'Hệ thống',
+  TOOLS:   'Công cụ kỹ thuật',
 };
+
 
 const AdminCmsProPage = () => {
   const { user, logout } = useAuth();
