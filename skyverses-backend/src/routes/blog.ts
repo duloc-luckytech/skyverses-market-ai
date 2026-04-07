@@ -416,16 +416,43 @@ router.post("/reorder", authenticate, async (req: any, res) => {
    ADMIN — TOGGLE PUBLISH STATUS
    POST /blog/:id/publish
 ===================================================== */
+
+/** Fire-and-forget ping to Google & Bing when sitemap updates */
+async function pingSitemapIndexers(slug?: string) {
+  const SITEMAP = "https://insights.skyverses.com/sitemap.xml";
+  const POST_URL = slug ? `https://insights.skyverses.com/${slug}` : null;
+
+  const pings = [
+    // Google sitemap ping
+    `https://www.google.com/ping?sitemap=${encodeURIComponent(SITEMAP)}`,
+    // Bing sitemap ping
+    `https://www.bing.com/ping?sitemap=${encodeURIComponent(SITEMAP)}`,
+  ];
+
+  for (const url of pings) {
+    fetch(url, { method: "GET" })
+      .then(() => console.log(`🔔 [SEO] Pinged: ${url}`))
+      .catch((err) => console.warn(`⚠️ [SEO] Ping failed: ${url}`, err.message));
+  }
+
+  if (POST_URL) {
+    console.log(`🔔 [SEO] New post published: ${POST_URL}`);
+  }
+}
+
 router.post("/:id/publish", authenticate, async (req: any, res) => {
   try {
     const { isPublished } = req.body;
     const update: any = { isPublished };
+
+    let isFirstPublish = false;
 
     // Set publishedAt when first published
     if (isPublished) {
       const existing = await BlogPost.findById(req.params.id);
       if (existing && !existing.publishedAt) {
         update.publishedAt = new Date();
+        isFirstPublish = true;
       }
     }
 
@@ -433,6 +460,11 @@ router.post("/:id/publish", authenticate, async (req: any, res) => {
       new: true,
     });
     res.json({ success: true, data: post });
+
+    // Auto-ping Google + Bing sitemap (fire-and-forget, only on first publish)
+    if (isPublished && isFirstPublish && post?.slug) {
+      pingSitemapIndexers(post.slug);
+    }
   } catch (err: any) {
     console.error("[Blog Publish]", err);
     res.status(500).json({ success: false, message: err.message });
