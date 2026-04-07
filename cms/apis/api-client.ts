@@ -111,4 +111,19 @@ export const apiClientApi = {
       return { success: false, message: 'Connection failed' };
     }
   },
+
+  /** PATCH /api-client/token-expiry — Update expiry WITHOUT regen token */
+  updateTokenExpiry: async (userId: string, tokenExpiresIn: number | null): Promise<any> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api-client/token-expiry`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify({ userId, tokenExpiresIn }),
+      });
+      return await response.json();
+    } catch (error) {
+      return { success: false, message: 'Connection failed' };
+    }
+  },
 };
+

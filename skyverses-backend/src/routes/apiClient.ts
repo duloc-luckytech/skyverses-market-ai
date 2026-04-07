@@ -185,6 +185,56 @@ router.post("/generate-token", authenticate, async (req: any, res) => {
 });
 
 /* ============================================================
+   ⏰ 2.5 Update Token Expiry (WITHOUT regenerating token)
+   PATCH /api-client/token-expiry
+   Body: { userId, tokenExpiresIn }
+     tokenExpiresIn: number of days → 0 or null = never expires
+============================================================ */
+router.patch("/token-expiry", authenticate, async (req: any, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    const { userId, tokenExpiresIn } = req.body;
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "Thiếu userId" });
+    }
+
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User không tồn tại" });
+    }
+
+    if (!user.apiToken) {
+      return res.status(400).json({ success: false, message: "User chưa có token" });
+    }
+
+    // tokenExpiresIn: 0 or null = never expires
+    user.apiTokenExpiresAt = (tokenExpiresIn && tokenExpiresIn > 0)
+      ? new Date(Date.now() + tokenExpiresIn * 24 * 60 * 60 * 1000)
+      : null;
+
+    await user.save();
+
+    console.log(`⏰ [API-CLIENT] Token expiry updated for: ${user.email} → expires: ${user.apiTokenExpiresAt || 'never'}`);
+
+    return res.json({
+      success: true,
+      message: "✅ Đã cập nhật thời hạn token",
+      data: {
+        userId: user._id,
+        email: user.email,
+        apiTokenExpiresAt: user.apiTokenExpiresAt,
+      },
+    });
+  } catch (err: any) {
+    console.error("❌ [PATCH /api-client/token-expiry]", err);
+    return res.status(500).json({ success: false, message: err.message || "Internal error" });
+  }
+});
+
+/* ============================================================
    🚫 3️⃣ Revoke API Token
    POST /api-client/revoke-token
 ============================================================ */

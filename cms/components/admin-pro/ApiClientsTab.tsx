@@ -1,12 +1,12 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, Search, Plus, Key, Copy, RefreshCw, Loader2, Check, X,
   Shield, Zap, Activity, Eye, EyeOff, Trash2, RotateCcw,
   Terminal, Code, ChevronLeft, ChevronRight, Sparkles,
   UserPlus, Link2, AlertTriangle, Globe, Clipboard, Clock,
-  Timer
+  Timer, Calendar, Pencil
 } from 'lucide-react';
 import { apiClientApi, ApiClient, ApiClientStats } from '../../apis/api-client';
 import { useToast } from '../../context/ToastContext';
@@ -53,6 +53,24 @@ export const ApiClientsTab: React.FC = () => {
   // Token reveal
   const [revealedToken, setRevealedToken] = useState<string | null>(null);
   const [generatingTokenId, setGeneratingTokenId] = useState<string | null>(null);
+
+  // Edit expiry inline
+  const [editingExpiryId, setEditingExpiryId] = useState<string | null>(null);
+  const [expiryLoading, setExpiryLoading] = useState(false);
+  const [customExpiryDays, setCustomExpiryDays] = useState('');
+  const expiryPopoverRef = useRef<HTMLDivElement>(null);
+
+  // Close popover on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (expiryPopoverRef.current && !expiryPopoverRef.current.contains(e.target as Node)) {
+        setEditingExpiryId(null);
+        setCustomExpiryDays('');
+      }
+    };
+    if (editingExpiryId) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [editingExpiryId]);
 
   // API Docs modal
   const [showApiDocs, setShowApiDocs] = useState(false);
@@ -154,6 +172,29 @@ export const ApiClientsTab: React.FC = () => {
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     showToast(`Đã sao chép ${label}`, 'success');
+  };
+
+  /* ── Update Token Expiry ── */
+  const handleUpdateExpiry = async (userId: string, days: number | null) => {
+    setExpiryLoading(true);
+    try {
+      const res = await apiClientApi.updateTokenExpiry(userId, days);
+      if (res.success) {
+        showToast(days ? `Token hết hạn sau ${days} ngày` : 'Token đặt thành vĩnh viễn ∞', 'success');
+        // Optimistic update in local state
+        setClients(prev => prev.map(c => c._id === userId
+          ? { ...c, apiTokenExpiresAt: res.data?.apiTokenExpiresAt || undefined, tokenExpired: false }
+          : c
+        ));
+        setEditingExpiryId(null);
+        setCustomExpiryDays('');
+      } else {
+        showToast(res.message || 'Cập nhật thất bại', 'error');
+      }
+    } catch (e) {
+      showToast('Lỗi kết nối', 'error');
+    }
+    setExpiryLoading(false);
   };
 
   const relativeTime = (d?: string) => {
@@ -300,16 +341,85 @@ export const ApiClientsTab: React.FC = () => {
                       <span className="text-[9px] text-slate-300 dark:text-gray-700 italic">Chưa có token</span>
                     )}
                   </td>
-                  {/* Token Expiry */}
+                  {/* Token Expiry — Inline editable */}
                   <td className="px-3 py-3">
                     {c.hasToken ? (() => {
                       const exp = formatTokenExpiry(c.apiTokenExpiresAt, c.tokenExpired);
+                      const isEditingThis = editingExpiryId === c._id;
                       return (
-                        <div className="space-y-0.5">
-                          <span className={`px-1.5 py-0.5 text-[8px] font-black uppercase rounded border ${exp.badge}`}>{exp.label}</span>
+                        <div className="relative">
+                          {/* Badge — click to open popover */}
+                          <button
+                            onClick={() => {
+                              setEditingExpiryId(isEditingThis ? null : c._id);
+                              setCustomExpiryDays('');
+                            }}
+                            className={`group flex items-center gap-1 px-1.5 py-0.5 text-[8px] font-black uppercase rounded border transition-all hover:ring-1 hover:ring-brand-blue/30 ${exp.badge}`}
+                            title="Click để chỉnh thời hạn"
+                          >
+                            {exp.label}
+                            <Pencil size={7} className="opacity-0 group-hover:opacity-60 transition-opacity" />
+                          </button>
                           {c.apiTokenExpiresAt && (
-                            <p className="text-[8px] text-slate-400">{new Date(c.apiTokenExpiresAt).toLocaleDateString('vi-VN')}</p>
+                            <p className="text-[8px] text-slate-400 mt-0.5">{new Date(c.apiTokenExpiresAt).toLocaleDateString('vi-VN')}</p>
                           )}
+
+                          {/* Inline Popover */}
+                          <AnimatePresence>
+                            {isEditingThis && (
+                              <motion.div
+                                ref={expiryPopoverRef}
+                                initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                                transition={{ duration: 0.15 }}
+                                className="absolute left-0 top-full mt-1.5 z-[500] w-52 bg-white dark:bg-[#111114] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-2xl p-3 space-y-2"
+                              >
+                                <p className="text-[9px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1">
+                                  <Timer size={9} /> Thời hạn token
+                                </p>
+
+                                {/* Preset buttons */}
+                                <div className="grid grid-cols-3 gap-1">
+                                  {[7, 30, 90, 180, 365, 0].map(days => (
+                                    <button
+                                      key={days}
+                                      disabled={expiryLoading}
+                                      onClick={() => handleUpdateExpiry(c._id, days || null)}
+                                      className="py-1.5 rounded-lg text-[9px] font-bold border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.03] text-slate-600 dark:text-gray-400 hover:bg-brand-blue hover:text-white hover:border-brand-blue transition-all disabled:opacity-40"
+                                    >
+                                      {days === 0 ? '∞' : `${days}d`}
+                                    </button>
+                                  ))}
+                                </div>
+
+                                {/* Divider */}
+                                <div className="border-t border-black/[0.04] dark:border-white/[0.04]" />
+
+                                {/* Custom days input */}
+                                <div className="flex gap-1.5 items-center">
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    max="3650"
+                                    value={customExpiryDays}
+                                    onChange={e => setCustomExpiryDays(e.target.value)}
+                                    placeholder="Tùy chỉnh (ngày)"
+                                    className="flex-1 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg px-2 py-1.5 text-[9px] font-bold text-slate-700 dark:text-white outline-none focus:border-brand-blue/40 min-w-0"
+                                  />
+                                  <button
+                                    disabled={!customExpiryDays || expiryLoading}
+                                    onClick={() => handleUpdateExpiry(c._id, parseInt(customExpiryDays))}
+                                    className="px-2 py-1.5 bg-brand-blue text-white rounded-lg text-[9px] font-bold disabled:opacity-40 hover:brightness-110 transition-all shrink-0"
+                                  >
+                                    {expiryLoading ? <Loader2 size={9} className="animate-spin" /> : <Check size={9} />}
+                                  </button>
+                                </div>
+
+                                <p className="text-[8px] text-slate-400">0 ngày hoặc ∞ = không bao giờ hết hạn</p>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
                       );
                     })() : <span className="text-[9px] text-slate-300">—</span>}
