@@ -127,29 +127,33 @@ router.get("/sitemap.xml", async (_req, res) => {
       .sort({ publishedAt: -1 })
       .lean();
 
+    // Escape special XML characters to prevent parse errors
+    const xmlEscape = (str: string) =>
+      str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
     const staticPages = [
-      { url: BASE, priority: "1.0", changefreq: "daily" },
+      { url: `${BASE}`, priority: "1.0", changefreq: "daily" },
       { url: `${BASE}/category/Tutorials`, priority: "0.8", changefreq: "weekly" },
       { url: `${BASE}/category/News`, priority: "0.8", changefreq: "weekly" },
-      { url: `${BASE}/category/Tips & Tricks`, priority: "0.7", changefreq: "weekly" },
-      { url: `${BASE}/category/Case Studies`, priority: "0.7", changefreq: "weekly" },
+      { url: `${BASE}/category/Tips%20%26%20Tricks`, priority: "0.7", changefreq: "weekly" },
+      { url: `${BASE}/category/Case%20Studies`, priority: "0.7", changefreq: "weekly" },
     ];
 
     const urlSet = [
       // Static pages
       ...staticPages.map(p => `
   <url>
-    <loc>${p.url}</loc>
+    <loc>${xmlEscape(p.url)}</loc>
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="${p.url}"/>
-    <xhtml:link rel="alternate" hreflang="vi" href="${p.url}?lang=vi"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="${p.url}"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${xmlEscape(p.url)}"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="${xmlEscape(p.url)}?lang=vi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(p.url)}"/>
   </url>`),
       // Blog posts
       ...posts.map(post => {
         const lastmod = (post.updatedAt || post.publishedAt || new Date()).toISOString().split("T")[0];
-        const postUrl = `${BASE}/${post.slug}`;
+        const postUrl = xmlEscape(`${BASE}/${post.slug}`);
         return `
   <url>
     <loc>${postUrl}</loc>
