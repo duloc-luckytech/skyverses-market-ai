@@ -114,6 +114,67 @@ router.get("/", async (req, res) => {
 });
 
 /* =====================================================
+   PUBLIC — OG META PRERENDER (for social bots)
+   GET /blog/meta/:slug
+   Dùng để Nginx redirect bot (Facebook, Twitter, Zalo...)
+   đến endpoint này thay vì serve SPA → bot đọc đúng meta tags
+===================================================== */
+const BOT_META_HTML = (post: any, lang: string = "en") => {
+  const title = post.title?.[lang] || post.title?.en || "Skyverses Insights";
+  const description = post.seo?.metaDescription?.[lang] || post.seo?.metaDescription?.en
+    || post.excerpt?.[lang] || post.excerpt?.en || "";
+  const ogImage = post.seo?.ogImage?.trim() || post.coverImage?.trim()
+    || "https://ai.skyverses.com/assets/seo/seo-og-thumbnail-v2.png";
+  const url = `https://insights.skyverses.com/${post.slug}`;
+  const metaTitle = post.seo?.metaTitle?.[lang] || post.seo?.metaTitle?.en || title;
+
+  return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>${metaTitle} — Skyverses Insights</title>
+  <meta name="description" content="${description.replace(/"/g, "&quot;")}"/>
+  <meta property="og:title" content="${metaTitle.replace(/"/g, "&quot;")}"/>
+  <meta property="og:description" content="${description.replace(/"/g, "&quot;")}"/>
+  <meta property="og:image" content="${ogImage}"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:url" content="${url}"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:site_name" content="Skyverses Insights"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="${metaTitle.replace(/"/g, "&quot;")}"/>
+  <meta name="twitter:description" content="${description.replace(/"/g, "&quot;")}"/>
+  <meta name="twitter:image" content="${ogImage}"/>
+  <meta name="twitter:site" content="@SkyversesAI"/>
+  <link rel="canonical" href="${url}"/>
+  <script>window.location.replace("${url}");</script>
+</head>
+<body></body>
+</html>`;
+};
+
+router.get("/meta/:slug", async (req, res) => {
+  try {
+    const post = await BlogPost.findOne({ slug: req.params.slug, isPublished: true })
+      .select("slug title excerpt seo coverImage")
+      .lean();
+
+    if (!post) return res.status(404).send("Not found");
+
+    const lang = (req.query.lang as string) || "en";
+    res.set("Content-Type", "text/html; charset=utf-8");
+    res.set("Cache-Control", "public, max-age=3600");
+    return res.send(BOT_META_HTML(post, lang));
+  } catch (err: any) {
+    return res.status(500).send("Error");
+  }
+});
+
+
+
+/* =====================================================
    PUBLIC — SITEMAP XML
    GET /blog/sitemap.xml
    Trả về XML với tất cả published posts + hreflang EN/VI
