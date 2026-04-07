@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sitemap:gen": "node generate-sitemap.mjs",
+    "deploy": "node generate-sitemap.mjs && tsc && vite build"
   },
   "dependencies": {
     "framer-motion": "^12.23.26",
