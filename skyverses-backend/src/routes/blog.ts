@@ -343,22 +343,9 @@ router.put("/:id", authenticate, async (req: any, res) => {
 });
 
 /* =====================================================
-   ADMIN — DELETE POST
-   DELETE /blog/:id
-===================================================== */
-router.delete("/:id", authenticate, async (req: any, res) => {
-  try {
-    await BlogPost.findByIdAndDelete(req.params.id);
-    res.json({ success: true });
-  } catch (err: any) {
-    console.error("[Blog Delete]", err);
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-/* =====================================================
    ADMIN — BULK DELETE POSTS
    DELETE /blog/bulk  { ids: string[] }
+   ⚠️ Must be registered BEFORE DELETE /:id to avoid route conflict
 ===================================================== */
 router.delete("/bulk", authenticate, async (req: any, res) => {
   try {
@@ -370,6 +357,20 @@ router.delete("/bulk", authenticate, async (req: any, res) => {
     res.json({ success: true, deleted: result.deletedCount });
   } catch (err: any) {
     console.error("[Blog Bulk Delete]", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+/* =====================================================
+   ADMIN — DELETE POST
+   DELETE /blog/:id
+===================================================== */
+router.delete("/:id", authenticate, async (req: any, res) => {
+  try {
+    await BlogPost.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err: any) {
+    console.error("[Blog Delete]", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
