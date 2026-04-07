@@ -528,6 +528,45 @@ router.post("/:id/publish", authenticate, async (req: any, res) => {
     });
     res.json({ success: true, data: post });
 
+    // ─── Auto-featured pool management (fire-and-forget) ───────────
+    // Only on first publish: add new post to featured, keep pool at max 4
+    if (isPublished && isFirstPublish && post) {
+      (async () => {
+        const FEATURED_POOL = 4;
+        try {
+          // 1. Set new post as featured
+          await BlogPost.findByIdAndUpdate(post._id, { isFeatured: true });
+
+          // 2. Count current featured posts (excluding the new one)
+          const featured = await BlogPost.find({
+            isFeatured: true,
+            _id: { $ne: post._id },
+            isPublished: true,
+          })
+            .sort({ publishedAt: 1 }) // oldest first
+            .select("_id title publishedAt")
+            .lean();
+
+          // 3. If over limit → remove oldest featured posts
+          const overflow = featured.length - (FEATURED_POOL - 1); // -1 because new post already featured
+          if (overflow > 0) {
+            const toRemove = featured.slice(0, overflow).map((p: any) => p._id);
+            await BlogPost.updateMany(
+              { _id: { $in: toRemove } },
+              { $set: { isFeatured: false } }
+            );
+            console.log(
+              `⭐ [Featured] Removed ${overflow} old featured post(s), kept pool at ${FEATURED_POOL}`
+            );
+          }
+
+          console.log(`⭐ [Featured] "${post.title?.en}" added to featured pool`);
+        } catch (err) {
+          console.error("⚠️ [Featured] Auto-manage error:", err);
+        }
+      })();
+    }
+
     // Auto-ping Google + Bing sitemap (fire-and-forget, only on first publish)
     if (isPublished && isFirstPublish && post?.slug) {
       pingSitemapIndexers(post.slug);
