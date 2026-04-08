@@ -120,7 +120,7 @@ const BlogHeader: React.FC = () => {
           <div className="h-14 md:h-16 flex items-center gap-6">
 
             {/* Logo */}
-            <Link to="/" onClick={() => setMobileSheet(null)} className="flex items-center gap-2.5 shrink-0 group">
+            <Link to="/" onClick={() => { setMobileSheet(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="flex items-center gap-2.5 shrink-0 group">
               <img
                 src="https://ai.skyverses.com/assets/skyverses-logo.png"
                 alt="Skyverses"
