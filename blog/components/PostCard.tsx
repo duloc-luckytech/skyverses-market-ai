@@ -148,6 +148,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, size = 'normal' }) => {
           </h3>
           <div className="flex items-center gap-2 mt-1.5 text-[10px] text-white/45">
             <Clock size={9} /> {post.readTime}m · <Eye size={9} /> {post.viewCount}
+            {date && <span>· {date}</span>}
           </div>
         </div>
       </article>
@@ -206,6 +207,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, size = 'normal' }) => {
           <h2 className="text-[13px] font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-brand-blue transition-colors">
             {title}
           </h2>
+          <p className="text-[11px] text-slate-400 dark:text-gray-500 line-clamp-1 mt-0.5 leading-relaxed">
+            {excerpt}
+          </p>
           <div className="flex items-center gap-2 mt-1.5 text-[10px] text-slate-400">
             <Clock size={9} />{post.readTime}m
             <Eye size={9} />{post.viewCount > 999 ? `${(post.viewCount / 1000).toFixed(1)}k` : post.viewCount}

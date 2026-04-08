@@ -90,7 +90,7 @@ router.get("/", async (req, res) => {
     const [items, total] = await Promise.all([
       BlogPost.find(filter)
         .select("-content") // Don't send full content in list
-        .sort({ isFeatured: -1, order: 1, publishedAt: -1 })
+        .sort({ publishedAt: -1, createdAt: -1 })
         .skip(skip)
         .limit(limitNum)
         .lean(),
