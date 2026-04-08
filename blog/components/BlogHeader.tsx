@@ -120,7 +120,10 @@ const BlogHeader: React.FC = () => {
           <div className="h-14 md:h-16 flex items-center gap-6">
 
             {/* Logo */}
-            <Link to="/" onClick={() => { setMobileSheet(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="flex items-center gap-2.5 shrink-0 group">
+            <button
+              onClick={() => { setMobileSheet(null); navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="flex items-center gap-2.5 shrink-0 group"
+            >
               <img
                 src="https://ai.skyverses.com/assets/skyverses-logo.png"
                 alt="Skyverses"
@@ -134,7 +137,7 @@ const BlogHeader: React.FC = () => {
               <div className="flex sm:hidden items-baseline gap-1">
                 <span className="text-[15px] font-black tracking-tight text-slate-900 dark:text-white">Insights</span>
               </div>
-            </Link>
+            </button>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-1">
