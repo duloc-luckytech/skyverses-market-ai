@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
-  Search, Sparkles, X, ChevronRight, TrendingUp,
-  BookOpen, Zap, Users, Tag, ArrowRight, Newspaper
-} from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
+  Sparkles, ChevronRight, TrendingUp,
+  BookOpen, Zap, Users, Tag, ArrowRight, Newspaper, Search
+} from 'lucide-react';import { useLanguage } from '../context/LanguageContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { blogApi } from '../apis/blog';
 import { BlogPost, CategoryCount, Language } from '../types';
@@ -44,7 +43,6 @@ const ReadingProgress: React.FC = () => {
 const BlogHomePage: React.FC = () => {
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
   const { category: urlCategory } = useParams<{ category?: string }>();
   const currentLang = lang as Language;
 
@@ -62,7 +60,6 @@ const BlogHomePage: React.FC = () => {
   const [featured, setFeatured] = useState<BlogPost[]>([]);
   const [categories, setCategories] = useState<CategoryCount[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState(searchParams.get('q') || '');
   const [activeCategory, setActiveCategory] = useState(urlCategory || '');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -73,8 +70,8 @@ const BlogHomePage: React.FC = () => {
       setLoading(true);
       try {
         const [postsRes, featRes, catRes] = await Promise.all([
-          blogApi.getPosts({ page, limit: ITEMS_PER_PAGE, category: activeCategory || undefined, q: search || undefined, lang: currentLang }),
-          page === 1 && !activeCategory && !search ? blogApi.getFeatured() : Promise.resolve({ success: true, data: [] }),
+          blogApi.getPosts({ page, limit: ITEMS_PER_PAGE, category: activeCategory || undefined, lang: currentLang }),
+          page === 1 && !activeCategory ? blogApi.getFeatured() : Promise.resolve({ success: true, data: [] }),
           blogApi.getCategories(),
         ]);
         if (postsRes?.data) setPosts(postsRes.data);
@@ -85,14 +82,7 @@ const BlogHomePage: React.FC = () => {
       finally { setLoading(false); }
     };
     fetchAll();
-  }, [page, activeCategory, search, currentLang]);
-
-  useEffect(() => {
-    const p = new URLSearchParams();
-    if (search) p.set('q', search);
-    if (page > 1) p.set('page', String(page));
-    setSearchParams(p, { replace: true });
-  }, [search, page]);
+  }, [page, activeCategory, currentLang]);
 
   useEffect(() => { if (urlCategory !== undefined) setActiveCategory(urlCategory || ''); }, [urlCategory]);
 
@@ -103,11 +93,9 @@ const BlogHomePage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSearch = (e: React.FormEvent) => { e.preventDefault(); setPage(1); };
-
   const heroPost = featured[0];
   const sidePosts = featured.slice(1, 4);
-  const isFiltered = !!(activeCategory || search);
+  const isFiltered = !!activeCategory;
 
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#080809]">
@@ -182,40 +170,8 @@ const BlogHomePage: React.FC = () => {
       ══════════════════════════════════════════════ */}
       <div className={`max-w-7xl mx-auto px-4 md:px-8 pb-28 md:pb-20 ${isFiltered ? 'pt-20 md:pt-24' : 'pt-8'}`}>
 
-        {/* ── Search + Filter bar ── */}
+        {/* ── Filter bar — categories only ── */}
         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-10">
-          {/* Desktop search */}
-          <form onSubmit={handleSearch} className="relative max-w-sm w-full hidden md:block">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
-            <input type="text" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
-              placeholder={t('blog.search')}
-              className="w-full bg-white dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.07] pl-10 pr-10 py-2.5 rounded-2xl text-[13px] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-gray-600 focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/[0.08] outline-none transition-all shadow-sm dark:shadow-none"
-            />
-            {search && (
-              <button type="button" onClick={() => { setSearch(''); setPage(1); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-blue transition-colors">
-                <X size={13} />
-              </button>
-            )}
-          </form>
-
-          {/* Mobile: search visible when filtering */}
-          {isFiltered && (
-            <form onSubmit={handleSearch} className="relative w-full md:hidden">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
-              <input type="text" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
-                placeholder={t('blog.search')}
-                className="w-full bg-white dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.07] pl-10 pr-10 py-2.5 rounded-2xl text-[13px] text-slate-800 dark:text-white placeholder:text-slate-400 outline-none transition-all"
-              />
-              {search && (
-                <button type="button" onClick={() => { setSearch(''); setPage(1); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <X size={13} />
-                </button>
-              )}
-            </form>
-          )}
-
           {/* Category pills */}
           <div className="flex gap-2 overflow-x-auto no-scrollbar">
             <button onClick={() => handleCategory('')}
@@ -264,9 +220,7 @@ const BlogHomePage: React.FC = () => {
             <h2 className="text-[18px] font-black text-slate-900 dark:text-white tracking-tight">
               {activeCategory
                 ? `${activeCategory} Articles`
-                : search
-                  ? `Results for "${search}"`
-                  : t('blog.latest')
+                : t('blog.latest')
               }
             </h2>
             {!loading && posts.length > 0 && (
@@ -312,9 +266,9 @@ const BlogHomePage: React.FC = () => {
             </div>
             <h3 className="text-xl font-black text-slate-700 dark:text-white mb-2">{t('blog.no_posts')}</h3>
             <p className="text-[14px] text-slate-400 mb-6 max-w-sm mx-auto">
-              {search ? `No results for "${search}". Try different keywords.` : 'No articles in this category yet.'}
+              No articles in this category yet.
             </p>
-            <button onClick={() => { setSearch(''); setActiveCategory(''); navigate('/'); }}
+            <button onClick={() => { setActiveCategory(''); navigate('/'); }}
               className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-blue text-white text-[13px] font-bold rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-brand-blue/20">
               <ArrowRight size={14} /> Browse All Articles
             </button>

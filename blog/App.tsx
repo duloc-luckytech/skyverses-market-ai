@@ -6,6 +6,7 @@ import BlogHeader from './components/BlogHeader';
 import BlogFooter from './components/BlogFooter';
 import BlogHomePage from './pages/BlogHomePage';
 import BlogPostPage from './pages/BlogPostPage';
+import SearchPage from './pages/SearchPage';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -23,6 +24,7 @@ const App: React.FC = () => {
           <main className="min-h-screen">
             <Routes>
               <Route path="/" element={<BlogHomePage />} />
+              <Route path="/search" element={<SearchPage />} />
               <Route path="/category/:category" element={<BlogHomePage />} />
               <Route path="/:slug" element={<BlogPostPage />} />
             </Routes>

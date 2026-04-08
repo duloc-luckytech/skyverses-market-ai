@@ -26,6 +26,8 @@ const TOPICS = [
   { label: 'Community', to: '/category/Community' },
 ];
 
+const DEBOUNCE_MS = 400;
+
 const BlogHeader: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { lang, setLang, t } = useLanguage();
@@ -39,6 +41,7 @@ const BlogHeader: React.FC = () => {
   const [mobileSheet, setMobileSheet] = useState<null | 'topics' | 'search' | 'lang'>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const mobileSearchRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -57,12 +60,46 @@ const BlogHeader: React.FC = () => {
   // Close on route change
   useEffect(() => { setMobileSheet(null); }, [location]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (search.trim()) {
-      navigate(`/?q=${encodeURIComponent(search.trim())}`);
+  // Sync search input when navigating away from /search
+  useEffect(() => {
+    if (!location.pathname.startsWith('/search')) {
       setSearch('');
+    }
+  }, [location.pathname]);
+
+  // Desktop: debounce navigate to /search on input change
+  const handleDesktopInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearch(val);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const trimmed = val.trim();
+      if (trimmed) {
+        navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+      }
+    }, DEBOUNCE_MS);
+  };
+
+  // Desktop: submit → navigate immediately
+  const handleDesktopSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const trimmed = search.trim();
+    if (trimmed) {
+      navigate(`/search?q=${encodeURIComponent(trimmed)}`);
       setSearchOpen(false);
+      setSearch('');
+    }
+  };
+
+  // Mobile: submit → navigate to /search
+  const handleMobileSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const trimmed = search.trim();
+    if (trimmed) {
+      navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+      setSearch('');
       setMobileSheet(null);
     }
   };
@@ -70,6 +107,7 @@ const BlogHeader: React.FC = () => {
   const isActive = (to: string) => location.pathname === to || location.pathname.startsWith(to === '/' ? '/_never_' : to);
   const isHome = location.pathname === '/';
   const isTopics = location.pathname.startsWith('/category/');
+  const isSearch = location.pathname === '/search';
 
   return (
     <>
@@ -120,36 +158,28 @@ const BlogHeader: React.FC = () => {
               {/* Desktop Search */}
               <div className="hidden md:block">
                 {searchOpen ? (
-                  <form onSubmit={handleSearch} className="flex items-center gap-2 animate-in slide-in-from-right duration-200">
+                  <form onSubmit={handleDesktopSubmit} className="flex items-center gap-2 animate-in slide-in-from-right duration-200">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                       <input
                         ref={searchRef}
-                        type="text" value={search} onChange={e => setSearch(e.target.value)}
+                        type="text" value={search} onChange={handleDesktopInputChange}
                         placeholder="Search articles…"
                         className="w-52 md:w-72 bg-white dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.10] pl-9 pr-4 py-2 rounded-xl text-[13px] text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-gray-600 focus:border-brand-blue/50 focus:ring-2 focus:ring-brand-blue/10 outline-none transition-all"
                       />
                     </div>
-                    <button type="button" onClick={() => { setSearchOpen(false); setSearch(''); }}
+                    <button type="button" onClick={() => { setSearchOpen(false); setSearch(''); if (debounceRef.current) clearTimeout(debounceRef.current); }}
                       className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-all">
                       <X size={15} />
                     </button>
                   </form>
                 ) : (
                   <button onClick={() => setSearchOpen(true)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-brand-blue hover:bg-brand-blue/[0.06] transition-all">
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${isSearch ? 'text-brand-blue bg-brand-blue/[0.07]' : 'text-slate-400 hover:text-brand-blue hover:bg-brand-blue/[0.06]'}`}>
                     <Search size={16} />
                   </button>
                 )}
               </div>
-
-              {/* Mobile: search button in header */}
-              <button
-                onClick={() => setMobileSheet(mobileSheet === 'search' ? null : 'search')}
-                className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 dark:text-gray-400 hover:text-brand-blue hover:bg-brand-blue/[0.06] transition-all"
-              >
-                <Search size={17} />
-              </button>
 
               {/* Desktop Theme */}
               <button onClick={toggleTheme}
@@ -226,6 +256,16 @@ const BlogHeader: React.FC = () => {
             {(isTopics || mobileSheet === 'topics') && <span className="absolute bottom-1 w-1 h-1 rounded-full bg-brand-blue" />}
           </button>
 
+          {/* Search */}
+          <Link to="/search"
+            className={`flex-1 flex flex-col items-center justify-center gap-1 transition-all ${
+              isSearch ? 'text-brand-blue' : 'text-slate-400 dark:text-gray-500'
+            }`}>
+            <Search size={18} strokeWidth={isSearch ? 2.5 : 1.8} />
+            <span className="text-[9px] font-bold tracking-wide">Search</span>
+            {isSearch && <span className="absolute bottom-1 w-1 h-1 rounded-full bg-brand-blue" />}
+          </Link>
+
           {/* Language */}
           <button
             onClick={() => setMobileSheet(mobileSheet === 'lang' ? null : 'lang')}
@@ -278,45 +318,6 @@ const BlogHeader: React.FC = () => {
                   </Link>
                 ))}
               </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* ══════════════════════════════════════════
-          MOBILE BOTTOM SHEET — Search
-      ══════════════════════════════════════════ */}
-      {mobileSheet === 'search' && (
-        <>
-          <div className="md:hidden fixed inset-0 z-[140] bg-black/40 backdrop-blur-sm"
-            onClick={() => setMobileSheet(null)} />
-          <div className="md:hidden fixed bottom-[60px] left-0 right-0 z-[145] bg-white dark:bg-[#0d0d12] rounded-t-3xl border-t border-l border-r border-black/[0.08] dark:border-white/[0.08] shadow-2xl animate-in slide-in-from-bottom duration-200">
-            <div className="flex justify-center pt-3 pb-1">
-              <div className="w-10 h-1 rounded-full bg-slate-200 dark:bg-white/[0.12]" />
-            </div>
-            <div className="px-5 pt-3 pb-8">
-              <p className="text-[10px] font-black tracking-[0.18em] text-slate-400 uppercase mb-4">Search Articles</p>
-              <form onSubmit={handleSearch} className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                <input
-                  ref={mobileSearchRef}
-                  type="text" value={search} onChange={e => setSearch(e.target.value)}
-                  placeholder="Search AI tutorials, news…"
-                  className="w-full bg-slate-50 dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.10] pl-12 pr-12 py-3.5 rounded-2xl text-[14px] text-slate-800 dark:text-white placeholder:text-slate-400 focus:border-brand-blue/50 focus:ring-2 focus:ring-brand-blue/10 outline-none transition-all"
-                />
-                {search && (
-                  <button type="button" onClick={() => setSearch('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
-                    <X size={15} />
-                  </button>
-                )}
-              </form>
-              <button
-                type="button"
-                onClick={handleSearch as any}
-                className="mt-3 w-full flex items-center justify-center gap-2 py-3 bg-brand-blue text-white text-[14px] font-bold rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-brand-blue/20">
-                <Search size={15} /> Search
-              </button>
             </div>
           </div>
         </>
