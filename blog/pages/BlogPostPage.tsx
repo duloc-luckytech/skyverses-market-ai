@@ -296,6 +296,7 @@ const BlogPostPage: React.FC = () => {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [related, setRelated] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [coverLoaded, setCoverLoaded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [activeHeading, setActiveHeading] = useState('');
   const [tocOpen, setTocOpen] = useState(false);
@@ -306,6 +307,7 @@ const BlogPostPage: React.FC = () => {
     const fetchPost = async () => {
       if (!slug) return;
       setLoading(true);
+      setCoverLoaded(false);
       try {
         const res = await blogApi.getPost(slug);
         if (res?.success && res.data) {
@@ -396,15 +398,156 @@ const BlogPostPage: React.FC = () => {
   // ── Loading skeleton ───────────────────────────
   if (loading) {
     return (
-      <div className="pt-20 pb-16 min-h-screen bg-[#f8fafc] dark:bg-[#080809]">
-        <div className="max-w-3xl mx-auto px-4 md:px-6 animate-pulse">
-          <div className="h-4 bg-slate-100 dark:bg-white/[0.04] rounded w-40 mb-8" />
-          <div className="h-10 bg-slate-100 dark:bg-white/[0.04] rounded-xl w-4/5 mb-4" />
-          <div className="h-4 bg-slate-100 dark:bg-white/[0.03] rounded w-1/2 mb-8" />
-          <div className="h-[400px] bg-slate-100 dark:bg-white/[0.03] rounded-3xl mb-10" />
-          {[...Array(10)].map((_, i) => (
-            <div key={i} className="h-3.5 bg-slate-100 dark:bg-white/[0.02] rounded mb-3" style={{ width: `${65 + Math.random() * 35}%` }} />
-          ))}
+      <div className="min-h-screen bg-[#f8fafc] dark:bg-[#080809]">
+        {/* ── Hero skeleton ── */}
+        <div className="relative w-full h-[55vh] min-h-[360px] max-h-[600px] overflow-hidden bg-slate-900 dark:bg-[#0d0d14]">
+          <div className="skeleton absolute inset-0 w-full h-full !rounded-none opacity-60" />
+          {/* gradient overlay same as real page */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
+
+          {/* Breadcrumb skeleton */}
+          <div className="absolute top-24 left-0 right-0 max-w-7xl mx-auto px-4 md:px-8">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="skeleton h-3 w-14 rounded-full opacity-50" />
+              <div className="skeleton h-3 w-3 rounded-full opacity-30" />
+              <div className="skeleton h-3 w-20 rounded-full opacity-50" />
+              <div className="skeleton h-3 w-3 rounded-full opacity-30" />
+              <div className="skeleton h-3 w-32 rounded-full opacity-40" />
+            </div>
+          </div>
+
+          {/* Title area bottom */}
+          <div className="absolute bottom-0 left-0 right-0 max-w-7xl mx-auto px-4 md:px-8 pb-8">
+            {/* Category badge */}
+            <div className="flex gap-2 mb-4">
+              <div className="skeleton h-6 w-20 rounded-full opacity-70" />
+            </div>
+            {/* Title lines */}
+            <div className="skeleton h-9 md:h-12 w-4/5 rounded-xl mb-3 opacity-60" />
+            <div className="skeleton h-9 md:h-12 w-3/5 rounded-xl mb-4 opacity-50" />
+            {/* Excerpt */}
+            <div className="skeleton h-4 w-2/3 rounded-lg mb-2 opacity-40" />
+            <div className="skeleton h-4 w-1/2 rounded-lg opacity-30" />
+          </div>
+        </div>
+
+        {/* ── Content area skeleton ── */}
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+          <div className="flex gap-12">
+
+            {/* ── Left: article skeleton ── */}
+            <div className="flex-1 min-w-0">
+              {/* Meta bar */}
+              <div className="flex flex-wrap items-center gap-4 pb-6 mb-8 border-b border-black/[0.06] dark:border-white/[0.06]">
+                {/* Author avatar + name */}
+                <div className="flex items-center gap-2.5">
+                  <div className="skeleton w-10 h-10 rounded-full" />
+                  <div className="space-y-1.5">
+                    <div className="skeleton h-3 w-24 rounded-full" />
+                    <div className="skeleton h-2.5 w-14 rounded-full" />
+                  </div>
+                </div>
+                <div className="skeleton h-3 w-28 rounded-full" />
+                <div className="skeleton h-3 w-20 rounded-full" />
+                <div className="skeleton h-3 w-16 rounded-full" />
+              </div>
+
+              {/* Tags row */}
+              <div className="flex gap-2 mb-8">
+                {[44, 56, 36, 48].map((w, i) => (
+                  <div key={i} className="skeleton h-6 rounded-full" style={{ width: `${w}px`, animationDelay: `${i * 80}ms` }} />
+                ))}
+              </div>
+
+              {/* Content lines — vary widths for realistic look */}
+              <div className="space-y-3">
+                {/* H2 heading */}
+                <div className="skeleton h-6 w-2/5 rounded-lg mb-5" style={{ animationDelay: '60ms' }} />
+                {[100, 90, 95, 80, 85, 100, 75, 92].map((pct, i) => (
+                  <div key={i} className="skeleton h-3.5 rounded" style={{ width: `${pct}%`, animationDelay: `${i * 40}ms` }} />
+                ))}
+                {/* Paragraph break */}
+                <div className="h-4" />
+                {/* H3 heading */}
+                <div className="skeleton h-5 w-1/3 rounded-lg mb-4" style={{ animationDelay: '100ms' }} />
+                {[88, 100, 93, 70, 97, 84].map((pct, i) => (
+                  <div key={i} className="skeleton h-3.5 rounded" style={{ width: `${pct}%`, animationDelay: `${(i + 8) * 40}ms` }} />
+                ))}
+                {/* Paragraph break */}
+                <div className="h-4" />
+                {/* Blockquote-style */}
+                <div className="skeleton h-16 w-full rounded-xl mb-4" style={{ animationDelay: '200ms' }} />
+                {/* More lines */}
+                {[95, 78, 100, 86, 60].map((pct, i) => (
+                  <div key={i} className="skeleton h-3.5 rounded" style={{ width: `${pct}%`, animationDelay: `${(i + 14) * 40}ms` }} />
+                ))}
+              </div>
+
+              {/* Extra padding mobile */}
+              <div className="md:hidden h-[120px]" />
+            </div>
+
+            {/* ── Right: TOC sidebar skeleton ── */}
+            <aside className="hidden lg:block w-[240px] xl:w-[280px] shrink-0">
+              <div className="sticky top-20">
+                <div className="bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-4">
+                  {/* TOC header */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="skeleton w-3 h-3 rounded" />
+                    <div className="skeleton h-2.5 w-16 rounded-full" />
+                  </div>
+                  {/* TOC items */}
+                  <div className="space-y-2">
+                    {[70, 55, 65, 48, 72, 52, 60, 44].map((pct, i) => (
+                      <div key={i} className="skeleton h-3 rounded-lg"
+                        style={{ width: `${pct}%`, marginLeft: i % 3 !== 0 ? '12px' : '0', animationDelay: `${i * 60}ms` }} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        {/* ── Related posts skeleton ── */}
+        <div className="max-w-7xl mx-auto px-4 md:px-8 pb-16">
+          <div className="pt-10 border-t border-black/[0.06] dark:border-white/[0.06]">
+            {/* Section title */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="skeleton w-1 h-6 rounded-full" />
+              <div className="skeleton h-5 w-36 rounded-xl" />
+            </div>
+            {/* 3-col grid desktop */}
+            <div className="hidden md:grid grid-cols-3 gap-6">
+              {[0, 1, 2].map(i => (
+                <div key={i} className="bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden"
+                  style={{ animationDelay: `${i * 80}ms` }}>
+                  <div className="skeleton h-[200px] !rounded-none" style={{ animationDelay: `${i * 80}ms` }} />
+                  <div className="p-5 space-y-3">
+                    <div className="skeleton h-4 w-16 rounded-full" />
+                    <div className="skeleton h-5 w-4/5 rounded-lg" />
+                    <div className="skeleton h-3.5 w-full rounded" />
+                    <div className="skeleton h-3.5 w-3/4 rounded" />
+                    <div className="skeleton h-3 w-24 rounded-full mt-4" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Mobile horizontal scroll */}
+            <div className="flex md:hidden gap-3 overflow-x-auto no-scrollbar pb-2">
+              {[0, 1].map(i => (
+                <div key={i} className="shrink-0 w-[78vw] bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden">
+                  <div className="skeleton h-[160px] !rounded-none" />
+                  <div className="p-4 space-y-2.5">
+                    <div className="skeleton h-3.5 w-14 rounded-full" />
+                    <div className="skeleton h-5 w-4/5 rounded-lg" />
+                    <div className="skeleton h-3 w-full rounded" />
+                    <div className="skeleton h-3 w-2/3 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -432,7 +575,8 @@ const BlogPostPage: React.FC = () => {
         <img
           src={post.coverImage}
           alt={title}
-          className="absolute inset-0 w-full h-full object-cover opacity-80"
+          onLoad={() => setCoverLoaded(true)}
+          className={`absolute inset-0 w-full h-full object-cover opacity-80 img-blur${coverLoaded ? ' loaded' : ''}`}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
 
