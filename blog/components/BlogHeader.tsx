@@ -121,7 +121,10 @@ const BlogHeader: React.FC = () => {
 
             {/* Logo */}
             <button
-              onClick={() => { setMobileSheet(null); navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              onClick={() => {
+                setMobileSheet(null);
+                window.location.href = '/';
+              }}
               className="flex items-center gap-2.5 shrink-0 group"
             >
               <img
