@@ -41,8 +41,8 @@ const ReadingProgress: React.FC = () => {
 };
 
 // ─── Reusable shimmer block ───
-const Sk: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`skeleton rounded-xl ${className}`} />
+const Sk: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className = '', style }) => (
+  <div className={`skeleton rounded-xl ${className}`} style={style} />
 );
 
 // ─── Hero Editorial Skeleton (slate-950 section) ───
