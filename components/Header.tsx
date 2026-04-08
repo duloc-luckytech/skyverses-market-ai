@@ -155,7 +155,18 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 Home
               </Link>
 
-              {/* Explore Dropdown — groups: Marketplace / Discover */}
+              {/* Marketplace */}
+              <Link to="/markets"
+                className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${
+                  location.pathname.startsWith('/markets')
+                    ? 'text-brand-blue bg-brand-blue/[0.06]'
+                    : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
+                }`}
+              >
+                Marketplace
+              </Link>
+
+              {/* Explore Dropdown — group: Discover */}
               <div className="relative" ref={exploreRef}>
                 <button
                   onClick={() => setShowExploreMenu(!showExploreMenu)}
@@ -163,7 +174,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   aria-expanded={showExploreMenu}
                   aria-haspopup="true"
                   className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all flex items-center gap-1 ${
-                    location.pathname.startsWith('/market') || location.pathname.startsWith('/explorer') || location.pathname === '/models'
+                    location.pathname.startsWith('/explorer') || location.pathname === '/models'
                       ? 'text-brand-blue bg-brand-blue/[0.06]'
                       : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
                   }`}
@@ -180,19 +191,16 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                       className="absolute top-full left-0 mt-1 w-52 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl p-2 z-[200]"
                       role="menu"
                     >
-                      {/* Group: Marketplace */}
-                      <p className="text-[9px] font-black tracking-[0.15em] uppercase text-slate-400 px-2 pb-1.5 pt-0.5">Marketplace</p>
-                      <DropdownLink to="/markets" icon={null} label="Browse AI Tools" onClick={() => setShowExploreMenu(false)} />
-                      {isAuthenticated && (
-                        <DropdownLink to="/apps" icon={null} label="My Workspace" onClick={() => setShowExploreMenu(false)} />
-                      )}
-
-                      <div className="h-px bg-black/[0.04] dark:bg-white/[0.04] mx-1 my-1.5" />
-
                       {/* Group: Discover */}
-                      <p className="text-[9px] font-black tracking-[0.15em] uppercase text-slate-400 px-2 pb-1.5">Discover</p>
+                      <p className="text-[9px] font-black tracking-[0.15em] uppercase text-slate-400 px-2 pb-1.5 pt-0.5">Discover</p>
                       <DropdownLink to="/explorer" icon={null} label="Explorer Gallery" onClick={() => setShowExploreMenu(false)} />
                       <DropdownLink to="/models" icon={null} label="AI Models" onClick={() => setShowExploreMenu(false)} />
+                      {isAuthenticated && (
+                        <>
+                          <div className="h-px bg-black/[0.04] dark:bg-white/[0.04] mx-1 my-1.5" />
+                          <DropdownLink to="/apps" icon={null} label="My Workspace" onClick={() => setShowExploreMenu(false)} />
+                        </>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
