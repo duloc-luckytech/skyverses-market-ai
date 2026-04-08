@@ -40,6 +40,122 @@ const ReadingProgress: React.FC = () => {
   );
 };
 
+// ─── Reusable shimmer block ───
+const Sk: React.FC<{ className?: string }> = ({ className = '' }) => (
+  <div className={`skeleton rounded-xl ${className}`} />
+);
+
+// ─── Hero Editorial Skeleton (slate-950 section) ───
+const HeroSkeleton: React.FC = () => (
+  <section className="bg-slate-950 pt-14 md:pt-16">
+    <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-10">
+      {/* Eyebrow */}
+      <div className="flex items-center gap-3 mb-5 md:mb-7">
+        <div className="h-px flex-1 bg-white/[0.06]" />
+        <Sk className="w-28 h-3 !rounded-full" />
+        <div className="h-px flex-1 bg-white/[0.06]" />
+      </div>
+
+      {/* Desktop 5-col grid */}
+      <div className="hidden md:grid grid-cols-5 gap-3 lg:gap-4" style={{ height: '560px' }}>
+        {/* Hero left 3-col */}
+        <div className="col-span-3 h-full rounded-2xl lg:rounded-3xl overflow-hidden relative">
+          <Sk className="!rounded-2xl lg:!rounded-3xl w-full h-full" />
+          <div className="absolute bottom-0 left-0 right-0 p-10 space-y-4">
+            <Sk className="w-24 h-5 !rounded-full" />
+            <Sk className="w-3/4 h-9 !rounded-xl" />
+            <Sk className="w-2/3 h-9 !rounded-xl" />
+            <Sk className="w-1/2 h-4 !rounded-lg" />
+          </div>
+        </div>
+        {/* Right 2-col */}
+        <div className="col-span-2 flex flex-col gap-3 lg:gap-4 h-full">
+          <div className="flex-1 rounded-xl lg:rounded-2xl overflow-hidden">
+            <Sk className="!rounded-xl lg:!rounded-2xl w-full h-full" />
+          </div>
+          <div className="flex-1 rounded-xl lg:rounded-2xl overflow-hidden">
+            <Sk className="!rounded-xl lg:!rounded-2xl w-full h-full" />
+          </div>
+          <div className="shrink-0 h-[80px] rounded-2xl overflow-hidden p-3 flex gap-3 bg-white/[0.03] border border-white/[0.06]">
+            <Sk className="w-[72px] h-full shrink-0 !rounded-xl" />
+            <div className="flex-1 space-y-2 py-1">
+              <Sk className="w-16 h-3 !rounded-full" />
+              <Sk className="w-full h-3.5 !rounded-lg" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile hero skeleton */}
+      <div className="flex md:hidden flex-col gap-3">
+        <div className="h-[260px] rounded-2xl overflow-hidden">
+          <Sk className="!rounded-2xl w-full h-full" />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {[0, 1].map(i => (
+            <div key={i} className="h-[145px] rounded-xl overflow-hidden">
+              <Sk className="!rounded-xl w-full h-full" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+    {/* Wave separator */}
+    <div className="h-10 relative overflow-hidden">
+      <div className="absolute bottom-0 left-0 right-0 h-10 bg-[#f8fafc] dark:bg-[#080809] [clip-path:ellipse(55%_100%_at_50%_100%)]" />
+    </div>
+  </section>
+);
+
+// ─── Desktop card skeleton ───
+const CardSkeleton: React.FC<{ delay?: number }> = ({ delay = 0 }) => (
+  <div
+    className="bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden flex flex-col"
+    style={{ animationDelay: `${delay}ms` }}
+  >
+    <Sk className="h-[200px] !rounded-none" />
+    <div className="p-5 space-y-3 flex-1">
+      <Sk className="h-4 w-16 !rounded-full" />
+      <Sk className="h-5 w-4/5 !rounded-lg" />
+      <Sk className="h-5 w-3/5 !rounded-lg" />
+      <Sk className="h-3.5 w-full !rounded-md" />
+      <Sk className="h-3.5 w-2/3 !rounded-md" />
+      <div className="pt-3.5 border-t border-black/[0.05] dark:border-white/[0.04] flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Sk className="w-6 h-6 !rounded-full" />
+          <Sk className="w-16 h-3 !rounded-full" />
+        </div>
+        <Sk className="w-20 h-3 !rounded-full" />
+      </div>
+    </div>
+  </div>
+);
+
+// ─── Mobile card skeleton ───
+const MobileCardSkeleton: React.FC<{ delay?: number }> = ({ delay = 0 }) => (
+  <div
+    className="bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden p-3 flex gap-3"
+    style={{ animationDelay: `${delay}ms` }}
+  >
+    <Sk className="w-[90px] h-[76px] shrink-0 !rounded-xl" />
+    <div className="flex-1 space-y-2 py-1">
+      <Sk className="h-3.5 w-14 !rounded-full" />
+      <Sk className="h-4 w-full !rounded-lg" />
+      <Sk className="h-3.5 w-4/5 !rounded-lg" />
+      <Sk className="h-3 w-2/3 !rounded-md" />
+    </div>
+  </div>
+);
+
+// ─── Category pill skeleton ───
+const CategoryPillsSkeleton: React.FC = () => (
+  <div className="flex gap-2 overflow-x-auto no-scrollbar">
+    {[56, 72, 64, 80, 68].map((w, i) => (
+      <Sk key={i} className={`h-9 shrink-0 !rounded-2xl`} style={{ width: `${w}px` }} />
+    ))}
+  </div>
+);
+
 const BlogHomePage: React.FC = () => {
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
@@ -104,7 +220,8 @@ const BlogHomePage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           APPLE EDITORIAL GRID — content-first, straight to top
       ══════════════════════════════════════════════════════ */}
-      {!isFiltered && page === 1 && heroPost && (
+      {loading && page === 1 && !isFiltered && <HeroSkeleton />}
+      {!loading && !isFiltered && page === 1 && heroPost && (
         <section className="bg-slate-950 pt-14 md:pt-16">
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-10">
 
@@ -173,6 +290,9 @@ const BlogHomePage: React.FC = () => {
         {/* ── Filter bar — categories only ── */}
         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-10">
           {/* Category pills */}
+          {loading && categories.length === 0 ? (
+            <CategoryPillsSkeleton />
+          ) : (
           <div className="flex gap-2 overflow-x-auto no-scrollbar">
             <button onClick={() => handleCategory('')}
               className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-2xl text-[12px] font-bold transition-all ${!activeCategory
@@ -199,6 +319,7 @@ const BlogHomePage: React.FC = () => {
               );
             })}
           </div>
+          )}
         </div>
 
         {/* Breadcrumb */}
@@ -234,28 +355,16 @@ const BlogHomePage: React.FC = () => {
         {/* ── Post feed ── */}
         {loading ? (
           <>
+            {/* DESKTOP: 3-col card skeletons with stagger */}
             <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden animate-pulse">
-                  <div className="h-[200px] bg-slate-100 dark:bg-white/[0.04]" />
-                  <div className="p-5 space-y-3">
-                    <div className="h-5 w-16 bg-slate-100 dark:bg-white/[0.04] rounded-full" />
-                    <div className="h-5 bg-slate-100 dark:bg-white/[0.04] rounded-lg w-4/5" />
-                    <div className="h-3.5 bg-slate-100 dark:bg-white/[0.03] rounded w-full" />
-                  </div>
-                </div>
+                <CardSkeleton key={i} delay={i * 60} />
               ))}
             </div>
+            {/* MOBILE: list skeletons with stagger */}
             <div className="flex md:hidden flex-col gap-3">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-white dark:bg-[#0f0f17] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden animate-pulse p-3 flex gap-3">
-                  <div className="w-[90px] h-[76px] bg-slate-100 dark:bg-white/[0.04] rounded-xl shrink-0" />
-                  <div className="flex-1 space-y-2 py-1">
-                    <div className="h-4 w-14 bg-slate-100 dark:bg-white/[0.04] rounded-full" />
-                    <div className="h-4 bg-slate-100 dark:bg-white/[0.03] rounded w-full" />
-                    <div className="h-3 bg-slate-100 dark:bg-white/[0.03] rounded w-2/3" />
-                  </div>
-                </div>
+                <MobileCardSkeleton key={i} delay={i * 60} />
               ))}
             </div>
           </>
@@ -277,15 +386,19 @@ const BlogHomePage: React.FC = () => {
           <>
             {/* DESKTOP: 3-column grid */}
             <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {posts.map(post => (
-                <PostCard key={post._id} post={post} size="normal" />
+              {posts.map((post, idx) => (
+                <div key={post._id} className="card-reveal" style={{ animationDelay: `${idx * 55}ms` }}>
+                  <PostCard post={post} size="normal" />
+                </div>
               ))}
             </div>
             {/* MOBILE: Vertical list feed */}
             <div className="flex md:hidden flex-col gap-2.5">
               {posts.map((post, idx) => (
                 <React.Fragment key={post._id}>
-                  <PostCard post={post} size="normal" />
+                  <div className="card-reveal" style={{ animationDelay: `${idx * 55}ms` }}>
+                    <PostCard post={post} size="normal" />
+                  </div>
                   {idx < posts.length - 1 && (
                     <div className="h-px bg-black/[0.04] dark:bg-white/[0.04] mx-3" />
                   )}

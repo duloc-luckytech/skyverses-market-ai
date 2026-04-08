@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Clock, Eye, ArrowUpRight, Sparkles, User, Tag } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { BlogPost, Language } from '../types';
+
+// ─── Blur-up hook — image fades in sharp once loaded ───
+const useBlurUp = () => {
+  const ref = useRef<HTMLImageElement>(null);
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    if (ref.current?.complete) setLoaded(true);
+  }, []);
+  return { ref, loaded, onLoad: () => setLoaded(true) };
+};
 
 // Category accent colors
 const CATEGORY_COLORS: Record<string, string> = {
@@ -49,6 +59,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, size = 'normal' }) => {
 
   // ─────── HERO card — Apple Newsroom style (full editorial) ───────
   if (size === 'hero') {
+    const img = useBlurUp();
     return (
       <article
         onClick={() => navigate(`/${post.slug}`)}
@@ -56,9 +67,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, size = 'normal' }) => {
       >
         {/* Cover image */}
         <img
+          ref={img.ref}
           src={post.coverImage}
           alt={title}
-          className="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 group-hover:scale-[1.03] transition-all duration-700"
+          onLoad={img.onLoad}
+          className={`absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 group-hover:scale-[1.03] transition-all duration-700 img-blur${img.loaded ? ' loaded' : ''}`}
         />
 
         {/* Gradient layers — Apple-style: very clean bottom gradient */}
@@ -130,13 +143,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, size = 'normal' }) => {
 
   // ─────── FEATURED card — Apple-style medium, clean overlay ───────
   if (size === 'featured') {
+    const img = useBlurUp();
     return (
       <article
         onClick={() => navigate(`/${post.slug}`)}
         className="group relative rounded-xl lg:rounded-2xl overflow-hidden cursor-pointer bg-slate-900 h-full min-h-[160px] shadow-lg shadow-black/10"
       >
-        <img src={post.coverImage} alt={title}
-          className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-85 group-hover:scale-[1.04] transition-all duration-500" />
+        <img ref={img.ref} src={post.coverImage} alt={title} onLoad={img.onLoad}
+          className={`absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-85 group-hover:scale-[1.04] transition-all duration-500 img-blur${img.loaded ? ' loaded' : ''}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
         <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -157,13 +171,15 @@ const PostCard: React.FC<PostCardProps> = ({ post, size = 'normal' }) => {
 
   // ─────── COMPACT card — horizontal list (Apple Newsroom sidebar style) ───────
   if (size === 'compact') {
+    const img = useBlurUp();
     return (
       <article
         onClick={() => navigate(`/${post.slug}`)}
         className="group flex gap-3 items-start cursor-pointer p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all"
       >
         <div className="w-[72px] h-[60px] lg:w-[80px] lg:h-[64px] rounded-xl overflow-hidden shrink-0 bg-slate-100 dark:bg-white/[0.04]">
-          <img src={post.coverImage} alt={title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+          <img ref={img.ref} src={post.coverImage} alt={title} onLoad={img.onLoad}
+            className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 img-blur${img.loaded ? ' loaded' : ''}`} />
         </div>
         <div className="flex-1 min-w-0 py-0.5">
           <span className={`inline-block text-[8px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full text-white bg-gradient-to-r ${categoryGradient} mb-1.5`}>
@@ -181,6 +197,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, size = 'normal' }) => {
   }
 
   // ─────── NORMAL card — grid card (horizontal on mobile, vertical on desktop) ───────
+  const imgMobile = useBlurUp();
+  const imgDesktop = useBlurUp();
   return (
     <article
       onClick={() => navigate(`/${post.slug}`)}
@@ -192,13 +210,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, size = 'normal' }) => {
       {/* ── MOBILE: Horizontal layout ── */}
       <div className="flex md:hidden gap-3 p-3">
         {/* Thumbnail */}
-        <div className="relative w-[90px] h-[76px] rounded-xl overflow-hidden shrink-0 bg-slate-100 dark:bg-white/[0.04]">
-          <img src={post.coverImage} alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
-          <div className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r ${categoryGradient}`} />
-        </div>
+          <div className="relative w-[90px] h-[76px] rounded-xl overflow-hidden shrink-0 bg-slate-100 dark:bg-white/[0.04]">
+            <img ref={imgMobile.ref} src={post.coverImage} alt={title} onLoad={imgMobile.onLoad}
+              className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 img-blur${imgMobile.loaded ? ' loaded' : ''}`}
+              loading="lazy"
+            />
+            <div className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r ${categoryGradient}`} />
+          </div>
         {/* Content */}
         <div className="flex-1 min-w-0 py-0.5">
           <span className={`inline-block px-2 py-0.5 text-[8px] font-black tracking-widest uppercase text-white rounded-full bg-gradient-to-r ${categoryGradient} mb-1.5`}>
@@ -223,8 +241,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, size = 'normal' }) => {
       <div className="hidden md:flex flex-col flex-1">
         {/* Cover */}
         <div className="relative h-[200px] overflow-hidden bg-slate-100 dark:bg-white/[0.03]">
-          <img src={post.coverImage} alt={title}
-            className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700"
+          <img ref={imgDesktop.ref} src={post.coverImage} alt={title} onLoad={imgDesktop.onLoad}
+            className={`w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700 img-blur${imgDesktop.loaded ? ' loaded' : ''}`}
             loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
