@@ -276,6 +276,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, size = 'normal' }) => {
               </span>
             </div>
             <div className="flex items-center gap-3 text-[10.5px] text-slate-400 dark:text-gray-500">
+              {date && <span>{date}</span>}
               <span className="flex items-center gap-1"><Clock size={10} /> {post.readTime}m</span>
               <span className="flex items-center gap-1">
                 <Eye size={10} />
