@@ -78,23 +78,82 @@ node seed-<slug>.mjs
 
 ---
 
-## STEP 3 — Generate & update banner image
+## STEP 3 — Generate & update demo images (3-5 images per platform)
 
-Tạo `gen-<slug>-image.mjs` theo pattern `gen-social-banner-image.mjs`:
-- Copy script
-- Update `BANNER_PROMPT` — cinematic premium AI studio description
-- Update `PRODUCT_ID` với `_id` từ STEP 2
-- Update `SKV_API_TOKEN` (lấy từ CMS Admin > API Clients nếu 401)
+Tạo `gen-<slug>-images.mjs` — gen **NHIỀU ảnh** theo từng platform/use-case:
+
+```js
+const API = 'https://api.skyverses.com/market';
+const TOKEN = '<SKV_API_TOKEN>';   // CMS Admin > API Clients
+const PRODUCT_ID = '<_id từ STEP 2>';
+
+// Định nghĩa 3-5 prompts theo từng platform phù hợp product
+const DEMO_PROMPTS = [
+  { platform: 'thumbnail',  prompt: 'main hero banner, cinematic premium quality, ...' },
+  { platform: 'instagram',  prompt: 'instagram square 1:1 post, vibrant, ...' },
+  { platform: 'facebook',   prompt: 'facebook landscape 16:9 banner, professional, ...' },
+  { platform: 'story',      prompt: 'portrait 9:16 story format, mobile-first, ...' },
+  { platform: 'wide',       prompt: 'ultrawide 21:9 cinematic cover, premium, ...' },
+];
+
+// Điều chỉnh DEMO_PROMPTS cho phù hợp loại product:
+// - Image/Poster product → các định dạng banner phổ biến
+// - Video product → các frame đại diện video (key frames)
+// - Transform product (remove bg, upscale) → before/after pairs
+// - Social product → platform-specific formats (IG, FB, TikTok, LinkedIn)
+
+async function genAndUpload(item, index) {
+  // 1. Gen ảnh qua Skyverses AI API
+  const genRes = await fetch('https://api.skyverses.com/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
+    body: JSON.stringify({ prompt: item.prompt, size: '1024x1024' })
+  });
+  const { imageUrl } = await genRes.json();
+
+  if (index === 0) {
+    // Ảnh đầu tiên = imageUrl chính của product
+    await fetch(`${API}/${PRODUCT_ID}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
+      body: JSON.stringify({ imageUrl })
+    });
+    console.log(`✅ [${item.platform}] thumbnail → ${imageUrl}`);
+  } else {
+    // Ảnh còn lại → thêm vào demoImages array
+    await fetch(`${API}/${PRODUCT_ID}/demo-images`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
+      body: JSON.stringify({ platform: item.platform, url: imageUrl })
+    });
+    console.log(`✅ [${item.platform}] demo → ${imageUrl}`);
+  }
+  return { platform: item.platform, url: imageUrl };
+}
+
+async function seed() {
+  const results = [];
+  for (let i = 0; i < DEMO_PROMPTS.length; i++) {
+    const r = await genAndUpload(DEMO_PROMPTS[i], i);
+    results.push(r);
+  }
+  console.log('\n📋 Tất cả CDN URLs (dùng cho STEP 3.5):');
+  results.forEach(r => console.log(`  ${r.platform}: ${r.url}`));
+}
+seed();
+```
 
 ```bash
-node gen-<slug>-image.mjs
-# Pipeline: Skyverses AI → Cloudflare CDN → PUT /market/:id
+node gen-<slug>-images.mjs
+# Pipeline: Skyverses AI → Cloudflare CDN → PUT/PATCH /market/:id
+# → Ghi lại TẤT CẢ CDN URLs trả về để dùng trong STEP 3.5
 ```
 
 > ⚠️ `SKV_API_TOKEN` expired → hỏi user lấy token mới từ CMS Admin Tab "API Clients"
 
 > **🚨 QUAN TRỌNG: Phải chạy luôn script ngay sau khi tạo — KHÔNG bỏ qua bước này.**
-> Claude phải tự `node gen-<slug>-image.mjs` trước khi sang STEP 3.5.
+> Claude phải tự `node gen-<slug>-images.mjs` trước khi sang STEP 3.5.
+> Ghi lại tất cả URL output để dùng làm `beforeSrc`/`afterSrc` (BeforeAfterSlider) hoặc platform grid.
 
 ---
 
@@ -142,19 +201,38 @@ node gen-<slug>-image.mjs
 
 8. FEATURED TEMPLATES (3-5 mẫu):
    Prompt templates cụ thể cho product này, user click dùng ngay
+
+9. DEMO IMAGES (từ STEP 3 — CDN URLs đã gen):
+   Liệt kê 3-5 CDN URLs đã gen → dùng cho HeroSection right column
+   - Nếu Visual Type là `BeforeAfterSlider` → chọn 1 URL làm `beforeSrc` + 1 URL làm `afterSrc`
+   - Nếu Visual Type là `PlatformMockupGrid` → map từng URL theo đúng `platform` key
+   - Nếu Visual Type là `ImageMasonryGrid` → dùng ảnh từ Explorer API (không cần hardcode)
+
+10. USE CASES (4-6 business scenarios):
+    Ai sẽ dùng product này? Mô tả 4-6 use case theo ngành cụ thể:
+    VD: { icon: Store, title: 'Cửa hàng online', desc: 'Tạo banner sale trong 60s, không cần designer' }
+    VD: { icon: Building, title: 'Agency Marketing', desc: 'Scale content x10 với AI batch generation' }
+    → Dùng cho `UseCasesSection.tsx` (section mới — thêm sau FeaturesSection)
+    → Cũng dùng để define INDUSTRIES trong STEP 6 Workspace
+
+11. SHOWCASE FILTER:
+    Explorer API type: 'image' | 'video'
+    productSlug để filter showcase (nếu API hỗ trợ tag filter)
+    Caption theme: mô tả ngắn để hiển thị trên ảnh showcase
 ```
 
 ---
 
 ## STEP 4 — Build PRO landing sections
 
-Tạo **5 file riêng** trong `components/landing/<slug>/`:
+Tạo **6 file riêng** trong `components/landing/<slug>/`:
 
 ```
 HeroSection.tsx          ← ProHeroVisuals + GradientMesh + scroll animations
 WorkflowSection.tsx      ← StaggerChildren + timeline connector
-ShowcaseSection.tsx      ← NEW: ShowcaseImageStrip từ Explorer
+ShowcaseSection.tsx      ← ShowcaseImageStrip từ Explorer (nhận productSlug prop)
 FeaturesSection.tsx      ← Bento-grid + StaggerChildren + hover expand
+UseCasesSection.tsx      ← NEW: 4-6 use case cards theo ngành (sau FeaturesSection)
 FinalCTA.tsx             ← Animated CTA
 ```
 
@@ -253,7 +331,10 @@ import { ImageMasonryGrid, BeforeAfterSlider, VideoReelGrid, FloatingBadge, AIBa
 
 ```tsx
 // Full-width dark section với image strip
-export const ShowcaseSection: React.FC = () => (
+// productSlug prop dùng để filter theo product nếu API hỗ trợ
+interface ShowcaseSectionProps { productSlug?: string; }
+
+export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({ productSlug }) => (
   <section className="py-20 bg-black/[0.02] dark:bg-white/[0.015] overflow-hidden">
     <div className="max-w-[1400px] mx-auto px-6 lg:px-12 mb-10">
       <FadeInUp>
@@ -262,6 +343,7 @@ export const ShowcaseSection: React.FC = () => (
         <p className="text-slate-500">Hàng nghìn kết quả từ cộng đồng người dùng</p>
       </FadeInUp>
     </div>
+    {/* Nếu API hỗ trợ filter by tag: truyền tag={productSlug} */}
     <ShowcaseImageStrip type="image" limit={20} />
   </section>
 );
@@ -300,6 +382,62 @@ const features = [
 
 ---
 
+### UseCasesSection rules (MỚI — thêm sau FeaturesSection, trước FinalCTA):
+
+> Nội dung từ STEP 3.5 câu hỏi 10. Chọn 4-6 ngành phù hợp nhất với product.
+
+```tsx
+import { FadeInUp, StaggerChildren, HoverCard, SectionLabel } from '../_shared/SectionAnimations';
+// Icons từ lucide-react: Store, Building, Shirt, GraduationCap, Heart, Coffee, etc.
+
+interface UseCase {
+  icon: React.ElementType;
+  title: string;
+  desc: string;
+}
+
+// Define 4-6 use cases phù hợp với product (từ STEP 3.5 phân tích câu 10)
+const USE_CASES: UseCase[] = [
+  { icon: Store,      title: 'Cửa hàng online',   desc: '...' },
+  { icon: Building,   title: 'Agency Marketing',  desc: '...' },
+  { icon: Shirt,      title: 'Thương hiệu thời trang', desc: '...' },
+  { icon: GraduationCap, title: 'Giáo dục', desc: '...' },
+  // ... tối đa 6
+];
+
+export const UseCasesSection: React.FC = () => (
+  <section className="py-20 px-6 lg:px-12">
+    <div className="max-w-[1400px] mx-auto">
+      <FadeInUp className="mb-10">
+        <SectionLabel>DÀNH CHO</SectionLabel>
+        <h2 className="text-3xl font-bold mt-2">Phù hợp mọi lĩnh vực</h2>
+        <p className="text-slate-500 mt-2 text-sm max-w-lg">
+          Từ cửa hàng nhỏ đến agency lớn — AI giúp bạn tạo nội dung chuyên nghiệp trong vài giây.
+        </p>
+      </FadeInUp>
+
+      <StaggerChildren className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {USE_CASES.map((uc) => (
+          <HoverCard key={uc.title} className="p-5 bg-black/[0.01] dark:bg-white/[0.015]">
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: -3 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+              className="w-9 h-9 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue mb-3"
+            >
+              <uc.icon size={18} />
+            </motion.div>
+            <h3 className="text-sm font-semibold mb-1">{uc.title}</h3>
+            <p className="text-[11px] text-slate-500 dark:text-[#666] leading-relaxed">{uc.desc}</p>
+          </HoverCard>
+        ))}
+      </StaggerChildren>
+    </div>
+  </section>
+);
+```
+
+---
+
 ## STEP 5 — Create landing page file (thin orchestrator)
 
 ```tsx
@@ -310,6 +448,7 @@ import { HeroSection } from '../../components/landing/your-slug/HeroSection';
 import { WorkflowSection } from '../../components/landing/your-slug/WorkflowSection';
 import { ShowcaseSection } from '../../components/landing/your-slug/ShowcaseSection';
 import { FeaturesSection } from '../../components/landing/your-slug/FeaturesSection';
+import { UseCasesSection } from '../../components/landing/your-slug/UseCasesSection';
 import { FinalCTA } from '../../components/landing/your-slug/FinalCTA';
 import { usePageMeta } from '../../hooks/usePageMeta';
 
@@ -327,8 +466,9 @@ const YourProductAI = () => {
     <div className="bg-white dark:bg-[#0a0a0c] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
       <HeroSection onStartStudio={() => setIsStudioOpen(true)} />
       <WorkflowSection />
-      <ShowcaseSection />        {/* ← NEW */}
+      <ShowcaseSection productSlug="your-slug" />  {/* ← pass productSlug */}
       <FeaturesSection />
+      <UseCasesSection />                           {/* ← NEW */}
       <FinalCTA onStartStudio={() => setIsStudioOpen(true)} />
     </div>
   );
@@ -338,15 +478,106 @@ export default YourProductAI;
 
 ---
 
-## STEP 6 — Create Workspace component (với AISuggestPanel)
+## STEP 6 — Create Workspace component (với AISuggestPanel + Industry Picker)
 
 > **Reference:** `components/PosterStudioWorkspace.tsx` — đây là canonical workspace.
 > Copy structure, chỉ thay:
 > 1. Phần picker (Category → Platform/Format/etc.) phù hợp với product
-> 2. Thêm `AISuggestPanel` phía trên prompt textarea
-> 3. Define product-specific STYLES và FEATURED_TEMPLATES
+> 2. Thêm **Industry Picker** phía trên AISuggestPanel
+> 3. Thêm `AISuggestPanel` phía trên prompt textarea
+> 4. Define product-specific STYLES và FEATURED_TEMPLATES
 
-### AISuggestPanel integration:
+### Industry Picker (thêm vào sidebar, TRÊN AISuggestPanel):
+
+```tsx
+import { Store, Building, Shirt, GraduationCap, Heart, Coffee,
+         Plane, Car, Music, Cpu, Dumbbell, MessageCircle } from 'lucide-react';
+
+// Chỉ 8-12 industries PHỔ BIẾN NHẤT với product này
+// KHÔNG copy toàn bộ 40+ items của PosterStudioWorkspace
+// Lấy từ USE_CASES đã phân tích trong STEP 3.5 câu 10
+const INDUSTRIES = [
+  { id: 'social',      label: 'MXH',          icon: MessageCircle },
+  { id: 'restaurant',  label: 'Nhà hàng',     icon: Coffee        },
+  { id: 'fashion',     label: 'Thời trang',   icon: Shirt         },
+  { id: 'realestate',  label: 'BĐS',          icon: Building      },
+  { id: 'education',   label: 'Giáo dục',     icon: GraduationCap },
+  { id: 'travel',      label: 'Du lịch',      icon: Plane         },
+  { id: 'beauty',      label: 'Làm đẹp',      icon: Heart         },
+  { id: 'tech',        label: 'Công nghệ',    icon: Cpu           },
+  // Thêm hoặc bỏ tùy product — giữ 8-12 items tối đa
+];
+
+// State:
+const [activeIndustry, setActiveIndustry] = useState('social');
+```
+
+**Đặt trong sidebar, TRÊN AISuggestPanel:**
+```tsx
+{/* ─── Industry Picker ─── */}
+<div className="mb-3">
+  <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">
+    Lĩnh vực
+  </p>
+  <div className="flex flex-wrap gap-1.5">
+    {INDUSTRIES.map((ind) => {
+      const Icon = ind.icon;
+      const isActive = activeIndustry === ind.id;
+      return (
+        <button
+          key={ind.id}
+          onClick={() => setActiveIndustry(ind.id)}
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-medium border transition-all ${
+            isActive
+              ? 'bg-brand-blue text-white border-brand-blue shadow-sm shadow-brand-blue/20'
+              : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-500 dark:text-[#666] hover:border-brand-blue/30 hover:text-brand-blue'
+          }`}
+        >
+          <Icon size={11} />
+          {ind.label}
+        </button>
+      );
+    })}
+  </div>
+</div>
+```
+
+**Truyền industry context vào AISuggestPanel:**
+```tsx
+// Industry label để Gemini hiểu context khi suggest
+const activeIndustryLabel = INDUSTRIES.find(i => i.id === activeIndustry)?.label || '';
+
+<AISuggestPanel
+  productSlug="your-slug"
+  productName="Your Product Name"
+  styles={PRODUCT_STYLES}
+  onPromptSelect={(p) => setPrompt(prev => p + prev)}
+  onApply={(cfg) => {
+    if (cfg.prompt) setPrompt(cfg.prompt);
+    if (cfg.style && PRODUCT_STYLES.find(s => s.label === cfg.style)) {
+      setActiveStyle(cfg.style);
+    }
+    if (cfg.format) setActiveFormat(cfg.format);
+  }}
+  historyKey={STORAGE_KEY}
+  featuredTemplates={FEATURED_TEMPLATES}
+  // ← Industry context động theo picker
+  productContext={`${productName} AI tool for ${activeIndustryLabel || 'general'} industry in Vietnam`}
+/>
+```
+
+**Industry ảnh hưởng đến prompt khi generate:**
+```tsx
+// Prepend industry context vào finalPrompt
+const industryLabel = INDUSTRIES.find(i => i.id === activeIndustry)?.label;
+const finalPrompt = industryLabel
+  ? `[Lĩnh vực: ${industryLabel}] ${prompt}`
+  : prompt;
+
+// Dùng finalPrompt (không phải prompt) khi gọi generateDemoImage(finalPrompt, ...)
+```
+
+### AISuggestPanel integration (sau Industry Picker, trước prompt textarea):
 
 ```tsx
 import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
@@ -364,24 +595,6 @@ const FEATURED_TEMPLATES = [
   { label: 'Template phổ biến 2', prompt: '...', style: 'Luxury'   },
   { label: 'Template phổ biến 3', prompt: '...'                     },
 ];
-
-// Trong JSX, ngay trên prompt textarea:
-<AISuggestPanel
-  productSlug="your-slug"
-  productName="Your Product Name"
-  styles={PRODUCT_STYLES}
-  onPromptSelect={(p) => setPrompt(prev => p + prev)}
-  onApply={(cfg) => {
-    if (cfg.prompt) setPrompt(cfg.prompt);
-    if (cfg.style && PRODUCT_STYLES.find(s => s.label === cfg.style)) {
-      setActiveStyle(cfg.style);
-    }
-    if (cfg.format) setActiveFormat(cfg.format);  // nếu workspace có format
-  }}
-  historyKey={STORAGE_KEY}
-  featuredTemplates={FEATURED_TEMPLATES}
-  productContext="Mô tả ngắn về product để Gemini hiểu context khi suggest"
-/>
 ```
 
 ### Layout cố định (giống PosterStudioWorkspace):
@@ -392,12 +605,14 @@ TOP NAV (h-14)
 
 SIDEBAR (w-[380px]) ── flex-grow VIEWPORT
 │ Product-specific picker          │ Generate button bar (top)
-│ ─── AI SUGGEST PANEL ───         │   status dot · CR cost · button
-│ Prompt textarea                  │
-│ AI Boost button                  │ Current: aspect-ratio result
-│ Title / Subtitle (optional)      │   + download/fullscreen overlay
+│ ─── INDUSTRY PICKER ───          │   status dot · CR cost · button
+│ 8-12 industry chip buttons       │
+│ ─── AI SUGGEST PANEL ───         │ Current: aspect-ratio result
+│ Prompt textarea                  │   + download/fullscreen overlay
+│ AI Boost button                  │
+│ Title / Subtitle (optional)      │ Library: grid of past sessions
 │ Reference images (3-col, max 6)  │
-│ ─────────────────────────────    │ Library: grid of past sessions
+│ ─────────────────────────────    │
 │ MODEL  │ STYLE                   │
 │ MODE   │ RESOLUTION              │
 │ ─ QUANTITY · N CR ─              │
@@ -449,18 +664,23 @@ git add -A && git commit -m "feat: add <product-name> — PRO landing + smart wo
 
 | Sai | Đúng |
 |-----|------|
-| Landing page 1 file monolithic | Thin orchestrator + 5 section files riêng |
+| Landing page 1 file monolithic | Thin orchestrator + 6 section files riêng |
 | Copy Explorer image grid cho mọi product | Dùng ProHeroVisuals template đúng loại |
 | Tự ý dùng màu accent mới | Dùng `brand-blue` nhất quán |
 | Workspace viết từ đầu | Copy structure `PosterStudioWorkspace.tsx` |
 | Thiếu Low Credit modal | Luôn có `showLowCreditAlert` |
 | Không add vào ProductToolModal | Luôn add vào `WORKSPACE_MAP` |
 | Token `skv_` 401 | Hỏi user lấy token mới từ CMS Admin > API Clients |
-| Quên ShowcaseSection | Luôn có `<ShowcaseSection />` giữa Workflow và Features |
+| Quên ShowcaseSection | Luôn có `<ShowcaseSection productSlug="..." />` giữa Workflow và Features |
 | Workspace không có AI suggest | Import `AISuggestPanel` từ `components/workspace/` |
 | Dùng hardcode BG glow divs | Dùng `<GradientMesh />` component thay thế |
 | Sections không có scroll animation | Wrap với `<FadeInUp>` / `<StaggerChildren>` |
 | FeaturesSection uniform grid | Dùng bento-grid (1-2 featured cards chiếm col-span-2) |
+| Quên UseCasesSection | Luôn có `<UseCasesSection />` sau FeaturesSection |
+| Gen chỉ 1 ảnh thumbnail | Gen 3-5 ảnh theo platform trong STEP 3 |
+| Industry picker copy 40+ items | Chỉ 8-12 industries phù hợp nhất với product |
+| Không truyền industry vào AISuggestPanel | `productContext` phải include `activeIndustryLabel` |
+| Industry picker không ảnh hưởng prompt | Prepend `[Lĩnh vực: ...]` vào `finalPrompt` khi generate |
 
 ---
 
@@ -479,5 +699,20 @@ components/workspace/
   AISuggestPanel.tsx        → Tab: Prompt Ideas | Style Presets | Templates | Smart Fill
                                Props: productSlug, productName, styles[], 
                                       onPromptSelect, onApply, historyKey,
-                                      productContext, featuredTemplates
+                                      productContext (truyền activeIndustry), featuredTemplates
+
+components/PosterStudioWorkspace.tsx
+                            → Canonical workspace reference
+                               Pattern: ALL_CATEGORIES → dùng để thiết kế INDUSTRIES (thu gọn 8-12 items)
+```
+
+## Landing Page Section Order (chuẩn)
+
+```
+HeroSection          ← ProHeroVisuals + GradientMesh
+WorkflowSection      ← 4 bước + StaggerChildren
+ShowcaseSection      ← ShowcaseImageStrip (productSlug prop)
+FeaturesSection      ← Bento-grid
+UseCasesSection      ← 4-6 industry use cases  ← NEW
+FinalCTA             ← Animated button
 ```

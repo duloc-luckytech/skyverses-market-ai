@@ -46,7 +46,6 @@ const pageImports = {
   aiRestoration: () => import('./pages/images/AIImageRestoration'),
   realEstate: () => import('./pages/images/RealEstateAI'),
   bgRemoval: () => import('./pages/images/BackgroundRemovalAI'),
-  socialBanner: () => import('./pages/images/SocialBannerAI'),
   // Videos
   aiVideo: () => import('./pages/videos/AIVideoGenerator'),
   genyu: () => import('./pages/videos/GenyuProduct'),
@@ -102,7 +101,6 @@ const AIStylistPage = React.lazy(pageImports.aiStylist);
 const AIImageRestoration = React.lazy(pageImports.aiRestoration);
 const RealEstateAI = React.lazy(pageImports.realEstate);
 const BackgroundRemovalAI = React.lazy(pageImports.bgRemoval);
-const SocialBannerAI = React.lazy(pageImports.socialBanner);
 
 // Product pages — videos
 const AIVideoGenerator = React.lazy(pageImports.aiVideo);
@@ -244,7 +242,6 @@ const App: React.FC = () => {
                       <Route path="/product/music-generator" element={<MusicGenerator />} />
                       <Route path="/product/product-image" element={<ProductImage />} />
                       <Route path="/product/poster-marketing-ai" element={<PosterMarketingAI />} />
-                      <Route path="/product/social-banner-ai" element={<SocialBannerAI />} />
                       <Route path="/product/fashion-center-ai" element={<FashionCenterAI />} />
                       <Route path="/product/image-upscale-ai" element={<ImageUpscaleAI />} />
                       <Route path="/product/character-sync-studio" element={<Product6Image />} />
