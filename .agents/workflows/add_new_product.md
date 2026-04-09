@@ -1162,10 +1162,18 @@ if (credits < CREDIT_COST * quantity) { setShowLowCreditAlert(true); return; }
 
 > Tất cả workspace tạo ảnh hoặc tạo video đều **PHẢI** dùng component dùng chung `ModelEngineSettings`.
 > **TUYỆT ĐỐI KHÔNG** tự viết lại UI server/model/mode/res/ratio/quantity riêng trong workspace mới.
->
-> **Tham chiếu implementation thực tế:**
-> - `components/SocialBannerWorkspace.tsx` — image generation workspace
-> - `components/RealEstateVisualWorkspace.tsx` — image + video tabs trong cùng 1 workspace
+
+**TRƯỚC KHI VIẾT BẤT KỲ CODE NÀO — đọc 2 file sau:**
+
+```
+view_file: components/SocialBannerWorkspace.tsx        ← image workspace reference
+view_file: components/RealEstateVisualWorkspace.tsx    ← image + video tabs reference
+view_file: components/image-generator/ModelEngineSettings.tsx  ← component props interface
+view_file: hooks/useImageModels.ts                     ← hook return values
+```
+
+> Chỉ sau khi đọc xong mới bắt đầu code. Copy pattern props từ file reference — không tự suy luận.
+
 
 ---
 
@@ -2409,7 +2417,7 @@ Import cần thêm: `Link` từ `react-router-dom`, `credits` từ `useAuth()`.
 | Library tab rỗng sau generate | Save session vào localStorage sau mỗi lần generate thành công (W9) |
 | Status message không có visual cue | Status dot đổi màu theo trạng thái: amber=processing, green=done, red=error (W11) |
 | Low Credit modal chỉ là 1 dòng code | Modal đầy đủ: thông báo + nút Nạp Credits + nút Đóng (L8) |
-| Product tạo ảnh/video hardcode CREDIT_COST | Dùng dynamic `currentUnitCost` từ pricing matrix model (STEP 6.5) |
-| Workspace tạo ảnh/video tự build model list | Copy engine/family/model combo từ AIImageGeneratorWorkspace hoặc AIVideoGeneratorWorkspace (STEP 6.5) |
-| Không có duration selector cho video workspace | Detect `isModeBased` — nếu false thì hiện duration cycle button (STEP 6.5B) |
+| Product tạo ảnh/video hardcode CREDIT_COST | Dùng `selectedModelCost` từ `useImageModels` hook (STEP 6.5) |
+| Workspace tạo ảnh/video tự build Server/Model/Mode/Res UI | Import `ModelEngineSettings` + `useImageModels` — không tự viết (STEP 6.5) |
+| Không có duration selector cho video workspace | Dùng `ModelEngineSettings` + Duration/Sound row bên dưới, detect `isModeBased` (STEP 6.5B) |
 
