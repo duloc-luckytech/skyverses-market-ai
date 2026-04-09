@@ -1151,236 +1151,375 @@ if (credits < CREDIT_COST * quantity) { setShowLowCreditAlert(true); return; }
 
 ---
 
-## STEP 6.5 — Cấu hình AI (nếu product tạo ảnh hoặc tạo video)
+## STEP 6.5 — Inherit Settings Combo (nếu product liên quan tới tạo ảnh hoặc tạo video)
 
 > **Chỉ áp dụng khi** product tạo ra ảnh hoặc video bằng AI model.
 > Transform-only products (xóa nền, upscale, restore) → **bỏ qua step này**.
 
----
+### Quyết định nguồn reference:
 
-### ⚠️ QUY TẮC BẮT BUỘC — Dùng `ModelEngineSettings` component (KHÔNG tự build UI)
-
-> Tất cả workspace tạo ảnh hoặc tạo video đều **PHẢI** dùng component dùng chung `ModelEngineSettings`.
-> **TUYỆT ĐỐI KHÔNG** tự viết lại UI server/model/mode/res/ratio/quantity riêng trong workspace mới.
-
-**TRƯỚC KHI VIẾT BẤT KỲ CODE NÀO — đọc 2 file sau:**
-
-```
-view_file: components/SocialBannerWorkspace.tsx        ← image workspace reference
-view_file: components/RealEstateVisualWorkspace.tsx    ← image + video tabs reference
-view_file: components/image-generator/ModelEngineSettings.tsx  ← component props interface
-view_file: hooks/useImageModels.ts                     ← hook return values
-```
-
-> Chỉ sau khi đọc xong mới bắt đầu code. Copy pattern props từ file reference — không tự suy luận.
-
+| Product Type | Reference workspace | File |
+|---|---|---|
+| Tạo **ảnh** (từ text, concept, style) | AIImageGeneratorWorkspace | `components/AIImageGeneratorWorkspace.tsx` |
+| Tạo **video** (từ text, ảnh, frame sequence) | AIVideoGeneratorWorkspace | `components/AIVideoGeneratorWorkspace.tsx` |
+| Tạo **banner / social content** (ảnh marketing) | SocialBannerWorkspace | `components/SocialBannerWorkspace.tsx` |
 
 ---
 
-### A. Cấu hình AI — Tạo ảnh
-
-#### 1. Import
-
-```tsx
-import { useImageModels } from '../hooks/useImageModels';
-import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
-```
-
-#### 2. Hook state (thay thế toàn bộ state engine thủ công)
-
-```tsx
-// Engine selector state (1 useState duy nhất)
-const [imgEngine, setImgEngine] = useState('gommo');
-
-// Tất cả state còn lại (model, family, mode, res, ratio, quantity, cost) — đến từ hook
-const {
-  availableModels,      // PricingModel[] — tất cả models của engine
-  selectedModel,        // PricingModel | null — model đang chọn (object đầy đủ)
-  setSelectedModel,
-  selectedFamily,       // string — tên family đang chọn
-  setSelectedFamily,
-  selectedMode,         // string
-  setSelectedMode,
-  selectedRes,          // string — '1k' | '2k' | '4k' | ...
-  setSelectedRes,
-  selectedRatio,        // string — '16:9' | '1:1' | ...
-  setSelectedRatio,
-  familyList,           // string[] — danh sách family names
-  familyModels,         // MappedImageModel[] — models của family đang chọn
-  familyModes,          // string[] — modes của family đang chọn
-  familyResolutions,    // string[] — resolutions của family đang chọn
-  familyRatios,         // string[] — ratios của family đang chọn
-  selectedModelCost,    // number — credit cost của model+mode+res đang chọn
-} = useImageModels(imgEngine);
-
-const [quantity, setQuantity] = useState(1);
-
-// Credit check — dùng selectedModelCost (dynamic), KHÔNG hardcode
-if (credits < selectedModelCost * quantity) { setShowLowCreditAlert(true); return; }
-```
-
-#### 3. JSX — đặt trong sidebar (sau picker, trước AISuggestPanel)
-
-```tsx
-<ModelEngineSettings
-  availableModels={availableModels}
-  selectedModel={selectedModel}
-  setSelectedModel={setSelectedModel}
-  selectedRatio={selectedRatio}
-  setSelectedRatio={setSelectedRatio}
-  selectedRes={selectedRes}
-  setSelectedRes={setSelectedRes}
-  quantity={quantity}
-  setQuantity={setQuantity}
-  selectedMode={selectedMode}
-  setSelectedMode={setSelectedMode}
-  selectedEngine={imgEngine}
-  onSelectEngine={setImgEngine}
-  activeMode="SINGLE"
-  isGenerating={isGenerating}
-  familyList={familyList}
-  selectedFamily={selectedFamily}
-  setSelectedFamily={setSelectedFamily}
-  familyModels={familyModels.map(m => m.raw || m)}
-  familyModes={familyModes}
-  familyRatios={familyRatios}
-  familyResolutions={familyResolutions}
-/>
-```
-
-#### 4. Dùng trong generate payload
-
-```tsx
-const payload: ImageJobRequest = {
-  type: references.length > 0 ? 'image_to_image' : 'text_to_image',
-  input: { prompt: finalPrompt, images: references.length > 0 ? references : undefined },
-  config: { width: 1024, height: 1024, aspectRatio: selectedRatio, seed: 0 },
-  engine: {
-    provider: imgEngine as 'gommo' | 'fxlab',
-    model: selectedModel?.raw?.modelKey ?? selectedModel?.modelKey ?? '',
-  },
-  enginePayload: {
-    prompt: finalPrompt,
-    privacy: 'PRIVATE',
-    projectId: 'default',
-    mode: selectedMode,
-  },
-};
-```
+> 🆕 **Cập nhật mới — UI Engine Settings dùng chung component:**
+>
+> Kể từ khi refactor `SocialBannerWorkspace` và `RealEstateVisualWorkspace`, toàn bộ UI "Cấu hình AI"
+> (Server pills, Model family dropdown, Chế độ, Tỷ lệ, P.Giải, SL) đã được **tách ra thành shared component**.
+>
+> **Thay vì tự build UI trong sections A/B bên dưới, ưu tiên dùng:**
+> ```tsx
+> import { useImageModels } from '../hooks/useImageModels';
+> import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
+> ```
+> Đọc `components/SocialBannerWorkspace.tsx` (image) hoặc `components/RealEstateVisualWorkspace.tsx`
+> (image + video) để xem full implementation mẫu trước khi code.
+>
+> Đọc sections A/B bên dưới để hiểu cách state hoạt động (pricing, isModeBased, duration, cost calc) —
+> nhưng **phần UI JSX** thay bằng `<ModelEngineSettings>` thay vì build select boxes thủ công.
 
 ---
 
-### B. Cấu hình AI — Tạo video
 
-> Video workspace cần thêm Duration + Sound control bên dưới `ModelEngineSettings`.
-> Tham chiếu: tab video trong `components/RealEstateVisualWorkspace.tsx`.
+### A. Settings Combo — Tạo ảnh (copy từ AIImageGeneratorWorkspace)
 
-#### 1. Import
+**Đọc `AIImageGeneratorWorkspace.tsx` + hook `useImageGenerator`** trước khi code. Copy nguyên các phần sau:
 
+> ⚠️ **Hook pattern:** `AIImageGeneratorWorkspace` dùng `useImageGenerator()` hook để quản lý toàn bộ state (engine, model, mode, res, ratio, quantity). Khi tạo workspace mới tạo ảnh, dùng cùng hook này thay vì tự quản lý state rời.
+
+#### Engine list + Family + Model
 ```tsx
-import { useImageModels } from '../hooks/useImageModels';
-import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
-import { Clock, Volume2, VolumeX } from 'lucide-react';
-import { pricingApi, PricingModel } from '../apis/pricing';
+// Lấy từ hook — KHÔNG hardcode engines array
+const g = useImageGenerator(); // đọc hook này từ canonical workspace
+const { rawModels, engines, selectedEngine, setSelectedEngine } = g;
+// engines = [{ id: string, label: string }, ...] — từ API, không hardcode
+
+// Group models theo family
+const families = useMemo(() => {
+  const groups: Record<string, any[]> = {};
+  rawModels.forEach((m: any) => {
+    const fam = extractImageFamily(m.name); // copy hàm này từ AIImageGeneratorWorkspace
+    if (!groups[fam]) groups[fam] = [];
+    groups[fam].push(m);
+  });
+  return groups;
+}, [rawModels]);
+
+const familyList = useMemo(() => Object.keys(families).sort(), [families]);
+const [selectedFamily, setSelectedFamily] = useState('');
+
+// familyModels = list model objects của family đang chọn
+const familyModels = useMemo(() => families[selectedFamily] || [], [families, selectedFamily]);
+
+// selectedModel = object đầu tiên khớp với mode+res hiện tại (hoặc auto-select)
+// Dùng pattern giống canonical: g.selectedModel từ hook
+const selectedModel = g.selectedModel; // PricingModel object — có .pricing, .modes, .aspectRatios
 ```
 
-#### 2. State
-
+#### Auto-sync khi family đổi (BẮT BUỘC)
 ```tsx
-// Video models phải fetch riêng vì tool:'video' — hook useImageModels chỉ dùng cho image
-const [videoEngine, setVideoEngine] = useState('gommo');
-const [videoAvailableModels, setVideoAvailableModels] = useState<PricingModel[]>([]);
-const [videoSelectedModelObj, setVideoSelectedModelObj] = useState<PricingModel | null>(null);
-const [videoSelectedFamily, setVideoSelectedFamily] = useState('');
-const [videoSelectedMode, setVideoSelectedMode] = useState('relaxed');
-const [videoResolution, setVideoResolution] = useState('720p');
-const [videoRatio, setVideoRatio] = useState('16:9');
-const [videoDuration, setVideoDuration] = useState('8s');
-const [soundEnabled, setSoundEnabled] = useState(false);
-const [videoQuantity, setVideoQuantity] = useState(1);
-
-// Fetch video models on engine change
+// Khi user đổi family → reset về model đầu tiên + mode/res đầu tiên của family mới
 useEffect(() => {
-  setVideoAvailableModels([]);
-  pricingApi.getPricing({ tool: 'video', engine: videoEngine })
-    .then(res => {
-      if (res.success && res.data.length > 0) {
-        setVideoAvailableModels(res.data);
-        const def = res.data[0];
-        setVideoSelectedFamily(extractFamilyName(def.name)); // copy extractFamilyName từ canonical
-        setVideoSelectedModelObj(def);
-      }
-    })
-    .catch(console.error);
-}, [videoEngine]);
-
-// Family groupings — memos giống canonical RealEstateVisualWorkspace
-const videoFamilies     = useMemo(() => { /* group bằng extractFamilyName */ }, [videoAvailableModels]);
-const videoFamilyList   = useMemo(() => Object.keys(videoFamilies).sort(), [videoFamilies]);
-const videoFamilyModels = useMemo(() => videoFamilies[videoSelectedFamily] || [], [videoFamilies, videoSelectedFamily]);
-const videoFamilyModes  = useMemo(() => [...new Set(videoFamilyModels.flatMap(m => m.modes || []))], [videoFamilyModels]);
-const videoFamilyRes    = useMemo(() => [...new Set(videoFamilyModels.flatMap(m => Object.keys(m.pricing || {})))], [videoFamilyModels]);
-const videoFamilyRatios = useMemo(() => [...new Set(videoFamilyModels.flatMap(m => m.aspectRatios || []))].filter(r => r && r !== 'auto'), [videoFamilyModels]);
-
-// Duration + isModeBased (copy từ RealEstateVisualWorkspace)
-const isModeBased = useMemo(() => { /* detect pricing key type */ }, [videoSelectedModelObj, videoResolution]);
-const availableVideoDurations = useMemo(() => { /* from model pricing */ }, [videoSelectedModelObj, videoResolution, isModeBased]);
-const cycleDuration = () => { /* cycle through durations */ };
-const videoUnitCost = useMemo(() => getUnitCost(videoSelectedModelObj, videoResolution, videoDuration, videoSelectedMode), [...]);
+  if (familyModels.length > 0) {
+    // g.setSelectedModel(familyModels[0]) hoặc dùng setter tương đương của hook
+    const firstModel = familyModels[0];
+    g.setSelectedModel?.(firstModel);
+    const firstMode = firstModel.modes?.[0] ?? '';
+    const firstRes  = Object.keys(firstModel.pricing ?? {})[0] ?? '';
+    g.setSelectedMode?.(firstMode);
+    g.setSelectedRes?.(firstRes);
+  }
+}, [selectedFamily]); // eslint-disable-line react-hooks/exhaustive-deps
 ```
 
-#### 3. JSX — `ModelEngineSettings` + Duration/Sound row
-
+#### Mode + Resolution + Ratio (derived từ family)
 ```tsx
-{/* Shared AI config — same component as /ai-image-generator */}
-<ModelEngineSettings
-  availableModels={videoAvailableModels}
-  selectedModel={videoSelectedModelObj}
-  setSelectedModel={setVideoSelectedModelObj}
-  selectedRatio={videoRatio}
-  setSelectedRatio={setVideoRatio}
-  selectedRes={videoResolution}
-  setSelectedRes={setVideoResolution}
-  quantity={videoQuantity}
-  setQuantity={setVideoQuantity}
-  selectedMode={videoSelectedMode}
-  setSelectedMode={setVideoSelectedMode}
-  selectedEngine={videoEngine}
-  onSelectEngine={setVideoEngine}
-  activeMode="SINGLE"
-  isGenerating={isGenerating}
-  familyList={videoFamilyList}
-  selectedFamily={videoSelectedFamily}
-  setSelectedFamily={setVideoSelectedFamily}
-  familyModels={videoFamilyModels}
-  familyModes={videoFamilyModes}
-  familyRatios={videoFamilyRatios}
-  familyResolutions={videoFamilyRes}
-/>
+const familyModes = useMemo(
+  () => [...new Set(familyModels.flatMap((m: any) => m.modes || []))],
+  [familyModels]
+);
+const familyResolutions = useMemo(
+  () => [...new Set(familyModels.flatMap((m: any) => Object.keys(m.pricing || {})))],
+  [familyModels]
+);
+const familyRatios = useMemo(
+  () => [...new Set(familyModels.flatMap((m: any) => m.aspectRatios || []))].filter((r: string) => r && r !== 'auto'),
+  [familyModels]
+);
 
-{/* Video-only extras: Duration + Sound — compact row beneath */}
-<div className="flex items-center gap-2 px-0.5 pt-0.5">
-  {!isModeBased && availableVideoDurations.length > 0 && (
-    <button
-      onClick={cycleDuration}
-      disabled={isGenerating}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.04] text-[10px] font-semibold text-slate-600 dark:text-[#888] hover:border-rose-500/30 hover:text-rose-400 disabled:opacity-40 transition-all"
-    >
-      <Clock size={10} /> {videoDuration}
+// Dùng g.selectedMode, g.setSelectedMode, g.selectedRes, g.setSelectedRes, g.selectedRatio, g.setSelectedRatio từ hook
+```
+
+#### Quantity + Cost (dynamic từ selectedModel object)
+```tsx
+// g.quantity, g.setQuantity từ hook
+
+// Cost = tra pricing matrix từ selectedModel object (KHÔNG phải family string)
+const currentUnitCost = useMemo(() => {
+  if (!selectedModel?.pricing) return 120; // fallback khi model chưa load
+  const resMatrix = selectedModel.pricing[g.selectedRes?.toLowerCase() ?? ''];
+  if (!resMatrix) return 120;
+  // Ưu tiên mode-based, fallback sang key đầu tiên
+  return resMatrix[g.selectedMode] ?? resMatrix[Object.keys(resMatrix)[0]] ?? 120;
+}, [selectedModel, g.selectedRes, g.selectedMode]);
+
+// Credit check — dùng currentUnitCost (dynamic), KHÔNG hardcode
+if (credits < currentUnitCost * g.quantity) { setShowLowCreditAlert(true); return; }
+```
+
+#### UI — Sidebar Settings Block (đặt sau Industry Picker, trước AISuggestPanel)
+```tsx
+{/* ─── ENGINE ─── */}
+<div className="grid grid-cols-2 gap-2 mb-3">
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Server</p>
+    <select value={selectedEngine || ''} onChange={e => setSelectedEngine(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {engines.map(e => <option key={e.id} value={e.id}>{e.label}</option>)}
+    </select>
+  </div>
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Model</p>
+    <select value={selectedFamily} onChange={e => setSelectedFamily(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyList.map(f => <option key={f} value={f}>{f}</option>)}
+    </select>
+  </div>
+</div>
+
+{/* ─── MODE + RESOLUTION ─── */}
+<div className="grid grid-cols-2 gap-2 mb-3">
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Chế độ</p>
+    <select value={selectedMode} onChange={e => setSelectedMode(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyModes.map(m => <option key={m} value={m}>{m}</option>)}
+    </select>
+  </div>
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Độ phân giải</p>
+    <select value={selectedRes} onChange={e => setSelectedRes(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyResolutions.map(r => <option key={r} value={r}>{r}</option>)}
+    </select>
+  </div>
+</div>
+
+{/* ─── RATIO + QUANTITY ─── */}
+<div className="flex items-center justify-between mb-3">
+  <div className="flex gap-1.5 flex-wrap">
+    {familyRatios.map(r => (
+      <button key={r} onClick={() => setSelectedRatio(r)}
+        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition-all ${
+          selectedRatio === r
+            ? 'bg-brand-blue text-white border-brand-blue'
+            : 'border-black/[0.06] dark:border-white/[0.06] text-slate-500 hover:border-brand-blue/40'
+        }`}>
+        {r}
+      </button>
+    ))}
+  </div>
+  <div className="flex items-center gap-1">
+    {[1, 2, 3, 4].map(q => (
+      <button key={q} onClick={() => setQuantity(q)}
+        className={`w-7 h-7 rounded-lg text-[11px] font-bold transition-all ${
+          quantity === q ? 'bg-brand-blue text-white' : 'bg-black/[0.03] dark:bg-white/[0.03] text-slate-500 hover:bg-brand-blue/10'
+        }`}>
+        {q}
+      </button>
+    ))}
+  </div>
+</div>
+```
+
+---
+
+### B. Settings Combo — Tạo video (copy từ AIVideoGeneratorWorkspace)
+
+**Đọc `AIVideoGeneratorWorkspace.tsx`** trước khi code. Copy nguyên các phần sau:
+
+> ⚠️ **Không hardcode engines/models:** Cả engine list lẫn model list đều load từ API. Đọc canonical workspace để biết hook hoặc API call đang dùng (`useVideoGenerator` hoặc fetch trực tiếp).
+
+#### Engine + Family + Model
+```tsx
+// engines = dynamic từ API (như canonical workspace) — KHÔNG tự định nghĩa array
+// Đọc AIVideoGeneratorWorkspace để biết cách fetch engines
+
+const [selectedEngine, setSelectedEngine] = useState('gommo'); // default từ canonical
+const [selectedFamily, setSelectedFamily] = useState('VEO');   // default family
+const [selectedModelObj, setSelectedModelObj] = useState<PricingModel | null>(null);
+
+// Family extraction — copy hàm extractFamilyName từ AIVideoGeneratorWorkspace
+const KNOWN_FAMILIES = ['VEO', 'Kling', 'Hailuo', 'Grok', 'Sora', 'WAN', 'Wan', 'V-Fuse', 'OmniHuman', 'Seedance'];
+const extractFamilyName = (name: string): string => {
+  const n = name.trim();
+  for (const fam of KNOWN_FAMILIES) {
+    if (n.toLowerCase().startsWith(fam.toLowerCase())) return fam;
+  }
+  return n.split(/\s*-\s/)[0].split(/\s+/)[0] || 'Other';
+};
+
+// Group raw models → families (rawModels từ API fetch)
+const families = useMemo(() => {
+  const groups: Record<string, PricingModel[]> = {};
+  rawModels.forEach(m => {
+    const fam = extractFamilyName(m.name);
+    if (!groups[fam]) groups[fam] = [];
+    groups[fam].push(m);
+  });
+  return groups;
+}, [rawModels]);
+
+const familyList    = useMemo(() => Object.keys(families).sort(), [families]);
+const familyModels  = useMemo(() => families[selectedFamily] || [], [families, selectedFamily]);
+const familyModes   = useMemo(() => [...new Set(familyModels.flatMap(m => m.modes || (m.mode ? [m.mode] : [])))], [familyModels]);
+const familyResolutions = useMemo(() => [...new Set(familyModels.flatMap(m => Object.keys(m.pricing || {})))], [familyModels]);
+const familyRatios  = useMemo(() => [...new Set(familyModels.flatMap(m => m.aspectRatios || []))].filter(r => r && r !== 'auto'), [familyModels]);
+```
+
+#### Auto-sync khi family đổi (BẮT BUỘC)
+```tsx
+// Khi user đổi family → reset model + mode + resolution về giá trị đầu tiên hợp lệ
+useEffect(() => {
+  if (familyModels.length > 0) {
+    const first = familyModels[0];
+    setSelectedModelObj(first);
+    const firstMode = (Array.isArray(first.modes) ? first.modes[0] : first.mode) ?? 'relaxed';
+    const firstRes  = Object.keys(first.pricing ?? {})[0] ?? '720p';
+    setSelectedMode(firstMode);
+    setResolution(firstRes);
+  }
+}, [selectedFamily]); // eslint-disable-line react-hooks/exhaustive-deps
+```
+
+#### Mode + Resolution + Ratio + Duration
+> **Note:** Video workspace quản lý state trực tiếp (không qua hook như image). `familyModes`, `familyResolutions`, `familyRatios` đã được derive ở phần Family bên trên.
+```tsx
+// State riêng — không qua hook
+const [selectedMode, setSelectedMode] = useState('relaxed');
+const [resolution,   setResolution]   = useState('720p');
+const [ratio,        setRatio]        = useState('16:9');
+const [duration,     setDuration]     = useState('8s');
+const [soundEnabled, setSoundEnabled] = useState(false);
+
+// Detect pricing model type (mode-based vs duration-based)
+const isModeBased = useMemo(() => {
+  if (!selectedModelObj?.pricing) return false;
+  const resMatrix = selectedModelObj.pricing[resolution.toLowerCase()];
+  if (!resMatrix) return false;
+  return Object.keys(resMatrix).every(k => isNaN(Number(k)));
+}, [selectedModelObj, resolution]);
+
+// Available durations — dynamic từ model pricing
+const availableDurations = useMemo(() => {
+  if (!selectedModelObj?.pricing) return ['5s', '8s', '10s'];
+  const resMatrix = selectedModelObj.pricing[resolution.toLowerCase()];
+  if (!resMatrix || isModeBased) return ['8s'];
+  return Object.keys(resMatrix).map(d => `${d}s`);
+}, [selectedModelObj, resolution, isModeBased]);
+
+// Cycle helpers (dùng cho compact buttons)
+const cycleRatio    = () => { const arr = familyRatios;    const i = arr.indexOf(ratio);    setRatio(arr[(i + 1) % arr.length]); };
+const cycleDuration = () => { const arr = availableDurations; const i = arr.indexOf(duration); setDuration(arr[(i + 1) % arr.length]); };
+const cycleSound    = () => setSoundEnabled(s => !s);
+```
+
+#### Cost calculation
+```tsx
+// Copy hàm getUnitCost từ AIVideoGeneratorWorkspace
+const getUnitCost = (model: PricingModel | null, resKey: string, durStr: string, mode?: string): number => {
+  if (!model?.pricing) return 1500;
+  const resMatrix = model.pricing[resKey.toLowerCase()];
+  if (!resMatrix) return 1500;
+  if (mode && resMatrix[mode] != null) return resMatrix[mode];
+  const durKey = durStr.replace('s', '');
+  return resMatrix[durKey] ?? 1500;
+};
+
+const currentUnitCost = useMemo(
+  () => getUnitCost(selectedModelObj, resolution, duration, selectedMode),
+  [selectedModelObj, resolution, duration, selectedMode]
+);
+
+// Credit check — cost phụ thuộc quantity
+if (credits < currentUnitCost * quantity) { setShowLowCreditAlert(true); return; }
+```
+
+#### UI — Sidebar Settings Block (video)
+```tsx
+{/* ─── ENGINE + FAMILY ─── */}
+<div className="grid grid-cols-2 gap-2 mb-3">
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Server</p>
+    <select value={selectedEngine} onChange={e => setSelectedEngine(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {engines.map(e => <option key={e.id} value={e.id}>{e.label}</option>)}
+    </select>
+  </div>
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Model</p>
+    <select value={selectedFamily} onChange={e => setSelectedFamily(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyList.map(f => <option key={f} value={f}>{f}</option>)}
+    </select>
+  </div>
+</div>
+
+{/* ─── MODE + RESOLUTION ─── */}
+<div className="grid grid-cols-2 gap-2 mb-3">
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Chế độ</p>
+    <select value={selectedMode} onChange={e => setSelectedMode(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyModes.map(m => <option key={m} value={m}>{m}</option>)}
+    </select>
+  </div>
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Độ phân giải</p>
+    <select value={resolution} onChange={e => setResolution(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyResolutions.map(r => <option key={r} value={r}>{r}</option>)}
+    </select>
+  </div>
+</div>
+
+{/* ─── RATIO · DURATION · SOUND (inline buttons) ─── */}
+<div className="flex items-center gap-2 flex-wrap mb-3">
+  <button onClick={cycleRatio}
+    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[10px] font-semibold text-slate-600 dark:text-white/70 hover:border-brand-blue/40 transition-all">
+    ⊡ {ratio}
+  </button>
+  {!isModeBased && (
+    <button onClick={cycleDuration}
+      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[10px] font-semibold text-slate-600 dark:text-white/70 hover:border-brand-blue/40 transition-all">
+      ⏱ {duration}
     </button>
   )}
-  <button
-    onClick={() => setSoundEnabled(s => !s)}
-    disabled={isGenerating}
-    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-semibold transition-all disabled:opacity-40 ${
+  <button onClick={cycleSound}
+    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[10px] font-semibold transition-all ${
       soundEnabled
-        ? 'bg-rose-500/10 border-rose-500/25 text-rose-400'
-        : 'border-black/[0.06] dark:border-white/[0.04] text-slate-500 dark:text-[#666] hover:border-rose-500/30 hover:text-rose-400'
-    }`}
-  >
-    {soundEnabled ? <Volume2 size={10} /> : <VolumeX size={10} />}
-    {soundEnabled ? 'Sound' : 'Mute'}
+        ? 'bg-brand-blue/10 border-brand-blue/30 text-brand-blue'
+        : 'bg-black/[0.03] dark:bg-white/[0.03] border-black/[0.06] dark:border-white/[0.06] text-slate-400'
+    }`}>
+    {soundEnabled ? '🔊' : '🔇'} Âm thanh
   </button>
+</div>
+
+{/* ─── QUANTITY ─── */}
+<div className="flex items-center gap-1 mb-3">
+  <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-widest mr-2">Số lượng</p>
+  {[1, 2, 3, 4].map(q => (
+    <button key={q} onClick={() => setQuantity(q)}
+      className={`w-7 h-7 rounded-lg text-[11px] font-bold transition-all ${
+        quantity === q ? 'bg-brand-blue text-white' : 'bg-black/[0.03] dark:bg-white/[0.03] text-slate-500 hover:bg-brand-blue/10'
+      }`}>
+      {q}
+    </button>
+  ))}
 </div>
 ```
 
@@ -1392,37 +1531,37 @@ const videoUnitCost = useMemo(() => getUnitCost(videoSelectedModelObj, videoReso
 SIDEBAR
 │ Product-specific picker (platform/format/etc.)
 │ ─── INDUSTRY PICKER ───
-│ ─── ✅ ModelEngineSettings (component dùng chung) ───
-│     SERVER pills (Server 1 / Server 2 / Grok) — live status
-│     MODEL family dropdown + list modal
-│     CHẾ ĐỘ pills
-│     TỶ LỆ pills + P.GIẢI pills
-│     # SL selector
-│ ─── (video only) Duration button + Sound toggle ───
+│ ─── ✅ SETTINGS COMBO (6.5) ───
+│     Server | Model (Family)
+│     Chế độ | Độ phân giải
+│     Ratio · Duration · Sound (video only)
+│     Quantity buttons
 │ ─── AI SUGGEST PANEL ───
 │ Prompt textarea
 │ AI Boost button
 │ Reference images
 │ ─────────────────────────────
-│ Cost badge (selectedModelCost × quantity CR) + Generate button
+│ Cost badge + Generate button
 ```
 
 ---
 
-### D. Common Mistakes
+### D. Common Mistakes khi dùng Settings Combo
 
-| ❌ Sai | ✅ Đúng |
-|--------|---------|
-| Tự build Server/Model/Mode/Res/SL UI thủ công | Dùng `<ModelEngineSettings>` component |
-| `const CREDIT_COST = 120` hardcode | Dùng `selectedModelCost` từ `useImageModels` hook |
-| `const MODELS = ['Nano Banana', ...]` hardcode | `useImageModels(engine)` → `availableModels` từ API |
-| Không pass `familyModels={familyModels.map(m => m.raw \|\| m)}` | Luôn map `.raw` — ModelEngineSettings cần raw PricingModel |
-| Build Video settings UI từ đầu | Dùng `ModelEngineSettings` + Duration/Sound row (xem mẫu RealEstateVisualWorkspace) |
-| `generateDemoImage` / `generateDemoVideo` từ `services/gemini` | Dùng `imagesApi.createJob` + poll / `videosApi.createJob` + poll |
-| `useState<string\|null>(null)` — 1 result duy nhất | `useState<REResult[]>([])` — task list với status per-item |
-| Không hoàn credits khi job thất bại | `addCredits(cost)` + set `isRefunded: true` khi `status === 'error'` |
-
-
+| Sai | Đúng |
+|-----|------|
+| Hardcode `CREDIT_COST = 120` khi dùng dynamic model | Dùng `currentUnitCost` từ pricing matrix |
+| Copy MODELS array thủ công | Fetch dynamic từ API qua `useImageGenerator` / `useVideoGenerator` hook |
+| Bỏ qua `isModeBased` detection | Nếu `isModeBased = true` → ẩn duration selector, dùng mode làm key pricing |
+| Tự build family grouping logic | Copy `extractImageFamily` / `extractFamilyName` từ canonical workspace |
+| Ratio/Duration là select dropdown | Dùng **cycle button** (như canonical video workspace) — nhỏ gọn hơn |
+| Dùng `generateDemoImage` / `generateDemoVideo` từ `services/gemini` | Dùng `imagesApi.createJob` + poll / `videosApi.createJob` + poll |
+| `const [result, setResult] = useState<string\|null>(null)` — 1 result duy nhất | `const [results, setResults] = useState<REResult[]>([])` — task list với status per-item |
+| Không hoàn credits khi job thất bại | Khi `status === 'error'`: gọi `addCredits(cost)` + set `isRefunded: true` |
+| Viewport chỉ hiển thị 1 ảnh, không có task list | Right rail: tab "Tác vụ" (results list) + tab "Lịch sử" (sessions localStorage) |
+| Không sync selectedModel khi family đổi | Luôn có `useEffect([selectedFamily])` auto-select model đầu tiên của family |
+| `engines` array tự hardcode | `engines` lấy từ hook — xem canonical workspace để biết tên biến chính xác |
+| Dùng `selectedFamily` (string) vào `currentUnitCost` | Phải resolve `selectedFamily` → `selectedModel` object trước khi tính cost |
 
 ---
 
@@ -2417,7 +2556,7 @@ Import cần thêm: `Link` từ `react-router-dom`, `credits` từ `useAuth()`.
 | Library tab rỗng sau generate | Save session vào localStorage sau mỗi lần generate thành công (W9) |
 | Status message không có visual cue | Status dot đổi màu theo trạng thái: amber=processing, green=done, red=error (W11) |
 | Low Credit modal chỉ là 1 dòng code | Modal đầy đủ: thông báo + nút Nạp Credits + nút Đóng (L8) |
-| Product tạo ảnh/video hardcode CREDIT_COST | Dùng `selectedModelCost` từ `useImageModels` hook (STEP 6.5) |
-| Workspace tạo ảnh/video tự build Server/Model/Mode/Res UI | Import `ModelEngineSettings` + `useImageModels` — không tự viết (STEP 6.5) |
-| Không có duration selector cho video workspace | Dùng `ModelEngineSettings` + Duration/Sound row bên dưới, detect `isModeBased` (STEP 6.5B) |
+| Product tạo ảnh/video hardcode CREDIT_COST | Dùng dynamic `currentUnitCost` từ pricing matrix model (STEP 6.5) |
+| Workspace tạo ảnh/video tự build model list | Copy engine/family/model combo từ AIImageGeneratorWorkspace hoặc AIVideoGeneratorWorkspace (STEP 6.5) |
+| Không có duration selector cho video workspace | Detect `isModeBased` — nếu false thì hiện duration cycle button (STEP 6.5B) |
 
