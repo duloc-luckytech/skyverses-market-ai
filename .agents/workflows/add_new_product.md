@@ -109,7 +109,35 @@ Pipeline: Skyverses AI → Cloudflare CDN → PUT `/market/:id` update `imageUrl
 
 ---
 
-## STEP 4 — Create landing page sections
+## STEP 3.5 — Generate landing page content with Claude AI (TRƯỚC KHI CODE)
+
+> **Luôn chạy bước này trước** khi viết HeroSection, WorkflowSection, FeaturesSection.  
+> Claude Sonnet sẽ đề xuất nội dung phù hợp với business của từng product cụ thể.
+
+```bash
+node gen-landing-content.mjs \
+  --slug "your-slug" \
+  --name "Your Product Name" \
+  --desc "Mô tả ngắn về product, chức năng chính" \
+  --category "Category (VD: Social Media Tools, AI Image, E-commerce...)"
+```
+
+Output: file `landing-content-<slug>.json` gồm:
+- `hero.badge` — badge text nhỏ trên heading
+- `hero.headline` — mảng dòng heading
+- `hero.tagline` — tagline mô tả
+- `hero.specs` — 4 spec cards
+- `hero.heroVisualIdea` — **ý tưởng visual cho right column của hero** (đây là phần quan trọng nhất — mỗi product phải khác nhau)
+- `workflow.steps` — 4 bước sử dụng
+- `features.items` — 6-8 tính năng
+- `finalCta` — CTA section
+- `seo` — title, description, keywords
+
+**Sau khi có JSON → đọc `heroVisualIdea` và implement hero visual phù hợp.**
+
+> API: `https://ezaiapi.com/v1/messages` · Model: `claude-sonnet-4-5`  
+> Key lưu trong `gen-landing-content.mjs` → cập nhật nếu 401.
+
 
 ### Structure (MANDATORY — follow `AIImageGenerator.tsx` pattern exactly):
 
@@ -164,13 +192,11 @@ components/landing/<product-name>/
    className="px-6 lg:px-16 py-20 border-t border-black/[0.06] dark:border-white/[0.04]"
    ```
 
-#### Color accent rule:
-- DO NOT invent new colors. Use `text-brand-blue` / `bg-brand-blue` / `border-brand-blue` consistently.
-- Reference pages like `BackgroundRemovalAI.tsx` use their own accent (rose) — Social Banner AI uses `brand-blue`.
+> Key stored in script — update nếu 401 (lấy từ dashboard ezaiapi.com).
 
 ---
 
-## STEP 5 — Create the landing page file
+## STEP 4 — Create landing page sections
 
 `pages/images/YourProductAI.tsx` — **thin orchestrator only**, no JSX logic:
 
