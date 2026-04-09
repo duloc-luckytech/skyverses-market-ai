@@ -18,7 +18,6 @@ const WORKSPACE_MAP: Record<string, React.LazyExoticComponent<React.ComponentTyp
   'image-upscale-ai':      React.lazy(() => import('../UpscaleWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
   'background-removal-ai': React.lazy(() => import('../BackgroundRemovalWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
   'poster-marketing-ai':   React.lazy(() => import('../PosterStudioWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
-  'social-banner-ai':      React.lazy(() => import('../SocialBannerWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
   'fashion-center-ai':     React.lazy(() => import('../FashionStudioWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
   'ai-image-restorer':     React.lazy(() => import('../RestorationWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
   'ai-stylist':            React.lazy(() => import('../AIStylistWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),

@@ -46,7 +46,6 @@ const pageImports = {
   aiRestoration: () => import('./pages/images/AIImageRestoration'),
   realEstate: () => import('./pages/images/RealEstateAI'),
   bgRemoval: () => import('./pages/images/BackgroundRemovalAI'),
-  socialBanner: () => import('./pages/images/SocialBannerAI'),
   // Videos
   aiVideo: () => import('./pages/videos/AIVideoGenerator'),
   genyu: () => import('./pages/videos/GenyuProduct'),
@@ -102,7 +101,6 @@ const AIStylistPage = React.lazy(pageImports.aiStylist);
 const AIImageRestoration = React.lazy(pageImports.aiRestoration);
 const RealEstateAI = React.lazy(pageImports.realEstate);
 const BackgroundRemovalAI = React.lazy(pageImports.bgRemoval);
-const SocialBannerAI = React.lazy(pageImports.socialBanner);
 
 // Product pages — videos
 const AIVideoGenerator = React.lazy(pageImports.aiVideo);
@@ -215,7 +213,6 @@ const App: React.FC = () => {
                       
 
                       <Route path="/product/background-removal-ai" element={<BackgroundRemovalAI />} />
-                      <Route path="/product/social-banner-ai" element={<SocialBannerAI />} />
                       <Route path="/product/ai-agent-workflow" element={<ProductAIAgentWorkflow />} />
                       <Route path="/product/captcha-veo3" element={<ProductCaptchaToken />} />
                       <Route path="/product/nocode-export" element={<NoCodeExportPage />} />

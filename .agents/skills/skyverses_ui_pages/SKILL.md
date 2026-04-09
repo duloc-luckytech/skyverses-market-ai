@@ -197,3 +197,104 @@ usePageMeta({
 })
 // Sets <title>, <meta description>, <link canonical>, <script type="application/ld+json">
 ```
+
+---
+
+## 5. PRO LANDING PAGE SYSTEM
+
+### Shared Components (components/landing/_shared/)
+
+**SectionAnimations.tsx** — Animation primitives (import in ALL sections):
+```tsx
+import {
+  FadeInUp,            // scroll-triggered fade + slide up
+  FadeInScale,         // scroll-triggered fade + scale
+  StaggerChildren,     // wraps children, staggers their entrance
+  ParallaxSection,     // subtle parallax depth on scroll
+  CountUp,             // animated number counter
+  GradientMesh,        // animated brand-blue/indigo blob background
+  SectionLabel,        // uppercase section label pill (brand-blue)
+  HoverCard,           // card with hover lift + blue glow border
+  TimelineConnector,   // animated SVG line between workflow steps
+} from '../_shared/SectionAnimations';
+```
+
+**ProHeroVisuals.tsx** — Visual templates for HeroSection right column:
+```tsx
+import {
+  ImageMasonryGrid,    // masonry grid fetching from Explorer API
+  BeforeAfterSlider,   // drag-to-reveal before/after comparison
+  VideoReelGrid,       // bento grid of video thumbnails
+  ShowcaseImageStrip,  // two-row auto-scrolling marquee strip
+  FloatingBadge,       // animated stats badge overlay
+  AIBadge,             // "AI Generated" sparkle badge (top-right)
+} from '../_shared/ProHeroVisuals';
+```
+
+### Hero Visual Selection Guide:
+| Product type | Visual component |
+|-------------|-----------------|
+| Image/Poster generator | `<ImageMasonryGrid type="image" />` |
+| Video generator/animate | `<VideoReelGrid fetchFromExplorer />` |
+| Background removal / restoration / upscale | `<BeforeAfterSlider beforeSrc afterSrc />` |
+| Social banner / marketing content | Custom platform mockup grid |
+
+### Section Structure (5 files per product):
+```
+components/landing/<slug>/
+  HeroSection.tsx        — GradientMesh + ProHeroVisuals + FadeInUp left col
+  WorkflowSection.tsx    — StaggerChildren + HoverCard + TimelineConnector
+  ShowcaseSection.tsx    — ShowcaseImageStrip (always include this section)
+  FeaturesSection.tsx    — Bento grid (1-2 featured col-span-2 + rest col-span-1)
+  FinalCTA.tsx           — Animated CTA button
+```
+
+### Thin Orchestrator Pattern (pages/images/YourProductAI.tsx):
+```tsx
+// 5 sections in order:
+<HeroSection onStartStudio={() => setIsStudioOpen(true)} />
+<WorkflowSection />
+<ShowcaseSection />    // ← always add between Workflow and Features
+<FeaturesSection />
+<FinalCTA onStartStudio={() => setIsStudioOpen(true)} />
+```
+
+---
+
+## 6. AI SUGGEST WORKSPACE PANEL
+
+**AISuggestPanel.tsx** (components/workspace/AISuggestPanel.tsx):
+
+A collapsible AI-powered panel to add above the prompt textarea in any workspace.
+Powered by Gemini (`generateDemoText`) — same key pool as image generation.
+
+```tsx
+import AISuggestPanel, { StylePreset, DEFAULT_STYLES } from './workspace/AISuggestPanel';
+
+// Usage in any workspace sidebar, above prompt textarea:
+<AISuggestPanel
+  productSlug="poster-marketing-ai"
+  productName="Poster Marketing AI"
+  styles={PRODUCT_STYLES}       // optional: override DEFAULT_STYLES
+  onPromptSelect={(p) => setPrompt(prev => p + prev)}
+  onApply={(cfg) => {
+    if (cfg.prompt) setPrompt(cfg.prompt);
+    if (cfg.style)  setActiveStyle(cfg.style);
+  }}
+  historyKey={STORAGE_KEY}      // localStorage vault key for Templates tab
+  featuredTemplates={[          // optional: hardcoded starter templates
+    { label: 'Promo Sale', prompt: '...', style: 'Bold & Pop' },
+  ]}
+  productContext="Brief description for Gemini to understand the product"
+/>
+```
+
+**4 Tabs:**
+| Tab | Description |
+|-----|-------------|
+| Prompt Ideas | Gemini generates 6 contextual prompts on mount, refresh button |
+| Style Presets | 6 style cards, click = prefix added to prompt |
+| Templates | User history grid (from vault) + featured templates |
+| Smart Fill | "Điền thông minh" button → Gemini fills all workspace fields at once |
+
+**State persistence:** Panel open/close state → `localStorage skyverses_{slug}_suggest_panel_open`
