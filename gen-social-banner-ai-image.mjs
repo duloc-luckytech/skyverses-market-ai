@@ -24,7 +24,7 @@ const CF_API_TOKEN   = 'cfut_EqsuFJ2hEEz1Gkm5596aLAfnnLyn6sGzYuVDXFZjb59c46b5';
 const CF_DELIVERY_URL = 'https://imagedelivery.net/aevj5SbbyTU6ZP_CJx_TEA';
 
 // ── Product ──
-const PRODUCT_ID  = '69d72a988519b291d8b17777'; // MongoDB _id từ seed
+const PRODUCT_ID  = '69d739c15ae87fd445bb5398'; // MongoDB _id từ seed
 const PRODUCT_SKU = 'SOCIAL-BANNER-AI';
 
 const BANNER_PROMPT = `A premium social media banner creation studio — multiple platform canvases side by side showing X (Twitter) cover 1500×500, Facebook post 1200×630, Instagram story 1080×1920, and LinkedIn banner 1584×396. Each canvas shows a beautifully designed AI-generated brand banner. Platform logos glowing in the corners. Dark premium interface with brand-blue and purple gradient accents, holographic layout guides, pixel dimension labels floating in golden text around each frame. Cinematic 4K quality, ultra professional.`;
