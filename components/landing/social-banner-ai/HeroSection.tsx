@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -7,7 +7,8 @@ import {
 } from 'lucide-react';
 import { GradientMesh, FadeInUp, HoverCard } from '../_shared/SectionAnimations';
 import { FloatingBadge } from '../_shared/ProHeroVisuals';
-import { generateDemoImage } from '../../../services/gemini';
+import { imagesApi, ImageJobRequest } from '../../../apis/images';
+import { useAuth } from '../../../context/AuthContext';
 
 interface HeroSectionProps { onStartStudio: () => void; }
 
@@ -28,8 +29,6 @@ const PLATFORMS = [
   { key: 'linkedin',  label: 'LinkedIn',        size: '1584×396', color: '#0A66C2' },
 ];
 
-const CDN_DEMO = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/7cbe5f07-2b18-4c42-ca5c-20bcd7206f00/public';
-
 const DEMO_PROMPTS = [
   'Flash Sale 50% nền đỏ rực, chữ trắng bold, năng lượng cao',
   'Khai trương cửa hàng, pháo hoa vàng đỏ, festive Việt Nam',
@@ -38,20 +37,105 @@ const DEMO_PROMPTS = [
 ];
 
 const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio }) => {
+  const { isAuthenticated, login, credits, useCredits, addCredits } = useAuth();
+
   const [demoPrompt, setDemoPrompt] = useState(DEMO_PROMPTS[0]);
   const [demoResult, setDemoResult] = useState<string | null>(null);
   const [demoLoading, setDemoLoading] = useState(false);
   const [demoPromptIdx, setDemoPromptIdx] = useState(0);
+  const [demoStatus, setDemoStatus] = useState<'idle' | 'creating' | 'polling' | 'done' | 'error'>('idle');
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Demo dùng model mặc định — không cần user chọn engine
+  const DEMO_ENGINE = 'gommo';
+  const DEMO_MODEL  = 'Nano Banana';   // model nhanh nhất, chi phí thấp
+  const DEMO_MODE   = 'relaxed';
+  const DEMO_COST   = 80;             // CR khớp với FloatingBadge
+
+  const pollJob = useCallback((jobId: string) => {
+    pollTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await imagesApi.getJobStatus(jobId);
+        const status = res.data?.status;
+
+        if (status === 'error' || status === 'failed') {
+          // Hoàn credits khi job thất bại
+          addCredits(DEMO_COST);
+          setDemoStatus('error');
+          setDemoLoading(false);
+          return;
+        }
+
+        if (status === 'done' && res.data.result?.images?.length) {
+          setDemoResult(res.data.result.images[0]);
+          setDemoStatus('done');
+          setDemoLoading(false);
+          return;
+        }
+
+        // Còn processing → poll tiếp
+        pollJob(jobId);
+      } catch {
+        // Lỗi mạng → retry chậm hơn
+        pollTimerRef.current = setTimeout(() => pollJob(jobId), 10000);
+      }
+    }, 5000);
+  }, [addCredits]);
 
   const runDemo = async () => {
-    if (demoLoading) return;
+    if (demoLoading || !demoPrompt.trim()) return;
+
+    if (!isAuthenticated) { login(); return; }
+    if (credits < DEMO_COST) { onOpenStudio(); return; }
+
+    // Xóa poll timer cũ nếu có
+    if (pollTimerRef.current) clearTimeout(pollTimerRef.current);
+
     setDemoLoading(true);
     setDemoResult(null);
+    setDemoStatus('creating');
+
+    const payload: ImageJobRequest = {
+      type: 'text_to_image',
+      input: {
+        prompt: `Tạo banner mạng xã hội chuyên nghiệp, tỷ lệ 16:9. ${demoPrompt}. Chất lượng cao, bố cục đẹp mắt.`,
+      },
+      config: {
+        width: 1280,
+        height: 720,
+        aspectRatio: '16:9',
+        seed: 0,
+        style: 'cinematic',
+      },
+      engine: {
+        provider: DEMO_ENGINE as 'gommo' | 'fxlab',
+        model: DEMO_MODEL,
+      },
+      enginePayload: {
+        prompt: `Tạo banner mạng xã hội chuyên nghiệp, tỷ lệ 16:9. ${demoPrompt}. Chất lượng cao, bố cục đẹp mắt.`,
+        privacy: 'PRIVATE',
+        projectId: 'default',
+        mode: DEMO_MODE,
+      },
+    };
+
     try {
-      const url = await generateDemoImage(demoPrompt);
-      setDemoResult(url ?? null);
-    } catch { /* silent */ }
-    finally { setDemoLoading(false); }
+      const res = await imagesApi.createJob(payload);
+      const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
+
+      if (isSuccess && res.data?.jobId) {
+        // Trừ credits ngay khi job tạo thành công
+        useCredits(DEMO_COST);
+        setDemoStatus('polling');
+        pollJob(res.data.jobId);
+      } else {
+        setDemoStatus('error');
+        setDemoLoading(false);
+      }
+    } catch {
+      setDemoStatus('error');
+      setDemoLoading(false);
+    }
   };
 
   const cyclePrompt = () => {
@@ -59,7 +143,14 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
     setDemoPromptIdx(next);
     setDemoPrompt(DEMO_PROMPTS[next]);
     setDemoResult(null);
+    setDemoStatus('idle');
+    if (pollTimerRef.current) clearTimeout(pollTimerRef.current);
   };
+
+  const statusLabel =
+    demoStatus === 'creating' ? 'Đang gửi lên AI...' :
+    demoStatus === 'polling'  ? 'AI đang vẽ...' :
+    demoStatus === 'error'    ? 'Lỗi — thử lại nhé' : '';
 
   return (
     <div className="rounded-2xl border border-black/[0.07] dark:border-white/[0.06] bg-white dark:bg-white/[0.02] overflow-hidden shadow-xl shadow-black/5">
@@ -88,7 +179,15 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
                   <div key={i} className="aspect-video rounded-lg bg-slate-200 dark:bg-white/[0.04] animate-pulse" style={{ animationDelay: `${i*0.12}s` }} />
                 ))}
               </div>
-              <p className="text-[10px] text-slate-400 animate-pulse">AI đang vẽ...</p>
+              <p className="text-[10px] text-slate-400 animate-pulse">{statusLabel}</p>
+            </motion.div>
+          ) : demoStatus === 'error' ? (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="flex flex-col items-center gap-2 text-center px-4"
+            >
+              <p className="text-[11px] text-red-400 font-medium">Có lỗi xảy ra — credits đã được hoàn lại 🔄</p>
             </motion.div>
           ) : demoResult ? (
             <motion.img
@@ -110,12 +209,12 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
               <div className="w-10 h-10 rounded-xl bg-brand-blue/10 flex items-center justify-center">
                 <Sparkles size={18} className="text-brand-blue/60" />
               </div>
-              <p className="text-[11px] text-slate-400 dark:text-[#555]">Nhấn <strong className="text-brand-blue">Thử Ngay</strong> để xem AI tạo banner</p>
+              <p className="text-[11px] text-slate-400 dark:text-[#555]">Nhấn <strong className="text-brand-blue">Thử Ngay</strong> để xem AI tạo banner thật</p>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {demoResult && (
+        {demoStatus === 'done' && (
           <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-emerald-500 rounded-full text-white text-[9px] font-bold">
             ✓ Tạo xong
           </div>
@@ -127,7 +226,7 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
         <div className="flex items-center gap-2">
           <input
             value={demoPrompt}
-            onChange={e => { setDemoPrompt(e.target.value); setDemoResult(null); }}
+            onChange={e => { setDemoPrompt(e.target.value); setDemoResult(null); setDemoStatus('idle'); }}
             onKeyDown={e => e.key === 'Enter' && runDemo()}
             placeholder="Mô tả banner..."
             className="flex-1 text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-lg px-3 py-2 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
@@ -147,7 +246,10 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
             whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
             className="flex-1 py-2 rounded-lg bg-brand-blue text-white text-[11px] font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all"
           >
-            {demoLoading ? <><Loader2 size={11} className="animate-spin" /> Đang tạo...</> : <><Sparkles size={11} /> Thử Ngay (miễn phí)</>}
+            {demoLoading
+              ? <><Loader2 size={11} className="animate-spin" /> {statusLabel}</>
+              : <><Sparkles size={11} /> Thử Ngay ({DEMO_COST} CR)</>
+            }
           </motion.button>
           <motion.button
             onClick={onOpenStudio}
