@@ -351,26 +351,72 @@ const BlogPostPage: React.FC = () => {
 
   const toc = useMemo(() => (content ? extractToc(content) : []), [content]);
 
+  // Merge seo.keywords + tags + category thành một keywords string phong phú
+  const allKeywords = [
+    ...(post?.seo?.keywords || []),
+    ...(post?.tags || []),
+    ...(post?.category ? [post.category, `${post.category} AI`, `tin tức ${post.category}`] : []),
+    'Skyverses Insights', 'AI news', 'tin tức AI',
+  ].filter((v, i, a) => v && a.indexOf(v) === i); // dedupe
+
+  // Dùng NewsArticle cho category News, Article cho các loại khác
+  const schemaType = post?.category === 'News' ? 'NewsArticle' : 'Article';
+
   usePageMeta({
     title: metaTitle ? `${metaTitle} — Skyverses Insights` : 'Skyverses Insights',
     description: metaDesc,
-    keywords: post?.seo?.keywords?.join(', ') || post?.tags?.join(', '),
+    keywords: allKeywords.join(', '),
     ogImage: post?.seo?.ogImage?.trim() || post?.coverImage?.trim() || undefined,
     canonical: `/${slug}`,
     type: 'article',
     lang: currentLang,
+    articleMeta: post ? {
+      publishedTime: post.publishedAt,
+      modifiedTime: post.updatedAt,
+      author: post.author?.name || 'Skyverses Team',
+      section: post.category,
+      tags: post.tags || [],
+    } : undefined,
     jsonLd: post ? {
-      '@type': 'Article',
+      '@type': schemaType,
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `https://insights.skyverses.com/${slug}`,
+      },
       headline: title,
       description: excerpt,
-      image: post.seo?.ogImage?.trim() || post.coverImage,
+      image: {
+        '@type': 'ImageObject',
+        url: post.seo?.ogImage?.trim() || post.coverImage,
+        width: 1200,
+        height: 630,
+      },
       datePublished: post.publishedAt,
-      dateModified: post.updatedAt,
-      author: { '@type': 'Person', name: post.author?.name || 'Skyverses Team' },
+      dateModified: post.updatedAt || post.publishedAt,
+      author: {
+        '@type': 'Person',
+        name: post.author?.name || 'Skyverses Team',
+        url: 'https://insights.skyverses.com',
+      },
       publisher: {
         '@type': 'Organization',
         name: 'Skyverses',
-        logo: { '@type': 'ImageObject', url: 'https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png' },
+        url: 'https://ai.skyverses.com',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png',
+          width: 200,
+          height: 200,
+        },
+      },
+      articleSection: post.category,
+      keywords: allKeywords.join(', '),
+      url: `https://insights.skyverses.com/${slug}`,
+      inLanguage: currentLang,
+      isPartOf: {
+        '@type': 'Blog',
+        name: 'Skyverses Insights',
+        url: 'https://insights.skyverses.com',
       },
     } : undefined,
   });
@@ -677,7 +723,7 @@ const BlogPostPage: React.FC = () => {
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-8">
                 {post.tags.map(tag => (
-                  <Link key={tag} to={`/?q=${encodeURIComponent(tag)}`}
+                  <Link key={tag} to={`/tags/${encodeURIComponent(tag)}`}
                     className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 dark:bg-white/[0.05] text-slate-500 dark:text-gray-400 rounded-full text-[11px] font-semibold border border-black/[0.05] dark:border-white/[0.05] hover:border-brand-blue/30 hover:text-brand-blue transition-all">
                     <Tag size={10} />{tag}
                   </Link>

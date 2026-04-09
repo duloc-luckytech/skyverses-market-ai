@@ -34,7 +34,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.newsletter_desc': 'Get the latest AI insights delivered to your inbox.',
     'blog.newsletter_btn': 'Subscribe',
     'blog.newsletter_placeholder': 'your@email.com',
-    'footer.copyright': '© 2025 SKYVERSES ECOSYSTEM.',
+    'footer.copyright': '© 2026 SKYVERSES ECOSYSTEM.',
     'footer.description': 'Leading AI production studio for work and creativity.',
   },
   vi: {
@@ -63,7 +63,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.newsletter_desc': 'Nhận các bài viết AI mới nhất qua email.',
     'blog.newsletter_btn': 'Đăng ký',
     'blog.newsletter_placeholder': 'email@example.com',
-    'footer.copyright': '© 2025 HỆ SINH THÁI SKYVERSES.',
+    'footer.copyright': '© 2026 HỆ SINH THÁI SKYVERSES.',
     'footer.description': 'Studio sản xuất AI hàng đầu cho công việc và sáng tạo.',
   },
   ko: {
@@ -92,7 +92,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.newsletter_desc': '최신 AI 인사이트를 이메일로 받으세요.',
     'blog.newsletter_btn': '구독',
     'blog.newsletter_placeholder': 'your@email.com',
-    'footer.copyright': '© 2025 SKYVERSES 생태계.',
+    'footer.copyright': '© 2026 SKYVERSES 생태계.',
     'footer.description': '업무와 창작을 위한 최고의 AI 제작 스튜디오.',
   },
   ja: {
@@ -121,7 +121,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.newsletter_desc': '最新のAIインサイトをメールでお届けします。',
     'blog.newsletter_btn': '購読する',
     'blog.newsletter_placeholder': 'your@email.com',
-    'footer.copyright': '© 2025 SKYVERSESエコシステム.',
+    'footer.copyright': '© 2026 SKYVERSESエコシステム.',
     'footer.description': '仕事とクリエイティブのための最先端AIスタジオ.',
   },
 };

@@ -63,4 +63,15 @@ export const blogApi = {
       return { success: false, data: null as any };
     }
   },
+
+  /** GET /blog — All posts (for sitemap & RSS, no pagination limit) */
+  getAllPosts: async (): Promise<BlogListResponse> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/blog?limit=500&page=1`, { headers: getHeaders() });
+      return await res.json();
+    } catch (error) {
+      console.error('Blog All Posts Error:', error);
+      return { success: false, data: [], pagination: { page: 1, limit: 500, total: 0, totalPages: 0 } };
+    }
+  },
 };
