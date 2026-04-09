@@ -122,12 +122,35 @@ components/landing/<product-name>/
 ```
 
 #### Rules:
-1. **HeroSection** must:
-   - Import `getExplorerUrl` from `../../../apis/config` and fetch real images from Explorer API
-   - Show scrolling image masonry grid (same as `image-generator/HeroSection.tsx`)
-   - Show product spec pills/badges (platform, format counts, key specs)
-   - CTA button calls `onStartStudio()`
-   - Back arrow link to `/market`
+1. **HeroSection** — **VISUAL PHẢI PHÙ HỢP VỚI PRODUCT, KHÔNG COPY NGUYÊN XI**:
+
+   > The `image-generator/HeroSection.tsx` dùng Explorer API image grid vì product đó liên quan đến tạo hình.  
+   > **Mỗi product cần hero visual riêng phản ánh đúng business của nó.**
+
+   | Product | Hero visual phù hợp |
+   |---------|---------------------|
+   | AI Image Generator | Scrolling Explorer image grid |
+   | Social Banner AI | Platform mockup grid (X cover, FB post, IG story, LI banner) |
+   | Background Removal | Before/after split-screen image |
+   | Fashion AI | Model + outfit showcase grid |
+   | Video Generator | Video thumbnail reel |
+   | Poster Marketing | Marketing poster showcase |
+
+   **Tham khảo từ `image-generator/HeroSection.tsx`:**
+   - ✅ Layout: `grid grid-cols-1 lg:grid-cols-12`
+   - ✅ Left col: badge → h1 → description → specs grid → CTA button
+   - ✅ Right col: product-relevant visual (custom per product)
+   - ✅ BG glows: `brand-blue/[0.04]` + `purple/[0.03]`
+   - ✅ Back link to `/market`
+   - ✅ `motion.div` entry animation
+   - ❌ KHÔNG dùng `getExplorerUrl` unless product là image/video explorer
+
+   **Specs grid (bottom-left)** — 4 cards showing key product metrics:
+   ```tsx
+   <div className="grid grid-cols-2 gap-2">
+     {SPECS.map(s => (
+       <div className="p-3 bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-xl flex items-start gap-2.5 ...">
+   ```
 
 2. **WorkflowSection** — 4 steps, exact same card style as `image-generator/WorkflowSection.tsx`:
    ```tsx
