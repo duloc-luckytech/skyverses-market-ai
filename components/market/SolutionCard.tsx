@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Bookmark, Sparkles, Users, Heart, Zap } from 'lucide-react';
+import { Bookmark, Users, Heart, Zap, Eye, ArrowRight } from 'lucide-react';
 import { Solution, Language } from '../../types';
 
 interface SolutionCardProps {
@@ -13,12 +13,13 @@ interface SolutionCardProps {
   onToggleLike: (e: React.MouseEvent, id: string) => void;
   onClick: (slug: string) => void;
   onHover?: (slug: string) => void;
+  onQuickView?: (e: React.MouseEvent, sol: Solution) => void;
   stats: { users: string; likes: string };
   isGrid?: boolean;
 }
 
 const SolutionCardComponent: React.FC<SolutionCardProps> = ({ 
-  sol, idx, lang, isLiked, isFavorited, onToggleFavorite, onToggleLike, onClick, onHover, stats, isGrid = false 
+  sol, idx, lang, isLiked, isFavorited, onToggleFavorite, onToggleLike, onClick, onHover, onQuickView, stats, isGrid = false 
 }) => {
   const targetId = sol._id || sol.id;
   const currentLang = lang as Language;
@@ -40,24 +41,50 @@ const SolutionCardComponent: React.FC<SolutionCardProps> = ({
           src={sol.imageUrl} 
           alt={sol.name[currentLang]} 
           loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-30 transition-all duration-1000" 
+          className="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-40 transition-all duration-700" 
         />
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 z-40">
-           <div className="px-5 py-2.5 bg-black/60 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2.5 shadow-2xl scale-90 group-hover:scale-100 transition-all duration-500">
-              <Sparkles size={14} className="text-brand-blue" fill="currentColor" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue">Initialize</span>
-           </div>
+
+        {/* ── Hover Action Buttons Overlay ── */}
+        <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-400 z-40">
+          {/* Quick View Button */}
+          {onQuickView && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onQuickView(e, sol); }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white/15 hover:bg-white/25 backdrop-blur-lg border border-white/20 hover:border-white/40 rounded-full transition-all duration-300 shadow-2xl scale-90 group-hover:scale-100 translate-y-2 group-hover:translate-y-0"
+              style={{ transitionDelay: '50ms' }}
+              aria-label="Quick view"
+            >
+              <Eye size={13} className="text-white" />
+              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white">Quick View</span>
+            </button>
+          )}
+
+          {/* Detail Button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onClick(sol.slug); }}
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue/80 hover:bg-brand-blue backdrop-blur-lg border border-brand-blue/40 hover:border-brand-blue rounded-full transition-all duration-300 shadow-2xl shadow-brand-blue/30 scale-90 group-hover:scale-100 translate-y-2 group-hover:translate-y-0"
+            style={{ transitionDelay: '100ms' }}
+            aria-label="View detail"
+          >
+            <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white">Detail</span>
+            <ArrowRight size={12} className="text-white" />
+          </button>
         </div>
+
+        {/* Favorite bookmark */}
         <button 
           onClick={(e) => onToggleFavorite(e, sol.id)} 
           className={`absolute top-2 right-2 md:top-4 md:right-4 p-1.5 md:p-2.5 bg-black/60 backdrop-blur-md rounded-full border transition-all z-30 shadow-xl ${isFavorited ? 'text-brand-blue border-brand-blue/50' : 'text-white/40 border-white/10 hover:text-brand-blue'}`}
         >
           <Bookmark fill="currentColor" className="w-3.5 h-3.5 md:w-[18px] md:h-[18px]" />
         </button>
+
+        {/* Category badge */}
         <div className="absolute top-2 left-2 md:top-4 md:left-4">
           <span className="bg-black/90 backdrop-blur-md text-white border border-white/20 px-1.5 md:px-3 py-0.5 md:py-1 text-[7px] md:text-[9px] font-black uppercase tracking-widest rounded-sm">{sol.category[currentLang]}</span>
         </div>
       </div>
+
       <div className="p-3 md:p-6 flex-grow flex flex-col gap-3 md:gap-6 bg-white dark:bg-[#0d0d0f]">
         <div className="space-y-2 md:space-y-4">
           <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter text-brand-blue italic transition-colors flex-grow pr-2 truncate">{sol.name[currentLang]}</h3>

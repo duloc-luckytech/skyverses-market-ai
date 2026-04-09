@@ -23,6 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CardSkeleton } from '../components/market/MarketSkeleton';
 import { MarketSectionHeader } from '../components/market/MarketSectionHeader';
 import { SolutionCard } from '../components/market/SolutionCard';
+import ProductToolModal from '../components/market/ProductToolModal';
 
 const BLOCK_ICONS: Record<string, LucideIcon> = {
   top_trending: Flame,
@@ -62,26 +63,29 @@ const MarketPage = () => {
   const navigate = useNavigate();
 
   usePageMeta({
-    title: 'Skyverses | Marketplace AI — Mọi công cụ AI trong một nền tảng',
-    description: 'Skyverses Marketplace — 30+ ứng dụng AI, 50+ model (Veo3, Seedance, Grok, Kling, Sora, Gemini, GPT-4o, Midjourney, Flux). Tiết kiệm ~70% chi phí. Tạo video, ảnh, nhạc, giọng nói & tự động hoá. Giải pháp AI cho doanh nghiệp.',
-    keywords: 'AI marketplace, Skyverses, Veo3, Seedance, Grok, Kling, Sora, Gemini, GPT-4o, Midjourney, Flux, Qwen, tạo video AI, tạo ảnh AI, AI giá rẻ, giải pháp AI doanh nghiệp, xây dựng ứng dụng AI, enterprise AI, 50+ model AI',
+    title: 'Skyverses — Marketplace AI #1 Việt Nam | Dùng thử miễn phí 100 Credits',
+    description: 'Truy cập 30+ ứng dụng AI sáng tạo trong một nền tảng: tạo Video, Ảnh, Nhạc, Giọng nói & Chat AI. Hỗ trợ Veo3, Kling, Gemini, GPT-4o, Midjourney, Flux, Grok, Qwen. Tiết kiệm ~70% — Dùng thử ngay với 100 Credits miễn phí, không cần thẻ quốc tế.',
+    keywords: 'marketplace AI Việt Nam, AI giá rẻ, dùng thử AI miễn phí, tạo video AI, tạo ảnh AI, Veo3, Kling, Sora, Seedance, Gemini, GPT-4o, Grok, Midjourney, Flux, Qwen, chat AI miễn phí, text to speech AI, AI music generator, xoá nền AI, upscale ảnh AI, AI agent workflow, giải pháp AI doanh nghiệp, enterprise AI, Skyverses, credits AI, AI không cần thẻ quốc tế, nền tảng AI all-in-one',
     canonical: '/',
     jsonLd: {
       '@type': 'ItemList',
       name: 'Top AI Products — Skyverses Marketplace',
-      description: 'Bộ sưu tập 30+ công cụ AI hàng đầu: Video, Image, Voice, Music, Chat & Automation',
-      numberOfItems: 10,
+      description: '30+ công cụ AI hàng đầu: Video, Image, Voice, Music, Chat & Automation trong một nền tảng',
+      url: 'https://ai.skyverses.com',
+      numberOfItems: 12,
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'AI Video Generator', url: 'https://ai.skyverses.com/product/ai-video-generator' },
-        { '@type': 'ListItem', position: 2, name: 'AI Image Generator', url: 'https://ai.skyverses.com/product/ai-image-generator' },
+        { '@type': 'ListItem', position: 1, name: 'AI Video Generator (Veo3, Kling, Sora)', url: 'https://ai.skyverses.com/product/ai-video-generator' },
+        { '@type': 'ListItem', position: 2, name: 'AI Image Generator (Midjourney, Flux)', url: 'https://ai.skyverses.com/product/ai-image-generator' },
         { '@type': 'ListItem', position: 3, name: 'AI Music Generator', url: 'https://ai.skyverses.com/product/ai-music-generator' },
         { '@type': 'ListItem', position: 4, name: 'Text to Speech AI', url: 'https://ai.skyverses.com/product/text-to-speech' },
-        { '@type': 'ListItem', position: 5, name: 'Qwen Chat AI', url: 'https://ai.skyverses.com/product/qwen-chat-ai' },
+        { '@type': 'ListItem', position: 5, name: 'Qwen Chat AI (GPT-4o, Gemini, Grok)', url: 'https://ai.skyverses.com/product/qwen-chat-ai' },
         { '@type': 'ListItem', position: 6, name: 'Background Removal AI', url: 'https://ai.skyverses.com/product/background-removal-ai' },
-        { '@type': 'ListItem', position: 7, name: 'Studio Architect', url: 'https://ai.skyverses.com/product/studio-architect' },
-        { '@type': 'ListItem', position: 8, name: 'AI Agent Workflow', url: 'https://ai.skyverses.com/product/ai-agent-workflow' },
+        { '@type': 'ListItem', position: 7, name: 'Image Upscale AI', url: 'https://ai.skyverses.com/product/image-upscale-ai' },
+        { '@type': 'ListItem', position: 8, name: 'AI Agent Workflow Automation', url: 'https://ai.skyverses.com/product/ai-agent-workflow' },
         { '@type': 'ListItem', position: 9, name: 'Voice Design AI', url: 'https://ai.skyverses.com/product/voice-design-ai' },
-        { '@type': 'ListItem', position: 10, name: 'Poster Marketing AI', url: 'https://ai.skyverses.com/product/poster-marketing-ai' },
+        { '@type': 'ListItem', position: 10, name: 'Poster & Marketing AI', url: 'https://ai.skyverses.com/product/poster-marketing-ai' },
+        { '@type': 'ListItem', position: 11, name: 'Real Estate AI', url: 'https://ai.skyverses.com/product/real-estate-ai' },
+        { '@type': 'ListItem', position: 12, name: 'Fashion Center AI', url: 'https://ai.skyverses.com/product/fashion-center-ai' },
       ]
     }
   });
@@ -96,6 +100,7 @@ const MarketPage = () => {
   const [likedItems, setLikedItems] = useState<string[]>([]);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
   const [featuredIdx, setFeaturedIdx] = useState(0);
+  const [toolModalSlug, setToolModalSlug] = useState<string | null>(null);
 
   const scrollRefs = useRef<Record<string, React.RefObject<HTMLDivElement | null>>>({});
 
@@ -185,6 +190,11 @@ const MarketPage = () => {
     if (!isAuthenticated) navigate('/login');
     else navigate(`/product/${slug}`);
   }, [isAuthenticated, navigate]);
+
+  // Quick View → open tool workspace modal
+  const handleQuickView = useCallback((_e: React.MouseEvent, sol: Solution) => {
+    setToolModalSlug(sol.slug);
+  }, []);
 
   // Prefetch product page chunk on hover for instant navigation
   const prefetchedSlugs = useRef(new Set<string>());
@@ -358,6 +368,7 @@ const MarketPage = () => {
                       onToggleLike={toggleLike}
                       onClick={handleNavigate}
                       onHover={handlePrefetchOnHover}
+                      onQuickView={handleQuickView}
                       stats={getFakeStats(sol._id || sol.id)}
                     />
                   ))}
@@ -750,6 +761,7 @@ const MarketPage = () => {
                             onToggleLike={toggleLike}
                             onClick={handleNavigate}
                             onHover={handlePrefetchOnHover}
+                            onQuickView={handleQuickView}
                             stats={getFakeStats(sol._id || sol.id)}
                           />
                         ))}
@@ -1465,6 +1477,12 @@ const MarketPage = () => {
           100% { transform: translateY(0); }
         }
       `}</style>
+
+      {/* ── Product Tool Modal (workspace launched from card) ── */}
+      <ProductToolModal
+        slug={toolModalSlug}
+        onClose={() => setToolModalSlug(null)}
+      />
     </div>
   );
 };

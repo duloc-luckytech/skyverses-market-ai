@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Solution, Language } from '../../types';
 import { SolutionCard } from './SolutionCard';
@@ -11,6 +10,7 @@ interface SolutionListProps {
   onToggleFavorite: (e: React.MouseEvent, id: string) => void;
   onToggleLike: (e: React.MouseEvent, id: string) => void;
   onNavigate: (slug: string) => void;
+  onQuickView?: (e: React.MouseEvent, sol: Solution) => void;
   getFakeStats: (id: string) => { users: string; likes: string };
 }
 
@@ -22,6 +22,7 @@ export const SolutionList: React.FC<SolutionListProps> = ({
   onToggleFavorite,
   onToggleLike,
   onNavigate,
+  onQuickView,
   getFakeStats
 }) => {
   return (
@@ -37,6 +38,7 @@ export const SolutionList: React.FC<SolutionListProps> = ({
           onToggleFavorite={onToggleFavorite}
           onToggleLike={onToggleLike}
           onClick={onNavigate}
+          onQuickView={onQuickView}
           stats={getFakeStats(sol._id || sol.id)}
           isGrid={true}
         />

@@ -114,9 +114,15 @@ const SearchPage: React.FC = () => {
 
   usePageMeta({
     title: activeQuery
-      ? `Search: "${activeQuery}" — Skyverses Insights`
-      : 'Search — Skyverses Insights',
-    description: 'Search AI tutorials, news and insights from Skyverses.',
+      ? `Tìm kiếm: "${activeQuery}" — Skyverses Insights`
+      : 'Tìm kiếm bài viết AI — Skyverses Insights',
+    description: activeQuery
+      ? `Kết quả tìm kiếm cho "${activeQuery}" trên Skyverses Insights — hướng dẫn AI, tin tức và case study.`
+      : 'Tìm kiếm hướng dẫn AI, tin tức và case study trên Skyverses Insights. Khám phá bài viết về Veo3, Kling, Gemini, GPT-4o, Midjourney và 50+ AI model.',
+    keywords: activeQuery
+      ? `${activeQuery}, hướng dẫn AI, Skyverses insights, tìm kiếm AI`
+      : 'tìm kiếm AI, hướng dẫn AI, Skyverses insights',
+    noindex: true,
     lang: currentLang,
   });
 

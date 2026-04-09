@@ -162,14 +162,72 @@ const BlogHomePage: React.FC = () => {
   const { category: urlCategory } = useParams<{ category?: string }>();
   const currentLang = lang as Language;
 
+  // Per-category SEO descriptions
+  const CATEGORY_SEO: Record<string, { description: string; keywords: string }> = {
+    'News': {
+      description: `Tin tức AI mới nhất chuyên mục News: cập nhật ra mắt model mới, tính năng mới, sự kiện & xu hướng AI toàn cầu. Không bỏ lỡ bất kỳ tin tức nào từ Skyverses Insights.`,
+      keywords: `tin tức AI mới nhất, AI news, AI update, model AI mới ra mắt, sự kiện AI, AI 2026, Skyverses news`,
+    },
+    'Tutorials': {
+      description: `Hướng dẫn AI thực chiến từ A-Z cho mọi trình độ: tạo video AI, ảnh AI, giọng nói AI, tự động hoá workflow. Step-by-step, dễ hiểu, áp dụng ngay từ đội ngũ Skyverses.`,
+      keywords: `hướng dẫn AI, AI tutorial, học AI, cách dùng AI, Veo3 hướng dẫn, Midjourney tutorial, AI workflow, AI step by step`,
+    },
+    'Tips': {
+      description: `Tips & tricks AI thực dụng giúp bạn tạo ra kết quả tốt hơn với ít tài nguyên hơn. Mẹo prompt, tối ưu workflow, tiết kiệm credits từ các chuyên gia Skyverses.`,
+      keywords: `tips AI, mẹo dùng AI, AI tricks, prompt tips, tối ưu AI, tiết kiệm credits, AI best practices`,
+    },
+    'Case Study': {
+      description: `Case study thực tế: doanh nghiệp & cá nhân ứng dụng AI vào sản xuất nội dung, marketing, giáo dục, y tế, tài chính. Kết quả đo lường, ROI và bài học rút ra từ Skyverses.`,
+      keywords: `case study AI, ứng dụng AI thực tế, AI doanh nghiệp, AI marketing, AI giáo dục, AI y tế, ROI AI`,
+    },
+    'Community': {
+      description: `Cộng đồng AI sáng tạo Skyverses: chia sẻ tác phẩm, kinh nghiệm, thảo luận xu hướng AI và kết nối với những người dùng AI trên khắp Việt Nam & thế giới.`,
+      keywords: `cộng đồng AI, AI community, chia sẻ AI, người dùng AI Việt Nam, AI creative community, Skyverses community`,
+    },
+  };
+
+  const catSeo = urlCategory ? CATEGORY_SEO[urlCategory] : null;
+
   usePageMeta({
     title: urlCategory
-      ? `${urlCategory} — Skyverses Insights`
-      : 'Skyverses Insights — AI Tutorials, News & Workflows',
-    description: t('blog.subtitle'),
-    keywords: 'Skyverses insights, AI tutorials, AI tools, creative AI, video AI, image generation',
+      ? `${urlCategory} — Tin tức & Bài viết AI mọi lĩnh vực | Skyverses Insights`
+      : 'Skyverses Insights — Tin tức AI mới nhất mọi lĩnh vực | Hướng dẫn & Case Study',
+    description: catSeo?.description ?? (urlCategory
+      ? `Tổng hợp tin tức & bài viết AI chuyên mục ${urlCategory}: cập nhật mới nhất, hướng dẫn thực chiến và case study từ đội ngũ Skyverses. Bao gồm mọi lĩnh vực ứng dụng AI.`
+      : 'Cập nhật tin tức AI mới nhất 2026 cho mọi lĩnh vực: Video, Ảnh, Âm nhạc, Giọng nói, Y tế, Giáo dục, Tài chính, Bất động sản & Doanh nghiệp. Hướng dẫn thực chiến Veo3, Kling, Gemini, GPT-4o, Midjourney, Flux từ đội ngũ Skyverses.'),
+    keywords: catSeo?.keywords ?? (urlCategory
+      ? `${urlCategory}, tin tức AI, AI news, Skyverses insights, hướng dẫn AI, ${urlCategory} AI 2026`
+      : 'tin tức AI mới nhất, AI news 2026, AI mọi lĩnh vực, video AI mới, ảnh AI, âm nhạc AI, giọng nói AI, AI y tế, AI giáo dục, AI tài chính, AI bất động sản, AI doanh nghiệp, Veo3 news, Kling AI, Gemini update, GPT-4o, Midjourney, Flux AI, hướng dẫn AI, case study AI, Skyverses insights'),
     canonical: urlCategory ? `/category/${urlCategory}` : '/',
     lang: currentLang,
+    jsonLd: urlCategory ? undefined : {
+      '@type': 'Blog',
+      name: 'Skyverses Insights',
+      description: 'Tin tức AI mới nhất mọi lĩnh vực — hướng dẫn thực chiến, case study & cập nhật về Veo3, Kling, Gemini, GPT-4o, Midjourney và 50+ AI model từ Skyverses.',
+      url: 'https://insights.skyverses.com',
+      inLanguage: ['vi', 'en'],
+      about: [
+        { '@type': 'Thing', name: 'AI News' },
+        { '@type': 'Thing', name: 'Generative AI' },
+        { '@type': 'Thing', name: 'AI Video Generation' },
+        { '@type': 'Thing', name: 'AI Image Generation' },
+        { '@type': 'Thing', name: 'AI Music Generation' },
+        { '@type': 'Thing', name: 'AI Voice Synthesis' },
+        { '@type': 'Thing', name: 'AI in Healthcare' },
+        { '@type': 'Thing', name: 'AI in Education' },
+        { '@type': 'Thing', name: 'AI for Business' },
+        { '@type': 'Thing', name: 'AI Automation' },
+      ],
+      publisher: {
+        '@type': 'Organization',
+        name: 'Skyverses',
+        url: 'https://ai.skyverses.com',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png',
+        },
+      },
+    },
   });
 
   const [posts, setPosts] = useState<BlogPost[]>([]);

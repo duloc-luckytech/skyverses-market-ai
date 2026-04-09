@@ -15,7 +15,7 @@ const API_BASE = 'https://api.skyverses.com';
 const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWM4ZDhjYWQ4MWZhNWRlN2JkMTA2MTYiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQHNreXZlcnNlcy5jb20iLCJpYXQiOjE3NzQ3NzA0ODEsImV4cCI6MTc3NTM3NTI4MX0.5sWLqUkzr30pFVNe00dci_wZNO_cTkR1RcpFOGWAfig';
 
 // API Token for external image-task (Bearer apiToken)
-const SKV_API_TOKEN = 'skv_d50bceec9c3a2abaf88573aff3db2d08ae219aea0d54d10b295d0bbfb08cc6bc';
+const SKV_API_TOKEN = 'skv_cbb360d3c039ffb0ebb494e8536a9730a9faa4acde25d44be11a8087b65a230b';
 
 // Cloudflare Images config
 const CF_ACCOUNT_ID = 'cf3d665aec0eda633986d008ba66c967';
@@ -138,6 +138,8 @@ function buildPrompt(product) {
     'BAT-DONG-SAN-AI': `A stunning AI real estate visualization — a beautiful modern villa being virtually staged with furniture appearing as holographic projections. Before/after split of empty room vs designer-staged room. Warm golden lighting, luxury real estate aesthetic, cinematic 4K.`,
 
     'CAPTCHA-VEO3': `A futuristic cybersecurity automation scene — a CAPTCHA challenge being solved in real-time by an AI vision system. Glowing grid patterns, recognition markers highlighting image elements. Matrix-style data streams on dark background, green and cyan neon, cinematic 4K.`,
+
+    'SOCIAL-BANNER-AI': `A premium social media banner creation studio — multiple platform canvases side by side showing X (Twitter) cover 1500×500, Facebook post 1200×630, Instagram story 1080×1920, and LinkedIn banner 1584×396. Each canvas shows a beautifully designed AI-generated brand banner. Platform logos glowing in the corners. Dark premium interface with brand-blue and purple gradient accents, holographic layout guides, pixel dimension labels floating in golden text around each frame. Cinematic 4K quality, ultra professional.`,
   };
 
   if (promptMap[product.id]) {
