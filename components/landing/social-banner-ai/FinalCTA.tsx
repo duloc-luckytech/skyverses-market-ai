@@ -33,6 +33,13 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onStartStudio }) => (
         <p className="text-[10px] text-slate-400 dark:text-[#555] mt-4 uppercase tracking-widest">
           80 CR / banner · Không cần design skills
         </p>
+        <p className="text-[11px] text-slate-400 dark:text-[#555] mt-2 flex items-center justify-center gap-2.5">
+          <span>🔒 Không cần thẻ tín dụng</span>
+          <span className="opacity-30">·</span>
+          <span>✓ Ảnh thuộc về bạn</span>
+          <span className="opacity-30">·</span>
+          <span>⚡ 100 CR miễn phí khi đăng ký</span>
+        </p>
       </FadeInUp>
     </div>
   </section>
