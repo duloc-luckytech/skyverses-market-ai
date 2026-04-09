@@ -83,6 +83,7 @@ node seed-<slug>.mjs
 Tạo `gen-<slug>-image.mjs` theo pattern `gen-social-banner-image.mjs`:
 - Copy script
 - Update `BANNER_PROMPT` — cinematic premium AI studio description
+- Update `PRODUCT_ID` với `_id` từ STEP 2
 - Update `SKV_API_TOKEN` (lấy từ CMS Admin > API Clients nếu 401)
 
 ```bash
@@ -91,6 +92,9 @@ node gen-<slug>-image.mjs
 ```
 
 > ⚠️ `SKV_API_TOKEN` expired → hỏi user lấy token mới từ CMS Admin Tab "API Clients"
+
+> **🚨 QUAN TRỌNG: Phải chạy luôn script ngay sau khi tạo — KHÔNG bỏ qua bước này.**
+> Claude phải tự `node gen-<slug>-image.mjs` trước khi sang STEP 3.5.
 
 ---
 
