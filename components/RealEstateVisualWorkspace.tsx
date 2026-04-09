@@ -7,7 +7,7 @@ import {
   Building2, Home, Briefcase, Store, Map,
   Building, Users, LayoutGrid, PenTool, Code, HardHat, MoreHorizontal,
   Sofa, Image as ImageIcon, Eye,
-  Navigation, Wind, Film, Clock, Volume2, VolumeX,
+  Navigation, Wind, Film, Clock,
   CheckCircle2,
 } from 'lucide-react';
 import { generateDemoText } from '../services/gemini';
@@ -19,6 +19,7 @@ import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
 import { useImageModels, extractImageFamily } from '../hooks/useImageModels';
 import { pricingApi, PricingModel } from '../apis/pricing';
 import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
+import { VideoModelEngineSettings } from './video-generator/VideoModelEngineSettings';
 import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
 import { videosApi, VideoJobRequest, VideoJobResponse } from '../apis/videos';
 
@@ -805,56 +806,36 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
 
 
-          {/* Video AI Config — same ModelEngineSettings component as /ai-image-generator */}
-          <ModelEngineSettings
-            availableModels={videoAvailableModels}
-            selectedModel={videoSelectedModelObj}
-            setSelectedModel={setVideoSelectedModelObj}
-            selectedRatio={videoRatio}
-            setSelectedRatio={setVideoRatio}
-            selectedRes={videoResolution}
-            setSelectedRes={setVideoResolution}
-            quantity={videoQuantity}
-            setQuantity={setVideoQuantity}
-            selectedMode={videoSelectedMode}
-            setSelectedMode={setVideoSelectedMode}
+          {/* Video AI Config — shared VideoModelEngineSettings */}
+          <VideoModelEngineSettings
             selectedEngine={videoEngine}
             onSelectEngine={setVideoEngine}
-            activeMode="SINGLE"
-            isGenerating={isGenerating}
+            availableModels={videoAvailableModels}
+            selectedModelObj={videoSelectedModelObj}
+            setSelectedModelObj={setVideoSelectedModelObj}
             familyList={videoFamilyList}
             selectedFamily={videoSelectedFamily}
             setSelectedFamily={setVideoSelectedFamily}
             familyModels={videoFamilyModels}
             familyModes={videoFamilyModes}
-            familyRatios={videoFamilyRatios}
             familyResolutions={videoFamilyRes}
+            familyRatios={videoFamilyRatios}
+            selectedMode={videoSelectedMode}
+            setSelectedMode={setVideoSelectedMode}
+            ratio={videoRatio}
+            setRatio={setVideoRatio}
+            resolution={videoResolution}
+            setResolution={setVideoResolution}
+            isModeBased={isModeBased}
+            duration={videoDuration}
+            cycleDuration={cycleDuration}
+            soundEnabled={soundEnabled}
+            setSoundEnabled={setSoundEnabled}
+            quantity={videoQuantity}
+            setQuantity={setVideoQuantity}
+            showQuantity
+            isGenerating={isGenerating}
           />
-
-          {/* Video-only: Duration + Sound — compact row below shared config */}
-          <div className="flex items-center gap-2 px-0.5 pt-0.5">
-            {!isModeBased && availableVideoDurations.length > 0 && (
-              <button
-                onClick={cycleDuration}
-                disabled={isGenerating}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.04] text-[10px] font-semibold text-slate-600 dark:text-[#888] hover:border-rose-500/30 hover:text-rose-400 disabled:opacity-40 transition-all"
-              >
-                <Clock size={10} /> {videoDuration}
-              </button>
-            )}
-            <button
-              onClick={() => setSoundEnabled(s => !s)}
-              disabled={isGenerating}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-semibold transition-all disabled:opacity-40 ${
-                soundEnabled
-                  ? 'bg-rose-500/10 border-rose-500/25 text-rose-400'
-                  : 'border-black/[0.06] dark:border-white/[0.04] text-slate-500 dark:text-[#666] hover:border-rose-500/30 hover:text-rose-400'
-              }`}
-            >
-              {soundEnabled ? <Volume2 size={10} /> : <VolumeX size={10} />}
-              {soundEnabled ? 'Sound' : 'Mute'}
-            </button>
-          </div>
 
           {/* AISuggestPanel for video */}
           <AISuggestPanel

@@ -174,6 +174,26 @@ node gen-<slug>-images.mjs
 
 > **Không dùng script external.** Claude Code tự plan content phù hợp business của product.
 
+---
+
+### ⚠️ QUY TẮC QUAN TRỌNG — Xác định loại product trước khi plan
+
+Trước khi làm bất cứ thứ gì trong STEP 3.5, xác định ngay:
+
+| Loại product | Ví dụ | Bắt buộc |
+|---|---|---|
+| **Tạo ảnh** (image generation) | AI Image Generator, Poster Marketing, Social Banner | ✅ **PHẢI dùng `ModelEngineSettings`** ở STEP 6.5 |
+| **Tạo video** (video generation) | AI Video Generator, Video Animate, Fibus Studio | ✅ **PHẢI dùng `ModelEngineSettings`** ở STEP 6.5 |
+| **Transform ảnh** (không gen AI model) | Remove Background, Image Upscale, Restore | ❌ Bỏ qua STEP 6.5 |
+| **Tool/Workflow** (không tạo media) | AI Agent, Qwen Chat, Automation | ❌ Bỏ qua STEP 6.5 |
+
+> **Nếu product thuộc loại tạo ảnh hoặc tạo video:**
+> → Đặt ghi chú ngay đây: `⚡ STEP 6.5 bắt buộc — dùng ModelEngineSettings`
+> → TUYỆT ĐỐI KHÔNG tự build UI server/model/mode/resolution riêng trong workspace
+> → Xem chi tiết pattern tại **STEP 6.5** bên dưới
+
+---
+
 ### A. Phân tích product → chọn Hero Visual Type:
 
 | Visual Type | Dùng khi | Component |
@@ -883,6 +903,8 @@ export default YourProductAI;
 > **Reference:** `components/SocialBannerWorkspace.tsx` — đây là canonical workspace MỚI NHẤT.
 > (PosterStudioWorkspace là reference cũ — chưa có AISuggestPanel)
 
+> ⚡ **Nhắc nhở:** Nếu product tạo ảnh hoặc tạo video → sau khi xây workspace xong, tiếp tục sang **STEP 6.5** để tích hợp `ModelEngineSettings`. KHÔNG tự build UI engine thủ công trong workspace.
+
 ---
 
 ### ⚠️ RULE: Generate phải dùng Job+Poll — KHÔNG dùng `generateDemoImage` / `generateDemoVideo`
@@ -1151,41 +1173,273 @@ if (credits < CREDIT_COST * quantity) { setShowLowCreditAlert(true); return; }
 
 ---
 
-## STEP 6.5 — Inherit Settings Combo (nếu product liên quan tới tạo ảnh hoặc tạo video)
+## STEP 6.5 — Cấu hình AI Engine (BẮT BUỘC nếu product tạo ảnh hoặc tạo video)
 
-> **Chỉ áp dụng khi** product tạo ra ảnh hoặc video bằng AI model.
-> Transform-only products (xóa nền, upscale, restore) → **bỏ qua step này**.
-
-### Quyết định nguồn reference:
-
-| Product Type | Reference workspace | File |
-|---|---|---|
-| Tạo **ảnh** (từ text, concept, style) | AIImageGeneratorWorkspace | `components/AIImageGeneratorWorkspace.tsx` |
-| Tạo **video** (từ text, ảnh, frame sequence) | AIVideoGeneratorWorkspace | `components/AIVideoGeneratorWorkspace.tsx` |
-| Tạo **banner / social content** (ảnh marketing) | SocialBannerWorkspace | `components/SocialBannerWorkspace.tsx` |
+> ⚡ **Trigger:** Nếu bạn đã đánh dấu `⚡ STEP 6.5 bắt buộc` ở STEP 3.5 → thực hiện toàn bộ step này.
+> **Chỉ bỏ qua** khi product là transform-only (xóa nền, upscale, restore) hoặc tool/workflow không tạo media.
 
 ---
 
-> 🆕 **Cập nhật mới — UI Engine Settings dùng chung component:**
+### ⚠️ QUY TẮC BẮT BUỘC — Dùng `ModelEngineSettings` component (KHÔNG tự build UI)
+
+> **Mọi workspace tạo ảnh hoặc tạo video đều PHẢI dùng component dùng chung `ModelEngineSettings`.**
+> **TUYỆT ĐỐI KHÔNG** tự viết lại UI server / model / mode / resolution / ratio / quantity riêng trong workspace mới.
+> Viết lại thủ công = sai kiến trúc, gây inconsistency toàn hệ thống.
 >
-> Kể từ khi refactor `SocialBannerWorkspace` và `RealEstateVisualWorkspace`, toàn bộ UI "Cấu hình AI"
-> (Server pills, Model family dropdown, Chế độ, Tỷ lệ, P.Giải, SL) đã được **tách ra thành shared component**.
->
-> **Thay vì tự build UI trong sections A/B bên dưới, ưu tiên dùng:**
-> ```tsx
-> import { useImageModels } from '../hooks/useImageModels';
-> import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
-> ```
-> Đọc `components/SocialBannerWorkspace.tsx` (image) hoặc `components/RealEstateVisualWorkspace.tsx`
-> (image + video) để xem full implementation mẫu trước khi code.
->
-> Đọc sections A/B bên dưới để hiểu cách state hoạt động (pricing, isModeBased, duration, cost calc) —
-> nhưng **phần UI JSX** thay bằng `<ModelEngineSettings>` thay vì build select boxes thủ công.
+> **Tham chiếu implementation thực tế:**
+> - `components/SocialBannerWorkspace.tsx` — image generation workspace (canonical mới nhất)
+> - `components/RealEstateVisualWorkspace.tsx` — image + video tabs trong cùng 1 workspace
 
 ---
 
+### A. Cấu hình AI — Tạo ảnh
 
-### A. Settings Combo — Tạo ảnh (copy từ AIImageGeneratorWorkspace)
+#### 1. Import
+
+```tsx
+import { useImageModels } from '../hooks/useImageModels';
+import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
+```
+
+#### 2. Hook state (thay thế toàn bộ state engine thủ công)
+
+```tsx
+// Engine selector state (1 useState duy nhất)
+const [imgEngine, setImgEngine] = useState('gommo');
+
+// Tất cả state còn lại (model, family, mode, res, ratio, quantity, cost) — đến từ hook
+const {
+  availableModels,      // PricingModel[] — tất cả models của engine
+  selectedModel,        // PricingModel | null — model đang chọn (object đầy đủ)
+  setSelectedModel,
+  selectedFamily,       // string — tên family đang chọn
+  setSelectedFamily,
+  selectedMode,         // string
+  setSelectedMode,
+  selectedRes,          // string — '1k' | '2k' | '4k' | ...
+  setSelectedRes,
+  selectedRatio,        // string — '16:9' | '1:1' | ...
+  setSelectedRatio,
+  familyList,           // string[] — danh sách family names
+  familyModels,         // MappedImageModel[] — models của family đang chọn
+  familyModes,          // string[] — modes của family đang chọn
+  familyResolutions,    // string[] — resolutions của family đang chọn
+  familyRatios,         // string[] — ratios của family đang chọn
+  selectedModelCost,    // number — credit cost của model+mode+res đang chọn
+} = useImageModels(imgEngine);
+
+const [quantity, setQuantity] = useState(1);
+
+// Credit check — dùng selectedModelCost (dynamic), KHÔNG hardcode
+if (credits < selectedModelCost * quantity) { setShowLowCreditAlert(true); return; }
+```
+
+#### 3. JSX — đặt trong sidebar (sau picker, trước AISuggestPanel)
+
+```tsx
+<ModelEngineSettings
+  availableModels={availableModels}
+  selectedModel={selectedModel}
+  setSelectedModel={setSelectedModel}
+  selectedRatio={selectedRatio}
+  setSelectedRatio={setSelectedRatio}
+  selectedRes={selectedRes}
+  setSelectedRes={setSelectedRes}
+  quantity={quantity}
+  setQuantity={setQuantity}
+  selectedMode={selectedMode}
+  setSelectedMode={setSelectedMode}
+  selectedEngine={imgEngine}
+  onSelectEngine={setImgEngine}
+  activeMode="SINGLE"
+  isGenerating={isGenerating}
+  familyList={familyList}
+  selectedFamily={selectedFamily}
+  setSelectedFamily={setSelectedFamily}
+  familyModels={familyModels.map(m => m.raw || m)}
+  familyModes={familyModes}
+  familyRatios={familyRatios}
+  familyResolutions={familyResolutions}
+/>
+```
+
+#### 4. Dùng trong generate payload
+
+```tsx
+const payload: ImageJobRequest = {
+  type: references.length > 0 ? 'image_to_image' : 'text_to_image',
+  input: { prompt: finalPrompt, images: references.length > 0 ? references : undefined },
+  config: { width: 1024, height: 1024, aspectRatio: selectedRatio, seed: 0 },
+  engine: {
+    provider: imgEngine as 'gommo' | 'fxlab',
+    model: selectedModel?.raw?.modelKey ?? selectedModel?.modelKey ?? '',
+  },
+  enginePayload: {
+    prompt: finalPrompt,
+    privacy: 'PRIVATE',
+    projectId: 'default',
+    mode: selectedMode,
+  },
+};
+```
+
+---
+
+### B. Cấu hình AI — Tạo video
+
+> Video workspace cần thêm Duration + Sound control bên dưới `ModelEngineSettings`.
+> Tham chiếu: tab video trong `components/RealEstateVisualWorkspace.tsx`.
+
+#### 1. Import
+
+```tsx
+import { useImageModels } from '../hooks/useImageModels';
+import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
+import { Clock, Volume2, VolumeX } from 'lucide-react';
+import { pricingApi, PricingModel } from '../apis/pricing';
+```
+
+#### 2. State
+
+```tsx
+// Video models phải fetch riêng vì tool:'video' — hook useImageModels chỉ dùng cho image
+const [videoEngine, setVideoEngine] = useState('gommo');
+const [videoAvailableModels, setVideoAvailableModels] = useState<PricingModel[]>([]);
+const [videoSelectedModelObj, setVideoSelectedModelObj] = useState<PricingModel | null>(null);
+const [videoSelectedFamily, setVideoSelectedFamily] = useState('');
+const [videoSelectedMode, setVideoSelectedMode] = useState('relaxed');
+const [videoResolution, setVideoResolution] = useState('720p');
+const [videoRatio, setVideoRatio] = useState('16:9');
+const [videoDuration, setVideoDuration] = useState('8s');
+const [soundEnabled, setSoundEnabled] = useState(false);
+const [videoQuantity, setVideoQuantity] = useState(1);
+
+// Fetch video models on engine change
+useEffect(() => {
+  setVideoAvailableModels([]);
+  pricingApi.getPricing({ tool: 'video', engine: videoEngine })
+    .then(res => {
+      if (res.success && res.data.length > 0) {
+        setVideoAvailableModels(res.data);
+        const def = res.data[0];
+        setVideoSelectedFamily(extractFamilyName(def.name)); // copy extractFamilyName từ canonical
+        setVideoSelectedModelObj(def);
+      }
+    })
+    .catch(console.error);
+}, [videoEngine]);
+
+// Family groupings — memos giống canonical RealEstateVisualWorkspace
+const videoFamilies     = useMemo(() => { /* group bằng extractFamilyName */ }, [videoAvailableModels]);
+const videoFamilyList   = useMemo(() => Object.keys(videoFamilies).sort(), [videoFamilies]);
+const videoFamilyModels = useMemo(() => videoFamilies[videoSelectedFamily] || [], [videoFamilies, videoSelectedFamily]);
+const videoFamilyModes  = useMemo(() => [...new Set(videoFamilyModels.flatMap(m => m.modes || []))], [videoFamilyModels]);
+const videoFamilyRes    = useMemo(() => [...new Set(videoFamilyModels.flatMap(m => Object.keys(m.pricing || {})))], [videoFamilyModels]);
+const videoFamilyRatios = useMemo(() => [...new Set(videoFamilyModels.flatMap(m => m.aspectRatios || []))].filter(r => r && r !== 'auto'), [videoFamilyModels]);
+
+// Duration + isModeBased (copy từ RealEstateVisualWorkspace)
+const isModeBased = useMemo(() => { /* detect pricing key type */ }, [videoSelectedModelObj, videoResolution]);
+const availableVideoDurations = useMemo(() => { /* from model pricing */ }, [videoSelectedModelObj, videoResolution, isModeBased]);
+const cycleDuration = () => { /* cycle through durations */ };
+const videoUnitCost = useMemo(() => getUnitCost(videoSelectedModelObj, videoResolution, videoDuration, videoSelectedMode), [...]);
+```
+
+#### 3. JSX — `ModelEngineSettings` + Duration/Sound row
+
+```tsx
+{/* Shared AI config — same component as /ai-image-generator */}
+<ModelEngineSettings
+  availableModels={videoAvailableModels}
+  selectedModel={videoSelectedModelObj}
+  setSelectedModel={setVideoSelectedModelObj}
+  selectedRatio={videoRatio}
+  setSelectedRatio={setVideoRatio}
+  selectedRes={videoResolution}
+  setSelectedRes={setVideoResolution}
+  quantity={videoQuantity}
+  setQuantity={setVideoQuantity}
+  selectedMode={videoSelectedMode}
+  setSelectedMode={setVideoSelectedMode}
+  selectedEngine={videoEngine}
+  onSelectEngine={setVideoEngine}
+  activeMode="SINGLE"
+  isGenerating={isGenerating}
+  familyList={videoFamilyList}
+  selectedFamily={videoSelectedFamily}
+  setSelectedFamily={setVideoSelectedFamily}
+  familyModels={videoFamilyModels}
+  familyModes={videoFamilyModes}
+  familyRatios={videoFamilyRatios}
+  familyResolutions={videoFamilyRes}
+/>
+
+{/* Video-only extras: Duration + Sound — compact row beneath */}
+<div className="flex items-center gap-2 px-0.5 pt-0.5">
+  {!isModeBased && availableVideoDurations.length > 0 && (
+    <button
+      onClick={cycleDuration}
+      disabled={isGenerating}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.04] text-[10px] font-semibold text-slate-600 dark:text-[#888] hover:border-rose-500/30 hover:text-rose-400 disabled:opacity-40 transition-all"
+    >
+      <Clock size={10} /> {videoDuration}
+    </button>
+  )}
+  <button
+    onClick={() => setSoundEnabled(s => !s)}
+    disabled={isGenerating}
+    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-semibold transition-all disabled:opacity-40 ${
+      soundEnabled
+        ? 'bg-rose-500/10 border-rose-500/25 text-rose-400'
+        : 'border-black/[0.06] dark:border-white/[0.04] text-slate-500 dark:text-[#666] hover:border-rose-500/30 hover:text-rose-400'
+    }`}
+  >
+    {soundEnabled ? <Volume2 size={10} /> : <VolumeX size={10} />}
+    {soundEnabled ? 'Sound' : 'Mute'}
+  </button>
+</div>
+```
+
+---
+
+### C. Vị trí trong Sidebar Layout
+
+```
+SIDEBAR
+│ Product-specific picker (platform/format/etc.)
+│ ─── INDUSTRY PICKER ───
+│ ─── ✅ ModelEngineSettings (component dùng chung) ───
+│     SERVER pills (Server 1 / Server 2 / Grok) — live status
+│     MODEL family dropdown + list modal
+│     CHẾ ĐỘ pills
+│     TỶ LỆ pills + P.GIẢI pills
+│     # SL selector
+│ ─── (video only) Duration button + Sound toggle ───
+│ ─── AI SUGGEST PANEL ───
+│ Prompt textarea
+│ AI Boost button
+│ Reference images
+│ ─────────────────────────────
+│ Cost badge (selectedModelCost × quantity CR) + Generate button
+```
+
+---
+
+### D. Common Mistakes
+
+| ❌ Sai | ✅ Đúng |
+|--------|---------|
+| Tự build Server/Model/Mode/Res/SL UI thủ công | Dùng `<ModelEngineSettings>` component |
+| `const CREDIT_COST = 120` hardcode | Dùng `selectedModelCost` từ `useImageModels` hook |
+| `const MODELS = ['Nano Banana', ...]` hardcode | `useImageModels(engine)` → `availableModels` từ API |
+| Không pass `familyModels={familyModels.map(m => m.raw \|\| m)}` | Luôn map `.raw` — ModelEngineSettings cần raw PricingModel |
+| Build Video settings UI từ đầu | Dùng `ModelEngineSettings` + Duration/Sound row (xem mẫu RealEstateVisualWorkspace) |
+| `generateDemoImage` / `generateDemoVideo` từ `services/gemini` | Dùng `imagesApi.createJob` + poll / `videosApi.createJob` + poll |
+| `useState<string\|null>(null)` — 1 result duy nhất | `useState<REResult[]>([])` — task list với status per-item |
+| Không hoàn credits khi job thất bại | `addCredits(cost)` + set `isRefunded: true` khi `status === 'error'` |
+
+
+
+
 
 **Đọc `AIImageGeneratorWorkspace.tsx` + hook `useImageGenerator`** trước khi code. Copy nguyên các phần sau:
 
