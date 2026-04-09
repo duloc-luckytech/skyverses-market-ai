@@ -166,6 +166,23 @@ const AdminCmsProPage = () => {
     finally { setTogglingId(null); }
   };
 
+  const handleDelete = async (sol: Solution) => {
+    const targetId = sol._id || sol.id;
+    const confirm = window.confirm(`Xoá sản phẩm "${sol.name.en}"? Hành động này không thể hoàn tác.`);
+    if (!confirm) return;
+    try {
+      const res = await marketApi.deleteSolution(targetId);
+      if (res.success) {
+        setRemoteSolutions(prev => prev.filter(item => item._id !== targetId && item.id !== targetId));
+        showToast(`Đã xoá "${sol.name.en}"`, 'success');
+      } else {
+        showToast(res.message || 'Xoá thất bại', 'error');
+      }
+    } catch (err) {
+      showToast('Lỗi kết nối server khi xoá', 'error');
+    }
+  };
+
   const handleSaveSolution = async () => {
     if (!editedItem) return;
     setIsSaving(true);
@@ -329,7 +346,7 @@ const AdminCmsProPage = () => {
                 key={activeTab}
                 activeTab={activeTab}
                 solutions={remoteSolutions}
-                onEdit={handleEdit} onDelete={() => { }}
+                onEdit={handleEdit} onDelete={handleDelete}
                 onToggleActive={handleToggleActive}
                 onUpdateHomeBlocks={handleQuickUpdateHomeBlocks}
                 isSyncedOnCloud={isSyncedOnCloud}
