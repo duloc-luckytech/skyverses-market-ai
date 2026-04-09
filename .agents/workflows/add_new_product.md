@@ -170,6 +170,527 @@ node gen-<slug>-images.mjs
 
 ---
 
+## STEP 3.2 — Gen landing page block images (bash scripts)
+
+> Tạo **3 bash scripts** để gen + upload Cloudflare CDN toàn bộ hình ảnh cho các khối block landing page.
+> Làm **trước STEP 3.5** để có CDN URLs điền vào plan (câu 13 — Section Image Plan).
+>
+> **Tham chiếu pattern thực tế:**
+> - `scripts/gen_socialbanner_landing_images.sh` → FeaturesSection thumbs + WorkflowSection result + UseCasesSection cards + HeroSection demo
+> - `scripts/gen_socialbanner_showcase.sh` → ShowcaseSection 15 example banners
+> - `scripts/gen_socialbanner_feature_thumbs.sh` → FeaturesSection 6 non-featured cards
+
+---
+
+### Script 1 — `gen-<slug>-landing-images.sh` (main landing blocks)
+
+> Gen tất cả hình cho: FeaturesSection (featured cards), WorkflowSection (step kết quả), UseCasesSection (cards), HeroSection (demo preview).
+
+```bash
+#!/bin/bash
+# gen-<slug>-landing-images.sh
+# Gen + Upload → Cloudflare CDN toàn bộ hình landing <ProductName>
+# Run: bash scripts/gen-<slug>-landing-images.sh
+
+API="https://api.skyverses.com/image-jobs"
+TOKEN="Bearer <SKV_API_TOKEN>"          # CMS Admin > API Clients
+CF_ACCOUNT="<CF_ACCOUNT_ID>"
+CF_TOKEN="<CF_API_TOKEN>"
+CF_API="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/images/v1"
+
+IMG_DIR="public/assets/<slug>"
+OUTPUT_FILE="scripts/<slug>-cdn-urls.sh"
+mkdir -p "$IMG_DIR"
+
+declare -a NAMES
+declare -a PROMPTS
+
+# ─── FeaturesSection — 2 featured card thumbnails (800x320) ─────────────────
+# Naming: features-<feature-keyword>
+NAMES+=("features-<feature-1-keyword>")
+PROMPTS+=("<describe the visual for featured feature 1, relevant to product, premium dark aesthetic, no readable text, wide banner 800x320>")
+
+NAMES+=("features-<feature-2-keyword>")
+PROMPTS+=("<describe the visual for featured feature 2, relevant to product, premium dark aesthetic, no readable text, wide banner 800x320>")
+
+# ─── WorkflowSection — step kết quả thumbnail (400x200) ──────────────────────
+# Naming: workflow-result
+NAMES+=("workflow-result")
+PROMPTS+=("<show the product output displayed on a device mockup, professional quality, no readable text, 400x200>")
+
+# ─── UseCasesSection — 4-6 use case cards (600x400) ──────────────────────────
+# Naming: usecase-<industry-keyword>
+# → Mỗi use case từ STEP 3.5 câu 10 cần 1 ảnh tương ứng
+NAMES+=("usecase-<industry-1>")
+PROMPTS+=("<visual for industry 1 use case, relevant to the specific industry context, no readable text, 600x400>")
+
+NAMES+=("usecase-<industry-2>")
+PROMPTS+=("<visual for industry 2 use case, 600x400>")
+
+NAMES+=("usecase-<industry-3>")
+PROMPTS+=("<visual for industry 3 use case, 600x400>")
+
+NAMES+=("usecase-<industry-4>")
+PROMPTS+=("<visual for industry 4 use case, 600x400>")
+
+# Thêm usecase-5, usecase-6 nếu có thêm use cases
+
+# ─── HeroSection — demo preview thumbnail (1200x630) ─────────────────────────
+# Naming: hero-demo-<slug>
+NAMES+=("hero-demo-<slug>")
+PROMPTS+=("<a stunning 2x2 or 3-column grid collage of 3-4 example outputs from this product, pixel-perfect, premium quality, no readable text visible, 1200x630>")
+
+# ═══════════════════════════════════════════════════════════════
+# SUBMIT JOBS
+# ═══════════════════════════════════════════════════════════════
+
+JOBIDS=()
+echo "🎨 <ProductName> Landing — Tạo ${#NAMES[@]} hình ảnh..."
+echo ""
+
+for i in "${!NAMES[@]}"; do
+  NAME="${NAMES[$i]}"
+  P="${PROMPTS[$i]}"
+
+  # Auto-detect size theo prefix naming convention
+  if   [[ "$NAME" == features-* ]]; then W=800;  H=320; RATIO="16:5"
+  elif [[ "$NAME" == workflow-*  ]]; then W=400;  H=200; RATIO="2:1"
+  elif [[ "$NAME" == usecase-*   ]]; then W=600;  H=400; RATIO="3:2"
+  elif [[ "$NAME" == hero-*      ]]; then W=1200; H=630; RATIO="16:9"
+  else                                    W=800;  H=450; RATIO="16:9"
+  fi
+
+  R=$(curl -s -X POST "$API" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: $TOKEN" \
+    -d "{\"type\":\"text_to_image\",\"input\":{\"prompt\":\"$P\"},\"config\":{\"width\":$W,\"height\":$H,\"aspectRatio\":\"$RATIO\",\"seed\":0,\"style\":\"\"},\"engine\":{\"provider\":\"gommo\",\"model\":\"google_image_gen_4_5\"},\"enginePayload\":{\"prompt\":\"$P\",\"privacy\":\"PRIVATE\",\"projectId\":\"default\"}}")
+
+  JID=$(echo "$R" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['jobId'])" 2>/dev/null)
+  JOBIDS+=("$JID")
+  echo "  [$((i+1))/${#NAMES[@]}] $NAME (${W}x${H}) → $JID"
+  sleep 1
+done
+
+# ═══════════════════════════════════════════════════════════════
+# POLL & DOWNLOAD
+# ═══════════════════════════════════════════════════════════════
+
+echo ""
+echo "⏳ Polling results..."
+
+for i in "${!NAMES[@]}"; do
+  JID="${JOBIDS[$i]}"
+  NAME="${NAMES[$i]}"
+  [ -z "$JID" ] && echo "❌ $NAME: no job ID" && continue
+
+  for attempt in $(seq 1 60); do
+    sleep 5
+    SR=$(curl -s "$API/$JID" -H "Authorization: $TOKEN")
+    ST=$(echo "$SR" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['status'])" 2>/dev/null)
+    if [ "$ST" = "done" ]; then
+      URL=$(echo "$SR" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['result']['images'][0])" 2>/dev/null)
+      echo "✅ $NAME → $URL"
+      curl -sL -o "${IMG_DIR}/${NAME}.png" "$URL"
+      break
+    elif [ "$ST" = "failed" ] || [ "$ST" = "error" ]; then
+      echo "❌ $NAME FAILED"; break
+    else
+      printf "  ⏳ %s (%d/60)\\r" "$NAME" "$attempt"
+    fi
+  done
+done
+
+# ═══════════════════════════════════════════════════════════════
+# UPLOAD → CLOUDFLARE
+# ═══════════════════════════════════════════════════════════════
+
+echo ""
+echo "☁️  Uploading to Cloudflare Images..."
+echo ""
+
+cat > "$OUTPUT_FILE" << 'HEADER'
+#!/bin/bash
+# AUTO-GENERATED: Cloudflare CDN URLs for <ProductName> landing page
+HEADER
+
+UPLOADED=0
+
+for FILE in "$IMG_DIR"/*.png; do
+  NAME=$(basename "$FILE" .png)
+  echo -n "  ⬆  $NAME ... "
+  RESPONSE=$(curl -s -X POST "$CF_API" \
+    -H "Authorization: Bearer $CF_TOKEN" \
+    -F "file=@${FILE}" \
+    -F "requireSignedURLs=false")
+
+  SUCCESS=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('success', False))" 2>/dev/null)
+  URL=$(echo "$RESPONSE" | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    v = d.get('result', {}).get('variants', [])
+    print(next((x for x in v if x.endswith('/public')), v[0] if v else ''))
+except: print('')
+" 2>/dev/null)
+
+  if [ "$SUCCESS" = "True" ] && [ -n "$URL" ]; then
+    echo "✅  $URL"
+    echo "CDN_${NAME//-/_}=\"${URL}\"" >> "$OUTPUT_FILE"
+    UPLOADED=$((UPLOADED + 1))
+  else
+    echo "❌  $(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('errors','?'))" 2>/dev/null)"
+  fi
+  sleep 0.3
+done
+
+rm -rf "$IMG_DIR"
+echo ""
+echo "═══════════════════════════════════════════════════════════"
+echo "✅ Uploaded: $UPLOADED/${#NAMES[@]} → Cloudflare CDN"
+echo "📋 URLs saved to: $OUTPUT_FILE"
+echo "🗑  Deleted: $IMG_DIR"
+echo "═══════════════════════════════════════════════════════════"
+cat "$OUTPUT_FILE"
+```
+
+```bash
+bash scripts/gen-<slug>-landing-images.sh
+# → Ghi lại CDN URLs (CDN_features_*, CDN_workflow_result, CDN_usecase_*, CDN_hero_demo_*)
+# → Dùng cho STEP 3.5 câu 13 (Section Image Plan)
+```
+
+---
+
+### Script 2 — `gen-<slug>-showcase.sh` (ShowcaseSection — 10-15 example outputs)
+
+> Gen 10-15 banner/output ví dụ thực tế để hiển thị trong ShowcaseSection marquee.
+> Mỗi ảnh minh hoạ một use case/platform output khác nhau của product.
+
+```bash
+#!/bin/bash
+# gen-<slug>-showcase.sh
+# Gen 10-15 showcase example outputs cho ShowcaseSection
+# Run: bash scripts/gen-<slug>-showcase.sh
+
+API="https://api.skyverses.com/image-jobs"
+TOKEN="Bearer <SKV_API_TOKEN>"
+CF_ACCOUNT="<CF_ACCOUNT_ID>"
+CF_TOKEN="<CF_API_TOKEN>"
+CF_API="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/images/v1"
+
+IMG_DIR="public/assets/<slug>-showcase"
+OUTPUT_FILE="scripts/<slug>-showcase-cdn.sh"
+mkdir -p "$IMG_DIR"
+
+# Format: NAMES / PROMPTS / LABELS / DESCS / WIDTHS / HEIGHTS
+declare -a NAMES PROMPTS LABELS DESCS WIDTHS HEIGHTS
+
+# ── 1. <Example output type 1 — e.g. Flash Sale banner> ────────────────
+NAMES+=("<slug>-example-01")
+WIDTHS+=(1200); HEIGHTS+=(630)
+LABELS+=("<Label tiếng Việt ngắn — VD: Flash Sale 11.11>")
+DESCS+=("<Mô tả ngắn use case tiếng Việt — VD: Banner sale lớn nhất năm với AI>")
+PROMPTS+=("<Full English prompt describing a realistic, premium-quality output example for this product. Specific industry/use case context. No readable text in image. Appropriate dimensions.>")
+
+# ── 2. <Example output type 2> ─────────────────────────────────────────
+NAMES+=("<slug>-example-02")
+WIDTHS+=(820); HEIGHTS+=(312)
+LABELS+=("<Label 2>")
+DESCS+=("<Desc 2>")
+PROMPTS+=("<Prompt 2>")
+
+# ... thêm 8-13 examples nữa, đa dạng industry/use case/size
+# Quy tắc:
+# - Mỗi example phải khác industry hoặc format (đừng gen cùng 1 kiểu)
+# - Mix sizes: 1200x630 (FB post), 820x312 (FB cover), 1080x1080 (IG), 1080x1920 (story), 1200x675 (X post)
+# - Label + Desc tiếng Việt rõ ràng để hiển thị trong metadata
+
+# ═══════════════════════════════════════════════════════════════
+# SUBMIT ALL JOBS
+# ═══════════════════════════════════════════════════════════════
+
+JOBIDS=()
+echo "🎨 Generating ${#NAMES[@]} showcase examples..."
+echo ""
+
+for i in "${!NAMES[@]}"; do
+  NAME="${NAMES[$i]}"
+  P="${PROMPTS[$i]}"
+  W="${WIDTHS[$i]}"
+  H="${HEIGHTS[$i]}"
+
+  R=$(curl -s -X POST "$API" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: $TOKEN" \
+    -d "{\"type\":\"text_to_image\",\"input\":{\"prompt\":\"$P\"},\"config\":{\"width\":$W,\"height\":$H,\"aspectRatio\":\"${W}:${H}\",\"seed\":0,\"style\":\"\"},\"engine\":{\"provider\":\"gommo\",\"model\":\"google_image_gen_4_5\"},\"enginePayload\":{\"prompt\":\"$P\",\"privacy\":\"PRIVATE\",\"projectId\":\"default\"}}")
+
+  JID=$(echo "$R" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['jobId'])" 2>/dev/null)
+  JOBIDS+=("$JID")
+  echo "  [$((i+1))/${#NAMES[@]}] ${NAME} (${W}x${H}) → $JID"
+  sleep 1
+done
+
+# POLL (sequential)
+echo ""
+echo "⏳ Polling results (~30s/image)..."
+
+for i in "${!NAMES[@]}"; do
+  JID="${JOBIDS[$i]}"
+  NAME="${NAMES[$i]}"
+  [ -z "$JID" ] && echo "❌ $NAME: no job ID" && continue
+
+  for attempt in $(seq 1 60); do
+    sleep 5
+    SR=$(curl -s "$API/$JID" -H "Authorization: $TOKEN")
+    ST=$(echo "$SR" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['status'])" 2>/dev/null)
+    if [ "$ST" = "done" ]; then
+      URL=$(echo "$SR" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['result']['images'][0])" 2>/dev/null)
+      echo "✅ $NAME → $URL"
+      curl -sL -o "${IMG_DIR}/${NAME}.png" "$URL"
+      break
+    elif [ "$ST" = "failed" ] || [ "$ST" = "error" ]; then
+      echo "❌ $NAME FAILED"; break
+    else
+      printf "  ⏳ %s (%d/60)\\r" "$NAME" "$attempt"
+    fi
+  done
+done
+
+# UPLOAD → CLOUDFLARE (with full metadata)
+echo ""
+echo "☁️  Uploading to Cloudflare Images..."
+echo ""
+
+cat > "$OUTPUT_FILE" << 'HEADER'
+#!/bin/bash
+# AUTO-GENERATED: <ProductName> Showcase CDN URLs + metadata
+HEADER
+
+UPLOADED=0
+
+for i in "${!NAMES[@]}"; do
+  NAME="${NAMES[$i]}"
+  FILE="${IMG_DIR}/${NAME}.png"
+  [ ! -f "$FILE" ] && echo "⚠️  Skip $NAME (not downloaded)" && continue
+
+  echo -n "  ⬆  $NAME ... "
+  RESPONSE=$(curl -s -X POST "$CF_API" \
+    -H "Authorization: Bearer $CF_TOKEN" \
+    -F "file=@${FILE}" \
+    -F "requireSignedURLs=false")
+
+  SUCCESS=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('success', False))" 2>/dev/null)
+  URL=$(echo "$RESPONSE" | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    v = d.get('result', {}).get('variants', [])
+    print(next((x for x in v if x.endswith('/public')), v[0] if v else ''))
+except: print('')
+" 2>/dev/null)
+
+  if [ "$SUCCESS" = "True" ] && [ -n "$URL" ]; then
+    echo "✅  $URL"
+    cat >> "$OUTPUT_FILE" << ENTRY
+SHOWCASE_${NAME//-/_}=(
+  url="${URL}"
+  label="${LABELS[$i]}"
+  desc="${DESCS[$i]}"
+  width="${WIDTHS[$i]}"
+  height="${HEIGHTS[$i]}"
+)
+ENTRY
+    UPLOADED=$((UPLOADED + 1))
+  else
+    echo "❌  $(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('errors','?'))" 2>/dev/null)"
+  fi
+  sleep 0.3
+done
+
+rm -rf "$IMG_DIR"
+echo ""
+echo "═══════════════════════════════════════════════════════════"
+echo "✅ Uploaded: $UPLOADED/${#NAMES[@]} → Cloudflare CDN"
+echo "📋 Metadata saved to: $OUTPUT_FILE"
+echo "═══════════════════════════════════════════════════════════"
+```
+
+```bash
+bash scripts/gen-<slug>-showcase.sh
+# → Output: SHOWCASE_<slug>_example_01.url, .label, .desc, .width, .height
+# → Dùng URLs này để seed vào Explorer API hoặc hardcode tạm vào ShowcaseSection
+```
+
+---
+
+### Script 3 — `gen-<slug>-feature-thumbs.sh` (FeaturesSection non-featured cards)
+
+> Gen 4-6 thumbnail nhỏ (600x300) cho các feature card thường (non-featured) trong FeaturesSection.
+> Mỗi thumb minh hoạ concept của 1 tính năng cụ thể — abstract, minimal, no text.
+
+```bash
+#!/bin/bash
+# gen-<slug>-feature-thumbs.sh
+# Gen 4-6 thumbnails cho non-featured feature cards (600x300)
+# Run: bash scripts/gen-<slug>-feature-thumbs.sh
+
+API="https://api.skyverses.com/image-jobs"
+TOKEN="Bearer <SKV_API_TOKEN>"
+CF_ACCOUNT="<CF_ACCOUNT_ID>"
+CF_TOKEN="<CF_API_TOKEN>"
+CF_API="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/images/v1"
+
+IMG_DIR="public/assets/<slug>-feature-thumbs"
+OUTPUT="scripts/<slug>-feature-thumbs-cdn.sh"
+mkdir -p "$IMG_DIR"
+
+NAMES=(); PROMPTS=()
+
+# Naming: feat-<feature-keyword>
+# Mỗi prompt: abstract illustration của feature concept, dark background, no text, 600x300
+
+NAMES+=("feat-<feature-1>")
+PROMPTS+=("<abstract visual concept for feature 1 — minimal, dark background, no text, 600x300 wide>")
+
+NAMES+=("feat-<feature-2>")
+PROMPTS+=("<abstract visual concept for feature 2 — 600x300 wide>")
+
+NAMES+=("feat-<feature-3>")
+PROMPTS+=("<abstract visual concept for feature 3 — 600x300 wide>")
+
+NAMES+=("feat-<feature-4>")
+PROMPTS+=("<abstract visual concept for feature 4 — 600x300 wide>")
+
+# Thêm feat-5, feat-6 nếu cần
+
+echo "🚀 Submitting ${#NAMES[@]} feature thumb jobs..."
+JOBIDS=()
+
+for i in "${!NAMES[@]}"; do
+  R=$(curl -s -X POST "$API" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: $TOKEN" \
+    -d "{\"type\":\"text_to_image\",\"input\":{\"prompt\":\"${PROMPTS[$i]}\"},\"config\":{\"width\":600,\"height\":300,\"aspectRatio\":\"2:1\",\"seed\":0,\"style\":\"\"},\"engine\":{\"provider\":\"gommo\",\"model\":\"google_image_gen_4_5\"},\"enginePayload\":{\"prompt\":\"${PROMPTS[$i]}\",\"privacy\":\"PRIVATE\",\"projectId\":\"default\"}}")
+  JID=$(echo "$R" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['jobId'])" 2>/dev/null)
+  JOBIDS+=("$JID")
+  echo "  [$((i+1))/${#NAMES[@]}] ${NAMES[$i]} → $JID"
+  sleep 0.5
+done
+
+echo ""
+echo "⏳ Polling in parallel..."
+
+poll_job() {
+  local NAME="$1" JID="$2" OUTDIR="$3" TK="$4"
+  for attempt in $(seq 1 60); do
+    sleep 5
+    SR=$(curl -s "https://api.skyverses.com/image-jobs/$JID" -H "Authorization: $TK")
+    ST=$(echo "$SR" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['status'])" 2>/dev/null)
+    if [ "$ST" = "done" ]; then
+      URL=$(echo "$SR" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['result']['images'][0])" 2>/dev/null)
+      echo "✅ $NAME → $URL"
+      curl -sL -o "${OUTDIR}/${NAME}.png" "$URL"
+      return 0
+    elif [ "$ST" = "failed" ] || [ "$ST" = "error" ]; then
+      echo "❌ $NAME FAILED"; return 1
+    fi
+  done
+  echo "⏰ $NAME TIMEOUT"; return 1
+}
+export -f poll_job
+
+PIDS=()
+for i in "${!NAMES[@]}"; do
+  poll_job "${NAMES[$i]}" "${JOBIDS[$i]}" "$IMG_DIR" "$TOKEN" &
+  PIDS+=($!)
+done
+for PID in "${PIDS[@]}"; do wait "$PID"; done
+
+echo ""
+echo "☁️  Uploading to Cloudflare..."
+
+cat > "$OUTPUT" << 'HDR'
+#!/bin/bash
+# AUTO-GENERATED: <ProductName> Feature Thumbnails CDN
+HDR
+
+UPLOADED=0
+for FILE in "$IMG_DIR"/*.png; do
+  NAME=$(basename "$FILE" .png)
+  echo -n "  ⬆  $NAME ... "
+  RESP=$(curl -s -X POST "$CF_API" \
+    -H "Authorization: Bearer $CF_TOKEN" \
+    -F "file=@${FILE}" -F "requireSignedURLs=false")
+  SUCCESS=$(echo "$RESP" | python3 -c "import sys,json; print(json.load(sys.stdin).get('success',False))" 2>/dev/null)
+  URL=$(echo "$RESP" | python3 -c "
+import sys,json
+try:
+  d=json.load(sys.stdin); v=d.get('result',{}).get('variants',[])
+  print(next((x for x in v if x.endswith('/public')),v[0] if v else ''))
+except: print('')
+" 2>/dev/null)
+  if [ "$SUCCESS" = "True" ] && [ -n "$URL" ]; then
+    echo "✅  $URL"
+    echo "CDN_${NAME//-/_}=\"${URL}\"" >> "$OUTPUT"
+    UPLOADED=$((UPLOADED+1))
+  else echo "❌"; fi
+  sleep 0.3
+done
+
+rm -rf "$IMG_DIR"
+echo ""
+echo "════════════════════════════════════"
+echo "✅ Uploaded: $UPLOADED/${#NAMES[@]} → Cloudflare"
+echo "📋 Saved: $OUTPUT"
+echo "════════════════════════════════════"
+cat "$OUTPUT"
+```
+
+```bash
+bash scripts/gen-<slug>-feature-thumbs.sh
+# → Output: CDN_feat_<feature-1>="...", CDN_feat_<feature-2>="..."
+# → Dùng URLs này làm thumbUrl cho feature objects trong FeaturesSection
+```
+
+---
+
+### Bảng mapping: CDN URL → Dùng ở đâu
+
+| CDN variable | Dùng trong | Cách dùng |
+|---|---|---|
+| `CDN_features_<keyword>` | `FeaturesSection.tsx` | `thumbUrl` của 2 featured cards (col-span-2) |
+| `CDN_feat_<keyword>` | `FeaturesSection.tsx` | `thumbUrl` của non-featured cards (optional) |
+| `CDN_workflow_result` | `WorkflowSection.tsx` | `CDN_RESULT_THUMB` — step cuối "Nhận kết quả" |
+| `CDN_usecase_<industry>` | `UseCasesSection.tsx` | Nếu muốn thêm `imgUrl` vào use case card |
+| `CDN_hero_demo_<slug>` | `HeroSection.tsx` | `CDN_DEMO` trong `StaticDemoMockup` visual type |
+| `SHOWCASE_<slug>_example_*.url` | `ShowcaseSection.tsx` | Hardcode tạm vào `ShowcaseImageStrip` data |
+
+> **Thứ tự chạy scripts:**
+> 1. `bash scripts/gen-<slug>-landing-images.sh`     ← main blocks (features, workflow, usecases, hero)
+> 2. `bash scripts/gen-<slug>-showcase.sh`           ← showcase examples (optional, có thể dùng Explorer API)
+> 3. `bash scripts/gen-<slug>-feature-thumbs.sh`     ← non-featured cards thumbs (optional)
+>
+> ⚠️ **Bắt buộc gitignore scripts chứa TOKEN:**
+> ```bash
+> echo "gen-*.sh" >> .gitignore   # hoặc move vào .gitignore theo slug
+> ```
+> → TOKEN trong scripts **không được commit lên git**.
+
+---
+
+### Quy tắc viết PROMPT cho block images
+
+| Block | Size | Quy tắc prompt |
+|-------|------|----------------|
+| `features-*` | 800×320 | Abstract concept của tính năng. Dark matte BG. No text. Premium tool aesthetic. Wide. |
+| `workflow-result` | 400×200 | Output của product trên device mockup. Professional. No text. Wide. |
+| `usecase-*` | 600×400 | Visual đặc trưng ngành/context cụ thể. No text. Premium photography/illustration. |
+| `hero-demo-*` | 1200×630 | Grid collage 3-4 output examples. Pixel-perfect. No readable text. Cinematic. |
+| Showcase | Mixed | Realistic output example: đúng loại content product tạo ra. Từng cái khác industry. |
+| `feat-*` | 600×300 | Abstract minimal concept. Dark BG. No text. 2:1 wide. |
+
+---
+
 ## STEP 3.5 — Plan PRO landing page (Claude Code tự phân tích)
 
 > **Không dùng script external.** Claude Code tự plan content phù hợp business của product.
@@ -1966,6 +2487,12 @@ git add -A && git commit -m "feat: add <product-name> — PRO landing + smart wo
 | FeaturesSection uniform grid | Dùng bento-grid (1-2 featured cards chiếm col-span-2) |
 | Quên UseCasesSection | Luôn có `<UseCasesSection />` sau FeaturesSection |
 | Gen chỉ 1 ảnh thumbnail | Gen 3-5 ảnh theo platform trong STEP 3 |
+| Bỏ qua STEP 3.2 (bash scripts) | Phải chạy `gen-<slug>-landing-images.sh` trước STEP 3.5 để có CDN URLs điền vào Section Image Plan |
+| Không gen hình cho FeaturesSection featured cards | Mỗi product phải có `features-*` images — chạy Script 1 của STEP 3.2 |
+| Không gen hình cho UseCasesSection | Chạy `gen-<slug>-landing-images.sh` — `usecase-*` images cần 1 ảnh/industry |
+| Không gen showcase examples | Chạy `gen-<slug>-showcase.sh` cho 10-15 diverse output examples |
+| Commit bash scripts chứa TOKEN | `echo "gen-*.sh" >> .gitignore` — TOKEN không được lộ trong git |
+| Hardcode prompt quá chung chung | Prompt phải đặc tả industry/context cụ thể + size + no readable text |
 | Industry picker copy 40+ items | Chỉ 8-12 industries phù hợp nhất với product |
 | Không truyền industry vào AISuggestPanel | `productContext` phải include `activeIndustryLabel` |
 | Industry picker không ảnh hưởng prompt | Prepend `[Lĩnh vực: ...]` vào `finalPrompt` khi generate |
@@ -2011,11 +2538,17 @@ components/PosterStudioWorkspace.tsx
 
 ```
 HeroSection          ← ProHeroVisuals + GradientMesh (xem STEP 3.6 chọn visual type)
+                       → hero-demo-* image: CDN từ STEP 3.2 Script 1
 LiveStatsBar         ← CountUp social proof numbers (L2) — ngay sau Hero
 WorkflowSection      ← 4 bước + StaggerChildren + TimelineConnector
+                       → workflow-result: CDN từ STEP 3.2 Script 1
 ShowcaseSection      ← ShowcaseImageStrip (import từ ProHeroVisuals)
-FeaturesSection      ← Bento-grid (featured cards có thể kèm thumbUrl từ CDN)
+                       → showcase examples: CDN từ STEP 3.2 Script 2
+FeaturesSection      ← Bento-grid (featured cards kèm thumbUrl từ CDN STEP 3.2)
+                       → features-* thumbs: CDN từ STEP 3.2 Script 1
+                       → feat-* thumbs: CDN từ STEP 3.2 Script 3
 UseCasesSection      ← 4-6 industry use cases + icons
+                       → usecase-* thumbs: CDN từ STEP 3.2 Script 1 (optional)
 FAQSection           ← Accordion 5-6 câu hỏi (L3) — trước FinalCTA
 FinalCTA             ← Animated button + GradientMesh + trust micro-copy (L1)
 [Sticky mobile CTA]  ← md:hidden fixed bottom bar (L4) — trong page file
