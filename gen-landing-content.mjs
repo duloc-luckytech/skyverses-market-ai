@@ -11,8 +11,8 @@
 
 import { writeFileSync } from 'fs';
 
-const EZ_API_KEY = 'sk-1bf44cf665c77cfec220f3ee9b03d045c2e3073b189544fa';
-const EZ_API_URL = 'https://ezaiapi.com/v1/messages';
+const EZ_API_KEY = 'sk-a872ad970097e44608731b01af1308b6f0ea1dfcaed1db93';
+const EZ_API_URL = 'https://api-v2.itera102.cloud/v1/messages';
 const MODEL = 'claude-sonnet-4-5';
 
 // ── Parse CLI args ────────────────────────────────────────────────────────────

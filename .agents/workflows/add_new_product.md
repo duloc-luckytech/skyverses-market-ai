@@ -6,14 +6,13 @@ description: Add a new AI product to Skyverses marketplace — full flow from se
 
 // turbo-all
 
-This workflow documents the **complete, correct flow** to add a new AI product tool to the marketplace.  
-Follow every step in order. Do NOT skip architectural rule checks.
+Follow every step in order. Do NOT skip steps.
 
 ---
 
 ## STEP 0 — Read skills first
 
-Before starting, read these skills:
+Before starting, read:
 - `.agents/skills/skyverses_architecture/SKILL.md`
 - `.agents/skills/skyverses_ui_pages/SKILL.md`
 
@@ -21,23 +20,23 @@ Before starting, read these skills:
 
 ## STEP 1 — Define product metadata
 
-Determine:
+Xác định trước khi làm bất cứ thứ gì:
 - **slug**: e.g. `social-banner-ai`
 - **id** (SCREAMING_SNAKE): e.g. `SOCIAL-BANNER-AI`
-- **category** (4 langs: en/vi/ko/ja)
-- **name** (4 langs)
+- **name** (4 langs: en/vi/ko/ja)
+- **category** (4 langs)
 - **description** (4 langs)
 - **features** array (4 langs each)
 - **priceCredits**: number
 - **complexity**: `Standard` | `Advanced` | `Enterprise`
-- **homeBlocks**: which homepage blocks to appear in (e.g. `['top_trending', 'marketing_tools']`)
-- **tags**: array of strings
+- **homeBlocks**: e.g. `['top_trending']`
+- **tags**: array
 
 ---
 
 ## STEP 2 — Create seed script
 
-Create `seed-<slug>.mjs` in project root following the **exact pattern** of `seed-products.mjs`.
+Create `seed-<slug>.mjs` theo pattern `seed-products.mjs`:
 
 ```js
 const API = 'https://api.skyverses.com/market';
@@ -55,11 +54,9 @@ const product = {
   tags: [...],
   features: [{ en: '...', vi: '...', ko: '...', ja: '...' }],
   complexity: 'Standard',
-  priceReference: '120 CR / banner',
-  isActive: true,
-  isFree: false,
-  priceCredits: 120,
-  featured: true,
+  priceReference: '120 CR / lần',
+  isActive: true, isFree: false,
+  priceCredits: 120, featured: true,
   homeBlocks: ['top_trending'],
 };
 async function seed() {
@@ -69,157 +66,151 @@ async function seed() {
     body: JSON.stringify(product)
   });
   const data = await res.json();
-  console.log(data.success ? `✅ ${product.slug}: _id=${data.data?._id}` : `❌ ${data.message}`);
+  console.log(data.success ? `✅ _id=${data.data?._id}` : `❌ ${data.message}`);
 }
 seed();
 ```
 
-Run the seed:
 ```bash
 node seed-<slug>.mjs
+# → Ghi lại _id trả về
 ```
-Note the returned `_id`.
 
 ---
 
-## STEP 3 — Generate & update product banner image
+## STEP 3 — Generate & update banner image
 
-### 3a. Add prompt to `update-product-images.mjs` promptMap:
-```js
-// In buildPrompt() → promptMap:
-'YOUR-ID': `A premium AI studio scene for <your product>. Dark tech aesthetic, cinematic 4K.`,
-```
+Tạo `gen-<slug>-image.mjs` theo pattern `gen-social-banner-image.mjs`:
+- Copy script
+- Update `BANNER_PROMPT` — cinematic premium AI studio description
+- Update `SKV_API_TOKEN` (lấy từ CMS Admin > API Clients nếu 401)
 
-### 3b. Create `gen-<slug>-image.mjs` following pattern of `gen-social-banner-image.mjs`:
-- Copy the script
-- Update `BANNER_PROMPT` with a cinematic, premium AI studio description for the product
-- Update `SKV_API_TOKEN` (get new token from admin if needed)
-
-The token system:
-- `SKV_API_TOKEN`: starts with `skv_` — stored on user model field `apiToken`
-  - If expired (401), ask user for new token OR call `POST /api-client/generate-token` with admin token
-- `ADMIN_TOKEN`: JWT from `POST /auth/admin/login` with `{ username, password }`
-
-Run:
 ```bash
 node gen-<slug>-image.mjs
+# Pipeline: Skyverses AI → Cloudflare CDN → PUT /market/:id
 ```
 
-Pipeline: Skyverses AI → Cloudflare CDN → PUT `/market/:id` update `imageUrl`
+> ⚠️ `SKV_API_TOKEN` expired → hỏi user lấy token mới từ CMS Admin Tab "API Clients"
 
 ---
 
-## STEP 3.5 — Generate landing page content with Claude AI (TRƯỚC KHI CODE)
+## STEP 3.5 — Plan landing page content (Claude Code tự làm)
 
-> **Luôn chạy bước này trước** khi viết HeroSection, WorkflowSection, FeaturesSection.  
-> Claude Sonnet sẽ đề xuất nội dung phù hợp với business của từng product cụ thể.
+> **Không dùng script external.** Claude Code tự plan content phù hợp business của product.
 
-```bash
-node gen-landing-content.mjs \
-  --slug "your-slug" \
-  --name "Your Product Name" \
-  --desc "Mô tả ngắn về product, chức năng chính" \
-  --category "Category (VD: Social Media Tools, AI Image, E-commerce...)"
-```
-
-Output: file `landing-content-<slug>.json` gồm:
-- `hero.badge` — badge text nhỏ trên heading
-- `hero.headline` — mảng dòng heading
-- `hero.tagline` — tagline mô tả
-- `hero.specs` — 4 spec cards
-- `hero.heroVisualIdea` — **ý tưởng visual cho right column của hero** (đây là phần quan trọng nhất — mỗi product phải khác nhau)
-- `workflow.steps` — 4 bước sử dụng
-- `features.items` — 6-8 tính năng
-- `finalCta` — CTA section
-- `seo` — title, description, keywords
-
-**Sau khi có JSON → đọc `heroVisualIdea` và implement hero visual phù hợp.**
-
-> API: `https://ezaiapi.com/v1/messages` · Model: `claude-sonnet-4-5`  
-> Key lưu trong `gen-landing-content.mjs` → cập nhật nếu 401.
-
-
-### Structure (MANDATORY — follow `AIImageGenerator.tsx` pattern exactly):
+Trước khi code, Claude phải tự trả lời các câu hỏi sau về product:
 
 ```
-components/landing/<product-name>/
-  HeroSection.tsx
-  WorkflowSection.tsx
-  FeaturesSection.tsx     (or UseCasesSection.tsx)
-  FinalCTA.tsx
+1. HERO VISUAL IDEA:
+   Product này demo được gì tốt nhất? → Đó là visual right column.
+   Examples:
+   - Social Banner AI → Platform mockup grid (X cover, FB post, IG story)
+   - Background Removal → Before/after split-screen
+   - Real Estate AI → Empty room vs AI-staged room 2x2 grid
+   - Video Generator → Video thumbnail reel với play button
+   - Poster Marketing → Marketing poster showcase grid
+
+2. KEY SPECS (4 items):
+   Số liệu / tính năng nổi bật nhất của product là gì?
+   VD: "14+ Formats", "4 Platforms", "4K Export", "AI Prompt Boost"
+
+3. WORKFLOW STEPS (4 bước):
+   User dùng product theo flow nào? Liệt kê 4 bước tự nhiên.
+
+4. FEATURES (6-8 items):
+   Điểm khác biệt cụ thể so với tool thủy thủ khác?
+
+5. SEO:
+   Title tag + meta description phù hợp tìm kiếm tiếng Việt
 ```
-
-#### Rules:
-1. **HeroSection** — **VISUAL PHẢI PHÙ HỢP VỚI PRODUCT, KHÔNG COPY NGUYÊN XI**:
-
-   > The `image-generator/HeroSection.tsx` dùng Explorer API image grid vì product đó liên quan đến tạo hình.  
-   > **Mỗi product cần hero visual riêng phản ánh đúng business của nó.**
-
-   | Product | Hero visual phù hợp |
-   |---------|---------------------|
-   | AI Image Generator | Scrolling Explorer image grid |
-   | Social Banner AI | Platform mockup grid (X cover, FB post, IG story, LI banner) |
-   | Background Removal | Before/after split-screen image |
-   | Fashion AI | Model + outfit showcase grid |
-   | Video Generator | Video thumbnail reel |
-   | Poster Marketing | Marketing poster showcase |
-
-   **Tham khảo từ `image-generator/HeroSection.tsx`:**
-   - ✅ Layout: `grid grid-cols-1 lg:grid-cols-12`
-   - ✅ Left col: badge → h1 → description → specs grid → CTA button
-   - ✅ Right col: product-relevant visual (custom per product)
-   - ✅ BG glows: `brand-blue/[0.04]` + `purple/[0.03]`
-   - ✅ Back link to `/market`
-   - ✅ `motion.div` entry animation
-   - ❌ KHÔNG dùng `getExplorerUrl` unless product là image/video explorer
-
-   **Specs grid (bottom-left)** — 4 cards showing key product metrics:
-   ```tsx
-   <div className="grid grid-cols-2 gap-2">
-     {SPECS.map(s => (
-       <div className="p-3 bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-xl flex items-start gap-2.5 ...">
-   ```
-
-2. **WorkflowSection** — 4 steps, exact same card style as `image-generator/WorkflowSection.tsx`:
-   ```tsx
-   className="p-5 rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.015]"
-   ```
-
-3. **FeaturesSection** — grid of feature cards, same style as `image-generator/UseCasesSection.tsx`
-
-4. **FinalCTA** — minimal, same as `image-generator/FinalCTA.tsx`:
-   ```tsx
-   className="px-6 lg:px-16 py-20 border-t border-black/[0.06] dark:border-white/[0.04]"
-   ```
-
-> Key stored in script — update nếu 401 (lấy từ dashboard ezaiapi.com).
 
 ---
 
-## STEP 4 — Create landing page sections
+## STEP 4 — Build landing sections
 
-`pages/images/YourProductAI.tsx` — **thin orchestrator only**, no JSX logic:
+Tạo **4 file riêng** trong `components/landing/<slug>/`:
+
+```
+HeroSection.tsx      ← visual RIGHT column custom theo business
+WorkflowSection.tsx  ← 4 bước sử dụng
+FeaturesSection.tsx  ← 6-8 tính năng
+FinalCTA.tsx         ← CTA đơn giản
+```
+
+### HeroSection rules (QUAN TRỌNG):
+
+**Left column** — theo đúng pattern `image-generator/HeroSection.tsx`:
+```tsx
+// Structure cố định:
+<Link to="/market">← Trở lại</Link>
+<badge>  // inline-flex, brand-blue/[0.08] bg, brand-blue text
+<h1> dòng 1 <br/><span brand-blue>Highlight</span> </h1>
+<p> tagline </p>
+<div grid-cols-2> // 4 spec cards
+<button> CTA </button>
+```
+
+**Right column** — CUSTOM theo từng product, KHÔNG copy Explorer grid:
+
+| Product | Hero visual |
+|---------|------------|
+| AI Image Generator | Scrolling Explorer image grid (có API `getExplorerUrl`) |
+| Social Banner AI | Platform mockup grid (X/FB/IG/LI, đúng aspect ratio) |
+| Background Removal | Before/after split-screen với divider |
+| Real Estate AI | 2x2 grid: trống vs staged, day vs dusk |
+| Video Generator | Video thumbnail reel với play button overlay |
+| Poster Marketing | Grid poster showcase nhiều orientation |
+| Fashion AI | Model outfit grid before/after |
+
+**CSS cố định cho hero section:**
+```tsx
+// BG glows
+<div className="absolute top-[-200px] right-[-200px] w-[800px] h-[800px] bg-brand-blue/[0.04] rounded-full blur-[200px]" />
+<div className="absolute bottom-[-200px] left-[-200px] w-[600px] h-[600px] bg-purple-600/[0.03] rounded-full blur-[180px]" />
+
+// Grid container
+<div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+  <div className="lg:col-span-5 ...">  // Left copy
+  <div className="lg:col-span-7 ...">  // Right visual
+```
+
+### WorkflowSection, FeaturesSection, FinalCTA:
+
+Follow **exact same card styles** as `image-generator/` equivalents:
+```tsx
+// WorkflowSection step card:
+className="p-5 rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.015]"
+
+// FeaturesSection feature card:  
+className="p-5 rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.015]"
+
+// Section label:
+className="text-[10px] font-semibold uppercase tracking-widest text-brand-blue/60 mb-2"
+```
+
+---
+
+## STEP 5 — Create landing page file (thin orchestrator)
 
 ```tsx
+// pages/images/YourProductAI.tsx
 import React, { useState } from 'react';
 import YourWorkspace from '../../components/YourWorkspace';
-import { HeroSection } from '../../components/landing/your-product/HeroSection';
-import { WorkflowSection } from '../../components/landing/your-product/WorkflowSection';
-import { FeaturesSection } from '../../components/landing/your-product/FeaturesSection';
-import { FinalCTA } from '../../components/landing/your-product/FinalCTA';
+import { HeroSection } from '../../components/landing/your-slug/HeroSection';
+import { WorkflowSection } from '../../components/landing/your-slug/WorkflowSection';
+import { FeaturesSection } from '../../components/landing/your-slug/FeaturesSection';
+import { FinalCTA } from '../../components/landing/your-slug/FinalCTA';
 import { usePageMeta } from '../../hooks/usePageMeta';
 
 const YourProductAI = () => {
-  usePageMeta({ title: '...', description: '...', keywords: '...', canonical: '/product/your-slug' });
+  usePageMeta({ title: '...', description: '...', keywords: '...', canonical: '/product/slug' });
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
-  if (isStudioOpen) {
-    return (
-      <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0a0c] animate-in fade-in duration-500">
-        <YourWorkspace onClose={() => setIsStudioOpen(false)} />
-      </div>
-    );
-  }
+  if (isStudioOpen) return (
+    <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0a0c] animate-in fade-in duration-500">
+      <YourWorkspace onClose={() => setIsStudioOpen(false)} />
+    </div>
+  );
 
   return (
     <div className="bg-white dark:bg-[#0a0a0c] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
@@ -230,77 +221,57 @@ const YourProductAI = () => {
     </div>
   );
 };
-
 export default YourProductAI;
 ```
 
 ---
 
-## STEP 6 — Create the Workspace component
+## STEP 6 — Create Workspace component
 
-Reference: `components/PosterStudioWorkspace.tsx` (782 lines — THE canonical workspace)
+> **Reference:** `components/PosterStudioWorkspace.tsx` — đây là canonical workspace.  
+> Copy structure, chỉ thay phần picker (Category → Platform/Format/etc.)
 
-### Mandatory workspace structure:
-
+### Layout cố định:
 ```
-1. TOP NAV bar (h-14)
-   - Left: "Phiên hiện tại" / "Thư viện (N)" tabs
-   - Right: Credits badge + X close button
+TOP NAV (h-14)
+├── Left: [Phiên hiện tại] [Thư viện (N)]
+└── Right: [Credits badge] [X close]
 
-2. SIDEBAR (w-[380px], left)
-   - Product-specific picker (Category / Platform / Format / etc.)
-   - Prompt textarea + AI Boost button
-   - Optional title/subtitle inputs
-   - Reference image upload (grid 3-col, max 6 images)
-   - AI Config grid: MODEL | STYLE | MODE | RESOLUTION | QUANTITY
-   - Advanced section (collapsible): Brand name, Brand colors, text overlay toggle
-
-3. VIEWPORT (flex-grow, right)
-   - Generate button bar (top) with status indicator + credit cost
-   - Result area: shows aspect-ratio locked preview when done
-   - Library grid when viewMode === 'library'
+SIDEBAR (w-[380px]) ── flex-grow VIEWPORT
+│ Product-specific picker          │ Generate button bar (top)
+│ Prompt + AI Boost button         │   status dot · CR cost · button
+│ Title / Subtitle (optional)      │
+│ Reference images (3-col, max 6)  │ Current: aspect-ratio result
+│ ─────────────────────────────    │   + download/fullscreen overlay
+│ MODEL  │ STYLE                   │
+│ MODE   │ RESOLUTION              │ Library: grid of past sessions
+│ ─ QUANTITY · N CR ─              │
+│ ─ Advanced (collapsible) ─       │
+│   Brand name                     │
+│   Brand colors picker            │
+│   Text overlay toggle            │
 ```
 
-### State pattern (copy from PosterStudioWorkspace):
+### Credit check (bắt buộc):
 ```tsx
-const [isGenerating, setIsGenerating] = useState(false);
-const [isEnhancing, setIsEnhancing] = useState(false);
-const [showAdvanced, setShowAdvanced] = useState(false);
-const [viewMode, setViewMode] = useState<'current' | 'library'>('current');
-const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
-const [sessions, setSessions] = useState<Session[]>([]);
+const CREDIT_COST = 120;
+if (credits < CREDIT_COST * quantity) { setShowLowCreditAlert(true); return; }
 ```
 
-### Credit check pattern:
-```tsx
-const CREDIT_COST = 120; // per generation
-const totalCost = CREDIT_COST * quantity;
-if (credits < totalCost) { setShowLowCreditAlert(true); return; }
-const successful = useCredits(totalCost);
-if (!successful) throw new Error('Insufficient credits');
-```
-
-### localStorage key: `skyverses_<product_id>_vault`
+### localStorage: `skyverses_<PRODUCT-ID>_vault`
 
 ---
 
 ## STEP 7 — Wire routing
 
-### `App.tsx`:
 ```tsx
-// 1. Add to pageImports object:
-yourProduct: () => import('./pages/images/YourProductAI'),
+// App.tsx — 3 chỗ:
+yourProduct: () => import('./pages/images/YourProductAI'), // pageImports
+const YourProductAI = React.lazy(pageImports.yourProduct); // lazy
+<Route path="/product/your-slug" element={<YourProductAI />} /> // route
 
-// 2. Add lazy component:
-const YourProductAI = React.lazy(pageImports.yourProduct);
-
-// 3. Add route (inside Suspense):
-<Route path="/product/your-slug" element={<YourProductAI />} />
-```
-
-### `components/market/ProductToolModal.tsx` (WORKSPACE_MAP):
-```tsx
-'your-slug': React.lazy(() => import('../YourWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
+// components/market/ProductToolModal.tsx — WORKSPACE_MAP:
+'your-slug': React.lazy(() => import('../YourWorkspace') as Promise<{default: React.ComponentType<WorkspaceProps>}>),
 ```
 
 ---
@@ -309,29 +280,27 @@ const YourProductAI = React.lazy(pageImports.yourProduct);
 
 ```bash
 npx tsc --noEmit 2>&1 | head -40
+# Must exit 0
 ```
-
-Must exit with code 0 (no errors) before considering the task complete.
 
 ---
 
 ## STEP 9 — Git push
 
 ```bash
-# Run /push workflow or:
-git add -A && git commit -m "feat: add <product-name> product — landing + workspace + seed + banner" && git push origin main
+git add -A && git commit -m "feat: add <product-name> — landing + workspace + seed + banner" && git push origin main
 ```
 
 ---
 
-## Common Mistakes to Avoid
+## ❌ Common Mistakes
 
-| ❌ Wrong | ✅ Correct |
-|---|---|
-| Landing page as single monolithic file | Thin orchestrator + separate section components in `components/landing/<name>/` |
-| Inventing new color accents | Use `brand-blue` consistently |
-| Hardcoding Unsplash images in hero | Fetch live from Explorer API via `getExplorerUrl()` |
-| One big JSX workspace from scratch | Copy `PosterStudioWorkspace.tsx` structure, only change the picker section |
-| Missing Low Credit modal | Always implement `showLowCreditAlert` state + modal |
-| Missing ProductToolModal entry | Always add to WORKSPACE_MAP so quick-view modal works |
-| Token `skv_` expired (401 error) | Ask user for new token or call `POST /api-client/generate-token` |
+| Sai | Đúng |
+|-----|------|
+| Landing page 1 file monolithic | Thin orchestrator + 4 section files riêng |
+| Copy Explorer image grid cho mọi product | Custom visual phù hợp business của product |
+| Tự ý dùng màu accent mới | Dùng `brand-blue` nhất quán |
+| Workspace viết từ đầu | Copy structure `PosterStudioWorkspace.tsx` |
+| Thiếu Low Credit modal | Luôn có `showLowCreditAlert` |
+| Không add vào ProductToolModal | Luôn add vào `WORKSPACE_MAP` |
+| Token `skv_` 401 | Hỏi user lấy token mới từ CMS Admin > API Clients |
