@@ -4,7 +4,7 @@ description: Add a new AI product to Skyverses marketplace — full flow from se
 
 # Add New Product to Skyverses Marketplace
 
-// turbo-all
+// turbo-all — chỉ thị cho Claude agent chạy toàn bộ steps không dừng hỏi giữa chừng
 
 Follow every step in order. Do NOT skip steps.
 
@@ -184,7 +184,7 @@ node gen-<slug>-images.mjs
 | `PlatformMockupGrid` | Product tạo banner/content cho mạng xã hội | custom platform grid |
 | `Custom` | Nếu không có template phù hợp | Tự code right column |
 
-### B. Phân tích product → trả lời 5 câu hỏi:
+### B. Phân tích product → trả lời 13 câu hỏi:
 
 ```
 1. HERO VISUAL TYPE: [chọn từ bảng trên]
@@ -201,9 +201,11 @@ node gen-<slug>-images.mjs
    Phân loại: 1-2 "featured" (double size) + còn lại normal
    Featured = tính năng QUAN TRỌNG NHẤT
 
-5. SHOWCASE SECTION:
+5. MEDIA OUTPUT TYPE:
    Explorer API type: 'image' | 'video'
-   Caption theme: mô tả ngắn để hiển thị trên ảnh showcase
+   productSlug để filter showcase (nếu API hỗ trợ tag filter)
+   Caption theme: mô tả ngắn hiển thị trên ảnh showcase
+   → Dùng cho ShowcaseSection + FeaturesSection thumbUrl
 
 6. SEO:
    Title tag + meta description phù hợp tìm kiếm tiếng Việt
@@ -225,30 +227,32 @@ node gen-<slug>-images.mjs
     Ai sẽ dùng product này? Mô tả 4-6 use case theo ngành cụ thể:
     VD: { icon: Store, title: 'Cửa hàng online', desc: 'Tạo banner sale trong 60s, không cần designer' }
     VD: { icon: Building, title: 'Agency Marketing', desc: 'Scale content x10 với AI batch generation' }
-    → Dùng cho `UseCasesSection.tsx` (section mới — thêm sau FeaturesSection)
-    → Cũng dùng để define INDUSTRIES trong STEP 6 Workspace
+    → Dùng cho `UseCasesSection.tsx` + define INDUSTRIES trong STEP 6 Workspace
 
-11. SHOWCASE FILTER:
-    Explorer API type: 'image' | 'video'
-    productSlug để filter showcase (nếu API hỗ trợ tag filter)
-    Caption theme: mô tả ngắn để hiển thị trên ảnh showcase
+11. LIVE STATS (cho LiveStatsBar — L2):
+    3-4 con số social proof phù hợp product:
+    VD image product: "Ảnh tạo hôm nay", "Người dùng", "Định dạng hỗ trợ", "Đánh giá TB"
+    VD video product: "Video tạo hôm nay", "Người dùng", "Phút video", "Đánh giá TB"
 
-12. SECTION IMAGE PLAN (MỚI):
+12. FAQ (5-6 câu hỏi cho FAQSection — L3):
+    Câu hỏi phổ biến nhất của người dùng mới về product này?
+    Luôn bao gồm: quyền sở hữu ảnh/video, hết hạn credits, chất lượng output
+
+13. SECTION IMAGE PLAN:
     Mỗi section nên có ít nhất 1 hình ảnh minh hoạ từ CDN hoặc Explorer API.
-    Trả lời từng section:
     → HeroSection: dùng Visual Type nào? (từ câu 1) → import component tương ứng từ ProHeroVisuals
     → WorkflowSection: có CDN URL để thêm result thumbnail vào step cuối không? (optional)
     → FeaturesSection: featured cards nào nên có thumbUrl? Map CDN URL cho mỗi featured feature.
-    → ShowcaseSection: type="image" hay type="video"?
+    → ShowcaseSection: type="image" hay type="video"? (từ câu 5)
     → Xem hướng dẫn chi tiết tại "Section Image Guidelines" (STEP 3.6) bên dưới.
 ```
 
 ---
 
-## STEP 3.6 — Section Image Guidelines (MỚI)
+## STEP 3.6 — Section Image Guidelines — Code Patterns chi tiết
 
-> Mỗi section landing page cần có hình ảnh để tăng visual weight và trust.
-> Dùng CDN URLs từ STEP 3, hoặc fetch từ Explorer API, hoặc Unsplash fallback.
+> Tham chiếu code patterns cho từng Visual Type đã chọn ở STEP 3.5 câu 1 + 13.
+> Nguồn ảnh theo thứ tự ưu tiên: CDN STEP 3 → Explorer API (auto-fetch) → Unsplash placeholder.
 
 ### Bảng quyết định: Dùng ảnh loại nào ở đâu?
 
@@ -498,15 +502,17 @@ interface ShowcaseImageStripProps {
 
 ## STEP 4 — Build PRO landing sections
 
-Tạo **6 file riêng** trong `components/landing/<slug>/`:
+Tạo **8 file riêng** trong `components/landing/<slug>/`:
 
 ```
-HeroSection.tsx          ← ProHeroVisuals + GradientMesh + scroll animations
-WorkflowSection.tsx      ← StaggerChildren + timeline connector
+HeroSection.tsx          ← ProHeroVisuals + GradientMesh + inline demo widget (L5)
+LiveStatsBar.tsx         ← CountUp social proof numbers (L2)
+WorkflowSection.tsx      ← StaggerChildren + TimelineConnector
 ShowcaseSection.tsx      ← ShowcaseImageStrip từ Explorer (nhận productSlug prop)
 FeaturesSection.tsx      ← Bento-grid + StaggerChildren + hover expand
-UseCasesSection.tsx      ← NEW: 4-6 use case cards theo ngành (sau FeaturesSection)
-FinalCTA.tsx             ← Animated CTA
+UseCasesSection.tsx      ← 4-6 use case cards theo ngành (sau FeaturesSection)
+FAQSection.tsx           ← Accordion 5-6 câu hỏi (L3)
+FinalCTA.tsx             ← Animated CTA + trust micro-copy (L1)
 ```
 
 ### Imports chuẩn cho mọi section:
@@ -588,6 +594,8 @@ import {
   <div className="lg:col-span-5 ...">  // Left copy
   <div className="lg:col-span-7 ...">  // Right visual
 ```
+
+> **L7 — GradientMesh intensity:** `intensity` prop nhận `"soft"` (default) | `"medium"` | `"strong"`. Dùng `"soft"` cho hầu hết landing pages. Chỉ dùng `"strong"` cho FinalCTA section để tạo điểm nhấn visual kết thúc. **Không dùng hardcode `bg-gradient-to-*` hay inline blob divs** — luôn dùng `<GradientMesh />` component để đồng nhất.
 
 ---
 
@@ -747,10 +755,12 @@ export const UseCasesSection: React.FC = () => (
 import React, { useState } from 'react';
 import YourWorkspace from '../../components/YourWorkspace';
 import { HeroSection } from '../../components/landing/your-slug/HeroSection';
+import { LiveStatsBar } from '../../components/landing/your-slug/LiveStatsBar';
 import { WorkflowSection } from '../../components/landing/your-slug/WorkflowSection';
 import { ShowcaseSection } from '../../components/landing/your-slug/ShowcaseSection';
 import { FeaturesSection } from '../../components/landing/your-slug/FeaturesSection';
 import { UseCasesSection } from '../../components/landing/your-slug/UseCasesSection';
+import { FAQSection } from '../../components/landing/your-slug/FAQSection';
 import { FinalCTA } from '../../components/landing/your-slug/FinalCTA';
 import { usePageMeta } from '../../hooks/usePageMeta';
 
@@ -774,11 +784,23 @@ const YourProductAI = () => {
   return (
     <div className="bg-white dark:bg-[#0a0a0c] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
       <HeroSection onStartStudio={() => setIsStudioOpen(true)} />
+      <LiveStatsBar />                                           {/* ← L2 */}
       <WorkflowSection />
-      <ShowcaseSection productSlug="your-slug" />  {/* ← pass productSlug */}
+      <ShowcaseSection productSlug="your-slug" />               {/* ← pass productSlug */}
       <FeaturesSection />
-      <UseCasesSection />                           {/* ← NEW */}
+      <UseCasesSection />                                        {/* ← sau Features */}
+      <FAQSection />                                             {/* ← L3, trước FinalCTA */}
       <FinalCTA onStartStudio={() => setIsStudioOpen(true)} />
+
+      {/* Sticky mobile CTA — L4 */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 px-4 pb-4 pt-2 bg-gradient-to-t from-white dark:from-[#0a0a0c] via-white/95 dark:via-[#0a0a0c]/95 to-transparent">
+        <button
+          onClick={() => setIsStudioOpen(true)}
+          className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-blue to-blue-500 text-white text-[12px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/30"
+        >
+          ✨ Tạo Ngay — Miễn phí thử
+        </button>
+      </div>
     </div>
   );
 };
@@ -906,9 +928,9 @@ const FEATURED_TEMPLATES = [
 
 ### STORAGE_KEY convention:
 ```tsx
-// Pattern: skyverses_<PRODUCT-SLUG>_vault  (dùng slug, không phải SCREAMING_SNAKE id)
-const STORAGE_KEY = 'skyverses_social-banner-ai_vault';
-// ❌ Sai: 'skyverses_SOCIAL-BANNER-AI_vault'
+// Pattern: skyverses_<SCREAMING-SNAKE-ID>_vault  (dùng id viết HOA, khớp với canonical SocialBannerWorkspace)
+const STORAGE_KEY = 'skyverses_SOCIAL-BANNER-AI_vault';
+// ❌ Sai: 'skyverses_social-banner-ai_vault'  (slug viết thường — không nhất quán với code thực)
 ```
 
 ### Layout cố định (giống SocialBannerWorkspace — canonical mới):
@@ -941,7 +963,398 @@ const CREDIT_COST = 120;
 if (credits < CREDIT_COST * quantity) { setShowLowCreditAlert(true); return; }
 ```
 
-### localStorage: `skyverses_<product-slug>_vault`
+### localStorage: `skyverses_<SCREAMING-SNAKE-ID>_vault`
+
+---
+
+## STEP 6.5 — Inherit Settings Combo (nếu product liên quan tới tạo ảnh hoặc tạo video)
+
+> **Chỉ áp dụng khi** product tạo ra ảnh hoặc video bằng AI model.
+> Transform-only products (xóa nền, upscale, restore) → **bỏ qua step này**.
+
+### Quyết định nguồn reference:
+
+| Product Type | Reference workspace | File |
+|---|---|---|
+| Tạo **ảnh** (từ text, concept, style) | AIImageGeneratorWorkspace | `components/AIImageGeneratorWorkspace.tsx` |
+| Tạo **video** (từ text, ảnh, frame sequence) | AIVideoGeneratorWorkspace | `components/AIVideoGeneratorWorkspace.tsx` |
+| Tạo **banner / social content** (ảnh marketing) | SocialBannerWorkspace | `components/SocialBannerWorkspace.tsx` |
+
+---
+
+### A. Settings Combo — Tạo ảnh (copy từ AIImageGeneratorWorkspace)
+
+**Đọc `AIImageGeneratorWorkspace.tsx` + hook `useImageGenerator`** trước khi code. Copy nguyên các phần sau:
+
+> ⚠️ **Hook pattern:** `AIImageGeneratorWorkspace` dùng `useImageGenerator()` hook để quản lý toàn bộ state (engine, model, mode, res, ratio, quantity). Khi tạo workspace mới tạo ảnh, dùng cùng hook này thay vì tự quản lý state rời.
+
+#### Engine list + Family + Model
+```tsx
+// Lấy từ hook — KHÔNG hardcode engines array
+const g = useImageGenerator(); // đọc hook này từ canonical workspace
+const { rawModels, engines, selectedEngine, setSelectedEngine } = g;
+// engines = [{ id: string, label: string }, ...] — từ API, không hardcode
+
+// Group models theo family
+const families = useMemo(() => {
+  const groups: Record<string, any[]> = {};
+  rawModels.forEach((m: any) => {
+    const fam = extractImageFamily(m.name); // copy hàm này từ AIImageGeneratorWorkspace
+    if (!groups[fam]) groups[fam] = [];
+    groups[fam].push(m);
+  });
+  return groups;
+}, [rawModels]);
+
+const familyList = useMemo(() => Object.keys(families).sort(), [families]);
+const [selectedFamily, setSelectedFamily] = useState('');
+
+// familyModels = list model objects của family đang chọn
+const familyModels = useMemo(() => families[selectedFamily] || [], [families, selectedFamily]);
+
+// selectedModel = object đầu tiên khớp với mode+res hiện tại (hoặc auto-select)
+// Dùng pattern giống canonical: g.selectedModel từ hook
+const selectedModel = g.selectedModel; // PricingModel object — có .pricing, .modes, .aspectRatios
+```
+
+#### Auto-sync khi family đổi (BẮT BUỘC)
+```tsx
+// Khi user đổi family → reset về model đầu tiên + mode/res đầu tiên của family mới
+useEffect(() => {
+  if (familyModels.length > 0) {
+    // g.setSelectedModel(familyModels[0]) hoặc dùng setter tương đương của hook
+    const firstModel = familyModels[0];
+    g.setSelectedModel?.(firstModel);
+    const firstMode = firstModel.modes?.[0] ?? '';
+    const firstRes  = Object.keys(firstModel.pricing ?? {})[0] ?? '';
+    g.setSelectedMode?.(firstMode);
+    g.setSelectedRes?.(firstRes);
+  }
+}, [selectedFamily]); // eslint-disable-line react-hooks/exhaustive-deps
+```
+
+#### Mode + Resolution + Ratio (derived từ family)
+```tsx
+const familyModes = useMemo(
+  () => [...new Set(familyModels.flatMap((m: any) => m.modes || []))],
+  [familyModels]
+);
+const familyResolutions = useMemo(
+  () => [...new Set(familyModels.flatMap((m: any) => Object.keys(m.pricing || {})))],
+  [familyModels]
+);
+const familyRatios = useMemo(
+  () => [...new Set(familyModels.flatMap((m: any) => m.aspectRatios || []))].filter((r: string) => r && r !== 'auto'),
+  [familyModels]
+);
+
+// Dùng g.selectedMode, g.setSelectedMode, g.selectedRes, g.setSelectedRes, g.selectedRatio, g.setSelectedRatio từ hook
+```
+
+#### Quantity + Cost (dynamic từ selectedModel object)
+```tsx
+// g.quantity, g.setQuantity từ hook
+
+// Cost = tra pricing matrix từ selectedModel object (KHÔNG phải family string)
+const currentUnitCost = useMemo(() => {
+  if (!selectedModel?.pricing) return 120; // fallback khi model chưa load
+  const resMatrix = selectedModel.pricing[g.selectedRes?.toLowerCase() ?? ''];
+  if (!resMatrix) return 120;
+  // Ưu tiên mode-based, fallback sang key đầu tiên
+  return resMatrix[g.selectedMode] ?? resMatrix[Object.keys(resMatrix)[0]] ?? 120;
+}, [selectedModel, g.selectedRes, g.selectedMode]);
+
+// Credit check — dùng currentUnitCost (dynamic), KHÔNG hardcode
+if (credits < currentUnitCost * g.quantity) { setShowLowCreditAlert(true); return; }
+```
+
+#### UI — Sidebar Settings Block (đặt sau Industry Picker, trước AISuggestPanel)
+```tsx
+{/* ─── ENGINE ─── */}
+<div className="grid grid-cols-2 gap-2 mb-3">
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Server</p>
+    <select value={selectedEngine || ''} onChange={e => setSelectedEngine(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {engines.map(e => <option key={e.id} value={e.id}>{e.label}</option>)}
+    </select>
+  </div>
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Model</p>
+    <select value={selectedFamily} onChange={e => setSelectedFamily(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyList.map(f => <option key={f} value={f}>{f}</option>)}
+    </select>
+  </div>
+</div>
+
+{/* ─── MODE + RESOLUTION ─── */}
+<div className="grid grid-cols-2 gap-2 mb-3">
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Chế độ</p>
+    <select value={selectedMode} onChange={e => setSelectedMode(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyModes.map(m => <option key={m} value={m}>{m}</option>)}
+    </select>
+  </div>
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Độ phân giải</p>
+    <select value={selectedRes} onChange={e => setSelectedRes(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyResolutions.map(r => <option key={r} value={r}>{r}</option>)}
+    </select>
+  </div>
+</div>
+
+{/* ─── RATIO + QUANTITY ─── */}
+<div className="flex items-center justify-between mb-3">
+  <div className="flex gap-1.5 flex-wrap">
+    {familyRatios.map(r => (
+      <button key={r} onClick={() => setSelectedRatio(r)}
+        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition-all ${
+          selectedRatio === r
+            ? 'bg-brand-blue text-white border-brand-blue'
+            : 'border-black/[0.06] dark:border-white/[0.06] text-slate-500 hover:border-brand-blue/40'
+        }`}>
+        {r}
+      </button>
+    ))}
+  </div>
+  <div className="flex items-center gap-1">
+    {[1, 2, 3, 4].map(q => (
+      <button key={q} onClick={() => setQuantity(q)}
+        className={`w-7 h-7 rounded-lg text-[11px] font-bold transition-all ${
+          quantity === q ? 'bg-brand-blue text-white' : 'bg-black/[0.03] dark:bg-white/[0.03] text-slate-500 hover:bg-brand-blue/10'
+        }`}>
+        {q}
+      </button>
+    ))}
+  </div>
+</div>
+```
+
+---
+
+### B. Settings Combo — Tạo video (copy từ AIVideoGeneratorWorkspace)
+
+**Đọc `AIVideoGeneratorWorkspace.tsx`** trước khi code. Copy nguyên các phần sau:
+
+> ⚠️ **Không hardcode engines/models:** Cả engine list lẫn model list đều load từ API. Đọc canonical workspace để biết hook hoặc API call đang dùng (`useVideoGenerator` hoặc fetch trực tiếp).
+
+#### Engine + Family + Model
+```tsx
+// engines = dynamic từ API (như canonical workspace) — KHÔNG tự định nghĩa array
+// Đọc AIVideoGeneratorWorkspace để biết cách fetch engines
+
+const [selectedEngine, setSelectedEngine] = useState('gommo'); // default từ canonical
+const [selectedFamily, setSelectedFamily] = useState('VEO');   // default family
+const [selectedModelObj, setSelectedModelObj] = useState<PricingModel | null>(null);
+
+// Family extraction — copy hàm extractFamilyName từ AIVideoGeneratorWorkspace
+const KNOWN_FAMILIES = ['VEO', 'Kling', 'Hailuo', 'Grok', 'Sora', 'WAN', 'Wan', 'V-Fuse', 'OmniHuman', 'Seedance'];
+const extractFamilyName = (name: string): string => {
+  const n = name.trim();
+  for (const fam of KNOWN_FAMILIES) {
+    if (n.toLowerCase().startsWith(fam.toLowerCase())) return fam;
+  }
+  return n.split(/\s*-\s/)[0].split(/\s+/)[0] || 'Other';
+};
+
+// Group raw models → families (rawModels từ API fetch)
+const families = useMemo(() => {
+  const groups: Record<string, PricingModel[]> = {};
+  rawModels.forEach(m => {
+    const fam = extractFamilyName(m.name);
+    if (!groups[fam]) groups[fam] = [];
+    groups[fam].push(m);
+  });
+  return groups;
+}, [rawModels]);
+
+const familyList    = useMemo(() => Object.keys(families).sort(), [families]);
+const familyModels  = useMemo(() => families[selectedFamily] || [], [families, selectedFamily]);
+const familyModes   = useMemo(() => [...new Set(familyModels.flatMap(m => m.modes || (m.mode ? [m.mode] : [])))], [familyModels]);
+const familyResolutions = useMemo(() => [...new Set(familyModels.flatMap(m => Object.keys(m.pricing || {})))], [familyModels]);
+const familyRatios  = useMemo(() => [...new Set(familyModels.flatMap(m => m.aspectRatios || []))].filter(r => r && r !== 'auto'), [familyModels]);
+```
+
+#### Auto-sync khi family đổi (BẮT BUỘC)
+```tsx
+// Khi user đổi family → reset model + mode + resolution về giá trị đầu tiên hợp lệ
+useEffect(() => {
+  if (familyModels.length > 0) {
+    const first = familyModels[0];
+    setSelectedModelObj(first);
+    const firstMode = (Array.isArray(first.modes) ? first.modes[0] : first.mode) ?? 'relaxed';
+    const firstRes  = Object.keys(first.pricing ?? {})[0] ?? '720p';
+    setSelectedMode(firstMode);
+    setResolution(firstRes);
+  }
+}, [selectedFamily]); // eslint-disable-line react-hooks/exhaustive-deps
+```
+
+#### Mode + Resolution + Ratio + Duration
+> **Note:** Video workspace quản lý state trực tiếp (không qua hook như image). `familyModes`, `familyResolutions`, `familyRatios` đã được derive ở phần Family bên trên.
+```tsx
+// State riêng — không qua hook
+const [selectedMode, setSelectedMode] = useState('relaxed');
+const [resolution,   setResolution]   = useState('720p');
+const [ratio,        setRatio]        = useState('16:9');
+const [duration,     setDuration]     = useState('8s');
+const [soundEnabled, setSoundEnabled] = useState(false);
+
+// Detect pricing model type (mode-based vs duration-based)
+const isModeBased = useMemo(() => {
+  if (!selectedModelObj?.pricing) return false;
+  const resMatrix = selectedModelObj.pricing[resolution.toLowerCase()];
+  if (!resMatrix) return false;
+  return Object.keys(resMatrix).every(k => isNaN(Number(k)));
+}, [selectedModelObj, resolution]);
+
+// Available durations — dynamic từ model pricing
+const availableDurations = useMemo(() => {
+  if (!selectedModelObj?.pricing) return ['5s', '8s', '10s'];
+  const resMatrix = selectedModelObj.pricing[resolution.toLowerCase()];
+  if (!resMatrix || isModeBased) return ['8s'];
+  return Object.keys(resMatrix).map(d => `${d}s`);
+}, [selectedModelObj, resolution, isModeBased]);
+
+// Cycle helpers (dùng cho compact buttons)
+const cycleRatio    = () => { const arr = familyRatios;    const i = arr.indexOf(ratio);    setRatio(arr[(i + 1) % arr.length]); };
+const cycleDuration = () => { const arr = availableDurations; const i = arr.indexOf(duration); setDuration(arr[(i + 1) % arr.length]); };
+const cycleSound    = () => setSoundEnabled(s => !s);
+```
+
+#### Cost calculation
+```tsx
+// Copy hàm getUnitCost từ AIVideoGeneratorWorkspace
+const getUnitCost = (model: PricingModel | null, resKey: string, durStr: string, mode?: string): number => {
+  if (!model?.pricing) return 1500;
+  const resMatrix = model.pricing[resKey.toLowerCase()];
+  if (!resMatrix) return 1500;
+  if (mode && resMatrix[mode] != null) return resMatrix[mode];
+  const durKey = durStr.replace('s', '');
+  return resMatrix[durKey] ?? 1500;
+};
+
+const currentUnitCost = useMemo(
+  () => getUnitCost(selectedModelObj, resolution, duration, selectedMode),
+  [selectedModelObj, resolution, duration, selectedMode]
+);
+
+// Credit check — cost phụ thuộc quantity
+if (credits < currentUnitCost * quantity) { setShowLowCreditAlert(true); return; }
+```
+
+#### UI — Sidebar Settings Block (video)
+```tsx
+{/* ─── ENGINE + FAMILY ─── */}
+<div className="grid grid-cols-2 gap-2 mb-3">
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Server</p>
+    <select value={selectedEngine} onChange={e => setSelectedEngine(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {engines.map(e => <option key={e.id} value={e.id}>{e.label}</option>)}
+    </select>
+  </div>
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Model</p>
+    <select value={selectedFamily} onChange={e => setSelectedFamily(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyList.map(f => <option key={f} value={f}>{f}</option>)}
+    </select>
+  </div>
+</div>
+
+{/* ─── MODE + RESOLUTION ─── */}
+<div className="grid grid-cols-2 gap-2 mb-3">
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Chế độ</p>
+    <select value={selectedMode} onChange={e => setSelectedMode(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyModes.map(m => <option key={m} value={m}>{m}</option>)}
+    </select>
+  </div>
+  <div>
+    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Độ phân giải</p>
+    <select value={resolution} onChange={e => setResolution(e.target.value)}
+      className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] text-slate-700 dark:text-white/80">
+      {familyResolutions.map(r => <option key={r} value={r}>{r}</option>)}
+    </select>
+  </div>
+</div>
+
+{/* ─── RATIO · DURATION · SOUND (inline buttons) ─── */}
+<div className="flex items-center gap-2 flex-wrap mb-3">
+  <button onClick={cycleRatio}
+    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[10px] font-semibold text-slate-600 dark:text-white/70 hover:border-brand-blue/40 transition-all">
+    ⊡ {ratio}
+  </button>
+  {!isModeBased && (
+    <button onClick={cycleDuration}
+      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[10px] font-semibold text-slate-600 dark:text-white/70 hover:border-brand-blue/40 transition-all">
+      ⏱ {duration}
+    </button>
+  )}
+  <button onClick={cycleSound}
+    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[10px] font-semibold transition-all ${
+      soundEnabled
+        ? 'bg-brand-blue/10 border-brand-blue/30 text-brand-blue'
+        : 'bg-black/[0.03] dark:bg-white/[0.03] border-black/[0.06] dark:border-white/[0.06] text-slate-400'
+    }`}>
+    {soundEnabled ? '🔊' : '🔇'} Âm thanh
+  </button>
+</div>
+
+{/* ─── QUANTITY ─── */}
+<div className="flex items-center gap-1 mb-3">
+  <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-widest mr-2">Số lượng</p>
+  {[1, 2, 3, 4].map(q => (
+    <button key={q} onClick={() => setQuantity(q)}
+      className={`w-7 h-7 rounded-lg text-[11px] font-bold transition-all ${
+        quantity === q ? 'bg-brand-blue text-white' : 'bg-black/[0.03] dark:bg-white/[0.03] text-slate-500 hover:bg-brand-blue/10'
+      }`}>
+      {q}
+    </button>
+  ))}
+</div>
+```
+
+---
+
+### C. Vị trí trong Sidebar Layout
+
+```
+SIDEBAR
+│ Product-specific picker (platform/format/etc.)
+│ ─── INDUSTRY PICKER ───
+│ ─── ✅ SETTINGS COMBO (6.5) ───
+│     Server | Model (Family)
+│     Chế độ | Độ phân giải
+│     Ratio · Duration · Sound (video only)
+│     Quantity buttons
+│ ─── AI SUGGEST PANEL ───
+│ Prompt textarea
+│ AI Boost button
+│ Reference images
+│ ─────────────────────────────
+│ Cost badge + Generate button
+```
+
+---
+
+### D. Common Mistakes khi dùng Settings Combo
+
+| Sai | Đúng |
+|-----|------|
+| Hardcode `CREDIT_COST = 120` khi dùng dynamic model | Dùng `currentUnitCost` từ pricing matrix |
+| Copy MODELS array thủ công | Fetch dynamic từ API qua `useImageGenerator` / `useVideoGenerator` hook |
+| Bỏ qua `isModeBased` detection | Nếu `isModeBased = true` → ẩn duration selector, dùng mode làm key pricing |
+| Tự build family grouping logic | Copy `extractImageFamily` / `extractFamilyName` từ canonical workspace |
+| Ratio/Duration là select dropdown | Dùng **cycle button** (như canonical video workspace) — nhỏ gọn hơn |
+| Không sync selectedModel khi family đổi | Luôn có `useEffect([selectedFamily])` auto-select model đầu tiên của family |
+| `engines` array tự hardcode | `engines` lấy từ hook — xem canonical workspace để biết tên biến chính xác |
+| Dùng `selectedFamily` (string) vào `currentUnitCost` | Phải resolve `selectedFamily` → `selectedModel` object trước khi tính cost |
 
 ---
 
@@ -957,6 +1370,8 @@ const YourProductAI = React.lazy(pageImports.yourProduct); // lazy
 'your-slug': React.lazy(() => import('../YourWorkspace') as Promise<{default: React.ComponentType<WorkspaceProps>}>),
 ```
 
+> **Kiểm tra `constants/market-config.tsx`:** Nếu file này có danh sách featured products, categories, hoặc homeBlocks config → thêm product mới vào đây để hiển thị đúng trên homepage/marketplace.
+
 ---
 
 ## STEP 8 — TypeScript check
@@ -968,11 +1383,43 @@ npx tsc --noEmit 2>&1 | head -40
 
 ---
 
-## STEP 9 — Git push
+## STEP 8.5 — Smoke test checklist
+
+Trước khi push, tự kiểm tra nhanh các điểm sau:
+
+**Landing page:**
+- [ ] Mở `/product/your-slug` → Hero render đúng Visual Type
+- [ ] LiveStatsBar hiển thị CountUp numbers
+- [ ] ShowcaseSection load ảnh từ Explorer API (không blank)
+- [ ] FAQSection accordion mở/đóng đúng
+- [ ] Mobile: sticky bottom CTA hiện (`md:hidden`)
+
+**Workspace:**
+- [ ] Mở Studio → sidebar render đúng
+- [ ] Industry picker chuyển tab → `productContext` cập nhật AISuggestPanel
+- [ ] AISuggestPanel mở 4 tabs: Prompt Ideas / Style Presets / Templates / Smart Fill
+- [ ] Nhập prompt → ⌘+Enter trigger generate
+- [ ] Credits < CREDIT_COST → Low Credit modal xuất hiện
+- [ ] Generate thành công → credits trừ đúng, toast "thành công" hiện
+- [ ] Generate thất bại → toast "credits chưa trừ" hiện, credits không đổi
+- [ ] Nút Hủy hiện khi đang generate, click abort đúng
+- [ ] Mobile: nút "Cài đặt" mở bottom sheet
+
+---
+
+## STEP 9 — Dọn dẹp & Git push
 
 ```bash
+# 1. Gitignore seed scripts (chứa TOKEN — không commit lên repo)
+echo "seed-*.mjs" >> .gitignore
+echo "gen-*.mjs" >> .gitignore
+echo "update-*.mjs" >> .gitignore
+
+# 2. Commit & push
 git add -A && git commit -m "feat: add <product-name> — PRO landing + smart workspace + seed + banner" && git push origin main
 ```
+
+> ⚠️ **Bắt buộc gitignore trước khi commit** — seed scripts chứa `TOKEN` admin, không được để lộ trong git history.
 
 ---
 
@@ -980,7 +1427,9 @@ git add -A && git commit -m "feat: add <product-name> — PRO landing + smart wo
 
 | Sai | Đúng |
 |-----|------|
-| Landing page 1 file monolithic | Thin orchestrator + 6 section files riêng |
+| Quên gitignore seed scripts | `echo "seed-*.mjs" >> .gitignore` trước khi commit — TOKEN không được lộ |
+| Không kiểm tra constants/market-config | Xem STEP 7 — thêm product vào featured/homeBlocks nếu cần |
+| Landing page 1 file monolithic | Thin orchestrator + 8 section files riêng |
 | Copy Explorer image grid cho mọi product | Dùng đúng Hero Visual Type từ STEP 3.6 |
 | Tự ý dùng màu accent mới | Dùng `brand-blue` nhất quán |
 | Reference `PosterStudioWorkspace` cho workspace mới | Reference `SocialBannerWorkspace` (canonical mới — có AISuggestPanel) |
@@ -1002,7 +1451,7 @@ git add -A && git commit -m "feat: add <product-name> — PRO landing + smart wo
 | Import `FloatingBadge` từ SectionAnimations | Import từ `ProHeroVisuals` |
 | Sections không có ảnh minh hoạ | Featured cards trong FeaturesSection nên có `thumbUrl` từ CDN STEP 3 |
 | Định nghĩa Wand2 inline SVG trong Workspace | Import `Wand2` từ `lucide-react` |
-| STORAGE_KEY dùng SCREAMING_SNAKE id | Dùng slug: `skyverses_<slug>_vault` |
+| STORAGE_KEY dùng slug viết thường | Dùng SCREAMING-SNAKE id: `skyverses_<ID>_vault` (VD: `skyverses_SOCIAL-BANNER-AI_vault`) |
 
 ---
 
@@ -1036,14 +1485,21 @@ components/PosterStudioWorkspace.tsx
 
 ## Landing Page Section Order (chuẩn)
 
+> Khớp với `SocialBannerAI.tsx` — canonical mới nhất (2025-04).
+
 ```
 HeroSection          ← ProHeroVisuals + GradientMesh (xem STEP 3.6 chọn visual type)
-WorkflowSection      ← 4 bước + StaggerChildren + icons only
+LiveStatsBar         ← CountUp social proof numbers (L2) — ngay sau Hero
+WorkflowSection      ← 4 bước + StaggerChildren + TimelineConnector
 ShowcaseSection      ← ShowcaseImageStrip (import từ ProHeroVisuals)
 FeaturesSection      ← Bento-grid (featured cards có thể kèm thumbUrl từ CDN)
 UseCasesSection      ← 4-6 industry use cases + icons
-FinalCTA             ← Animated button + GradientMesh
+FAQSection           ← Accordion 5-6 câu hỏi (L3) — trước FinalCTA
+FinalCTA             ← Animated button + GradientMesh + trust micro-copy (L1)
+[Sticky mobile CTA]  ← md:hidden fixed bottom bar (L4) — trong page file
 ```
+
+> **Ghi chú:** Các product cũ (image-generator, video-generator, image-restoration) chưa có LiveStatsBar, ShowcaseSection, UseCasesSection, FAQSection — **không bắt buộc backport**, chỉ áp dụng cho product mới tạo từ workflow này.
 
 ---
 
@@ -1172,7 +1628,68 @@ const { showToast } = useToast();
 
 ---
 
-### W6 — Empty state starter prompts (W6)
+### W5 — Download + Fullscreen overlay trên result image
+
+Khi có ảnh kết quả, hiện 2 action button overlay khi hover:
+
+```tsx
+{result && (
+  <div className="relative group w-full max-w-2xl">
+    <img src={result} className="w-full rounded-2xl shadow-xl" alt="AI result" />
+
+    {/* Overlay actions — hiện khi hover */}
+    <div className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/30 transition-colors duration-200 flex items-end justify-end gap-2 p-3 opacity-0 group-hover:opacity-100">
+      {/* Download */}
+      <a
+        href={result}
+        download
+        target="_blank"
+        rel="noreferrer"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/90 dark:bg-black/80 text-[11px] font-semibold text-slate-700 dark:text-white hover:bg-white hover:scale-105 transition-all shadow-sm"
+      >
+        <Download size={13} /> Tải xuống
+      </a>
+      {/* Fullscreen */}
+      <button
+        onClick={() => setIsFullscreen(true)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/90 dark:bg-black/80 text-[11px] font-semibold text-slate-700 dark:text-white hover:bg-white hover:scale-105 transition-all shadow-sm"
+      >
+        <Maximize2 size={13} /> Xem toàn màn hình
+      </button>
+    </div>
+  </div>
+)}
+
+{/* Fullscreen lightbox */}
+<AnimatePresence>
+  {isFullscreen && result && (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[600] bg-black/95 flex items-center justify-center p-4"
+      onClick={() => setIsFullscreen(false)}
+    >
+      <img src={result} className="max-w-full max-h-full rounded-xl shadow-2xl object-contain" />
+      <button
+        className="absolute top-4 right-4 text-white/70 hover:text-white"
+        onClick={() => setIsFullscreen(false)}
+      >
+        <X size={24} />
+      </button>
+    </motion.div>
+  )}
+</AnimatePresence>
+```
+
+State cần thêm:
+```tsx
+const [isFullscreen, setIsFullscreen] = useState(false);
+```
+
+Import icons: `Download`, `Maximize2`, `X` từ `lucide-react`.
+
+---
+
+### W6 — Empty state starter prompts
 
 Khi không có ảnh và không đang generate → hiện 4 starter cards thay vì text đơn:
 
@@ -1243,6 +1760,189 @@ Dropdown UI (đặt bên cạnh label "Mô tả"):
   </AnimatePresence>
 </div>
 ```
+
+---
+
+### W8 — View Mode Toggle (Phiên hiện tại / Thư viện)
+
+Top nav của workspace phải có 2 tab để switch giữa current result và session library:
+
+```tsx
+type ViewMode = 'current' | 'library';
+const [viewMode, setViewMode] = useState<ViewMode>('current');
+```
+
+Toggle UI trong top nav (bên trái, sau logo/title):
+```tsx
+{/* View mode toggle */}
+<div className="flex items-center bg-black/[0.04] dark:bg-white/[0.04] rounded-lg p-0.5">
+  {(['current', 'library'] as ViewMode[]).map((mode) => {
+    const label = mode === 'current' ? 'Phiên hiện tại' : `Thư viện (${sessions.length})`;
+    return (
+      <button
+        key={mode}
+        onClick={() => setViewMode(mode)}
+        className={`px-3 py-1.5 rounded-md text-[10px] font-semibold transition-all ${
+          viewMode === mode
+            ? 'bg-white dark:bg-white/[0.08] text-slate-800 dark:text-white shadow-sm'
+            : 'text-slate-400 dark:text-[#666] hover:text-slate-600 dark:hover:text-white/60'
+        }`}
+      >
+        {label}
+      </button>
+    );
+  })}
+</div>
+```
+
+Viewport render theo viewMode:
+```tsx
+{viewMode === 'current' ? (
+  // Result area — W2/W5 patterns
+  <div className="flex-1 flex items-center justify-center ...">
+    {/* skeleton / result image / empty state */}
+  </div>
+) : (
+  // Library grid — W9 pattern
+  <LibraryGrid sessions={sessions} onSelect={(s) => { setResult(s.imageUrl); setViewMode('current'); }} />
+)}
+```
+
+---
+
+### W9 — Session History (Library)
+
+Mỗi lần generate thành công → save session vào localStorage. Library tab hiển thị grid các session cũ.
+
+Interface:
+```tsx
+interface BannerSession {
+  id: string;           // crypto.randomUUID() hoặc Date.now().toString()
+  imageUrl: string;
+  prompt: string;
+  createdAt: number;    // Date.now()
+  // Optional metadata phù hợp product:
+  style?: string;
+  format?: string;      // e.g. 'instagram', 'facebook'
+  industry?: string;
+}
+```
+
+Save sau generate thành công (ngay sau `useCredits()`):
+```tsx
+const newSession: BannerSession = {
+  id: Date.now().toString(),
+  imageUrl,
+  prompt,
+  createdAt: Date.now(),
+  style: activeStyle,
+  // ... thêm metadata phù hợp product
+};
+const updatedSessions = [newSession, ...sessions].slice(0, 50); // max 50
+setSessions(updatedSessions);
+localStorage.setItem(STORAGE_KEY + '_sessions', JSON.stringify(updatedSessions));
+```
+
+Load on mount:
+```tsx
+const [sessions, setSessions] = useState<BannerSession[]>([]);
+
+useEffect(() => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY + '_sessions');
+    if (saved) setSessions(JSON.parse(saved));
+  } catch {}
+}, []);
+```
+
+Library grid component (inline trong workspace hoặc tách file):
+```tsx
+interface LibraryGridProps {
+  sessions: BannerSession[];
+  onSelect: (session: BannerSession) => void;
+}
+
+const LibraryGrid: React.FC<LibraryGridProps> = ({ sessions, onSelect }) => {
+  if (sessions.length === 0) return (
+    <div className="flex-1 flex flex-col items-center justify-center gap-3 text-slate-400">
+      <p className="text-sm font-semibold">Thư viện trống</p>
+      <p className="text-[11px]">Tạo ảnh đầu tiên để lưu vào thư viện</p>
+    </div>
+  );
+
+  return (
+    <div className="flex-1 overflow-y-auto p-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        {sessions.map((s) => (
+          <button
+            key={s.id}
+            onClick={() => onSelect(s)}
+            className="group relative aspect-video rounded-xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/40 transition-all hover:shadow-lg hover:shadow-brand-blue/10"
+          >
+            <img src={s.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+              <p className="text-[9px] text-white/90 line-clamp-2 leading-relaxed">{s.prompt}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+```
+
+> **Key:** `STORAGE_KEY + '_sessions'` (tách biệt với `STORAGE_KEY + '_prompts'` của W7)
+
+---
+
+### W11 — Status Message với Color Dot
+
+Status message không chỉ là text — thêm dot màu để feedback tức thì:
+
+State:
+```tsx
+const [status, setStatus] = useState('');
+```
+
+Status dot component (inline):
+```tsx
+// Hiển thị bên cạnh CR cost, trong generate button bar
+{status && (
+  <span className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-[#666]">
+    <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+      status.includes('Lỗi') || status.includes('hủy')
+        ? 'bg-red-400'
+        : status.includes('thành công') || status.includes('xong')
+          ? 'bg-emerald-400'
+          : 'bg-amber-400 animate-pulse'   // ← processing state
+    }`} />
+    {status}
+  </span>
+)}
+```
+
+setStatus calls theo flow:
+```tsx
+// Trước khi gọi API:
+setStatus('Đang xử lý...');
+
+// Khi có kết quả:
+setStatus('Tạo thành công!');
+
+// Khi lỗi:
+setStatus('Lỗi tạo ảnh');
+
+// Khi hủy:
+setStatus('Đã hủy');
+
+// Clear sau 3 giây (optional):
+setTimeout(() => setStatus(''), 3000);
+```
+
+> **Quy tắc màu dot:**
+> - `bg-amber-400 animate-pulse` → đang processing (bất kỳ status nào không khớp 2 case dưới)
+> - `bg-emerald-400` → thành công (status có "thành công" hoặc "xong")
+> - `bg-red-400` → lỗi/hủy (status có "Lỗi" hoặc "hủy")
 
 ---
 
@@ -1483,9 +2183,25 @@ Thêm trực tiếp vào page file (`pages/images/YourProductAI.tsx`), **trong `
 
 ### L5 — Inline Hero Demo widget
 
-Thay right column mockup bằng mini-demo interactive widget. User có thể thử generate ngay trên landing page (không cần credits).
+Thay right column mockup bằng mini-demo interactive widget. User có thể thử generate ngay trên landing page.
+
+> **⚠️ Về credits & endpoint:**
+> - Widget gọi `generateDemoImage()` từ `services/gemini` — đây là endpoint **server-side có cost** (Gemini API).
+> - Widget **KHÔNG trừ credits của user** — chi phí tính vào server budget demo.
+> - **Bắt buộc rate-limit phía server** (VD: max 3 lần/IP/ngày) để tránh lạm dụng.
+> - Nếu server chưa có rate-limit → dùng phương án thay thế: **hiển thị ảnh CDN pre-generated từ STEP 3** (rotate qua 3-5 ảnh có sẵn) thay vì call API thật.
 
 ```tsx
+// Phương án an toàn — rotate pre-generated CDN images (KHÔNG call API):
+const DEMO_IMAGES = [
+  'https://imagedelivery.net/.../img1/public',  // URLs từ STEP 3
+  'https://imagedelivery.net/.../img2/public',
+  'https://imagedelivery.net/.../img3/public',
+];
+const [demoIndex, setDemoIndex] = useState(0);
+const runDemo = () => setDemoIndex(i => (i + 1) % DEMO_IMAGES.length);
+
+// --- HOẶC phương án đầy đủ (nếu server ĐÃ có rate-limit): ---
 // State trong HeroSection (convert từ () => sang function):
 const [demoPrompt, setDemoPrompt] = useState(DEMO_PROMPTS[0]);
 const [demoResult, setDemoResult] = useState<string | null>(null);
@@ -1526,7 +2242,7 @@ const runDemo = async () => {
       <button onClick={runDemo} disabled={demoLoading} className="flex-1 py-2 rounded-lg bg-brand-blue text-white text-[11px] font-bold">
         {demoLoading ? 'Đang tạo...' : '✨ Thử Ngay (miễn phí)'}
       </button>
-      <button onClick={onOpenStudio} className="px-3 py-2 rounded-lg border border-brand-blue/30 text-brand-blue text-[11px] font-semibold">
+      <button onClick={onStartStudio} className="px-3 py-2 rounded-lg border border-brand-blue/30 text-brand-blue text-[11px] font-semibold">
         Mở Studio →
       </button>
     </div>
@@ -1539,6 +2255,76 @@ Import generateDemoImage:
 import { generateDemoImage } from '../../../services/gemini';
 ```
 
+> **💡 L6 — Demo Prompt Cycling (optional enhancement):** Nếu muốn widget không bị static, thêm `DEMO_PROMPTS` array và sau mỗi lần `runDemo()` cycle sang prompt tiếp theo: `setDemoPrompt(DEMO_PROMPTS[(demoIndex + 1) % DEMO_PROMPTS.length])`. Không cần section riêng — 3 dòng code là đủ.
+
+---
+
+### L8 — Low Credit Modal
+
+STEP 6 có `setShowLowCreditAlert(true)` nhưng modal phải được implement đầy đủ — không chỉ là state.
+
+State:
+```tsx
+const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
+```
+
+Modal UI (thêm vào `<AnimatePresence>` cuối component, tương tự fullscreen lightbox):
+```tsx
+<AnimatePresence>
+  {showLowCreditAlert && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[700] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={() => setShowLowCreditAlert(false)}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+        onClick={e => e.stopPropagation()}
+        className="bg-white dark:bg-[#111113] rounded-2xl shadow-2xl p-6 max-w-sm w-full border border-black/[0.06] dark:border-white/[0.06]"
+      >
+        {/* Icon */}
+        <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-400/10 flex items-center justify-center mx-auto mb-4">
+          <span className="text-2xl">⚡</span>
+        </div>
+
+        {/* Content */}
+        <h3 className="text-[15px] font-bold text-center mb-1">Credits không đủ</h3>
+        <p className="text-[12px] text-slate-500 dark:text-[#777] text-center leading-relaxed mb-5">
+          Bạn cần <span className="font-semibold text-slate-700 dark:text-white">{CREDIT_COST * quantity} CR</span> để tạo.
+          Hiện có <span className="font-semibold text-amber-500">{credits} CR</span>.
+        </p>
+
+        {/* Actions */}
+        <div className="flex flex-col gap-2">
+          <Link
+            to="/credits"
+            onClick={() => setShowLowCreditAlert(false)}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-blue to-blue-500 text-white text-[12px] font-bold text-center shadow-md shadow-brand-blue/20 hover:shadow-lg hover:shadow-brand-blue/30 transition-shadow"
+          >
+            ⚡ Nạp Credits ngay
+          </Link>
+          <button
+            onClick={() => setShowLowCreditAlert(false)}
+            className="w-full py-2.5 rounded-xl border border-black/[0.07] dark:border-white/[0.07] text-[11px] text-slate-500 dark:text-[#666] hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors"
+          >
+            Đóng
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+```
+
+Import cần thêm: `Link` từ `react-router-dom`, `credits` từ `useAuth()`.
+
+> **Quy tắc hiển thị:** Modal chỉ trigger từ credit check trong `handleGenerate()`. **Không** tự dismiss sau timeout — user phải chủ động đóng hoặc click ra ngoài.
+
 ---
 
 ## Cập nhật ❌ Common Mistakes
@@ -1546,6 +2332,7 @@ import { generateDemoImage } from '../../../services/gemini';
 | Sai | Đúng |
 |-----|------|
 | Credits trừ trước khi API call | Trừ credits **sau** khi API trả thành công (W4) |
+| Result image không có action nào | Download + Fullscreen overlay khi hover (W5) |
 | handleEnhance auto-replace prompt | Show diff card (before/after) → user confirm áp dụng (S2) |
 | Empty viewport khi đang generate | Skeleton 2×2 shimmer grid (W2) |
 | Không có keyboard shortcut | ⌘+Enter trigger generate (W1) |
@@ -1553,9 +2340,16 @@ import { generateDemoImage } from '../../../services/gemini';
 | Landing không có social proof | LiveStatsBar ngay sau Hero + CountUp numbers (L2) |
 | Landing không trả lời FAQ | FAQSection accordion trước FinalCTA (L3) |
 | Mobile user khó trigger CTA | Sticky bottom bar `md:hidden` fixed (L4) |
-| Hero mockup static không interactive | InlineDemoWidget — user thử generate trực tiếp (L5) |
+| Hero mockup static không interactive | InlineDemoWidget — rotate CDN images hoặc call API nếu đã có rate-limit (L5) |
 | CTA không có trust signal | Trust micro-copy 3 items: no CC + ownership + free credits (L1) |
 | Không có cancel khi đang generate | AbortController + Hủy button hiện khi isGenerating (W3) |
 | Prompt history mất sau reload | Save lên localStorage `STORAGE_KEY + '_prompts'` (W7) |
 | No starter prompts when empty | 4 starter prompt cards 2×2 grid khi không có ảnh (W6) |
+| Workspace chỉ có 1 view (Current) | Luôn có tab "Phiên hiện tại" + "Thư viện (N)" toggle (W8) |
+| Library tab rỗng sau generate | Save session vào localStorage sau mỗi lần generate thành công (W9) |
+| Status message không có visual cue | Status dot đổi màu theo trạng thái: amber=processing, green=done, red=error (W11) |
+| Low Credit modal chỉ là 1 dòng code | Modal đầy đủ: thông báo + nút Nạp Credits + nút Đóng (L8) |
+| Product tạo ảnh/video hardcode CREDIT_COST | Dùng dynamic `currentUnitCost` từ pricing matrix model (STEP 6.5) |
+| Workspace tạo ảnh/video tự build model list | Copy engine/family/model combo từ AIImageGeneratorWorkspace hoặc AIVideoGeneratorWorkspace (STEP 6.5) |
+| Không có duration selector cho video workspace | Detect `isModeBased` — nếu false thì hiện duration cycle button (STEP 6.5B) |
 
