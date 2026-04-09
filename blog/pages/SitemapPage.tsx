@@ -8,6 +8,13 @@ const CATEGORIES = ['News', 'Tutorials', 'Tips', 'Case Study', 'Community'];
 const esc = (str: string) =>
   str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+interface SitemapUrl {
+  loc: string;
+  priority: string;
+  changefreq: string;
+  lastmod?: string;
+}
+
 /**
  * SitemapPage — serves a dynamic XML sitemap at /sitemap.xml
  * Replaces the document content with raw XML and sets correct Content-Type.
@@ -18,7 +25,7 @@ const SitemapPage = () => {
       const res = await blogApi.getAllPosts();
       const posts = res?.data || [];
 
-      const staticUrls = [
+      const staticUrls: SitemapUrl[] = [
         { loc: BASE_URL + '/',           priority: '1.0', changefreq: 'daily' },
         { loc: BASE_URL + '/search',     priority: '0.3', changefreq: 'monthly' },
         ...CATEGORIES.map(cat => ({
@@ -28,14 +35,14 @@ const SitemapPage = () => {
         })),
       ];
 
-      const postUrls = posts.map(p => ({
+      const postUrls: SitemapUrl[] = posts.map(p => ({
         loc: `${BASE_URL}/${esc(p.slug)}`,
         lastmod: (p.updatedAt || p.publishedAt || '').split('T')[0],
         priority: p.isFeatured ? '0.9' : '0.8',
         changefreq: 'weekly',
       }));
 
-      const allUrls = [...staticUrls, ...postUrls];
+      const allUrls: SitemapUrl[] = [...staticUrls, ...postUrls];
 
       const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
