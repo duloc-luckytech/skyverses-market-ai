@@ -1180,15 +1180,19 @@ if (credits < CREDIT_COST * quantity) { setShowLowCreditAlert(true); return; }
 
 ---
 
-### ⚠️ QUY TẮC BẮT BUỘC — Dùng `ModelEngineSettings` component (KHÔNG tự build UI)
+### ⚠️ QUY TẮC BẮT BUỘC — Dùng đúng component theo loại media (KHÔNG tự build UI)
 
-> **Mọi workspace tạo ảnh hoặc tạo video đều PHẢI dùng component dùng chung `ModelEngineSettings`.**
+> **Mọi workspace tạo ảnh hoặc tạo video đều PHẢI dùng component dùng chung tương ứng:**
+> - **Tạo ảnh** → `ModelEngineSettings` (`components/image-generator/ModelEngineSettings.tsx`)
+> - **Tạo video** → `VideoModelEngineSettings` (`components/video-generator/VideoModelEngineSettings.tsx`)
+>
 > **TUYỆT ĐỐI KHÔNG** tự viết lại UI server / model / mode / resolution / ratio / quantity riêng trong workspace mới.
 > Viết lại thủ công = sai kiến trúc, gây inconsistency toàn hệ thống.
 >
 > **Tham chiếu implementation thực tế:**
 > - `components/SocialBannerWorkspace.tsx` — image generation workspace (canonical mới nhất)
-> - `components/RealEstateVisualWorkspace.tsx` — image + video tabs trong cùng 1 workspace
+> - `components/AIVideoGeneratorWorkspace.tsx` — video workspace canonical (dùng `VideoModelEngineSettings` qua `ConfigurationPanel`)
+> - `components/video-generator/ConfigurationPanel.tsx` — wrapper collapsible chứa `VideoModelEngineSettings`
 
 ---
 
