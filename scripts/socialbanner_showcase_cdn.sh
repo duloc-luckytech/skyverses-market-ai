@@ -1,0 +1,17 @@
+#!/bin/bash
+# AUTO-GENERATED: Social Banner Showcase CDN URLs
+CDN_showcase_beauty_brand_story="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/87f819af-339e-4144-e17a-5ecdc1282900/public"
+CDN_showcase_coffee_promo="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/2b41a1fc-4ab5-48ef-edf2-40300c3ecb00/public"
+CDN_showcase_elearning="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/0c531e63-958f-4157-764c-de57228d9400/public"
+CDN_showcase_flash_sale_1111="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/856429ad-d3fc-4708-7a4e-6a04c59fa900/public"
+CDN_showcase_food_delivery="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/2fd23fdf-d600-4a0a-8ef1-6aebed612100/public"
+CDN_showcase_grand_opening="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/53366c5d-e1d3-4a4e-c7ea-25519c88ea00/public"
+CDN_showcase_gym_fitness="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/fa52e689-1ff4-4810-2927-6d7dd9424100/public"
+CDN_showcase_new_collection_story="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/76082522-f991-4176-f321-1d4d09339d00/public"
+CDN_showcase_product_launch_ig="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/3aebbfd3-4095-4cc8-770f-a4efcb998e00/public"
+CDN_showcase_realestate_linkedin="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/2bf39eed-6a95-44a5-fcea-380501b54700/public"
+CDN_showcase_tech_gadget="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/3940688f-5827-4f42-f9a4-b82dba06ef00/public"
+CDN_showcase_tet_sale="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/c9a676ed-fc4b-4404-9833-275e90dbc300/public"
+CDN_showcase_travel_agency="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/39c7bbea-121b-4f0e-4c30-c42b0cde4100/public"
+CDN_showcase_tuyen_dung="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/b2a1b759-4b62-4d6c-a4a7-db43b9a8bf00/public"
+CDN_showcase_webinar_linkedin="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/52735b7f-a10b-4d4d-37a9-4a5d4db9a100/public"

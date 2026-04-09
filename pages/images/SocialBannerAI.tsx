@@ -36,7 +36,7 @@ const SocialBannerAI: React.FC = () => {
 
       {/* ── WORKFLOW + SHOWCASE + FEATURES + USE CASES ── */}
       <WorkflowSection />
-      <ShowcaseSection productSlug="social-banner-ai" />
+      <ShowcaseSection />
       <FeaturesSection />
       <UseCasesSection />
 
