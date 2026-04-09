@@ -1291,22 +1291,21 @@ const payload: ImageJobRequest = {
 
 ### B. Cấu hình AI — Tạo video
 
-> Video workspace cần thêm Duration + Sound control bên dưới `ModelEngineSettings`.
-> Tham chiếu: tab video trong `components/RealEstateVisualWorkspace.tsx`.
+> Video workspace dùng **`VideoModelEngineSettings`** — component chuyên biệt cho video (đã tích hợp sẵn Duration + Sound + Variants).
+> **KHÔNG dùng** `ModelEngineSettings` (image component) cho video workspace.
+> Tham chiếu canonical: `components/AIVideoGeneratorWorkspace.tsx` + `components/video-generator/ConfigurationPanel.tsx`.
 
 #### 1. Import
 
 ```tsx
-import { useImageModels } from '../hooks/useImageModels';
-import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
-import { Clock, Volume2, VolumeX } from 'lucide-react';
+import { VideoModelEngineSettings } from './video-generator/VideoModelEngineSettings';
 import { pricingApi, PricingModel } from '../apis/pricing';
 ```
 
 #### 2. State
 
 ```tsx
-// Video models phải fetch riêng vì tool:'video' — hook useImageModels chỉ dùng cho image
+// ─── Video engine + models (fetch riêng, tool: 'video') ───
 const [videoEngine, setVideoEngine] = useState('gommo');
 const [videoAvailableModels, setVideoAvailableModels] = useState<PricingModel[]>([]);
 const [videoSelectedModelObj, setVideoSelectedModelObj] = useState<PricingModel | null>(null);
@@ -1318,7 +1317,16 @@ const [videoDuration, setVideoDuration] = useState('8s');
 const [soundEnabled, setSoundEnabled] = useState(false);
 const [videoQuantity, setVideoQuantity] = useState(1);
 
-// Fetch video models on engine change
+// KNOWN_FAMILIES (copy từ VideoModelEngineSettings hoặc AIVideoGeneratorWorkspace)
+const KNOWN_FAMILIES = ['VEO', 'Kling', 'Hailuo', 'Grok', 'Sora', 'WAN', 'Wan', 'V-Fuse', 'OmniHuman', 'Seedance'];
+const extractFamilyName = (name: string) => {
+  for (const f of KNOWN_FAMILIES) {
+    if (name.toLowerCase().startsWith(f.toLowerCase())) return f;
+  }
+  return name.split(/\s*-\s/)[0].split(/\s+/)[0] || 'Other';
+};
+
+// Fetch video models khi engine thay đổi
 useEffect(() => {
   setVideoAvailableModels([]);
   pricingApi.getPricing({ tool: 'video', engine: videoEngine })
@@ -1326,81 +1334,114 @@ useEffect(() => {
       if (res.success && res.data.length > 0) {
         setVideoAvailableModels(res.data);
         const def = res.data[0];
-        setVideoSelectedFamily(extractFamilyName(def.name)); // copy extractFamilyName từ canonical
+        setVideoSelectedFamily(extractFamilyName(def.name));
         setVideoSelectedModelObj(def);
       }
     })
     .catch(console.error);
 }, [videoEngine]);
 
-// Family groupings — memos giống canonical RealEstateVisualWorkspace
-const videoFamilies     = useMemo(() => { /* group bằng extractFamilyName */ }, [videoAvailableModels]);
+// Family groupings
+const videoFamilies     = useMemo(() => {
+  const groups: Record<string, PricingModel[]> = {};
+  videoAvailableModels.forEach(m => {
+    const fam = extractFamilyName(m.name);
+    if (!groups[fam]) groups[fam] = [];
+    groups[fam].push(m);
+  });
+  return groups;
+}, [videoAvailableModels]);
+
 const videoFamilyList   = useMemo(() => Object.keys(videoFamilies).sort(), [videoFamilies]);
 const videoFamilyModels = useMemo(() => videoFamilies[videoSelectedFamily] || [], [videoFamilies, videoSelectedFamily]);
 const videoFamilyModes  = useMemo(() => [...new Set(videoFamilyModels.flatMap(m => m.modes || []))], [videoFamilyModels]);
 const videoFamilyRes    = useMemo(() => [...new Set(videoFamilyModels.flatMap(m => Object.keys(m.pricing || {})))], [videoFamilyModels]);
-const videoFamilyRatios = useMemo(() => [...new Set(videoFamilyModels.flatMap(m => m.aspectRatios || []))].filter(r => r && r !== 'auto'), [videoFamilyModels]);
+const videoFamilyRatios = useMemo(() => (
+  [...new Set(videoFamilyModels.flatMap(m => m.aspectRatios || []))].filter(r => r && r !== 'auto')
+), [videoFamilyModels]);
 
-// Duration + isModeBased (copy từ RealEstateVisualWorkspace)
-const isModeBased = useMemo(() => { /* detect pricing key type */ }, [videoSelectedModelObj, videoResolution]);
-const availableVideoDurations = useMemo(() => { /* from model pricing */ }, [videoSelectedModelObj, videoResolution, isModeBased]);
-const cycleDuration = () => { /* cycle through durations */ };
-const videoUnitCost = useMemo(() => getUnitCost(videoSelectedModelObj, videoResolution, videoDuration, videoSelectedMode), [...]);
+// isModeBased — true nếu pricing key là mode name (fast/quality), false nếu là duration (5s/8s/10s)
+const isModeBased = useMemo(() => {
+  const pricing = videoSelectedModelObj?.pricing ?? {};
+  const keys = Object.keys(pricing);
+  return keys.length > 0 && !keys[0].includes('s');
+}, [videoSelectedModelObj, videoResolution]);
+
+// Danh sách duration có thể chọn (chỉ khi không phải mode-based)
+const availableVideoDurations = useMemo(() => {
+  if (isModeBased || !videoSelectedModelObj?.pricing) return [];
+  return Object.keys(videoSelectedModelObj.pricing);
+}, [videoSelectedModelObj, videoResolution, isModeBased]);
+
+const cycleDuration = () => {
+  const idx = availableVideoDurations.indexOf(videoDuration);
+  setVideoDuration(availableVideoDurations[(idx + 1) % availableVideoDurations.length] || videoDuration);
+};
+
+// Cost
+const videoUnitCost = useMemo(() => {
+  const pricing = videoSelectedModelObj?.pricing ?? {};
+  const key = isModeBased ? videoSelectedMode : videoDuration;
+  return (pricing as Record<string, number>)[key] ?? 0;
+}, [videoSelectedModelObj, videoResolution, videoDuration, videoSelectedMode, isModeBased]);
 ```
 
-#### 3. JSX — `ModelEngineSettings` + Duration/Sound row
+#### 3. JSX — `VideoModelEngineSettings` (Duration + Sound đã tích hợp sẵn bên trong)
 
 ```tsx
-{/* Shared AI config — same component as /ai-image-generator */}
-<ModelEngineSettings
-  availableModels={videoAvailableModels}
-  selectedModel={videoSelectedModelObj}
-  setSelectedModel={setVideoSelectedModelObj}
-  selectedRatio={videoRatio}
-  setSelectedRatio={setVideoRatio}
-  selectedRes={videoResolution}
-  setSelectedRes={setVideoResolution}
-  quantity={videoQuantity}
-  setQuantity={setVideoQuantity}
-  selectedMode={videoSelectedMode}
-  setSelectedMode={setVideoSelectedMode}
+{/* ─── AI Config — VideoModelEngineSettings (canonical video component) ─── */}
+<VideoModelEngineSettings
   selectedEngine={videoEngine}
   onSelectEngine={setVideoEngine}
-  activeMode="SINGLE"
-  isGenerating={isGenerating}
+  availableModels={videoAvailableModels}
+  selectedModelObj={videoSelectedModelObj}
+  setSelectedModelObj={setVideoSelectedModelObj}
   familyList={videoFamilyList}
   selectedFamily={videoSelectedFamily}
   setSelectedFamily={setVideoSelectedFamily}
   familyModels={videoFamilyModels}
   familyModes={videoFamilyModes}
-  familyRatios={videoFamilyRatios}
   familyResolutions={videoFamilyRes}
+  familyRatios={videoFamilyRatios}
+  selectedMode={videoSelectedMode}
+  setSelectedMode={setVideoSelectedMode}
+  ratio={videoRatio}
+  setRatio={setVideoRatio}
+  resolution={videoResolution}
+  setResolution={setVideoResolution}
+  isModeBased={isModeBased}
+  duration={videoDuration}
+  cycleDuration={cycleDuration}
+  soundEnabled={soundEnabled}
+  setSoundEnabled={setSoundEnabled}
+  quantity={videoQuantity}
+  setQuantity={setVideoQuantity}
+  showQuantity={true}
+  isGenerating={isGenerating}
 />
+```
 
-{/* Video-only extras: Duration + Sound — compact row beneath */}
-<div className="flex items-center gap-2 px-0.5 pt-0.5">
-  {!isModeBased && availableVideoDurations.length > 0 && (
-    <button
-      onClick={cycleDuration}
-      disabled={isGenerating}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.04] text-[10px] font-semibold text-slate-600 dark:text-[#888] hover:border-rose-500/30 hover:text-rose-400 disabled:opacity-40 transition-all"
-    >
-      <Clock size={10} /> {videoDuration}
-    </button>
-  )}
-  <button
-    onClick={() => setSoundEnabled(s => !s)}
-    disabled={isGenerating}
-    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-semibold transition-all disabled:opacity-40 ${
-      soundEnabled
-        ? 'bg-rose-500/10 border-rose-500/25 text-rose-400'
-        : 'border-black/[0.06] dark:border-white/[0.04] text-slate-500 dark:text-[#666] hover:border-rose-500/30 hover:text-rose-400'
-    }`}
-  >
-    {soundEnabled ? <Volume2 size={10} /> : <VolumeX size={10} />}
-    {soundEnabled ? 'Sound' : 'Mute'}
-  </button>
-</div>
+> ✅ `VideoModelEngineSettings` đã **tích hợp sẵn** Duration pill + Sound toggle bên trong — **không cần thêm row bên ngoài** như pattern cũ.
+
+#### 4. Dùng trong generate payload
+
+```tsx
+const payload: VideoJobRequest = {
+  type: 'text-to-video',
+  input: { images: [null, null] },
+  config: { duration: parseInt(videoDuration), aspectRatio: videoRatio, resolution: videoResolution },
+  engine: {
+    provider: videoEngine as any,
+    model: videoSelectedModelObj?.modelKey as any,
+  },
+  enginePayload: {
+    prompt: finalPrompt,
+    privacy: 'PRIVATE',
+    projectId: 'default',
+    mode: videoSelectedMode as any,
+    translateToEn: true,
+  },
+};
 ```
 
 ---
@@ -1408,22 +1449,36 @@ const videoUnitCost = useMemo(() => getUnitCost(videoSelectedModelObj, videoReso
 ### C. Vị trí trong Sidebar Layout
 
 ```
-SIDEBAR
+SIDEBAR — Tạo ảnh
 │ Product-specific picker (platform/format/etc.)
 │ ─── INDUSTRY PICKER ───
-│ ─── ✅ ModelEngineSettings (component dùng chung) ───
-│     SERVER pills (Server 1 / Server 2 / Grok) — live status
+│ ─── ✅ ModelEngineSettings (image component) ───
+│     SERVER pills — live status
 │     MODEL family dropdown + list modal
 │     CHẾ ĐỘ pills
 │     TỶ LỆ pills + P.GIẢI pills
 │     # SL selector
-│ ─── (video only) Duration button + Sound toggle ───
 │ ─── AI SUGGEST PANEL ───
-│ Prompt textarea
-│ AI Boost button
+│ Prompt textarea + AI Boost button
 │ Reference images
 │ ─────────────────────────────
-│ Cost badge (selectedModelCost × quantity CR) + Generate button
+│ Cost badge + Generate button
+
+SIDEBAR — Tạo video
+│ Product-specific picker
+│ ─── INDUSTRY PICKER ───
+│ ─── ✅ VideoModelEngineSettings (video component) ───
+│     SERVER pills — live status
+│     MODEL family dropdown + list modal
+│     PHIÊN BẢN (variants) pills
+│     CHẾ ĐỘ pills
+│     TỶ LỆ + P.GIẢI + THỜI LƯỢNG + ÂM THANH  ← đã tích hợp sẵn
+│     # SL selector
+│ ─── AI SUGGEST PANEL ───
+│ Prompt textarea + AI Boost button
+│ Reference images
+│ ─────────────────────────────
+│ Cost badge + Generate button
 ```
 
 ---
@@ -1432,11 +1487,13 @@ SIDEBAR
 
 | ❌ Sai | ✅ Đúng |
 |--------|---------|
-| Tự build Server/Model/Mode/Res/SL UI thủ công | Dùng `<ModelEngineSettings>` component |
-| `const CREDIT_COST = 120` hardcode | Dùng `selectedModelCost` từ `useImageModels` hook |
-| `const MODELS = ['Nano Banana', ...]` hardcode | `useImageModels(engine)` → `availableModels` từ API |
-| Không pass `familyModels={familyModels.map(m => m.raw \|\| m)}` | Luôn map `.raw` — ModelEngineSettings cần raw PricingModel |
-| Build Video settings UI từ đầu | Dùng `ModelEngineSettings` + Duration/Sound row (xem mẫu RealEstateVisualWorkspace) |
+| Tự build Server/Model/Mode/Res/SL UI thủ công | Dùng `<ModelEngineSettings>` (ảnh) hoặc `<VideoModelEngineSettings>` (video) |
+| Dùng `ModelEngineSettings` cho video workspace | Dùng `VideoModelEngineSettings` từ `components/video-generator/` |
+| Thêm Duration/Sound row bên ngoài `VideoModelEngineSettings` | Duration + Sound đã tích hợp sẵn bên trong component — không cần thêm |
+| `const CREDIT_COST = 120` hardcode | Dùng `selectedModelCost` từ `useImageModels` hook (ảnh) / `videoUnitCost` (video) |
+| `const MODELS = ['Nano Banana', ...]` hardcode | Fetch từ `pricingApi.getPricing({ tool: 'video', engine })` → `availableModels` |
+| Không pass `familyModels={familyModels.map(m => m.raw \|\| m)}` | Luôn map `.raw` — `ModelEngineSettings` (image) cần raw PricingModel |
+| Build Video settings UI từ đầu | Dùng `VideoModelEngineSettings` (xem canonical `AIVideoGeneratorWorkspace`) |
 | `generateDemoImage` / `generateDemoVideo` từ `services/gemini` | Dùng `imagesApi.createJob` + poll / `videosApi.createJob` + poll |
 | `useState<string\|null>(null)` — 1 result duy nhất | `useState<REResult[]>([])` — task list với status per-item |
 | Không hoàn credits khi job thất bại | `addCredits(cost)` + set `isRefunded: true` khi `status === 'error'` |

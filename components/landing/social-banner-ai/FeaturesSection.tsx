@@ -25,36 +25,42 @@ const FEATURES = [
     title: 'Brand Color Injection',
     desc: 'Nhập màu HEX thương hiệu, upload logo — AI tự tích hợp vào banner một cách hài hòa.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/310a3d27-c86d-48a7-5a91-dbd066cf4500/public',
   },
   {
     icon: Type,
     title: 'Smart Text Layout',
     desc: 'AI tự cân bằng font size, contrast và khoảng cách để text luôn đọc được trên mọi nền.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/e8098564-a7d0-4bad-ac22-d8ccd5467700/public',
   },
   {
     icon: Download,
     title: 'Batch Export',
     desc: 'Xuất tất cả formats cùng lúc. PNG hoặc JPG 4K — sẵn sàng đăng lên mạng xã hội ngay lập tức.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/2fa87813-2a58-49d0-5de6-1ab7956b3300/public',
   },
   {
     icon: RefreshCw,
     title: 'Auto Refund',
     desc: 'Nếu AI trả lỗi, credits được hoàn tự động. Retry 1-click không mất thêm phí.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/75cb3d42-fea4-47e6-4542-0fa967072200/public',
   },
   {
     icon: Zap,
     title: 'Tốc độ 30 giây',
     desc: 'Pipeline tối ưu — từ prompt đến banner hoàn chỉnh trong trung bình 30 giây.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/3a75d82d-bbc2-4ea0-bef5-988828b36100/public',
   },
   {
     icon: ShieldCheck,
     title: 'Bảo mật tài sản',
     desc: 'Mọi banner tạo ra chỉ bạn mới thấy. Không dùng dữ liệu thương hiệu để train model.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/ea749dd8-508d-4afb-9e95-7b5e71235d00/public',
   },
 ];
 
@@ -75,10 +81,10 @@ export const FeaturesSection: React.FC = () => (
             key={f.title}
             className={`overflow-hidden bg-black/[0.01] dark:bg-white/[0.015] ${f.featured ? 'col-span-2' : 'col-span-1'}`}
           >
-            {f.featured && f.thumbnail && (
-              <div className="relative w-full h-24 overflow-hidden">
+            {f.thumbnail && (
+              <div className={`relative w-full overflow-hidden ${f.featured ? 'h-28' : 'h-20'}`}>
                 <img src={f.thumbnail} alt={f.title} className="w-full h-full object-cover" loading="lazy" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
               </div>
             )}
             <div className="p-5">
