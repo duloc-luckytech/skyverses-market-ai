@@ -207,8 +207,52 @@ node gen-<slug>-images.mjs
    Caption theme: mô tả ngắn hiển thị trên ảnh showcase
    → Dùng cho ShowcaseSection + FeaturesSection thumbUrl
 
-6. SEO:
-   Title tag + meta description phù hợp tìm kiếm tiếng Việt
+6. SEO — Điền đầy đủ 5 trường sau (dùng thẳng vào `usePageMeta` ở STEP 5):
+
+   **a. title** — Công thức: `{Tính năng chính} — {Keyword tìm kiếm} | Skyverses`
+      - Độ dài: 50-60 ký tự (Google cắt sau ~60 ký tự)
+      - Bắt đầu bằng từ khoá người Việt thực sự tìm kiếm
+      - VD: `Tạo Banner AI — Thiết kế mạng xã hội tự động | Skyverses`
+      - VD: `Xóa Nền Ảnh AI — Background Removal miễn phí | Skyverses`
+
+   **b. description** — Công thức: `{Verb mạnh} + {tính năng 1} + {tính năng 2}. {Use case cụ thể}. {CTA ngắn}.`
+      - Độ dài: 140-160 ký tự (Google cắt sau ~160 ký tự)
+      - Bao gồm ít nhất 1 con số cụ thể (VD: "8K", "60s", "14 định dạng")
+      - Tránh từ chung chung như "công cụ AI tốt nhất" — dùng lợi ích cụ thể
+      - VD: `Tạo banner Facebook, Instagram, TikTok chỉ trong 60 giây bằng AI. Hỗ trợ 14+ định dạng, không cần kỹ năng thiết kế. Thử miễn phí ngay.`
+
+   **c. keywords** — 6-10 từ khoá, phân cách bằng dấu phẩy
+      - 3-4 từ khoá chính (tiếng Việt, người thực sự tìm)
+      - 2-3 từ khoá dài (long-tail, intent cao)
+      - 1-2 từ khoá thương hiệu
+      - VD: `tạo banner AI, thiết kế mạng xã hội AI, social media banner tự động, AI banner generator, Skyverses banner AI`
+
+   **d. canonical** — `/product/{slug}` (khớp với route trong App.tsx)
+
+   **e. jsonLd** — SoftwareApplication schema (bắt buộc nếu product tạo output ảnh/video):
+   ```json
+   {
+     "@type": "SoftwareApplication",
+     "name": "{Tên product tiếng Anh}",
+     "applicationCategory": "MultimediaApplication",
+     "operatingSystem": "Web",
+     "offers": {
+       "@type": "Offer",
+       "price": "{priceCredits}",
+       "priceCurrency": "CREDITS"
+     },
+     "description": "{description tiếng Anh ngắn}",
+     "url": "https://ai.skyverses.com/product/{slug}",
+     "provider": {
+       "@type": "Organization",
+       "name": "Skyverses",
+       "url": "https://ai.skyverses.com"
+     }
+   }
+   ```
+   → Dùng `"MultimediaApplication"` cho image/video product
+   → Dùng `"BusinessApplication"` cho workflow/automation product
+   → Dùng `"UtilitiesApplication"` cho utility tools (upscale, remove bg, convert)
 
 7. WORKSPACE STYLE PRESETS (6 presets):
    Phù hợp với từng product — thay DEFAULT_STYLES trong AISuggestPanel
@@ -765,13 +809,38 @@ import { FinalCTA } from '../../components/landing/your-slug/FinalCTA';
 import { usePageMeta } from '../../hooks/usePageMeta';
 
 const YourProductAI = () => {
+  // ─── SEO (từ STEP 3.5 câu 6) ─────────────────────────────────────────────
+  // Quy tắc:
+  //   title       → 50-60 ký tự, bắt đầu bằng keyword Việt, kết thúc "| Skyverses"
+  //   description → 140-160 ký tự, có số liệu cụ thể + CTA ngắn
+  //   keywords    → 6-10 từ khoá thực tế, gồm long-tail
+  //   canonical   → '/product/{slug}' khớp route App.tsx
+  //   jsonLd      → SoftwareApplication schema (bắt buộc cho image/video product)
+  // ─────────────────────────────────────────────────────────────────────────
   usePageMeta({
-    title: '...',
-    description: '...',
-    keywords: '...',
-    canonical: '/product/slug',
-    // jsonLd tuỳ chọn — thêm nếu product có image/video output để boost SEO:
-    // jsonLd: { '@type': 'SoftwareApplication', name: '...', applicationCategory: 'MultimediaApplication' }
+    title: '{Tính năng chính} — {Keyword Việt} | Skyverses',
+    description: '{Verb mạnh} + {tính năng}. {Con số cụ thể}. {CTA ngắn}.',
+    keywords: '{keyword-1}, {keyword-2}, {long-tail-1}, {long-tail-2}, Skyverses {product-name}',
+    canonical: '/product/{slug}',
+    ogImage: 'https://ai.skyverses.com/assets/seo/seo-og-thumbnail-v2.png', // thay bằng CDN ảnh product từ STEP 3 nếu có
+    jsonLd: {
+      '@type': 'SoftwareApplication',          // MultimediaApplication | BusinessApplication | UtilitiesApplication
+      name: '{Product Name EN}',
+      applicationCategory: 'MultimediaApplication',
+      operatingSystem: 'Web',
+      offers: {
+        '@type': 'Offer',
+        price: '{priceCredits}',               // số credits, VD: 120
+        priceCurrency: 'CREDITS',
+      },
+      description: '{Short description EN}',
+      url: 'https://ai.skyverses.com/product/{slug}',
+      provider: {
+        '@type': 'Organization',
+        name: 'Skyverses',
+        url: 'https://ai.skyverses.com',
+      },
+    },
   });
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
@@ -813,6 +882,121 @@ export default YourProductAI;
 
 > **Reference:** `components/SocialBannerWorkspace.tsx` — đây là canonical workspace MỚI NHẤT.
 > (PosterStudioWorkspace là reference cũ — chưa có AISuggestPanel)
+
+---
+
+### ⚠️ RULE: Generate phải dùng Job+Poll — KHÔNG dùng `generateDemoImage` / `generateDemoVideo`
+
+> `generateDemoImage` và `generateDemoVideo` từ `services/gemini` là **demo/mock service** — **KHÔNG dùng trong workspace production**.
+
+#### Image generation → `imagesApi.createJob` + `pollImageJobStatus`
+```ts
+import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
+
+// 1. Gọi createJob
+const payload: ImageJobRequest = {
+  type: references.length > 0 ? 'image_to_image' : 'text_to_image',
+  input: { prompt: finalPrompt, images: references.length > 0 ? references : undefined },
+  config: { width: 1024, height: 1024, aspectRatio: selectedRatio, seed: 0, style: 'cinematic' },
+  engine: { provider: selectedEngine as 'gommo' | 'fxlab', model: selectedModel.raw.modelKey },
+  enginePayload: { prompt: finalPrompt, privacy: 'PRIVATE', projectId: 'default', mode: selectedMode },
+};
+const apiRes = await imagesApi.createJob(payload);
+
+// 2. Nếu thành công → trừ credits + bắt đầu poll
+if (apiRes.success && apiRes.data.jobId) {
+  useCredits(unitCost);
+  pollImageJob(apiRes.data.jobId, taskId, unitCost);
+}
+
+// 3. Poll mỗi 5s (retry 10s nếu lỗi mạng)
+const pollImageJob = async (jobId, taskId, cost) => {
+  const res = await imagesApi.getJobStatus(jobId);
+  if (res.data?.status === 'error' || res.data?.status === 'failed') {
+    addCredits(cost);           // ← hoàn credits khi job fail
+    markTaskError(taskId);
+    return;
+  }
+  if (res.data?.status === 'done' && res.data.result?.images?.length) {
+    markTaskDone(taskId, res.data.result.images[0]);
+    refreshUserInfo();
+    return;
+  }
+  setTimeout(() => pollImageJob(jobId, taskId, cost), 5000);    // processing → retry
+  // catch: setTimeout(..., 10000)                               // network error → retry chậm hơn
+};
+```
+
+#### Video generation → `videosApi.createJob` + `pollVideoJobStatus`
+```ts
+import { videosApi, VideoJobRequest, VideoJobResponse } from '../apis/videos';
+
+const payload: VideoJobRequest = {
+  type: 'text-to-video',           // hoặc 'image-to-video' nếu có reference
+  input: { images: [null, null] },
+  config: { duration: parseInt(duration), aspectRatio: ratio, resolution },
+  engine: { provider: selectedEngine as any, model: selectedModelObj.modelKey as any },
+  enginePayload: { accessToken: 'YOUR_GOMMO_ACCESS_TOKEN', prompt: finalPrompt,
+                   privacy: 'PRIVATE', translateToEn: true, projectId: 'default', mode: selectedMode as any },
+};
+const res = await videosApi.createJob(payload);
+const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
+
+if (isSuccess && res.data.jobId) {
+  useCredits(unitCost);
+  pollVideoJob(res.data.jobId, taskId, unitCost);
+}
+
+// poll: kiểm tra res.data.result?.videoUrl khi status === 'done'
+// error: addCredits(cost) + refund
+// network error: setTimeout retry 10s
+```
+
+#### Results state pattern — danh sách tasks thay vì 1 result duy nhất
+
+> **KHÔNG dùng** `const [result, setResult] = useState<string | null>(null)`
+> **PHẢI dùng** mảng tasks — mỗi task có status riêng để render card list bên phải viewport
+
+```ts
+interface REResult {
+  id: string;
+  url: string | null;
+  prompt: string;
+  mode: 'image' | 'video';      // nếu workspace multi-mode
+  status: 'processing' | 'done' | 'error';
+  cost: number;
+  isRefunded?: boolean;
+  logs?: string[];              // optional — dùng để debug job pipeline
+}
+
+const [results, setResults] = useState<REResult[]>([]);
+const [activeResultId, setActiveResultId] = useState<string | null>(null);
+
+// Viewport chính hiển thị activeResult:
+const activeResult = results.find(r => r.id === activeResultId) || results[0] || null;
+
+// Right rail (panel bên phải viewport) = task list + history
+// - Tác vụ (results): mỗi card click → setActiveResultId(task.id)
+// - Lịch sử (sessions localStorage): xem lại kết quả cũ
+```
+
+#### Layout: Right rail task list + history (bắt buộc với workspace multi-output)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  SIDEBAR (left, 380px)    │  VIEWPORT (center, flex-1)  │ TASKS │
+│  - Pickers                │  - Active result preview    │ (220px)│
+│  - Engine settings        │    (image / video / skel.)  │ Tasks  │
+│  - AISuggestPanel         │                             │ tab +  │
+│  - Prompt textarea        │                             │ History│
+│  - Generate button        │                             │ tab    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **Reference implementation:** `components/RealEstateVisualWorkspace.tsx`
+> Copy pattern `pollImageJob` + `pollVideoJob` + `REResult[]` state từ file này.
+
+---
 > Copy structure SocialBannerWorkspace, chỉ thay:
 > 1. Phần picker (Platform → Category/Format/etc.) phù hợp với product
 > 2. INDUSTRIES list — giữ 8-12 items phù hợp nhất
@@ -1352,6 +1536,10 @@ SIDEBAR
 | Bỏ qua `isModeBased` detection | Nếu `isModeBased = true` → ẩn duration selector, dùng mode làm key pricing |
 | Tự build family grouping logic | Copy `extractImageFamily` / `extractFamilyName` từ canonical workspace |
 | Ratio/Duration là select dropdown | Dùng **cycle button** (như canonical video workspace) — nhỏ gọn hơn |
+| Dùng `generateDemoImage` / `generateDemoVideo` từ `services/gemini` | Dùng `imagesApi.createJob` + poll / `videosApi.createJob` + poll |
+| `const [result, setResult] = useState<string\|null>(null)` — 1 result duy nhất | `const [results, setResults] = useState<REResult[]>([])` — task list với status per-item |
+| Không hoàn credits khi job thất bại | Khi `status === 'error'`: gọi `addCredits(cost)` + set `isRefunded: true` |
+| Viewport chỉ hiển thị 1 ảnh, không có task list | Right rail: tab "Tác vụ" (results list) + tab "Lịch sử" (sessions localStorage) |
 | Không sync selectedModel khi family đổi | Luôn có `useEffect([selectedFamily])` auto-select model đầu tiên của family |
 | `engines` array tự hardcode | `engines` lấy từ hook — xem canonical workspace để biết tên biến chính xác |
 | Dùng `selectedFamily` (string) vào `currentUnitCost` | Phải resolve `selectedFamily` → `selectedModel` object trước khi tính cost |

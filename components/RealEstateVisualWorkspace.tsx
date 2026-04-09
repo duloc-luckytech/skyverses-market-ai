@@ -10,7 +10,7 @@ import {
   Navigation, Wind, Film, Clock,
   CheckCircle2,
 } from 'lucide-react';
-import { generateDemoImage, generateDemoText, generateDemoVideo } from '../services/gemini';
+import { generateDemoText } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
@@ -18,6 +18,8 @@ import { Link } from 'react-router-dom';
 import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
 import { useImageModels, extractImageFamily } from '../hooks/useImageModels';
 import { pricingApi, PricingModel } from '../apis/pricing';
+import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
+import { videosApi, VideoJobRequest, VideoJobResponse } from '../apis/videos';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -120,6 +122,20 @@ interface RESession {
   industry?: string;
 }
 
+interface REResult {
+  id: string;
+  url: string | null;
+  prompt: string;
+  mode: 'image' | 'video';
+  status: 'processing' | 'done' | 'error';
+  cost: number;
+  propertyType: string;
+  industry: string;
+  createdAt: string;
+  isRefunded?: boolean;
+  logs?: string[];
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const extractFamilyName = (name: string): string => {
@@ -144,7 +160,7 @@ const getUnitCost = (model: PricingModel | null, resKey: string, durStr: string,
 
 const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { theme } = useTheme();
-  const { credits, useCredits, isAuthenticated, login } = useAuth();
+  const { credits, useCredits, addCredits, refreshUserInfo, isAuthenticated, login } = useAuth();
   const { showToast } = useToast();
 
   // ── Top-level UI state ────────────────────────────────────────────────────
@@ -156,7 +172,6 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [status, setStatus]               = useState('Sẵn sàng');
   const [isGenerating, setIsGenerating]   = useState(false);
   const [isEnhancing, setIsEnhancing]     = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
 
   // ── Shared pickers ────────────────────────────────────────────────────────
   const [activeProperty, setActiveProperty] = useState('apartment');
@@ -166,7 +181,10 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [prompt, setPrompt]               = useState('');
   const [promptHistory, setPromptHistory] = useState<string[]>([]);
   const [showHistory, setShowHistory]     = useState(false);
-  const [result, setResult]               = useState<string | null>(null);
+
+  // ── Results (task list — job+poll) ────────────────────────────────────────
+  const [results, setResults]             = useState<REResult[]>([]);
+  const [activeResultId, setActiveResultId] = useState<string | null>(null);
 
   // S2: AI Enhance diff
   const [enhancedPreview, setEnhancedPreview] = useState<string | null>(null);
@@ -363,7 +381,12 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     });
   };
 
-  // ── Save session helper ───────────────────────────────────────────────────
+  // ── Log helper ───────────────────────────────────────────────────────────
+  const addLog = (taskId: string, msg: string) => {
+    setResults(prev => prev.map(r => r.id === taskId ? { ...r, logs: [...(r.logs || []), msg] } : r));
+  };
+
+  // ── Save to sessions history ──────────────────────────────────────────────
   const saveSession = (url: string, mode: WorkspaceMode, promptText: string) => {
     const newSession: RESession = {
       id: Date.now().toString(),
@@ -377,11 +400,88 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     const updated = [newSession, ...sessions];
     setSessions(updated);
     localStorage.setItem(STORAGE_KEY + '_sessions', JSON.stringify(updated));
-
-    // Save prompt history (max 10)
     const newHistory = [promptText, ...promptHistory.filter(p => p !== promptText)].slice(0, 10);
     setPromptHistory(newHistory);
     localStorage.setItem(STORAGE_KEY + '_prompts', JSON.stringify(newHistory));
+  };
+
+  // ── POLL IMAGE ────────────────────────────────────────────────────────────
+  const pollImageJob = async (jobId: string, taskId: string, cost: number) => {
+    try {
+      addLog(taskId, `[POLLING] Checking image job status...`);
+      const res: ImageJobResponse = await imagesApi.getJobStatus(jobId);
+      const isError = res.data?.status === 'error' || res.data?.status === 'failed';
+
+      if (isError) {
+        const errMsg = (res.data as any)?.error?.message || 'Inference failed';
+        addLog(taskId, `[ERROR] ${errMsg}`);
+        setResults(prev => prev.map(r => {
+          if (r.id === taskId && !r.isRefunded) {
+            addCredits(cost);
+            return { ...r, status: 'error', isRefunded: true };
+          }
+          return r.id === taskId ? { ...r, status: 'error' } : r;
+        }));
+        showToast('Tạo ảnh thất bại — credits đã được hoàn.', 'warning');
+        return;
+      }
+
+      if (res.data?.status === 'done' && res.data.result?.images?.length) {
+        addLog(taskId, `[SUCCESS] Image delivered to CDN.`);
+        const imageUrl = res.data.result.images[0];
+        setResults(prev => prev.map(r => r.id === taskId ? { ...r, url: imageUrl, status: 'done' } : r));
+        setActiveResultId(taskId);
+        saveSession(imageUrl, 'image', prompt);
+        refreshUserInfo();
+        showToast('Ảnh BĐS đã được tạo thành công!', 'success');
+      } else {
+        addLog(taskId, `[STATUS] ${res.data?.status?.toUpperCase() || 'PROCESSING'}`);
+        setTimeout(() => pollImageJob(jobId, taskId, cost), 5000);
+      }
+    } catch {
+      addLog(taskId, `[NETWORK] Retrying...`);
+      setTimeout(() => pollImageJob(jobId, taskId, cost), 10000);
+    }
+  };
+
+  // ── POLL VIDEO ────────────────────────────────────────────────────────────
+  const pollVideoJob = async (jobId: string, taskId: string, cost: number) => {
+    try {
+      addLog(taskId, `[POLLING] Checking video job status...`);
+      const res: VideoJobResponse = await videosApi.getJobStatus(jobId);
+      const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
+      const jobStatus = res.data?.status?.toLowerCase();
+      const errMsg = res.data?.error?.message || res.data?.error?.userMessage || '';
+
+      if (!isSuccess || jobStatus === 'failed' || jobStatus === 'error') {
+        addLog(taskId, `[ERROR] ${errMsg || 'Backend error'}`);
+        setResults(prev => prev.map(r => {
+          if (r.id === taskId && !r.isRefunded) {
+            addCredits(cost);
+            return { ...r, status: 'error', isRefunded: true };
+          }
+          return r.id === taskId ? { ...r, status: 'error' } : r;
+        }));
+        showToast('Tạo video thất bại — credits đã được hoàn.', 'warning');
+        return;
+      }
+
+      if (jobStatus === 'done' && res.data.result?.videoUrl) {
+        addLog(taskId, `[SUCCESS] Video delivered to CDN.`);
+        const videoUrl = res.data.result.videoUrl;
+        setResults(prev => prev.map(r => r.id === taskId ? { ...r, url: videoUrl, status: 'done' } : r));
+        setActiveResultId(taskId);
+        saveSession(videoUrl, 'video', prompt);
+        refreshUserInfo();
+        showToast('Video BĐS đã được tạo thành công!', 'success');
+      } else {
+        addLog(taskId, `[STATUS] ${jobStatus?.toUpperCase() || 'PROCESSING'}`);
+        setTimeout(() => pollVideoJob(jobId, taskId, cost), 5000);
+      }
+    } catch {
+      addLog(taskId, `[NETWORK] Retrying...`);
+      setTimeout(() => pollVideoJob(jobId, taskId, cost), 10000);
+    }
   };
 
   // ── Generate IMAGE ────────────────────────────────────────────────────────
@@ -390,36 +490,57 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     if (!isAuthenticated) { login(); return; }
     if (credits < imgUnitCost * imgQuantity) { setShowLowCreditAlert(true); return; }
 
-    const controller = new AbortController();
-    abortRef.current = controller;
+    const tasks = Array.from({ length: imgQuantity }, (_, i) => ({
+      id: `re-img-${Date.now()}-${i}`,
+      url: null as string | null,
+      prompt,
+      mode: 'image' as WorkspaceMode,
+      status: 'processing' as const,
+      cost: imgUnitCost,
+      propertyType: activeProperty,
+      industry: activeIndustry,
+      createdAt: new Date().toLocaleString('vi-VN'),
+      logs: [`[SYSTEM] Pipeline initialized.`],
+    }));
+
+    setResults(prev => [...tasks, ...prev]);
+    setActiveResultId(tasks[0].id);
     setIsGenerating(true);
     setStatus('Đang kết nối AI...');
+
     try {
-      const stylePrefix = IMAGE_STYLES.find(s => s.label === activeStyle)?.promptPrefix || '';
-      const finalPrompt = `${stylePrefix}${prompt} — ${propertyLabel} ${imageTypeLabel}, real estate photography, Vietnam market [${industryLabel}]`.trim();
+      await Promise.all(tasks.map(async task => {
+        const stylePrefix = IMAGE_STYLES.find(s => s.label === activeStyle)?.promptPrefix || '';
+        const finalPrompt = `${stylePrefix}${prompt} — ${propertyLabel} ${imageTypeLabel}, real estate photography, Vietnam market [${industryLabel}]`.trim();
 
-      setStatus('AI đang tạo ảnh BĐS...');
-      const imageUrl = await generateDemoImage(finalPrompt, references);
+        const payload: ImageJobRequest = {
+          type: references.length > 0 ? 'image_to_image' : 'text_to_image',
+          input: { prompt: finalPrompt, images: references.length > 0 ? references : undefined },
+          config: { width: 1024, height: 1024, aspectRatio: imgSelectedRatio, seed: 0, style: 'cinematic' },
+          engine: { provider: imgEngine as 'gommo' | 'fxlab', model: imgSelectedModel?.raw?.modelKey || '' },
+          enginePayload: { prompt: finalPrompt, privacy: 'PRIVATE', projectId: 'default', mode: imgSelectedMode },
+        };
 
-      if (controller.signal.aborted) return;
+        addLog(task.id, `[NODE_INIT] Provisioning GPU cluster...`);
+        setStatus('AI đang tạo ảnh BĐS...');
+        const apiRes = await imagesApi.createJob(payload);
 
-      if (imageUrl) {
-        useCredits(imgUnitCost * imgQuantity);
-        setResult(imageUrl);
-        saveSession(imageUrl, 'image', prompt);
-        setStatus('Hoàn tất ✓');
-        showToast('Ảnh BĐS đã được tạo thành công!', 'success');
-      } else {
-        setStatus('Lỗi tạo ảnh');
-        showToast('Không tạo được ảnh — credits chưa bị trừ, thử lại nhé!', 'warning');
-      }
-    } catch (err) {
-      if (controller.signal.aborted) return;
-      setStatus('Lỗi hệ thống');
+        if (apiRes.success && apiRes.data.jobId) {
+          const serverJobId = apiRes.data.jobId;
+          addLog(task.id, `[API_READY] Job ID: ${serverJobId}`);
+          setResults(prev => prev.map(r => r.id === task.id ? { ...r, id: serverJobId } : r));
+          useCredits(imgUnitCost);
+          pollImageJob(serverJobId, serverJobId, imgUnitCost);
+        } else {
+          addLog(task.id, `[ERROR] Job creation failed: ${apiRes.message || 'Unknown'}`);
+          setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
+        }
+      }));
+    } catch {
       showToast('Lỗi hệ thống — credits chưa bị trừ.', 'error');
     } finally {
-      if (!controller.signal.aborted) setIsGenerating(false);
-      abortRef.current = null;
+      setIsGenerating(false);
+      setStatus('Sẵn sàng');
     }
   };
 
@@ -429,43 +550,69 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     if (!isAuthenticated) { login(); return; }
     if (credits < videoUnitCost * videoQuantity) { setShowLowCreditAlert(true); return; }
 
-    const controller = new AbortController();
-    abortRef.current = controller;
+    const tasks = Array.from({ length: videoQuantity }, (_, i) => ({
+      id: `re-vid-${Date.now()}-${i}`,
+      url: null as string | null,
+      prompt,
+      mode: 'video' as WorkspaceMode,
+      status: 'processing' as const,
+      cost: videoUnitCost,
+      propertyType: activeProperty,
+      industry: activeIndustry,
+      createdAt: new Date().toLocaleString('vi-VN'),
+      logs: [`[SYSTEM] Pipeline initialized.`],
+    }));
+
+    setResults(prev => [...tasks, ...prev]);
+    setActiveResultId(tasks[0].id);
     setIsGenerating(true);
     setStatus('Đang kết nối AI...');
+
     try {
-      const videoStylePrefix = VIDEO_STYLES.find(s => s.label === activeVideoStyle)?.promptPrefix || '';
-      const finalVideoPrompt = `${videoStylePrefix}${prompt} — ${propertyLabel} ${videoTypeLabel}, Vietnam real estate [${industryLabel}]`.trim();
+      await Promise.all(tasks.map(async task => {
+        const videoStylePrefix = VIDEO_STYLES.find(s => s.label === activeVideoStyle)?.promptPrefix || '';
+        const finalPrompt = `${videoStylePrefix}${prompt} — ${propertyLabel} ${videoTypeLabel}, Vietnam real estate [${industryLabel}]`.trim();
 
-      setStatus('AI đang tạo video BĐS...');
-      const videoUrl = await generateDemoVideo({
-        prompt: finalVideoPrompt,
-        isUltra: videoSelectedModelObj?.modelKey?.includes('ultra') || videoSelectedModelObj?.name?.includes('PRO') || false,
-        duration: videoDuration,
-        resolution: videoResolution as '720p' | '1080p',
-        aspectRatio: videoRatio as '16:9' | '9:16',
-        references: references.length > 0 ? [references[0]] : undefined,
-      });
+        const payload: VideoJobRequest = {
+          type: 'text-to-video',
+          input: { images: [null, null] },
+          config: {
+            duration: parseInt(videoDuration),
+            aspectRatio: videoRatio,
+            resolution: videoResolution,
+          },
+          engine: { provider: videoEngine as any, model: videoSelectedModelObj?.modelKey as any },
+          enginePayload: {
+            accessToken: 'YOUR_GOMMO_ACCESS_TOKEN',
+            prompt: finalPrompt,
+            privacy: 'PRIVATE',
+            translateToEn: true,
+            projectId: 'default',
+            mode: videoSelectedMode as any,
+          },
+        };
 
-      if (controller.signal.aborted) return;
+        addLog(task.id, `[NODE_INIT] Provisioning GPU cluster...`);
+        setStatus('AI đang tạo video BĐS...');
+        const res = await videosApi.createJob(payload);
+        const isSuccess = res.success === true || res.status?.toLowerCase() === 'success';
 
-      if (videoUrl) {
-        useCredits(videoUnitCost * videoQuantity);
-        setResult(videoUrl);
-        saveSession(videoUrl, 'video', prompt);
-        setStatus('Hoàn tất ✓');
-        showToast('Video BĐS đã được tạo thành công!', 'success');
-      } else {
-        setStatus('Lỗi tạo video');
-        showToast('Không tạo được video — credits chưa bị trừ, thử lại nhé!', 'warning');
-      }
-    } catch (err) {
-      if (controller.signal.aborted) return;
-      setStatus('Lỗi hệ thống');
+        if (isSuccess && res.data.jobId) {
+          const serverJobId = res.data.jobId;
+          addLog(task.id, `[API_READY] Job ID: ${serverJobId}`);
+          setResults(prev => prev.map(r => r.id === task.id ? { ...r, id: serverJobId } : r));
+          useCredits(videoUnitCost);
+          pollVideoJob(serverJobId, serverJobId, videoUnitCost);
+        } else {
+          addLog(task.id, `[ERROR] Job creation failed`);
+          setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
+        }
+      }));
+    } catch {
       showToast('Lỗi hệ thống — credits chưa bị trừ.', 'error');
     } finally {
-      if (!controller.signal.aborted) setIsGenerating(false);
-      abortRef.current = null;
+      setIsGenerating(false);
+      setStatus('Sẵn sàng');
     }
   };
 
@@ -481,8 +628,17 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     localStorage.setItem(STORAGE_KEY + '_sessions', JSON.stringify(updated));
   };
 
-  const currentUnitCost = workspaceMode === 'image' ? imgUnitCost : videoUnitCost;
+  const deleteResult = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setResults(prev => prev.filter(r => r.id !== id));
+    if (activeResultId === id) setActiveResultId(null);
+  };
+
+  // Derived: active result to show in viewport
+  const activeResult = results.find(r => r.id === activeResultId) || results[0] || null;
+  const processingCount = results.filter(r => r.status === 'processing').length;
   const currentQuantity = workspaceMode === 'image' ? imgQuantity : videoQuantity;
+  const currentUnitCost = workspaceMode === 'image' ? imgUnitCost : videoUnitCost;
 
   // ── Status dot color ──────────────────────────────────────────────────────
   const statusDotColor = isGenerating
@@ -988,22 +1144,16 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
       {/* ── TOP NAV (h-14) ── */}
       <div className="h-14 bg-white dark:bg-[#0a0a0a] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-4 md:px-6 shrink-0 z-[100] transition-colors gap-3">
-        {/* Left: view toggle + title */}
+        {/* Left: title + processing indicator */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-full border border-slate-200 dark:border-white/10">
-            {(['current', 'library'] as const).map(m => (
-              <button
-                key={m}
-                onClick={() => setViewMode(m)}
-                className={`px-3 md:px-5 py-1.5 text-[10px] md:text-[11px] font-bold rounded-full transition-all ${viewMode === m ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
-              >
-                {m === 'current' ? 'Phiên hiện tại' : `Thư viện (${sessions.length})`}
-              </button>
-            ))}
-          </div>
-          <span className="hidden sm:block text-[12px] font-bold text-slate-700 dark:text-white/80 whitespace-nowrap">
+          <span className="text-[12px] font-bold text-slate-700 dark:text-white/80 whitespace-nowrap">
             🏡 RealEstate Visual AI
           </span>
+          {processingCount > 0 && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[9px] font-bold">
+              <Loader2 size={9} className="animate-spin" /> {processingCount} đang tạo
+            </span>
+          )}
         </div>
 
         {/* Right: mode toggle + credits + close */}
@@ -1013,7 +1163,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             {modeOptions.map(opt => (
               <button
                 key={opt.id}
-                onClick={() => { setWorkspaceMode(opt.id); setResult(null); setStatus('Sẵn sàng'); }}
+                onClick={() => { setWorkspaceMode(opt.id); setActiveResultId(null); setStatus('Sẵn sàng'); }}
                 title={opt.desc}
                 className={`px-2.5 md:px-4 py-1.5 text-[10px] md:text-[11px] font-bold rounded-full transition-all ${
                   workspaceMode === opt.id
@@ -1063,7 +1213,6 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 {isGenerating && (
                   <button
                     onClick={() => {
-                      abortRef.current?.abort();
                       setIsGenerating(false);
                       setStatus('Đã hủy');
                     }}
@@ -1095,18 +1244,159 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         </div>
 
         {/* ── MAIN VIEWPORT ── */}
-        <div className="flex-1 flex flex-col bg-[#f0f2f5] dark:bg-[#060608] overflow-hidden">
+        <div className="flex-1 flex overflow-hidden bg-[#f0f2f5] dark:bg-[#060608]">
 
-          {viewMode === 'current' ? (
+          {/* ── Task list / history panel (right rail) ── */}
+          <div className="hidden lg:flex w-[220px] shrink-0 flex-col bg-white dark:bg-[#0d0d0f] border-l border-slate-200 dark:border-white/5 overflow-hidden">
+            <div className="flex items-center gap-1 p-2 border-b border-slate-100 dark:border-white/5 shrink-0">
+              {(['current', 'library'] as const).map(m => (
+                <button
+                  key={m}
+                  onClick={() => setViewMode(m)}
+                  className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all ${viewMode === m ? 'bg-brand-blue/10 text-brand-blue' : 'text-slate-400 hover:text-slate-700 dark:hover:text-white'}`}
+                >
+                  {m === 'current' ? `Tác vụ${processingCount > 0 ? ` (${processingCount}⟳)` : results.length > 0 ? ` (${results.length})` : ''}` : `Lịch sử (${sessions.length})`}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              {viewMode === 'current' ? (
+                results.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full gap-2 text-center p-4">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+                      <ImageIcon size={18} className="text-slate-300 dark:text-[#444]" />
+                    </div>
+                    <p className="text-[10px] text-slate-400 dark:text-[#555]">Chưa có tác vụ</p>
+                  </div>
+                ) : (
+                  <div className="p-2 space-y-1.5">
+                    {results.map(task => (
+                      <div
+                        key={task.id}
+                        onClick={() => setActiveResultId(task.id)}
+                        className={`group relative rounded-xl overflow-hidden border cursor-pointer transition-all ${activeResultId === task.id ? 'border-brand-blue/50 shadow-sm shadow-brand-blue/10' : 'border-slate-100 dark:border-white/5 hover:border-brand-blue/20'}`}
+                      >
+                        {/* Thumbnail */}
+                        <div className="aspect-video bg-slate-100 dark:bg-white/[0.03] overflow-hidden">
+                          {task.status === 'processing' ? (
+                            <div className="w-full h-full animate-pulse bg-slate-200 dark:bg-white/[0.04] flex items-center justify-center">
+                              <Loader2 size={16} className="animate-spin text-brand-blue" />
+                            </div>
+                          ) : task.status === 'error' ? (
+                            <div className="w-full h-full flex items-center justify-center bg-red-50 dark:bg-red-900/10">
+                              <AlertTriangle size={16} className="text-red-400" />
+                            </div>
+                          ) : task.url ? (
+                            task.mode === 'image' ? (
+                              <img src={task.url} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <video src={task.url} className="w-full h-full object-cover" muted />
+                            )
+                          ) : null}
+                        </div>
+                        {/* Info */}
+                        <div className="p-2">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${task.mode === 'image' ? 'bg-brand-blue/10 text-brand-blue' : 'bg-purple-500/10 text-purple-500'}`}>
+                              {task.mode === 'image' ? '🖼️' : '🎬'} {task.mode === 'image' ? 'Ảnh' : 'Video'}
+                            </span>
+                            <span className={`text-[8px] font-bold ${task.status === 'done' ? 'text-emerald-500' : task.status === 'error' ? 'text-red-400' : 'text-amber-400'}`}>
+                              {task.status === 'done' ? '✓ Done' : task.status === 'error' ? '✗ Lỗi' : '⟳ Đang tạo'}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-600 dark:text-white/60 line-clamp-1">{task.prompt}</p>
+                          <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5">{task.cost.toLocaleString()} CR · {task.createdAt.split(' ')[0]}</p>
+                        </div>
+                        {/* Delete button */}
+                        {task.status !== 'processing' && (
+                          <button
+                            onClick={(e) => deleteResult(e, task.id)}
+                            className="absolute top-1 right-1 p-1 rounded-md bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                          >
+                            <Trash2 size={10} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )
+              ) : (
+                sessions.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full gap-2 text-center p-4">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+                      <History size={18} className="text-slate-300 dark:text-[#444]" />
+                    </div>
+                    <p className="text-[10px] text-slate-400 dark:text-[#555]">Chưa có lịch sử</p>
+                  </div>
+                ) : (
+                  <div className="p-2 space-y-1.5">
+                    {sessions.map(session => (
+                      <div
+                        key={session.id}
+                        onClick={() => {
+                          // Load session back into task list as a done item
+                          const alreadyLoaded = results.find(r => r.url === session.imageUrl);
+                          if (!alreadyLoaded) {
+                            const loaded: REResult = {
+                              id: session.id,
+                              url: session.imageUrl,
+                              prompt: session.prompt,
+                              mode: session.mode,
+                              status: 'done',
+                              cost: 0,
+                              propertyType: session.propertyType || '',
+                              industry: session.industry || '',
+                              createdAt: session.createdAt,
+                            };
+                            setResults(prev => [...prev, loaded]);
+                            setActiveResultId(session.id);
+                          } else {
+                            setActiveResultId(alreadyLoaded.id);
+                          }
+                          setViewMode('current');
+                        }}
+                        className="group relative rounded-xl overflow-hidden border border-slate-100 dark:border-white/5 cursor-pointer hover:border-brand-blue/20 transition-all"
+                      >
+                        <div className="aspect-video bg-slate-100 dark:bg-white/[0.03] overflow-hidden">
+                          {session.mode === 'image' ? (
+                            <img src={session.imageUrl} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          ) : (
+                            <video src={session.imageUrl} className="w-full h-full object-cover" muted />
+                          )}
+                        </div>
+                        <div className="p-2">
+                          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${session.mode === 'image' ? 'bg-brand-blue/10 text-brand-blue' : 'bg-purple-500/10 text-purple-500'}`}>
+                            {session.mode === 'image' ? '🖼️ Ảnh' : '🎬 Video'}
+                          </span>
+                          <p className="text-[10px] text-slate-600 dark:text-white/60 line-clamp-1 mt-1">{session.prompt}</p>
+                          <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5">{session.createdAt}</p>
+                        </div>
+                        <button
+                          onClick={(e) => deleteSession(e, session.id)}
+                          className="absolute top-1 right-1 p-1 rounded-md bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                        >
+                          <Trash2 size={10} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+
+          {/* ── Active Result Viewport (center) ── */}
+          <div className="flex-1 flex flex-col bg-[#f0f2f5] dark:bg-[#060608] overflow-hidden">
             <div className="flex-1 flex items-center justify-center p-6 md:p-8">
-              {isGenerating ? (
-                /* Skeleton loading — 2×2 shimmer grid (W2) */
+              {activeResult?.status === 'processing' ? (
+                /* Skeleton loading */
                 <div className="w-full max-w-2xl space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     {[1, 2, 3, 4].map(i => (
                       <div
                         key={i}
-                        className={`rounded-2xl bg-slate-200 dark:bg-white/[0.04] animate-pulse overflow-hidden relative ${workspaceMode === 'image' ? 'aspect-video' : 'aspect-[16/9]'}`}
+                        className="rounded-2xl bg-slate-200 dark:bg-white/[0.04] animate-pulse overflow-hidden relative aspect-video"
                         style={{ animationDelay: `${i * 0.1}s` }}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/[0.05] to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
@@ -1114,21 +1404,41 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                     ))}
                   </div>
                   <p className="text-center text-[11px] text-slate-400 dark:text-[#555] animate-pulse">
-                    AI đang tạo {workspaceMode === 'image' ? 'ảnh' : 'video'} BĐS · thường mất {workspaceMode === 'image' ? '10–30 giây' : '1–3 phút'}...
+                    AI đang tạo {activeResult.mode === 'image' ? 'ảnh' : 'video'} BĐS · thường mất {activeResult.mode === 'image' ? '10–30 giây' : '1–3 phút'}...
                   </p>
+                  {activeResult.logs && activeResult.logs.length > 0 && (
+                    <p className="text-center text-[10px] text-brand-blue/70 font-mono">{activeResult.logs[activeResult.logs.length - 1]}</p>
+                  )}
                 </div>
-              ) : result ? (
-                /* Result with Download + Fullscreen overlay (W5) */
+              ) : activeResult?.status === 'error' ? (
+                /* Error state */
+                <div className="flex flex-col items-center justify-center gap-4 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center">
+                    <AlertTriangle size={28} className="text-red-400" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-700 dark:text-white/70">Tạo thất bại</p>
+                    <p className="text-[11px] text-slate-400 dark:text-[#555] mt-1">Credits đã được hoàn lại tự động</p>
+                  </div>
+                  <button
+                    onClick={handleGenerate}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-blue text-white text-[12px] font-bold hover:brightness-110 transition-all"
+                  >
+                    <RefreshCw size={14} /> Thử lại
+                  </button>
+                </div>
+              ) : activeResult?.url ? (
+                /* Result with Download + Fullscreen overlay */
                 <div className="relative group max-w-2xl w-full">
-                  {workspaceMode === 'image' ? (
+                  {activeResult.mode === 'image' ? (
                     <img
-                      src={result}
+                      src={activeResult.url}
                       alt="Generated real estate"
                       className="w-full rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.04]"
                     />
                   ) : (
                     <video
-                      src={result}
+                      src={activeResult.url}
                       controls
                       autoPlay
                       loop
@@ -1138,15 +1448,15 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                   {/* Overlay actions */}
                   <div className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
                     <a
-                      href={result}
-                      download={workspaceMode === 'image' ? 'realestate.png' : 'realestate.mp4'}
+                      href={activeResult.url}
+                      download={activeResult.mode === 'image' ? 'realestate.png' : 'realestate.mp4'}
                       className="p-3 rounded-xl bg-white/90 text-slate-900 hover:bg-white transition-colors shadow-lg"
                       title="Tải xuống"
                     >
                       <Download size={18} />
                     </a>
                     <button
-                      onClick={() => window.open(result, '_blank')}
+                      onClick={() => window.open(activeResult.url!, '_blank')}
                       className="p-3 rounded-xl bg-white/90 text-slate-900 hover:bg-white transition-colors shadow-lg"
                       title="Xem toàn màn hình"
                     >
@@ -1163,15 +1473,12 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                   {/* Mode + type badge */}
                   <div className="absolute top-3 left-3 flex gap-1.5">
                     <span className="px-2.5 py-1 rounded-lg bg-brand-blue/90 backdrop-blur-sm text-white text-[10px] font-bold">
-                      {workspaceMode === 'image' ? '🖼️' : '🎬'} {propertyLabel}
-                    </span>
-                    <span className="px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold">
-                      {workspaceMode === 'image' ? imageTypeLabel : videoTypeLabel}
+                      {activeResult.mode === 'image' ? '🖼️' : '🎬'} {PROPERTY_TYPES.find(p => p.id === activeResult.propertyType)?.label || propertyLabel}
                     </span>
                   </div>
                 </div>
               ) : (
-                /* Empty state — starter prompt cards (W6) */
+                /* Empty state — starter prompt cards */
                 <div className="flex flex-col items-center justify-center gap-6 text-center w-full max-w-md">
                   <div>
                     <div className="w-16 h-16 rounded-2xl bg-brand-blue/10 flex items-center justify-center mx-auto mb-3">
@@ -1208,57 +1515,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 </div>
               )}
             </div>
-          ) : (
-            /* W8/W9: Library Grid */
-            <div className="flex-1 overflow-y-auto p-6">
-              {sessions.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
-                  <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
-                    <ImageIcon size={24} className="text-slate-300 dark:text-[#444]" />
-                  </div>
-                  <p className="text-sm text-slate-400 dark:text-[#555]">Thư viện trống — tạo hình ảnh đầu tiên!</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                  {sessions.map(session => (
-                    <div
-                      key={session.id}
-                      onClick={() => { setResult(session.imageUrl); setWorkspaceMode(session.mode); setViewMode('current'); }}
-                      className="group relative rounded-xl overflow-hidden border border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-[#0d0d0f] cursor-pointer hover:border-brand-blue/30 transition-all hover:-translate-y-0.5"
-                    >
-                      <div className="aspect-video overflow-hidden bg-black">
-                        {session.mode === 'image' ? (
-                          <img src={session.imageUrl} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                        ) : (
-                          <video src={session.imageUrl} className="w-full h-full object-cover" muted />
-                        )}
-                      </div>
-                      <div className="p-3">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${session.mode === 'image' ? 'bg-brand-blue/10 text-brand-blue' : 'bg-purple-500/10 text-purple-500'}`}>
-                            {session.mode === 'image' ? '🖼️ Ảnh' : '🎬 Video'}
-                          </span>
-                          {session.propertyType && (
-                            <span className="text-[8px] text-slate-400 dark:text-[#555]">
-                              {PROPERTY_TYPES.find(p => p.id === session.propertyType)?.label}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[11px] font-medium text-slate-700 dark:text-white/70 line-clamp-2">{session.prompt}</p>
-                        <p className="text-[9px] text-slate-400 dark:text-[#555] mt-1">{session.createdAt}</p>
-                      </div>
-                      <button
-                        onClick={(e) => deleteSession(e, session.id)}
-                        className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
-                      >
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+          </div>
         </div>
       </div>
 
