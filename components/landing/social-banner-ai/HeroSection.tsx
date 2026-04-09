@@ -36,6 +36,164 @@ const DEMO_PROMPTS = [
   'Ra mắt sản phẩm mới, nền tối premium, spotlight trắng',
 ];
 
+// ─── Mock banner cards hiển thị khi chưa tạo ảnh ────────────────────────────
+
+const MOCK_BANNERS = [
+  {
+    label: 'Flash Sale',
+    platform: 'FB Cover',
+    tag: '#sale',
+    gradient: 'from-red-500 via-orange-500 to-yellow-400',
+    accent: 'bg-yellow-300',
+    text: 'FLASH SALE',
+    sub: 'Giảm đến 50%',
+    dots: ['bg-yellow-200', 'bg-orange-200', 'bg-red-200'],
+  },
+  {
+    label: 'Ra mắt SP',
+    platform: 'IG Post',
+    tag: '#launch',
+    gradient: 'from-slate-900 via-blue-950 to-indigo-900',
+    accent: 'bg-brand-blue',
+    text: 'NEW ARRIVAL',
+    sub: 'Premium Collection',
+    dots: ['bg-blue-400', 'bg-indigo-400', 'bg-violet-400'],
+  },
+  {
+    label: 'Khai trương',
+    platform: 'X Header',
+    tag: '#grand',
+    gradient: 'from-amber-500 via-yellow-400 to-orange-400',
+    accent: 'bg-white',
+    text: 'GRAND OPENING',
+    sub: 'Hôm nay khai trương',
+    dots: ['bg-white/60', 'bg-amber-200', 'bg-yellow-200'],
+  },
+  {
+    label: 'Tuyển dụng',
+    platform: 'LinkedIn',
+    tag: '#hiring',
+    gradient: 'from-sky-600 via-blue-600 to-indigo-600',
+    accent: 'bg-sky-300',
+    text: "WE'RE HIRING",
+    sub: 'Join our team today',
+    dots: ['bg-sky-200', 'bg-blue-200', 'bg-indigo-200'],
+  },
+];
+
+const BannerPlaceholder: React.FC = () => {
+  return (
+    <motion.div
+      key="placeholder"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 overflow-hidden"
+    >
+      {/* Animated blur blobs background */}
+      <div className="absolute inset-0">
+        <motion.div
+          animate={{ x: [0, 20, 0], y: [0, -15, 0], scale: [1, 1.1, 1] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -top-8 -left-8 w-40 h-40 rounded-full bg-brand-blue/20 blur-3xl"
+        />
+        <motion.div
+          animate={{ x: [0, -15, 0], y: [0, 20, 0], scale: [1, 1.15, 1] }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+          className="absolute -bottom-8 -right-8 w-44 h-44 rounded-full bg-violet-500/15 blur-3xl"
+        />
+        <motion.div
+          animate={{ x: [0, 10, 0], y: [0, 10, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-indigo-400/10 blur-2xl"
+        />
+      </div>
+
+      {/* Banner cards grid — 2×2 */}
+      <div className="absolute inset-0 grid grid-cols-2 gap-2 p-3">
+        {MOCK_BANNERS.map((b, i) => (
+          <motion.div
+            key={b.label}
+            initial={{ opacity: 0, y: 16, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: i * 0.12, duration: 0.5, ease: 'easeOut' }}
+            whileHover={{ scale: 1.03, zIndex: 10 }}
+            className={`relative rounded-xl overflow-hidden bg-gradient-to-br ${b.gradient} flex flex-col justify-between p-3 cursor-default shadow-lg`}
+          >
+            {/* Shimmer sweep */}
+            <motion.div
+              animate={{ x: ['-100%', '200%'] }}
+              transition={{ duration: 2.4, repeat: Infinity, repeatDelay: i * 1.2 + 2, ease: 'easeInOut' }}
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 pointer-events-none"
+            />
+
+            {/* Top row: platform pill + tag */}
+            <div className="flex items-center justify-between">
+              <span className="text-[7px] font-bold uppercase tracking-widest text-white/60 bg-white/10 px-1.5 py-0.5 rounded-full">
+                {b.platform}
+              </span>
+              <span className="text-[7px] text-white/40">{b.tag}</span>
+            </div>
+
+            {/* Center text */}
+            <div className="space-y-0.5">
+              <p className="text-[11px] font-extrabold text-white leading-tight tracking-tight drop-shadow">
+                {b.text}
+              </p>
+              <p className="text-[8px] text-white/70 font-medium">{b.sub}</p>
+            </div>
+
+            {/* Bottom: dot accents */}
+            <div className="flex items-center gap-1">
+              {b.dots.map((d, j) => (
+                <motion.div
+                  key={j}
+                  animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 1.8, repeat: Infinity, delay: j * 0.3 + i * 0.2 }}
+                  className={`w-1.5 h-1.5 rounded-full ${d}`}
+                />
+              ))}
+              <div className="flex-1" />
+              <motion.div
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+                className={`w-5 h-1 rounded-full ${b.accent} opacity-60`}
+              />
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Center CTA overlay */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.6, duration: 0.4 }}
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+      >
+        <motion.div
+          animate={{ scale: [1, 1.04, 1] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          className="flex flex-col items-center gap-1.5 bg-white/90 dark:bg-black/70 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/50 dark:border-white/10 shadow-xl"
+        >
+          <motion.div
+            animate={{ rotate: [0, 10, -10, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1 }}
+          >
+            <Sparkles size={20} className="text-brand-blue" />
+          </motion.div>
+          <p className="text-[10px] font-bold text-slate-700 dark:text-white/90 text-center leading-snug">
+            Nhập prompt → AI tạo ngay
+          </p>
+          <p className="text-[8px] text-slate-400 dark:text-white/40">80 CR / banner</p>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+// ─── Inline Demo Widget ───────────────────────────────────────────────────────
+
 const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio }) => {
   const { isAuthenticated, login, credits, useCredits, addCredits } = useAuth();
 
@@ -201,16 +359,7 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
               className="w-full h-full object-cover"
             />
           ) : (
-            <motion.div
-              key="placeholder"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="flex flex-col items-center gap-2 text-center px-4"
-            >
-              <div className="w-10 h-10 rounded-xl bg-brand-blue/10 flex items-center justify-center">
-                <Sparkles size={18} className="text-brand-blue/60" />
-              </div>
-              <p className="text-[11px] text-slate-400 dark:text-[#555]">Nhấn <strong className="text-brand-blue">Thử Ngay</strong> để xem AI tạo banner thật</p>
-            </motion.div>
+            <BannerPlaceholder />
           )}
         </AnimatePresence>
 
