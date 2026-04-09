@@ -28,7 +28,7 @@ const PLATFORMS = [
   { key: 'linkedin',  label: 'LinkedIn',        size: '1584×396', color: '#0A66C2' },
 ];
 
-const CDN_DEMO = 'https://imagedelivery.net/aevj5SbbyTU6ZP_CJx_TEA/baa0318b-3bbe-404a-1bff-ca95989bd500/public';
+const CDN_DEMO = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/7cbe5f07-2b18-4c42-ca5c-20bcd7206f00/public';
 
 const DEMO_PROMPTS = [
   'Flash Sale 50% nền đỏ rực, chữ trắng bold, năng lượng cao',
