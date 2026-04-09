@@ -42,6 +42,7 @@ const USE_CASES: UseCase[] = [
     icon: GraduationCap,
     title: 'Giáo dục & Khoá học',
     desc: 'Quảng cáo tuyển sinh, webinar, sự kiện học thuật với banner chuyên nghiệp tạo nhanh.',
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/e8de9cf0-7e30-4383-4ba8-b5d56781b500/public',
   },
   {
     icon: MessageCircle,
