@@ -41,7 +41,7 @@ const RealEstateVisualAI: React.FC = () => {
 
       {/* ── WORKFLOW + SHOWCASE + FEATURES + USE CASES ── */}
       <WorkflowSection />
-      <ShowcaseSection productSlug="realestate-visual-ai" />
+      <ShowcaseSection />
       <FeaturesSection />
       <UseCasesSection />
 
