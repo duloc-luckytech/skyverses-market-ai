@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Building, Wand2, Cpu, Download } from 'lucide-react';
 import { FadeInUp, StaggerChildren, HoverCard, SectionLabel, TimelineConnector } from '../_shared/SectionAnimations';
 
-const CDN_RESULT_THUMB = 'https://imagedelivery.net/aevj5SbbyTU6ZP_CJx_TEA/0a27ce4d-7f58-4250-d919-74405083f100/public';
+const CDN_RESULT_THUMB = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/080ab1ce-da26-4afa-ff67-a48d025fb800/public';
 
 const STEPS = [
   {

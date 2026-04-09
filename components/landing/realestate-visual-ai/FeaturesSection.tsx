@@ -19,14 +19,14 @@ const FEATURES: Feature[] = [
     title: 'Render Kiến Trúc 4K',
     desc: 'Tạo ảnh kiến trúc photorealistic độ phân giải 4K — chuẩn chuyên nghiệp như studio design cao cấp',
     featured: true,
-    thumbnail: 'https://imagedelivery.net/aevj5SbbyTU6ZP_CJx_TEA/286a9e3d-7a63-4790-106d-d33869e52400/public',
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/6e175c4c-8442-419d-5fa1-2d1897131000/public',
   },
   {
     icon: Video,
     title: 'Tạo Video Tour AI',
     desc: 'Video walkthrough, drone aerial, cinematic tour 360° — không cần quay thực tế, AI tạo toàn bộ',
     featured: true,
-    thumbnail: 'https://imagedelivery.net/aevj5SbbyTU6ZP_CJx_TEA/42ec9a4a-ade0-43d9-f495-0dd31b1fed00/public',
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/82d54ec9-2db4-44cf-db15-572d7667b900/public',
   },
   {
     icon: Sparkles,
