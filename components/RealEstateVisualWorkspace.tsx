@@ -18,6 +18,8 @@ import { Link } from 'react-router-dom';
 import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
 import { useImageModels, extractImageFamily } from '../hooks/useImageModels';
 import { pricingApi, PricingModel } from '../apis/pricing';
+import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
+import { VideoEngineSettings } from './real-estate/VideoEngineSettings';
 import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
 import { videosApi, VideoJobRequest, VideoJobResponse } from '../apis/videos';
 
@@ -731,100 +733,31 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             </div>
           </div>
 
-          {/* Image Settings Combo (STEP 6.5A) */}
-          <div className="space-y-2">
-            <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-widest">Cài Đặt Engine</p>
-            {/* Server (Engine) select */}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <p className="text-[9px] text-slate-400 dark:text-[#555] mb-1">Engine</p>
-                <select
-                  value={imgEngine}
-                  onChange={e => setImgEngine(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {IMAGE_ENGINES.map(e => <option key={e} value={e}>{e}</option>)}
-                </select>
-              </div>
-              {/* Model Family select */}
-              <div>
-                <p className="text-[9px] text-slate-400 dark:text-[#555] mb-1">Model Family</p>
-                <select
-                  value={imgSelectedFamily}
-                  onChange={e => setImgSelectedFamily(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {imgFamilyList.map(f => <option key={f} value={f}>{f}</option>)}
-                </select>
-              </div>
-            </div>
-            {/* Mode + Resolution */}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <p className="text-[9px] text-slate-400 dark:text-[#555] mb-1">Chế độ</p>
-                <select
-                  value={imgSelectedMode}
-                  onChange={e => setImgSelectedMode(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {(imgFamilyModes.length > 0 ? imgFamilyModes : IMAGE_MODES).map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <p className="text-[9px] text-slate-400 dark:text-[#555] mb-1">Độ phân giải</p>
-                <select
-                  value={imgSelectedRes}
-                  onChange={e => setImgSelectedRes(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {(imgFamilyResolutions.length > 0 ? imgFamilyResolutions : IMAGE_RESOLUTIONS).map(r => (
-                    <option key={r} value={r}>{r.toUpperCase()}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            {/* Ratio buttons */}
-            <div>
-              <p className="text-[9px] text-slate-400 dark:text-[#555] mb-1">Tỷ lệ khung hình</p>
-              <div className="flex flex-wrap gap-1">
-                {(imgFamilyRatios.length > 0 ? imgFamilyRatios : IMAGE_RATIOS).map(r => (
-                  <button
-                    key={r}
-                    onClick={() => setImgSelectedRatio(r)}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition-all ${
-                      imgSelectedRatio === r
-                        ? 'bg-brand-blue text-white border-brand-blue'
-                        : 'border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-[#666] hover:border-brand-blue/40'
-                    }`}
-                  >{r}</button>
-                ))}
-              </div>
-            </div>
-            {/* Quantity */}
-            <div>
-              <p className="text-[9px] text-slate-400 dark:text-[#555] mb-1">Số lượng</p>
-              <div className="flex gap-1.5">
-                {IMAGE_QUANTITIES.map(q => (
-                  <button
-                    key={q}
-                    onClick={() => setImgQuantity(q)}
-                    className={`flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all ${
-                      imgQuantity === q
-                        ? 'bg-brand-blue text-white border-brand-blue'
-                        : 'border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-[#666] hover:border-brand-blue/40'
-                    }`}
-                  >{q}</button>
-                ))}
-              </div>
-            </div>
-            {/* Cost indicator */}
-            <div className="flex items-center justify-between text-[10px]">
-              <span className="text-slate-400 dark:text-[#555]">Chi phí mỗi ảnh</span>
-              <span className="font-bold text-brand-blue">{imgUnitCost.toLocaleString()} CR</span>
-            </div>
-          </div>
+          {/* Image AI Config — shared ModelEngineSettings */}
+          <ModelEngineSettings
+            availableModels={imgAvailableModels}
+            selectedModel={imgSelectedModel}
+            setSelectedModel={setImgSelectedModel}
+            selectedRatio={imgSelectedRatio}
+            setSelectedRatio={setImgSelectedRatio}
+            selectedRes={imgSelectedRes}
+            setSelectedRes={setImgSelectedRes}
+            quantity={imgQuantity}
+            setQuantity={setImgQuantity}
+            selectedMode={imgSelectedMode}
+            setSelectedMode={setImgSelectedMode}
+            selectedEngine={imgEngine}
+            onSelectEngine={setImgEngine}
+            activeMode="SINGLE"
+            isGenerating={isGenerating}
+            familyList={imgFamilyList}
+            selectedFamily={imgSelectedFamily}
+            setSelectedFamily={setImgSelectedFamily}
+            familyModels={imgFamilyModels.map(m => m.raw || m)}
+            familyModes={imgFamilyModes}
+            familyRatios={imgFamilyRatios}
+            familyResolutions={imgFamilyResolutions}
+          />
 
           {/* AISuggestPanel for image */}
           <AISuggestPanel
@@ -871,109 +804,35 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             </div>
           </div>
 
-          {/* Video Settings Combo (STEP 6.5B) */}
-          <div className="space-y-2">
-            <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-widest">Cài Đặt Engine Video</p>
-            {/* Engine + Family */}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <p className="text-[9px] text-slate-400 dark:text-[#555] mb-1">Engine</p>
-                <select
-                  value={videoEngine}
-                  onChange={e => setVideoEngine(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {VIDEO_ENGINES.map(e => <option key={e} value={e}>{e}</option>)}
-                </select>
-              </div>
-              <div>
-                <p className="text-[9px] text-slate-400 dark:text-[#555] mb-1">Model Family</p>
-                <select
-                  value={videoSelectedFamily}
-                  onChange={e => setVideoSelectedFamily(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {videoFamilyList.map(f => <option key={f} value={f}>{f}</option>)}
-                </select>
-              </div>
-            </div>
-            {/* Mode + Resolution */}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <p className="text-[9px] text-slate-400 dark:text-[#555] mb-1">Chế độ</p>
-                <select
-                  value={videoSelectedMode}
-                  onChange={e => setVideoSelectedMode(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {(videoFamilyModes.length > 0 ? videoFamilyModes : VIDEO_MODES).map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <p className="text-[9px] text-slate-400 dark:text-[#555] mb-1">Độ phân giải</p>
-                <select
-                  value={videoResolution}
-                  onChange={e => setVideoResolution(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {(videoFamilyRes.length > 0 ? videoFamilyRes : VIDEO_RESOLUTIONS).map(r => (
-                    <option key={r} value={r}>{r.toUpperCase()}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            {/* Ratio cycle + Duration cycle + Sound toggle */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={cycleVideoRatio}
-                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/[0.06] text-[10px] font-semibold text-slate-600 dark:text-[#888] hover:border-brand-blue/40 hover:text-brand-blue transition-all"
-              >
-                <RefreshCw size={10} /> {videoRatio}
-              </button>
-              {!isModeBased && (
-                <button
-                  onClick={cycleDuration}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/[0.06] text-[10px] font-semibold text-slate-600 dark:text-[#888] hover:border-brand-blue/40 hover:text-brand-blue transition-all"
-                >
-                  <Clock size={10} /> {videoDuration}
-                </button>
-              )}
-              <button
-                onClick={() => setSoundEnabled(s => !s)}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl border text-[10px] font-semibold transition-all ${
-                  soundEnabled
-                    ? 'bg-brand-blue/10 border-brand-blue/30 text-brand-blue'
-                    : 'border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-[#666] hover:border-brand-blue/40'
-                }`}
-              >
-                {soundEnabled ? '🔊 Sound' : '🔇 Mute'}
-              </button>
-            </div>
-            {/* Video Quantity */}
-            <div>
-              <p className="text-[9px] text-slate-400 dark:text-[#555] mb-1">Số lượng</p>
-              <div className="flex gap-1.5">
-                {VIDEO_QUANTITIES.map(q => (
-                  <button
-                    key={q}
-                    onClick={() => setVideoQuantity(q)}
-                    className={`flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all ${
-                      videoQuantity === q
-                        ? 'bg-brand-blue text-white border-brand-blue'
-                        : 'border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-[#666] hover:border-brand-blue/40'
-                    }`}
-                  >{q}</button>
-                ))}
-              </div>
-            </div>
-            {/* Cost indicator */}
-            <div className="flex items-center justify-between text-[10px]">
-              <span className="text-slate-400 dark:text-[#555]">Chi phí mỗi video</span>
-              <span className="font-bold text-brand-blue">{videoUnitCost.toLocaleString()} CR</span>
-            </div>
-          </div>
+          {/* Video AI Config — shared VideoEngineSettings */}
+          <VideoEngineSettings
+            selectedEngine={videoEngine}
+            onSelectEngine={setVideoEngine}
+            familyList={videoFamilyList}
+            selectedFamily={videoSelectedFamily}
+            setSelectedFamily={setVideoSelectedFamily}
+            familyModels={videoFamilyModels}
+            familyModes={videoFamilyModes}
+            selectedMode={videoSelectedMode}
+            setSelectedMode={setVideoSelectedMode}
+            familyResolutions={videoFamilyRes}
+            selectedResolution={videoResolution}
+            setSelectedResolution={setVideoResolution}
+            familyRatios={videoFamilyRatios}
+            selectedRatio={videoRatio}
+            cycleRatio={cycleVideoRatio}
+            availableDurations={availableVideoDurations}
+            selectedDuration={videoDuration}
+            cycleDuration={cycleDuration}
+            isModeBased={isModeBased}
+            soundEnabled={soundEnabled}
+            setSoundEnabled={setSoundEnabled}
+            quantity={videoQuantity}
+            setQuantity={setVideoQuantity}
+            unitCost={videoUnitCost}
+            isGenerating={isGenerating}
+            selectedModelObj={videoSelectedModelObj}
+          />
 
           {/* AISuggestPanel for video */}
           <AISuggestPanel
