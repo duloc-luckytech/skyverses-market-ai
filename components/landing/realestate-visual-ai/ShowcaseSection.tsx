@@ -33,7 +33,7 @@ const ITEMS: REItem[] = [
     label: 'Khu Biệt Thự Gated — Aerial View',
     category: 'Phối cảnh tổng thể',
     subcategory: 'Drone CGI · 1200×675',
-    desc: 'Bird's-eye view toàn khu biệt thự: villa cluster, hồ trung tâm, clubhouse, tennis, rừng nhiệt đới',
+    desc: 'Bird\'s-eye view toàn khu biệt thự: villa cluster, hồ trung tâm, clubhouse, tennis, rừng nhiệt đới',
     size: 'hero',
   },
   // ── Col right of hero ──
@@ -99,7 +99,7 @@ const ITEMS: REItem[] = [
     label: 'Master Plan Aerial',
     category: 'Marketing BĐS',
     subcategory: 'Developer · Brochure',
-    desc: 'Phối cảnh aerial khu đô thị — bird's-eye tháp cao tầng, hồ, tiện ích, cây xanh',
+    desc: 'Phối cảnh aerial khu đô thị — bird\'s-eye tháp cao tầng, hồ, tiện ích, cây xanh',
   },
 
   // ── Row 4 — 3 columns ──
