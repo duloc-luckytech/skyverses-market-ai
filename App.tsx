@@ -45,6 +45,7 @@ const pageImports = {
   aiStylist: () => import('./pages/images/AIStylistPage'),
   aiRestoration: () => import('./pages/images/AIImageRestoration'),
   realEstate: () => import('./pages/images/RealEstateAI'),
+  realEstateVisual: () => import('./pages/images/RealEstateVisualAI'),
   bgRemoval: () => import('./pages/images/BackgroundRemovalAI'),
   socialBanner: () => import('./pages/images/SocialBannerAI'),
   // Videos
@@ -101,6 +102,7 @@ const Product7Comic = React.lazy(pageImports.product7);
 const AIStylistPage = React.lazy(pageImports.aiStylist);
 const AIImageRestoration = React.lazy(pageImports.aiRestoration);
 const RealEstateAI = React.lazy(pageImports.realEstate);
+const RealEstateVisualAI = React.lazy(pageImports.realEstateVisual);
 const BackgroundRemovalAI = React.lazy(pageImports.bgRemoval);
 const SocialBannerAI = React.lazy(pageImports.socialBanner);
 
@@ -228,6 +230,7 @@ const App: React.FC = () => {
                       <Route path="/product/ai-tet-generator" element={<EventStudioPage type="tet" />} />
 
                       <Route path="/product/bat-dong-san-ai" element={<RealEstateAI />} />
+                      <Route path="/product/realestate-visual-ai" element={<RealEstateVisualAI />} />
                       <Route path="/product/ai-music-generator" element={<MusicGenerator />} />
                       <Route path="/product/ai-image-restorer" element={<AIImageRestoration />} />
                       <Route path="/product/storyboard-studio" element={<StoryboardStudioPage />} />

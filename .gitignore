@@ -23,6 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
+# Seed & gen scripts (contain API tokens — DO NOT commit)
+seed-*.mjs
+gen-*.mjs
+update-*.mjs
+
 # Sensitive files
 skyverses-backend/gcp-key.json
 skyverses-backend/service-account.json

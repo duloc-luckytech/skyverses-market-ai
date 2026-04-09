@@ -23,6 +23,7 @@ const WORKSPACE_MAP: Record<string, React.LazyExoticComponent<React.ComponentTyp
   'ai-image-restorer':     React.lazy(() => import('../RestorationWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
   'ai-stylist':            React.lazy(() => import('../AIStylistWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
   'bat-dong-san-ai':       React.lazy(() => import('../RealEstateWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
+  'realestate-visual-ai':  React.lazy(() => import('../RealEstateVisualWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
   'character-sync-studio': React.lazy(() => import('../KineticWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
   'banana-pro-comic-engine': React.lazy(() => import('../BananaProWorkspace') as Promise<{ default: React.ComponentType<WorkspaceProps> }>),
 
