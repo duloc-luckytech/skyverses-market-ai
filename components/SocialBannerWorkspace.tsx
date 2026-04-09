@@ -15,11 +15,13 @@ import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { Link } from 'react-router-dom';
 import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
+import { useImageModels } from '../hooks/useImageModels';
+import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'skyverses_SOCIAL-BANNER-AI_vault';
-const CREDIT_COST = 80;
+
 
 const PLATFORMS = [
   { id: 'fb-cover',   label: 'FB Cover',    platform: 'Facebook', size: '820×312',   ratio: '16:9'  },
@@ -32,9 +34,6 @@ const PLATFORMS = [
 ];
 
 const STYLES = ['Hiện đại', 'Luxury', 'Tối giản', 'Bold & Pop', 'Vintage', 'Cyberpunk'];
-const MODELS = ['Nano Banana Pro', 'Nano Banana Lite', 'Gemini 3 Pro Image'];
-const RESOLUTIONS = ['1k', '2k', '4k'];
-const MODES = ['Chuyên nghiệp', 'Nhanh', 'Cân bằng'];
 
 const BANNER_STYLES: StylePreset[] = [
   { id: 'modern',   label: 'Hiện đại',  emoji: '⚡', description: 'Clean, bold typography',  promptPrefix: 'modern clean minimalist design, bold typography, ' },
@@ -103,11 +102,29 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const [references, setReferences]       = useState<string[]>([]);
   const [result, setResult]               = useState<string | null>(null);
 
-  // Config state
-  const [selectedModel, setSelectedModel]   = useState(MODELS[0]);
+  // Config state — AI engine (live pricing API)
+  const [imgEngine, setImgEngine] = useState('gommo');
+  const imgModels = useImageModels(imgEngine);
+  const {
+    availableModels: imgAvailableModels,
+    selectedModel: imgSelectedModel,
+    setSelectedModel: setImgSelectedModel,
+    selectedFamily: imgSelectedFamily,
+    setSelectedFamily: setImgSelectedFamily,
+    selectedMode: imgSelectedMode,
+    setSelectedMode: setImgSelectedMode,
+    selectedRes: imgSelectedRes,
+    setSelectedRes: setImgSelectedRes,
+    selectedRatio: imgSelectedRatio,
+    setSelectedRatio: setImgSelectedRatio,
+    familyList: imgFamilyList,
+    familyModels: imgFamilyModels,
+    familyModes: imgFamilyModes,
+    familyResolutions: imgFamilyResolutions,
+    familyRatios: imgFamilyRatios,
+    selectedModelCost,
+  } = imgModels;
   const [selectedStyle, setSelectedStyle]   = useState(STYLES[0]);
-  const [selectedRes, setSelectedRes]       = useState(RESOLUTIONS[1]);
-  const [selectedMode, setSelectedMode]     = useState(MODES[0]);
   const [quantity, setQuantity]             = useState(1);
 
   // Brand state
@@ -201,7 +218,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const handleGenerate = async () => {
     if (!prompt.trim() || isGenerating) return;
     if (!isAuthenticated) { login(); return; }
-    const totalCost = CREDIT_COST * quantity;
+    const totalCost = selectedModelCost * quantity;
     if (credits < totalCost) { setShowLowCreditAlert(true); return; }
 
     const controller = new AbortController();
@@ -217,7 +234,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
       const stylePreset  = BANNER_STYLES.find(s => s.label === selectedStyle);
       const stylePrefix  = stylePreset?.promptPrefix ?? '';
 
-      const finalPrompt = `${industryCtx}${stylePrefix}Tạo banner mạng xã hội chuyên nghiệp. ${platformCtx} Phong cách: ${selectedStyle}. ${colorCtx} ${textCtx} Mô tả: ${prompt}. Chất lượng ${selectedRes}, bố cục tối ưu cho ${currentPlatform.platform}.`;
+      const finalPrompt = `${industryCtx}${stylePrefix}Tạo banner mạng xã hội chuyên nghiệp. ${platformCtx} Phong cách: ${selectedStyle}. ${colorCtx} ${textCtx} Mô tả: ${prompt}. Chất lượng ${imgSelectedRes || '2k'}, bố cục tối ưu cho ${currentPlatform.platform}.`;
 
       setStatus('AI đang tạo banner...');
       const imageUrl = await generateDemoImage(finalPrompt, references);
@@ -233,7 +250,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           id: Date.now().toString(),
           url: imageUrl,
           prompt,
-          config: { platformId: activePlatform, style: selectedStyle, model: selectedModel },
+          config: { platformId: activePlatform, style: selectedStyle, model: imgSelectedModel?.name || imgSelectedModel?.raw?.name || '' },
           timestamp: new Date().toLocaleString('vi-VN'),
         };
         const updated = [newSession, ...sessions];
@@ -545,73 +562,51 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
             </div>
 
-            {/* Model / Style row */}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Model AI</p>
-                <select
-                  value={selectedModel}
-                  onChange={e => setSelectedModel(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {MODELS.map(m => <option key={m} value={m}>{m}</option>)}
-                </select>
-              </div>
-              <div>
-                <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Phong cách</p>
-                <select
-                  value={selectedStyle}
-                  onChange={e => setSelectedStyle(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {STYLES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-            </div>
-
-            {/* Mode / Resolution row */}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Chế độ</p>
-                <select
-                  value={selectedMode}
-                  onChange={e => setSelectedMode(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {MODES.map(m => <option key={m} value={m}>{m}</option>)}
-                </select>
-              </div>
-              <div>
-                <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Độ phân giải</p>
-                <select
-                  value={selectedRes}
-                  onChange={e => setSelectedRes(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none focus:border-brand-blue/50 transition-colors"
-                >
-                  {RESOLUTIONS.map(r => <option key={r} value={r}>{r.toUpperCase()}</option>)}
-                </select>
-              </div>
-            </div>
-
-            {/* Quantity */}
+            {/* Phong cách banner (banner-specific, kept separate) */}
             <div>
-              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Số lượng</p>
-              <div className="flex gap-1.5">
-                {[1, 2, 3, 4].map(q => (
+              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Phong cách</p>
+              <div className="flex flex-wrap gap-1.5">
+                {STYLES.map(s => (
                   <button
-                    key={q}
-                    onClick={() => setQuantity(q)}
-                    className={`flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all ${
-                      quantity === q
-                        ? 'bg-brand-blue text-white border-brand-blue'
-                        : 'border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-[#666] hover:border-brand-blue/40 hover:text-brand-blue bg-black/[0.01] dark:bg-white/[0.02]'
+                    key={s}
+                    onClick={() => setSelectedStyle(s)}
+                    className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border transition-all ${
+                      selectedStyle === s
+                        ? 'bg-brand-blue text-white border-brand-blue shadow-sm'
+                        : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-500 dark:text-[#666] hover:border-brand-blue/30 hover:text-brand-blue'
                     }`}
                   >
-                    {q}
+                    {s}
                   </button>
                 ))}
               </div>
             </div>
+
+            {/* Cấu hình AI — shared ModelEngineSettings */}
+            <ModelEngineSettings
+              availableModels={imgAvailableModels}
+              selectedModel={imgSelectedModel}
+              setSelectedModel={setImgSelectedModel}
+              selectedRatio={imgSelectedRatio}
+              setSelectedRatio={setImgSelectedRatio}
+              selectedRes={imgSelectedRes}
+              setSelectedRes={setImgSelectedRes}
+              quantity={quantity}
+              setQuantity={setQuantity}
+              selectedMode={imgSelectedMode}
+              setSelectedMode={setImgSelectedMode}
+              selectedEngine={imgEngine}
+              onSelectEngine={setImgEngine}
+              activeMode="SINGLE"
+              isGenerating={isGenerating}
+              familyList={imgFamilyList}
+              selectedFamily={imgSelectedFamily}
+              setSelectedFamily={setImgSelectedFamily}
+              familyModels={imgFamilyModels.map(m => m.raw || m)}
+              familyModes={imgFamilyModes}
+              familyRatios={imgFamilyRatios}
+              familyResolutions={imgFamilyResolutions}
+            />
 
             {/* Advanced (collapsible) */}
             <div>
@@ -696,7 +691,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     <X size={11} /> Hủy
                   </button>
                 )}
-                <span className="font-semibold text-brand-blue">{CREDIT_COST * quantity} CR / lần</span>
+                <span className="font-semibold text-brand-blue">{selectedModelCost * quantity} CR / lần</span>
               </div>
             </div>
             <motion.button
@@ -857,7 +852,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               </div>
               <h3 className="font-bold text-lg mb-2">Không đủ Credits</h3>
               <p className="text-sm text-slate-500 dark:text-[#666] mb-4">
-                Bạn cần <strong className="text-brand-blue">{CREDIT_COST * quantity} CR</strong> để tạo banner này.<br />
+                Bạn cần <strong className="text-brand-blue">{selectedModelCost * quantity} CR</strong> để tạo banner này.<br />
                 Số dư hiện tại: <strong>{credits.toLocaleString()} CR</strong>
               </p>
               <div className="flex gap-3">
@@ -952,35 +947,42 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                   </div>
                 </div>
 
-                {/* Style + Model */}
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Phong cách</p>
-                    <select value={selectedStyle} onChange={e => setSelectedStyle(e.target.value)}
-                      className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none">
-                      {STYLES.map(s => <option key={s}>{s}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Độ phân giải</p>
-                    <select value={selectedRes} onChange={e => setSelectedRes(e.target.value)}
-                      className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none">
-                      {RESOLUTIONS.map(r => <option key={r} value={r}>{r.toUpperCase()}</option>)}
-                    </select>
-                  </div>
+                {/* Phong cách */}
+                <div>
+                  <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Phong cách</p>
+                  <select value={selectedStyle} onChange={e => setSelectedStyle(e.target.value)}
+                    className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none">
+                    {STYLES.map(s => <option key={s}>{s}</option>)}
+                  </select>
                 </div>
 
-                {/* Quantity */}
-                <div>
-                  <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Số lượng</p>
-                  <div className="flex gap-1.5">
-                    {[1,2,3,4].map(q => (
-                      <button key={q} onClick={() => setQuantity(q)}
-                        className={`flex-1 py-2 rounded-lg text-[11px] font-semibold border transition-all ${quantity === q ? 'bg-brand-blue text-white border-brand-blue' : 'border-slate-200 dark:border-white/[0.06] text-slate-500'}`}
-                      >{q}</button>
-                    ))}
-                  </div>
-                </div>
+                {/* Cấu hình AI — shared ModelEngineSettings */}
+                <ModelEngineSettings
+                  availableModels={imgAvailableModels}
+                  selectedModel={imgSelectedModel}
+                  setSelectedModel={setImgSelectedModel}
+                  selectedRatio={imgSelectedRatio}
+                  setSelectedRatio={setImgSelectedRatio}
+                  selectedRes={imgSelectedRes}
+                  setSelectedRes={setImgSelectedRes}
+                  quantity={quantity}
+                  setQuantity={setQuantity}
+                  selectedMode={imgSelectedMode}
+                  setSelectedMode={setImgSelectedMode}
+                  selectedEngine={imgEngine}
+                  onSelectEngine={setImgEngine}
+                  activeMode="SINGLE"
+                  isGenerating={isGenerating}
+                  familyList={imgFamilyList}
+                  selectedFamily={imgSelectedFamily}
+                  setSelectedFamily={setImgSelectedFamily}
+                  familyModels={imgFamilyModels.map(m => m.raw || m)}
+                  familyModes={imgFamilyModes}
+                  familyRatios={imgFamilyRatios}
+                  familyResolutions={imgFamilyResolutions}
+                />
+
+
               </div>
 
               {/* Sheet footer CTA */}
@@ -991,7 +993,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                   whileTap={{ scale: 0.97 }}
                   className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-blue to-blue-500 text-white text-[12px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/20 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  <Sparkles size={14} /> Tạo Banner — {CREDIT_COST * quantity} CR
+                  <Sparkles size={14} /> Tạo Banner — {selectedModelCost * quantity} CR
                 </motion.button>
               </div>
             </motion.div>
