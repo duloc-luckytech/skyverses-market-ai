@@ -1,0 +1,212 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║          SKYVERSES MARKETPLACE AI — WORKSPACE ARCHITECTURE OVERVIEW            ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        REAL ESTATE VISUAL AI WORKSPACE                       │
+│                   (components/RealEstateVisualWorkspace.tsx)                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  ┌────────────────┐  ┌──────────────────────────┐  ┌────────────────┐      │
+│  │  LEFT SIDEBAR  │  │    MAIN VIEWPORT         │  │  RIGHT RAIL    │      │
+│  │   (380px)      │  │   (Flexible)             │  │   (220px)      │      │
+│  ├────────────────┤  ├──────────────────────────┤  ├────────────────┤      │
+│  │ • Property     │  │                          │  │ ┌─ TABS ─┐     │      │
+│  │   type picker  │  │ Active Result Display:   │  │ │Current │     │      │
+│  │ • Industry     │  │                          │  │ │Library │     │      │
+│  │   picker       │  │ • Processing skeleton    │  │ └────────┘     │      │
+│  │ • Image/Video  │  │ • Done + overlay actions │  │                │      │
+│  │   mode toggle  │  │ • Error state            │  │ ╔════════════╗ │      │
+│  │ • AI config    │  │ • Starter prompts (idle) │  │ ║ Task Cards ║ │      │
+│  │   (model,      │  │                          │  │ ║ (Current)  ║ │      │
+│  │    ratio, res) │  │                          │  │ ╠════════════╣ │      │
+│  │ • Prompt       │  │                          │  │ ║ [Image]    ║ │      │
+│  │   textarea     │  │                          │  │ ║ Status: ✓   ║ │      │
+│  │   + history    │  │                          │  │ ║ 5000 CR     ║ │      │
+│  │ • Reference    │  │                          │  │ ║ Apr 10 ...  ║ │      │
+│  │   images       │  │                          │  │ ║ Prompt...   ║ │      │
+│  │                │  │                          │  │ ╠════════════╣ │      │
+│  │ [Generate Btn] │  │                          │  │ ║ [Video]    ║ │      │
+│  │                │  │                          │  │ ║ Status: ⟳   ║ │      │
+│  │                │  │                          │  │ ║ 7500 CR     ║ │      │
+│  │                │  │                          │  │ ║ Apr 10 ...  ║ │      │
+│  │                │  │                          │  │ ╚════════════╝ │      │
+│  │                │  │                          │  │                │      │
+│  │                │  │                          │  │ Library View:  │      │
+│  │                │  │                          │  │ [Session grid] │      │
+│  │                │  │                          │  │                │      │
+│  └────────────────┘  └──────────────────────────┘  └────────────────┘      │
+│                                                                               │
+│  STATE FLOW:                                                                  │
+│  1. User fills prompt + selects config → clicks Generate                     │
+│  2. Create task object → setResults([newTask, ...results])                   │
+│  3. API call → receives jobId                                                │
+│  4. Poll API every 5-10s → Update task.status & task.url                    │
+│  5. User clicks task card → setActiveResultId(taskId) → Show in viewport    │
+│  6. On done → saveSession() → Persist to localStorage                        │
+│                                                                               │
+│  STORAGE:                                                                     │
+│  • results: REResult[] (in-memory, current session)                          │
+│  • sessions: RESession[] (localStorage, persistent history)                  │
+│  • localStorage key: "skyverses_REALESTATE-VISUAL-AI_vault"                  │
+│                                                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     SOCIAL BANNER AI WORKSPACE                               │
+│                   (components/SocialBannerWorkspace.tsx)                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  ┌────────────────┐  ┌──────────────────────────┐                           │
+│  │  LEFT SIDEBAR  │  │    MAIN VIEWPORT         │                           │
+│  │   (380px)      │  │   (Flexible)             │                           │
+│  ├────────────────┤  ├──────────────────────────┤                           │
+│  │ • Platform     │  │ ┌─ TABS ────────────┐   │                           │
+│  │   selector     │  │ │ Current │ Library │   │                           │
+│  │ • Industry     │  │ └────────────────────┘   │                           │
+│  │   selector     │  │                          │                           │
+│  │ • AI templates │  │ Current View:            │                           │
+│  │ • Style picker │  │ ╔══════════════════════╗ │                           │
+│  │ • Prompt       │  │ ║  Single Result Image ║ │                           │
+│  │   textarea     │  │ ║                      ║ │                           │
+│  │ • Text config  │  │ ║  or Skeleton Loading ║ │                           │
+│  │   (title,      │  │ ║  or Empty State      ║ │                           │
+│  │    subtitle)   │  │ ║                      ║ │                           │
+│  │ • Reference    │  │ ║ [Download] [Full]    ║ │                           │
+│  │   images       │  │ ║ [Copy URL] [Refresh] ║ │                           │
+│  │ • Brand colors │  │ ╚══════════════════════╝ │                           │
+│  │   (advanced)   │  │                          │                           │
+│  │                │  │ Library View:            │                           │
+│  │ [Generate Btn] │  │ ╔════════════════════╗   │                           │
+│  │                │  │ ║  Grid: 2-3 cols   ║   │                           │
+│  │                │  │ ║                    ║   │                           │
+│  │                │  │ ║ [Thumb] [Thumb]    ║   │                           │
+│  │                │  │ ║ Prompt Prompt      ║   │                           │
+│  │                │  │ ║ Apr 10  Apr 10     ║   │                           │
+│  │                │  │ ║                    ║   │                           │
+│  │                │  │ ║ [Thumb] [Thumb]    ║   │                           │
+│  │                │  │ ║ Prompt Prompt      ║   │                           │
+│  │                │  │ ║ Apr 09  Apr 09     ║   │                           │
+│  │                │  │ ╚════════════════════╝   │                           │
+│  └────────────────┘  └──────────────────────────┘                           │
+│                                                                               │
+│  STATE FLOW:                                                                  │
+│  1. User fills prompt + selects platform/style → clicks Generate             │
+│  2. setIsGenerating(true)                                                     │
+│  3. API call (direct, no polling) → receives imageUrl                        │
+│  4. setResult(imageUrl) + append to sessions + save localStorage             │
+│  5. User can switch tabs: 'current' (single) vs 'library' (grid)             │
+│  6. Library click → setResult(sessionUrl); setViewMode('current')            │
+│                                                                               │
+│  STORAGE:                                                                     │
+│  • result: string | null (single active result, in-memory)                   │
+│  • sessions: BannerSession[] (localStorage, persistent history)              │
+│  • localStorage key: "skyverses_SOCIAL-BANNER-AI_vault"                      │
+│                                                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│         SHARED COMPONENTS & UTILITIES                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  ImageJobCard (components/shared/ImageJobCard.tsx)                           │
+│  ├─ 5 States: idle | submitting | processing | done | error                 │
+│  ├─ 2 Modes: 'full' (workspace) | 'compact' (widget)                        │
+│  ├─ Animated processing state (grid + particles + orbit)                    │
+│  └─ Download + retry functionality                                           │
+│     (Currently NOT used in workspaces — they use custom inline displays)     │
+│                                                                               │
+│  AISuggestPanel (components/workspace/AISuggestPanel.tsx)                    │
+│  ├─ Shared by Real Estate & Social Banner workspaces                         │
+│  ├─ Template suggestions + style presets                                     │
+│  ├─ Featured templates                                                        │
+│  └─ Prompt history                                                            │
+│                                                                               │
+│  ModelEngineSettings (components/image-generator/ModelEngineSettings.tsx)    │
+│  ├─ Image model picker + family grouping                                     │
+│  ├─ Aspect ratio + resolution selector                                       │
+│  └─ Quantity selector                                                         │
+│                                                                               │
+│  VideoModelEngineSettings (components/video-generator/...)                   │
+│  ├─ Video model picker + family grouping                                     │
+│  ├─ Duration + resolution selector                                           │
+│  └─ Quality/mode selector (fast | quality | relaxed)                         │
+│                                                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     APPS PAGE (pages/AppsPage.tsx)                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  ⚠️  NOT A WORKSPACE — This is a PRODUCT SUBMISSION FORM for developers     │
+│                                                                               │
+│  Left Sidebar (lg:col-span-2):                                               │
+│  • Step indicator (1/2/3/4)                                                  │
+│  • Completion percentage bar                                                  │
+│  • Info cards (10K+ users, SDK/API, revenue share)                          │
+│  • Help/support card                                                          │
+│                                                                               │
+│  Right Form (lg:col-span-3):                                                 │
+│  • Step 1: Product info (name, description, slug)                            │
+│  • Step 2: Media + pricing (thumbnails, pricing model)                       │
+│  • Step 3: Technical details (API endpoint, auth, documentation)             │
+│  • Step 4: Review & submit                                                    │
+│                                                                               │
+│  Bottom Section:                                                              │
+│  • Developer Portal info                                                      │
+│  • Submission pipeline diagram                                                │
+│  • Features: Fast review, infrastructure, security, marketing                │
+│                                                                               │
+│  🚫 No result grid, no job history, no workspace execution                  │
+│                                                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                      KEY DIFFERENCES                                            ║
+├────────────────────────────────────────────────────────────────────────────────┤
+║                                                                                 ║
+║  REAL ESTATE                          SOCIAL BANNER                            ║
+║  ─────────────────────────────────    ────────────────────────────────────── ║
+║  • Multi-mode: Image + Video           • Single mode: Banner only             ║
+║  • Right-side task list panel          • Tab-based (current | library)         ║
+║  • Polling for async jobs (5-10s)      • Direct generation (no polling)        ║
+║  • Result array (parallel jobs)        • Single result at a time               ║
+║  • Detailed config options             • Simplified config                     ║
+║  • Logs for each job                   • No logs (simple UI)                  ║
+║  • REResult[] interface                • BannerSession[] interface             ║
+║                                                                                 ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                   COMPONENT REUSE RECOMMENDATIONS                              ║
+├────────────────────────────────────────────────────────────────────────────────┤
+║                                                                                 ║
+║  ✅ Already Shared:                                                             ║
+║     • AISuggestPanel          (both workspaces)                                 ║
+║     • ModelEngineSettings     (image workspaces)                                ║
+║     • VideoModelEngineSettings (video workspaces)                               ║
+║                                                                                 ║
+║  ⚠️  Partially Shared:                                                          ║
+║     • ImageJobCard component exists but NOT used                               ║
+║       → Could replace inline result displays in workspaces                     ║
+║       → Would standardize look & feel                                          ║
+║                                                                                 ║
+║  🚫 NOT Shared (Should Be):                                                     ║
+║     • Task list UI logic                                                        ║
+║     • localStorage persistence logic                                            ║
+║     • API polling logic (async job handling)                                    ║
+║     • Result card rendering                                                     ║
+║                                                                                 ║
+║  ➡️  REFACTOR OPPORTUNITY:                                                      ║
+║     Create:                                                                     ║
+║     1. <TaskListPanel /> component                                              ║
+║     2. useJobPolling() hook                                                     ║
+║     3. useLocalStorageHistory() hook                                            ║
+║     4. WorkspaceContext for cross-workspace state                              ║
+║                                                                                 ║
+╚════════════════════════════════════════════════════════════════════════════════╝

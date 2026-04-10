@@ -1,0 +1,23 @@
+#!/bin/bash
+# AUTO-GENERATED: Cloudflare CDN URLs for Storyboard Studio landing page
+# Sections: Hero, Features, Workflow Steps, Use Cases, Scene Demos
+CDN_feat_batch_image="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/9727b938-20f9-46f8-0a94-be2279ad6600/public"
+CDN_feat_char_lock="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/4435dcfe-2fd1-4181-1c82-3ff81bc1e400/public"
+CDN_feat_export="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/4e41e923-0a68-4420-a855-d3557c390400/public"
+CDN_feat_script_split="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/b69caa6a-9c1f-461f-a992-6a588f1e9300/public"
+CDN_feat_timeline="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/0a32c07f-96c2-40dd-9345-268764382400/public"
+CDN_feat_video_render="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/6c8a39e7-0f1c-4dd8-817c-41c0458a4800/public"
+CDN_hero_main="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/f7802461-e33c-4b00-9a69-2beeee3fbb00/public"
+CDN_scene_demo_action="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/06585f6d-0382-4ac6-7d47-8920291b3700/public"
+CDN_scene_demo_landscape="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/10924373-b021-49c6-3f1b-ddefd7f75500/public"
+CDN_scene_demo_portrait="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/71cb7ec3-b4ba-4835-39c3-a41132b6fb00/public"
+CDN_step_export_download="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/589ac2cd-5ce8-48d0-2125-c18b1e86ac00/public"
+CDN_step_generate_assets="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/f4fb519b-0229-4966-89f6-e83529e6d200/public"
+CDN_step_scene_split="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/d8887806-9f21-4ec0-b34d-d094ce4e2100/public"
+CDN_step_script_input="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/7dfb06a9-1757-4d64-efaf-44f828588c00/public"
+CDN_usecase_education="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/b0e4adca-d433-40e8-dc23-6a32c0a1b200/public"
+CDN_usecase_game_cutscene="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/415be258-4792-4fcd-524d-45cf475d9500/public"
+CDN_usecase_mv="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/1187c21b-4e25-4ca7-8bc4-9efd7b9ddd00/public"
+CDN_usecase_short_film="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/b13168cc-cb53-4129-667d-64b09b9c5700/public"
+CDN_usecase_tvc="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/4f6c81d8-4c67-4131-eb9d-9c18e639cb00/public"
+CDN_usecase_virtual_influencer="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/25c62379-20f9-4e8b-01d7-53a546100900/public"
