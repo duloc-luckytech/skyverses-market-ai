@@ -1,38 +1,83 @@
-
 import React from 'react';
-import { Upload, Scan, Maximize2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Upload, Scan, Maximize2, Download } from 'lucide-react';
+import { FadeInUp, StaggerChildren, HoverCard, SectionLabel, TimelineConnector } from '../_shared/SectionAnimations';
 
-export const WorkflowSection: React.FC = () => {
-  const steps = [
-    { s: '01', t: 'Tải ảnh cũ', d: 'Tải lên các tấm ảnh bị mờ, xước, đen trắng hoặc độ phân giải thấp từ kho lưu trữ của bạn.', icon: Upload },
-    { s: '02', t: 'AI Phân tích', d: 'Neural Core nhận diện các điểm lỗi, nhiễu hạt và các chi tiết khuôn mặt cần phục hồi.', icon: Scan },
-    { s: '03', t: 'Kết xuất 4K', d: 'Hệ thống tổng hợp lại pixel, khử nhiễu và nâng cấp độ phân giải lên 4K sắc nét tuyệt đối.', icon: Maximize2 }
-  ];
+const STEPS = [
+  {
+    n: 1,
+    icon: Upload,
+    title: 'Tải ảnh cũ lên',
+    desc: 'Upload ảnh bị mờ, xước, đen trắng hoặc độ phân giải thấp từ máy tính hoặc thư viện Cloud.',
+    thumb: null,
+  },
+  {
+    n: 2,
+    icon: Scan,
+    title: 'AI Phân Tích',
+    desc: 'Neural Core nhận diện điểm lỗi, nhiễu hạt, chi tiết khuôn mặt và các vùng cần phục hồi.',
+    thumb: null,
+  },
+  {
+    n: 3,
+    icon: Maximize2,
+    title: 'Tái Tạo 4K',
+    desc: 'Hệ thống tổng hợp lại pixel, khử nhiễu và nâng cấp độ phân giải lên 4K / 8K sắc nét.',
+    thumb: null,
+  },
+  {
+    n: 4,
+    icon: Download,
+    title: 'Tải Về Ngay',
+    desc: 'Export PNG 4K hoặc JPG — sẵn sàng in ấn, đóng khung, chia sẻ hoặc lưu trữ lâu dài.',
+    thumb: 'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?auto=format&fit=crop&q=80&w=400',
+  },
+];
 
-  return (
-    <section className="py-32 lg:py-40 bg-slate-50 dark:bg-[#070708] border-y border-slate-100 dark:border-white/5 transition-colors">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="text-center space-y-4 mb-20 lg:mb-24">
-          <h2 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">The Restoration Path</h2>
-          <p className="text-slate-400 dark:text-gray-500 uppercase text-[10px] font-black tracking-[0.5em]">Upload → Analyze → Synchronize</p>
-        </div>
+export const WorkflowSection: React.FC = () => (
+  <section className="py-20 px-6 lg:px-12 border-t border-black/[0.06] dark:border-white/[0.04]">
+    <div className="max-w-[1400px] mx-auto">
+      <FadeInUp className="mb-10">
+        <SectionLabel>CÁCH HOẠT ĐỘNG</SectionLabel>
+        <h2 className="text-3xl font-bold mt-2">4 bước phục chế ảnh chuyên nghiệp</h2>
+        <p className="text-sm text-slate-500 dark:text-[#666] mt-2 max-w-md">
+          Từ ảnh hỏng đến ký ức 4K — không cần kỹ năng kỹ thuật, AI làm tất cả.
+        </p>
+      </FadeInUp>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-          {steps.map((step, i) => {
-            const Icon = step.icon;
-            return (
-              <div key={i} className="p-10 lg:p-12 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-2xl relative group hover:border-emerald-500/30 transition-all shadow-sm hover:shadow-xl hover:shadow-emerald-500/5">
-                <div className="absolute top-4 right-8 text-5xl font-black italic text-black/[0.03] dark:text-white/5 group-hover:text-emerald-500/10 transition-colors">{step.s}</div>
-                <div className="w-14 h-14 lg:w-16 lg:h-16 bg-emerald-500/[0.06] dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-8 lg:mb-10 rounded-xl group-hover:scale-110 transition-transform border border-emerald-500/10">
-                  <Icon size={26} />
+      <StaggerChildren className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {STEPS.map((step, idx) => (
+          <React.Fragment key={step.n}>
+            <HoverCard className="p-5">
+              {step.thumb && (
+                <div className="w-full h-20 rounded-lg overflow-hidden mb-3 border border-black/[0.06] dark:border-white/[0.04]">
+                  <img
+                    src={step.thumb}
+                    alt="Kết quả phục chế"
+                    className="w-full h-full object-cover opacity-75"
+                    loading="lazy"
+                  />
                 </div>
-                <h4 className="text-xl lg:text-2xl font-black uppercase italic tracking-tight mb-4 text-slate-900 dark:text-white">{step.t}</h4>
-                <p className="text-gray-500 dark:text-gray-400 font-bold uppercase text-xs tracking-wider leading-loose">"{step.d}"</p>
-              </div>
-            );
-          })}
-        </div>
+              )}
+              <motion.div
+                whileHover={{ rotate: 5, scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+                className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 mb-3 flex items-center justify-center"
+              >
+                <step.icon size={20} />
+              </motion.div>
+              <p className="text-[10px] font-bold text-emerald-500 mb-1">BƯỚC {step.n}</p>
+              <h3 className="text-sm font-semibold mb-2">{step.title}</h3>
+              <p className="text-[11px] text-slate-500 dark:text-[#666] leading-relaxed">{step.desc}</p>
+            </HoverCard>
+          </React.Fragment>
+        ))}
+      </StaggerChildren>
+
+      {/* Timeline connector */}
+      <div className="hidden md:block mt-2 px-[calc(12.5%+20px)]">
+        <TimelineConnector vertical={false} className="opacity-40" />
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);

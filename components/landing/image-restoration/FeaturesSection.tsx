@@ -1,40 +1,116 @@
-
 import React from 'react';
-import { User, Eraser, Palette, Activity, Maximize2, Zap, ShieldCheck, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
+import {
+  User, Eraser, Palette, Activity, Maximize2,
+  Zap, ShieldCheck, Clock,
+} from 'lucide-react';
+import { FadeInUp, StaggerChildren, HoverCard, SectionLabel } from '../_shared/SectionAnimations';
 
-const FEATURES = [
-  { t: 'Face Enhancement', i: User, d: 'Khôi phục chân dung với độ chính xác tuyệt đối, giữ nguyên đặc điểm nhận dạng.' },
-  { t: 'Scratch Removal', i: Eraser, d: 'Tự động xóa bỏ các vết xước, nếp gấp và vết ố bẩn của thời gian.' },
-  { t: 'Color Synthesis', i: Palette, d: 'Chế độ AI thông minh tự động lên màu cho ảnh đen trắng một cách tự nhiên.' },
-  { t: 'Noise Reduction', i: Activity, d: 'Loại bỏ hiện tượng nhiễu hạt (grain) và các lỗi nén kỹ thuật số.' },
-  { t: '8K Upscaling', i: Maximize2, d: 'Nâng cấp kích thước ảnh lên gấp 8 lần mà không làm vỡ hình.' },
-  { t: 'Industrial Speed', i: Zap, d: 'Xử lý phục chế ảnh chỉ trong chưa đầy 5 giây nhờ cụm H100 GPU.' },
-  { t: 'Privacy Vault', i: ShieldCheck, d: 'Dữ liệu cá nhân của bạn được bảo mật tuyệt đối trong mạng riêng ảo VPC.' },
-  { t: 'History Sync', i: Clock, d: 'Lưu trữ lịch sử phục chế đồng bộ trên mọi thiết bị trong Cloud Registry.' }
+interface Feature {
+  icon: React.ElementType;
+  title: string;
+  desc: string;
+  featured: boolean;
+  thumbnail?: string;
+}
+
+const FEATURES: Feature[] = [
+  {
+    icon: User,
+    title: 'Face Enhancement AI',
+    desc: 'Khôi phục chân dung với độ chính xác tuyệt đối — giữ nguyên đặc điểm nhận dạng, xóa mờ, tái tạo chi tiết.',
+    featured: true,
+    thumbnail: 'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?auto=format&fit=crop&q=80&w=600',
+  },
+  {
+    icon: Palette,
+    title: 'Color Synthesis AI',
+    desc: 'AI thông minh tô màu ảnh đen trắng một cách tự nhiên — màu da, trời, cây cỏ chân thực như ảnh gốc.',
+    featured: true,
+    thumbnail: 'https://images.unsplash.com/photo-1547750099-5e6e95ffa01c?auto=format&fit=crop&q=80&w=600',
+  },
+  {
+    icon: Eraser,
+    title: 'Scratch Removal',
+    desc: 'Tự động xóa vết xước, nếp gấp, vết ố bẩn của thời gian — mà không ảnh hưởng chi tiết xung quanh.',
+    featured: false,
+  },
+  {
+    icon: Activity,
+    title: 'Noise Reduction',
+    desc: 'Loại bỏ nhiễu hạt (grain) và lỗi nén kỹ thuật số — ảnh sạch, rõ, chi tiết sắc bén.',
+    featured: false,
+  },
+  {
+    icon: Maximize2,
+    title: '8K Upscaling',
+    desc: 'Nâng cấp kích thước ảnh lên 8× mà không bị vỡ hình — pixel được AI tái tạo từ dữ liệu gốc.',
+    featured: false,
+  },
+  {
+    icon: Zap,
+    title: 'Tốc Độ H100 GPU',
+    desc: 'Xử lý phục chế trong dưới 5 giây nhờ cụm H100 GPU — batch nhiều ảnh cùng lúc.',
+    featured: false,
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Privacy Vault',
+    desc: 'Ảnh cá nhân được mã hóa đầu-cuối trong VPC riêng — tự động xóa sau 24 giờ.',
+    featured: false,
+  },
+  {
+    icon: Clock,
+    title: 'History Sync',
+    desc: 'Lưu trữ lịch sử phục chế đồng bộ trên mọi thiết bị trong Cloud Registry.',
+    featured: false,
+  },
 ];
 
-export const FeaturesSection: React.FC = () => {
-  return (
-    <section className="py-32 lg:py-40 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-black transition-colors">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-16 lg:space-y-24">
-        <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter italic text-center text-slate-900 dark:text-white">Technical Mastery</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-2xl rounded-2xl overflow-hidden">
-          {FEATURES.map((f, i) => {
-            const Icon = f.i;
-            return (
-              <div key={i} className="p-10 lg:p-12 bg-white dark:bg-[#0a0a0c] space-y-6 hover:bg-emerald-500/[0.02] transition-all duration-500">
-                <div className="text-emerald-600 dark:text-emerald-400 opacity-60">
-                  <Icon size={24} />
-                </div>
-                <div className="space-y-2">
-                  <h4 className="text-base lg:text-lg font-black uppercase tracking-widest italic text-slate-900 dark:text-white">{f.t}</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-gray-500 font-bold uppercase leading-loose tracking-tight">"{f.d}"</p>
-                </div>
+export const FeaturesSection: React.FC = () => (
+  <section className="py-20 px-6 lg:px-12 border-t border-black/[0.06] dark:border-white/[0.04]">
+    <div className="max-w-[1400px] mx-auto">
+      <FadeInUp className="mb-10">
+        <SectionLabel>TÍNH NĂNG</SectionLabel>
+        <h2 className="text-3xl font-bold mt-2">Công nghệ phục chế toàn diện</h2>
+        <p className="text-sm text-slate-500 dark:text-[#666] mt-2 max-w-lg">
+          Từ chân dung đến phong cảnh — mọi loại ảnh đều được phục chế với chất lượng studio.
+        </p>
+      </FadeInUp>
+
+      <StaggerChildren className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-fr">
+        {FEATURES.map((f) => (
+          <HoverCard
+            key={f.title}
+            className={`overflow-hidden bg-black/[0.01] dark:bg-white/[0.015] ${
+              f.featured ? 'col-span-2' : 'col-span-1'
+            }`}
+          >
+            {f.featured && f.thumbnail && (
+              <div className="relative w-full h-36 overflow-hidden">
+                <img
+                  src={f.thumbnail}
+                  alt={f.title}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
               </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-};
+            )}
+            <div className="p-5">
+              <motion.div
+                whileHover={{ rotate: [0, -5, 5, 0] }}
+                transition={{ duration: 0.4 }}
+                className="inline-block"
+              >
+                <f.icon size={22} className="text-emerald-500 mb-3" />
+              </motion.div>
+              <h3 className="text-sm font-semibold mb-1">{f.title}</h3>
+              <p className="text-[12px] text-slate-500 dark:text-[#666] leading-relaxed">{f.desc}</p>
+            </div>
+          </HoverCard>
+        ))}
+      </StaggerChildren>
+    </div>
+  </section>
+);
