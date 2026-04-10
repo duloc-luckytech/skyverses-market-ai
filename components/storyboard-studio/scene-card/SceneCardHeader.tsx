@@ -3,12 +3,12 @@ import { ShotTypeBadge } from './ShotTypeBadge';
 import { DurationControl } from './DurationControl';
 import type { ShotType, DurationPreset } from '../../../hooks/useStoryboardStudio';
 
-const STATUS_CONFIG: Record<string, { dot: string; label: string }> = {
-  idle:       { dot: 'bg-white/20',                       label: 'Idle' },
-  analyzing:  { dot: 'bg-amber-400 animate-pulse',         label: 'Analyzing' },
-  generating: { dot: 'bg-brand-blue animate-pulse',        label: 'Rendering' },
-  done:       { dot: 'bg-emerald-500',                     label: 'Done' },
-  error:      { dot: 'bg-rose-500',                        label: 'Error' },
+const STATUS_CONFIG: Record<string, { dot: string; label: string; badge: string }> = {
+  idle:       { dot: 'bg-white/20',                label: 'Idle',       badge: 'bg-white/10 text-white/30 border-white/10' },
+  analyzing:  { dot: 'bg-amber-400 animate-pulse', label: 'Phân tích',  badge: 'bg-amber-500/15 text-amber-400 border-amber-500/20' },
+  generating: { dot: 'bg-brand-blue animate-pulse',label: 'Rendering',  badge: 'bg-brand-blue/15 text-brand-blue border-brand-blue/25' },
+  done:       { dot: 'bg-emerald-500',             label: 'Done ✓',     badge: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' },
+  error:      { dot: 'bg-rose-500',                label: 'Lỗi',        badge: 'bg-rose-500/15 text-rose-400 border-rose-500/20' },
 };
 
 interface SceneCardHeaderProps {
@@ -30,15 +30,15 @@ export const SceneCardHeader: React.FC<SceneCardHeaderProps> = ({
   onDurationChange,
   isProcessing,
 }) => {
-  const { dot, label } = STATUS_CONFIG[status] ?? STATUS_CONFIG.idle;
+  const { dot, label, badge } = STATUS_CONFIG[status] ?? STATUS_CONFIG.idle;
 
   return (
     <div
-      className="flex items-center gap-2 px-3 py-2 border-b border-white/8 bg-white/[0.02]"
+      className="flex items-center gap-2 px-3 py-2 border-b border-slate-100 dark:border-white/8 bg-slate-50 dark:bg-white/[0.02]"
       onClick={e => e.stopPropagation()}
     >
-      {/* Scene number */}
-      <span className="text-[9px] font-black text-white/30 shrink-0 w-5 text-center font-mono">
+      {/* Scene number — pill badge nổi bật */}
+      <span className="shrink-0 inline-flex items-center justify-center min-w-[28px] h-5 px-1.5 rounded-full bg-brand-blue/90 text-white text-[8px] font-black font-mono leading-none shadow-sm">
         #{sceneIndex + 1}
       </span>
 
@@ -58,10 +58,13 @@ export const SceneCardHeader: React.FC<SceneCardHeaderProps> = ({
         />
       </div>
 
-      {/* Status dot + label */}
-      <div className="flex items-center gap-1.5 shrink-0" title={label}>
-        <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
-        <span className="text-[9px] text-white/30 hidden sm:inline font-bold uppercase tracking-widest leading-none">{label}</span>
+      {/* Status badge — màu theo trạng thái */}
+      <div
+        className={`flex items-center gap-1 shrink-0 px-1.5 py-0.5 rounded-full border text-[7px] font-black uppercase tracking-widest leading-none ${badge}`}
+        title={label}
+      >
+        <span className={`w-1.5 h-1.5 rounded-full ${dot} shrink-0`} />
+        <span className="hidden sm:inline">{label}</span>
       </div>
     </div>
   );

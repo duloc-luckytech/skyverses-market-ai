@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence, Reorder, useDragControls, useMotionValue, useTransform } from 'framer-motion';
 import {
   Zap, Layers, Plus, RefreshCw, AlertCircle, Clock,
@@ -94,11 +94,20 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
     [-5, 0, 5],
     ['0 8px 30px rgba(0,144,255,0.18)', '0 2px 8px rgba(0,0,0,0.08)', '0 8px 30px rgba(0,144,255,0.18)']
   );
-  const [hovered, setHovered] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(true); // autoPlay bắt đầu là playing
 
   const hasVideo = !!scene.videoUrl;
   const hasImage = !!scene.visualUrl;
   const isGenerating = scene.status === 'generating';
+
+  const togglePlay = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const vid = videoRef.current;
+    if (!vid) return;
+    if (vid.paused) { vid.play(); setIsPlaying(true); }
+    else { vid.pause(); setIsPlaying(false); }
+  }, []);
 
   const characterAssets = (scene.characterIds || [])
     .map(id => assets.find(a => a.id === id))
@@ -122,8 +131,6 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
 
       <div
         onClick={onToggle}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
         className={`relative flex flex-col rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer ml-1
           ${isSelected
             ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(0,144,255,0.12)]'
@@ -144,7 +151,6 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
 
         {/* ── Visual Area ─────────────────────────────────────── */}
         <div
-          onClick={(e) => { if (hasImage || hasVideo) { e.stopPropagation(); onView(); } }}
           className="relative aspect-video bg-slate-100 dark:bg-black overflow-hidden"
         >
           {/* State A: Empty */}
@@ -155,42 +161,59 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
             </div>
           )}
 
-          {/* State B: Has image */}
+          {/* State B: Has image — always-visible view button */}
           {hasImage && !hasVideo && (
             <>
-              <img src={scene.visualUrl!} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={`Cảnh ${scene.order}`} />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute bottom-0 left-0 right-0 p-3 flex gap-2 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <button
-                  onClick={(e) => { e.stopPropagation(); onView(); }}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-black/50 backdrop-blur-md border border-white/10 rounded-lg py-2 text-[9px] font-black uppercase tracking-widest text-white hover:bg-brand-blue/60 transition-colors"
-                >
-                  <Maximize2 size={11} /> Xem đầy đủ
-                </button>
-              </div>
+              <img
+                src={scene.visualUrl!}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                alt={`Cảnh ${scene.order}`}
+                onClick={(e) => { e.stopPropagation(); onView(); }}
+              />
+              {/* Always-visible view button — bottom-right, 60% opacity */}
+              <button
+                onClick={(e) => { e.stopPropagation(); onView(); }}
+                className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-black uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
+              >
+                <Maximize2 size={10} /> <span className="hidden sm:inline">Xem</span>
+              </button>
             </>
           )}
 
-          {/* State C: Has video */}
+          {/* State C: Has video — play/pause toggle */}
           {hasVideo && (
             <>
-              <video src={scene.videoUrl!} autoPlay loop muted playsInline className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute bottom-0 left-0 right-0 p-3 flex gap-2 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <button
-                  onClick={(e) => { e.stopPropagation(); onView(); }}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-black/50 backdrop-blur-md border border-white/10 rounded-lg py-2 text-[9px] font-black uppercase tracking-widest text-white hover:bg-brand-blue/60 transition-colors"
-                >
-                  <Play size={11} fill="currentColor" /> Xem toàn màn hình
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); }}
-                  className="flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white hover:bg-white/20 transition-colors"
-                  title="Tải xuống"
-                >
-                  <Download size={11} />
-                </button>
-              </div>
+              <video
+                ref={videoRef}
+                src={scene.videoUrl!}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+                onClick={(e) => { e.stopPropagation(); onView(); }}
+              />
+              {/* Play/pause overlay — center when paused, corner when playing */}
+              <button
+                onClick={togglePlay}
+                className={`absolute transition-all duration-200 flex items-center justify-center rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white hover:bg-brand-blue/70 z-10
+                  ${isPlaying
+                    ? 'bottom-2 left-2 w-6 h-6 opacity-50 hover:opacity-100'
+                    : 'inset-0 m-auto w-10 h-10 opacity-90'
+                  }`}
+              >
+                {isPlaying
+                  ? <SquareIcon size={10} fill="currentColor" />
+                  : <Play size={16} fill="currentColor" className="ml-0.5" />
+                }
+              </button>
+              {/* Always-visible fullscreen button */}
+              <button
+                onClick={(e) => { e.stopPropagation(); onView(); }}
+                className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-black uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
+              >
+                <Play size={10} fill="currentColor" /> <span className="hidden sm:inline">Xem</span>
+              </button>
             </>
           )}
 
@@ -207,16 +230,16 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
 
           {/* Media type badge */}
           {hasVideo && (
-            <div className="absolute top-2 right-9 bg-purple-600 text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">VIDEO</div>
+            <div className="absolute top-2 right-9 bg-purple-600 text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md z-10">VIDEO</div>
           )}
           {hasImage && !hasVideo && (
-            <div className="absolute top-2 right-9 bg-brand-blue text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">HÌNH</div>
+            <div className="absolute top-2 right-9 bg-brand-blue text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md z-10">HÌNH</div>
           )}
 
           {/* Selection checkbox */}
           <div
             onClick={(e) => { e.stopPropagation(); onToggle(); }}
-            className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shadow-sm
+            className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shadow-sm z-10
               ${isSelected
                 ? 'bg-brand-blue border-brand-blue'
                 : 'bg-white/50 dark:bg-black/40 border-slate-300 dark:border-white/20 opacity-0 group-hover:opacity-100'
@@ -224,17 +247,6 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
           >
             {isSelected && <Check size={11} strokeWidth={3.5} className="text-white" />}
           </div>
-
-          {/* Hover quick actions overlay */}
-          <SceneHoverActions
-            visible={hovered && !isGenerating}
-            isProcessing={isProcessing}
-            isEnhancingPrompt={isEnhancingPrompt}
-            onRegenerateImage={onReGenerateImage}
-            onRegenerateVideo={onReGenerateVideo}
-            onEnhancePrompt={onEnhancePrompt ?? (() => {})}
-            onDelete={onDelete}
-          />
         </div>
 
         {/* ── Character strip ─────────────────────────────────── */}
@@ -266,11 +278,21 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
               value={scene.prompt}
               onChange={(e) => onUpdate({ prompt: e.target.value })}
               onClick={(e) => e.stopPropagation()}
-              className="w-full bg-transparent border-none p-0 text-[11px] font-medium leading-relaxed text-slate-600 dark:text-gray-300 italic focus:ring-0 resize-none min-h-[48px] outline-none no-scrollbar"
-              rows={3}
+              className="w-full bg-transparent border-none p-0 text-[12px] font-medium leading-relaxed text-slate-600 dark:text-gray-300 italic focus:ring-0 resize-none min-h-[52px] outline-none no-scrollbar"
+              rows={4}
             />
           </div>
         </div>
+
+        {/* ── Persistent bottom action bar ────────────────────── */}
+        <SceneHoverActions
+          isProcessing={isProcessing}
+          isEnhancingPrompt={isEnhancingPrompt}
+          onRegenerateImage={onReGenerateImage}
+          onRegenerateVideo={onReGenerateVideo}
+          onEnhancePrompt={onEnhancePrompt ?? (() => {})}
+          onDelete={onDelete}
+        />
       </div>
     </Reorder.Item>
   );
@@ -697,15 +719,48 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               ))}
             </div>
           ) : scenes.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-5 py-24 text-center">
-              <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
-                <Clapperboard size={32} className="text-slate-300 dark:text-white/15" />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
+              className="flex flex-col items-center justify-center gap-6 py-16 px-6 text-center border-2 border-dashed border-slate-200 dark:border-white/8 rounded-2xl bg-white dark:bg-white/[0.01]"
+            >
+              {/* Icon */}
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+                <Clapperboard size={28} className="text-slate-300 dark:text-white/20" />
               </div>
+
+              {/* Title */}
               <div>
-                <p className="text-lg font-black uppercase italic tracking-tight text-slate-300 dark:text-white/20">Chưa có phân cảnh</p>
-                <p className="text-[11px] text-slate-400 dark:text-gray-600 mt-1">Nhập kịch bản và nhấn "Phân tách kịch bản" để bắt đầu</p>
+                <p className="text-lg font-black uppercase italic tracking-tight text-slate-400 dark:text-white/30">🎬 Chưa có phân cảnh nào</p>
+                <p className="text-[11px] text-slate-400 dark:text-gray-600 mt-1.5">Để bắt đầu, hãy làm theo 3 bước:</p>
               </div>
-            </div>
+
+              {/* 3-step guide */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+                {[
+                  { num: '1', text: 'Nhập kịch bản phía trên' },
+                  { num: '2', text: 'Chọn model AI (Flux / SDXL)' },
+                  { num: '3', text: 'Nhấn "Phân tách kịch bản"' },
+                ].map((step, i) => (
+                  <React.Fragment key={step.num}>
+                    <div className="flex items-center gap-2.5 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/8 rounded-xl px-4 py-2.5 text-left">
+                      <span className="w-6 h-6 rounded-full bg-brand-blue/90 text-white text-[10px] font-black flex items-center justify-center shrink-0">{step.num}</span>
+                      <span className="text-[11px] font-semibold text-slate-600 dark:text-gray-300 whitespace-nowrap">{step.text}</span>
+                    </div>
+                    {i < 2 && <span className="text-slate-200 dark:text-white/15 font-black hidden sm:block">→</span>}
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <button
+                onClick={() => setIsTemplatePickerOpen(true)}
+                className="flex items-center gap-2 px-6 py-2.5 bg-brand-blue/10 hover:bg-brand-blue/20 border border-brand-blue/20 hover:border-brand-blue/40 rounded-xl text-[11px] font-black uppercase tracking-widest text-brand-blue transition-all"
+              >
+                <LayoutGrid size={13} /> 📋 Dùng mẫu kịch bản có sẵn
+              </button>
+            </motion.div>
           ) : (
             <Reorder.Group
               axis="y"
