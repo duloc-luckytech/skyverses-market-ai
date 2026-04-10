@@ -9,6 +9,8 @@ interface SceneHoverActionsProps {
   onRegenerateVideo:  () => void;
   onEnhancePrompt:    () => void;
   onDelete:           () => void;
+  /** Khi true: nút to hơn, label luôn hiện (list view ngang) */
+  isListView?: boolean;
   /** @deprecated — visible prop no longer needed (bar is always shown) */
   visible?: boolean;
 }
@@ -20,6 +22,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
   onRegenerateVideo,
   onEnhancePrompt,
   onDelete,
+  isListView = false,
 }) => {
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
@@ -64,7 +67,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
 
   return (
     <div
-      className="flex items-center border-t border-slate-100 dark:border-white/8 bg-white dark:bg-[#0d0d10] px-2 py-1.5 gap-0.5"
+      className={`flex items-center border-t border-slate-100 dark:border-white/8 bg-white dark:bg-[#0d0d10] gap-1 ${isListView ? 'px-3 py-2' : 'px-2 py-1.5 gap-0.5'}`}
       onClick={e => e.stopPropagation()}
     >
       {/* Primary action buttons */}
@@ -75,11 +78,13 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
           onClick={e => { e.stopPropagation(); action.onClick(); }}
           disabled={action.disabled}
           title={action.title}
-          className={`flex-1 flex items-center justify-center gap-1 px-1 py-1.5 rounded-lg text-slate-400 dark:text-white/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed ${action.color}`}
+          className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg text-slate-400 dark:text-white/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed ${action.color} ${isListView ? 'py-2 px-2' : 'py-1.5 px-1'}`}
         >
           {action.icon}
-          {/* Label: hidden on mobile, shown on desktop */}
-          <span className="hidden md:inline text-[8px] font-black uppercase tracking-wider leading-none">{action.label}</span>
+          {/* Label: luôn hiện trong list view, hidden trên mobile ở grid view */}
+          <span className={`text-[8px] font-black uppercase tracking-wider leading-none ${isListView ? '' : 'hidden md:inline'}`}>
+            {action.label}
+          </span>
         </motion.button>
       ))}
 

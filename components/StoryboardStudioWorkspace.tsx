@@ -250,30 +250,6 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             </div>
           </div>
 
-          {/* Generate button */}
-          <div className="px-4 pb-4">
-            <div className="relative group/btn">
-              <button
-                onClick={s.handleCreateStoryboard}
-                disabled={s.isProcessing || !s.script.trim()}
-                className={`w-full py-3.5 rounded-xl text-white font-semibold uppercase text-[11px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2.5 ${
-                  s.isProcessing || !s.script.trim()
-                    ? 'bg-slate-200 dark:bg-white/[0.04] text-slate-400 dark:text-slate-600 cursor-not-allowed'
-                    : 'bg-brand-blue hover:brightness-110 active:scale-[0.98] shadow-brand-blue/20'
-                }`}
-              >
-                {s.isProcessing ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} fill="currentColor" />}
-                {s.isProcessing ? 'Đang xử lý...' : 'Phân tách kịch bản'}
-              </button>
-              {!s.script.trim() && !s.isProcessing && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover/btn:opacity-100 pointer-events-none transition-all z-50">
-                  <div className="bg-slate-900 dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg text-[9px] font-semibold whitespace-nowrap shadow-xl">
-                    Vui lòng nhập kịch bản
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </aside>
 

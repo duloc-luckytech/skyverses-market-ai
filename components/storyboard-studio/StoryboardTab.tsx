@@ -71,6 +71,7 @@ interface SceneCardWrapperProps {
   assets: ReferenceAsset[];
   isProcessing: boolean;
   isEnhancingPrompt?: boolean;
+  viewLayout?: 'grid' | 'list' | 'timeline';
   onToggle: () => void;
   onView: () => void;
   onUpdate: (updates: any) => void;
@@ -84,6 +85,7 @@ interface SceneCardWrapperProps {
 
 const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
   scene, index, isSelected, assets, isProcessing, isEnhancingPrompt,
+  viewLayout = 'list',
   onToggle, onView, onUpdate, onReGenerateImage, onReGenerateVideo,
   onDelete, onEnhancePrompt, onShotTypeChange, onDurationChange,
 }) => {
@@ -95,8 +97,9 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
     ['0 8px 30px rgba(0,144,255,0.18)', '0 2px 8px rgba(0,0,0,0.08)', '0 8px 30px rgba(0,144,255,0.18)']
   );
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true); // autoPlay bắt đầu là playing
+  const [isPlaying, setIsPlaying] = useState(true);
 
+  const isListView = viewLayout === 'list';
   const hasVideo = !!scene.videoUrl;
   const hasImage = !!scene.visualUrl;
   const isGenerating = scene.status === 'generating';
@@ -112,6 +115,159 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
   const characterAssets = (scene.characterIds || [])
     .map(id => assets.find(a => a.id === id))
     .filter(Boolean) as ReferenceAsset[];
+
+  // ── Visual area (shared between list & grid layouts) ─────────────────
+  const visualArea = (
+    <div className={`relative bg-slate-100 dark:bg-black overflow-hidden ${isListView ? 'w-[38%] shrink-0 self-stretch' : 'aspect-video'}`}>
+      <div className={`relative w-full h-full ${!isListView ? 'aspect-video' : ''}`}>
+
+        {/* State A: Empty */}
+        {!hasImage && !hasVideo && !isGenerating && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-[#0f0f14] dark:to-[#0a0a0e]">
+            <Clapperboard size={isListView ? 24 : 32} className="text-slate-300 dark:text-white/15" />
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-white/15">Chưa render</span>
+          </div>
+        )}
+
+        {/* State B: Has image */}
+        {hasImage && !hasVideo && (
+          <>
+            <img
+              src={scene.visualUrl!}
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              alt={`Cảnh ${scene.order}`}
+              onClick={(e) => { e.stopPropagation(); onView(); }}
+            />
+            <button
+              onClick={(e) => { e.stopPropagation(); onView(); }}
+              className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-black uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
+            >
+              <Maximize2 size={10} /> <span className={isListView ? '' : 'hidden sm:inline'}>Xem</span>
+            </button>
+          </>
+        )}
+
+        {/* State C: Has video */}
+        {hasVideo && (
+          <>
+            <video
+              ref={videoRef}
+              src={scene.videoUrl!}
+              autoPlay loop muted playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+              onClick={(e) => { e.stopPropagation(); onView(); }}
+            />
+            <button
+              onClick={togglePlay}
+              className={`absolute transition-all duration-200 flex items-center justify-center rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white hover:bg-brand-blue/70 z-10
+                ${isPlaying
+                  ? 'bottom-2 left-2 w-6 h-6 opacity-50 hover:opacity-100'
+                  : 'inset-0 m-auto w-10 h-10 opacity-90'
+                }`}
+            >
+              {isPlaying
+                ? <SquareIcon size={10} fill="currentColor" />
+                : <Play size={16} fill="currentColor" className="ml-0.5" />
+              }
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onView(); }}
+              className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-black uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
+            >
+              <Play size={10} fill="currentColor" /> <span className={isListView ? '' : 'hidden sm:inline'}>Xem</span>
+            </button>
+          </>
+        )}
+
+        {/* Generating overlay */}
+        {isGenerating && (
+          <div className="absolute inset-0 bg-white/70 dark:bg-black/70 backdrop-blur-md flex flex-col items-center justify-center gap-3 z-20">
+            <div className="relative">
+              <Loader2 className="text-brand-blue animate-spin" size={28} />
+              <div className="absolute inset-0 rounded-full bg-brand-blue/20 blur-xl animate-pulse" />
+            </div>
+            <span className="text-[9px] font-black text-slate-700 dark:text-white uppercase tracking-[0.4em] animate-pulse">Rendering...</span>
+          </div>
+        )}
+
+        {/* Media type badge */}
+        {hasVideo && <div className="absolute top-2 right-9 bg-purple-600 text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md z-10">VIDEO</div>}
+        {hasImage && !hasVideo && <div className="absolute top-2 right-9 bg-brand-blue text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md z-10">HÌNH</div>}
+
+        {/* Selection checkbox */}
+        <div
+          onClick={(e) => { e.stopPropagation(); onToggle(); }}
+          className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shadow-sm z-10
+            ${isSelected
+              ? 'bg-brand-blue border-brand-blue'
+              : 'bg-white/50 dark:bg-black/40 border-slate-300 dark:border-white/20 opacity-0 group-hover:opacity-100'
+            }`}
+        >
+          {isSelected && <Check size={11} strokeWidth={3.5} className="text-white" />}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── Info pane (header + character + prompt + actions) ─────────────────
+  const infoPane = (
+    <div className="flex flex-col flex-1 min-w-0">
+      {/* Header */}
+      <SceneCardHeader
+        sceneIndex={index}
+        shotType={scene.shotType ?? 'WIDE'}
+        duration={scene.duration ?? 8}
+        status={scene.status}
+        onShotTypeChange={onShotTypeChange}
+        onDurationChange={onDurationChange}
+        isProcessing={isProcessing}
+      />
+
+      {/* Character strip */}
+      {characterAssets.length > 0 && (
+        <div className="px-4 py-2 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5 flex items-center gap-2">
+          <User size={10} className="text-emerald-500 shrink-0" />
+          <span className="text-[7px] font-black uppercase text-emerald-500 tracking-widest shrink-0">Mỏ neo:</span>
+          <div className="flex -space-x-1.5">
+            {characterAssets.slice(0, 4).map((asset) => (
+              <div key={asset.id} className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0d0d10] overflow-hidden shadow-sm" title={asset.name}>
+                {asset.url
+                  ? <img src={asset.url} className="w-full h-full object-cover" alt={asset.name} />
+                  : <div className="w-full h-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[7px] font-black text-slate-500">{asset.name.charAt(0)}</div>
+                }
+              </div>
+            ))}
+            {characterAssets.length > 4 && (
+              <div className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0d0d10] bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[7px] font-black text-slate-500">+{characterAssets.length - 4}</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Prompt textarea */}
+      <div className="px-4 py-3 flex-grow bg-white dark:bg-transparent">
+        <p className="text-[7px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest mb-1.5">Kịch bản chi tiết</p>
+        <textarea
+          value={scene.prompt}
+          onChange={(e) => onUpdate({ prompt: e.target.value })}
+          onClick={(e) => e.stopPropagation()}
+          className="w-full bg-transparent border-none p-0 text-[12px] font-medium leading-relaxed text-slate-600 dark:text-gray-300 italic focus:ring-0 resize-none outline-none no-scrollbar"
+          rows={isListView ? 3 : 4}
+        />
+      </div>
+
+      {/* Bottom action bar */}
+      <SceneHoverActions
+        isProcessing={isProcessing}
+        isEnhancingPrompt={isEnhancingPrompt}
+        onRegenerateImage={onReGenerateImage}
+        onRegenerateVideo={onReGenerateVideo}
+        onEnhancePrompt={onEnhancePrompt ?? (() => {})}
+        onDelete={onDelete}
+        isListView={isListView}
+      />
+    </div>
+  );
 
   return (
     <Reorder.Item
@@ -131,168 +287,16 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
 
       <div
         onClick={onToggle}
-        className={`relative flex flex-col rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer ml-1
+        className={`relative flex overflow-hidden transition-all duration-300 cursor-pointer ml-1 rounded-2xl
+          ${isListView ? 'flex-row min-h-[120px]' : 'flex-col'}
           ${isSelected
             ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(0,144,255,0.12)]'
             : 'ring-1 ring-slate-200 dark:ring-white/8 hover:ring-brand-blue/30 hover:shadow-xl dark:hover:shadow-brand-blue/5'
           }
           bg-white dark:bg-[#0d0d10]`}
       >
-        {/* ── Scene card header (shot type, duration, status) ── */}
-        <SceneCardHeader
-          sceneIndex={index}
-          shotType={scene.shotType ?? 'WIDE'}
-          duration={scene.duration ?? 8}
-          status={scene.status}
-          onShotTypeChange={onShotTypeChange}
-          onDurationChange={onDurationChange}
-          isProcessing={isProcessing}
-        />
-
-        {/* ── Visual Area ─────────────────────────────────────── */}
-        <div
-          className="relative aspect-video bg-slate-100 dark:bg-black overflow-hidden"
-        >
-          {/* State A: Empty */}
-          {!hasImage && !hasVideo && !isGenerating && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-[#0f0f14] dark:to-[#0a0a0e]">
-              <Clapperboard size={32} className="text-slate-300 dark:text-white/15" />
-              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-white/15">Chưa render</span>
-            </div>
-          )}
-
-          {/* State B: Has image — always-visible view button */}
-          {hasImage && !hasVideo && (
-            <>
-              <img
-                src={scene.visualUrl!}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                alt={`Cảnh ${scene.order}`}
-                onClick={(e) => { e.stopPropagation(); onView(); }}
-              />
-              {/* Always-visible view button — bottom-right, 60% opacity */}
-              <button
-                onClick={(e) => { e.stopPropagation(); onView(); }}
-                className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-black uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
-              >
-                <Maximize2 size={10} /> <span className="hidden sm:inline">Xem</span>
-              </button>
-            </>
-          )}
-
-          {/* State C: Has video — play/pause toggle */}
-          {hasVideo && (
-            <>
-              <video
-                ref={videoRef}
-                src={scene.videoUrl!}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-                onClick={(e) => { e.stopPropagation(); onView(); }}
-              />
-              {/* Play/pause overlay — center when paused, corner when playing */}
-              <button
-                onClick={togglePlay}
-                className={`absolute transition-all duration-200 flex items-center justify-center rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white hover:bg-brand-blue/70 z-10
-                  ${isPlaying
-                    ? 'bottom-2 left-2 w-6 h-6 opacity-50 hover:opacity-100'
-                    : 'inset-0 m-auto w-10 h-10 opacity-90'
-                  }`}
-              >
-                {isPlaying
-                  ? <SquareIcon size={10} fill="currentColor" />
-                  : <Play size={16} fill="currentColor" className="ml-0.5" />
-                }
-              </button>
-              {/* Always-visible fullscreen button */}
-              <button
-                onClick={(e) => { e.stopPropagation(); onView(); }}
-                className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-black uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
-              >
-                <Play size={10} fill="currentColor" /> <span className="hidden sm:inline">Xem</span>
-              </button>
-            </>
-          )}
-
-          {/* Generating state overlay */}
-          {isGenerating && (
-            <div className="absolute inset-0 bg-white/70 dark:bg-black/70 backdrop-blur-md flex flex-col items-center justify-center gap-3 z-20">
-              <div className="relative">
-                <Loader2 className="text-brand-blue animate-spin" size={28} />
-                <div className="absolute inset-0 rounded-full bg-brand-blue/20 blur-xl animate-pulse" />
-              </div>
-              <span className="text-[9px] font-black text-slate-700 dark:text-white uppercase tracking-[0.4em] animate-pulse">Rendering...</span>
-            </div>
-          )}
-
-          {/* Media type badge */}
-          {hasVideo && (
-            <div className="absolute top-2 right-9 bg-purple-600 text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md z-10">VIDEO</div>
-          )}
-          {hasImage && !hasVideo && (
-            <div className="absolute top-2 right-9 bg-brand-blue text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md z-10">HÌNH</div>
-          )}
-
-          {/* Selection checkbox */}
-          <div
-            onClick={(e) => { e.stopPropagation(); onToggle(); }}
-            className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shadow-sm z-10
-              ${isSelected
-                ? 'bg-brand-blue border-brand-blue'
-                : 'bg-white/50 dark:bg-black/40 border-slate-300 dark:border-white/20 opacity-0 group-hover:opacity-100'
-              }`}
-          >
-            {isSelected && <Check size={11} strokeWidth={3.5} className="text-white" />}
-          </div>
-        </div>
-
-        {/* ── Character strip ─────────────────────────────────── */}
-        {characterAssets.length > 0 && (
-          <div className="px-4 py-2 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5 flex items-center gap-2">
-            <User size={10} className="text-emerald-500 shrink-0" />
-            <span className="text-[7px] font-black uppercase text-emerald-500 tracking-widest shrink-0">Mỏ neo:</span>
-            <div className="flex -space-x-1.5">
-              {characterAssets.slice(0, 4).map((asset) => (
-                <div key={asset.id} className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0d0d10] overflow-hidden shadow-sm" title={asset.name}>
-                  {asset.url
-                    ? <img src={asset.url} className="w-full h-full object-cover" alt={asset.name} />
-                    : <div className="w-full h-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[7px] font-black text-slate-500">{asset.name.charAt(0)}</div>
-                  }
-                </div>
-              ))}
-              {characterAssets.length > 4 && (
-                <div className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0d0d10] bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[7px] font-black text-slate-500">+{characterAssets.length - 4}</div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* ── Prompt textarea ──────────────────────────────────── */}
-        <div className="p-4 flex-grow space-y-3 bg-white dark:bg-transparent">
-          <div>
-            <p className="text-[7px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest mb-1.5">Kịch bản chi tiết</p>
-            <textarea
-              value={scene.prompt}
-              onChange={(e) => onUpdate({ prompt: e.target.value })}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full bg-transparent border-none p-0 text-[12px] font-medium leading-relaxed text-slate-600 dark:text-gray-300 italic focus:ring-0 resize-none min-h-[52px] outline-none no-scrollbar"
-              rows={4}
-            />
-          </div>
-        </div>
-
-        {/* ── Persistent bottom action bar ────────────────────── */}
-        <SceneHoverActions
-          isProcessing={isProcessing}
-          isEnhancingPrompt={isEnhancingPrompt}
-          onRegenerateImage={onReGenerateImage}
-          onRegenerateVideo={onReGenerateVideo}
-          onEnhancePrompt={onEnhancePrompt ?? (() => {})}
-          onDelete={onDelete}
-        />
+        {visualArea}
+        {infoPane}
       </div>
     </Reorder.Item>
   );
@@ -434,7 +438,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
 }) => {
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const mainAudioInputRef = useRef<HTMLInputElement>(null);
-  const [viewLayout, setViewLayout] = useState<'grid' | 'list' | 'timeline'>('grid');
+  const [viewLayout, setViewLayout] = useState<'grid' | 'list' | 'timeline'>('list');
   const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
 
   const handleMainImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -777,6 +781,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   assets={assets}
                   isProcessing={isProcessing}
                   isEnhancingPrompt={enhancingSceneId === scene.id}
+                  viewLayout={viewLayout}
                   onToggle={() => toggleSceneSelection(scene.id)}
                   onView={() => onViewScene(scene)}
                   onUpdate={(updates) => updateScene(scene.id, updates)}
