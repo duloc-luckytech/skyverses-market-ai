@@ -4,7 +4,7 @@ import { motion, AnimatePresence, Reorder, useDragControls, useMotionValue, useT
 import {
   Zap, Clock,
   Check, MonitorPlay, User, Maximize2,
-  Grid2X2, Film,
+  Grid2X2, Film, FileText,
   Image as LucideImage, Loader2, Square as SquareIcon, LayoutGrid, Settings,
   Sparkles, Music, Mic, FileAudio, Clapperboard,
   Play, Video, AlignJustify,
@@ -319,6 +319,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   const mainAudioInputRef = useRef<HTMLInputElement>(null);
   const [viewLayout, setViewLayout] = useState<'grid' | 'list' | 'timeline'>('list');
   const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
+  const [bottomTab, setBottomTab] = useState<'script' | 'scenes' | 'videos'>('scenes');
 
   const handleMainImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -337,17 +338,24 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   const allSelected = selectedSceneIds.length === scenes.length && scenes.length > 0;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-      className="flex-grow flex flex-col p-5 lg:p-10 overflow-y-auto no-scrollbar bg-[#fafafa] dark:bg-[#050506] transition-colors duration-500"
+      className="flex-grow flex flex-col bg-[#fafafa] dark:bg-[#050506] transition-colors duration-500 relative"
     >
-      <div className="max-w-[1600px] mx-auto w-full space-y-8 lg:space-y-10 pb-48 lg:pb-40">
+      {/* ── Scrollable content area ──────────────────────────────── */}
+      <div className="flex-1 overflow-y-auto no-scrollbar p-5 lg:p-10 pb-24">
+      <div className="max-w-[1600px] mx-auto w-full space-y-8 lg:space-y-10">
 
         {/* ── Header ──────────────────────────────────────────── */}
         <div className="flex items-center gap-3 border-l-4 border-brand-blue pl-5">
           <Zap size={18} className="text-brand-blue" />
           <h2 className="text-2xl lg:text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Tạo Kịch Bản</h2>
         </div>
+
+        {/* ── Script tab ───────────────────────────────────────── */}
+        {bottomTab === 'script' && (
+          <AnimatePresence mode="wait">
+            <motion.div key="script-tab" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
 
         {/* ── Script Input ─────────────────────────────────────── */}
         <div className="space-y-4 max-w-6xl mx-auto w-full">
@@ -504,7 +512,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
           handleReGenerateAsset={handleReGenerateAsset}
         />
 
-        {/* ── AI Script Assistant — Phase 3 ────────────────────── */}
+        {/* ── AI Script Assistant ─────────────────────────────── */}
         <AIScriptAssistant
           script={script}
           scenes={scenes}
@@ -513,8 +521,17 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
           isProcessing={isProcessing}
         />
 
+            </motion.div>
+          </AnimatePresence>
+        )}
+
+        {/* ── Scenes tab ───────────────────────────────────────── */}
+        {bottomTab === 'scenes' && (
+          <AnimatePresence mode="wait">
+            <motion.div key="scenes-tab" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+
         {/* ── Scene Grid ───────────────────────────────────────── */}
-        <div className="space-y-6 pt-8 border-t border-slate-100 dark:border-white/5">
+        <div className="space-y-6 pt-2 border-slate-100 dark:border-white/5">
           {/* Header toolbar */}
           <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
@@ -675,6 +692,89 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
             </Reorder.Group>
           )}
         </div>
+
+            </motion.div>
+          </AnimatePresence>
+        )}
+
+        {/* ── Videos tab ───────────────────────────────────────── */}
+        {bottomTab === 'videos' && (
+          <AnimatePresence mode="wait">
+            <motion.div key="videos-tab" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6 pt-2">
+
+              {/* Header */}
+              <div className="flex items-center gap-2.5">
+                <Video size={18} className="text-purple-500" />
+                <h3 className="text-xl lg:text-2xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Video đã render</h3>
+                {scenes.filter(s => s.videoUrl).length > 0 && (
+                  <span className="ml-1 text-[9px] font-black uppercase tracking-widest text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded-full">
+                    {scenes.filter(s => s.videoUrl).length} video
+                  </span>
+                )}
+              </div>
+
+              {scenes.filter(s => s.videoUrl).length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-5 py-20 text-center border-2 border-dashed border-slate-200 dark:border-white/8 rounded-2xl">
+                  <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+                    <Video size={28} className="text-slate-300 dark:text-white/20" />
+                  </div>
+                  <div>
+                    <p className="text-base font-black uppercase italic tracking-tight text-slate-400 dark:text-white/30">Chưa có video nào</p>
+                    <p className="text-[11px] text-slate-400 dark:text-gray-600 mt-1.5">Render video từ tab Bối cảnh để xem ở đây</p>
+                  </div>
+                  <button
+                    onClick={() => setBottomTab('scenes')}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 rounded-xl text-[11px] font-black uppercase tracking-widest text-purple-500 transition-all"
+                  >
+                    <Clapperboard size={13} /> Đến Bối cảnh
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+                  {scenes.filter(s => s.videoUrl).map((scene) => (
+                    <motion.div
+                      key={scene.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="group relative rounded-2xl overflow-hidden bg-black ring-1 ring-white/10 cursor-pointer hover:ring-purple-500/50 transition-all"
+                      onClick={() => onViewScene(scene)}
+                    >
+                      <div className="relative aspect-video">
+                        <video
+                          src={scene.videoUrl!}
+                          autoPlay loop muted playsInline
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                        {/* Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                        {/* Scene # badge */}
+                        <div className="absolute top-2 left-2 inline-flex items-center justify-center min-w-[26px] h-5 px-1.5 rounded-full bg-brand-blue/90 text-white text-[8px] font-black font-mono">
+                          #{scene.order}
+                        </div>
+                        <div className="absolute top-2 right-2 bg-purple-600 text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">VIDEO</div>
+                        {/* Bottom info */}
+                        <div className="absolute bottom-0 left-0 right-0 p-3">
+                          <p className="text-[10px] font-black text-white/90 uppercase tracking-wider leading-none mb-1">{scene.shotType ?? 'WIDE'} · {scene.duration ?? 8}s</p>
+                          <p className="text-[10px] text-white/60 leading-snug line-clamp-2 italic">{scene.prompt}</p>
+                        </div>
+                        {/* Play icon center */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                            <Play size={16} fill="currentColor" className="text-white ml-0.5" />
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+            </motion.div>
+          </AnimatePresence>
+        )}
+
+      </div>
       </div>
 
       {/* Template Picker Modal */}
@@ -683,6 +783,41 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
         onClose={() => setIsTemplatePickerOpen(false)}
         onSelect={(script) => setScript(script)}
       />
+
+      {/* ── Bottom Tab Bar (cố định) ─────────────────────────── */}
+      <div className="shrink-0 flex items-stretch border-t border-slate-200 dark:border-white/8 bg-white dark:bg-[#0a0a0c] z-30">
+        {([
+          { id: 'script',  icon: <FileText size={16} />,    label: 'Script',    badge: null },
+          { id: 'scenes',  icon: <Clapperboard size={16} />, label: 'Bối cảnh', badge: scenes.length > 0 ? scenes.length : null },
+          { id: 'videos',  icon: <Video size={16} />,        label: 'Video',     badge: scenes.filter(s => s.videoUrl).length > 0 ? scenes.filter(s => s.videoUrl).length : null },
+        ] as { id: 'script' | 'scenes' | 'videos'; icon: React.ReactNode; label: string; badge: number | null }[]).map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setBottomTab(tab.id)}
+            className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 relative transition-all
+              ${bottomTab === tab.id
+                ? 'text-brand-blue'
+                : 'text-slate-400 dark:text-white/30 hover:text-slate-700 dark:hover:text-white/60'
+              }`}
+          >
+            {/* Active indicator */}
+            {bottomTab === tab.id && (
+              <motion.div layoutId="bottomTabIndicator" className="absolute top-0 left-4 right-4 h-0.5 bg-brand-blue rounded-full" />
+            )}
+            <div className="relative">
+              {tab.icon}
+              {tab.badge !== null && (
+                <span className={`absolute -top-1.5 -right-2.5 min-w-[14px] h-[14px] rounded-full text-[8px] font-black flex items-center justify-center px-0.5 leading-none
+                  ${bottomTab === tab.id ? 'bg-brand-blue text-white' : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/40'}`}>
+                  {tab.badge}
+                </span>
+              )}
+            </div>
+            <span className="text-[9px] font-black uppercase tracking-wider leading-none">{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
     </motion.div>
   );
 };
