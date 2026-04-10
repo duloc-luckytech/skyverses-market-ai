@@ -181,7 +181,6 @@ const QuickGenWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio }
   const [explorerImages, setExplorerImages] = useState<string[]>([]);
   const { isAuthenticated, login, credits, useCredits, addCredits, refreshUserInfo } = useAuth();
 
-  const COST = 80;
   const MAX_DURATION_MS = 180_000;
 
   // ─── useJobPoller ─────────────────────────────────────────────
