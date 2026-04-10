@@ -370,7 +370,7 @@ const CreditsPage = () => {
         </section>
 
         {/* ════════════════════════════════════════════
-            WHAT YOU CAN CREATE 
+            WHAT YOU CAN CREATE
         ════════════════════════════════════════════ */}
         <section className="mb-24">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
@@ -380,16 +380,17 @@ const CreditsPage = () => {
             <p className="text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto">Một loại credit — hơn 30 sản phẩm AI</p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 max-w-5xl mx-auto">
+          {/* Tool cost cards */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 max-w-5xl mx-auto mb-10">
             {[
-              { icon: <Video size={22} />, name: 'Video AI', range: '100 – 160K', color: '#ef4444' },
-              { icon: <ImageIcon size={22} />, name: 'Image AI', range: '100 – 17.5K', color: '#0090ff' },
-              { icon: <Mic size={22} />, name: 'Voice AI', range: '500 – 5K', color: '#f59e0b' },
-              { icon: <Music size={22} />, name: 'Music AI', range: '1K – 10K', color: '#ec4899' },
-              { icon: <Wand2 size={22} />, name: 'Enhance', range: '200 – 5K', color: '#8b5cf6' },
-              { icon: <Cpu size={22} />, name: 'Workflow', range: '500 – 20K', color: '#10b981' },
+              { icon: <Video size={22} />, name: 'Video AI', range: '600 – 2,000', avgCost: 1500, color: '#ef4444' },
+              { icon: <ImageIcon size={22} />, name: 'Image AI', range: '80 – 1,500', avgCost: 150, color: '#0090ff' },
+              { icon: <Mic size={22} />, name: 'Voice AI', range: '500 – 2,000', avgCost: 500, color: '#f59e0b' },
+              { icon: <Music size={22} />, name: 'Music AI', range: '1,000 – 5,000', avgCost: 1000, color: '#ec4899' },
+              { icon: <Wand2 size={22} />, name: 'Upscale', range: '100 – 500', avgCost: 100, color: '#8b5cf6' },
+              { icon: <Cpu size={22} />, name: 'Workflow', range: '500 – 5,000', avgCost: 500, color: '#10b981' },
             ].map((tool, idx) => (
-              <motion.div 
+              <motion.div
                 key={tool.name}
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -405,6 +406,101 @@ const CreditsPage = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* Per-package estimate table */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto"
+          >
+            <p className="text-center text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-5">
+              Ước tính số lần tạo theo gói <span className="text-slate-300 dark:text-gray-600">(dựa trên mức giá trung bình)</span>
+            </p>
+            <div className="overflow-x-auto rounded-2xl border border-black/[0.05] dark:border-white/[0.05] bg-white dark:bg-white/[0.02]">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-black/[0.05] dark:border-white/[0.05]">
+                    <th className="text-left px-5 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px]">Công cụ</th>
+                    <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
+                      <span className="text-slate-800 dark:text-white">Starter</span><br />
+                      <span className="font-bold text-brand-blue normal-case tracking-normal">5,000 cr</span>
+                    </th>
+                    <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
+                      <span className="text-slate-800 dark:text-white">Creator</span><br />
+                      <span className="font-bold text-violet-500 normal-case tracking-normal">~27,500 cr</span>
+                    </th>
+                    <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
+                      <span className="text-slate-800 dark:text-white">Pro</span><br />
+                      <span className="font-bold text-fuchsia-500 normal-case tracking-normal">~72,000 cr</span>
+                    </th>
+                    <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
+                      <span className="text-slate-800 dark:text-white">Ultimate</span><br />
+                      <span className="font-bold text-amber-500 normal-case tracking-normal">~244,000 cr</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    {
+                      icon: <ImageIcon size={13} />, name: 'Image AI', color: '#0090ff',
+                      note: 'avg ~150 cr/ảnh',
+                      avg: 150,
+                    },
+                    {
+                      icon: <Video size={13} />, name: 'Video AI', color: '#ef4444',
+                      note: 'avg ~1,500 cr/video',
+                      avg: 1500,
+                    },
+                    {
+                      icon: <Mic size={13} />, name: 'Voice AI', color: '#f59e0b',
+                      note: 'avg ~500 cr/bản',
+                      avg: 500,
+                    },
+                    {
+                      icon: <Music size={13} />, name: 'Music AI', color: '#ec4899',
+                      note: 'avg ~1,000 cr/bài',
+                      avg: 1000,
+                    },
+                    {
+                      icon: <Wand2 size={13} />, name: 'Upscale', color: '#8b5cf6',
+                      note: 'avg ~100 cr/ảnh',
+                      avg: 100,
+                    },
+                  ].map((row, i) => {
+                    const counts = [5000, 27500, 72000, 244000].map(cr => Math.floor(cr / row.avg));
+                    const colors = ['#0090ff', '#8b5cf6', '#ec4899', '#f59e0b'];
+                    return (
+                      <tr key={row.name} className={`border-b border-black/[0.03] dark:border-white/[0.03] last:border-0 ${i % 2 === 0 ? '' : 'bg-slate-50/50 dark:bg-white/[0.01]'}`}>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${row.color}12`, color: row.color }}>
+                              {row.icon}
+                            </div>
+                            <div>
+                              <p className="font-bold text-slate-800 dark:text-white text-xs">{row.name}</p>
+                              <p className="text-[9px] text-slate-400 dark:text-gray-500">{row.note}</p>
+                            </div>
+                          </div>
+                        </td>
+                        {counts.map((count, ci) => (
+                          <td key={ci} className="px-4 py-4 text-center">
+                            <span className="text-sm font-black" style={{ color: colors[ci] }}>
+                              ~{count >= 1000 ? `${(count / 1000).toFixed(count % 1000 === 0 ? 0 : 1)}K` : count}
+                            </span>
+                            <p className="text-[9px] text-slate-400 dark:text-gray-500 mt-0.5">lần</p>
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-center text-[10px] text-slate-300 dark:text-gray-600 mt-3">
+              * Ước tính dựa trên mức giá trung bình. Giá thực tế phụ thuộc vào model và chất lượng chọn.
+            </p>
+          </motion.div>
         </section>
 
         {/* ════════════════════════════════════════════
@@ -442,7 +538,7 @@ const CreditsPage = () => {
             {[
               { q: 'Credits có hết hạn không?', a: 'Không. Credits bạn mua sẽ còn mãi mãi cho đến khi sử dụng hết. Không có thời hạn sử dụng.' },
               { q: 'Tôi có thể dùng Credits cho sản phẩm nào?', a: 'Tất cả sản phẩm trong Skyverses — Video AI, Image AI, Voice Studio, Music AI, Workflow, Background Removal, Upscale và hơn 30 công cụ khác.' },
-              { q: 'Mỗi lần tạo ảnh/video tốn bao nhiêu Credits?', a: 'Tuỳ theo model và chất lượng. Image AI từ 100-17,500 credits, Video AI từ 100-160,000 credits. Chi tiết hiển thị trước khi bạn tạo.' },
+              { q: 'Mỗi lần tạo ảnh/video tốn bao nhiêu Credits?', a: 'Tuỳ theo model và chất lượng. Image AI từ 80–1,500 credits (avg ~150 cr/ảnh), Video AI từ 600–2,000 credits (avg ~1,500 cr/video). Chi tiết hiển thị trước khi bạn tạo.' },
               { q: 'Có được hoàn tiền không?', a: 'Có, Skyverses hỗ trợ hoàn tiền trong vòng 7 ngày nếu bạn chưa sử dụng Credits. Liên hệ support để được hỗ trợ.' },
               { q: 'Unlimited Model là gì?', a: 'Một số gói cho phép truy cập không giới hạn vào các model AI cụ thể — bạn có thể tạo bao nhiêu tuỳ ý mà không tốn Credits.' },
               { q: 'Tôi có thể nâng cấp gói giữa chừng không?', a: 'Hoàn toàn được. Bạn có thể mua thêm Credits bất kỳ lúc nào. Credits mới sẽ được cộng vào số dư hiện tại.' },
