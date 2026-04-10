@@ -132,7 +132,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
               beforeLabel="TRƯỚC"
               afterLabel="ĐÃ PHỤC CHẾ"
               className="aspect-[16/9]"
-              accentColor="#10b981"
             />
           </div>
 
@@ -142,7 +141,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
             icon={<Wand2 size={18} className="text-emerald-500" />}
             label="Output Quality"
             value="Ultra HD 4K"
-            accentColor="emerald"
           />
         </motion.div>
       </div>
