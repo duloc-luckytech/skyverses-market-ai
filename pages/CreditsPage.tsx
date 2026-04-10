@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
   Zap, Sparkles, ArrowRight, Check, X, Loader2, Star,
   Shield, Globe2, ChevronDown, CreditCard, RefreshCw,
   Video, ImageIcon, Music, Mic, Wand2, Crown, Cpu,
@@ -11,11 +11,29 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { creditsApi, CreditPackage } from '../apis/credits';
+import { pricingApi, PricingModel } from '../apis/pricing';
 import CreditPurchaseModal from '../components/CreditPurchaseModal';
 import { Link } from 'react-router-dom';
 
 const USD_TO_VND = 26000;
 const formatVND = (usd: number) => Math.round(usd * USD_TO_VND).toLocaleString('vi-VN');
+
+// Danh sách modelKey ưu tiên hiển thị (top/nổi tiếng nhất)
+const TOP_IMAGE_KEYS = [
+  'midjourney_8_0', 'midjourney_7_0',
+  'google_image_gen_banana_pro', 'google_image_gen_banana_2',
+  'seedream_5_0', 'seedream_4_5',
+  'imagen 4.5', 'google_image_gen_4_5',
+  'kling_colors_2_1', 'o1',
+];
+const TOP_VIDEO_KEYS = [
+  'veo_3_1', 'veo_3_1_fxflow',
+  'kling_video_3_0', 'kling_video_2_6',
+  'sora_2_0',
+  'seedance_20_pro',
+  'wan_2_2', 'wan_2_5',
+  'hailuo_2_3',
+];
 
 const CreditsPage = () => {
   const { t } = useLanguage();
@@ -26,6 +44,8 @@ const CreditsPage = () => {
   const [loading, setLoading] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [hoveredPack, setHoveredPack] = useState<string | null>(null);
+  const [topImageModels, setTopImageModels] = useState<PricingModel[]>([]);
+  const [topVideoModels, setTopVideoModels] = useState<PricingModel[]>([]);
 
   useEffect(() => {
     const fetchPacks = async () => {
@@ -41,6 +61,31 @@ const CreditsPage = () => {
       setLoading(false);
     };
     fetchPacks();
+  }, []);
+
+  useEffect(() => {
+    pricingApi.getPricing({ tool: 'image' }).then(res => {
+      if (res.data?.length) {
+        const active = res.data.filter(m => m.status === 'active');
+        // ưu tiên theo TOP_IMAGE_KEYS, lấy tối đa 8
+        const sorted = [
+          ...TOP_IMAGE_KEYS.map(k => active.find(m => m.modelKey === k)).filter(Boolean),
+          ...active.filter(m => !TOP_IMAGE_KEYS.includes(m.modelKey)),
+        ].slice(0, 8) as PricingModel[];
+        setTopImageModels(sorted);
+      }
+    }).catch(() => {});
+
+    pricingApi.getPricing({ tool: 'video' }).then(res => {
+      if (res.data?.length) {
+        const active = res.data.filter(m => m.status === 'active');
+        const sorted = [
+          ...TOP_VIDEO_KEYS.map(k => active.find(m => m.modelKey === k)).filter(Boolean),
+          ...active.filter(m => !TOP_VIDEO_KEYS.includes(m.modelKey)),
+        ].slice(0, 8) as PricingModel[];
+        setTopVideoModels(sorted);
+      }
+    }).catch(() => {});
   }, []);
 
   const handleUpgradeClick = (pack: CreditPackage) => {
@@ -339,26 +384,70 @@ const CreditsPage = () => {
                         </div>
                       )}
 
-                      {/* Unlimited Models */}
+                      {/* Unlimited Models — dynamic từ pricing API */}
                       {pack.unlimitedModels && pack.unlimitedModels.filter(m => m.enabled).length > 0 && (
                         <div className="mt-5 pt-5 border-t border-black/[0.04] dark:border-white/[0.04]">
                           <div className="flex items-center gap-1.5 mb-3">
                             <Infinity size={12} style={{ color: accent }} />
                             <p className="text-[9px] font-black uppercase tracking-[0.25em]" style={{ color: accent }}>Unlimited Access</p>
                           </div>
-                          <div className="space-y-1.5">
-                            {pack.unlimitedModels.filter(m => m.enabled).map((model, i) => (
-                              <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg border" style={{ backgroundColor: `${accent}04`, borderColor: `${accent}10` }}>
-                                <div className="flex items-center gap-2">
-                                  <Check size={11} style={{ color: accent }} strokeWidth={3} />
-                                  <span className="text-[10px] font-bold text-slate-700 dark:text-gray-300">{model.label}</span>
-                                </div>
-                                <span className="text-[7px] font-black uppercase px-1.5 py-0.5 rounded text-white" style={{ backgroundColor: accent }}>
-                                  {model.badge || '∞'}
-                                </span>
+
+                          {/* Image models */}
+                          {topImageModels.length > 0 && (
+                            <div className="mb-2">
+                              <p className="text-[8px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                                <ImageIcon size={9} /> Image Models
+                              </p>
+                              <div className="flex flex-wrap gap-1">
+                                {topImageModels.map(m => (
+                                  <span
+                                    key={m._id}
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-semibold border"
+                                    style={{ backgroundColor: `${accent}08`, borderColor: `${accent}18`, color: accent }}
+                                  >
+                                    {m.name}
+                                  </span>
+                                ))}
                               </div>
-                            ))}
-                          </div>
+                            </div>
+                          )}
+
+                          {/* Video models */}
+                          {topVideoModels.length > 0 && (
+                            <div>
+                              <p className="text-[8px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                                <Video size={9} /> Video Models
+                              </p>
+                              <div className="flex flex-wrap gap-1">
+                                {topVideoModels.map(m => (
+                                  <span
+                                    key={m._id}
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-semibold border"
+                                    style={{ backgroundColor: `${accent}08`, borderColor: `${accent}18`, color: accent }}
+                                  >
+                                    {m.name}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Fallback nếu API chưa load */}
+                          {topImageModels.length === 0 && topVideoModels.length === 0 && (
+                            <div className="space-y-1.5">
+                              {pack.unlimitedModels.filter(m => m.enabled).map((model, i) => (
+                                <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg border" style={{ backgroundColor: `${accent}04`, borderColor: `${accent}10` }}>
+                                  <div className="flex items-center gap-2">
+                                    <Check size={11} style={{ color: accent }} strokeWidth={3} />
+                                    <span className="text-[10px] font-bold text-slate-700 dark:text-gray-300">{model.label}</span>
+                                  </div>
+                                  <span className="text-[7px] font-black uppercase px-1.5 py-0.5 rounded text-white" style={{ backgroundColor: accent }}>
+                                    {model.badge || '∞'}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
