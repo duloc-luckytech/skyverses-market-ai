@@ -16,6 +16,7 @@ import { DragHandle }         from './scene-card/DragHandle';
 import { SceneHoverActions }  from './scene-card/SceneHoverActions';
 import AIScriptAssistant      from './AIScriptAssistant';
 import TimelineView           from './TimelineView';
+import { TemplatePickerModal } from './TemplatePickerModal';
 
 interface StoryboardTabProps {
   script: string;
@@ -412,6 +413,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const mainAudioInputRef = useRef<HTMLInputElement>(null);
   const [viewLayout, setViewLayout] = useState<'grid' | 'list' | 'timeline'>('grid');
+  const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
 
   const handleMainImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -463,7 +465,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               <button onClick={onLoadSuggestion} disabled={isEnhancing} className="flex items-center gap-1.5 text-[9px] font-black text-brand-blue uppercase tracking-widest hover:underline transition-all disabled:opacity-30">
                 <Sparkles size={11} /> Gợi ý AI
               </button>
-              <button onClick={onLoadSample} disabled={isEnhancing} className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest hover:underline transition-all disabled:opacity-30">
+              <button onClick={() => setIsTemplatePickerOpen(true)} disabled={isEnhancing} className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest hover:underline transition-all disabled:opacity-30">
                 <LayoutGrid size={11} /> Dùng mẫu
               </button>
             </div>
@@ -735,6 +737,13 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
           )}
         </div>
       </div>
+
+      {/* Template Picker Modal */}
+      <TemplatePickerModal
+        isOpen={isTemplatePickerOpen}
+        onClose={() => setIsTemplatePickerOpen(false)}
+        onSelect={(script) => setScript(script)}
+      />
     </motion.div>
   );
 };

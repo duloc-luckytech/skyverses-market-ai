@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Zap, Loader2, Layers, Camera, MonitorPlay,
-  Clapperboard, Sliders, ChevronRight, Menu
+  Clapperboard, Sliders, ChevronRight, Menu, ChevronDown
 } from 'lucide-react';
 import { useStoryboardStudio } from '../hooks/useStoryboardStudio';
 import { StoryboardTab } from './storyboard-studio/StoryboardTab';
@@ -17,12 +17,45 @@ import { ExportTab } from './storyboard-studio/ExportTab';
 import ExplorerDetailModal from './ExplorerDetailModal';
 import { MobileGeneratorBar } from './common/MobileGeneratorBar';
 import { useAuth } from '../context/AuthContext';
-// ── Phase 1: Sidebar sub-components ──────────────────────────────────────────
 import { ProjectInfoSection }  from './storyboard-studio/sidebar/ProjectInfoSection';
 import { CharactersQuickView } from './storyboard-studio/sidebar/CharactersQuickView';
 import { StyleGuideChips }     from './storyboard-studio/sidebar/StyleGuideChips';
 import { ProductionStats }     from './storyboard-studio/sidebar/ProductionStats';
 import { AIQuickActions }      from './storyboard-studio/sidebar/AIQuickActions';
+import { OnboardingWizard, shouldShowWizard } from './storyboard-studio/OnboardingWizard';
+
+// ── Collapsible section wrapper ───────────────────────────────────────────────
+const CollapsibleSection: React.FC<{
+  label: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}> = ({ label, defaultOpen = false, children }) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-b border-white/[0.06]">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center justify-between px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white/70 transition-colors"
+      >
+        <span>{label}</span>
+        <ChevronDown size={12} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { credits } = useAuth();
@@ -30,6 +63,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [isRenderModalOpen, setIsRenderModalOpen] = useState(false);
   const [isAestheticModalOpen, setIsAestheticModalOpen] = useState(false);
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
+  const [showWizard, setShowWizard] = useState(() => shouldShowWizard());
 
   // Derived credit estimates for sidebar
   const imageCredits = s.scenes.filter(sc => !sc.visualUrl).length * 100;
@@ -144,6 +178,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           />
 
           <div className="flex-grow overflow-y-auto no-scrollbar">
+            {/* Thông tin dự án — luôn hiện */}
             <ProjectInfoSection
               projectName={s.projectName}
               onProjectNameChange={s.setProjectName}
@@ -152,39 +187,51 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               creditCostEstimate={s.creditCostEstimate}
             />
 
-            <CharactersQuickView
-              assets={s.assets}
-              onNavigateToAssets={() => s.setActiveTab('ASSETS')}
-            />
+            {/* Nhân vật & Bối cảnh — mặc định đóng */}
+            <CollapsibleSection label="Nhân vật & Bối cảnh">
+              <CharactersQuickView
+                assets={s.assets}
+                onNavigateToAssets={() => s.setActiveTab('ASSETS')}
+              />
+            </CollapsibleSection>
 
-            <StyleGuideChips
-              format={s.settings.format}
-              style={s.settings.style}
-              culture={s.settings.culture}
-              onOpenAestheticModal={() => setIsAestheticModalOpen(true)}
-            />
+            {/* Phong cách — mặc định đóng */}
+            <CollapsibleSection label="Phong cách">
+              <StyleGuideChips
+                format={s.settings.format}
+                style={s.settings.style}
+                culture={s.settings.culture}
+                onOpenAestheticModal={() => setIsAestheticModalOpen(true)}
+              />
+            </CollapsibleSection>
 
-            <ProductionStats
-              totalScenes={s.scenes.length}
-              renderedCount={s.renderedScenes.length}
-              totalDuration={s.computedTotalDuration}
-            />
+            {/* Thống kê — mặc định đóng */}
+            <CollapsibleSection label="Thống kê sản xuất">
+              <ProductionStats
+                totalScenes={s.scenes.length}
+                renderedCount={s.renderedScenes.length}
+                totalDuration={s.computedTotalDuration}
+              />
+            </CollapsibleSection>
 
-            <AIQuickActions
-              isProcessing={s.isProcessing}
-              imageCredits={imageCredits}
-              videoCredits={videoCredits}
-              totalCreditEstimate={s.creditCostEstimate}
-              onEnhanceAllPrompts={s.handleEnhanceAllPrompts}
-              onGenerateBatchImages={() => {
-                s.selectAllScenes();
-                setTimeout(() => s.handleGenerateBatchImages(), 100);
-              }}
-              onGenerateBatchVideos={() => {
-                s.selectAllScenes();
-                setTimeout(() => s.handleGenerateBatchVideos(), 100);
-              }}
-            />
+            {/* Thao tác nhanh — mặc định mở */}
+            <CollapsibleSection label="Thao tác nhanh AI" defaultOpen>
+              <AIQuickActions
+                isProcessing={s.isProcessing}
+                imageCredits={imageCredits}
+                videoCredits={videoCredits}
+                totalCreditEstimate={s.creditCostEstimate}
+                onEnhanceAllPrompts={s.handleEnhanceAllPrompts}
+                onGenerateBatchImages={() => {
+                  s.selectAllScenes();
+                  setTimeout(() => s.handleGenerateBatchImages(), 100);
+                }}
+                onGenerateBatchVideos={() => {
+                  s.selectAllScenes();
+                  setTimeout(() => s.handleGenerateBatchVideos(), 100);
+                }}
+              />
+            </CollapsibleSection>
           </div>
         </div>
 
@@ -388,6 +435,19 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         item={s.viewingExplorerItem}
         onClose={() => s.setViewingExplorerItem(null)}
       />
+
+      {/* Onboarding Wizard — lần đầu sử dụng */}
+      <AnimatePresence>
+        {showWizard && (
+          <OnboardingWizard
+            onComplete={(script) => {
+              if (script) s.setScript(script);
+              setShowWizard(false);
+            }}
+            onSkip={() => setShowWizard(false)}
+          />
+        )}
+      </AnimatePresence>
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }

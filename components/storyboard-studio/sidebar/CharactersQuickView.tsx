@@ -29,7 +29,7 @@ export const CharactersQuickView: React.FC<CharactersQuickViewProps> = ({ assets
       >
         <span className="flex items-center gap-1.5">
           <Users size={12} />
-          Identity Anchors
+          Nhân vật & Bối cảnh
           {assets.length > 0 && (
             <span className="ml-1 rounded-full bg-white/10 px-1.5 py-px text-white/40 normal-case tracking-normal font-bold text-[9px]">
               {assets.length}

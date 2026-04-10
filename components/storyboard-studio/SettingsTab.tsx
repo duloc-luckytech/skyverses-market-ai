@@ -50,7 +50,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               </div>
               <div className="space-y-1">
                 <h3 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">THÔNG SỐ SÁNG TẠO</h3>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest italic">Aesthetic & Artistic Language</p>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest italic">Thẩm mỹ & Ngôn ngữ hình ảnh</p>
               </div>
             </div>
             
@@ -64,27 +64,27 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative z-10">
              <div className="p-5 bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 rounded-2xl space-y-3">
-                <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Format</p>
+                <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Định dạng</p>
                 <p className="text-sm font-black uppercase italic truncate">{settings.format}</p>
              </div>
              <div className="p-5 bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 rounded-2xl space-y-3">
-                <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Style</p>
+                <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Phong cách</p>
                 <p className="text-sm font-black uppercase italic truncate">{settings.style}</p>
              </div>
              <div className="p-5 bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 rounded-2xl space-y-3">
-                <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Culture</p>
+                <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Văn hóa</p>
                 <p className="text-sm font-black uppercase italic truncate">{settings.culture}</p>
              </div>
              <div className="p-5 bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 rounded-2xl space-y-3">
-                <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Audio Nodes</p>
+                <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Âm thanh</p>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1">
                     <Music size={12} className={settings.bgm ? 'text-emerald-500' : 'text-gray-600'} />
-                    <span className="text-[9px] font-bold">BGM</span>
+                    <span className="text-[9px] font-bold">Nhạc nền</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Mic size={12} className={settings.voiceOver ? 'text-emerald-500' : 'text-gray-600'} />
-                    <span className="text-[9px] font-bold">VO</span>
+                    <span className="text-[9px] font-bold">Lời bình</span>
                   </div>
                 </div>
              </div>
@@ -104,7 +104,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               </div>
               <div className="space-y-1">
                 <h3 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">CẤU HÌNH KẾT XUẤT</h3>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest italic">Engine & Model Registry</p>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest italic">Engine & Kho model AI</p>
               </div>
             </div>
             
@@ -120,21 +120,21 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
              <div className="p-5 bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 rounded-2xl space-y-3">
                 <div className="flex items-center gap-2 text-brand-blue">
                    <ImageIcon size={14} />
-                   <span className="text-[8px] font-black uppercase tracking-widest">Image Engine</span>
+                   <span className="text-[8px] font-black uppercase tracking-widest">Engine hình ảnh</span>
                 </div>
                 <p className="text-sm font-black uppercase italic truncate">{settings.imageModel.replace(/_/g, ' ')}</p>
              </div>
              <div className="p-5 bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 rounded-2xl space-y-3">
                 <div className="flex items-center gap-2 text-purple-500">
                    <Film size={14} />
-                   <span className="text-[8px] font-black uppercase tracking-widest">Video Engine</span>
+                   <span className="text-[8px] font-black uppercase tracking-widest">Engine video</span>
                 </div>
                 <p className="text-sm font-black uppercase italic truncate">{settings.model.replace(/_/g, ' ')}</p>
              </div>
              <div className="p-5 bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 rounded-2xl space-y-3">
                 <div className="flex items-center gap-2 text-emerald-500">
                    <Maximize2 size={14} />
-                   <span className="text-[8px] font-black uppercase tracking-widest">Spec Target</span>
+                   <span className="text-[8px] font-black uppercase tracking-widest">Thông số xuất</span>
                 </div>
                 <p className="text-sm font-black uppercase italic truncate">1080P • 24FPS • 16:9</p>
              </div>

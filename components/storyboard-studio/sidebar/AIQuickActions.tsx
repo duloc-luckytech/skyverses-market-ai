@@ -23,15 +23,15 @@ export const AIQuickActions: React.FC<AIQuickActionsProps> = ({
 }) => {
   const actions = [
     {
-      label:    'Enhance All Prompts',
-      sublabel: 'AI rewrites',
+      label:    'Cải thiện tất cả prompt',
+      sublabel: 'AI viết lại',
       icon:     <Sparkles size={13} />,
       onClick:  onEnhanceAllPrompts,
       className:'border-brand-blue/40 text-brand-blue hover:bg-brand-blue/10',
       cost:     null,
     },
     {
-      label:    'Generate All Images',
+      label:    'Tạo tất cả hình ảnh',
       sublabel: null,
       icon:     <Image size={13} />,
       onClick:  onGenerateBatchImages,
@@ -39,7 +39,7 @@ export const AIQuickActions: React.FC<AIQuickActionsProps> = ({
       cost:     imageCredits,
     },
     {
-      label:    'Generate All Videos',
+      label:    'Tạo tất cả video',
       sublabel: null,
       icon:     <Video size={13} />,
       onClick:  onGenerateBatchVideos,
@@ -53,7 +53,7 @@ export const AIQuickActions: React.FC<AIQuickActionsProps> = ({
       {/* Header */}
       <p className="text-[10px] font-black uppercase tracking-widest text-white/50 flex items-center gap-1.5">
         <Sparkles size={12} />
-        AI Quick Actions
+        Thao tác nhanh
       </p>
 
       {/* Action buttons */}
@@ -87,7 +87,7 @@ export const AIQuickActions: React.FC<AIQuickActionsProps> = ({
       {/* Total estimate footer */}
       {totalCreditEstimate > 0 && (
         <div className="pt-1.5 flex items-center justify-between text-[10px] border-t border-white/8">
-          <span className="text-white/25 font-bold uppercase tracking-widest">Total estimate</span>
+          <span className="text-white/25 font-bold uppercase tracking-widest">Tổng dự tính</span>
           <span className="font-black font-mono text-amber-400/80">
             ~{totalCreditEstimate.toLocaleString()} CR
           </span>

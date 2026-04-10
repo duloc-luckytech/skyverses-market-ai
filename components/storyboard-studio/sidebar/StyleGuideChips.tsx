@@ -29,7 +29,7 @@ export const StyleGuideChips: React.FC<StyleGuideChipsProps> = ({
       >
         <span className="flex items-center gap-1.5">
           <Palette size={12} />
-          Style Guide
+          Phong cách
         </span>
         <ChevronRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
       </button>

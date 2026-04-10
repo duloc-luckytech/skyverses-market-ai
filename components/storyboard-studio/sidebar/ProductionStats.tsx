@@ -23,10 +23,10 @@ export const ProductionStats: React.FC<ProductionStatsProps> = ({
   const percent = totalScenes > 0 ? Math.round((renderedCount / totalScenes) * 100) : 0;
 
   const stats = [
-    { label: 'Scenes',    value: totalScenes,                accent: 'text-white' },
-    { label: 'Rendered',  value: renderedCount,              accent: 'text-emerald-400' },
-    { label: 'Complete',  value: `${percent}%`,              accent: 'text-brand-blue' },
-    { label: 'Duration',  value: formatDuration(totalDuration), accent: 'text-purple-400' },
+    { label: 'Phân cảnh',  value: totalScenes,                   accent: 'text-white' },
+    { label: 'Đã render',  value: renderedCount,                  accent: 'text-emerald-400' },
+    { label: 'Hoàn thành', value: `${percent}%`,                  accent: 'text-brand-blue' },
+    { label: 'Thời lượng', value: formatDuration(totalDuration),  accent: 'text-purple-400' },
   ];
 
   return (
@@ -34,7 +34,7 @@ export const ProductionStats: React.FC<ProductionStatsProps> = ({
       {/* Header */}
       <p className="text-[10px] font-black uppercase tracking-widest text-white/50 flex items-center gap-1.5">
         <BarChart3 size={12} />
-        Production Stats
+        Thống kê sản xuất
       </p>
 
       {/* 2×2 grid */}

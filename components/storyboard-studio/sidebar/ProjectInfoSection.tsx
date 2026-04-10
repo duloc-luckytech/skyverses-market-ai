@@ -29,7 +29,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
   }, [editing, projectName]);
 
   const commit = () => {
-    onProjectNameChange(draft.trim() || 'Untitled Project');
+    onProjectNameChange(draft.trim() || 'Dự án mới');
     setEditing(false);
   };
 
@@ -70,7 +70,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
       {/* Render progress bar */}
       <div className="space-y-1.5">
         <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest">
-          <span className="text-white/40">{renderedCount}/{totalScenes} rendered</span>
+          <span className="text-white/40">{renderedCount}/{totalScenes} đã render</span>
           <span className="text-brand-blue">{renderPercent}%</span>
         </div>
         <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
@@ -85,7 +85,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
 
       {/* Credit cost estimate */}
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Est. Credits</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Dự tính credits</span>
         <span className="text-xs font-black font-mono text-amber-400">~{creditCostEstimate.toLocaleString()} CR</span>
       </div>
     </div>
