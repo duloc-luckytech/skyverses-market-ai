@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -8,6 +8,7 @@ import {
   Shuffle, ZoomIn,
 } from 'lucide-react';
 import { imagesApi, ImageJobRequest } from '../../../apis/images';
+import { explorerApi } from '../../../apis/explorer';
 import { useAuth } from '../../../context/AuthContext';
 
 interface HeroSectionProps { onStartStudio: () => void; }
@@ -81,7 +82,7 @@ const PLACEHOLDER_GRADIENTS = [
   'from-violet-500 via-purple-600 to-fuchsia-700',
 ];
 
-const IdleMosaic: React.FC = () => (
+const IdleMosaic: React.FC<{ images?: string[] }> = ({ images = [] }) => (
   <div className="absolute inset-0 overflow-hidden">
     {/* Blurred orbs */}
     <motion.div
@@ -97,27 +98,44 @@ const IdleMosaic: React.FC = () => (
 
     {/* 6-cell mosaic */}
     <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-1 p-1.5">
-      {PLACEHOLDER_GRADIENTS.map((g, i) => (
-        <motion.div
-          key={i}
-          className={`relative rounded-xl overflow-hidden bg-gradient-to-br ${g}`}
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: i * 0.1, duration: 0.5 }}
-          whileHover={{ scale: 1.04, zIndex: 10 }}
-        >
-          {/* Shimmer */}
+      {PLACEHOLDER_GRADIENTS.map((g, i) => {
+        const imgUrl = images[i];
+        return (
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12"
-            animate={{ x: ['-120%', '200%'] }}
-            transition={{ duration: 2.2, repeat: Infinity, repeatDelay: i * 0.8 + 1.5, ease: 'easeInOut' }}
-          />
-          {/* Icon */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <ImageIcon size={16} className="text-white/30" />
-          </div>
-        </motion.div>
-      ))}
+            key={i}
+            className={`relative rounded-xl overflow-hidden ${!imgUrl ? `bg-gradient-to-br ${g}` : 'bg-black'}`}
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.08, duration: 0.5 }}
+            whileHover={{ scale: 1.04, zIndex: 10 }}
+          >
+            {imgUrl ? (
+              <img
+                src={imgUrl}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <>
+                {/* Shimmer for gradient cells */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12"
+                  animate={{ x: ['-120%', '200%'] }}
+                  transition={{ duration: 2.2, repeat: Infinity, repeatDelay: i * 0.8 + 1.5, ease: 'easeInOut' }}
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <ImageIcon size={16} className="text-white/30" />
+                </div>
+              </>
+            )}
+            {/* Subtle dark tint on real images for depth */}
+            {imgUrl && (
+              <div className="absolute inset-0 bg-black/10 hover:bg-black/0 transition-colors" />
+            )}
+          </motion.div>
+        );
+      })}
     </div>
 
     {/* Center overlay */}
@@ -166,13 +184,29 @@ const QuickGenWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio }
   const [genState, setGenState] = useState<GenState>('idle');
   const [selectedPrompt, setSelectedPrompt] = useState(0);
   const [customPrompt, setCustomPrompt] = useState('');
-  const [selectedRatio, setSelectedRatio] = useState(0);
+  const [selectedRatio, setSelectedRatio] = useState(1); // default 16:9
   const [progress, setProgress] = useState(0);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [fullscreen, setFullscreen] = useState(false);
+  const [explorerImages, setExplorerImages] = useState<string[]>([]);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
   const { isAuthenticated, login, credits, useCredits, addCredits } = useAuth();
+
+  // Load 6 ảnh từ Explorer để hiển thị mosaic idle
+  useEffect(() => {
+    explorerApi.getItems({ type: 'image' })
+      .then(res => {
+        if (res?.data?.length) {
+          const urls = (res.data as Array<{ thumbnailUrl?: string; mediaUrl?: string; url?: string }>)
+            .map(item => item.thumbnailUrl || item.mediaUrl || item.url || '')
+            .filter(Boolean)
+            .slice(0, 6);
+          setExplorerImages(urls);
+        }
+      })
+      .catch(() => { /* fallback to gradients */ });
+  }, []);
 
   const COST = 80;
   const ratio = ASPECT_RATIOS[selectedRatio];
@@ -293,7 +327,7 @@ const QuickGenWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio }
         <AnimatePresence mode="wait">
 
           {/* Idle */}
-          {genState === 'idle' && <IdleMosaic key="idle" />}
+          {genState === 'idle' && <IdleMosaic key="idle" images={explorerImages} />}
 
           {/* Processing */}
           {isRunning && (
