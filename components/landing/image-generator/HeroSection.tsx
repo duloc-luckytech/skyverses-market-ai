@@ -249,200 +249,287 @@ const QuickGenWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio }
   };
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-black/[0.07] dark:border-white/[0.06] bg-white dark:bg-white/[0.02] shadow-2xl shadow-black/[0.08]">
-      {/* Window chrome */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/[0.05] dark:border-white/[0.04] bg-slate-50/60 dark:bg-white/[0.015]">
+    <div className="rounded-3xl overflow-hidden border border-black/[0.06] dark:border-white/[0.07] bg-white dark:bg-[#0f0f0f] shadow-[0_24px_64px_-16px_rgba(0,0,0,0.14)] dark:shadow-[0_24px_64px_-16px_rgba(0,0,0,0.5)]">
+
+      {/* ── Top bar ── */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.05]">
+        {/* Traffic lights */}
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
-          <div className="w-2.5 h-2.5 rounded-full bg-amber-400/80" />
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/80" />
+          <div className="w-3 h-3 rounded-full bg-rose-400/90 hover:bg-rose-500 transition-colors cursor-default" />
+          <div className="w-3 h-3 rounded-full bg-amber-400/90 hover:bg-amber-500 transition-colors cursor-default" />
+          <div className="w-3 h-3 rounded-full bg-emerald-400/90 hover:bg-emerald-500 transition-colors cursor-default" />
         </div>
-        <span className="text-[9px] font-bold text-slate-400 dark:text-[#555] uppercase tracking-wider">
-          Quick Generate · Image Studio
+
+        <span className="text-[10px] font-semibold text-slate-400 dark:text-white/25 tracking-widest uppercase select-none">
+          Quick Generate
         </span>
-        {/* Ratio selector in header */}
-        <div className="flex items-center gap-1">
+
+        {/* Ratio pills */}
+        <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/[0.04] rounded-lg p-0.5">
           {ASPECT_RATIOS.map((r, i) => (
-            <button
+            <motion.button
               key={r.key}
               onClick={() => setSelectedRatio(i)}
-              className={`px-2 py-0.5 rounded text-[8px] font-bold transition-all ${
+              whileTap={{ scale: 0.92 }}
+              className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all duration-200 ${
                 selectedRatio === i
-                  ? 'bg-rose-500 text-white'
-                  : 'text-slate-400 dark:text-[#555] hover:text-rose-500'
+                  ? 'bg-white dark:bg-white/10 text-rose-500 shadow-sm'
+                  : 'text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/60'
               }`}
             >
               {r.label}
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
 
-      {/* Canvas */}
-      <div
-        className="relative bg-slate-50 dark:bg-black/30 overflow-hidden"
-        style={{ aspectRatio: `${ratio.w}/${ratio.h}`, maxHeight: '380px' }}
+      {/* ── Canvas ── */}
+      <motion.div
+        className="relative bg-slate-50 dark:bg-black/40 overflow-hidden"
+        animate={{ aspectRatio: `${ratio.w}/${ratio.h}` }}
+        transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+        style={{ maxHeight: '340px', minHeight: '160px' }}
       >
         <AnimatePresence mode="wait">
+
+          {/* Idle */}
           {genState === 'idle' && <IdleMosaic key="idle" />}
 
+          {/* Processing */}
           {isRunning && (
-            <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-4"
-              style={{ background: 'linear-gradient(135deg, rgba(244,63,94,0.04), rgba(168,85,247,0.04))' }}
+            <motion.div
+              key="processing"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 flex flex-col items-center justify-center gap-5"
             >
+              {/* Animated gradient wash */}
+              <motion.div
+                className="absolute inset-0"
+                animate={{ background: [
+                  'linear-gradient(135deg, rgba(244,63,94,0.06) 0%, rgba(168,85,247,0.04) 100%)',
+                  'linear-gradient(225deg, rgba(168,85,247,0.06) 0%, rgba(244,63,94,0.04) 100%)',
+                  'linear-gradient(135deg, rgba(244,63,94,0.06) 0%, rgba(168,85,247,0.04) 100%)',
+                ]}}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+              />
               {/* Scan line */}
               <motion.div
-                className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent pointer-events-none"
+                className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/60 to-transparent pointer-events-none"
                 animate={{ y: ['0%', '100%'] }}
-                transition={{ duration: 1.8, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
               />
-              {/* Skeleton grid */}
-              <div className="grid grid-cols-3 gap-1.5 w-full px-3">
-                {[...Array(6)].map((_, i) => (
-                  <motion.div key={i} className="aspect-square rounded-lg bg-rose-500/5 border border-rose-500/10"
-                    animate={{ opacity: [0.3, 0.65, 0.3] }}
-                    transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.15 }} />
-                ))}
-              </div>
-              <div className="relative z-10 flex flex-col items-center gap-2 px-6 w-full">
-                <p className="text-[10px] font-semibold text-rose-500/80">
-                  {genState === 'submitting' ? 'Đang gửi job...' : `AI đang tạo... ${Math.round(progress)}%`}
-                </p>
-                <div className="w-full max-w-[200px]">
-                  <ProgressBar value={progress} />
+              {/* Pulsing circle */}
+              <div className="relative z-10 flex flex-col items-center gap-3">
+                <div className="relative">
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-rose-500/20"
+                    animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
+                    transition={{ duration: 1.8, repeat: Infinity }}
+                  />
+                  <div className="relative w-11 h-11 rounded-full bg-white dark:bg-white/10 border border-rose-500/20 flex items-center justify-center shadow-lg shadow-rose-500/10">
+                    <Loader2 size={18} className="text-rose-500 animate-spin" />
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-1.5">
+                  <p className="text-xs font-semibold text-slate-700 dark:text-white/80">
+                    {genState === 'submitting' ? 'Đang gửi yêu cầu...' : 'AI đang tạo ảnh...'}
+                  </p>
+                  <div className="flex items-center gap-2 w-44">
+                    <ProgressBar value={progress} />
+                    <span className="text-[10px] font-bold text-rose-500 tabular-nums shrink-0">{Math.round(progress)}%</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
           )}
 
+          {/* Done */}
           {genState === 'done' && resultUrl && (
-            <motion.div key="done" initial={{ opacity: 0, scale: 1.04 }} animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="absolute inset-0"
+            <motion.div
+              key="done"
+              initial={{ opacity: 0, scale: 1.06 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute inset-0 group"
             >
               <img src={resultUrl} alt="Generated" className="w-full h-full object-cover" />
-              {/* Actions overlay */}
+
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300" />
+
+              {/* Done badge */}
               <motion.div
-                initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                className="absolute top-3 right-3 flex items-center gap-1.5"
+                initial={{ opacity: 0, y: -8, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.25, type: 'spring', stiffness: 400, damping: 22 }}
+                className="absolute top-3 left-3"
               >
-                <span className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-emerald-500 text-white text-[9px] font-bold shadow-lg">
-                  <CheckCircle2 size={9} /> Xong!
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold shadow-lg shadow-emerald-500/30">
+                  <CheckCircle2 size={11} /> Xong!
                 </span>
               </motion.div>
 
-              {/* Bottom row */}
+              {/* Action buttons — revealed on hover */}
               <motion.div
-                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-                className="absolute bottom-3 right-3 flex gap-1.5"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+                className="absolute bottom-3 inset-x-3 flex items-center justify-end gap-2"
               >
-                <button onClick={() => setFullscreen(true)}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-[9px] font-medium hover:bg-black/80 transition-colors"
+                <button
+                  onClick={() => setFullscreen(true)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black/55 backdrop-blur-md text-white text-[10px] font-semibold hover:bg-black/75 transition-all shadow-sm"
                 >
-                  <ZoomIn size={10} /> Xem lớn
+                  <ZoomIn size={12} /> Xem lớn
                 </button>
-                <a href={resultUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-500/80 backdrop-blur text-white text-[9px] font-medium hover:bg-rose-500 transition-colors"
+                <a
+                  href={resultUrl} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500/85 backdrop-blur-md text-white text-[10px] font-semibold hover:bg-rose-500 transition-all shadow-sm"
                 >
-                  <Download size={10} /> Tải về
+                  <Download size={12} /> Tải về
                 </a>
-                <button onClick={reset}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/10 backdrop-blur text-white text-[9px] font-medium hover:bg-white/20 transition-colors"
+                <button
+                  onClick={reset}
+                  className="w-8 h-8 rounded-xl bg-white/15 backdrop-blur-md text-white hover:bg-white/25 transition-all flex items-center justify-center shadow-sm"
                 >
-                  <RefreshCw size={10} />
+                  <RefreshCw size={12} />
                 </button>
               </motion.div>
             </motion.div>
           )}
 
+          {/* Error */}
           {genState === 'error' && (
-            <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+            <motion.div
+              key="error"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 flex flex-col items-center justify-center gap-4"
             >
-              <AlertCircle size={28} className="text-rose-400/60" />
-              <p className="text-[11px] text-rose-400/80 text-center px-4">{errorMsg}</p>
-              <button onClick={reset}
-                className="text-[10px] text-slate-400 hover:text-rose-500 underline transition-colors"
+              <motion.div
+                initial={{ scale: 0.8 }} animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 22 }}
+                className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center"
               >
-                Thử lại
-              </button>
+                <AlertCircle size={22} className="text-rose-400" />
+              </motion.div>
+              <div className="flex flex-col items-center gap-1">
+                <p className="text-xs font-semibold text-slate-600 dark:text-white/60">{errorMsg}</p>
+                <button
+                  onClick={reset}
+                  className="text-[10px] text-rose-500 font-semibold hover:text-rose-600 transition-colors flex items-center gap-1"
+                >
+                  <RefreshCw size={10} /> Thử lại
+                </button>
+              </div>
             </motion.div>
           )}
-        </AnimatePresence>
-      </div>
 
-      {/* Controls */}
-      <div className="p-3 space-y-2.5 border-t border-black/[0.04] dark:border-white/[0.04]">
-        {/* Prompt presets */}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* ── Controls ── */}
+      <div className="p-4 space-y-3 border-t border-black/[0.04] dark:border-white/[0.05]">
+
+        {/* Prompt chips */}
         <div className="flex gap-1.5 flex-wrap">
           {QUICK_PROMPTS.map((p, i) => (
-            <button
+            <motion.button
               key={p.label}
+              whileTap={{ scale: 0.94 }}
               onClick={() => { setSelectedPrompt(i); setCustomPrompt(''); if (genState === 'done' || genState === 'error') reset(); }}
-              className={`px-2.5 py-1 rounded-lg text-[9px] font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all duration-200 ${
                 selectedPrompt === i && !customPrompt
-                  ? 'bg-rose-500/12 border border-rose-500/35 text-rose-500 dark:text-rose-400'
-                  : 'border border-black/[0.07] dark:border-white/[0.06] text-slate-400 dark:text-[#555] hover:text-rose-500 hover:border-rose-500/25'
+                  ? 'bg-rose-500/10 border border-rose-500/40 text-rose-500 dark:text-rose-400 shadow-sm'
+                  : 'bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-white/40 hover:border-rose-500/30 hover:text-rose-500 dark:hover:text-rose-400'
               }`}
             >
               {p.label}
-            </button>
+            </motion.button>
           ))}
         </div>
 
-        {/* Custom prompt input */}
-        <div className="flex gap-2">
-          <input
-            value={customPrompt}
-            onChange={e => { setCustomPrompt(e.target.value); if (genState === 'done' || genState === 'error') reset(); }}
-            onKeyDown={e => e.key === 'Enter' && startGen()}
-            placeholder="Hoặc nhập prompt của bạn..."
-            className="flex-1 text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-rose-500/40 transition-colors"
-          />
-          <button
+        {/* Prompt input */}
+        <div className="flex gap-2 items-center">
+          <div className="relative flex-1">
+            <input
+              value={customPrompt}
+              onChange={e => { setCustomPrompt(e.target.value); if (genState === 'done' || genState === 'error') reset(); }}
+              onKeyDown={e => e.key === 'Enter' && startGen()}
+              placeholder="Mô tả hình ảnh của bạn..."
+              className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.07] rounded-xl px-4 py-2.5 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-white/25 focus:outline-none focus:border-rose-500/50 focus:ring-2 focus:ring-rose-500/10 transition-all"
+            />
+          </div>
+          <motion.button
             onClick={shufflePrompt}
-            className="shrink-0 w-9 h-9 rounded-xl border border-slate-200 dark:border-white/[0.06] flex items-center justify-center text-slate-400 hover:text-rose-500 hover:border-rose-500/30 transition-colors"
-            title="Đổi prompt mẫu"
+            whileHover={{ rotate: 180 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className="shrink-0 w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.07] flex items-center justify-center text-slate-400 hover:text-rose-500 hover:border-rose-500/30 transition-colors"
+            title="Đổi prompt ngẫu nhiên"
           >
-            <Shuffle size={13} />
-          </button>
+            <Shuffle size={14} />
+          </motion.button>
         </div>
 
-        {/* Action buttons */}
+        {/* CTA row */}
         <div className="flex gap-2">
           <motion.button
             onClick={startGen}
             disabled={isRunning}
-            whileHover={!isRunning ? { scale: 1.02 } : {}}
-            whileTap={!isRunning ? { scale: 0.98 } : {}}
-            className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold flex items-center justify-center gap-2 transition-all ${
+            whileHover={!isRunning ? { scale: 1.015 } : {}}
+            whileTap={!isRunning ? { scale: 0.985 } : {}}
+            className={`relative flex-1 py-3 rounded-xl text-[12px] font-bold flex items-center justify-center gap-2 overflow-hidden transition-all ${
               isRunning
-                ? 'bg-rose-500/15 text-rose-400/50 cursor-not-allowed'
-                : 'bg-gradient-to-r from-rose-600 to-fuchsia-600 text-white shadow-lg shadow-rose-500/20 hover:brightness-110'
+                ? 'bg-rose-500/10 text-rose-400/50 cursor-not-allowed'
+                : 'bg-gradient-to-r from-rose-500 to-fuchsia-600 text-white shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 hover:brightness-105'
             }`}
           >
+            {/* Shimmer on hover */}
+            {!isRunning && (
+              <motion.span
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12 pointer-events-none"
+                initial={{ x: '-120%' }}
+                whileHover={{ x: '200%' }}
+                transition={{ duration: 0.55, ease: 'easeOut' }}
+              />
+            )}
             {isRunning
-              ? <><Loader2 size={12} className="animate-spin" /> Đang tạo...</>
-              : <><Sparkles size={12} /> Tạo Ngay · {COST} CR</>
+              ? <><Loader2 size={14} className="animate-spin" /> Đang tạo ảnh...</>
+              : <><Sparkles size={14} /> Tạo Ngay <span className="opacity-75 font-normal">· {COST} CR</span></>
             }
           </motion.button>
+
           <motion.button
             onClick={onOpenStudio}
-            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="px-4 py-2.5 rounded-xl border border-rose-500/25 text-rose-500 dark:text-rose-400 text-[11px] font-semibold hover:bg-rose-500/8 transition-all whitespace-nowrap"
+            whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.985 }}
+            className="px-5 py-3 rounded-xl border border-rose-500/25 dark:border-rose-500/20 text-rose-500 dark:text-rose-400 text-[12px] font-semibold hover:bg-rose-500/8 hover:border-rose-500/45 transition-all whitespace-nowrap"
           >
             Studio →
           </motion.button>
         </div>
 
-        {!isAuthenticated && (
-          <p className="text-[9px] text-slate-400 dark:text-[#444] text-center">
-            <button onClick={login} className="text-rose-500 underline font-semibold">Đăng nhập</button>
-            {' '}để tạo ảnh · 100 CR miễn phí
-          </p>
-        )}
+        {/* Auth nudge */}
+        <AnimatePresence>
+          {!isAuthenticated && (
+            <motion.p
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="text-[10px] text-slate-400 dark:text-white/30 text-center"
+            >
+              <button onClick={login} className="text-rose-500 font-bold hover:underline">Đăng nhập</button>
+              {' '}để tạo ảnh &mdash; 100 CR miễn phí khi đăng ký
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
+
+      {/* Fullscreen lightbox (self-contained in widget) */}
+      <AnimatePresence>
+        {fullscreen && resultUrl && (
+          <Fullscreen url={resultUrl} onClose={() => setFullscreen(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -470,8 +557,6 @@ const Fullscreen: React.FC<{ url: string; onClose: () => void }> = ({ url, onClo
 
 // ─── Main HeroSection ──────────────────────────────────────────
 export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
-  const [fullscreenUrl, setFullscreenUrl] = useState<string | null>(null);
-
   return (
     <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-16 relative overflow-hidden">
       <HeroBG />
@@ -561,11 +646,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
           </motion.div>
         </div>
       </div>
-
-      {/* Fullscreen lightbox */}
-      <AnimatePresence>
-        {fullscreenUrl && <Fullscreen url={fullscreenUrl} onClose={() => setFullscreenUrl(null)} />}
-      </AnimatePresence>
     </section>
   );
 };
