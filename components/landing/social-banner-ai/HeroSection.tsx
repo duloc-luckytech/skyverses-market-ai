@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -8,7 +8,9 @@ import {
 import { GradientMesh, FadeInUp, HoverCard } from '../_shared/SectionAnimations';
 import { FloatingBadge } from '../_shared/ProHeroVisuals';
 import { imagesApi, ImageJobRequest } from '../../../apis/images';
+import { ImageJobCard, JobCardStatus } from '../../../components/shared/ImageJobCard';
 import { useAuth } from '../../../context/AuthContext';
+import { useJobPoller } from '../../../hooks/useJobPoller';
 
 interface HeroSectionProps { onStartStudio: () => void; }
 
@@ -202,7 +204,6 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
   const [demoLoading, setDemoLoading] = useState(false);
   const [demoPromptIdx, setDemoPromptIdx] = useState(0);
   const [demoStatus, setDemoStatus] = useState<'idle' | 'creating' | 'polling' | 'done' | 'error'>('idle');
-  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Demo dùng model mặc định — không cần user chọn engine
   const DEMO_ENGINE = 'gommo';
@@ -210,44 +211,39 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
   const DEMO_MODE   = 'relaxed';
   const DEMO_COST   = 80;             // CR khớp với FloatingBadge
 
-  const pollJob = useCallback((jobId: string) => {
-    pollTimerRef.current = setTimeout(async () => {
-      try {
-        const res = await imagesApi.getJobStatus(jobId);
-        const status = res.data?.status;
-
-        if (status === 'error' || status === 'failed') {
-          // Hoàn credits khi job thất bại
+  // ─── useJobPoller ─────────────────────────────────────────────
+  const poller = useJobPoller(
+    {
+      onDone: (result) => {
+        const url = result.images?.[0] ?? null;
+        if (url) {
+          setDemoResult(url);
+          setDemoStatus('done');
+        } else {
           addCredits(DEMO_COST);
           setDemoStatus('error');
-          setDemoLoading(false);
-          return;
         }
-
-        if (status === 'done' && res.data.result?.images?.length) {
-          setDemoResult(res.data.result.images[0]);
-          setDemoStatus('done');
-          setDemoLoading(false);
-          return;
-        }
-
-        // Còn processing → poll tiếp
-        pollJob(jobId);
-      } catch {
-        // Lỗi mạng → retry chậm hơn
-        pollTimerRef.current = setTimeout(() => pollJob(jobId), 10000);
-      }
-    }, 5000);
-  }, [addCredits]);
+        setDemoLoading(false);
+      },
+      onError: () => {
+        addCredits(DEMO_COST);
+        setDemoStatus('error');
+        setDemoLoading(false);
+      },
+      onTimeout: () => {
+        addCredits(DEMO_COST);
+        setDemoStatus('error');
+        setDemoLoading(false);
+      },
+    },
+    { apiType: 'image', intervalMs: 5000, maxDurationMs: 180_000 },
+  );
 
   const runDemo = async () => {
     if (demoLoading || !demoPrompt.trim()) return;
 
     if (!isAuthenticated) { login(); return; }
     if (credits < DEMO_COST) { onOpenStudio(); return; }
-
-    // Xóa poll timer cũ nếu có
-    if (pollTimerRef.current) clearTimeout(pollTimerRef.current);
 
     setDemoLoading(true);
     setDemoResult(null);
@@ -285,7 +281,7 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
         // Trừ credits ngay khi job tạo thành công
         useCredits(DEMO_COST);
         setDemoStatus('polling');
-        pollJob(res.data.jobId);
+        poller.startPolling(res.data.jobId);
       } else {
         setDemoStatus('error');
         setDemoLoading(false);
@@ -302,7 +298,7 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
     setDemoPrompt(DEMO_PROMPTS[next]);
     setDemoResult(null);
     setDemoStatus('idle');
-    if (pollTimerRef.current) clearTimeout(pollTimerRef.current);
+    poller.cancel();
   };
 
   const statusLabel =
@@ -324,51 +320,26 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
       </div>
 
       {/* Preview area */}
-      <div className="aspect-video bg-slate-100 dark:bg-white/[0.03] relative flex items-center justify-center overflow-hidden">
-        <AnimatePresence mode="wait">
-          {demoLoading ? (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-            >
-              <div className="grid grid-cols-2 gap-2 w-full px-4">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="aspect-video rounded-lg bg-slate-200 dark:bg-white/[0.04] animate-pulse" style={{ animationDelay: `${i*0.12}s` }} />
-                ))}
-              </div>
-              <p className="text-[10px] text-slate-400 animate-pulse">{statusLabel}</p>
-            </motion.div>
-          ) : demoStatus === 'error' ? (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="flex flex-col items-center gap-2 text-center px-4"
-            >
-              <p className="text-[11px] text-red-400 font-medium">Có lỗi xảy ra — credits đã được hoàn lại 🔄</p>
-            </motion.div>
-          ) : demoResult ? (
-            <motion.img
-              key="result"
-              src={demoResult}
-              alt="Demo output"
-              initial={{ opacity: 0, scale: 0.97 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <BannerPlaceholder />
-          )}
-        </AnimatePresence>
-
-        {demoStatus === 'done' && (
-          <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-emerald-500 rounded-full text-white text-[9px] font-bold">
-            ✓ Tạo xong
-          </div>
-        )}
-      </div>
+      {(() => {
+        const cardStatus: JobCardStatus = demoLoading ? 'processing'
+          : demoStatus === 'error' ? 'error'
+          : demoResult ? 'done'
+          : 'idle';
+        return (
+          <ImageJobCard
+            status={cardStatus}
+            resultUrl={demoResult ?? undefined}
+            statusText={statusLabel}
+            errorMessage="Có lỗi xảy ra — credits đã được hoàn lại 🔄"
+            aspectRatio="16/9"
+            mode="compact"
+            downloadFilename="skyverses_banner"
+            onReset={cyclePrompt}
+            onRetry={() => { setDemoResult(null); setDemoStatus('idle'); }}
+            idleSlot={<BannerPlaceholder />}
+          />
+        );
+      })()}
 
       {/* Prompt input + actions */}
       <div className="p-3 space-y-2">

@@ -1,8 +1,9 @@
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { uploadToGCS } from '../services/storage';
 import { API_BASE_URL, getHeaders } from '../apis/config';
+import { useJobPoller } from './useJobPoller';
 
 export interface RestorationPreset {
   id: string;
@@ -92,8 +93,6 @@ export interface RestoreJob {
   progressStep?: string;     // #5 Progress step label
 }
 
-const POLL_INTERVAL = 3000;
-const POLL_MAX_ATTEMPTS = 120;
 const DEFAULT_RESTORE_COST = 100;
 
 export const useRestoration = () => {
@@ -115,8 +114,55 @@ export const useRestoration = () => {
   });
   const [hasPersonalKey, setHasPersonalKey] = useState(false);
 
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pollCountRef = useRef(0);
+  // ─── JOB POLLER ───
+  const [activeLocalJobId, setActiveLocalJobId] = useState<string | null>(null);
+  const poller = useJobPoller(
+    {
+      onDone: (result) => {
+        const resultUrl = result.images?.[0] ?? result.thumbnail ?? null;
+        setJobs(prev => prev.map(j =>
+          j.id === activeLocalJobId
+            ? { ...j, status: 'DONE', result: resultUrl, progress: 100, progressStep: 'Hoàn tất' }
+            : j
+        ));
+        setIsProcessing(false);
+        showToast('✅ Phục chế hoàn tất! Ảnh đã sẵn sàng tải xuống.', 'success');
+        try { refreshUserInfo?.(); } catch {}
+      },
+      onError: (errorMsg) => {
+        setJobs(prev => prev.map(j =>
+          j.id === activeLocalJobId
+            ? { ...j, status: 'ERROR', errorMessage: errorMsg, progress: 0 }
+            : j
+        ));
+        setIsProcessing(false);
+        showToast(`❌ ${errorMsg}. Credit đã được hoàn trả.`, 'error');
+        try { refreshUserInfo?.(); } catch {}
+      },
+      onTick: ({ tickCount }) => {
+        const simulatedProgress = Math.min(90, Math.floor((tickCount / 30) * 90));
+        const step = simulatedProgress < 20 ? 'Đang phân tích ảnh...'
+          : simulatedProgress < 50 ? 'Đang tái tạo chi tiết...'
+          : simulatedProgress < 75 ? 'Đang khử nhiễu & lên màu...'
+          : 'Đang hoàn thiện kết xuất...';
+        setJobs(prev => prev.map(j =>
+          j.id === activeLocalJobId
+            ? { ...j, status: 'PROCESSING', progress: simulatedProgress, progressStep: step }
+            : j
+        ));
+      },
+      onTimeout: () => {
+        setJobs(prev => prev.map(j =>
+          j.id === activeLocalJobId
+            ? { ...j, status: 'ERROR', errorMessage: 'Quá thời gian chờ. Vui lòng thử lại.' }
+            : j
+        ));
+        setIsProcessing(false);
+        showToast('⏱️ Quá thời gian chờ xử lý. Credit đã được hoàn trả tự động.', 'error');
+      },
+    },
+    { apiType: 'image', intervalMs: 3000, maxDurationMs: 360_000 },
+  );
 
   useEffect(() => {
     const vault = localStorage.getItem('skyverses_model_vault');
@@ -154,12 +200,6 @@ export const useRestoration = () => {
     })();
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
-  }, []);
-
   // ─── #2 TOAST AUTO-DISMISS ───
   useEffect(() => {
     if (toast) {
@@ -171,81 +211,6 @@ export const useRestoration = () => {
   const showToast = (message: string, type: 'error' | 'success' | 'info' = 'error') => {
     setToast({ message, type });
   };
-
-  // ─── POLL JOB STATUS (#5 progress support) ───
-  const startPolling = useCallback((localJobId: string, backendJobId: string) => {
-    if (pollRef.current) clearInterval(pollRef.current);
-    pollCountRef.current = 0;
-
-    pollRef.current = setInterval(async () => {
-      pollCountRef.current += 1;
-
-      if (pollCountRef.current > POLL_MAX_ATTEMPTS) {
-        if (pollRef.current) clearInterval(pollRef.current);
-        setJobs(prev => prev.map(j => j.id === localJobId
-          ? { ...j, status: 'ERROR', errorMessage: 'Quá thời gian chờ. Vui lòng thử lại.' }
-          : j
-        ));
-        setIsProcessing(false);
-        showToast('⏱️ Quá thời gian chờ xử lý. Credit đã được hoàn trả tự động.', 'error');
-        return;
-      }
-
-      try {
-        const res = await fetch(`${API_BASE_URL}/image-jobs/${backendJobId}`, {
-          headers: getHeaders(),
-        });
-        const json = await res.json();
-        const status = json?.data?.status || json?.status;
-
-        if (status === 'done') {
-          if (pollRef.current) clearInterval(pollRef.current);
-
-          const resultUrl =
-            json?.data?.result?.images?.[0] ||
-            json?.data?.result?.thumbnail ||
-            null;
-
-          setJobs(prev => prev.map(j =>
-            j.id === localJobId
-              ? { ...j, status: 'DONE', result: resultUrl, progress: 100, progressStep: 'Hoàn tất' }
-              : j
-          ));
-          setIsProcessing(false);
-          showToast('✅ Phục chế hoàn tất! Ảnh đã sẵn sàng tải xuống.', 'success');
-          try { refreshUserInfo?.(); } catch {}
-
-        } else if (status === 'error' || status === 'reject' || status === 'cancelled') {
-          if (pollRef.current) clearInterval(pollRef.current);
-          const errorMsg = json?.data?.error?.message || json?.data?.error || 'Lỗi xử lý phục chế ảnh';
-          setJobs(prev => prev.map(j =>
-            j.id === localJobId
-              ? { ...j, status: 'ERROR', errorMessage: errorMsg, progress: 0 }
-              : j
-          ));
-          setIsProcessing(false);
-          showToast(`❌ ${errorMsg}. Credit đã được hoàn trả.`, 'error');
-          try { refreshUserInfo?.(); } catch {}
-
-        } else if (status === 'processing' || status === 'polling') {
-          // #5 — Simulate progress based on poll count
-          const simulatedProgress = Math.min(90, Math.floor((pollCountRef.current / 30) * 90));
-          const step = simulatedProgress < 20 ? 'Đang phân tích ảnh...'
-            : simulatedProgress < 50 ? 'Đang tái tạo chi tiết...'
-            : simulatedProgress < 75 ? 'Đang khử nhiễu & lên màu...'
-            : 'Đang hoàn thiện kết xuất...';
-
-          setJobs(prev => prev.map(j =>
-            j.id === localJobId
-              ? { ...j, status: 'PROCESSING', progress: simulatedProgress, progressStep: step }
-              : j
-          ));
-        }
-      } catch (err) {
-        console.error('[Restore] Poll error:', err);
-      }
-    }, POLL_INTERVAL);
-  }, [refreshUserInfo]);
 
   // ─── #3 FETCH HISTORY ───
   const fetchHistory = useCallback(async () => {
@@ -427,7 +392,8 @@ export const useRestoration = () => {
       ));
 
       showToast('🚀 Đã gửi yêu cầu phục chế. Đang xử lý...', 'info');
-      startPolling(activeJobId!, backendJobId);
+      setActiveLocalJobId(activeJobId!);
+      poller.startPolling(backendJobId);
 
     } catch (err: any) {
       console.error('[Restore] Error:', err);

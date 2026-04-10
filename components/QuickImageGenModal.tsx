@@ -1,11 +1,13 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Wand2, Zap, Plus, Loader2, Sparkles, ChevronDown, Activity, Gift, Image, Camera, Star, ArrowRight, Download } from 'lucide-react';
+import { X, Wand2, Zap, Plus, Loader2, Sparkles, ChevronDown, Activity, Gift, Image, Camera } from 'lucide-react';
+import { ImageJobCard } from './shared/ImageJobCard';
 import { uploadToGCS } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
 import { pricingApi, PricingModel } from '../apis/pricing';
-import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { useJobPoller } from '../hooks/useJobPoller';
 
 interface QuickImageGenModalProps {
   isOpen: boolean;
@@ -49,6 +51,37 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
   const usagePreference = useMemo(() => {
     return (localStorage.getItem('skyverses_usage_preference') as any) || 'credits';
   }, [isOpen]);
+
+  // ─── Shared polling via useJobPoller ────────────────────────────────────────
+  const poller = useJobPoller(
+    {
+      onDone: (result) => {
+        const url = result.images?.[0] ?? null;
+        if (url) {
+          setStatusText('✨ Hoàn tất');
+          setGeneratedImage(url);
+          refreshUserInfo();
+        } else {
+          setStatusText('Lỗi tạo ảnh');
+          alert('Máy chủ không trả về hình ảnh. Vui lòng thử lại.');
+        }
+        setIsGenerating(false);
+      },
+      onError: () => {
+        setIsGenerating(false);
+        setStatusText('Lỗi tạo ảnh');
+        alert('Máy chủ báo lỗi hoặc không thể tạo hình. Vui lòng thử lại.');
+      },
+      onTimeout: () => {
+        setIsGenerating(false);
+        setStatusText('Hết thời gian chờ');
+      },
+      onTick: ({ tickCount }) => {
+        setStatusText(tickCount <= 2 ? '⏳ Đang xếp hàng...' : '🎨 Đang render...');
+      },
+    },
+    { apiType: 'image', intervalMs: 3000, maxDurationMs: 180_000 },
+  );
 
   // -- Initialization: Fetch Pricing (default to fxflow engine = Server 2) --
   useEffect(() => {
@@ -106,31 +139,6 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
     const firstKey = Object.keys(resMatrix)[0];
     return resMatrix[firstKey] || 0;
   }, [selectedModel, selectedRes]);
-
-  const pollJobStatus = async (jobId: string) => {
-    try {
-      const response: ImageJobResponse = await imagesApi.getJobStatus(jobId);
-      const jobStatus = response.data?.status;
-
-      if (jobStatus === 'done' && response.data.result?.images?.length) {
-        setStatusText('✨ Hoàn tất');
-        setGeneratedImage(response.data.result.images[0]);
-        setIsGenerating(false);
-        refreshUserInfo();
-      } else if (jobStatus === 'failed' || (jobStatus as string) === 'error') {
-        setIsGenerating(false);
-        setStatusText('Lỗi tạo ảnh');
-        alert("Máy chủ báo lỗi hoặc không thể tạo hình. Vui lòng thử lại.");
-      } else {
-        setStatusText(jobStatus === 'processing' ? '🎨 Đang render...' : '⏳ Đang xếp hàng...');
-        setTimeout(() => pollJobStatus(jobId), 3000);
-      }
-    } catch (e) {
-      console.error("Polling Error:", e);
-      setIsGenerating(false);
-      setStatusText('Lỗi kết nối');
-    }
-  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -191,7 +199,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
       if (res.success && res.data.jobId) {
         if (freeImageRemaining <= 0) useCredits(currentUnitCost);
         setStatusText('🎨 Đang kiến tạo...');
-        pollJobStatus(res.data.jobId);
+        poller.startPolling(res.data.jobId);
       } else {
         throw new Error(res.message || 'Khởi tạo Job thất bại');
       }
@@ -435,49 +443,15 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
             <div className="flex-1 overflow-y-auto p-5 space-y-5 no-scrollbar">
 
               {/* Generated Image Preview */}
-              {generatedImage && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="rounded-xl overflow-hidden border border-emerald-500/20"
-                  style={{ background: 'rgba(52,211,153,0.05)' }}
-                >
-                  <img src={generatedImage} className="w-full h-auto rounded-xl" alt="Generated" />
-                  <div className="p-3 flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
-                      <Star size={10} fill="currentColor" /> Ảnh đã tạo thành công
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={async () => {
-                          try {
-                            const res = await fetch(generatedImage!);
-                            const blob = await res.blob();
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `skyverses_${Date.now()}.png`;
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                            URL.revokeObjectURL(url);
-                          } catch { window.open(generatedImage!, '_blank'); }
-                        }}
-                        className="px-3 py-1.5 rounded-lg text-[10px] font-bold text-white flex items-center gap-1.5 transition-all hover:brightness-110"
-                        style={{ background: 'linear-gradient(135deg, #0090ff, #0070cc)' }}
-                      >
-                        <Download size={10} /> Tải về
-                      </button>
-                      <button
-                        onClick={() => { setGeneratedImage(null); setPrompt(''); }}
-                        className="text-[10px] font-bold text-white/40 hover:text-brand-blue transition-colors flex items-center gap-1"
-                      >
-                        Tạo thêm <ArrowRight size={10} />
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
+              <ImageJobCard
+                status={isGenerating ? 'processing' : generatedImage ? 'done' : 'idle'}
+                resultUrl={generatedImage ?? undefined}
+                statusText={statusText}
+                mode="full"
+                aspectRatio="1/1"
+                downloadFilename={`skyverses_${Date.now()}`}
+                onReset={() => { setGeneratedImage(null); setPrompt(''); }}
+              />
 
               {/* Prompt */}
               <div className="space-y-2">

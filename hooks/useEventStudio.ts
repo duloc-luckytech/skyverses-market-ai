@@ -1,11 +1,12 @@
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { uploadToGCS, GCSAssetMetadata } from '../services/storage';
-import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
+import { imagesApi, ImageJobRequest } from '../apis/images';
 import { pricingApi, PricingModel } from '../apis/pricing';
 import { getCostFromPricing, getResolutionsFromPricing } from '../utils/pricing-helpers';
 import { EventConfig, COMMON_STUDIO_CONSTANTS, STYLE_PRESETS, EventTemplate } from '../constants/event-configs';
+import { pollJobOnce } from './useJobPoller';
 
 export interface RenderResult {
   id: string;
@@ -128,6 +129,13 @@ export const useEventStudio = (config: EventConfig) => {
   // -- NEW: Feature 7 — Auto-Enhance state --
   const [isEnhancing, setIsEnhancing] = useState(false);
 
+  const isCancelledRef = useRef(false);
+
+  // Cancel all in-flight polls on unmount
+  useEffect(() => {
+    return () => { isCancelledRef.current = true; };
+  }, []);
+
   // Derived states
   const isGenerating = useMemo(() => results.some(r => r.status === 'processing'), [results]);
   const activeStylePreset = useMemo(() => STYLE_PRESETS.find(s => s.id === selectedStyle), [selectedStyle]);
@@ -189,20 +197,27 @@ export const useEventStudio = (config: EventConfig) => {
   const isGenerateDisabled = isRequesting || !!generateTooltip;
 
   // --- POLL STATUS ---
-  const pollStatus = useCallback(async (jobId: string, resultId: string, cost: number) => {
-    try {
-      const res: ImageJobResponse = await imagesApi.getJobStatus(jobId);
-      const status = res.data?.status;
-      if (status === 'done' && res.data.result?.images?.length) {
-        const imageUrl = res.data.result.images[0];
-        setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done', progress: { step: 'Hoàn tất!', percent: 100 } } : r));
+  const pollStatus = useCallback((jobId: string, resultId: string, cost: number) => {
+    pollJobOnce({
+      jobId,
+      isCancelledRef,
+      apiType: 'image',
+      intervalMs: 4000,
+      networkRetryMs: 10000,
+      onDone: (result) => {
+        const imageUrl = result.images?.[0] ?? null;
+        setResults(prev => prev.map(r => r.id === resultId
+          ? { ...r, url: imageUrl, status: 'done', progress: { step: 'Hoàn tất!', percent: 100 } }
+          : r
+        ));
         setActiveResultId(resultId);
         refreshUserInfo();
-      } else if (status === 'failed' || status === 'error') {
+      },
+      onError: () => {
         if (usagePreference === 'credits') addCredits(cost);
         setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
-      } else {
-        // Increment progress step
+      },
+      onTick: () => {
         setResults(prev => prev.map(r => {
           if (r.id !== resultId || r.status !== 'processing') return r;
           const p = r.progress?.percent || 30;
@@ -216,11 +231,8 @@ export const useEventStudio = (config: EventConfig) => {
           const step = Object.entries(stepLabels).reverse().find(([k]) => nextPercent >= Number(k))?.[1] || r.progress?.step || 'Đang xử lý...';
           return { ...r, progress: { step, percent: nextPercent } };
         }));
-        setTimeout(() => pollStatus(jobId, resultId, cost), 4000);
-      }
-    } catch (e) {
-      setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
-    }
+      },
+    });
   }, [usagePreference, addCredits, refreshUserInfo]);
 
   // --- BUILD PROMPT ---

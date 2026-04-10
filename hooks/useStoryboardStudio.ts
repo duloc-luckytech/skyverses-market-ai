@@ -1,12 +1,13 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { generateDemoImage, generateDemoText } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
 import { imagesApi } from '../apis/images';
-import { videosApi, VideoJobRequest, VideoJobResponse } from '../apis/videos';
+import { videosApi, VideoJobRequest } from '../apis/videos';
 import { ExplorerItem } from '../components/ExplorerDetailModal';
 import { STORYBOARD_SAMPLES } from '../data';
 import { uploadToGCS } from '../services/storage';
+import { pollJobOnce } from './useJobPoller';
 
 export interface Scene {
   id: string;
@@ -63,6 +64,13 @@ export const useStoryboardStudio = () => {
   const [assets, setAssets] = useState<ReferenceAsset[]>([]);
   const assetUploadRef = useRef<HTMLInputElement>(null);
   const [activeUploadAssetId, setActiveUploadAssetId] = useState<string | null>(null);
+
+  const isCancelledRef = useRef(false);
+
+  // Cancel all in-flight polls on unmount
+  useEffect(() => {
+    return () => { isCancelledRef.current = true; };
+  }, []);
 
   const [settings, setSettings] = useState({
     videoPrompt: true,
@@ -186,53 +194,49 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
     setIsProcessing(false);
   }, []);
 
-  const pollImageJobStatus = useCallback(async (jobId: string, assetId: string) => {
-    try {
-      const response: any = await imagesApi.getJobStatus(jobId);
-      const jobStatus = response.data?.status || response.status;
-
-      if (jobStatus === 'done' && response.data.result?.images?.length) {
-        const imageUrl = response.data.result.images[0];
-        const mediaId = response.data.result.imageId || null;
-        updateAsset(assetId, { url: imageUrl, mediaId: mediaId, status: 'done' });
+  const pollImageJobStatus = useCallback((jobId: string, assetId: string) => {
+    pollJobOnce({
+      jobId,
+      isCancelledRef,
+      apiType: 'image',
+      intervalMs: 5000,
+      networkRetryMs: 10000,
+      onDone: (result) => {
+        const imageUrl = result.images?.[0] ?? null;
+        const mediaId = (result as any).imageId || null;
+        updateAsset(assetId, { url: imageUrl, mediaId, status: 'done' });
         refreshUserInfo();
         if (!autoCloseTriggeredRef.current) {
           autoCloseTriggeredRef.current = true;
           addLog("KẾT QUẢ: Đã tạo thành công concept.");
           setTimeout(closeProgressModal, 1500);
         }
-      } else if (jobStatus === 'error' || jobStatus === 'failed') {
+      },
+      onError: () => {
         updateAsset(assetId, { status: 'error' });
         addLog(`LỖI: Tác vụ ${jobId} thất bại.`);
-      } else {
-        setTimeout(() => pollImageJobStatus(jobId, assetId), 5000);
-      }
-    } catch (e) {
-      updateAsset(assetId, { status: 'error' });
-    }
+      },
+    });
   }, [updateAsset, refreshUserInfo, closeProgressModal, addLog]);
 
-  const pollVideoJobStatus = useCallback(async (jobId: string, sceneId: string, cost: number) => {
-    try {
-      const response: VideoJobResponse = await videosApi.getJobStatus(jobId);
-      const isSuccess = response.success === true || response.status?.toLowerCase() === 'success';
-      const jobStatus = response.data?.status?.toLowerCase();
-
-      if (jobStatus === 'done' && response.data.result?.videoUrl) {
-        updateScene(sceneId, { videoUrl: response.data.result.videoUrl, status: 'done' });
+  const pollVideoJobStatus = useCallback((jobId: string, sceneId: string, cost: number) => {
+    pollJobOnce({
+      jobId,
+      isCancelledRef,
+      apiType: 'video',
+      intervalMs: 5000,
+      networkRetryMs: 10000,
+      onDone: (result) => {
+        updateScene(sceneId, { videoUrl: result.videoUrl ?? null, status: 'done' });
         addLog(`KẾT QUẢ: Phân cảnh #${sceneId.slice(-4)} kết xuất thành công.`);
         refreshUserInfo();
-      } else if (jobStatus === 'failed' || jobStatus === 'error' || (!isSuccess && jobStatus !== 'pending' && jobStatus !== 'processing')) {
+      },
+      onError: (errorMsg) => {
         updateScene(sceneId, { status: 'error' });
         addLog(`LỖI: Render phân cảnh #${sceneId.slice(-4)} thất bại. Hoàn trả: ${cost} CR.`);
         addCredits(cost);
-      } else {
-        setTimeout(() => pollVideoJobStatus(jobId, sceneId, cost), 5000);
-      }
-    } catch (e) {
-      console.error("Video poll error", e);
-      setTimeout(() => pollVideoJobStatus(jobId, sceneId, cost), 10000);
-    }
+      },
+    });
   }, [updateScene, addLog, refreshUserInfo, addCredits]);
 
   const triggerImageGeneration = useCallback(async (asset: ReferenceAsset) => {

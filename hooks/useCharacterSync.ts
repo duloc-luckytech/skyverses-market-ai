@@ -1,10 +1,11 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { generateDemoVideo } from '../services/gemini';
 import { uploadToGCS } from '../services/storage';
 import { pricingApi, PricingModel } from '../apis/pricing';
-import { videosApi, VideoJobRequest, VideoJobResponse } from '../apis/videos';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from './useJobPoller';
 
 export interface CharacterSlot {
   id: string;
@@ -59,6 +60,13 @@ export const useCharacterSync = () => {
   // NEW: State for results terminal
   const [activeResultTab, setActiveResultTab] = useState<'CURRENT' | 'HISTORY'>('CURRENT');
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+
+  const isCancelledRef = useRef(false);
+
+  // Cancel all in-flight polls on unmount
+  useEffect(() => {
+    return () => { isCancelledRef.current = true; };
+  }, []);
 
   const [availableModels, setAvailableModels] = useState<PricingModel[]>([]);
   const [selectedModel, setSelectedModel] = useState<PricingModel | null>(null);
@@ -173,42 +181,40 @@ export const useCharacterSync = () => {
     sequences.filter(s => s.text.trim() !== '').length * currentUnitCost,
     [sequences, currentUnitCost]);
 
-  const pollJobStatus = async (jobId: string, resultId: string, cost: number) => {
-    try {
-      const response: VideoJobResponse = await videosApi.getJobStatus(jobId);
-      const isSuccess = response.success === true || response.status?.toLowerCase() === 'success';
-      const jobStatus = response.data?.status?.toUpperCase();
-
-      if (jobStatus === 'DONE' && response.data.result?.videoUrl) {
-        const videoUrl = response.data.result.videoUrl;
+  const pollJobStatus = (jobId: string, resultId: string, cost: number) => {
+    pollJobOnce({
+      jobId,
+      isCancelledRef,
+      apiType: 'video',
+      intervalMs: 5000,
+      networkRetryMs: 10000,
+      onDone: (result) => {
+        const videoUrl = result.videoUrl ?? null;
         setJobs(prev => {
           const job = prev.find(j => j.id === resultId);
-          if (job) {
+          if (job && videoUrl) {
             setHistory(h => [{ ...job, status: 'COMPLETED', url: videoUrl, progress: 100 }, ...h]);
           }
           return prev.filter(j => j.id !== resultId);
         });
         refreshUserInfo();
-      } else if (jobStatus === 'FAILED' || jobStatus === 'ERROR' || (!isSuccess && jobStatus !== 'PENDING' && jobStatus !== 'PROCESSING')) {
-        const errorData = (response.data as any)?.error;
-        const errorMsg = errorData?.userMessage || errorData?.message || 'Lỗi tạo video';
-
+      },
+      onError: (errorMsg) => {
         if (usagePreference === 'credits') addCredits(cost);
-        setJobs(prev => prev.map(j => j.id === resultId ? { ...j, status: 'FAILED', error: errorMsg, isRefunded: true } : j));
-      } else {
+        setJobs(prev => prev.map(j => j.id === resultId
+          ? { ...j, status: 'FAILED', error: errorMsg, isRefunded: true }
+          : j
+        ));
+      },
+      onTick: () => {
         setJobs(prev => prev.map(j => {
           if (j.id === resultId) {
-            const newProgress = Math.min(95, j.progress + 3);
-            return { ...j, progress: newProgress };
+            return { ...j, progress: Math.min(95, j.progress + 3) };
           }
           return j;
         }));
-        setTimeout(() => pollJobStatus(jobId, resultId, cost), 5000);
-      }
-    } catch (e) {
-      console.error("Polling Error:", e);
-      setJobs(prev => prev.map(j => j.id === resultId ? { ...j, status: 'FAILED', error: 'Mất kết nối API' } : j));
-    }
+      },
+    });
   };
 
   const handleLocalUpload = async (e: React.ChangeEvent<HTMLInputElement>, activeIdx: number | null) => {

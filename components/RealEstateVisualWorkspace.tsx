@@ -2,13 +2,12 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, Sparkles, Loader2, Download, Maximize2, Trash2,
+  X, Sparkles, Loader2, Trash2,
   Coins, AlertTriangle, History, Wand2, RefreshCw, Plus,
   Building2, Home, Briefcase, Store, Map,
   Building, Users, LayoutGrid, PenTool, Code, HardHat, MoreHorizontal,
   Sofa, Image as ImageIcon, Eye,
   Navigation, Wind, Film, Clock,
-  CheckCircle2,
 } from 'lucide-react';
 import { generateDemoText } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
@@ -22,6 +21,7 @@ import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
 import { VideoModelEngineSettings } from './video-generator/VideoModelEngineSettings';
 import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
 import { videosApi, VideoJobRequest, VideoJobResponse } from '../apis/videos';
+import { ImageJobCard } from '../components/shared/ImageJobCard';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -1137,44 +1137,32 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                       <div
                         key={task.id}
                         onClick={() => setActiveResultId(task.id)}
-                        className={`group relative rounded-xl overflow-hidden border cursor-pointer transition-all ${activeResultId === task.id ? 'border-brand-blue/50 shadow-sm shadow-brand-blue/10' : 'border-slate-100 dark:border-white/5 hover:border-brand-blue/20'}`}
+                        className={`group relative cursor-pointer transition-all rounded-xl ${activeResultId === task.id ? 'ring-1 ring-brand-blue/50 shadow-sm shadow-brand-blue/10' : ''}`}
                       >
-                        {/* Thumbnail */}
-                        <div className="aspect-video bg-slate-100 dark:bg-white/[0.03] overflow-hidden">
-                          {task.status === 'processing' ? (
-                            <div className="w-full h-full animate-pulse bg-slate-200 dark:bg-white/[0.04] flex items-center justify-center">
-                              <Loader2 size={16} className="animate-spin text-brand-blue" />
+                        <ImageJobCard
+                          status={task.status}
+                          resultUrl={task.url ?? undefined}
+                          isVideo={task.mode === 'video'}
+                          aspectRatio="16/9"
+                          mode="compact"
+                          onRetry={() => setActiveResultId(task.id)}
+                          infoSlot={
+                            <div className="px-2 py-1.5">
+                              <div className="flex items-center justify-between mb-0.5">
+                                <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${task.mode === 'image' ? 'bg-brand-blue/10 text-brand-blue' : 'bg-purple-500/10 text-purple-500'}`}>
+                                  {task.mode === 'image' ? '🖼️ Ảnh' : '🎬 Video'}
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-slate-600 dark:text-white/60 line-clamp-1">{task.prompt}</p>
+                              <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5">{task.cost.toLocaleString()} CR · {task.createdAt.split(' ')[0]}</p>
                             </div>
-                          ) : task.status === 'error' ? (
-                            <div className="w-full h-full flex items-center justify-center bg-red-50 dark:bg-red-900/10">
-                              <AlertTriangle size={16} className="text-red-400" />
-                            </div>
-                          ) : task.url ? (
-                            task.mode === 'image' ? (
-                              <img src={task.url} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                              <video src={task.url} className="w-full h-full object-cover" muted />
-                            )
-                          ) : null}
-                        </div>
-                        {/* Info */}
-                        <div className="p-2">
-                          <div className="flex items-center justify-between mb-0.5">
-                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${task.mode === 'image' ? 'bg-brand-blue/10 text-brand-blue' : 'bg-purple-500/10 text-purple-500'}`}>
-                              {task.mode === 'image' ? '🖼️' : '🎬'} {task.mode === 'image' ? 'Ảnh' : 'Video'}
-                            </span>
-                            <span className={`text-[8px] font-bold ${task.status === 'done' ? 'text-emerald-500' : task.status === 'error' ? 'text-red-400' : 'text-amber-400'}`}>
-                              {task.status === 'done' ? '✓ Done' : task.status === 'error' ? '✗ Lỗi' : '⟳ Đang tạo'}
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-slate-600 dark:text-white/60 line-clamp-1">{task.prompt}</p>
-                          <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5">{task.cost.toLocaleString()} CR · {task.createdAt.split(' ')[0]}</p>
-                        </div>
-                        {/* Delete button */}
+                          }
+                          cardClassName="border border-slate-100 dark:border-white/5"
+                        />
                         {task.status !== 'processing' && (
                           <button
                             onClick={(e) => deleteResult(e, task.id)}
-                            className="absolute top-1 right-1 p-1 rounded-md bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                            className="absolute top-1 right-1 z-10 p-1 rounded-md bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
                           >
                             <Trash2 size={10} />
                           </button>
@@ -1197,7 +1185,6 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                       <div
                         key={session.id}
                         onClick={() => {
-                          // Load session back into task list as a done item
                           const alreadyLoaded = results.find(r => r.url === session.imageUrl);
                           if (!alreadyLoaded) {
                             const loaded: REResult = {
@@ -1218,25 +1205,28 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                           }
                           setViewMode('current');
                         }}
-                        className="group relative rounded-xl overflow-hidden border border-slate-100 dark:border-white/5 cursor-pointer hover:border-brand-blue/20 transition-all"
+                        className="group relative cursor-pointer"
                       >
-                        <div className="aspect-video bg-slate-100 dark:bg-white/[0.03] overflow-hidden">
-                          {session.mode === 'image' ? (
-                            <img src={session.imageUrl} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                          ) : (
-                            <video src={session.imageUrl} className="w-full h-full object-cover" muted />
-                          )}
-                        </div>
-                        <div className="p-2">
-                          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${session.mode === 'image' ? 'bg-brand-blue/10 text-brand-blue' : 'bg-purple-500/10 text-purple-500'}`}>
-                            {session.mode === 'image' ? '🖼️ Ảnh' : '🎬 Video'}
-                          </span>
-                          <p className="text-[10px] text-slate-600 dark:text-white/60 line-clamp-1 mt-1">{session.prompt}</p>
-                          <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5">{session.createdAt}</p>
-                        </div>
+                        <ImageJobCard
+                          status="done"
+                          resultUrl={session.imageUrl}
+                          isVideo={session.mode === 'video'}
+                          aspectRatio="16/9"
+                          mode="compact"
+                          infoSlot={
+                            <div className="px-2 py-1.5">
+                              <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md ${session.mode === 'image' ? 'bg-brand-blue/10 text-brand-blue' : 'bg-purple-500/10 text-purple-500'}`}>
+                                {session.mode === 'image' ? '🖼️ Ảnh' : '🎬 Video'}
+                              </span>
+                              <p className="text-[10px] text-slate-600 dark:text-white/60 line-clamp-1 mt-1">{session.prompt}</p>
+                              <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5">{session.createdAt}</p>
+                            </div>
+                          }
+                          cardClassName="border border-slate-100 dark:border-white/5"
+                        />
                         <button
                           onClick={(e) => deleteSession(e, session.id)}
-                          className="absolute top-1 right-1 p-1 rounded-md bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                          className="absolute top-1 right-1 z-10 p-1 rounded-md bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
                         >
                           <Trash2 size={10} />
                         </button>
@@ -1251,93 +1241,19 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           {/* ── Active Result Viewport (center) ── */}
           <div className="flex-1 flex flex-col bg-[#f0f2f5] dark:bg-[#060608] overflow-hidden">
             <div className="flex-1 flex items-center justify-center p-6 md:p-8">
-              {activeResult?.status === 'processing' ? (
-                /* Skeleton loading */
-                <div className="w-full max-w-2xl space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    {[1, 2, 3, 4].map(i => (
-                      <div
-                        key={i}
-                        className="rounded-2xl bg-slate-200 dark:bg-white/[0.04] animate-pulse overflow-hidden relative aspect-video"
-                        style={{ animationDelay: `${i * 0.1}s` }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/[0.05] to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-center text-[11px] text-slate-400 dark:text-[#555] animate-pulse">
-                    AI đang tạo {activeResult.mode === 'image' ? 'ảnh' : 'video'} BĐS · thường mất {activeResult.mode === 'image' ? '10–30 giây' : '1–3 phút'}...
-                  </p>
-                  {activeResult.logs && activeResult.logs.length > 0 && (
-                    <p className="text-center text-[10px] text-brand-blue/70 font-mono">{activeResult.logs[activeResult.logs.length - 1]}</p>
-                  )}
-                </div>
-              ) : activeResult?.status === 'error' ? (
-                /* Error state */
-                <div className="flex flex-col items-center justify-center gap-4 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center">
-                    <AlertTriangle size={28} className="text-red-400" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-700 dark:text-white/70">Tạo thất bại</p>
-                    <p className="text-[11px] text-slate-400 dark:text-[#555] mt-1">Credits đã được hoàn lại tự động</p>
-                  </div>
-                  <button
-                    onClick={handleGenerate}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-blue text-white text-[12px] font-bold hover:brightness-110 transition-all"
-                  >
-                    <RefreshCw size={14} /> Thử lại
-                  </button>
-                </div>
-              ) : activeResult?.url ? (
-                /* Result with Download + Fullscreen overlay */
-                <div className="relative group max-w-2xl w-full">
-                  {activeResult.mode === 'image' ? (
-                    <img
-                      src={activeResult.url}
-                      alt="Generated real estate"
-                      className="w-full rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.04]"
-                    />
-                  ) : (
-                    <video
-                      src={activeResult.url}
-                      controls
-                      autoPlay
-                      loop
-                      className="w-full rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.04] aspect-video object-contain bg-black"
-                    />
-                  )}
-                  {/* Overlay actions */}
-                  <div className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
-                    <a
-                      href={activeResult.url}
-                      download={activeResult.mode === 'image' ? 'realestate.png' : 'realestate.mp4'}
-                      className="p-3 rounded-xl bg-white/90 text-slate-900 hover:bg-white transition-colors shadow-lg"
-                      title="Tải xuống"
-                    >
-                      <Download size={18} />
-                    </a>
-                    <button
-                      onClick={() => window.open(activeResult.url!, '_blank')}
-                      className="p-3 rounded-xl bg-white/90 text-slate-900 hover:bg-white transition-colors shadow-lg"
-                      title="Xem toàn màn hình"
-                    >
-                      <Maximize2 size={18} />
-                    </button>
-                    <button
-                      onClick={handleGenerate}
-                      className="p-3 rounded-xl bg-white/90 text-slate-900 hover:bg-white transition-colors shadow-lg"
-                      title="Tạo lại"
-                    >
-                      <RefreshCw size={18} />
-                    </button>
-                  </div>
-                  {/* Mode + type badge */}
-                  <div className="absolute top-3 left-3 flex gap-1.5">
-                    <span className="px-2.5 py-1 rounded-lg bg-brand-blue/90 backdrop-blur-sm text-white text-[10px] font-bold">
-                      {activeResult.mode === 'image' ? '🖼️' : '🎬'} {PROPERTY_TYPES.find(p => p.id === activeResult.propertyType)?.label || propertyLabel}
-                    </span>
-                  </div>
+              {activeResult ? (
+                <div className="w-full max-w-2xl">
+                  <ImageJobCard
+                    status={activeResult?.status ?? 'idle'}
+                    resultUrl={activeResult?.url ?? undefined}
+                    isVideo={activeResult?.mode === 'video'}
+                    aspectRatio="16/9"
+                    mode="full"
+                    progress={0}
+                    statusText="AI đang xử lý..."
+                    errorMessage={activeResult?.isRefunded ? 'Có lỗi — Credits đã hoàn lại' : 'Có lỗi xảy ra'}
+                    onRetry={() => activeResult && setActiveResultId(activeResult.id)}
+                  />
                 </div>
               ) : (
                 /* Empty state — starter prompt cards */

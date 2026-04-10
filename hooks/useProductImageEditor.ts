@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
+import { imagesApi, ImageJobRequest } from '../apis/images';
 import { generateDemoImage } from '../services/gemini';
 import { uploadToGCS } from '../services/storage';
 import { useImageModels, MappedImageModel } from './useImageModels';
+import { pollJobOnce } from './useJobPoller';
 
 export interface TextLayer {
   id: string;
@@ -78,6 +79,12 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
   const [textDragStart, setTextDragStart] = useState<{ id: string, x: number, y: number, startX: number, startY: number } | null>(null);
   
   const lastClickRef = useRef<{ id: string, time: number } | null>(null);
+  const isCancelledRef = useRef(false);
+
+  // Cancel all in-flight polls on unmount
+  useEffect(() => {
+    return () => { isCancelledRef.current = true; };
+  }, []);
 
   const [isCropping, setIsCropping] = useState(false);
   const [cropRatio, setCropRatio] = useState(0); 
@@ -158,30 +165,31 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     }
   }, [result, zoom]);
 
-  const pollJobStatus = async (jobId: string, resultId: string, cost: number) => {
-    try {
-      const response: ImageJobResponse = await imagesApi.getJobStatus(jobId);
-      if (response.data && response.data.status === 'done' && response.data.result?.images?.length) {
-        const imageUrl = response.data.result.images[0];
-        pushToHistory(imageUrl);
-        setHistory(prev => [{ id: Date.now().toString(), url: imageUrl, prompt: '', timestamp: new Date().toLocaleTimeString() }, ...prev]);
-        refreshUserInfo();
+  const pollJobStatus = (jobId: string, resultId: string, cost: number) => {
+    pollJobOnce({
+      jobId,
+      isCancelledRef,
+      apiType: 'image',
+      intervalMs: 5000,
+      networkRetryMs: 10000,
+      onDone: (result) => {
+        const imageUrl = result.images?.[0] ?? null;
+        if (imageUrl) {
+          pushToHistory(imageUrl);
+          setHistory(prev => [{ id: Date.now().toString(), url: imageUrl, prompt: '', timestamp: new Date().toLocaleTimeString() }, ...prev]);
+          refreshUserInfo();
+        }
         setStatus('Hoàn tất');
         setIsGenerating(false);
         setActiveTasks(prev => prev.filter(t => t.id !== resultId));
-      } else if (response.data && response.data.status === 'failed') {
+      },
+      onError: () => {
         if (usagePreference === 'credits') addCredits(cost);
         setActiveTasks(prev => prev.filter(t => t.id !== resultId));
         setStatus('Lỗi xử lý từ máy chủ');
         setIsGenerating(false);
-      } else {
-        setTimeout(() => pollJobStatus(jobId, resultId, cost), 5000);
-      }
-    } catch (e) {
-      setActiveTasks(prev => prev.filter(t => t.id !== resultId));
-      setStatus('Lỗi đồng bộ trạng thái');
-      setIsGenerating(false);
-    }
+      },
+    });
   };
 
   const handleGenerate = async (overridePrompt?: string, forceCost?: number) => {

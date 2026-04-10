@@ -4,12 +4,13 @@ import { Link } from 'react-router-dom';
 import {
   ChevronLeft, Sparkles, ArrowRight, Loader2,
   Image as ImageIcon, Cpu, Gauge, Ratio, Wand2,
-  RefreshCw, Download, CheckCircle2, AlertCircle,
   Shuffle, ZoomIn,
 } from 'lucide-react';
+import { ImageJobCard } from '../../shared/ImageJobCard';
 import { imagesApi, ImageJobRequest } from '../../../apis/images';
 import { explorerApi } from '../../../apis/explorer';
 import { useAuth } from '../../../context/AuthContext';
+import { useJobPoller } from '../../../hooks/useJobPoller';
 
 interface HeroSectionProps { onStartStudio: () => void; }
 
@@ -165,18 +166,6 @@ const IdleMosaic: React.FC<{ images?: string[] }> = ({ images = [] }) => (
   </div>
 );
 
-// ─── Progress bar ──────────────────────────────────────────────
-const ProgressBar: React.FC<{ value: number }> = ({ value }) => (
-  <div className="h-0.5 w-full bg-rose-500/10 rounded-full overflow-hidden">
-    <motion.div
-      className="h-full bg-gradient-to-r from-rose-500 to-fuchsia-500 rounded-full"
-      initial={{ width: 0 }}
-      animate={{ width: `${value}%` }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
-    />
-  </div>
-);
-
 // ─── Quick Gen Widget ──────────────────────────────────────────
 type GenState = 'idle' | 'submitting' | 'processing' | 'done' | 'error';
 
@@ -190,8 +179,38 @@ const QuickGenWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio }
   const [errorMsg, setErrorMsg] = useState('');
   const [fullscreen, setFullscreen] = useState(false);
   const [explorerImages, setExplorerImages] = useState<string[]>([]);
-  const pollRef = useRef<NodeJS.Timeout | null>(null);
-  const { isAuthenticated, login, credits, useCredits, addCredits } = useAuth();
+  const { isAuthenticated, login, credits, useCredits, addCredits, refreshUserInfo } = useAuth();
+
+  const COST = 80;
+  const MAX_DURATION_MS = 180_000;
+
+  // ─── useJobPoller ─────────────────────────────────────────────
+  const poller = useJobPoller(
+    {
+      onDone: (result) => {
+        const url = result.images?.[0] ?? null;
+        setResultUrl(url);
+        setProgress(100);
+        setGenState(url ? 'done' : 'error');
+        if (!url) setErrorMsg('AI không trả về ảnh');
+        else refreshUserInfo();
+      },
+      onError: (msg) => {
+        addCredits(COST);
+        setErrorMsg(msg || 'AI lỗi — Credits đã hoàn lại');
+        setGenState('error');
+      },
+      onTimeout: () => {
+        addCredits(COST);
+        setErrorMsg('Hết thời gian chờ — Credits đã hoàn lại');
+        setGenState('error');
+      },
+      onTick: ({ elapsedMs }) => {
+        setProgress(Math.min(90, 20 + (elapsedMs / MAX_DURATION_MS) * 70));
+      },
+    },
+    { apiType: 'image', intervalMs: 3000, maxDurationMs: MAX_DURATION_MS },
+  );
 
   // Load 6 ảnh từ Explorer để hiển thị mosaic idle
   useEffect(() => {
@@ -217,7 +236,6 @@ const QuickGenWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio }
     if (isRunning || genState === 'done') return;
     if (!isAuthenticated) { login(); return; }
     if (credits < COST) { onOpenStudio(); return; }
-    if (pollRef.current) clearInterval(pollRef.current);
 
     setGenState('submitting');
     setResultUrl(null);
@@ -238,41 +256,17 @@ const QuickGenWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio }
       const isOk = res.success === true || res.status?.toLowerCase() === 'success';
       if (!isOk) throw new Error('Job rejected');
       useCredits(COST);
-      const jobId = res.data.jobId;
       setGenState('processing');
       setProgress(20);
-
-      let elapsed = 0;
-      pollRef.current = setInterval(async () => {
-        elapsed += 3;
-        setProgress(Math.min(90, 20 + elapsed * 2.2));
-        const status = await imagesApi.getJobStatus(jobId);
-        const s = status?.data?.status;
-        if (s === 'done') {
-          clearInterval(pollRef.current!);
-          const url = status.data.result?.images?.[0] ?? null;
-          setResultUrl(url);
-          setProgress(100);
-          setGenState('done');
-        } else if (s === 'failed' || s === 'error') {
-          clearInterval(pollRef.current!);
-          addCredits(COST);
-          setErrorMsg('AI lỗi — Credits đã hoàn lại');
-          setGenState('error');
-        }
-      }, 3000);
-
-      setTimeout(() => {
-        if (pollRef.current) { clearInterval(pollRef.current); setGenState('error'); setErrorMsg('Timeout'); }
-      }, 180_000);
+      poller.startPolling(res.data.jobId);
     } catch (e: any) {
       setErrorMsg(e?.message || 'Lỗi kết nối');
       setGenState('error');
     }
-  }, [isRunning, genState, isAuthenticated, credits, activePrompt, ratio, login, onOpenStudio, useCredits, addCredits]);
+  }, [isRunning, genState, isAuthenticated, credits, activePrompt, ratio, login, onOpenStudio, useCredits, poller]);
 
   const reset = () => {
-    if (pollRef.current) clearInterval(pollRef.current);
+    poller.cancel();
     setGenState('idle'); setResultUrl(null); setProgress(0); setErrorMsg('');
   };
 
@@ -319,146 +313,36 @@ const QuickGenWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio }
 
       {/* ── Canvas ── */}
       <motion.div
-        className="relative bg-slate-50 dark:bg-black/40 overflow-hidden"
+        className="relative overflow-hidden"
         animate={{ aspectRatio: `${ratio.w}/${ratio.h}` }}
         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
         style={{ maxHeight: '340px', minHeight: '160px' }}
       >
-        <AnimatePresence mode="wait">
-
-          {/* Idle */}
-          {genState === 'idle' && <IdleMosaic key="idle" images={explorerImages} />}
-
-          {/* Processing */}
-          {isRunning && (
-            <motion.div
-              key="processing"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-5"
-            >
-              {/* Animated gradient wash */}
-              <motion.div
-                className="absolute inset-0"
-                animate={{ background: [
-                  'linear-gradient(135deg, rgba(244,63,94,0.06) 0%, rgba(168,85,247,0.04) 100%)',
-                  'linear-gradient(225deg, rgba(168,85,247,0.06) 0%, rgba(244,63,94,0.04) 100%)',
-                  'linear-gradient(135deg, rgba(244,63,94,0.06) 0%, rgba(168,85,247,0.04) 100%)',
-                ]}}
-                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-              />
-              {/* Scan line */}
-              <motion.div
-                className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/60 to-transparent pointer-events-none"
-                animate={{ y: ['0%', '100%'] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              />
-              {/* Pulsing circle */}
-              <div className="relative z-10 flex flex-col items-center gap-3">
-                <div className="relative">
-                  <motion.div
-                    className="absolute inset-0 rounded-full bg-rose-500/20"
-                    animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
-                    transition={{ duration: 1.8, repeat: Infinity }}
-                  />
-                  <div className="relative w-11 h-11 rounded-full bg-white dark:bg-white/10 border border-rose-500/20 flex items-center justify-center shadow-lg shadow-rose-500/10">
-                    <Loader2 size={18} className="text-rose-500 animate-spin" />
-                  </div>
-                </div>
-                <div className="flex flex-col items-center gap-1.5">
-                  <p className="text-xs font-semibold text-slate-700 dark:text-white/80">
-                    {genState === 'submitting' ? 'Đang gửi yêu cầu...' : 'AI đang tạo ảnh...'}
-                  </p>
-                  <div className="flex items-center gap-2 w-44">
-                    <ProgressBar value={progress} />
-                    <span className="text-[10px] font-bold text-rose-500 tabular-nums shrink-0">{Math.round(progress)}%</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Done */}
-          {genState === 'done' && resultUrl && (
-            <motion.div
-              key="done"
-              initial={{ opacity: 0, scale: 1.06 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-0 group"
-            >
-              <img src={resultUrl} alt="Generated" className="w-full h-full object-cover" />
-
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300" />
-
-              {/* Done badge */}
-              <motion.div
-                initial={{ opacity: 0, y: -8, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: 0.25, type: 'spring', stiffness: 400, damping: 22 }}
-                className="absolute top-3 left-3"
-              >
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold shadow-lg shadow-emerald-500/30">
-                  <CheckCircle2 size={11} /> Xong!
-                </span>
-              </motion.div>
-
-              {/* Action buttons — revealed on hover */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className="absolute bottom-3 inset-x-3 flex items-center justify-end gap-2"
-              >
+        <ImageJobCard
+          status={genState}
+          resultUrl={resultUrl ?? undefined}
+          progress={progress}
+          statusText={genState === 'submitting' ? 'Đang gửi yêu cầu...' : 'AI đang tạo ảnh...'}
+          errorMessage={errorMsg}
+          aspectRatio={`${ratio.w}/${ratio.h}`}
+          mode="compact"
+          downloadFilename={`skyverses_${Date.now()}`}
+          onReset={reset}
+          onRetry={reset}
+          idleSlot={<IdleMosaic images={explorerImages} />}
+          resultFooter={
+            resultUrl ? (
+              <div className="flex justify-end gap-2 px-1">
                 <button
                   onClick={() => setFullscreen(true)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black/55 backdrop-blur-md text-white text-[10px] font-semibold hover:bg-black/75 transition-all shadow-sm"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/55 backdrop-blur-md text-white text-[10px] font-semibold hover:bg-black/75 transition-all"
                 >
                   <ZoomIn size={12} /> Xem lớn
                 </button>
-                <a
-                  href={resultUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500/85 backdrop-blur-md text-white text-[10px] font-semibold hover:bg-rose-500 transition-all shadow-sm"
-                >
-                  <Download size={12} /> Tải về
-                </a>
-                <button
-                  onClick={reset}
-                  className="w-8 h-8 rounded-xl bg-white/15 backdrop-blur-md text-white hover:bg-white/25 transition-all flex items-center justify-center shadow-sm"
-                >
-                  <RefreshCw size={12} />
-                </button>
-              </motion.div>
-            </motion.div>
-          )}
-
-          {/* Error */}
-          {genState === 'error' && (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-4"
-            >
-              <motion.div
-                initial={{ scale: 0.8 }} animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 380, damping: 22 }}
-                className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center"
-              >
-                <AlertCircle size={22} className="text-rose-400" />
-              </motion.div>
-              <div className="flex flex-col items-center gap-1">
-                <p className="text-xs font-semibold text-slate-600 dark:text-white/60">{errorMsg}</p>
-                <button
-                  onClick={reset}
-                  className="text-[10px] text-rose-500 font-semibold hover:text-rose-600 transition-colors flex items-center gap-1"
-                >
-                  <RefreshCw size={10} /> Thử lại
-                </button>
               </div>
-            </motion.div>
-          )}
-
-        </AnimatePresence>
+            ) : undefined
+          }
+        />
       </motion.div>
 
       {/* ── Controls ── */}

@@ -2,12 +2,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, Zap, Download, Loader2, Plus, Upload,
-  RefreshCw, Sparkles, Maximize2, Trash2,
+  X, Zap, Loader2, Plus, Upload,
+  Sparkles, Trash2,
   CheckCircle2, ChevronDown, Coins, AlertTriangle,
   MessageCircle, Store, Building, Shirt,
   GraduationCap, Heart, Coffee, Plane, Cpu,
-  LayoutGrid, Image as ImageIcon, Wand2, History, Copy,
+  LayoutGrid, Image as ImageIcon, Wand2, History,
 } from 'lucide-react';
 import { generateDemoImage, generateDemoText } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom';
 import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
 import { useImageModels } from '../hooks/useImageModels';
 import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
+import { ImageJobCard } from '../components/shared/ImageJobCard';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -714,54 +715,16 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
           {viewMode === 'current' ? (
             <div className="flex-1 flex items-center justify-center p-8">
-              {result ? (
-                <div className="relative group max-w-2xl w-full">
-                  <img
-                    src={result}
-                    alt="Generated banner"
-                    className="w-full rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.04]"
+              {(isGenerating || result) ? (
+                <div className="w-full max-w-2xl">
+                  <ImageJobCard
+                    status={isGenerating ? 'processing' : result ? 'done' : 'idle'}
+                    resultUrl={result ?? undefined}
+                    aspectRatio="16/9"
+                    mode="full"
+                    statusText={status}
+                    onReset={() => setResult(null)}
                   />
-                  {/* Overlay actions */}
-                  <div className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
-                    <a href={result} download="banner.png" className="p-3 rounded-xl bg-white/90 text-slate-900 hover:bg-white transition-colors shadow-lg" title="Tải xuống">
-                      <Download size={18} />
-                    </a>
-                    <button onClick={() => window.open(result, '_blank')} className="p-3 rounded-xl bg-white/90 text-slate-900 hover:bg-white transition-colors shadow-lg" title="Xem toàn màn hình">
-                      <Maximize2 size={18} />
-                    </button>
-                    <button
-                      onClick={() => { navigator.clipboard.writeText(result ?? ''); showToast('Đã copy URL ảnh!', 'success'); }}
-                      className="p-3 rounded-xl bg-white/90 text-slate-900 hover:bg-white transition-colors shadow-lg"
-                      title="Copy URL"
-                    >
-                      <Copy size={18} />
-                    </button>
-                    <button onClick={handleGenerate} className="p-3 rounded-xl bg-white/90 text-slate-900 hover:bg-white transition-colors shadow-lg" title="Tạo lại">
-                      <RefreshCw size={18} />
-                    </button>
-                  </div>
-                  {/* Platform label */}
-                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-brand-blue/90 backdrop-blur-sm text-white text-[10px] font-bold">
-                    {currentPlatform.platform} {currentPlatform.label} · {currentPlatform.size}
-                  </div>
-                </div>
-              ) : isGenerating ? (
-                /* ── Skeleton loading — 2×2 shimmer grid ── */
-                <div className="w-full max-w-2xl space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    {[1, 2, 3, 4].map(i => (
-                      <div
-                        key={i}
-                        className="aspect-video rounded-2xl bg-slate-200 dark:bg-white/[0.04] animate-pulse overflow-hidden relative"
-                        style={{ animationDelay: `${i * 0.1}s` }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/[0.05] to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-center text-[11px] text-slate-400 dark:text-[#555] animate-pulse">
-                    AI đang tạo banner · thường mất 10–30 giây...
-                  </p>
                 </div>
               ) : (
                 /* ── Empty state — starter prompt cards ── */
@@ -806,18 +769,24 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     <div
                       key={session.id}
                       onClick={() => { setResult(session.url); setViewMode('current'); }}
-                      className="group relative rounded-xl overflow-hidden border border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-[#0d0d0f] cursor-pointer hover:border-brand-blue/30 transition-all hover:-translate-y-0.5"
+                      className="group relative cursor-pointer"
                     >
-                      <div className="aspect-video overflow-hidden">
-                        <img src={session.url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      </div>
-                      <div className="p-3">
-                        <p className="text-[11px] font-medium text-slate-700 dark:text-white/70 line-clamp-2">{session.prompt}</p>
-                        <p className="text-[9px] text-slate-400 dark:text-[#555] mt-1">{session.timestamp}</p>
-                      </div>
+                      <ImageJobCard
+                        status="done"
+                        resultUrl={session.url}
+                        aspectRatio="16/9"
+                        mode="compact"
+                        infoSlot={
+                          <div className="p-3">
+                            <p className="text-[11px] font-medium text-slate-700 dark:text-white/70 line-clamp-2">{session.prompt}</p>
+                            <p className="text-[9px] text-slate-400 dark:text-[#555] mt-1">{session.timestamp}</p>
+                          </div>
+                        }
+                        cardClassName="border border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-[#0d0d0f] hover:border-brand-blue/30 hover:-translate-y-0.5 transition-all"
+                      />
                       <button
                         onClick={(e) => deleteSession(e, session.id)}
-                        className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                        className="absolute top-2 right-2 z-10 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
                       >
                         <Trash2 size={12} />
                       </button>

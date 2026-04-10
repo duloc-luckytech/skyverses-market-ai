@@ -1,14 +1,16 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeft, Sparkles, ArrowRight, Building2, Zap, Image as ImageIcon,
-  Clock, Loader2, RefreshCw, Download, CheckCircle2, AlertCircle,
+  Clock, Loader2,
 } from 'lucide-react';
 import { GradientMesh, FadeInUp, HoverCard } from '../_shared/SectionAnimations';
 import { FloatingBadge } from '../_shared/ProHeroVisuals';
 import { imagesApi, ImageJobRequest } from '../../../apis/images';
 import { useAuth } from '../../../context/AuthContext';
+import { useJobPoller } from '../../../hooks/useJobPoller';
+import { ImageJobCard } from '../../../components/shared/ImageJobCard';
 
 interface HeroSectionProps { onStartStudio: () => void; }
 
@@ -63,19 +65,6 @@ const BackgroundOrbs: React.FC = () => (
   </div>
 );
 
-// ─── Animated progress bar ────────────────────────────────────
-const ProgressBar: React.FC<{ progress: number; color: string }> = ({ progress, color }) => (
-  <div className="h-0.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
-    <motion.div
-      className="h-full rounded-full"
-      style={{ backgroundColor: color }}
-      initial={{ width: 0 }}
-      animate={{ width: `${progress}%` }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
-    />
-  </div>
-);
-
 // ─── Quick Render Widget ───────────────────────────────────────
 type RenderState = 'idle' | 'submitting' | 'processing' | 'done' | 'error';
 
@@ -87,8 +76,34 @@ const REQuickRenderWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStu
   const [progress, setProgress] = useState(0);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
-  const pollRef = useRef<NodeJS.Timeout | null>(null);
   const { user } = useAuth();
+
+  const MAX_DURATION_MS = 180_000;
+
+  // ─── useJobPoller ─────────────────────────────────────────────
+  const poller = useJobPoller(
+    {
+      onDone: (result) => {
+        const url = result.images?.[0] ?? null;
+        setResultUrl(url);
+        setProgress(100);
+        setState(url ? 'done' : 'error');
+        if (!url) setErrorMsg('AI không trả về ảnh');
+      },
+      onError: (msg) => {
+        setErrorMsg(msg || 'AI gặp lỗi — thử lại nhé');
+        setState('error');
+      },
+      onTimeout: () => {
+        setState('error');
+        setErrorMsg('Timeout — thử lại nhé');
+      },
+      onTick: ({ elapsedMs }) => {
+        setProgress(Math.min(90, 15 + (elapsedMs / MAX_DURATION_MS) * 75));
+      },
+    },
+    { apiType: 'image', intervalMs: 3000, maxDurationMs: MAX_DURATION_MS },
+  );
 
   const activePrompt = customPrompt || DEMO_PROMPTS[selectedPrompt].prompt;
   const styleLabel = QUICK_STYLES[selectedStyle].label;
@@ -113,48 +128,17 @@ const REQuickRenderWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStu
     try {
       const res = await imagesApi.createJob(payload);
       if (!res?.data?.jobId) throw new Error('No jobId returned');
-      const jobId = res.data.jobId;
       setState('processing');
       setProgress(15);
-
-      // Poll
-      let elapsed = 0;
-      pollRef.current = setInterval(async () => {
-        elapsed += 3;
-        // Animate progress naturally up to 90%
-        setProgress(Math.min(90, 15 + elapsed * 2.5));
-
-        const status = await imagesApi.getJobStatus(jobId);
-        const s = status?.data?.status;
-        if (s === 'done') {
-          clearInterval(pollRef.current!);
-          const url = status.data.result?.images?.[0] ?? null;
-          setResultUrl(url);
-          setProgress(100);
-          setState('done');
-        } else if (s === 'failed' || s === 'error') {
-          clearInterval(pollRef.current!);
-          setErrorMsg('AI gặp lỗi — thử lại nhé');
-          setState('error');
-        }
-      }, 3000);
-
-      // Safety timeout after 3 min
-      setTimeout(() => {
-        if (pollRef.current) {
-          clearInterval(pollRef.current);
-          setState('error');
-          setErrorMsg('Timeout — thử lại nhé');
-        }
-      }, 180_000);
+      poller.startPolling(res.data.jobId);
     } catch {
       setErrorMsg('Lỗi kết nối');
       setState('error');
     }
-  }, [state, activePrompt, styleLabel]);
+  }, [state, activePrompt, styleLabel, poller]);
 
   const reset = () => {
-    if (pollRef.current) clearInterval(pollRef.current);
+    poller.cancel();
     setState('idle');
     setResultUrl(null);
     setProgress(0);
@@ -183,100 +167,36 @@ const REQuickRenderWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStu
       </div>
 
       {/* ── Preview canvas ── */}
-      <div className="relative overflow-hidden bg-black/40" style={{ aspectRatio: '16/9' }}>
-        <AnimatePresence mode="wait">
-          {state === 'idle' && (
-            <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-              {/* Architectural grid placeholder */}
-              <div className="w-full h-full absolute inset-0 grid grid-cols-3 grid-rows-2 gap-1 p-1 opacity-30">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="rounded-lg bg-emerald-500/10 border border-emerald-500/[0.08]"
-                    style={{ animationDelay: `${i * 0.2}s` }} />
-                ))}
+      <ImageJobCard
+        status={state === 'submitting' ? 'submitting' : state}
+        resultUrl={resultUrl ?? undefined}
+        progress={progress}
+        statusText={state === 'submitting' ? 'Đang gửi job...' : `AI đang render... ${Math.round(progress)}%`}
+        errorMessage={errorMsg}
+        aspectRatio="16/9"
+        mode="compact"
+        downloadFilename="skyverses_render"
+        onReset={reset}
+        onRetry={reset}
+        idleSlot={
+          <div className="w-full h-full absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/40">
+            <div className="w-full h-full absolute inset-0 grid grid-cols-3 grid-rows-2 gap-1 p-1 opacity-30">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="rounded-lg bg-emerald-500/10 border border-emerald-500/[0.08]" />
+              ))}
+            </div>
+            <div className="relative z-10 flex flex-col items-center gap-2">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <Building2 size={22} className="text-emerald-400/60" />
               </div>
-              <div className="relative z-10 flex flex-col items-center gap-2">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                  <Building2 size={22} className="text-emerald-400/60" />
-                </div>
-                <p className="text-[11px] text-white/40 text-center max-w-[200px]">
-                  Chọn loại công trình và nhấn{' '}
-                  <span className="text-emerald-400 font-semibold">Render Ngay</span>
-                </p>
-              </div>
-            </motion.div>
-          )}
-
-          {isRunning && (
-            <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-              {/* Cinematic scan line effect */}
-              <motion.div
-                className="absolute inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent"
-                animate={{ y: ['0%', '100%'] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              />
-              <div className="grid grid-cols-3 gap-1.5 w-full px-4">
-                {[...Array(6)].map((_, i) => (
-                  <motion.div key={i} className="aspect-video rounded-lg bg-emerald-500/5 border border-emerald-500/10"
-                    animate={{ opacity: [0.3, 0.7, 0.3] }}
-                    transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }} />
-                ))}
-              </div>
-              <div className="relative z-10 flex flex-col items-center gap-2 px-6 w-full">
-                <p className="text-[10px] text-emerald-400/80 font-medium">
-                  {state === 'submitting' ? 'Đang gửi job...' : `AI đang render... ${Math.round(progress)}%`}
-                </p>
-                <div className="w-full max-w-[200px]">
-                  <ProgressBar progress={progress} color="#10b981" />
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {state === 'done' && resultUrl && (
-            <motion.div key="done" initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="absolute inset-0"
-            >
-              <img src={resultUrl} alt="Render result" className="w-full h-full object-cover" />
-              {/* Success overlay */}
-              <motion.div
-                initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500 text-white text-[9px] font-bold shadow-lg shadow-emerald-500/30"
-              >
-                <CheckCircle2 size={10} />
-                Render Xong!
-              </motion.div>
-              {/* Download overlay on hover */}
-              <div className="absolute bottom-3 right-3 flex gap-2">
-                <a href={resultUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-[9px] font-medium hover:bg-black/80 transition-colors"
-                >
-                  <Download size={10} /> Lưu ảnh
-                </a>
-                <button onClick={reset}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/10 backdrop-blur text-white text-[9px] font-medium hover:bg-white/20 transition-colors"
-                >
-                  <RefreshCw size={10} /> Render mới
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {state === 'error' && (
-            <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-            >
-              <AlertCircle size={28} className="text-red-400/60" />
-              <p className="text-[11px] text-red-400/80">{errorMsg}</p>
-              <button onClick={reset} className="text-[10px] text-white/40 hover:text-white/70 underline transition-colors">
-                Thử lại
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+              <p className="text-[11px] text-white/40 text-center max-w-[200px]">
+                Chọn loại công trình và nhấn{' '}
+                <span className="text-emerald-400 font-semibold">Render Ngay</span>
+              </p>
+            </div>
+          </div>
+        }
+      />
 
       {/* ── Controls ── */}
       <div className="p-4 space-y-3 border-t border-white/[0.04]">

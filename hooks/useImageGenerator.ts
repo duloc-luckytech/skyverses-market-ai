@@ -4,11 +4,12 @@ import { generateDemoImage } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { GCSAssetMetadata, uploadToGCS } from '../services/storage';
-import { imagesApi, ImageJobRequest, ImageJobResponse } from '../apis/images';
+import { imagesApi, ImageJobRequest } from '../apis/images';
 import { pricingApi, PricingModel } from '../apis/pricing';
 import { useToast } from '../context/ToastContext';
 import { ASPECT_RATIOS, DEFAULT_ASPECT_RATIO } from '../constants/media-presets';
 import { getResolutionsFromPricing, getCostFromPricing } from '../utils/pricing-helpers';
+import { pollJobOnce } from './useJobPoller';
 
 export type CreationMode = 'SINGLE' | 'BATCH';
 
@@ -83,6 +84,13 @@ export const useImageGenerator = () => {
   const [hasPersonalKey, setHasPersonalKey] = useState(false);
   const [personalKey, setPersonalKey] = useState<string | undefined>(undefined);
   const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
+
+  const isCancelledRef = useRef(false);
+
+  // Cancel all in-flight polls on unmount
+  useEffect(() => {
+    return () => { isCancelledRef.current = true; };
+  }, []);
 
   const setSelectedEngine = (val: string) => {
     _setSelectedEngine(val);
@@ -247,14 +255,22 @@ export const useImageGenerator = () => {
     }
   };
 
-  const pollImageJobStatus = async (jobId: string, resultId: string, cost: number) => {
-    try {
-      addLogToTask(resultId, `[POLLING] Requesting status update for node cluster...`);
-      const response: ImageJobResponse = await imagesApi.getJobStatus(jobId);
-      const isError = response.status === 'error' || response.data?.status === 'error' || response.data?.status === 'failed';
-
-      if (isError) {
-        const errorMsg = (response.data as any)?.error?.message || "Inference failed";
+  const pollImageJobStatus = (jobId: string, resultId: string, cost: number) => {
+    addLogToTask(resultId, `[POLLING] Requesting status update for node cluster...`);
+    pollJobOnce({
+      jobId,
+      isCancelledRef,
+      apiType: 'image',
+      intervalMs: 5000,
+      networkRetryMs: 10000,
+      onDone: (result) => {
+        const imageUrl = result.images?.[0] ?? null;
+        addLogToTask(resultId, `[SUCCESS] Synthesis complete. Delivering asset to CDN...`);
+        setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done' } : r));
+        refreshUserInfo();
+        fetchServerResults(1, true);
+      },
+      onError: (errorMsg) => {
         addLogToTask(resultId, `[ERROR] Synthesis aborted: ${errorMsg}`);
         if (usagePreference === 'credits') {
           setResults(prev => prev.map(r => {
@@ -267,23 +283,11 @@ export const useImageGenerator = () => {
         } else {
           setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
         }
-        return;
-      }
-
-      if (response.data && response.data.status === 'done' && response.data.result?.images?.length) {
-        addLogToTask(resultId, `[SUCCESS] Synthesis complete. Delivering asset to CDN...`);
-        const imageUrl = response.data.result.images[0];
-        setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done' } : r));
-        refreshUserInfo();
-        fetchServerResults(1, true);
-      } else {
-        addLogToTask(resultId, `[STATUS] Pipeline state: ${response.data?.status?.toUpperCase() || 'SYNTHESIZING'}`);
-        setTimeout(() => pollImageJobStatus(jobId, resultId, cost), 5000);
-      }
-    } catch (e) {
-      addLogToTask(resultId, `[NETWORK] Connectivity drift. Retrying telemetry uplink...`);
-      setTimeout(() => pollImageJobStatus(jobId, resultId, cost), 10000);
-    }
+      },
+      onTick: ({ tickCount }) => {
+        addLogToTask(resultId, `[STATUS] Pipeline state: SYNTHESIZING (tick ${tickCount})`);
+      },
+    });
   };
 
   const performInference = async (currentPreference: 'credits' | 'key', retryItem?: ImageResult) => {
