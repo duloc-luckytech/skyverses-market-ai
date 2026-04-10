@@ -424,19 +424,19 @@ const CreditsPage = () => {
                     <th className="text-left px-5 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px]">Công cụ</th>
                     <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
                       <span className="text-slate-800 dark:text-white">Starter</span><br />
-                      <span className="font-bold text-brand-blue normal-case tracking-normal">5,000 cr</span>
+                      <span className="font-bold text-brand-blue normal-case tracking-normal">75,000 cr</span>
                     </th>
                     <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
                       <span className="text-slate-800 dark:text-white">Creator</span><br />
-                      <span className="font-bold text-violet-500 normal-case tracking-normal">~27,500 cr</span>
+                      <span className="font-bold text-violet-500 normal-case tracking-normal">~258,750 cr</span>
                     </th>
                     <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
                       <span className="text-slate-800 dark:text-white">Pro</span><br />
-                      <span className="font-bold text-fuchsia-500 normal-case tracking-normal">~72,000 cr</span>
+                      <span className="font-bold text-fuchsia-500 normal-case tracking-normal">~625,000 cr</span>
                     </th>
                     <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
                       <span className="text-slate-800 dark:text-white">Ultimate</span><br />
-                      <span className="font-bold text-amber-500 normal-case tracking-normal">~244,000 cr</span>
+                      <span className="font-bold text-amber-500 normal-case tracking-normal">~1,400,000 cr</span>
                     </th>
                   </tr>
                 </thead>
@@ -468,7 +468,7 @@ const CreditsPage = () => {
                       avg: 100,
                     },
                   ].map((row, i) => {
-                    const counts = [5000, 27500, 72000, 244000].map(cr => Math.floor(cr / row.avg));
+                    const counts = [75000, 258750, 625000, 1400000].map(cr => Math.floor(cr / row.avg));
                     const colors = ['#0090ff', '#8b5cf6', '#ec4899', '#f59e0b'];
                     return (
                       <tr key={row.name} className={`border-b border-black/[0.03] dark:border-white/[0.03] last:border-0 ${i % 2 === 0 ? '' : 'bg-slate-50/50 dark:bg-white/[0.01]'}`}>
