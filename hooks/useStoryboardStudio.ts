@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { generateDemoImage } from '../services/gemini';
 import { aiChatJSON, aiChatStream, ChatMessage } from '../apis/aiChat';
@@ -10,10 +10,27 @@ import { STORYBOARD_SAMPLES } from '../data';
 import { uploadToGCS } from '../services/storage';
 import { pollJobOnce } from './useJobPoller';
 
+// ─── Shot Type ───────────────────────────────────────────────────────────────
+export type ShotType = 'WIDE' | 'MED' | 'CU' | 'ECU' | 'POV';
+export const SHOT_TYPES: ShotType[] = ['WIDE', 'MED', 'CU', 'ECU', 'POV'];
+export const SHOT_TYPE_LABELS: Record<ShotType, string> = {
+  WIDE: 'Wide', MED: 'Medium', CU: 'Close-Up', ECU: 'Extreme CU', POV: 'POV',
+};
+export const SHOT_TYPE_COLORS: Record<ShotType, string> = {
+  WIDE: 'bg-sky-500/20 text-sky-300 border-sky-500/40',
+  MED:  'bg-violet-500/20 text-violet-300 border-violet-500/40',
+  CU:   'bg-amber-500/20 text-amber-300 border-amber-500/40',
+  ECU:  'bg-rose-500/20 text-rose-300 border-rose-500/40',
+  POV:  'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+};
+export const DURATION_PRESETS = [4, 8, 12, 16] as const;
+export type DurationPreset = typeof DURATION_PRESETS[number];
+
 export interface Scene {
   id: string;
   order: number;
   duration: number;
+  shotType?: ShotType;
   prompt: string;
   visualUrl?: string | null;
   videoUrl?: string | null;
@@ -80,15 +97,37 @@ export const useStoryboardStudio = () => {
   const assetUploadRef = useRef<HTMLInputElement>(null);
   const [activeUploadAssetId, setActiveUploadAssetId] = useState<string | null>(null);
 
+  // ── Project name ─────────────────────────────────────────────────────
+  const [projectName, setProjectName] = useState<string>(() => {
+    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').projectName || 'Untitled Project'; } catch { return 'Untitled Project'; }
+  });
+
+  // ── Computed memos ────────────────────────────────────────────────────
+  const renderedScenes = useMemo(
+    () => scenes.filter(sc => sc.status === 'done' || !!sc.visualUrl || !!sc.videoUrl),
+    [scenes]
+  );
+
+  const computedTotalDuration = useMemo(
+    () => scenes.reduce((sum, sc) => sum + (sc.duration || 8), 0),
+    [scenes]
+  );
+
+  const creditCostEstimate = useMemo(() => {
+    const imageCost = scenes.filter(sc => !sc.visualUrl).length * 100;
+    const videoCost = scenes.filter(sc => !sc.videoUrl).length * 50;
+    return imageCost + videoCost;
+  }, [scenes]);
+
   const isCancelledRef = useRef(false);
 
   // Auto-save project to localStorage when key state changes
   useEffect(() => {
     try {
-      const saved = { script, totalDuration, sceneDuration, scenes, assets, updatedAt: Date.now() };
+      const saved = { script, totalDuration, sceneDuration, scenes, assets, projectName, updatedAt: Date.now() };
       localStorage.setItem(PROJECT_KEY, JSON.stringify(saved));
     } catch { /* quota exceeded */ }
-  }, [script, totalDuration, sceneDuration, scenes, assets]);
+  }, [script, totalDuration, sceneDuration, scenes, assets, projectName]);
 
   // Cancel all in-flight polls on unmount
   useEffect(() => {
@@ -523,6 +562,7 @@ IMPORTANT:
         id: `scene-${Date.now()}-${i}`,
         order: s.order || (i + 1),
         duration: sceneDuration,
+        shotType: 'WIDE' as ShotType,
         prompt: s.visualPrompt || s.title || 'Cinematic scene',
         status: 'idle' as const,
         characterIds: (s.appears || []).map((tid: string) => idMap[tid]).filter(Boolean),
@@ -1048,6 +1088,21 @@ Rewrite this as a better image generation prompt:`,
     }
   };
 
+  // ── Shot type per scene ──────────────────────────────────────────────
+  const handleShotTypeChange = useCallback((sceneId: string, shotType: ShotType) => {
+    setScenes(prev => prev.map(sc => sc.id === sceneId ? { ...sc, shotType } : sc));
+  }, []);
+
+  // ── Per-scene duration ────────────────────────────────────────────────
+  const handleSceneDurationChange = useCallback((sceneId: string, duration: DurationPreset) => {
+    setScenes(prev => prev.map(sc => sc.id === sceneId ? { ...sc, duration } : sc));
+  }, []);
+
+  // ── Drag reorder ─────────────────────────────────────────────────────
+  const handleReorder = useCallback((reordered: Scene[]) => {
+    setScenes(reordered.map((sc, i) => ({ ...sc, order: i + 1 })));
+  }, []);
+
   return {
     activeTab, setActiveTab, script, setScript, scriptRefImage, setScriptRefImage, scriptRefAudio, setScriptRefAudio,
     totalDuration, setTotalDuration, sceneDuration, setSceneDuration, voiceOverEnabled, setVoiceOverEnabled,
@@ -1064,6 +1119,10 @@ Rewrite this as a better image generation prompt:`,
     updateAsset, isAssetModalOpen, openAssetModal, closeAssetModal, saveAsset, editingAsset, setEditingAsset,
     viewingExplorerItem, setViewingExplorerItem, openExplorerView, openExplorerViewScene,
     systemPrompt, setSystemPrompt, handleGenerateBatchImages, handleGenerateBatchVideos,
-    assetUploadRef, setActiveUploadAssetId, handleAssetUpload
+    assetUploadRef, setActiveUploadAssetId, handleAssetUpload,
+    // ── Phase 1/2 additions ──
+    projectName, setProjectName,
+    renderedScenes, computedTotalDuration, creditCostEstimate,
+    handleShotTypeChange, handleSceneDurationChange, handleReorder,
   };
 };

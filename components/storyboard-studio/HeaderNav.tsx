@@ -5,9 +5,10 @@ interface HeaderNavProps {
   activeTab: string;
   setActiveTab: (tab: any) => void;
   onClose: () => void;
+  projectName?: string;
 }
 
-export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, onClose }) => {
+export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, onClose, projectName }) => {
   const tabs = [
     { id: 'STORYBOARD', label: 'Board', icon: <Clapperboard size={18} /> },
     { id: 'ASSETS', label: 'Tài sản', icon: <Layers size={18} /> },
@@ -16,16 +17,22 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, o
 
   return (
     <>
-      {/* Desktop Header: Giữ nguyên trên màn hình lớn */}
+      {/* Desktop Header */}
       <div className="hidden lg:flex h-14 border-b border-white/5 items-center justify-between px-6 shrink-0 bg-black/40 backdrop-blur-md z-[160]">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          {/* Project name breadcrumb */}
+          {projectName && (
+            <span className="text-[10px] font-black uppercase tracking-widest text-white/30 italic max-w-[160px] truncate hidden xl:block">
+              {projectName}
+            </span>
+          )}
+          {projectName && <span className="text-white/15 hidden xl:block">·</span>}
           {tabs.map(tab => (
-            <button 
+            <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-1.5 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-brand-blue text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}
             >
-              {/* Added LucideProps cast to fix 'size' property error */}
               {React.cloneElement(tab.icon as React.ReactElement<LucideProps>, { size: 14 })} {tab.label}
             </button>
           ))}
@@ -35,7 +42,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, o
         </button>
       </div>
 
-      {/* Mobile Top Header: Chỉ hiện nút đóng */}
+      {/* Mobile Top Header */}
       <div className="lg:hidden h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 bg-black/40 backdrop-blur-md z-[160]">
         <div className="flex items-center gap-2">
           <LayoutPanelLeft size={16} className="text-brand-blue" />
@@ -46,7 +53,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, o
         </button>
       </div>
 
-      {/* Mobile Bottom Navigation: Tab bar ở dưới */}
+      {/* Mobile Bottom Navigation */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#0a0a0c]/90 backdrop-blur-xl border-t border-white/5 flex items-center justify-around z-[200] px-4">
         {tabs.map(tab => (
           <button

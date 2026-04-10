@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  MonitorPlay, ImageIcon, X, Check, Loader2, Zap, AlertCircle, Coins
+import {
+  MonitorPlay, ImageIcon, X, Check, Loader2, Zap, AlertCircle, Coins, Clock
 } from 'lucide-react';
 
 interface FooterControlsProps {
@@ -14,10 +14,18 @@ interface FooterControlsProps {
   onReset: () => void;
   onGenerateImages: () => void;
   onGenerateVideos: () => void;
+  totalDuration?: number;
 }
 
-export const FooterControls: React.FC<FooterControlsProps> = ({ 
-  scenesCount, selectedCount, isProcessing, canCreate, onSynthesize, onReset, onGenerateImages, onGenerateVideos
+const formatDuration = (secs: number): string => {
+  if (secs < 60) return `${secs}s`;
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return s > 0 ? `${m}m ${s}s` : `${m}m`;
+};
+
+export const FooterControls: React.FC<FooterControlsProps> = ({
+  scenesCount, selectedCount, isProcessing, canCreate, onSynthesize, onReset, onGenerateImages, onGenerateVideos, totalDuration,
 }) => {
   const hasSelection = selectedCount > 0;
 
@@ -44,6 +52,12 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                         <span className="text-[10px] lg:text-xs font-black text-white whitespace-nowrap leading-none">{selectedCount} / {scenesCount}</span>
                         <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest mt-1">Đã chọn</span>
                       </div>
+                      {totalDuration !== undefined && totalDuration > 0 && (
+                        <div className="hidden lg:flex items-center gap-1.5 ml-3 pl-3 border-l border-white/10 text-white/40">
+                          <Clock size={11} />
+                          <span className="text-[10px] font-black font-mono">{formatDuration(totalDuration)}</span>
+                        </div>
+                      )}
                    </div>
 
                    <div className="flex items-center gap-1.5 lg:gap-2 relative flex-grow lg:flex-grow-0">
