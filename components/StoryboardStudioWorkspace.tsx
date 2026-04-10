@@ -22,6 +22,7 @@ import { CharacterEditModal } from './storyboard-studio/CharacterEditModal';
 import { StoryboardProgressModal } from './storyboard-studio/StoryboardProgressModal';
 import { RenderConfigModal } from './storyboard-studio/RenderConfigModal';
 import { AestheticProfileModal } from './storyboard-studio/AestheticProfileModal';
+import { ExportTab } from './storyboard-studio/ExportTab';
 import ExplorerDetailModal from './ExplorerDetailModal';
 import { MobileGeneratorBar } from './common/MobileGeneratorBar';
 import { useAuth } from '../context/AuthContext';
@@ -161,6 +162,8 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 onReGenerateSceneImage={s.handleReGenerateSceneImage}
                 onReGenerateSceneVideo={s.handleReGenerateSceneVideo}
                 onDeleteScene={(id) => s.setScenes(prev => prev.filter(sc => sc.id !== id))}
+                onEnhanceScenePrompt={s.handleEnhanceScenePrompt}
+                enhancingSceneId={s.enhancingSceneId}
               />
             )}
 
@@ -182,6 +185,21 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 isEnhancing={s.isEnhancing}
                 isProcessing={s.isProcessing}
                 onSaveAndGenerate={s.handleSaveAndGenerate}
+              />
+            )}
+            {s.activeTab === 'EXPORT' && (
+              <ExportTab
+                key="tab-export"
+                scenes={s.scenes}
+                assets={s.assets}
+                script={s.script}
+                settings={s.settings}
+                totalDuration={s.totalDuration}
+                onExportJSON={s.handleExportProjectJSON}
+                onImportJSON={s.handleImportProjectJSON}
+                onNewProject={s.handleNewProject}
+                onViewScene={(scene) => s.openExplorerViewScene(scene)}
+                isProcessing={s.isProcessing}
               />
             )}
           </AnimatePresence>

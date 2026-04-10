@@ -28,8 +28,8 @@ const CAT_COLORS: Record<string, string> = {
 const ITEMS: RestoreItem[] = [
   {
     id: 'portrait-hero',
-    before: 'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?auto=format&fit=crop&q=20&w=800&grayscale',
-    after: 'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?auto=format&fit=crop&q=100&w=800',
+    before: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a0e5c4b5-ee4d-4dee-ad59-a7bf44a2cc00/public',
+    after: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/656b1ac4-24d3-40eb-9612-d1be8c322e00/public',
     label: 'Chân Dung Gia Đình — 1950s',
     category: 'Portrait',
     subcategory: 'Face Restore · 4K Output',
@@ -38,8 +38,8 @@ const ITEMS: RestoreItem[] = [
   },
   {
     id: 'wedding-1',
-    before: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=20&w=600&grayscale',
-    after: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=100&w=600',
+    before: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/77cf78d5-1550-4ee3-e887-874b1f6e9900/public',
+    after: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/f07e49d0-700e-4fe3-dc88-f415c359ce00/public',
     label: 'Ảnh Cưới Vintage',
     category: 'Wedding',
     subcategory: 'Color Synthesis · Restored',
@@ -48,8 +48,8 @@ const ITEMS: RestoreItem[] = [
   },
   {
     id: 'colorize-1',
-    before: 'https://images.unsplash.com/photo-1547750099-5e6e95ffa01c?auto=format&fit=crop&q=20&w=600&grayscale',
-    after: 'https://images.unsplash.com/photo-1547750099-5e6e95ffa01c?auto=format&fit=crop&q=100&w=600',
+    before: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/b8a72565-6635-43eb-03d4-4743b8bae600/public',
+    after: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/f056253b-5557-4db2-2192-108fb260ae00/public',
     label: 'Cổ Điển Được Tô Màu',
     category: 'Colorize',
     subcategory: 'B&W → Color · AI Synthesis',
@@ -58,8 +58,8 @@ const ITEMS: RestoreItem[] = [
   },
   {
     id: 'landscape-1',
-    before: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=20&w=700&grayscale',
-    after: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=100&w=700',
+    before: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/7b21d7d5-c20f-4e4e-751d-3e053ad6c100/public',
+    after: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/e4ff278f-a6b7-4fc8-6bc4-0da026cd2400/public',
     label: 'Phong Cảnh Thiên Nhiên',
     category: 'Landscape',
     subcategory: '8K Upscale · Noise Remove',
@@ -67,8 +67,8 @@ const ITEMS: RestoreItem[] = [
   },
   {
     id: 'memorial-1',
-    before: 'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?auto=format&fit=crop&q=20&w=600&grayscale',
-    after: 'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?auto=format&fit=crop&q=100&w=600',
+    before: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/c65bd30f-6920-4ef2-2377-badbc891d900/public',
+    after: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/74bb5a70-b43d-40d1-310c-119fb8a59c00/public',
     label: 'Ký Ức Gia Đình',
     category: 'Memorial',
     subcategory: 'Scratch Remove · Colorize',
@@ -76,8 +76,8 @@ const ITEMS: RestoreItem[] = [
   },
   {
     id: 'portrait-2',
-    before: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=20&w=600&grayscale',
-    after: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=100&w=600',
+    before: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a0e5c4b5-ee4d-4dee-ad59-a7bf44a2cc00/public',
+    after: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/656b1ac4-24d3-40eb-9612-d1be8c322e00/public',
     label: 'Chân Dung Thế Kỷ 20',
     category: 'Portrait',
     subcategory: 'Ultra Restore · 4K',

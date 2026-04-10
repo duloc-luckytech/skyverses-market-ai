@@ -127,8 +127,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
 
             {/* BeforeAfter visual */}
             <BeforeAfterSlider
-              beforeSrc="https://images.unsplash.com/photo-1531259683007-016a7b628fc3?auto=format&fit=crop&q=30&w=1200"
-              afterSrc="https://images.unsplash.com/photo-1531259683007-016a7b628fc3?auto=format&fit=crop&q=100&w=1200"
+              beforeSrc="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/6cb710d5-cafd-4c87-d025-8cc3346fe400/public"
+              afterSrc="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/b5058dc5-2e95-40b1-0b0e-9cf709159200/public"
               beforeLabel="TRƯỚC"
               afterLabel="ĐÃ PHỤC CHẾ"
               className="aspect-[16/9]"

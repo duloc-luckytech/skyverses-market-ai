@@ -20,14 +20,14 @@ const FEATURES: Feature[] = [
     title: 'Face Enhancement AI',
     desc: 'Khôi phục chân dung với độ chính xác tuyệt đối — giữ nguyên đặc điểm nhận dạng, xóa mờ, tái tạo chi tiết.',
     featured: true,
-    thumbnail: 'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?auto=format&fit=crop&q=80&w=600',
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/f8370ab1-1b97-42bb-f6d7-912baf993d00/public',
   },
   {
     icon: Palette,
     title: 'Color Synthesis AI',
     desc: 'AI thông minh tô màu ảnh đen trắng một cách tự nhiên — màu da, trời, cây cỏ chân thực như ảnh gốc.',
     featured: true,
-    thumbnail: 'https://images.unsplash.com/photo-1547750099-5e6e95ffa01c?auto=format&fit=crop&q=80&w=600',
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/09280e89-4837-4944-8634-921cfae12b00/public',
   },
   {
     icon: Eraser,

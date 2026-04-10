@@ -30,7 +30,7 @@ const STEPS = [
     icon: Download,
     title: 'Tải Về Ngay',
     desc: 'Export PNG 4K hoặc JPG — sẵn sàng in ấn, đóng khung, chia sẻ hoặc lưu trữ lâu dài.',
-    thumb: 'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?auto=format&fit=crop&q=80&w=400',
+    thumb: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/aa6c8fd3-74ad-4929-ad2c-e5fc845f7f00/public',
   },
 ];
 

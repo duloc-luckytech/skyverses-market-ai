@@ -50,6 +50,8 @@ interface StoryboardTabProps {
   onReGenerateSceneImage: (sceneId: string) => void;
   onReGenerateSceneVideo: (sceneId: string) => void;
   onDeleteScene: (sceneId: string) => void;
+  onEnhanceScenePrompt?: (sceneId: string) => void;
+  enhancingSceneId?: string | null;
 }
 
 // ─── SCENE CARD ─────────────────────────────────────────────────────────────
@@ -63,9 +65,11 @@ interface SceneCardProps {
   onReGenerateImage: () => void;
   onReGenerateVideo: () => void;
   onDelete: () => void;
+  onEnhancePrompt?: () => void;
+  isEnhancingPrompt?: boolean;
 }
 
-const SceneCard: React.FC<SceneCardProps> = ({ scene, isSelected, assets, onToggle, onView, onUpdate, onReGenerateImage, onReGenerateVideo, onDelete }) => {
+const SceneCard: React.FC<SceneCardProps> = ({ scene, isSelected, assets, onToggle, onView, onUpdate, onReGenerateImage, onReGenerateVideo, onDelete, onEnhancePrompt, isEnhancingPrompt }) => {
   const hasVideo = !!scene.videoUrl;
   const hasImage = !!scene.visualUrl;
   const isGenerating = scene.status === 'generating';
@@ -261,9 +265,20 @@ const SceneCard: React.FC<SceneCardProps> = ({ scene, isSelected, assets, onTogg
               <Video size={10} />
               <span className="hidden sm:inline">Video</span>
             </button>
-            <button onClick={onDelete} className="text-slate-300 dark:text-white/15 hover:text-red-500 transition-colors">
-              <Trash2 size={10} />
+            <button onClick={onDelete} className="text-slate-300 dark:text-white/15 hover:text-red-500 transition-colors"
+              title="Xóa cảnh">
+              <Trash2 size={14}/>
             </button>
+            {onEnhancePrompt && (
+              <button
+                onClick={onEnhancePrompt}
+                disabled={isEnhancingPrompt}
+                className="text-slate-300 dark:text-white/15 hover:text-amber-400 transition-colors disabled:opacity-40"
+                title="✨ AI cải thiện prompt"
+              >
+                {isEnhancingPrompt ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -280,7 +295,8 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   scenes, selectedSceneIds, toggleSceneSelection, selectAllScenes,
   isProcessing, isEnhancing, assetUploadRef, setActiveUploadAssetId,
   onOpenSettings, onOpenRenderConfig, onOpenAestheticConfig, onLoadSample, onLoadSuggestion, settings,
-  onReGenerateSceneImage, onReGenerateSceneVideo, onDeleteScene
+  onReGenerateSceneImage, onReGenerateSceneVideo, onDeleteScene,
+  onEnhanceScenePrompt, enhancingSceneId
 }) => {
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const mainAudioInputRef = useRef<HTMLInputElement>(null);
@@ -565,6 +581,8 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                     onReGenerateImage={() => onReGenerateSceneImage(scene.id)}
                     onReGenerateVideo={() => onReGenerateSceneVideo(scene.id)}
                     onDelete={() => onDeleteScene(scene.id)}
+                    onEnhancePrompt={onEnhanceScenePrompt ? () => onEnhanceScenePrompt(scene.id) : undefined}
+                    isEnhancingPrompt={enhancingSceneId === scene.id}
                   />
                 ))
             }

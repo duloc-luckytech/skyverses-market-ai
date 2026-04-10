@@ -41,15 +41,27 @@ export interface ReferenceAsset {
 export const useStoryboardStudio = () => {
   const { credits, useCredits, addCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<'STORYBOARD' | 'ASSETS' | 'SETTINGS' | 'LOGIC' | 'SCENES'>('STORYBOARD');
-  const [script, setScript] = useState('');
-  const [totalDuration, setTotalDuration] = useState(64); 
-  const [sceneDuration, setSceneDuration] = useState(8);
+  const PROJECT_KEY = 'skyverses_storyboard_project';
+
+  const [activeTab, setActiveTab] = useState<'STORYBOARD' | 'ASSETS' | 'SETTINGS' | 'LOGIC' | 'SCENES' | 'EXPORT'>('STORYBOARD');
+  const [script, setScript] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').script || ''; } catch { return ''; }
+  });
+  const [totalDuration, setTotalDuration] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').totalDuration || 64; } catch { return 64; }
+  });
+  const [sceneDuration, setSceneDuration] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').sceneDuration || 8; } catch { return 8; }
+  });
   const [voiceOverEnabled, setVoiceOverEnabled] = useState(false);
-  const [scenes, setScenes] = useState<Scene[]>([]);
+  const [scenes, setScenes] = useState<Scene[]>(() => {
+    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').scenes || []; } catch { return []; }
+  });
   const [selectedSceneIds, setSelectedSceneIds] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [enhancingSceneId, setEnhancingSceneId] = useState<string | null>(null);
+  const [isGeneratingVoiceover, setIsGeneratingVoiceover] = useState(false);
 
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
@@ -62,11 +74,21 @@ export const useStoryboardStudio = () => {
   const [scriptRefImage, setScriptRefImage] = useState<string | null>(null);
   const [scriptRefAudio, setScriptRefAudio] = useState<string | null>(null);
 
-  const [assets, setAssets] = useState<ReferenceAsset[]>([]);
+  const [assets, setAssets] = useState<ReferenceAsset[]>(() => {
+    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').assets || []; } catch { return []; }
+  });
   const assetUploadRef = useRef<HTMLInputElement>(null);
   const [activeUploadAssetId, setActiveUploadAssetId] = useState<string | null>(null);
 
   const isCancelledRef = useRef(false);
+
+  // Auto-save project to localStorage when key state changes
+  useEffect(() => {
+    try {
+      const saved = { script, totalDuration, sceneDuration, scenes, assets, updatedAt: Date.now() };
+      localStorage.setItem(PROJECT_KEY, JSON.stringify(saved));
+    } catch { /* quota exceeded */ }
+  }, [script, totalDuration, sceneDuration, scenes, assets]);
 
   // Cancel all in-flight polls on unmount
   useEffect(() => {
@@ -576,6 +598,12 @@ IMPORTANT:
     targetScenes.forEach(s => updateScene(s.id, { status: 'generating' }));
 
     const generateOneImage = async (scene: Scene) => {
+      // Get character reference URLs for this scene (identity anchoring)
+      const characterRefs = assets
+        .filter(a => scene.characterIds?.includes(a.id) && a.url && a.status === 'done')
+        .map(a => a.url!)
+        .slice(0, 3); // max 3 refs
+
       const aestheticPrompt = [
         scene.prompt,
         settings.style && settings.style !== '--' ? `Style: ${settings.style}` : '',
@@ -584,12 +612,14 @@ IMPORTANT:
       ].filter(Boolean).join('. ');
 
       try {
+        const hasRefs = characterRefs.length > 0;
         const payload: any = {
-          type: 'text_to_image',
-          input: { prompt: aestheticPrompt },
+          type: hasRefs ? 'image_to_image' : 'text_to_image',
+          input: hasRefs ? { prompt: aestheticPrompt, images: characterRefs } : { prompt: aestheticPrompt },
           config: { width: 1024, height: 576, aspectRatio: '16:9', seed: 0, style: '' },
           engine: { provider: 'gommo', model: settings.imageModel as any },
-          enginePayload: { prompt: aestheticPrompt, privacy: 'PRIVATE', projectId: 'default' },
+          enginePayload: { prompt: aestheticPrompt, privacy: 'PRIVATE', projectId: 'default',
+            ...(hasRefs ? { referenceImages: characterRefs } : {}) },
         };
         const res = await imagesApi.createJob(payload);
         if (res.success && res.data.jobId) {
@@ -826,16 +856,188 @@ IMPORTANT:
     }
   }, [scenes, assets, credits, useCredits, updateScene, addLog, settings, pollVideoJobStatus]);
 
+  // ── AI Enhance Scene Prompt ──────────────────────────────────
+  const handleEnhanceScenePrompt = useCallback(async (sceneId: string) => {
+    const scene = scenes.find(s => s.id === sceneId);
+    if (!scene || enhancingSceneId) return;
+
+    setEnhancingSceneId(sceneId);
+    addLog(`[AI] Đang cải thiện prompt cảnh #${scene.order}...`);
+
+    try {
+      const { aiChatOnce } = await import('../apis/aiChat');
+      const enhanced = await aiChatOnce([
+        {
+          role: 'system',
+          content: `You are a cinematic prompt engineer specializing in AI video/image generation.
+Rewrite the given scene description to be:
+1. More visually specific and cinematic (lighting, composition, color palette)
+2. Optimized for AI image generation (concrete details, no abstract concepts)
+3. 40-70 words max
+4. Coherent with the visual style: ${settings.style || 'cinematic'}
+5. Return ONLY the enhanced prompt text, no explanation.`,
+        },
+        {
+          role: 'user',
+          content: `Original scene prompt:
+"${scene.prompt}"
+
+Format: ${settings.format || 'video'}
+Style: ${settings.style || 'cinematic'}
+Camera: ${settings.cinematic || 'dynamic'}
+
+Rewrite this as a better image generation prompt:`,
+        },
+      ]);
+
+      if (enhanced?.trim()) {
+        updateScene(sceneId, { prompt: enhanced.trim() });
+        addLog(`[✓] Cảnh #${scene.order}: prompt đã được cải thiện.`);
+      }
+    } catch (e: any) {
+      addLog(`[LỖI] Enhance cảnh #${scene.order}: ${e?.message ?? 'thất bại.'}`);
+    } finally {
+      setEnhancingSceneId(null);
+    }
+  }, [scenes, enhancingSceneId, updateScene, addLog, settings]);
+
+  // ── Enhance ALL visible scene prompts ──────────────────────────
+  const handleEnhanceAllPrompts = useCallback(async () => {
+    if (isProcessing || scenes.length === 0) return;
+    setIsProcessing(true);
+    addLog(`[AI] Cải thiện toàn bộ ${scenes.length} cảnh...`);
+    try {
+      const { aiChatOnce } = await import('../apis/aiChat');
+      for (const scene of scenes) {
+        const enhanced = await aiChatOnce([
+          { role: 'system', content: `You are a cinematic prompt engineer. Rewrite the scene description to be more visually specific for AI image generation. Return ONLY the enhanced prompt, 40-70 words, ${settings.style || 'cinematic'} style.` },
+          { role: 'user', content: `Scene ${scene.order}: "${scene.prompt}"\nContext: ${settings.format || ''} ${settings.cinematic || ''}. Rewrite:` },
+        ]);
+        if (enhanced?.trim()) updateScene(scene.id, { prompt: enhanced.trim() });
+        await new Promise(r => setTimeout(r, 500)); // Rate limit
+      }
+      addLog(`[✓] Tất cả ${scenes.length} cảnh đã được cải thiện.`);
+    } catch (e: any) {
+      addLog(`[LỖI] Enhance all: ${e?.message ?? 'unknown'}`);
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [scenes, isProcessing, updateScene, addLog, settings]);
+
+  // ── Voiceover generation ────────────────────────────────────
+  const handleGenerateVoiceover = useCallback(async (sceneId: string, voiceText?: string) => {
+    const scene = scenes.find(s => s.id === sceneId);
+    if (!scene || isGeneratingVoiceover) return;
+
+    setIsGeneratingVoiceover(true);
+    addLog(`[🎙️] Tạo voice-over cảnh #${scene.order}...`);
+
+    try {
+      const { generateDemoAudio } = await import('../services/gemini');
+      const text = voiceText || scene.prompt.slice(0, 200); // cap at 200 chars
+      const voiceName = settings.voiceOver?.toLowerCase().includes('female') ? 'Aoede' : 'Kore';
+
+      const audioBuffer = await generateDemoAudio(text, voiceName);
+      if (audioBuffer) {
+        // Convert AudioBuffer to blob URL for playback
+        const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
+        const ctx = new AudioContextClass();
+        const offlineCtx = new OfflineAudioContext(audioBuffer.numberOfChannels, audioBuffer.length, audioBuffer.sampleRate);
+        const source = offlineCtx.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(offlineCtx.destination);
+        source.start();
+        const rendered = await offlineCtx.startRendering();
+
+        // Encode as WAV
+        const wavBuffer = audioBufferToWav(rendered);
+        const blob = new Blob([wavBuffer], { type: 'audio/wav' });
+        const audioUrl = URL.createObjectURL(blob);
+        updateScene(sceneId, { audioUrl });
+        addLog(`[✓] Voice-over cảnh #${scene.order} hoàn tất.`);
+      }
+    } catch (e: any) {
+      addLog(`[LỖI] Voice-over cảnh #${scene.order}: ${e?.message ?? 'thất bại.'}`);
+    } finally {
+      setIsGeneratingVoiceover(false);
+    }
+  }, [scenes, isGeneratingVoiceover, updateScene, addLog, settings]);
+
+  // Helper: convert AudioBuffer to WAV binary
+  const audioBufferToWav = (buffer: AudioBuffer): ArrayBuffer => {
+    const numCh = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const format = 1; // PCM
+    const bitDepth = 16;
+    const bytesPerSample = bitDepth / 8;
+    const blockAlign = numCh * bytesPerSample;
+    const dataLength = buffer.length * blockAlign;
+    const totalLength = 44 + dataLength;
+    const arrayBuf = new ArrayBuffer(totalLength);
+    const view = new DataView(arrayBuf);
+    const writeStr = (offset: number, s: string) => { for (let i = 0; i < s.length; i++) view.setUint8(offset + i, s.charCodeAt(i)); };
+    writeStr(0, 'RIFF'); view.setUint32(4, 36 + dataLength, true);
+    writeStr(8, 'WAVE'); writeStr(12, 'fmt '); view.setUint32(16, 16, true);
+    view.setUint16(20, format, true); view.setUint16(22, numCh, true);
+    view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * blockAlign, true);
+    view.setUint16(32, blockAlign, true); view.setUint16(34, bitDepth, true);
+    writeStr(36, 'data'); view.setUint32(40, dataLength, true);
+    let offset = 44;
+    for (let i = 0; i < buffer.length; i++) {
+      for (let ch = 0; ch < numCh; ch++) {
+        const s = Math.max(-1, Math.min(1, buffer.getChannelData(ch)[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        offset += 2;
+      }
+    }
+    return arrayBuf;
+  };
+
+  // ── Project persistence helpers ──────────────────────────────────
+  const handleNewProject = useCallback(() => {
+    if (!window.confirm('Tạo project mới? Dữ liệu hiện tại đã được lưu tự động.')) return;
+    localStorage.removeItem(PROJECT_KEY);
+    setScript(''); setScenes([]); setAssets([]);
+    setTotalDuration(64); setSceneDuration(8);
+    addLog('[★] Project mới đã được khởi tạo.');
+  }, [addLog]);
+
+  const handleExportProjectJSON = useCallback(() => {
+    const data = { script, totalDuration, sceneDuration, scenes, assets, settings, exportedAt: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `storyboard-project-${Date.now()}.json`; a.click();
+    URL.revokeObjectURL(url);
+    addLog('[✓] Project JSON đã được xuất.');
+  }, [script, totalDuration, sceneDuration, scenes, assets, settings, addLog]);
+
+  const handleImportProjectJSON = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        if (data.script !== undefined) setScript(data.script);
+        if (data.scenes) setScenes(data.scenes);
+        if (data.assets) setAssets(data.assets);
+        if (data.totalDuration) setTotalDuration(data.totalDuration);
+        if (data.sceneDuration) setSceneDuration(data.sceneDuration);
+        addLog(`[✓] Import thành công: ${data.scenes?.length || 0} cảnh, ${data.assets?.length || 0} assets.`);
+      } catch { addLog('[LỖI] File JSON không hợp lệ.'); }
+    };
+    reader.readAsText(file);
+  }, [addLog]);
+
   const handleAssetUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && activeUploadAssetId) {
       updateAsset(activeUploadAssetId, { status: 'processing' });
       try {
         const metadata = await uploadToGCS(file);
-        updateAsset(activeUploadAssetId, { 
-          url: metadata.url, 
+        updateAsset(activeUploadAssetId, {
+          url: metadata.url,
           mediaId: metadata.mediaId || metadata.id,
-          status: 'done' 
+          status: 'done'
         });
       } catch (err) {
         updateAsset(activeUploadAssetId, { status: 'error' });
@@ -850,10 +1052,14 @@ IMPORTANT:
     activeTab, setActiveTab, script, setScript, scriptRefImage, setScriptRefImage, scriptRefAudio, setScriptRefAudio,
     totalDuration, setTotalDuration, sceneDuration, setSceneDuration, voiceOverEnabled, setVoiceOverEnabled,
     scenes, setScenes, updateScene, selectedSceneIds, setSelectedSceneIds, toggleSceneSelection, selectAllScenes,
-    isProcessing, isEnhancing, showProgressModal, closeProgressModal, terminalLogs, settings, setSettings, handleCreateStoryboard,
+    isProcessing, isEnhancing, enhancingSceneId, isGeneratingVoiceover,
+    showProgressModal, closeProgressModal, terminalLogs, settings, setSettings, handleCreateStoryboard,
     handleSaveAndGenerate,
     handleLoadSample, handleLoadSuggestion, handleReGenerateAsset,
     handleReGenerateSceneImage, handleReGenerateSceneVideo,
+    handleEnhanceScenePrompt, handleEnhanceAllPrompts,
+    handleGenerateVoiceover,
+    handleNewProject, handleExportProjectJSON, handleImportProjectJSON,
     assets, addAsset: () => openAssetModal(), removeAsset: (id: string) => setAssets(prev => prev.filter(a => a.id !== id)),
     updateAsset, isAssetModalOpen, openAssetModal, closeAssetModal, saveAsset, editingAsset, setEditingAsset,
     viewingExplorerItem, setViewingExplorerItem, openExplorerView, openExplorerViewScene,
