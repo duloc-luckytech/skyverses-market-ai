@@ -16,7 +16,7 @@ import { creditsApi, CreditTransaction } from '../apis/credits';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 const CreditUsagePage: React.FC = () => {
-  const { credits, login, isAuthenticated, user, refreshUserInfo } = useAuth();
+  const { credits, login, isAuthenticated, user, refreshUserInfo, freeImageRemaining } = useAuth();
   const { t } = useLanguage();
 
   usePageMeta({
@@ -145,10 +145,12 @@ const CreditUsagePage: React.FC = () => {
   const typeConfig: Record<string, { label: string; color: string; bg: string }> = {
     'TOP_UP': { label: 'Nạp tiền', color: '#10b981', bg: '#10b98112' },
     'CONSUME': { label: 'Sử dụng', color: '#ef4444', bg: '#ef444412' },
+    'FREE_IMAGE': { label: 'Ảnh Free', color: '#8b5cf6', bg: '#8b5cf612' },
     'REFUND': { label: 'Hoàn trả', color: '#f59e0b', bg: '#f59e0b12' },
     'ADMIN_ADJUST': { label: 'Điều chỉnh', color: '#8b5cf6', bg: '#8b5cf612' },
     'WELCOME': { label: 'Welcome', color: '#0090ff', bg: '#0090ff12' },
     'DAILY': { label: 'Daily', color: '#06b6d4', bg: '#06b6d412' },
+    'EVENT_BONUS': { label: 'Event Bonus', color: '#f59e0b', bg: '#f59e0b12' },
     'REFERRAL': { label: 'Giới thiệu', color: '#ec4899', bg: '#ec489912' },
   };
 
@@ -227,33 +229,33 @@ const CreditUsagePage: React.FC = () => {
           transition={{ delay: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10"
         >
-          <StatCard 
-            label="Số dư hiện tại" 
-            value={credits.toLocaleString()} 
-            unit="CR" 
-            icon={<Sparkles size={18} fill="currentColor" />} 
-            color="#0090ff" 
+          <StatCard
+            label="Số dư hiện tại"
+            value={credits.toLocaleString()}
+            unit="CR"
+            icon={<Sparkles size={18} fill="currentColor" />}
+            color="#0090ff"
           />
-          <StatCard 
-            label="Đã dùng hôm nay" 
-            value={stats.todaySpent.toLocaleString()} 
-            unit="CR" 
-            icon={<Activity size={18} />} 
-            color="#8b5cf6" 
+          <StatCard
+            label="Ảnh free còn lại"
+            value={freeImageRemaining.toLocaleString()}
+            unit="ảnh"
+            icon={<ImageIcon size={18} />}
+            color="#8b5cf6"
           />
-          <StatCard 
-            label="Đã dùng tháng này" 
-            value={stats.monthSpent.toLocaleString()} 
-            unit="CR" 
-            icon={<TrendingUp size={18} />} 
-            color="#ef4444" 
+          <StatCard
+            label="Đã dùng hôm nay"
+            value={stats.todaySpent.toLocaleString()}
+            unit="CR"
+            icon={<Activity size={18} />}
+            color="#ef4444"
           />
-          <StatCard 
-            label="Tổng giao dịch" 
-            value={total.toString()} 
-            unit="TXN" 
-            icon={<Receipt size={18} />} 
-            color="#10b981" 
+          <StatCard
+            label="Đã dùng tháng này"
+            value={stats.monthSpent.toLocaleString()}
+            unit="CR"
+            icon={<TrendingUp size={18} />}
+            color="#f59e0b"
           />
         </motion.section>
 
@@ -464,10 +466,12 @@ const CreditUsagePage: React.FC = () => {
               >
                 <option value="All">Tất cả</option>
                 <option value="CONSUME">Sử dụng</option>
+                <option value="FREE_IMAGE">Ảnh Free</option>
                 <option value="TOP_UP">Nạp tiền</option>
                 <option value="REFUND">Hoàn trả</option>
                 <option value="WELCOME">Welcome</option>
                 <option value="DAILY">Daily</option>
+                <option value="EVENT_BONUS">Event Bonus</option>
                 <option value="REFERRAL">Giới thiệu</option>
               </select>
             </div>
@@ -522,10 +526,16 @@ const CreditUsagePage: React.FC = () => {
                     </div>
                     {/* Amount */}
                     <div className="col-span-2 text-right">
-                      <span className={`text-sm font-black tabular-nums ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
-                        {isPositive ? '+' : ''}{tx.amount.toLocaleString()}
-                      </span>
-                      <span className="text-[9px] text-slate-400 ml-1">CR</span>
+                      {tx.type === 'FREE_IMAGE' ? (
+                        <span className="text-sm font-black text-violet-500">Miễn phí</span>
+                      ) : (
+                        <>
+                          <span className={`text-sm font-black tabular-nums ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+                            {isPositive ? '+' : ''}{tx.amount.toLocaleString()}
+                          </span>
+                          <span className="text-[9px] text-slate-400 ml-1">CR</span>
+                        </>
+                      )}
                     </div>
                     {/* Balance after */}
                     <div className="col-span-2 text-right">

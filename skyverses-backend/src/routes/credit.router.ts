@@ -1085,4 +1085,42 @@ router.post("/purchase/crypto", authenticate, async (req: any, res) => {
   }
 });
 
+/* =====================================================
+   ADMIN: BATCH GRANT FREE IMAGES TO ALL USERS
+   POST /credits/admin/grant-free-images
+   Body: { images: number, note?: string }
+   One-time migration: cộng thêm free images cho toàn bộ user
+===================================================== */
+router.post("/admin/grant-free-images", authenticate, async (req: any, res) => {
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ message: "Admin only" });
+  }
+
+  const { images = 50, note = "🌍 Event bonus — +50 ảnh miễn phí cho tất cả users" } = req.body;
+
+  if (typeof images !== "number" || images <= 0 || images > 500) {
+    return res.status(400).json({ message: "images must be a number between 1 and 500" });
+  }
+
+  try {
+    // Bulk update: cộng thêm cho tất cả user (không giới hạn role)
+    const bulkResult = await User.updateMany(
+      { role: { $ne: "admin" } },
+      { $inc: { freeImageRemaining: images } }
+    );
+
+    console.log(`🌍 [ADMIN] Batch granted +${images} free images to ${bulkResult.modifiedCount} users`);
+
+    res.json({
+      success: true,
+      modifiedCount: bulkResult.modifiedCount,
+      message: `✅ Đã cộng +${images} ảnh miễn phí cho ${bulkResult.modifiedCount} users`,
+      note,
+    });
+  } catch (err: any) {
+    console.error("❌ [ADMIN GRANT FREE IMAGES]", err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 export default router;

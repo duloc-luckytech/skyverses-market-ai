@@ -1,10 +1,12 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Sparkles, Armchair, Share2, Download, Eye } from 'lucide-react';
+import { Sparkles, Eye } from 'lucide-react';
+import { ImageJobCard } from '../shared/ImageJobCard';
+import type { ImageResult } from '../../hooks/useImageGenerator';
 
 interface ViewportContentProps {
-  resultImage: string | null;
+  results: ImageResult[];
   isGenerating: boolean;
 }
 
@@ -47,7 +49,8 @@ const REAL_ESTATE_EXAMPLES = [
   }
 ];
 
-export const ViewportContent: React.FC<ViewportContentProps> = ({ resultImage, isGenerating }) => {
+export const ViewportContent: React.FC<ViewportContentProps> = ({ results, isGenerating }) => {
+  const hasResults = results.length > 0;
   return (
     <div className="flex-grow flex flex-col relative overflow-hidden">
       {/* Background Grid Pattern */}
@@ -57,42 +60,31 @@ export const ViewportContent: React.FC<ViewportContentProps> = ({ resultImage, i
       <div className="flex-grow overflow-y-auto no-scrollbar relative z-10">
         <div className="min-h-full w-full flex flex-col items-center justify-start p-6 md:p-10 lg:p-16">
           <AnimatePresence mode="wait">
-            {resultImage ? (
-              <motion.div 
-                key="result"
-                initial={{ opacity: 0, scale: 0.98 }} 
-                animate={{ opacity: 1, scale: 1 }} 
-                className="relative group max-w-5xl w-full aspect-video bg-white dark:bg-black rounded-xl overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.1)] dark:shadow-[0_0_150px_rgba(168,85,247,0.15)] border border-slate-200 dark:border-white/10"
+            {(hasResults || isGenerating) ? (
+              <motion.div
+                key="results"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full max-w-2xl space-y-4"
               >
-                <img src={resultImage} className="w-full h-full object-cover" alt="Render result" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
-                <div className="absolute top-6 right-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0 z-20">
-                  <button className="p-4 bg-white/90 dark:bg-black/80 backdrop-blur-md rounded-full shadow-2xl text-slate-800 dark:text-white hover:bg-brand-blue hover:text-white transition-all"><Share2 size={20}/></button>
-                  <a href={resultImage} download={`skyverses_real_estate_${Date.now()}.png`} className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center"><Download size={20}/></a>
-                </div>
-                <div className="absolute bottom-6 left-6 z-30 opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0">
-                  <div className="flex gap-2">
-                    <span className="px-3 py-1 bg-purple-600 text-white text-[9px] font-black uppercase tracking-widest rounded-sm shadow-xl italic">NEURAL RENDER v2.5</span>
-                    <span className="px-3 py-1 bg-black/60 backdrop-blur-md text-white text-[9px] font-black uppercase tracking-widest rounded-sm border border-white/10">8K ULTRA HD</span>
-                  </div>
-                </div>
-              </motion.div>
-            ) : isGenerating ? (
-              <motion.div 
-                key="generating"
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
-                exit={{ opacity: 0 }}
-                className="flex flex-col items-center gap-12 text-center my-auto"
-              >
-                <div className="relative">
-                  <Loader2 size={120} className="text-purple-500 animate-spin" strokeWidth={1} />
-                  <Sparkles size={40} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-purple-400 animate-pulse" />
-                </div>
-                <div className="space-y-4">
-                  <p className="text-xl font-black uppercase tracking-[0.6em] animate-pulse italic text-slate-800 dark:text-white">ĐANG TỔNG HỢP KHÔNG GIAN...</p>
-                  <p className="text-[10px] font-bold text-slate-400 dark:text-gray-600 uppercase tracking-widest">Architect Node #042 // Neural Lattice</p>
-                </div>
+                {isGenerating && results.filter(r => r.status === 'processing').length === 0 && (
+                  <ImageJobCard
+                    status="processing"
+                    aspectRatio="4/3"
+                    mode="full"
+                    statusText="ĐANG TỔNG HỢP KHÔNG GIAN..."
+                  />
+                )}
+                {results.map(result => (
+                  <ImageJobCard
+                    key={result.id}
+                    status={result.status}
+                    resultUrl={result.url ?? undefined}
+                    aspectRatio="4/3"
+                    mode="full"
+                    statusText={result.status === 'processing' ? 'ĐANG TỔNG HỢP KHÔNG GIAN...' : undefined}
+                  />
+                ))}
               </motion.div>
             ) : (
               <motion.div 

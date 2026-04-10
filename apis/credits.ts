@@ -256,7 +256,7 @@ export const creditsApi = {
 export interface CreditTransaction {
   _id: string;
   userId: string;
-  type: 'TOP_UP' | 'CONSUME' | 'REFUND' | 'ADMIN_ADJUST' | 'WELCOME' | 'DAILY' | 'REFERRAL';
+  type: 'TOP_UP' | 'CONSUME' | 'REFUND' | 'ADMIN_ADJUST' | 'WELCOME' | 'DAILY' | 'REFERRAL' | 'EVENT_BONUS' | 'FREE_IMAGE';
   amount: number;
   balanceAfter: number;
   source: string;

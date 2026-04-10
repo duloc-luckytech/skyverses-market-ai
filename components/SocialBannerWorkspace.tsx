@@ -2,22 +2,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, Zap, Loader2, Plus, Upload,
+  X, Loader2, Plus,
   Sparkles, Trash2,
-  CheckCircle2, ChevronDown, Coins, AlertTriangle,
+  ChevronDown, Coins,
   MessageCircle, Store, Building, Shirt,
   GraduationCap, Heart, Coffee, Plane, Cpu,
   LayoutGrid, Image as ImageIcon, Wand2, History,
 } from 'lucide-react';
-import { generateDemoImage, generateDemoText } from '../services/gemini';
+import { generateDemoText } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { Link } from 'react-router-dom';
 import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
-import { useImageModels } from '../hooks/useImageModels';
+import { useImageGenerator } from '../hooks/useImageGenerator';
 import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
 import { ImageJobCard } from '../components/shared/ImageJobCard';
+import ResourceAuthModal from './common/ResourceAuthModal';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -83,48 +84,25 @@ interface BannerSession {
 
 const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { theme } = useTheme();
-  const { credits, useCredits, addCredits, isAuthenticated, login } = useAuth();
+  const { credits, isAuthenticated, login } = useAuth();
   const { showToast } = useToast();
 
   // UI state
   const [activePlatform, setActivePlatform] = useState(PLATFORMS[0].id);
-  const [isGenerating, setIsGenerating]   = useState(false);
   const [isEnhancing, setIsEnhancing]     = useState(false);
   const [showAdvanced, setShowAdvanced]   = useState(false);
-  const [status, setStatus]               = useState('Sẵn sàng');
-  const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
   const [viewMode, setViewMode]           = useState<'current' | 'library'>('current');
   const [activeIndustry, setActiveIndustry] = useState('social');
 
   // Content state
-  const [prompt, setPrompt]               = useState('');
+  const [localPrompt, setLocalPrompt]     = useState('');
   const [title, setTitle]                 = useState('');
   const [subtitle, setSubtitle]           = useState('');
-  const [references, setReferences]       = useState<string[]>([]);
-  const [result, setResult]               = useState<string | null>(null);
+  const [localReferences, setLocalReferences] = useState<string[]>([]);
 
-  // Config state — AI engine (live pricing API)
-  const [imgEngine, setImgEngine] = useState('gommo');
-  const imgModels = useImageModels(imgEngine);
-  const {
-    availableModels: imgAvailableModels,
-    selectedModel: imgSelectedModel,
-    setSelectedModel: setImgSelectedModel,
-    selectedFamily: imgSelectedFamily,
-    setSelectedFamily: setImgSelectedFamily,
-    selectedMode: imgSelectedMode,
-    setSelectedMode: setImgSelectedMode,
-    selectedRes: imgSelectedRes,
-    setSelectedRes: setImgSelectedRes,
-    selectedRatio: imgSelectedRatio,
-    setSelectedRatio: setImgSelectedRatio,
-    familyList: imgFamilyList,
-    familyModels: imgFamilyModels,
-    familyModes: imgFamilyModes,
-    familyResolutions: imgFamilyResolutions,
-    familyRatios: imgFamilyRatios,
-    selectedModelCost,
-  } = imgModels;
+  // Config state — dùng useImageGenerator cho toàn bộ generate logic
+  const gen = useImageGenerator();
+
   const [selectedStyle, setSelectedStyle]   = useState(STYLES[0]);
   const [quantity, setQuantity]             = useState(1);
 
@@ -139,7 +117,6 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
   const fileInputRef    = useRef<HTMLInputElement>(null);
   const colorPickerRef  = useRef<HTMLInputElement>(null);
-  const abortRef        = useRef<AbortController | null>(null);
   const [editingColorIndex, setEditingColorIndex] = useState<number | null>(null);
 
   // Prompt history (W7)
@@ -168,21 +145,42 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const currentPlatform = PLATFORMS.find(p => p.id === activePlatform) ?? PLATFORMS[0];
   const activeIndustryLabel = INDUSTRIES.find(i => i.id === activeIndustry)?.label ?? '';
 
+  // Save sessions to localStorage when a job completes
+  const prevResultsRef = useRef<string[]>([]);
+  useEffect(() => {
+    const doneResults = gen.results.filter(r => r.status === 'done' && r.url);
+    const newDone = doneResults.filter(r => !prevResultsRef.current.includes(r.id));
+    if (newDone.length > 0) {
+      prevResultsRef.current = doneResults.map(r => r.id);
+      setSessions(prev => {
+        const newSessions = newDone.map(r => ({
+          id: r.id,
+          url: r.url!,
+          prompt: localPrompt,
+          config: { platformId: activePlatform, style: selectedStyle, model: gen.selectedModel?.name || '' },
+          timestamp: new Date().toLocaleString('vi-VN'),
+        }));
+        const updated = [...newSessions, ...prev];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        return updated;
+      });
+      showToast('Banner đã được tạo thành công!', 'success');
+    }
+  }, [gen.results]);
+
   // ── Handlers ───────────────────────────────────────────────────────────────
 
   const handleEnhance = async () => {
-    if (!prompt.trim() || isEnhancing) return;
+    if (!localPrompt.trim() || isEnhancing) return;
     setIsEnhancing(true);
-    setStatus('Đang tối ưu prompt...');
     setShowEnhanceDiff(false);
     setEnhancedPreview(null);
     try {
       const system = 'Bạn là chuyên gia thiết kế banner mạng xã hội. Viết lại prompt sau thành mô tả chi tiết cho AI tạo banner: bố cục, màu sắc, font chữ, hiệu ứng ánh sáng. Ngắn gọn, tiếng Việt.';
-      const enhanced = await generateDemoText(`${system}\n\nPrompt gốc: "${prompt}"`);
+      const enhanced = await generateDemoText(`${system}\n\nPrompt gốc: "${localPrompt}"`);
       if (enhanced && !enhanced.includes('CONNECTION_TERMINATED')) {
         setEnhancedPreview(enhanced);
         setShowEnhanceDiff(true);
-        setStatus('Xem trước prompt mới →');
       }
     } catch { /* ignore */ } finally {
       setIsEnhancing(false);
@@ -192,10 +190,10 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    const remaining = 6 - references.length;
+    const remaining = 6 - localReferences.length;
     Array.from(files).slice(0, remaining).forEach(file => {
       const reader = new FileReader();
-      reader.onloadend = () => setReferences(prev => [...prev, reader.result as string]);
+      reader.onloadend = () => setLocalReferences(prev => [...prev, reader.result as string]);
       reader.readAsDataURL(file);
     });
   };
@@ -216,70 +214,29 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     }
   };
 
-  const handleGenerate = async () => {
-    if (!prompt.trim() || isGenerating) return;
+  const handleGenerate = () => {
+    if (!localPrompt.trim() || gen.isGenerating) return;
     if (!isAuthenticated) { login(); return; }
-    const totalCost = selectedModelCost * quantity;
-    if (credits < totalCost) { setShowLowCreditAlert(true); return; }
 
-    const controller = new AbortController();
-    abortRef.current = controller;
+    const industryCtx  = activeIndustryLabel ? `[Lĩnh vực: ${activeIndustryLabel}] ` : '';
+    const platformCtx  = `Platform: ${currentPlatform.platform} ${currentPlatform.label} (${currentPlatform.size}, tỷ lệ ${currentPlatform.ratio}).`;
+    const colorCtx     = useBrandColor ? `Màu thương hiệu: ${brandColors.join(', ')}.` : '';
+    const textCtx      = addTextToBanner && title ? `Tiêu đề chính: "${title}". Tiêu đề phụ: "${subtitle}".` : '';
+    const stylePreset  = BANNER_STYLES.find(s => s.label === selectedStyle);
+    const stylePrefix  = stylePreset?.promptPrefix ?? '';
 
-    setIsGenerating(true);
-    setStatus('Đang kết nối AI...');
-    try {
-      const industryCtx  = activeIndustryLabel ? `[Lĩnh vực: ${activeIndustryLabel}] ` : '';
-      const platformCtx  = `Platform: ${currentPlatform.platform} ${currentPlatform.label} (${currentPlatform.size}, tỷ lệ ${currentPlatform.ratio}).`;
-      const colorCtx     = useBrandColor ? `Màu thương hiệu: ${brandColors.join(', ')}.` : '';
-      const textCtx      = addTextToBanner && title ? `Tiêu đề chính: "${title}". Tiêu đề phụ: "${subtitle}".` : '';
-      const stylePreset  = BANNER_STYLES.find(s => s.label === selectedStyle);
-      const stylePrefix  = stylePreset?.promptPrefix ?? '';
+    const finalPrompt = `${industryCtx}${stylePrefix}Tạo banner mạng xã hội chuyên nghiệp. ${platformCtx} Phong cách: ${selectedStyle}. ${colorCtx} ${textCtx} Mô tả: ${localPrompt}. Chất lượng ${gen.selectedRes || '2k'}, bố cục tối ưu cho ${currentPlatform.platform}.`;
 
-      const finalPrompt = `${industryCtx}${stylePrefix}Tạo banner mạng xã hội chuyên nghiệp. ${platformCtx} Phong cách: ${selectedStyle}. ${colorCtx} ${textCtx} Mô tả: ${prompt}. Chất lượng ${imgSelectedRes || '2k'}, bố cục tối ưu cho ${currentPlatform.platform}.`;
+    gen.setPrompt(finalPrompt);
+    gen.setReferences(localReferences.map(url => ({ url })));
+    gen.setQuantity(quantity);
 
-      setStatus('AI đang tạo banner...');
-      const imageUrl = await generateDemoImage(finalPrompt, references);
+    // Save prompt to history (max 10)
+    const newHistory = [localPrompt, ...promptHistory.filter(p => p !== localPrompt)].slice(0, 10);
+    setPromptHistory(newHistory);
+    localStorage.setItem(STORAGE_KEY + '_prompts', JSON.stringify(newHistory));
 
-      if (controller.signal.aborted) return;
-
-      if (imageUrl) {
-        // Deduct credits AFTER successful generation
-        useCredits(totalCost);
-
-        setResult(imageUrl);
-        const newSession: BannerSession = {
-          id: Date.now().toString(),
-          url: imageUrl,
-          prompt,
-          config: { platformId: activePlatform, style: selectedStyle, model: imgSelectedModel?.name || imgSelectedModel?.raw?.name || '' },
-          timestamp: new Date().toLocaleString('vi-VN'),
-        };
-        const updated = [newSession, ...sessions];
-        setSessions(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-
-        // Save prompt to history (max 10)
-        const newHistory = [prompt, ...promptHistory.filter(p => p !== prompt)].slice(0, 10);
-        setPromptHistory(newHistory);
-        localStorage.setItem(STORAGE_KEY + '_prompts', JSON.stringify(newHistory));
-
-        setStatus('Hoàn tất ✓');
-        showToast('Banner đã được tạo thành công!', 'success');
-      } else {
-        setStatus('Lỗi tạo banner');
-        showToast('Không tạo được banner — credits chưa bị trừ, thử lại nhé!', 'warning');
-      }
-    } catch (err: any) {
-      if (controller.signal.aborted) return;
-      console.error('[SocialBannerWorkspace] handleGenerate error:', err?.message ?? err);
-      setStatus('Lỗi hệ thống');
-      showToast('Lỗi hệ thống — credits chưa bị trừ, thử lại sau.', 'error');
-    } finally {
-      if (!controller.signal.aborted) {
-        setIsGenerating(false);
-      }
-      abortRef.current = null;
-    }
+    gen.handleGenerate();
   };
 
   const deleteSession = (e: React.MouseEvent, id: string) => {
@@ -383,9 +340,9 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               productSlug="social-banner-ai"
               productName="Social Banner AI"
               styles={BANNER_STYLES}
-              onPromptSelect={(p) => setPrompt(prev => p + (prev ? '\n' + prev : ''))}
+              onPromptSelect={(p) => setLocalPrompt(prev => p + (prev ? '\n' + prev : ''))}
               onApply={(cfg) => {
-                if (cfg.prompt) setPrompt(cfg.prompt);
+                if (cfg.prompt) setLocalPrompt(cfg.prompt);
                 if (cfg.style && BANNER_STYLES.find(s => s.label === cfg.style)) setSelectedStyle(cfg.style);
                 if (cfg.format) setActivePlatform(PLATFORMS.find(p => p.label === cfg.format)?.id ?? activePlatform);
               }}
@@ -422,7 +379,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                             {promptHistory.map((p, i) => (
                               <button
                                 key={i}
-                                onClick={() => { setPrompt(p); setShowHistory(false); }}
+                                onClick={() => { setLocalPrompt(p); setShowHistory(false); }}
                                 className="w-full text-left px-3 py-2.5 text-[11px] text-slate-700 dark:text-white/70 hover:bg-brand-blue/[0.06] hover:text-brand-blue transition-colors line-clamp-2 border-b border-black/[0.03] dark:border-white/[0.03] last:border-0"
                               >
                                 {p}
@@ -436,17 +393,17 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 )}
               </div>
               <textarea
-                value={prompt}
-                onChange={e => setPrompt(e.target.value)}
+                value={localPrompt}
+                onChange={e => setLocalPrompt(e.target.value)}
                 onKeyDown={e => {
                   if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
                     e.preventDefault();
                     handleGenerate();
                   }
-                  if (e.key === 'ArrowUp' && !prompt.trim()) {
+                  if (e.key === 'ArrowUp' && !localPrompt.trim()) {
                     e.preventDefault();
                     const hist = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY + '_prompts') || '[]'); } catch { return []; } })();
-                    if (hist[0]) setPrompt(hist[0]);
+                    if (hist[0]) setLocalPrompt(hist[0]);
                   }
                 }}
                 placeholder={`Mô tả banner ${currentPlatform.label} bạn muốn tạo...`}
@@ -455,7 +412,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               />
               <button
                 onClick={handleEnhance}
-                disabled={isEnhancing || !prompt.trim()}
+                disabled={isEnhancing || !localPrompt.trim()}
                 className="mt-1.5 flex items-center gap-1.5 text-[10px] font-semibold text-brand-blue hover:opacity-80 disabled:opacity-30 transition-opacity"
               >
                 {isEnhancing ? <Loader2 size={11} className="animate-spin" /> : <Wand2 size={11} />}
@@ -479,13 +436,13 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                         </span>
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => { setPrompt(enhancedPreview); setShowEnhanceDiff(false); setEnhancedPreview(null); setStatus('Đã áp dụng prompt mới'); showToast('Prompt đã được cập nhật!', 'success'); }}
+                            onClick={() => { setLocalPrompt(enhancedPreview); setShowEnhanceDiff(false); setEnhancedPreview(null); showToast('Prompt đã được cập nhật!', 'success'); }}
                             className="text-[9px] font-bold text-emerald-500 hover:text-emerald-600 transition-colors"
                           >
                             ✓ Áp dụng
                           </button>
                           <button
-                            onClick={() => { setShowEnhanceDiff(false); setEnhancedPreview(null); setStatus('Sẵn sàng'); }}
+                            onClick={() => { setShowEnhanceDiff(false); setEnhancedPreview(null); }}
                             className="text-[9px] text-slate-400 hover:text-red-400 transition-colors"
                           >
                             ✕ Bỏ
@@ -495,7 +452,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                       {/* Before */}
                       <div className="px-3 py-2 border-b border-dashed border-brand-blue/10">
                         <p className="text-[8px] font-bold text-slate-400 uppercase mb-1">Trước</p>
-                        <p className="text-[10px] text-slate-500 dark:text-[#888] line-clamp-2 leading-relaxed">{prompt}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-[#888] line-clamp-2 leading-relaxed">{localPrompt}</p>
                       </div>
                       {/* After */}
                       <div className="px-3 py-2">
@@ -539,20 +496,20 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
             {/* Reference images */}
             <div>
-              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Ảnh tham chiếu ({references.length}/6)</p>
+              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Ảnh tham chiếu ({localReferences.length}/6)</p>
               <div className="grid grid-cols-3 gap-1.5">
-                {references.map((ref, i) => (
+                {localReferences.map((ref, i) => (
                   <div key={i} className="aspect-square rounded-lg overflow-hidden relative group bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5">
                     <img src={ref} alt="" className="w-full h-full object-cover" />
                     <button
-                      onClick={() => setReferences(prev => prev.filter((_, idx) => idx !== i))}
+                      onClick={() => setLocalReferences(prev => prev.filter((_, idx) => idx !== i))}
                       className="absolute top-1 right-1 p-0.5 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <X size={10} />
                     </button>
                   </div>
                 ))}
-                {references.length < 6 && (
+                {localReferences.length < 6 && (
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     className="aspect-square rounded-lg border border-dashed border-slate-300 dark:border-white/10 flex items-center justify-center hover:border-brand-blue/40 transition-colors text-slate-400 dark:text-[#555]"
@@ -586,28 +543,28 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
             {/* Cấu hình AI — shared ModelEngineSettings */}
             <ModelEngineSettings
-              availableModels={imgAvailableModels}
-              selectedModel={imgSelectedModel}
-              setSelectedModel={setImgSelectedModel}
-              selectedRatio={imgSelectedRatio}
-              setSelectedRatio={setImgSelectedRatio}
-              selectedRes={imgSelectedRes}
-              setSelectedRes={setImgSelectedRes}
+              availableModels={gen.availableModels}
+              selectedModel={gen.selectedModel}
+              setSelectedModel={gen.setSelectedModel}
+              selectedRatio={gen.selectedRatio}
+              setSelectedRatio={gen.setSelectedRatio}
+              selectedRes={gen.selectedRes}
+              setSelectedRes={gen.setSelectedRes}
               quantity={quantity}
               setQuantity={setQuantity}
-              selectedMode={imgSelectedMode}
-              setSelectedMode={setImgSelectedMode}
-              selectedEngine={imgEngine}
-              onSelectEngine={setImgEngine}
+              selectedMode={gen.selectedMode}
+              setSelectedMode={gen.setSelectedMode}
+              selectedEngine={gen.selectedEngine}
+              onSelectEngine={gen.setSelectedEngine}
               activeMode="SINGLE"
-              isGenerating={isGenerating}
-              familyList={imgFamilyList}
-              selectedFamily={imgSelectedFamily}
-              setSelectedFamily={setImgSelectedFamily}
-              familyModels={imgFamilyModels.map(m => m.raw || m)}
-              familyModes={imgFamilyModes}
-              familyRatios={imgFamilyRatios}
-              familyResolutions={imgFamilyResolutions}
+              isGenerating={gen.isGenerating}
+              familyList={[]}
+              selectedFamily=""
+              setSelectedFamily={() => {}}
+              familyModels={gen.availableModels.map((m: any) => m.raw || m)}
+              familyModes={[]}
+              familyRatios={[]}
+              familyResolutions={[]}
             />
 
             {/* Advanced (collapsible) */}
@@ -677,33 +634,21 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           <div className="p-4 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#0d0d0f] shrink-0 space-y-2">
             <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-[#555]">
               <div className="flex items-center gap-1.5">
-                <div className={`w-1.5 h-1.5 rounded-full ${isGenerating ? 'bg-brand-blue animate-pulse' : 'bg-emerald-400'}`} />
-                {status}
+                <div className={`w-1.5 h-1.5 rounded-full ${gen.isGenerating ? 'bg-brand-blue animate-pulse' : 'bg-emerald-400'}`} />
+                {gen.isGenerating ? 'AI đang tạo banner...' : 'Sẵn sàng'}
               </div>
               <div className="flex items-center gap-2">
-                {isGenerating && (
-                  <button
-                    onClick={() => {
-                      abortRef.current?.abort();
-                      setIsGenerating(false);
-                      setStatus('Đã hủy');
-                    }}
-                    className="text-[10px] text-red-400 hover:text-red-500 font-semibold flex items-center gap-1 transition-colors"
-                  >
-                    <X size={11} /> Hủy
-                  </button>
-                )}
-                <span className="font-semibold text-brand-blue">{selectedModelCost * quantity} CR / lần</span>
+                <span className="font-semibold text-brand-blue">{gen.totalCost} CR / lần</span>
               </div>
             </div>
             <motion.button
               onClick={handleGenerate}
-              disabled={isGenerating || !prompt.trim()}
+              disabled={gen.isGenerating || !localPrompt.trim()}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-blue to-blue-500 text-white text-[12px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/20 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
             >
-              {isGenerating
+              {gen.isGenerating
                 ? <><Loader2 size={14} className="animate-spin" /> Đang tạo...</>
                 : <><Sparkles size={14} /> Tạo Banner <kbd className="ml-1 text-[9px] font-mono bg-white/20 px-1.5 py-0.5 rounded opacity-70 normal-case tracking-normal">⌘↵</kbd></>
               }
@@ -716,16 +661,26 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
           {viewMode === 'current' ? (
             <div className="flex-1 flex items-center justify-center p-8">
-              {(isGenerating || result) ? (
-                <div className="w-full max-w-2xl">
-                  <ImageJobCard
-                    status={isGenerating ? 'processing' : result ? 'done' : 'idle'}
-                    resultUrl={result ?? undefined}
-                    aspectRatio="16/9"
-                    mode="full"
-                    statusText={status}
-                    onReset={() => setResult(null)}
-                  />
+              {(gen.isGenerating || gen.results.length > 0) ? (
+                <div className="w-full max-w-2xl space-y-4">
+                  {gen.isGenerating && gen.results.filter(r => r.status === 'processing').length === 0 && (
+                    <ImageJobCard
+                      status="processing"
+                      aspectRatio="16/9"
+                      mode="full"
+                      statusText="AI đang tạo banner..."
+                    />
+                  )}
+                  {gen.results.map(result => (
+                    <ImageJobCard
+                      key={result.id}
+                      status={result.status}
+                      resultUrl={result.url ?? undefined}
+                      aspectRatio="16/9"
+                      mode="full"
+                      statusText={result.status === 'processing' ? 'AI đang tạo banner...' : undefined}
+                    />
+                  ))}
                 </div>
               ) : (
                 /* ── Empty state — starter prompt cards ── */
@@ -743,7 +698,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     ].map(sp => (
                       <button
                         key={sp.label}
-                        onClick={() => setPrompt(sp.prompt)}
+                        onClick={() => setLocalPrompt(sp.prompt)}
                         className="p-3.5 rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-white dark:bg-white/[0.02] text-left hover:border-brand-blue/40 hover:bg-brand-blue/[0.02] transition-all group"
                       >
                         <span className="text-xl">{sp.emoji}</span>
@@ -769,7 +724,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                   {sessions.map(session => (
                     <div
                       key={session.id}
-                      onClick={() => { setResult(session.url); setViewMode('current'); }}
+                      onClick={() => { setViewMode('current'); }}
                       className="group relative cursor-pointer"
                     >
                       <ImageJobCard
@@ -800,51 +755,26 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </div>
       </div>
 
-      {/* ── Low Credit Alert ── */}
-      <AnimatePresence>
-        {showLowCreditAlert && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6"
-            onClick={() => setShowLowCreditAlert(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              onClick={e => e.stopPropagation()}
-              className="bg-white dark:bg-[#0f0f11] rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-black/[0.06] dark:border-white/[0.06] text-center"
-            >
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle size={24} className="text-amber-500" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">Không đủ Credits</h3>
-              <p className="text-sm text-slate-500 dark:text-[#666] mb-4">
-                Bạn cần <strong className="text-brand-blue">{selectedModelCost * quantity} CR</strong> để tạo banner này.<br />
-                Số dư hiện tại: <strong>{credits.toLocaleString()} CR</strong>
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowLowCreditAlert(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
-                >
-                  Hủy
-                </button>
-                <Link
-                  to="/credits"
-                  onClick={onClose}
-                  className="flex-1 py-2.5 rounded-xl bg-brand-blue text-white text-sm font-bold text-center hover:brightness-110 transition-all"
-                >
-                  Nạp Credits
-                </Link>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
+      {/* ── Low Credit Alert — handled by ResourceAuthModal from useImageGenerator ── */}
+      {/* ResourceAuthModal */}
+      <ResourceAuthModal
+        isOpen={gen.showResourceModal}
+        onClose={() => gen.setShowResourceModal(false)}
+        onConfirm={(pref: 'credits' | 'key') => {
+          gen.setUsagePreference(pref);
+          localStorage.setItem('skyverses_usage_preference', pref);
+          gen.setShowResourceModal(false);
+          if (gen.isResumingGenerate) {
+            gen.setIsResumingGenerate(false);
+            gen.handleGenerate();
+          }
+        }}
+        hasPersonalKey={gen.hasPersonalKey}
+        totalCost={gen.totalCost}
+      />
 
-        {/* ── S1: MOBILE BOTTOM SHEET ── */}
+      {/* ── S1: MOBILE BOTTOM SHEET ── */}
+      <AnimatePresence>
         {showMobileSheet && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -928,28 +858,28 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
                 {/* Cấu hình AI — shared ModelEngineSettings */}
                 <ModelEngineSettings
-                  availableModels={imgAvailableModels}
-                  selectedModel={imgSelectedModel}
-                  setSelectedModel={setImgSelectedModel}
-                  selectedRatio={imgSelectedRatio}
-                  setSelectedRatio={setImgSelectedRatio}
-                  selectedRes={imgSelectedRes}
-                  setSelectedRes={setImgSelectedRes}
+                  availableModels={gen.availableModels}
+                  selectedModel={gen.selectedModel}
+                  setSelectedModel={gen.setSelectedModel}
+                  selectedRatio={gen.selectedRatio}
+                  setSelectedRatio={gen.setSelectedRatio}
+                  selectedRes={gen.selectedRes}
+                  setSelectedRes={gen.setSelectedRes}
                   quantity={quantity}
                   setQuantity={setQuantity}
-                  selectedMode={imgSelectedMode}
-                  setSelectedMode={setImgSelectedMode}
-                  selectedEngine={imgEngine}
-                  onSelectEngine={setImgEngine}
+                  selectedMode={gen.selectedMode}
+                  setSelectedMode={gen.setSelectedMode}
+                  selectedEngine={gen.selectedEngine}
+                  onSelectEngine={gen.setSelectedEngine}
                   activeMode="SINGLE"
-                  isGenerating={isGenerating}
-                  familyList={imgFamilyList}
-                  selectedFamily={imgSelectedFamily}
-                  setSelectedFamily={setImgSelectedFamily}
-                  familyModels={imgFamilyModels.map(m => m.raw || m)}
-                  familyModes={imgFamilyModes}
-                  familyRatios={imgFamilyRatios}
-                  familyResolutions={imgFamilyResolutions}
+                  isGenerating={gen.isGenerating}
+                  familyList={[]}
+                  selectedFamily=""
+                  setSelectedFamily={() => {}}
+                  familyModels={gen.availableModels.map((m: any) => m.raw || m)}
+                  familyModes={[]}
+                  familyRatios={[]}
+                  familyResolutions={[]}
                 />
 
 
@@ -959,11 +889,11 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/5">
                 <motion.button
                   onClick={() => { setShowMobileSheet(false); handleGenerate(); }}
-                  disabled={isGenerating || !prompt.trim()}
+                  disabled={gen.isGenerating || !localPrompt.trim()}
                   whileTap={{ scale: 0.97 }}
                   className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-blue to-blue-500 text-white text-[12px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/20 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  <Sparkles size={14} /> Tạo Banner — {selectedModelCost * quantity} CR
+                  <Sparkles size={14} /> Tạo Banner — {gen.totalCost} CR
                 </motion.button>
               </div>
             </motion.div>

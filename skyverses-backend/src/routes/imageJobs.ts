@@ -121,6 +121,17 @@ router.post("/", authenticate, async (req: any, res) => {
     userForCredit.freeImageRemaining -= 1;
     await userForCredit.save();
     usedFreeImage = true;
+
+    // 📝 Log FREE_IMAGE transaction
+    await CreditTransaction.create({
+      userId: userForCredit._id,
+      type: "FREE_IMAGE",
+      amount: 0,
+      balanceAfter: userForCredit.creditBalance,
+      source: "image_generation",
+      note: `Free Image: ${engine.model} | ${type} (còn ${userForCredit.freeImageRemaining} lượt)`,
+    });
+
     console.log(`🎁 [FREE-IMG] ${userForCredit.email} used 1 free image → remaining: ${userForCredit.freeImageRemaining}`);
   } else {
     // Tính credit cost từ pricing matrix

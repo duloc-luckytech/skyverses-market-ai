@@ -10,7 +10,7 @@ import { useAuth } from '../context/AuthContext';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const STORAGE_KEY = 'skyverses_welcome_promo_seen';
-const FREE_IMAGES = 100;
+const FREE_IMAGES = 50;
 const WELCOME_CREDITS = 1000;
 
 // ─── Main Component ───────────────────────────────────────────────────────────
