@@ -34,36 +34,42 @@ const FEATURES: Feature[] = [
     title: 'Scratch Removal',
     desc: 'Tự động xóa vết xước, nếp gấp, vết ố bẩn của thời gian — mà không ảnh hưởng chi tiết xung quanh.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/300ab37d-687e-4c65-4dd5-a362a2267300/public',
   },
   {
     icon: Activity,
     title: 'Noise Reduction',
     desc: 'Loại bỏ nhiễu hạt (grain) và lỗi nén kỹ thuật số — ảnh sạch, rõ, chi tiết sắc bén.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/89ea6cb1-912c-4c5c-2fc2-e463f2557100/public',
   },
   {
     icon: Maximize2,
     title: '8K Upscaling',
     desc: 'Nâng cấp kích thước ảnh lên 8× mà không bị vỡ hình — pixel được AI tái tạo từ dữ liệu gốc.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/068b8e1e-9672-41d7-4d95-eca54dfe1f00/public',
   },
   {
     icon: Zap,
     title: 'Tốc Độ H100 GPU',
     desc: 'Xử lý phục chế trong dưới 5 giây nhờ cụm H100 GPU — batch nhiều ảnh cùng lúc.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/6366c625-eb62-477d-5de5-4d9ecec8db00/public',
   },
   {
     icon: ShieldCheck,
     title: 'Privacy Vault',
     desc: 'Ảnh cá nhân được mã hóa đầu-cuối trong VPC riêng — tự động xóa sau 24 giờ.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/1a82f750-62b9-45ae-ac83-83ec9bd5b600/public',
   },
   {
     icon: Clock,
     title: 'History Sync',
     desc: 'Lưu trữ lịch sử phục chế đồng bộ trên mọi thiết bị trong Cloud Registry.',
     featured: false,
+    thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/45d58fd4-2fe5-4766-08e4-20c583eef200/public',
   },
 ];
 
@@ -86,8 +92,8 @@ export const FeaturesSection: React.FC = () => (
               f.featured ? 'col-span-2' : 'col-span-1'
             }`}
           >
-            {f.featured && f.thumbnail && (
-              <div className="relative w-full h-36 overflow-hidden">
+            {f.thumbnail && (
+              <div className={`relative w-full overflow-hidden ${f.featured ? 'h-36' : 'h-24'}`}>
                 <img
                   src={f.thumbnail}
                   alt={f.title}

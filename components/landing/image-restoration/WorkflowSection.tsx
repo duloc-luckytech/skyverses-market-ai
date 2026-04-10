@@ -9,21 +9,21 @@ const STEPS = [
     icon: Upload,
     title: 'Tải ảnh cũ lên',
     desc: 'Upload ảnh bị mờ, xước, đen trắng hoặc độ phân giải thấp từ máy tính hoặc thư viện Cloud.',
-    thumb: null,
+    thumb: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/70326a7e-1143-485e-2ead-349d6601fe00/public',
   },
   {
     n: 2,
     icon: Scan,
     title: 'AI Phân Tích',
     desc: 'Neural Core nhận diện điểm lỗi, nhiễu hạt, chi tiết khuôn mặt và các vùng cần phục hồi.',
-    thumb: null,
+    thumb: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/4eec65a4-0fe2-4db9-9f36-b4842e433f00/public',
   },
   {
     n: 3,
     icon: Maximize2,
     title: 'Tái Tạo 4K',
     desc: 'Hệ thống tổng hợp lại pixel, khử nhiễu và nâng cấp độ phân giải lên 4K / 8K sắc nét.',
-    thumb: null,
+    thumb: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/ef486759-a51b-400a-fc24-23f31d40fa00/public',
   },
   {
     n: 4,
@@ -50,13 +50,14 @@ export const WorkflowSection: React.FC = () => (
           <React.Fragment key={step.n}>
             <HoverCard className="p-5">
               {step.thumb && (
-                <div className="w-full h-20 rounded-lg overflow-hidden mb-3 border border-black/[0.06] dark:border-white/[0.04]">
+                <div className="relative w-full h-28 rounded-lg overflow-hidden mb-3 border border-black/[0.06] dark:border-white/[0.04]">
                   <img
                     src={step.thumb}
-                    alt="Kết quả phục chế"
-                    className="w-full h-full object-cover opacity-75"
+                    alt={step.title}
+                    className="w-full h-full object-cover"
                     loading="lazy"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-lg" />
                 </div>
               )}
               <motion.div
