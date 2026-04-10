@@ -269,8 +269,9 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         setStatus('Lỗi tạo banner');
         showToast('Không tạo được banner — credits chưa bị trừ, thử lại nhé!', 'warning');
       }
-    } catch (err) {
+    } catch (err: any) {
       if (controller.signal.aborted) return;
+      console.error('[SocialBannerWorkspace] handleGenerate error:', err?.message ?? err);
       setStatus('Lỗi hệ thống');
       showToast('Lỗi hệ thống — credits chưa bị trừ, thử lại sau.', 'error');
     } finally {
