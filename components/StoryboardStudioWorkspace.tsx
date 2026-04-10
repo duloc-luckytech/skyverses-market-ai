@@ -158,6 +158,9 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 onLoadSample={s.handleLoadSample}
                 onLoadSuggestion={s.handleLoadSuggestion}
                 settings={s.settings}
+                onReGenerateSceneImage={s.handleReGenerateSceneImage}
+                onReGenerateSceneVideo={s.handleReGenerateSceneVideo}
+                onDeleteScene={(id) => s.setScenes(prev => prev.filter(sc => sc.id !== id))}
               />
             )}
 

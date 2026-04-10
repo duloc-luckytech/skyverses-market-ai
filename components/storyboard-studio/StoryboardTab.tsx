@@ -46,7 +46,10 @@ interface StoryboardTabProps {
   onOpenAestheticConfig: () => void;
   onLoadSample: () => void;
   onLoadSuggestion: () => void;
-  settings: any; 
+  settings: any;
+  onReGenerateSceneImage: (sceneId: string) => void;
+  onReGenerateSceneVideo: (sceneId: string) => void;
+  onDeleteScene: (sceneId: string) => void;
 }
 
 // ─── SCENE CARD ─────────────────────────────────────────────────────────────
@@ -57,9 +60,12 @@ interface SceneCardProps {
   onToggle: () => void;
   onView: () => void;
   onUpdate: (updates: any) => void;
+  onReGenerateImage: () => void;
+  onReGenerateVideo: () => void;
+  onDelete: () => void;
 }
 
-const SceneCard: React.FC<SceneCardProps> = ({ scene, isSelected, assets, onToggle, onView, onUpdate }) => {
+const SceneCard: React.FC<SceneCardProps> = ({ scene, isSelected, assets, onToggle, onView, onUpdate, onReGenerateImage, onReGenerateVideo, onDelete }) => {
   const hasVideo = !!scene.videoUrl;
   const hasImage = !!scene.visualUrl;
   const isGenerating = scene.status === 'generating';
@@ -109,11 +115,18 @@ const SceneCard: React.FC<SceneCardProps> = ({ scene, isSelected, assets, onTogg
                 <Maximize2 size={11} /> Xem đầy đủ
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); }}
+                onClick={(e) => { e.stopPropagation(); onReGenerateVideo(); }}
                 className="flex items-center justify-center gap-1.5 bg-purple-600/60 backdrop-blur-md border border-purple-400/20 rounded-lg px-3 py-2 text-[9px] font-black uppercase tracking-widest text-white hover:bg-purple-600/80 transition-colors"
                 title="Tạo video từ cảnh này"
               >
                 <Video size={11} />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onReGenerateImage(); }}
+                className="flex items-center justify-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white hover:bg-brand-blue/50 transition-colors"
+                title="Tạo lại ảnh"
+              >
+                <RefreshCw size={11} />
               </button>
             </div>
           </>
@@ -138,6 +151,13 @@ const SceneCard: React.FC<SceneCardProps> = ({ scene, isSelected, assets, onTogg
                 title="Tải xuống"
               >
                 <Download size={11} />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onReGenerateVideo(); }}
+                className="flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white hover:bg-purple-600/50 transition-colors"
+                title="Render lại video"
+              >
+                <RefreshCw size={11} />
               </button>
             </div>
             {/* Video duration badge */}
@@ -225,11 +245,23 @@ const SceneCard: React.FC<SceneCardProps> = ({ scene, isSelected, assets, onTogg
             <span>{scene.duration || 8}s</span>
           </div>
           <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-            <button className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors group/regen">
+            <button
+              onClick={onReGenerateImage}
+              className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors group/regen"
+              title="Tạo lại ảnh"
+            >
               <RefreshCw size={10} className="group-hover/regen:rotate-180 transition-transform duration-700" />
-              <span className="hidden sm:inline">Tạo lại</span>
+              <span className="hidden sm:inline">Ảnh</span>
             </button>
-            <button className="text-slate-300 dark:text-white/15 hover:text-red-500 transition-colors">
+            <button
+              onClick={onReGenerateVideo}
+              className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 hover:text-purple-500 transition-colors"
+              title="Render video"
+            >
+              <Video size={10} />
+              <span className="hidden sm:inline">Video</span>
+            </button>
+            <button onClick={onDelete} className="text-slate-300 dark:text-white/15 hover:text-red-500 transition-colors">
               <Trash2 size={10} />
             </button>
           </div>
@@ -247,7 +279,8 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   onViewAsset, onViewScene,
   scenes, selectedSceneIds, toggleSceneSelection, selectAllScenes,
   isProcessing, isEnhancing, assetUploadRef, setActiveUploadAssetId,
-  onOpenSettings, onOpenRenderConfig, onOpenAestheticConfig, onLoadSample, onLoadSuggestion, settings
+  onOpenSettings, onOpenRenderConfig, onOpenAestheticConfig, onLoadSample, onLoadSuggestion, settings,
+  onReGenerateSceneImage, onReGenerateSceneVideo, onDeleteScene
 }) => {
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const mainAudioInputRef = useRef<HTMLInputElement>(null);
@@ -529,6 +562,9 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                     onToggle={() => toggleSceneSelection(scene.id)}
                     onView={() => onViewScene(scene)}
                     onUpdate={(updates) => updateScene(scene.id, updates)}
+                    onReGenerateImage={() => onReGenerateSceneImage(scene.id)}
+                    onReGenerateVideo={() => onReGenerateSceneVideo(scene.id)}
+                    onDelete={() => onDeleteScene(scene.id)}
                   />
                 ))
             }

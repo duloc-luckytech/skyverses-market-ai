@@ -81,12 +81,22 @@ export const useStoryboardStudio = () => {
     cinematic: 'Low-angle tracking shots, shallow depth of field, anamorphic lens flares.',
     bgm: 'Lo-fi hip hop beats blended with traditional Vietnamese instruments.',
     voiceOver: 'Deep, resonant male voice with a calm and wise tone.',
-    duration: 64,
+    duration: '64',
     sceneDuration: 8,
     model: 'veo_3_1',
     imageModel: 'google_image_gen_4_5',
     retryCount: 2,
-    maxThreads: 5
+    maxThreads: 5,
+    // Render config extras
+    resolution: '720p',
+    aspectRatio: '16:9',
+    imageRatio: '16:9',
+    imageQuality: '1K',
+    mode: 'fast',
+    privacy: 'private',
+    exportFormat: 'MP4',
+    autoDownload: false,
+    watermark: false,
   });
 
   const [systemPrompt, setSystemPrompt] = useState(`You are an expert AI Video Producer and Concept Artist. 
@@ -406,95 +416,175 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
 
   const handleGenerateBatchImages = useCallback(async () => {
     if (selectedSceneIds.length === 0 || isProcessing) return;
-    setIsProcessing(true);
-    addLog(`Bắt đầu kết xuất ${selectedSceneIds.length} hình ảnh...`);
-    
-    for (const id of selectedSceneIds) {
-      const scene = scenes.find(s => s.id === id);
-      if (!scene || scene.visualUrl) continue;
-      
-      updateScene(id, { status: 'generating' });
-      try {
-        const res = await generateDemoImage({
-          prompt: `${scene.prompt}. ${settings.style} style, ${settings.cinematic} camera.`,
-          model: settings.imageModel
-        });
-        if (res) {
-          updateScene(id, { visualUrl: res, status: 'done' });
-        } else {
-          updateScene(id, { visualUrl: null, status: 'error' });
-        }
-      } catch (e) {
-        updateScene(id, { visualUrl: null, status: 'error' });
-      }
+
+    const targetScenes = scenes.filter(s => selectedSceneIds.includes(s.id) && !s.visualUrl);
+    if (targetScenes.length === 0) return;
+
+    const IMAGE_COST = 100; // per scene image
+    const totalCost = targetScenes.length * IMAGE_COST;
+    if (credits < totalCost) {
+      addLog(`CẢNH BÁO: Không đủ credits. Cần ${totalCost} CR, hiện có ${credits} CR.`);
+      return;
     }
+
+    setIsProcessing(true);
+    addLog(`[BATCH IMAGE] Khởi chạy ${targetScenes.length} tác vụ song song...`);
+
+    // Mark all as generating immediately
+    targetScenes.forEach(s => updateScene(s.id, { status: 'generating' }));
+
+    const generateOneImage = async (scene: Scene) => {
+      const aestheticPrompt = [
+        scene.prompt,
+        settings.style && settings.style !== '--' ? `Style: ${settings.style}` : '',
+        settings.cinematic ? `Camera: ${settings.cinematic}` : '',
+        settings.culture ? `World: ${settings.culture}` : '',
+      ].filter(Boolean).join('. ');
+
+      try {
+        const payload: any = {
+          type: 'text_to_image',
+          input: { prompt: aestheticPrompt },
+          config: { width: 1024, height: 576, aspectRatio: '16:9', seed: 0, style: '' },
+          engine: { provider: 'gommo', model: settings.imageModel as any },
+          enginePayload: { prompt: aestheticPrompt, privacy: 'PRIVATE', projectId: 'default' },
+        };
+        const res = await imagesApi.createJob(payload);
+        if (res.success && res.data.jobId) {
+          useCredits(IMAGE_COST);
+          addLog(`[OK] Cảnh #${scene.order}: job ${res.data.jobId.slice(-6)} khởi tạo.`);
+          pollJobOnce({
+            jobId: res.data.jobId,
+            isCancelledRef,
+            apiType: 'image',
+            intervalMs: 6000,
+            networkRetryMs: 12000,
+            onDone: (result) => {
+              const imageUrl = result.images?.[0] ?? null;
+              updateScene(scene.id, { visualUrl: imageUrl, status: imageUrl ? 'done' : 'error' });
+              if (imageUrl) {
+                addLog(`[DONE] Cảnh #${scene.order}: hình ảnh đã sẵn sàng.`);
+                refreshUserInfo();
+              }
+            },
+            onError: () => {
+              updateScene(scene.id, { status: 'error' });
+              addLog(`[LỖI] Cảnh #${scene.order}: render thất bại.`);
+              addCredits(IMAGE_COST); // refund
+            },
+          });
+        } else {
+          updateScene(scene.id, { status: 'error' });
+          addLog(`[LỖI] Cảnh #${scene.order}: server từ chối.`);
+        }
+      } catch {
+        updateScene(scene.id, { status: 'error' });
+        addLog(`[LỖI] Cảnh #${scene.order}: lỗi kết nối.`);
+      }
+    };
+
+    // Run all in parallel (up to maxThreads)
+    const THREADS = settings.maxThreads ?? 4;
+    const chunks: Scene[][] = [];
+    for (let i = 0; i < targetScenes.length; i += THREADS) {
+      chunks.push(targetScenes.slice(i, i + THREADS));
+    }
+    for (const chunk of chunks) {
+      await Promise.allSettled(chunk.map(generateOneImage));
+    }
+
     setIsProcessing(false);
-    addLog("Hoàn tất kết xuất hình ảnh.");
+    addLog(`[BATCH IMAGE] Đã gửi ${targetScenes.length} tác vụ. Đang polling...`);
     setSelectedSceneIds([]);
-  }, [selectedSceneIds, isProcessing, scenes, updateScene, addLog, settings.style, settings.cinematic, settings.imageModel]);
+  }, [selectedSceneIds, isProcessing, scenes, updateScene, addLog, credits, useCredits, addCredits, refreshUserInfo, settings, imagesApi, pollJobOnce, isCancelledRef]);
 
   const handleGenerateBatchVideos = useCallback(async () => {
     if (selectedSceneIds.length === 0 || isProcessing) return;
-    setIsProcessing(true);
-    addLog(`Bắt đầu tiến trình kết xuất ${selectedSceneIds.length} phân cảnh video...`);
-    
-    const currentModelKey = "veo_3_1"; 
-    const unitCost = 50; 
 
-    for (const id of selectedSceneIds) {
-      const scene = scenes.find(s => s.id === id);
-      if (!scene || scene.videoUrl) continue;
-      
-      if (credits < unitCost) {
-        addLog("CẢNH BÁO: Hạn ngạch cạn kiệt, tạm dừng tiến trình.");
-        break;
+    const targetScenes = scenes.filter(s => selectedSceneIds.includes(s.id) && !s.videoUrl);
+    if (targetScenes.length === 0) return;
+
+    // Use model from settings (respects RenderConfigModal selection)
+    const currentModelKey = (settings as any).model ?? 'veo_3_1';
+    const resolution = (settings as any).resolution ?? '720p';
+    const durationSecs = (settings as any).duration ? parseInt((settings as any).duration) : sceneDuration;
+    const mode = (settings as any).mode ?? 'fast';
+
+    // Credit pre-check: estimate cost before starting
+    const VIDEO_UNIT_COST = 50;
+    const totalEstimated = targetScenes.length * VIDEO_UNIT_COST;
+    if (credits < totalEstimated) {
+      addLog(`CẢNH BÁO: Không đủ credits. Cần ~${totalEstimated} CR, hiện có ${credits} CR.`);
+      addLog(`Chỉ có thể xử lý ${Math.floor(credits / VIDEO_UNIT_COST)} / ${targetScenes.length} cảnh.`);
+    }
+
+    setIsProcessing(true);
+    addLog(`[BATCH VIDEO] Khởi chạy ${targetScenes.length} cảnh song song — Model: ${currentModelKey.toUpperCase()}...`);
+
+    targetScenes.forEach(s => updateScene(s.id, { status: 'generating' }));
+
+    const renderOneVideo = async (scene: Scene) => {
+      if (credits < VIDEO_UNIT_COST) {
+        updateScene(scene.id, { status: 'error' });
+        addLog(`[SKIP] Cảnh #${scene.order}: không đủ credits.`);
+        return;
       }
 
-      updateScene(id, { status: 'generating' });
-      addLog(`Uplink: Đang gửi lệnh render phân cảnh #${id.slice(-4)}...`);
+      const sceneRefs = assets
+        .filter(a => scene.characterIds?.includes(a.id) && a.url)
+        .map(a => a.url!);
+
+      const videoPrompt = [
+        scene.prompt,
+        settings.style && settings.style !== '--' ? `${settings.style} style` : '',
+        settings.cinematic ? `${settings.cinematic} camera` : '',
+        settings.background ? `${settings.background} background` : '',
+      ].filter(Boolean).join('. ');
+
+      const payload: VideoJobRequest = {
+        type: sceneRefs.length > 0 ? 'ingredient' : 'text-to-video',
+        input: { images: sceneRefs },
+        config: { duration: Number(durationSecs), aspectRatio: (settings as any).aspectRatio ?? '16:9', resolution },
+        engine: { provider: 'gommo', model: currentModelKey as any },
+        enginePayload: {
+          accessToken: 'STORYBOARD_GATEWAY',
+          prompt: videoPrompt,
+          privacy: 'PRIVATE',
+          translateToEn: true,
+          projectId: 'default',
+          mode,
+        },
+      };
 
       try {
-        const sceneRefs = assets
-          .filter(a => scene.characterIds?.includes(a.id) && a.url)
-          .map(a => a.url!);
-
-        const payload: VideoJobRequest = {
-          type: "ingredient",
-          input: { images: sceneRefs },
-          config: {
-            duration: sceneDuration,
-            aspectRatio: "16:9",
-            resolution: "720p"
-          },
-          engine: {
-            provider: "gommo",
-            model: currentModelKey as any
-          },
-          enginePayload: {
-            accessToken: "STORYBOARD_GATEWAY",
-            prompt: `${scene.prompt}. ${settings.style} style, ${settings.cinematic} camera, ${settings.background} background.`,
-            privacy: "PRIVATE",
-            translateToEn: true,
-            projectId: "default",
-            mode: "fast" 
-          }
-        };
-
         const res = await videosApi.createJob(payload);
         if (res.success && res.data.jobId) {
-          useCredits(unitCost);
-          pollVideoJobStatus(res.data.jobId, id, unitCost);
+          useCredits(VIDEO_UNIT_COST);
+          addLog(`[OK] Cảnh #${scene.order}: job ${res.data.jobId.slice(-6)} khởi tạo.`);
+          pollVideoJobStatus(res.data.jobId, scene.id, VIDEO_UNIT_COST);
         } else {
-          updateScene(id, { status: 'error' });
-          addLog(`LỖI: Server từ chối lệnh render phân cảnh #${id.slice(-4)}.`);
+          updateScene(scene.id, { status: 'error' });
+          addLog(`[LỖI] Cảnh #${scene.order}: server từ chối.`);
         }
-      } catch (e) {
-        updateScene(id, { status: 'error' });
-        addLog(`LỖI: Mất kết nối khi khởi tạo render phân cảnh #${id.slice(-4)}.`);
+      } catch {
+        updateScene(scene.id, { status: 'error' });
+        addLog(`[LỖI] Cảnh #${scene.order}: lỗi kết nối.`);
       }
+    };
+
+    // Parallel with thread limiting
+    const THREADS = Math.min(settings.maxThreads ?? 4, targetScenes.length);
+    const chunks: Scene[][] = [];
+    for (let i = 0; i < targetScenes.length; i += THREADS) {
+      chunks.push(targetScenes.slice(i, i + THREADS));
     }
+    for (const chunk of chunks) {
+      await Promise.allSettled(chunk.map(renderOneVideo));
+    }
+
     setIsProcessing(false);
     setSelectedSceneIds([]);
+    addLog(`[BATCH VIDEO] Đã gửi ${targetScenes.length} tác vụ. Đang polling results...`);
   }, [selectedSceneIds, isProcessing, scenes, updateScene, addLog, credits, sceneDuration, useCredits, pollVideoJobStatus, assets, settings]);
 
   const handleReGenerateAsset = useCallback((id: string) => {
@@ -504,6 +594,95 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
       triggerImageGeneration({ ...targetAsset, status: 'processing', url: null });
     }
   }, [assets, triggerImageGeneration, updateAsset]);
+
+  // ── Re-generate image for a single scene ────────────────────────────
+  const handleReGenerateSceneImage = useCallback(async (sceneId: string) => {
+    const scene = scenes.find(s => s.id === sceneId);
+    if (!scene) return;
+
+    const IMAGE_COST = 100;
+    if (credits < IMAGE_COST) { addLog(`[LỖI] Không đủ credits để tạo lại cảnh #${scene.order}.`); return; }
+
+    updateScene(sceneId, { status: 'generating', visualUrl: null });
+    addLog(`[REGEN] Tạo lại hình ảnh cảnh #${scene.order}...`);
+
+    const prompt = [
+      scene.prompt,
+      settings.style && settings.style !== '--' ? `Style: ${settings.style}` : '',
+      settings.cinematic ? `Camera: ${settings.cinematic}` : '',
+    ].filter(Boolean).join('. ');
+
+    try {
+      const payload: any = {
+        type: 'text_to_image',
+        input: { prompt },
+        config: { width: 1024, height: 576, aspectRatio: '16:9', seed: 0, style: '' },
+        engine: { provider: 'gommo', model: settings.imageModel as any },
+        enginePayload: { prompt, privacy: 'PRIVATE', projectId: 'default' },
+      };
+      const res = await imagesApi.createJob(payload);
+      if (res.success && res.data.jobId) {
+        useCredits(IMAGE_COST);
+        pollJobOnce({
+          jobId: res.data.jobId, isCancelledRef, apiType: 'image', intervalMs: 6000, networkRetryMs: 12000,
+          onDone: (result) => {
+            const url = result.images?.[0] ?? null;
+            updateScene(sceneId, { visualUrl: url, status: url ? 'done' : 'error' });
+            refreshUserInfo();
+            addLog(`[DONE] Cảnh #${scene.order} tạo lại thành công.`);
+          },
+          onError: () => {
+            updateScene(sceneId, { status: 'error' });
+            addCredits(IMAGE_COST);
+            addLog(`[LỖI] Tạo lại cảnh #${scene.order} thất bại. Hoàn trả ${IMAGE_COST} CR.`);
+          },
+        });
+      } else {
+        updateScene(sceneId, { status: 'error' });
+      }
+    } catch {
+      updateScene(sceneId, { status: 'error' });
+    }
+  }, [scenes, credits, useCredits, addCredits, updateScene, addLog, settings, refreshUserInfo]);
+
+  // ── Re-generate video for a single scene ────────────────────────────
+  const handleReGenerateSceneVideo = useCallback(async (sceneId: string) => {
+    const scene = scenes.find(s => s.id === sceneId);
+    if (!scene) return;
+
+    const VIDEO_COST = 50;
+    if (credits < VIDEO_COST) { addLog(`[LỖI] Không đủ credits để render video cảnh #${scene.order}.`); return; }
+
+    updateScene(sceneId, { status: 'generating', videoUrl: null });
+    addLog(`[REGEN] Render video cảnh #${scene.order} — Model: ${(settings.model ?? 'veo_3_1').toUpperCase()}...`);
+
+    const sceneRefs = assets.filter(a => scene.characterIds?.includes(a.id) && a.url).map(a => a.url!);
+    const videoPrompt = [
+      scene.prompt,
+      settings.style ? `${settings.style} style` : '',
+      settings.cinematic ? `${settings.cinematic} camera` : '',
+    ].filter(Boolean).join('. ');
+    const _s = settings as any;
+
+    try {
+      const payload: VideoJobRequest = {
+        type: 'ingredient',
+        input: { images: sceneRefs },
+        config: { duration: Number(_s.duration ? parseInt(_s.duration) : 8), aspectRatio: _s.aspectRatio ?? '16:9', resolution: _s.resolution ?? '720p' },
+        engine: { provider: 'gommo', model: (_s.model ?? 'veo_3_1') as any },
+        enginePayload: { accessToken: 'STORYBOARD_GATEWAY', prompt: videoPrompt, privacy: 'PRIVATE', translateToEn: true, projectId: 'default', mode: _s.mode ?? 'fast' },
+      };
+      const res = await videosApi.createJob(payload);
+      if (res.success && res.data.jobId) {
+        useCredits(VIDEO_COST);
+        pollVideoJobStatus(res.data.jobId, sceneId, VIDEO_COST);
+      } else {
+        updateScene(sceneId, { status: 'error' });
+      }
+    } catch {
+      updateScene(sceneId, { status: 'error' });
+    }
+  }, [scenes, assets, credits, useCredits, updateScene, addLog, settings, pollVideoJobStatus]);
 
   const handleAssetUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -532,6 +711,7 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
     isProcessing, isEnhancing, showProgressModal, closeProgressModal, terminalLogs, settings, setSettings, handleCreateStoryboard,
     handleSaveAndGenerate,
     handleLoadSample, handleLoadSuggestion, handleReGenerateAsset,
+    handleReGenerateSceneImage, handleReGenerateSceneVideo,
     assets, addAsset: () => openAssetModal(), removeAsset: (id: string) => setAssets(prev => prev.filter(a => a.id !== id)),
     updateAsset, isAssetModalOpen, openAssetModal, closeAssetModal, saveAsset, editingAsset, setEditingAsset,
     viewingExplorerItem, setViewingExplorerItem, openExplorerView, openExplorerViewScene,
