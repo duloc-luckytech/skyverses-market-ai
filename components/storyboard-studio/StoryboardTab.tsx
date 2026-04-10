@@ -2,11 +2,11 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence, Reorder, useDragControls, useMotionValue, useTransform } from 'framer-motion';
 import {
-  Zap, Layers, Plus, RefreshCw, AlertCircle, Clock,
-  Trash2, Check, MonitorPlay, User, Maximize2,
-  Download, Grid2X2, Edit3, Film,
+  Zap, Clock,
+  Check, MonitorPlay, User, Maximize2,
+  Grid2X2, Film,
   Image as LucideImage, Loader2, Square as SquareIcon, LayoutGrid, Settings,
-  Sparkles, Camera, Music, Mic, FileAudio, Clapperboard,
+  Sparkles, Music, Mic, FileAudio, Clapperboard,
   Play, Video, AlignJustify,
 } from 'lucide-react';
 import { ReferenceAsset, Scene, ShotType, DurationPreset } from '../../hooks/useStoryboardStudio';
@@ -299,127 +299,6 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
         {infoPane}
       </div>
     </Reorder.Item>
-  );
-};
-
-// ─── SCENE CARD (legacy — kept for backward compat) ────────────────────────
-interface SceneCardProps {
-  scene: Scene;
-  isSelected: boolean;
-  assets: ReferenceAsset[];
-  onToggle: () => void;
-  onView: () => void;
-  onUpdate: (updates: any) => void;
-  onReGenerateImage: () => void;
-  onReGenerateVideo: () => void;
-  onDelete: () => void;
-  onEnhancePrompt?: () => void;
-  isEnhancingPrompt?: boolean;
-}
-
-const SceneCard: React.FC<SceneCardProps> = ({ scene, isSelected, assets, onToggle, onView, onUpdate, onReGenerateImage, onReGenerateVideo, onDelete, onEnhancePrompt, isEnhancingPrompt }) => {
-  const hasVideo = !!scene.videoUrl;
-  const hasImage = !!scene.visualUrl;
-  const isGenerating = scene.status === 'generating';
-
-  const characterAssets = (scene.characterIds || [])
-    .map(id => assets.find(a => a.id === id))
-    .filter(Boolean) as ReferenceAsset[];
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      onClick={onToggle}
-      className={`group relative flex flex-col rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer
-        ${isSelected
-          ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(0,144,255,0.12)]'
-          : 'ring-1 ring-slate-200 dark:ring-white/8 hover:ring-brand-blue/30 hover:shadow-xl dark:hover:shadow-brand-blue/5'
-        }
-        bg-white dark:bg-[#0d0d10]`}
-    >
-      {/* ── Visual Area ─────────────────────────────────────── */}
-      <div
-        onClick={(e) => { if (hasImage || hasVideo) { e.stopPropagation(); onView(); } }}
-        className="relative aspect-video bg-slate-100 dark:bg-black overflow-hidden"
-      >
-        {!hasImage && !hasVideo && !isGenerating && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-[#0f0f14] dark:to-[#0a0a0e]">
-            <Clapperboard size={32} className="text-slate-300 dark:text-white/15" />
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-white/15">Chưa render</span>
-          </div>
-        )}
-        {hasImage && !hasVideo && (
-          <>
-            <img src={scene.visualUrl!} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={`Cảnh ${scene.order}`} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="absolute bottom-0 left-0 right-0 p-3 flex gap-2 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-              <button onClick={(e) => { e.stopPropagation(); onView(); }} className="flex-1 flex items-center justify-center gap-1.5 bg-black/50 backdrop-blur-md border border-white/10 rounded-lg py-2 text-[9px] font-black uppercase tracking-widest text-white hover:bg-brand-blue/60 transition-colors">
-                <Maximize2 size={11} /> Xem đầy đủ
-              </button>
-              <button onClick={(e) => { e.stopPropagation(); onReGenerateVideo(); }} className="flex items-center justify-center gap-1.5 bg-purple-600/60 backdrop-blur-md border border-purple-400/20 rounded-lg px-3 py-2 text-[9px] font-black uppercase tracking-widest text-white hover:bg-purple-600/80 transition-colors" title="Tạo video từ cảnh này"><Video size={11} /></button>
-              <button onClick={(e) => { e.stopPropagation(); onReGenerateImage(); }} className="flex items-center justify-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white hover:bg-brand-blue/50 transition-colors" title="Tạo lại ảnh"><RefreshCw size={11} /></button>
-            </div>
-          </>
-        )}
-        {hasVideo && (
-          <>
-            <video src={scene.videoUrl!} autoPlay loop muted playsInline className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="absolute bottom-0 left-0 right-0 p-3 flex gap-2 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-              <button onClick={(e) => { e.stopPropagation(); onView(); }} className="flex-1 flex items-center justify-center gap-1.5 bg-black/50 backdrop-blur-md border border-white/10 rounded-lg py-2 text-[9px] font-black uppercase tracking-widest text-white hover:bg-brand-blue/60 transition-colors"><Play size={11} fill="currentColor" /> Xem toàn màn hình</button>
-              <button onClick={(e) => { e.stopPropagation(); }} className="flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white hover:bg-white/20 transition-colors" title="Tải xuống"><Download size={11} /></button>
-              <button onClick={(e) => { e.stopPropagation(); onReGenerateVideo(); }} className="flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white hover:bg-purple-600/50 transition-colors" title="Render lại video"><RefreshCw size={11} /></button>
-            </div>
-          </>
-        )}
-        {isGenerating && (
-          <div className="absolute inset-0 bg-white/70 dark:bg-black/70 backdrop-blur-md flex flex-col items-center justify-center gap-3 z-20">
-            <div className="relative"><Loader2 className="text-brand-blue animate-spin" size={28} /><div className="absolute inset-0 rounded-full bg-brand-blue/20 blur-xl animate-pulse" /></div>
-            <span className="text-[9px] font-black text-slate-700 dark:text-white uppercase tracking-[0.4em] animate-pulse">Rendering...</span>
-          </div>
-        )}
-        <div className="absolute top-3 left-3 bg-white/90 dark:bg-black/70 backdrop-blur-md rounded-lg px-2.5 py-1 border border-slate-200/60 dark:border-white/10">
-          <span className="text-[8px] font-black uppercase tracking-widest text-slate-700 dark:text-white">Cảnh {String(scene.order).padStart(2, '0')}</span>
-        </div>
-        {hasVideo && <div className="absolute top-3 right-10 bg-purple-600 text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">VIDEO</div>}
-        {hasImage && !hasVideo && <div className="absolute top-3 right-10 bg-brand-blue text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">HÌNH</div>}
-        <div onClick={(e) => { e.stopPropagation(); onToggle(); }} className={`absolute top-3 right-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shadow-sm ${isSelected ? 'bg-brand-blue border-brand-blue' : 'bg-white/50 dark:bg-black/40 border-slate-300 dark:border-white/20 opacity-0 group-hover:opacity-100'}`}>
-          {isSelected && <Check size={11} strokeWidth={3.5} className="text-white" />}
-        </div>
-      </div>
-      {characterAssets.length > 0 && (
-        <div className="px-4 py-2 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5 flex items-center gap-2">
-          <User size={10} className="text-emerald-500 shrink-0" />
-          <span className="text-[7px] font-black uppercase text-emerald-500 tracking-widest shrink-0">Mỏ neo:</span>
-          <div className="flex -space-x-1.5">
-            {characterAssets.slice(0, 4).map((asset) => (
-              <div key={asset.id} className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0d0d10] overflow-hidden shadow-sm" title={asset.name}>
-                {asset.url ? <img src={asset.url} className="w-full h-full object-cover" alt={asset.name} /> : <div className="w-full h-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[7px] font-black text-slate-500">{asset.name.charAt(0)}</div>}
-              </div>
-            ))}
-            {characterAssets.length > 4 && <div className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0d0d10] bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[7px] font-black text-slate-500">+{characterAssets.length - 4}</div>}
-          </div>
-        </div>
-      )}
-      <div className="p-4 flex-grow space-y-3 bg-white dark:bg-transparent">
-        <div>
-          <p className="text-[7px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest mb-1.5">Kịch bản chi tiết</p>
-          <textarea value={scene.prompt} onChange={(e) => onUpdate({ prompt: e.target.value })} onClick={(e) => e.stopPropagation()} className="w-full bg-transparent border-none p-0 text-[11px] font-medium leading-relaxed text-slate-600 dark:text-gray-300 italic focus:ring-0 resize-none min-h-[48px] outline-none no-scrollbar" rows={3} />
-        </div>
-        <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-white/5">
-          <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 dark:text-gray-600"><Clock size={10} /><span>{scene.duration || 8}s</span></div>
-          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-            <button onClick={onReGenerateImage} className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors group/regen" title="Tạo lại ảnh"><RefreshCw size={10} className="group-hover/regen:rotate-180 transition-transform duration-700" /><span className="hidden sm:inline">Ảnh</span></button>
-            <button onClick={onReGenerateVideo} className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 hover:text-purple-500 transition-colors" title="Render video"><Video size={10} /><span className="hidden sm:inline">Video</span></button>
-            <button onClick={onDelete} className="text-slate-300 dark:text-white/15 hover:text-red-500 transition-colors" title="Xóa cảnh"><Trash2 size={14}/></button>
-            {onEnhancePrompt && (<button onClick={onEnhancePrompt} disabled={isEnhancingPrompt} className="text-slate-300 dark:text-white/15 hover:text-amber-400 transition-colors disabled:opacity-40" title="✨ AI cải thiện prompt">{isEnhancingPrompt ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}</button>)}
-          </div>
-        </div>
-      </div>
-    </motion.div>
   );
 };
 

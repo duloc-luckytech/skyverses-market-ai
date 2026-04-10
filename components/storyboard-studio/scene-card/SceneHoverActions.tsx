@@ -11,8 +11,6 @@ interface SceneHoverActionsProps {
   onDelete:           () => void;
   /** Khi true: nút to hơn, label luôn hiện (list view ngang) */
   isListView?: boolean;
-  /** @deprecated — visible prop no longer needed (bar is always shown) */
-  visible?: boolean;
 }
 
 export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
