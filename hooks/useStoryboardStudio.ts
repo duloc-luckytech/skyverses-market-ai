@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
-import { generateDemoImage, generateDemoText } from '../services/gemini';
+import { generateDemoImage } from '../services/gemini';
+import { aiChatJSON, aiChatStream, ChatMessage } from '../apis/aiChat';
 import { useAuth } from '../context/AuthContext';
 import { imagesApi } from '../apis/images';
 import { videosApi, VideoJobRequest } from '../apis/videos';
@@ -112,6 +113,69 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
     setTerminalLogs(prev => [...prev, msg]);
   }, []);
 
+  // ── Domain-aware system prompt builder ─────────────────────────────
+  const buildDomainSystemPrompt = useCallback((format: string): string => {
+    const domainGuides: Record<string, string> = {
+      'TVC Quảng cáo': `You are an expert TVC Commercial Director and Storyboard Artist.
+For advertising content: scenes must be sharp, product-centric, emotionally driven.
+Each scene should build AIDA (Attention-Interest-Desire-Action). Max 30s attention span per beat.
+Brand must appear in at least 1 scene. End with a strong CTA visual.`,
+
+      'MV Ca nhạc': `You are an expert Music Video Director and Visual Storyteller.
+For music videos: focus on mood, rhythm sync, artist performance, and abstract visuals.
+Scenes alternate between narrative story and artist performance shots.
+Color grading and lighting are critical. Include dynamic transitions.`,
+
+      'Phim ngắn': `You are an expert Short Film Director and Screenwriter.
+For short films: focus on character arc, emotional tension, and narrative payoff.
+Structure: Setup (20%) → Conflict (60%) → Resolution (20%).
+Dialogue scenes, reaction shots, and environmental storytelling are essential.`,
+
+      'Trailer / Teaser': `You are an expert Cinematic Trailer Editor and Director.
+For trailers: build anticipation with quick cuts, music hits, and mystery reveals.
+Start with intrigue, escalate tension, end on a cliffhanger or logo reveal.
+Use intercutting between storylines. Every scene should be a "wow moment".`,
+
+      'Video TikTok/Reels/Shorts': `You are an expert Short-Form Content Creator and Viral Video Director.
+For vertical short-form: hook in first 2 seconds, visual storytelling without relying on audio.
+Fast pacing (2-4s per scene), trending aesthetics, strong visual identity.
+Design for silent viewing — text overlays and on-screen action must carry the message.`,
+
+      'Phim tài liệu': `You are an expert Documentary Director and Visual Journalist.
+For documentaries: authentic locations, interview setups, B-roll coverage, archival materials.
+Balance exposition (narration/talking head) with immersive environmental shots.
+Evidence-based visual storytelling — every scene must support a factual argument.`,
+
+      'Video giáo dục': `You are an expert Educational Content Producer and Instructional Designer.
+For educational videos: clarity over aesthetics. Use Visual → Explanation → Example → Summary structure.
+Animations, diagrams, and step-by-step demonstrations are preferred over abstract visuals.
+Pacing should be deliberate and measured.`,
+
+      'Game Cutscene': `You are an expert Game Narrative Director and Cinematic Designer.
+For game cutscenes: dramatic reveals, character confrontations, world-building visuals.
+Cinematic framing with epic scale. Dynamic camera work (crane shots, close-ups for emotion).
+Match game’s visual style — integrate UI/HUD references if applicable.`,
+    };
+
+    const basePrompt = `You are an expert AI Video Producer, Storyboard Artist, and Creative Director.
+Your task is to parse creative scripts and extract structured pre-production data for AI video generation.
+
+CORE RULES:
+1. NO GROUPING of characters — each character is a SEPARATE object.
+2. Extract EVERY individual entity (characters, creatures, branded products).
+3. visualPrompt must be a detailed, self-contained cinematic description — do NOT reference other scenes.
+4. Return ONLY valid JSON — no markdown fences, no extra text outside the JSON object.
+5. Scene count MUST match exactly what is requested.`;
+
+    const domainGuide = domainGuides[format] ?? `You are an expert AI Video Producer and Storyboard Artist.
+Create detailed, visually rich scene breakdowns optimized for AI image and video generation.`;
+
+    return `${basePrompt}
+
+${domainGuide}`;
+  }, []);
+
+
   const handleLoadSample = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * STORYBOARD_SAMPLES.length);
     const sample = STORYBOARD_SAMPLES[randomIndex];
@@ -124,57 +188,77 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
     if (isEnhancing) return;
 
     setIsEnhancing(true);
-    const currentIdea = script.trim() || "Một ý tưởng ngẫu nhiên thú vị";
-    
+    const currentIdea = script.trim() || 'Một ý tưởng ngẫu nhiên thú vị';
+    addLog('[AI] Đang phân tích ý tưởng kiịch bản...');
+
     try {
-      const promptPayload = `
-        Based on this idea: "${currentIdea}", create a professional and fluid narrative script for a video.
-        The video has a TOTAL duration of ${totalDuration}s.
-        
-        CRITICAL INSTRUCTION: 
-        - Write the script as a SINGLE, COHESIVE story arc. 
-        - DO NOT mention "Shot 1", "Scene 2", "Beat 3", or any specific breakdown markers. 
-        - Just provide a rich, descriptive paragraph that describes the beginning, middle, and end of the visual narrative.
+      const messages: ChatMessage[] = [
+        {
+          role: 'system',
+          content: `You are a professional Storyboard Assistant and Creative Director.
+Help the user refine their creative ideas into structured narrative scripts optimized for AI video production.
+Always respond in the same language as the user's input.
+Return ONLY valid JSON — no markdown fences, no extra text.`,
+        },
+        {
+          role: 'user',
+          content: `Based on this idea: "${currentIdea}"
+Create a professional and fluid narrative script for a video with total duration ${totalDuration}s.
 
-        Fill in the following fields based on current context:
-        - refined_idea (The fluid narrative described above)
-        - format (e.g., Phim ngắn, TVC Quảng cáo, MV Ca nhạc)
-        - style (e.g., Hoạt hình 3D, Hoạt hình 2D, Anime, Live-action, Cyberpunk, Realistic)
-        - culture (setting/country)
-        - background (specific setting details)
-        - cinematic (camera style)
-        - bgm (music mood)
-        - voice-over (narrator style)
+Format: ${settings.format || 'auto-detect best format'}
+Style preference: ${settings.style || 'auto'}
 
-        Return ONLY a JSON object with these keys. No markdown.
-      `;
+Return a JSON object with these exact keys:
+{
+  "refined_idea": "A rich, cohesive narrative paragraph describing beginning-middle-end. No scene breakdowns.",
+  "format": "Video format type e.g. TVC Quảng cáo / MV Ca nhạc / Phim ngắn",
+  "style": "Visual style e.g. Hoạt hình 3D / Anime / Live-action / Cyberpunk",
+  "culture": "Cultural setting/country",
+  "background": "Specific environment details",
+  "cinematic": "Camera style and lens approach",
+  "bgm": "Music mood and genre",
+  "voice-over": "Narrator style"
+}`,
+        },
+      ];
 
-      const res = await generateDemoText(
-        promptPayload, 
-        'gemini-3-flash-preview', 
-        "You are a professional Storyboard Assistant. Help the user refine their creative ideas into structured narrative scripts."
-      );
-      
-      if (res && res !== "CONNECTION_TERMINATED") {
-        try {
-          const result = JSON.parse(res);
-          if (result.refined_idea) setScript(result.refined_idea);
-          setSettings(prev => ({
-            ...prev,
-            format: result.format || prev.format,
-            style: result.style || prev.style,
-            culture: result.culture || prev.culture,
-            background: result.background || prev.background,
-            cinematic: result.cinematic || prev.cinematic,
-            bgm: result.bgm || prev.bgm,
-            voiceOver: result['voice-over'] || prev.voiceOver
-          }));
-        } catch (e) {
-          console.error("JSON parse error on suggestion", e);
+      // Stream the response into terminal logs for live feedback
+      let accumulated = '';
+      addLog('[AI] Đang viết kịch bản...');
+      await aiChatStream(
+        messages,
+        (token) => {
+          accumulated += token;
+          // Update log with running text
+          setTerminalLogs(prev => {
+            const last = prev[prev.length - 1];
+            if (last?.startsWith('[AI WRITING] ')) {
+              return [...prev.slice(0, -1), `[AI WRITING] ${accumulated.slice(-120)}...`];
+            }
+            return [...prev, `[AI WRITING] ${token}`];
+          });
         }
-      }
-    } catch (e) {
-      console.error("Suggestion generation error", e);
+      );
+
+      // Parse full accumulated JSON
+      const cleaned = accumulated.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
+      const result = JSON.parse(cleaned);
+
+      if (result.refined_idea) setScript(result.refined_idea);
+      setSettings(prev => ({
+        ...prev,
+        format:    result.format    || prev.format,
+        style:     result.style     || prev.style,
+        culture:   result.culture   || prev.culture,
+        background: result.background || prev.background,
+        cinematic: result.cinematic  || prev.cinematic,
+        bgm:       result.bgm        || prev.bgm,
+        voiceOver: result['voice-over'] || prev.voiceOver,
+      }));
+      addLog('[DONE] Kịch bản gợi ý đã được tạo.');
+    } catch (e: any) {
+      addLog(`[LỖI] Tạo gợi ý thất bại: ${e?.message ?? 'unknown'}`);
+      console.error('Suggestion error', e);
     } finally {
       setIsEnhancing(false);
     }
@@ -277,103 +361,161 @@ Your job is to parse scripts and extract EVERY individual entity for pre-product
   const handleCreateStoryboard = async () => {
     if (!isAuthenticated) { login(); return; }
     setShowProgressModal(true);
-    setTerminalLogs(["Khởi tạo node xử lý kịch bản..."]);
+    setTerminalLogs(['[⚡] Khởi động Storyboard Engine...']);
     setIsProcessing(true);
     autoCloseTriggeredRef.current = false;
 
     const numScenes = Math.ceil(totalDuration / sceneDuration);
+    const format = settings.format || '';
+    const domainSystemPrompt = buildDomainSystemPrompt(format);
 
     try {
-      const aestheticContext = `
-        AESTHETIC SPECIFICATIONS:
-        - Format: ${settings.format}
-        - Global Style: ${settings.style}
-        - Culture: ${settings.culture}
-        - Ambient Lighting & Background: ${settings.background}
-        - Cinematic Lens & Camera: ${settings.cinematic}
-      `;
+      // ── Step 1: Stream domain intro ──────────────────────────────
+      addLog(`[DOMAIN] Định dạng: ${format || 'Auto'} • ${numScenes} phân cảnh • ${totalDuration}s`);
+      addLog('[AI] Đang phân tích cấu trúc kịch bản...');
 
-      const promptPayload = `
-        ${aestheticContext}
-        
-        REQUIRED OUTPUT:
-        1. Break down this narrative script into a detailed cinematic storyboard sequence: "${script}".
-        2. Extract EVERY individual character as a separate object.
-        3. Identify primary locations or environment settings.
-        
-        The timeline is ${totalDuration}s, and you MUST generate EXACTLY ${numScenes} scenes.
-        
-        Strictly follow this JSON schema:
+      const aestheticContext = [
+        settings.style     ? `Visual Style: ${settings.style}` : '',
+        settings.culture   ? `World/Culture: ${settings.culture}` : '',
+        settings.background ? `Environment: ${settings.background}` : '',
+        settings.cinematic ? `Camera/Lens: ${settings.cinematic}` : '',
+      ].filter(Boolean).join('\n');
+
+      const messages: ChatMessage[] = [
         {
-          "characters": [{"temp_id": "c1", "name": "NAME", "description": "Detailed physical description"}],
-          "locations": [{"temp_id": "l1", "name": "NAME", "description": "Detailed environmental description"}],
-          "scenes": [{"order": 1, "visualPrompt": "Cinematic visual description prompt, MUST include reference to character IDs and use the requested style and camera settings", "appears": ["c1", "l1"]}]
+          role: 'system',
+          content: domainSystemPrompt,
+        },
+        {
+          role: 'user',
+          content: `SCRIPT TO ANALYZE:
+"${script}"
+
+AESTHETIC CONTEXT:
+${aestheticContext || 'AI auto-select best aesthetics'}
+
+TIMELINE: ${totalDuration}s total • generate EXACTLY ${numScenes} scenes • ${sceneDuration}s each
+
+Return ONLY this JSON (no fences, no extra text):
+{
+  "characters": [
+    { "temp_id": "c1", "name": "Name", "description": "Detailed physical appearance only" }
+  ],
+  "locations": [
+    { "temp_id": "l1", "name": "Name", "description": "Detailed environment description" }
+  ],
+  "scenes": [
+    {
+      "order": 1,
+      "visualPrompt": "Rich, self-contained cinematic description. Include style, camera, lighting. Reference character appearances by physical description, not by name variable.",
+      "appears": ["c1", "l1"],
+      "mood": "tense / warm / epic / melancholic / etc",
+      "cameraMove": "static / pan / tracking / handheld / crane / etc"
+    }
+  ]
+}
+
+IMPORTANT:
+- Combined characters + locations = max 5 total
+- Each visualPrompt must be 40-80 words, highly descriptive
+- "appears" lists ONLY entities LITERALLY visible in that scene`,
+        },
+      ];
+
+      // ── Step 2: Stream AI response with live terminal feedback ───
+      addLog('[AI] Phân tách đang chạy — đang nhận phản hồi...');
+      let accumulated = '';
+      let dotCount = 0;
+
+      await aiChatStream(messages, (token) => {
+        accumulated += token;
+        dotCount++;
+        if (dotCount % 60 === 0) {
+          addLog(`[STREAM] Đang nhận... ${accumulated.length} ky tự`);
         }
-        
-        IMPORTANT: 
-        - The TOTAL combined number of characters and locations to generate must be exactly 5.
-        - CRITICAL: In "appears" array, list ONLY the "temp_id" of characters or locations that are LITERALLY present in that specific scene's visual description.
-        - Ensure visualPrompts are detailed and descriptive.
-      `;
-      
-      const res = await generateDemoText(promptPayload, 'gemini-3-pro-preview', systemPrompt);
-      if (res && res !== "CONNECTION_TERMINATED") {
-        const data = JSON.parse(res);
-        const extractedCharacters = data.characters || [];
-        const extractedLocations = data.locations || [];
-        const extractedScenes = data.scenes || [];
-        
-        addLog(`Xử lý thành công: Trích xuất ${extractedCharacters.length} nhân vật, ${extractedLocations.length} bối cảnh.`);
-        
-        const visualStyle = settings.style.includes('--') ? 'Cinematic, hyper-detailed' : settings.style;
-        const idMap: Record<string, string> = {};
+      });
 
-        const charAssets: ReferenceAsset[] = extractedCharacters.map((c: any, i: number) => {
-          const realId = `char-${Date.now()}-${i}`;
-          idMap[c.temp_id] = realId;
-          return {
-            id: realId,
-            name: c.name,
-            url: null,
-            mediaId: null,
-            type: 'CHARACTER',
-            status: 'idle',
-            designPrompt: `Design sheet of ${c.name}, ${c.description}, ${visualStyle} style, white background, detailed character design, consistent with ${settings.culture}`
-          };
-        });
+      addLog(`[OK] AI trả về ${accumulated.length} ky tự. Đang parse...`);
 
-        const locAssets: ReferenceAsset[] = extractedLocations.map((l: any, i: number) => {
-          const realId = `loc-${Date.now()}-${i}`;
-          idMap[l.temp_id] = realId;
-          return {
-            id: realId,
-            name: l.name,
-            url: null,
-            mediaId: null,
-            type: 'LOCATION',
-            status: 'idle',
-            designPrompt: `Concept environment sheet of ${l.name}, ${l.description}, ${visualStyle} style, detailed background design, consistent with ${settings.background}`
-          };
-        });
-        
-        const allExtractedAssets = [...charAssets, ...locAssets].slice(0, 5);
-        setAssets(allExtractedAssets);
+      // ── Step 3: Parse structured data ──────────────────────────
+      const cleaned = accumulated
+        .replace(/^```(?:json)?\s*/i, '')
+        .replace(/\s*```\s*$/i, '')
+        .trim();
 
-        setScenes(extractedScenes.map((s: any, i: number) => ({
-          id: `scene-${Date.now()}-${i}`,
-          order: s.order || (i + 1),
-          duration: sceneDuration,
-          prompt: s.visualPrompt || s.title || "Cinematic scene",
-          status: 'idle',
-          characterIds: (s.appears || []).map((tid: string) => idMap[tid]).filter(Boolean)
-        })));
-
-        for (const asset of allExtractedAssets) {
-          triggerImageGeneration(asset);
-        }
+      let data: any;
+      try {
+        data = JSON.parse(cleaned);
+      } catch {
+        // Try to extract JSON object from mixed content
+        const jsonMatch = cleaned.match(/\{[\s\S]+\}/);
+        if (jsonMatch) data = JSON.parse(jsonMatch[0]);
+        else throw new Error('Không đọc được JSON từ AI response');
       }
-    } catch (error) {
-      addLog("LỖI HỆ THỐNG: Không thể phân tách kịch bản.");
+
+      const extractedCharacters: any[] = data.characters || [];
+      const extractedLocations:  any[] = data.locations  || [];
+      const extractedScenes:     any[] = data.scenes     || [];
+
+      addLog(`[✓] Trích xuất: ${extractedCharacters.length} nhân vật, ${extractedLocations.length} bối cảnh, ${extractedScenes.length} phân cảnh.`);
+
+      // ── Step 4: Build identity anchor assets ────────────────────
+      const visualStyle = settings.style && settings.style !== '--'
+        ? settings.style
+        : 'Cinematic, hyper-detailed, ultra-realistic';
+      const idMap: Record<string, string> = {};
+
+      const charAssets: ReferenceAsset[] = extractedCharacters.map((c: any, i: number) => {
+        const realId = `char-${Date.now()}-${i}`;
+        idMap[c.temp_id] = realId;
+        return {
+          id: realId,
+          name: c.name,
+          url: null,
+          mediaId: null,
+          type: 'CHARACTER' as const,
+          status: 'idle' as const,
+          designPrompt: `Full character design sheet of ${c.name}. ${c.description}. ${visualStyle} style. White background. Front view + side profile. Consistent proportions. World: ${settings.culture || 'contemporary'}.`,
+        };
+      });
+
+      const locAssets: ReferenceAsset[] = extractedLocations.map((l: any, i: number) => {
+        const realId = `loc-${Date.now()}-${i}`;
+        idMap[l.temp_id] = realId;
+        return {
+          id: realId,
+          name: l.name,
+          url: null,
+          mediaId: null,
+          type: 'LOCATION' as const,
+          status: 'idle' as const,
+          designPrompt: `Concept environment art of ${l.name}. ${l.description}. ${visualStyle} style. Establishing wide shot. ${settings.background || ''}. World: ${settings.culture || 'contemporary'}.`,
+        };
+      });
+
+      const allAssets = [...charAssets, ...locAssets].slice(0, 5);
+      setAssets(allAssets);
+
+      // ── Step 5: Build scene list ─────────────────────────────────
+      const builtScenes = extractedScenes.map((s: any, i: number) => ({
+        id: `scene-${Date.now()}-${i}`,
+        order: s.order || (i + 1),
+        duration: sceneDuration,
+        prompt: s.visualPrompt || s.title || 'Cinematic scene',
+        status: 'idle' as const,
+        characterIds: (s.appears || []).map((tid: string) => idMap[tid]).filter(Boolean),
+      }));
+      setScenes(builtScenes);
+
+      addLog(`[⚡] Khởi động tạo ${allAssets.length} identity anchors song song...`);
+
+      // ── Step 6: Trigger parallel asset image generation ─────────
+      await Promise.allSettled(allAssets.map(asset => triggerImageGeneration(asset)));
+
+      addLog('[DONE] Storyboard dựng xong. Đang tạo concept art...');
+
+    } catch (error: any) {
+      addLog(`[LỖI HỆ THỐNG] ${error?.message ?? 'Không thể phân tách kịch bản.'}`);
       setTimeout(closeProgressModal, 3000);
     }
   };
