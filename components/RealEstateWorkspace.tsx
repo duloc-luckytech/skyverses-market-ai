@@ -53,7 +53,7 @@ const RealEstateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => 
 
         {/* SIDEBAR: Bottom sheet on mobile, left sidebar on desktop */}
         <aside
-          className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] shrink-0 bg-white dark:bg-[#0d0e12] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-32 lg:h-full lg:rounded-none'}`}
+          className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[380px] shrink-0 bg-white dark:bg-[#0d0e12] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out lg:h-full ${isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-32 lg:rounded-none'}`}
         >
           {/* MOBILE BAR */}
           <MobileGeneratorBar
@@ -71,8 +71,8 @@ const RealEstateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => 
             type="image"
           />
 
-          {/* Sidebar Full Content */}
-          <div className={`flex-grow overflow-y-auto no-scrollbar ${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+          {/* Sidebar Full Content — scrollable, takes remaining space */}
+          <div className={`flex-1 overflow-y-auto no-scrollbar min-h-0 ${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
             <SidebarControls s={s} fileInputRef={fileInputRef} />
 
             {/* AI Model Settings */}
@@ -104,7 +104,8 @@ const RealEstateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => 
             </div>
           </div>
 
-          <div className={`${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+          {/* ActionFooter — shrink-0 = always visible at bottom */}
+          <div className={`shrink-0 ${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
             <ActionFooter
               credits={credits}
               cost={gen.totalCost}
@@ -119,7 +120,18 @@ const RealEstateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => 
         {/* VIEWPORT */}
         <main className="flex-grow flex flex-col relative bg-[#f8f9fa] dark:bg-[#020202] transition-colors duration-500 overflow-hidden h-full">
            <ViewportHeader onClose={onClose} />
-           <ViewportContent results={gen.results} isGenerating={gen.isGenerating} />
+           <ViewportContent
+             results={gen.results}
+             isGenerating={gen.isGenerating}
+             onRegenerate={handleGenerateClick}
+             contextInfo={{
+               mode: s.mode,
+               roomType: s.roomType,
+               style: s.style,
+               model: gen.selectedModel?.name ?? '',
+               cost: gen.totalCost,
+             }}
+           />
         </main>
       </div>
 

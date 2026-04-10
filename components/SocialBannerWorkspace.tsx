@@ -4,16 +4,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Loader2, Plus,
   Sparkles, Trash2,
-  ChevronDown, Coins,
+  ChevronDown, ChevronRight, Coins,
   MessageCircle, Store, Building, Shirt,
   GraduationCap, Heart, Coffee, Plane, Cpu,
   LayoutGrid, Image as ImageIcon, Wand2, History,
+  Maximize2, Download, RefreshCw, Bot,
 } from 'lucide-react';
 import { generateDemoText } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
-import { Link } from 'react-router-dom';
 import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
 import { useImageGenerator } from '../hooks/useImageGenerator';
 import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
@@ -23,7 +23,6 @@ import ResourceAuthModal from './common/ResourceAuthModal';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'skyverses_SOCIAL-BANNER-AI_vault';
-
 
 const PLATFORMS = [
   { id: 'fb-cover',   label: 'FB Cover',    platform: 'Facebook', size: '820×312',   ratio: '16:9'  },
@@ -83,52 +82,56 @@ interface BannerSession {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const { theme } = useTheme();
+  const { theme: _theme } = useTheme();
   const { credits, isAuthenticated, login } = useAuth();
   const { showToast } = useToast();
 
   // UI state
   const [activePlatform, setActivePlatform] = useState(PLATFORMS[0].id);
-  const [isEnhancing, setIsEnhancing]     = useState(false);
-  const [showAdvanced, setShowAdvanced]   = useState(false);
-  const [viewMode, setViewMode]           = useState<'current' | 'library'>('current');
+  const [isEnhancing, setIsEnhancing]       = useState(false);
+  const [showAdvanced, setShowAdvanced]     = useState(false);
+  const [showAISuggest, setShowAISuggest]   = useState(false); // collapsed by default
+  const [viewMode, setViewMode]             = useState<'current' | 'library'>('current');
   const [activeIndustry, setActiveIndustry] = useState('social');
 
   // Content state
-  const [localPrompt, setLocalPrompt]     = useState('');
-  const [title, setTitle]                 = useState('');
-  const [subtitle, setSubtitle]           = useState('');
+  const [localPrompt, setLocalPrompt]         = useState('');
+  const [title, setTitle]                     = useState('');
+  const [subtitle, setSubtitle]               = useState('');
   const [localReferences, setLocalReferences] = useState<string[]>([]);
 
-  // Config state — dùng useImageGenerator cho toàn bộ generate logic
+  // Config state — useImageGenerator handles all generate logic
   const gen = useImageGenerator();
 
-  const [selectedStyle, setSelectedStyle]   = useState(STYLES[0]);
-  const [quantity, setQuantity]             = useState(1);
+  const [selectedStyle, setSelectedStyle] = useState(STYLES[0]);
+  const [quantity, setQuantity]           = useState(1);
 
   // Brand state
-  const [brandColors, setBrandColors]     = useState(['#0090FF', '#6366F1']);
-  const [hexInput, setHexInput]           = useState('#0090FF');
-  const [useBrandColor, setUseBrandColor] = useState(true);
+  const [brandColors, setBrandColors]       = useState(['#0090FF', '#6366F1']);
+  const [hexInput, setHexInput]             = useState('#0090FF');
+  const [useBrandColor, setUseBrandColor]   = useState(true);
   const [addTextToBanner, setAddTextToBanner] = useState(true);
 
   // History
   const [sessions, setSessions] = useState<BannerSession[]>([]);
 
-  const fileInputRef    = useRef<HTMLInputElement>(null);
-  const colorPickerRef  = useRef<HTMLInputElement>(null);
+  const fileInputRef   = useRef<HTMLInputElement>(null);
+  const colorPickerRef = useRef<HTMLInputElement>(null);
   const [editingColorIndex, setEditingColorIndex] = useState<number | null>(null);
 
-  // Prompt history (W7)
-  const [promptHistory, setPromptHistory]   = useState<string[]>([]);
-  const [showHistory, setShowHistory]       = useState(false);
+  // Prompt history
+  const [promptHistory, setPromptHistory] = useState<string[]>([]);
+  const [showHistory, setShowHistory]     = useState(false);
 
-  // S1: Mobile bottom sheet
+  // Mobile bottom sheet
   const [showMobileSheet, setShowMobileSheet] = useState(false);
 
-  // S2: AI Enhance diff preview
+  // AI Enhance diff preview
   const [enhancedPreview, setEnhancedPreview] = useState<string | null>(null);
   const [showEnhanceDiff, setShowEnhanceDiff] = useState(false);
+
+  // Lightbox
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   // Load history
   useEffect(() => {
@@ -142,7 +145,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     }
   }, []);
 
-  const currentPlatform = PLATFORMS.find(p => p.id === activePlatform) ?? PLATFORMS[0];
+  const currentPlatform     = PLATFORMS.find(p => p.id === activePlatform) ?? PLATFORMS[0];
   const activeIndustryLabel = INDUSTRIES.find(i => i.id === activeIndustry)?.label ?? '';
 
   // Save sessions to localStorage when a job completes
@@ -231,7 +234,6 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     gen.setReferences(localReferences.map(url => ({ url })));
     gen.setQuantity(quantity);
 
-    // Save prompt to history (max 10)
     const newHistory = [localPrompt, ...promptHistory.filter(p => p !== localPrompt)].slice(0, 10);
     setPromptHistory(newHistory);
     localStorage.setItem(STORAGE_KEY + '_prompts', JSON.stringify(newHistory));
@@ -245,6 +247,79 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     setSessions(updated);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   };
+
+  const handleDownloadUrl = async (url: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `skyverses_banner_${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      window.open(url, '_blank');
+    }
+  };
+
+  // ── Shared sub-components ──────────────────────────────────────────────────
+
+  /** Info bar shown below result images */
+  const ResultInfoBar = ({ session }: { session?: BannerSession }) => {
+    const plat = session ? PLATFORMS.find(p => p.id === session.config.platformId) : currentPlatform;
+    const style = session?.config.style ?? selectedStyle;
+    const model = session?.config.model ?? gen.selectedModel?.name ?? '';
+    const ts    = session?.timestamp ?? '';
+    return (
+      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#0d0d0f] border-t border-black/[0.05] dark:border-white/[0.05] flex-wrap">
+        {plat && (
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-blue/10 text-brand-blue text-[9px] font-bold">
+            {plat.platform} · {plat.label}
+          </span>
+        )}
+        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-500 dark:text-violet-400 text-[9px] font-bold">
+          {style}
+        </span>
+        {model && (
+          <span className="flex items-center gap-1 text-[9px] text-slate-400 dark:text-[#555]">
+            <Bot size={9} /> {model}
+          </span>
+        )}
+        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold ml-auto">
+          {gen.totalCost} CR
+        </span>
+        {ts && <span className="text-[9px] text-slate-300 dark:text-[#444]">{ts}</span>}
+      </div>
+    );
+  };
+
+  /** Action buttons below result image */
+  const ResultActions = ({ url }: { url: string }) => (
+    <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#0d0d0f]">
+      <button
+        onClick={handleGenerate}
+        disabled={gen.isGenerating}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-white/60 text-[10px] font-semibold hover:bg-brand-blue/10 hover:text-brand-blue transition-all disabled:opacity-40"
+      >
+        <RefreshCw size={11} /> Tạo lại
+      </button>
+      <button
+        onClick={() => setLightboxUrl(url)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-white/60 text-[10px] font-semibold hover:bg-brand-blue/10 hover:text-brand-blue transition-all"
+      >
+        <Maximize2 size={11} /> Xem full
+      </button>
+      <button
+        onClick={() => handleDownloadUrl(url)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-blue/10 text-brand-blue text-[10px] font-semibold hover:bg-brand-blue hover:text-white transition-all ml-auto"
+      >
+        <Download size={11} /> Tải về
+      </button>
+    </div>
+  );
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -265,7 +340,6 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           ))}
         </div>
         <div className="flex items-center gap-3">
-          {/* S1: Mobile sheet trigger */}
           <button
             onClick={() => setShowMobileSheet(true)}
             className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[10px] font-bold"
@@ -284,9 +358,11 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
       <div className="flex-grow flex overflow-hidden">
 
-        {/* ── SIDEBAR — hidden on mobile (uses bottom sheet instead) ── */}
-        <div className="hidden md:flex w-[380px] shrink-0 bg-white dark:bg-[#0d0d0f] border-r border-slate-200 dark:border-white/5 flex-col overflow-y-auto transition-colors">
-          <div className="p-4 space-y-4 flex-grow">
+        {/* ── SIDEBAR ── hidden on mobile, sticky generate button ── */}
+        <div className="hidden md:flex w-[360px] shrink-0 bg-white dark:bg-[#0d0d0f] border-r border-slate-200 dark:border-white/5 flex-col h-full transition-colors">
+
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
 
             {/* Platform Picker */}
             <div>
@@ -335,21 +411,45 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               </div>
             </div>
 
-            {/* AI Suggest Panel */}
-            <AISuggestPanel
-              productSlug="social-banner-ai"
-              productName="Social Banner AI"
-              styles={BANNER_STYLES}
-              onPromptSelect={(p) => setLocalPrompt(prev => p + (prev ? '\n' + prev : ''))}
-              onApply={(cfg) => {
-                if (cfg.prompt) setLocalPrompt(cfg.prompt);
-                if (cfg.style && BANNER_STYLES.find(s => s.label === cfg.style)) setSelectedStyle(cfg.style);
-                if (cfg.format) setActivePlatform(PLATFORMS.find(p => p.label === cfg.format)?.id ?? activePlatform);
-              }}
-              historyKey={STORAGE_KEY}
-              featuredTemplates={FEATURED_TEMPLATES}
-              productContext={`Social Banner AI tool for creating ${currentPlatform.platform} ${currentPlatform.label} banners for ${activeIndustryLabel || 'general'} industry in Vietnam`}
-            />
+            {/* AI Suggest Panel — collapsible */}
+            <div>
+              <button
+                onClick={() => setShowAISuggest(v => !v)}
+                className="flex items-center justify-between w-full text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] hover:text-brand-blue transition-colors tracking-widest mb-1"
+              >
+                <span>AI Gợi ý & Templates</span>
+                {showAISuggest
+                  ? <ChevronDown size={11} className="text-brand-blue" />
+                  : <ChevronRight size={11} />
+                }
+              </button>
+              <AnimatePresence>
+                {showAISuggest && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <AISuggestPanel
+                      productSlug="social-banner-ai"
+                      productName="Social Banner AI"
+                      styles={BANNER_STYLES}
+                      onPromptSelect={(p) => setLocalPrompt(prev => p + (prev ? '\n' + prev : ''))}
+                      onApply={(cfg) => {
+                        if (cfg.prompt) setLocalPrompt(cfg.prompt);
+                        if (cfg.style && BANNER_STYLES.find(s => s.label === cfg.style)) setSelectedStyle(cfg.style);
+                        if (cfg.format) setActivePlatform(PLATFORMS.find(p => p.label === cfg.format)?.id ?? activePlatform);
+                      }}
+                      historyKey={STORAGE_KEY}
+                      featuredTemplates={FEATURED_TEMPLATES}
+                      productContext={`Social Banner AI tool for creating ${currentPlatform.platform} ${currentPlatform.label} banners for ${activeIndustryLabel || 'general'} industry in Vietnam`}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Prompt textarea */}
             <div>
@@ -407,7 +507,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                   }
                 }}
                 placeholder={`Mô tả banner ${currentPlatform.label} bạn muốn tạo...`}
-                rows={4}
+                rows={3}
                 className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
               />
               <button
@@ -419,7 +519,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 AI Boost Prompt
               </button>
 
-              {/* S2: Enhance diff preview */}
+              {/* AI Enhance diff preview */}
               <AnimatePresence>
                 {showEnhanceDiff && enhancedPreview && (
                   <motion.div
@@ -449,12 +549,10 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                           </button>
                         </div>
                       </div>
-                      {/* Before */}
                       <div className="px-3 py-2 border-b border-dashed border-brand-blue/10">
                         <p className="text-[8px] font-bold text-slate-400 uppercase mb-1">Trước</p>
                         <p className="text-[10px] text-slate-500 dark:text-[#888] line-clamp-2 leading-relaxed">{localPrompt}</p>
                       </div>
-                      {/* After */}
                       <div className="px-3 py-2">
                         <p className="text-[8px] font-bold text-brand-blue uppercase mb-1">Sau</p>
                         <p className="text-[10px] text-slate-700 dark:text-white/80 line-clamp-4 leading-relaxed">{enhancedPreview}</p>
@@ -521,7 +619,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
             </div>
 
-            {/* Phong cách banner (banner-specific, kept separate) */}
+            {/* Phong cách */}
             <div>
               <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Phong cách</p>
               <div className="flex flex-wrap gap-1.5">
@@ -541,7 +639,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               </div>
             </div>
 
-            {/* Cấu hình AI — shared ModelEngineSettings */}
+            {/* AI Engine Settings */}
             <ModelEngineSettings
               availableModels={gen.availableModels}
               selectedModel={gen.selectedModel}
@@ -567,7 +665,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               familyResolutions={[]}
             />
 
-            {/* Advanced (collapsible) */}
+            {/* Advanced — brand colors */}
             <div>
               <button
                 onClick={() => setShowAdvanced(v => !v)}
@@ -585,7 +683,6 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden mt-3 space-y-3"
                   >
-                    {/* Brand colors */}
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
                         <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-widest">Màu thương hiệu</p>
@@ -628,18 +725,17 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 )}
               </AnimatePresence>
             </div>
-          </div>
 
-          {/* Generate button */}
-          <div className="p-4 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#0d0d0f] shrink-0 space-y-2">
+          </div>{/* end scroll area */}
+
+          {/* ── Generate button — sticky bottom ── */}
+          <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#0d0d0f] space-y-2">
             <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-[#555]">
               <div className="flex items-center gap-1.5">
                 <div className={`w-1.5 h-1.5 rounded-full ${gen.isGenerating ? 'bg-brand-blue animate-pulse' : 'bg-emerald-400'}`} />
                 {gen.isGenerating ? 'AI đang tạo banner...' : 'Sẵn sàng'}
               </div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-brand-blue">{gen.totalCost} CR / lần</span>
-              </div>
+              <span className="font-semibold text-brand-blue">{gen.totalCost} CR / lần</span>
             </div>
             <motion.button
               onClick={handleGenerate}
@@ -654,37 +750,64 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               }
             </motion.button>
           </div>
-        </div>
+
+        </div>{/* end sidebar */}
 
         {/* ── MAIN VIEWPORT ── */}
         <div className="flex-1 flex flex-col bg-[#f0f2f5] dark:bg-[#060608] overflow-hidden">
 
           {viewMode === 'current' ? (
-            <div className="flex-1 flex items-center justify-center p-8">
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col items-center">
               {(gen.isGenerating || gen.results.length > 0) ? (
                 <div className="w-full max-w-2xl space-y-4">
+                  {/* Placeholder card while submitting (no result yet) */}
                   {gen.isGenerating && gen.results.filter(r => r.status === 'processing').length === 0 && (
-                    <ImageJobCard
-                      status="processing"
-                      aspectRatio="16/9"
-                      mode="full"
-                      statusText="AI đang tạo banner..."
-                    />
+                    <div className="rounded-xl overflow-hidden shadow-sm">
+                      <ImageJobCard
+                        status="processing"
+                        aspectRatio={currentPlatform.ratio === '9:16' ? '9/16' : currentPlatform.ratio === '1:1' ? '1/1' : currentPlatform.ratio === '3:1' ? '3/1' : '16/9'}
+                        mode="full"
+                        statusText="AI đang tạo banner..."
+                        loadingExtra={
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="px-2 py-0.5 rounded-full bg-brand-blue/20 text-brand-blue text-[9px] font-bold">{currentPlatform.platform} · {currentPlatform.label}</span>
+                            <span className="px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-400 text-[9px] font-bold">{selectedStyle}</span>
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">{gen.totalCost} CR</span>
+                          </div>
+                        }
+                      />
+                    </div>
                   )}
+
+                  {/* Result cards */}
                   {gen.results.map(result => (
-                    <ImageJobCard
-                      key={result.id}
-                      status={result.status}
-                      resultUrl={result.url ?? undefined}
-                      aspectRatio="16/9"
-                      mode="full"
-                      statusText={result.status === 'processing' ? 'AI đang tạo banner...' : undefined}
-                    />
+                    <div key={result.id} className="rounded-xl overflow-hidden shadow-sm bg-white dark:bg-[#0d0d0f] border border-black/[0.06] dark:border-white/[0.04]">
+                      <ImageJobCard
+                        status={result.status}
+                        resultUrl={result.url ?? undefined}
+                        aspectRatio={currentPlatform.ratio === '9:16' ? '9/16' : currentPlatform.ratio === '1:1' ? '1/1' : currentPlatform.ratio === '3:1' ? '3/1' : '16/9'}
+                        mode="full"
+                        statusText={result.status === 'processing' ? 'AI đang tạo banner...' : undefined}
+                        loadingExtra={result.status === 'processing' ? (
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="px-2 py-0.5 rounded-full bg-brand-blue/20 text-brand-blue text-[9px] font-bold">{currentPlatform.platform} · {currentPlatform.label}</span>
+                            <span className="px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-400 text-[9px] font-bold">{selectedStyle}</span>
+                          </div>
+                        ) : undefined}
+                        onReset={result.status === 'done' ? handleGenerate : undefined}
+                        onRetry={result.status === 'error' ? handleGenerate : undefined}
+                        infoSlot={<ResultInfoBar />}
+                        resultFooter={result.status === 'done' && result.url
+                          ? <ResultActions url={result.url} />
+                          : undefined
+                        }
+                      />
+                    </div>
                   ))}
                 </div>
               ) : (
-                /* ── Empty state — starter prompt cards ── */
-                <div className="flex flex-col items-center justify-center gap-6 text-center w-full max-w-md">
+                /* Empty state — starter prompt cards */
+                <div className="flex flex-col items-center justify-center gap-6 text-center w-full max-w-md my-auto">
                   <div>
                     <p className="text-sm font-semibold text-slate-400 dark:text-[#555]">Bắt đầu với một gợi ý</p>
                     <p className="text-[11px] text-slate-300 dark:text-[#444] mt-1">Nhấn vào mẫu bên dưới hoặc nhập mô tả của bạn</p>
@@ -710,7 +833,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               )}
             </div>
           ) : (
-            /* Library grid */
+            /* ── Library grid ── */
             <div className="flex-1 overflow-y-auto p-6">
               {sessions.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
@@ -721,33 +844,64 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 </div>
               ) : (
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                  {sessions.map(session => (
-                    <div
-                      key={session.id}
-                      onClick={() => { setViewMode('current'); }}
-                      className="group relative cursor-pointer"
-                    >
-                      <ImageJobCard
-                        status="done"
-                        resultUrl={session.url}
-                        aspectRatio="16/9"
-                        mode="compact"
-                        infoSlot={
-                          <div className="p-3">
-                            <p className="text-[11px] font-medium text-slate-700 dark:text-white/70 line-clamp-2">{session.prompt}</p>
-                            <p className="text-[9px] text-slate-400 dark:text-[#555] mt-1">{session.timestamp}</p>
-                          </div>
-                        }
-                        cardClassName="border border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-[#0d0d0f] hover:border-brand-blue/30 hover:-translate-y-0.5 transition-all"
-                      />
-                      <button
-                        onClick={(e) => deleteSession(e, session.id)}
-                        className="absolute top-2 right-2 z-10 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                  {sessions.map(session => {
+                    const plat  = PLATFORMS.find(p => p.id === session.config.platformId);
+                    return (
+                      <div
+                        key={session.id}
+                        onClick={() => setViewMode('current')}
+                        className="group relative cursor-pointer"
                       >
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
-                  ))}
+                        <ImageJobCard
+                          status="done"
+                          resultUrl={session.url}
+                          aspectRatio={plat?.ratio === '9:16' ? '9/16' : plat?.ratio === '1:1' ? '1/1' : plat?.ratio === '3:1' ? '3/1' : '16/9'}
+                          mode="compact"
+                          cardClassName="border border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-[#0d0d0f] hover:border-brand-blue/30 hover:-translate-y-0.5 transition-all"
+                          infoSlot={
+                            <div className="bg-white dark:bg-[#0d0d0f] px-3 pt-2 pb-1.5 border-t border-black/[0.05] dark:border-white/[0.05]">
+                              {/* Badges row */}
+                              <div className="flex flex-wrap gap-1 mb-1.5">
+                                {plat && (
+                                  <span className="px-1.5 py-0.5 rounded-full bg-brand-blue/10 text-brand-blue text-[8px] font-bold">
+                                    {plat.platform} · {plat.label}
+                                  </span>
+                                )}
+                                {session.config.style && (
+                                  <span className="px-1.5 py-0.5 rounded-full bg-violet-500/10 text-violet-500 dark:text-violet-400 text-[8px] font-bold">
+                                    {session.config.style}
+                                  </span>
+                                )}
+                                {session.config.model && (
+                                  <span className="flex items-center gap-0.5 text-[8px] text-slate-400 dark:text-[#555]">
+                                    <Bot size={8} /> {session.config.model}
+                                  </span>
+                                )}
+                              </div>
+                              {/* Prompt */}
+                              <p className="text-[10px] text-slate-600 dark:text-white/60 line-clamp-2 leading-relaxed">{session.prompt}</p>
+                              {/* Footer */}
+                              <div className="flex items-center justify-between mt-1.5">
+                                <p className="text-[8px] text-slate-300 dark:text-[#444]">{session.timestamp}</p>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleDownloadUrl(session.url); }}
+                                  className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-blue/10 text-brand-blue text-[8px] font-bold hover:bg-brand-blue hover:text-white transition-all"
+                                >
+                                  <Download size={8} /> Tải
+                                </button>
+                              </div>
+                            </div>
+                          }
+                        />
+                        <button
+                          onClick={(e) => deleteSession(e, session.id)}
+                          className="absolute top-2 right-2 z-10 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -755,8 +909,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </div>
       </div>
 
-      {/* ── Low Credit Alert — handled by ResourceAuthModal from useImageGenerator ── */}
-      {/* ResourceAuthModal */}
+      {/* ── ResourceAuthModal ── */}
       <ResourceAuthModal
         isOpen={gen.showResourceModal}
         onClose={() => gen.setShowResourceModal(false)}
@@ -773,7 +926,49 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         totalCost={gen.totalCost}
       />
 
-      {/* ── S1: MOBILE BOTTOM SHEET ── */}
+      {/* ── Lightbox ── */}
+      <AnimatePresence>
+        {lightboxUrl && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[500] bg-black/90 backdrop-blur-sm flex items-center justify-center p-6"
+            onClick={() => setLightboxUrl(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ duration: 0.22 }}
+              onClick={e => e.stopPropagation()}
+              className="relative max-w-5xl max-h-[90vh] w-full flex flex-col items-center gap-3"
+            >
+              <img
+                src={lightboxUrl}
+                alt="Banner preview"
+                className="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
+              />
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setLightboxUrl(null)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white/70 hover:bg-white/20 text-[11px] font-semibold transition-all"
+                >
+                  <X size={13} /> Đóng
+                </button>
+                <button
+                  onClick={() => handleDownloadUrl(lightboxUrl)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-blue text-white text-[11px] font-bold hover:brightness-110 transition-all"
+                >
+                  <Download size={13} /> Tải về
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Mobile Bottom Sheet ── */}
       <AnimatePresence>
         {showMobileSheet && (
           <motion.div
@@ -791,7 +986,6 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               onClick={e => e.stopPropagation()}
               className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#0d0d0f] rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
             >
-              {/* Sheet handle */}
               <div className="flex items-center justify-between px-5 pt-4 pb-2 shrink-0">
                 <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-white/20 mx-auto absolute left-1/2 -translate-x-1/2 top-3" />
                 <p className="text-[12px] font-bold text-slate-700 dark:text-white/80">Cài đặt Banner</p>
@@ -800,10 +994,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 </button>
               </div>
 
-              {/* Sheet body — scrollable */}
               <div className="overflow-y-auto flex-1 px-4 pb-4 space-y-4">
-
-                {/* Platform */}
                 <div>
                   <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Nền tảng</p>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -824,7 +1015,6 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                   </div>
                 </div>
 
-                {/* Industry */}
                 <div>
                   <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Lĩnh vực</p>
                   <div className="flex flex-wrap gap-1.5">
@@ -847,16 +1037,17 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                   </div>
                 </div>
 
-                {/* Phong cách */}
                 <div>
                   <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Phong cách</p>
-                  <select value={selectedStyle} onChange={e => setSelectedStyle(e.target.value)}
-                    className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none">
+                  <select
+                    value={selectedStyle}
+                    onChange={e => setSelectedStyle(e.target.value)}
+                    className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-700 dark:text-white focus:outline-none"
+                  >
                     {STYLES.map(s => <option key={s}>{s}</option>)}
                   </select>
                 </div>
 
-                {/* Cấu hình AI — shared ModelEngineSettings */}
                 <ModelEngineSettings
                   availableModels={gen.availableModels}
                   selectedModel={gen.selectedModel}
@@ -881,11 +1072,8 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                   familyRatios={[]}
                   familyResolutions={[]}
                 />
-
-
               </div>
 
-              {/* Sheet footer CTA */}
               <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/5">
                 <motion.button
                   onClick={() => { setShowMobileSheet(false); handleGenerate(); }}
@@ -900,6 +1088,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           </motion.div>
         )}
       </AnimatePresence>
+
     </div>
   );
 };

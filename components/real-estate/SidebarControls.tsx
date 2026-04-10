@@ -7,8 +7,26 @@ import {
 import { motion } from 'framer-motion';
 import { MODES, ROOM_TYPES, STYLES } from '../../hooks/useRealEstateAI';
 
+interface RealEstateAIState {
+  sourceImage:    string | null;
+  isUploading:    boolean;
+  faceLock:       boolean;
+  setFaceLock:    (lock: boolean) => void;
+  mode:           string;
+  setMode:        (mode: string) => void;
+  roomType:       string;
+  setRoomType:    (type: string) => void;
+  style:          string;
+  setStyle:       (style: string) => void;
+  aspectRatio:    string;
+  setAspectRatio: (ratio: string) => void;
+  extraPrompt:    string;
+  setExtraPrompt: (prompt: string) => void;
+  handleUpload:   (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
 interface SidebarControlsProps {
-  s: any;
+  s: RealEstateAIState;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
 }
 
@@ -17,7 +35,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ s, fileInputRe
   const selectStyle = "w-full bg-slate-50 dark:bg-[#16161a] border border-slate-200 dark:border-white/10 rounded-lg p-3 text-xs font-bold text-slate-800 dark:text-white outline-none focus:border-purple-500/50 transition-all appearance-none cursor-pointer shadow-sm";
 
   return (
-    <div className="flex-grow overflow-y-auto no-scrollbar p-8 space-y-10">
+    <div className="p-8 space-y-10">
       {/* Header & Toggle */}
       <div className="flex justify-between items-start">
         <div className="space-y-1">

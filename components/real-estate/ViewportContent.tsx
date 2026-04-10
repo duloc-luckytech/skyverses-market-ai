@@ -1,13 +1,24 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Eye } from 'lucide-react';
+import { Sparkles, Eye, RefreshCw } from 'lucide-react';
 import { ImageJobCard } from '../shared/ImageJobCard';
 import type { ImageResult } from '../../hooks/useImageGenerator';
 
+interface ContextInfo {
+  mode:     string;
+  roomType: string;
+  style:    string;
+  model:    string;
+  cost:     number;
+}
+
 interface ViewportContentProps {
-  results: ImageResult[];
-  isGenerating: boolean;
+  results:       ImageResult[];
+  isGenerating:  boolean;
+  onRegenerate?: () => void;
+  contextInfo?:  ContextInfo;
+  aspectRatio?:  string;
 }
 
 const REAL_ESTATE_EXAMPLES = [
@@ -49,7 +60,25 @@ const REAL_ESTATE_EXAMPLES = [
   }
 ];
 
-export const ViewportContent: React.FC<ViewportContentProps> = ({ results, isGenerating }) => {
+const ASPECT_RATIO_CLASS_MAP: Record<string, string> = {
+  '1/1':  'aspect-square',
+  '16/9': 'aspect-video',
+  '9/16': 'aspect-[9/16]',
+  '4/3':  'aspect-[4/3]',
+  '3/2':  'aspect-[3/2]',
+};
+
+function resolveAspectRatio(ratio: string = '4/3'): string {
+  return ASPECT_RATIO_CLASS_MAP[ratio] ?? 'aspect-[4/3]';
+}
+
+export const ViewportContent: React.FC<ViewportContentProps> = ({
+  results,
+  isGenerating,
+  onRegenerate,
+  contextInfo,
+  aspectRatio = '4/3',
+}) => {
   const hasResults = results.length > 0;
   return (
     <div className="flex-grow flex flex-col relative overflow-hidden">
@@ -67,10 +96,67 @@ export const ViewportContent: React.FC<ViewportContentProps> = ({ results, isGen
                 animate={{ opacity: 1, y: 0 }}
                 className="w-full max-w-2xl space-y-4"
               >
+                {/* ─── Context Info Bar ───────────────────────────────── */}
+                {contextInfo && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/60 dark:bg-white/[0.03] backdrop-blur-sm px-4 py-2.5"
+                  >
+                    {/* LEFT — Context chips */}
+                    <div className="flex items-center gap-2 flex-wrap min-w-0">
+                      <span className="px-2 py-0.5 bg-purple-600/10 dark:bg-purple-600/20 border border-purple-500/20 text-purple-700 dark:text-purple-400 text-[8px] font-black uppercase tracking-widest rounded-md whitespace-nowrap">
+                        {contextInfo.mode}
+                      </span>
+
+                      <span className="w-px h-3 bg-slate-200 dark:bg-white/10 shrink-0" />
+
+                      <span className="px-2 py-0.5 bg-purple-600/10 dark:bg-purple-600/20 border border-purple-500/20 text-purple-700 dark:text-purple-400 text-[8px] font-black uppercase tracking-widest rounded-md whitespace-nowrap">
+                        {contextInfo.roomType}
+                      </span>
+
+                      <span className="w-px h-3 bg-slate-200 dark:bg-white/10 shrink-0" />
+
+                      <span className="px-2 py-0.5 bg-purple-600/10 dark:bg-purple-600/20 border border-purple-500/20 text-purple-700 dark:text-purple-400 text-[8px] font-black uppercase tracking-widest italic rounded-md whitespace-nowrap">
+                        {contextInfo.style}
+                      </span>
+
+                      {contextInfo.model && (
+                        <>
+                          <span className="w-px h-3 bg-slate-200 dark:bg-white/10 shrink-0" />
+                          <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 truncate max-w-[120px]">
+                            {contextInfo.model}
+                          </span>
+                        </>
+                      )}
+
+                      {contextInfo.cost > 0 && (
+                        <>
+                          <span className="w-px h-3 bg-slate-200 dark:bg-white/10 shrink-0" />
+                          <span className="text-[8px] font-black italic text-orange-500 whitespace-nowrap">
+                            {contextInfo.cost} CR
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    {/* RIGHT — Regenerate button */}
+                    {onRegenerate && (
+                      <button
+                        onClick={onRegenerate}
+                        className="flex items-center gap-1.5 shrink-0 text-[9px] font-black uppercase tracking-[0.2em] text-purple-600 dark:text-purple-400 hover:brightness-125 transition-all"
+                      >
+                        <RefreshCw size={11} />
+                        Tái tạo
+                      </button>
+                    )}
+                  </motion.div>
+                )}
                 {isGenerating && results.filter(r => r.status === 'processing').length === 0 && (
                   <ImageJobCard
                     status="processing"
-                    aspectRatio="4/3"
+                    aspectRatio={aspectRatio}
                     mode="full"
                     statusText="ĐANG TỔNG HỢP KHÔNG GIAN..."
                   />
@@ -80,7 +166,7 @@ export const ViewportContent: React.FC<ViewportContentProps> = ({ results, isGen
                     key={result.id}
                     status={result.status}
                     resultUrl={result.url ?? undefined}
-                    aspectRatio="4/3"
+                    aspectRatio={aspectRatio}
                     mode="full"
                     statusText={result.status === 'processing' ? 'ĐANG TỔNG HỢP KHÔNG GIAN...' : undefined}
                   />
