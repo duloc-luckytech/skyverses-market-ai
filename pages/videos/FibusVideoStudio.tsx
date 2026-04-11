@@ -183,7 +183,7 @@ const ShowcaseCard: React.FC<{ item: (typeof SHOWCASE)[0]; index: number }> = ({
 const FibusVideoStudio: React.FC = () => {
   usePageMeta({
     title: 'Fibus Video Studio — AI Video & Image Studio | Powered by Google VEO3 | Skyverses',
-    description: 'Ứng dụng desktop tạo Video AI & Image AI mạnh nhất. Text-to-Video, Image-to-Video powered by Google VEO3. Multi-account, Multi-queue. Dùng thử miễn phí.',
+    description: 'The most powerful AI Video & Image desktop app. Text-to-Video, Image-to-Video powered by Google VEO3. Multi-account, Multi-queue. No international card required.',
     keywords: 'fibus video studio, google veo3, ai video generator, text to video, image to video, banana pro, AI desktop app',
     canonical: '/product/fibus-video-studio',
   });
