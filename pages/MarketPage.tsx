@@ -63,8 +63,8 @@ const MarketPage = () => {
   const navigate = useNavigate();
 
   usePageMeta({
-    title: 'Skyverses — The AI Marketplace | Veo3, Grok, Kling, Gemini, GPT & More',
-    description: 'The all-in-one AI Marketplace for Videos, Images, Music, Voice & Scripts. Powered by Veo3, Grok, Kling, Gemini, GPT-4o, Midjourney, Flux and 50+ models. Custom AI solutions for Studios & Enterprises.',
+    title: 'Skyverses — The AI Marketplace | Veo3, Seedance, Grok, Kling, Gemini, GPT & More',
+    description: 'The all-in-one AI Marketplace for Videos, Images, Music, Voice & Scripts. Powered by Veo3, Seedance, Grok, Kling, Gemini, GPT-4o, Midjourney, Flux and 50+ models. Custom AI solutions for Studios & Enterprises.',
     keywords: 'marketplace AI Việt Nam, AI giá rẻ, dùng thử AI miễn phí, tạo video AI, tạo ảnh AI, Veo3, Kling, Sora, Seedance, Gemini, GPT-4o, Grok, Midjourney, Flux, Qwen, chat AI miễn phí, text to speech AI, AI music generator, xoá nền AI, upscale ảnh AI, AI agent workflow, giải pháp AI doanh nghiệp, enterprise AI, Skyverses, credits AI, AI không cần thẻ quốc tế, nền tảng AI all-in-one',
     canonical: '/',
     jsonLd: {
