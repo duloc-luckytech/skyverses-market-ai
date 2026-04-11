@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { generateDemoImage } from '../services/gemini';
-import { aiChatJSON, aiChatStream, ChatMessage } from '../apis/aiChat';
+import { aiChatJSON, aiChatStream, aiChatOnce, ChatMessage } from '../apis/aiChat';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { imagesApi } from '../apis/images';
@@ -348,9 +348,13 @@ Return a JSON object with these exact keys:
         }
       );
 
-      // Parse full accumulated JSON
-      const cleaned = accumulated.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
-      const result = JSON.parse(cleaned);
+      // Robust JSON parse — strip fences + regex fallback
+      const cleaned = accumulated
+        .replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
+      const jsonStr = (cleaned[0] === '{' || cleaned[0] === '[')
+        ? cleaned
+        : (cleaned.match(/\{[\s\S]+\}/) ?? [''])[0];
+      const result = JSON.parse(jsonStr);
 
       if (result.refined_idea) setScript(result.refined_idea);
       setSettings(prev => ({
@@ -541,11 +545,11 @@ IMPORTANT:
         if (dotCount % 60 === 0) {
           addLog(`[STREAM] Đang nhận... ${accumulated.length} ky tự`);
         }
-      });
+      }, undefined, 8192);
 
       addLog(`[OK] AI trả về ${accumulated.length} ky tự. Đang parse...`);
 
-      // ── Step 3: Parse structured data ──────────────────────────
+      // ── Step 3: Parse structured data — robust fence + regex fallback ──
       const cleaned = accumulated
         .replace(/^```(?:json)?\s*/i, '')
         .replace(/\s*```\s*$/i, '')
@@ -555,7 +559,7 @@ IMPORTANT:
       try {
         data = JSON.parse(cleaned);
       } catch {
-        // Try to extract JSON object from mixed content
+        // Fallback: extract first {...} block from mixed content
         const jsonMatch = cleaned.match(/\{[\s\S]+\}/);
         if (jsonMatch) data = JSON.parse(jsonMatch[0]);
         else throw new Error('Không đọc được JSON từ AI response');
@@ -952,7 +956,6 @@ IMPORTANT:
     addLog(`[AI] Đang cải thiện prompt cảnh #${scene.order}...`);
 
     try {
-      const { aiChatOnce } = await import('../apis/aiChat');
       const enhanced = await aiChatOnce([
         {
           role: 'system',
@@ -994,7 +997,6 @@ Rewrite this as a better image generation prompt:`,
     setIsProcessing(true);
     addLog(`[AI] Cải thiện toàn bộ ${scenes.length} cảnh...`);
     try {
-      const { aiChatOnce } = await import('../apis/aiChat');
       for (const scene of scenes) {
         const enhanced = await aiChatOnce([
           { role: 'system', content: `You are a cinematic prompt engineer. Rewrite the scene description to be more visually specific for AI image generation. Return ONLY the enhanced prompt, 40-70 words, ${settings.style || 'cinematic'} style.` },

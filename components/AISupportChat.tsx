@@ -1,8 +1,8 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Send, Bot, 
+import {
+  X, Send, Bot,
   Loader2, ChevronDown, User as UserIcon,
   Sparkles, Paperclip, Maximize2,
   MessageCircle, Copy, Terminal, Download, LogIn, RotateCcw, Trash2, AlertTriangle,
@@ -12,14 +12,15 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import FullChatModal from './FullChatModal';
 import { systemConfigApi } from '../apis/config';
+import { aiChatOnce, type ChatMessage as AIChatMessage } from '../apis/aiChat';
 
 export interface ChatContentPart {
   type: 'text' | 'image' | 'code' | 'table';
   content: string;
-  language?: string; 
+  language?: string;
 }
 
-export interface ChatMessage {
+export interface UIChatMessage {
   id: string;
   role: 'user' | 'bot';
   parts: ChatContentPart[];
@@ -37,7 +38,7 @@ const AISupportChat: React.FC = () => {
   const ACTIVE_SESSION_KEY = 'skyverses_ai_active_session';
 
   // Multi-session management
-  interface ChatSession { id: string; title: string; messages: ChatMessage[]; updatedAt: number; }
+  interface ChatSession { id: string; title: string; messages: UIChatMessage[]; updatedAt: number; }
   const [sessions, setSessions] = useState<ChatSession[]>(() => {
     try { return JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]'); } catch { return []; }
   });
@@ -45,7 +46,7 @@ const AISupportChat: React.FC = () => {
     return localStorage.getItem(ACTIVE_SESSION_KEY) || Date.now().toString();
   });
 
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+  const [messages, setMessages] = useState<UIChatMessage[]>(() => {
     try {
       // Try loading from active session first
       const allSessions: ChatSession[] = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
@@ -363,56 +364,35 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
       // Use CMS context if available, otherwise use hardcoded fallback
       const finalContext = cmsContext || SYSTEM_CONTEXT;
 
-      const apiMessages: any[] = [
+      const apiMessages: AIChatMessage[] = [
         { role: 'system', content: finalContext }
       ];
 
       // Add conversation history (last 20 messages for context)
       const history = messages.slice(-20);
       for (const msg of history) {
-        const textParts = msg.parts.filter(p => p.type === 'text').map(p => p.content).join('\n');
+        const textParts = msg.parts.filter((p: any) => p.type === 'text').map((p: any) => p.content).join('\n');
         if (textParts) {
           apiMessages.push({ role: msg.role === 'user' ? 'user' : 'assistant', content: textParts });
         }
       }
 
-      // Add current user message
+      // Add current user message (supports multipart image+text)
       if (currentFile) {
         const imgData = currentFile.data.includes('base64,') ? currentFile.data.split('base64,')[1] : currentFile.data;
         apiMessages.push({
           role: 'user',
           content: [
-            ...(userText ? [{ type: 'text', text: userText }] : []),
-            { type: 'image_url', image_url: { url: `data:${currentFile.mimeType};base64,${imgData}` } }
+            ...(userText ? [{ type: 'text' as const, text: userText }] : []),
+            { type: 'image_url' as const, image_url: { url: `data:${currentFile.mimeType};base64,${imgData}` } }
           ]
         });
       } else {
         apiMessages.push({ role: 'user', content: userText });
       }
 
-      // ═══ STREAMING via backend proxy (avoids CORS) ═══
-      const token = localStorage.getItem('skyverses_auth_token');
-      const API_BASE = import.meta.env.VITE_API_URL || 'https://api.skyverses.com';
-      
-      const response = await fetch(`${API_BASE}/ai/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          messages: apiMessages,
-          stream: false,
-        }),
-      });
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => null);
-        throw new Error(errData?.error?.message || errData?.detail || errData?.error || `HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-      const botText = data?.choices?.[0]?.message?.content || 'Không nhận được phản hồi. Vui lòng thử lại.';
+      // ═══ Gọi API qua common aiChatOnce ═══
+      const botText = await aiChatOnce(apiMessages) || 'Không nhận được phản hồi. Vui lòng thử lại.';
 
       setMessages(prev => [...prev, { id: botMsgId, role: 'bot', parts: [{ type: 'text', content: botText }], timestamp }]);
       startTypewriter(botMsgId, botText);

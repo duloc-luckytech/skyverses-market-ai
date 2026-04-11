@@ -13,12 +13,12 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { ChatMessage, ChatContentPart } from './AISupportChat';
+import { UIChatMessage, ChatContentPart } from './AISupportChat';
 
 interface FullChatModalProps {
   isOpen: boolean;
   onClose: () => void;
-  messages: ChatMessage[];
+  messages: UIChatMessage[];
   isLoading: boolean;
   onSendMessage: (text?: string, file?: {data: string, mimeType: string}) => void;
   onClearChat: () => void;

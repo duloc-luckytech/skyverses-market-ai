@@ -1,15 +1,33 @@
 /**
  * aiChat.ts — Skyverses AI Chat API client
- * Wraps POST /ai/chat (proxy → ezaiapi.com/v1/chat/completions / claude-sonnet-4-5)
- * Supports: single-shot JSON mode, streaming SSE mode
- * Used by: Storyboard Studio script analysis, AI planning flows, etc.
+ * Calls ezaiapi.com/v1/chat/completions directly (claude-sonnet-4-6)
+ * Supports: single-shot JSON mode, streaming SSE mode, multipart image+text
+ * Used by: AISupportChat (global chat), Storyboard Studio, AI planning flows
  */
 
-import { API_BASE_URL, getHeaders } from './config';
+// ── Config from env ────────────────────────────────────────────────────────
+
+const EZAI_BASE_URL = import.meta.env.VITE_EZAI_BASE_URL || 'https://ezaiapi.com/v1';
+const EZAI_API_KEY  = import.meta.env.VITE_EZAI_API_KEY  || '';
+const AI_MODEL      = import.meta.env.VITE_AI_MODEL      || 'claude-sonnet-4-6';
+
+// ── Message content types ──────────────────────────────────────────────────
+
+export interface TextContent {
+  type: 'text';
+  text: string;
+}
+
+export interface ImageUrlContent {
+  type: 'image_url';
+  image_url: { url: string };
+}
+
+export type MessageContent = string | (TextContent | ImageUrlContent)[];
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
-  content: string;
+  content: MessageContent;
 }
 
 export interface AIChatOptions {
@@ -24,50 +42,79 @@ export interface AIChatResult {
   usage?: { prompt_tokens: number; completion_tokens: number };
 }
 
+// ── Internal fetch helper ──────────────────────────────────────────────────
+
+const _chatFetch = async (
+  messages: ChatMessage[],
+  stream: boolean,
+  signal?: AbortSignal,
+  maxTokens = 4096,
+): Promise<Response> => {
+  const response = await fetch(`${EZAI_BASE_URL}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${EZAI_API_KEY}`,
+    },
+    body: JSON.stringify({ model: AI_MODEL, messages, stream, max_tokens: maxTokens }),
+    signal,
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.error?.message || err?.error || `AI Chat HTTP ${response.status}`);
+  }
+  return response;
+};
+
+// ── Robust JSON extractor ──────────────────────────────────────────────────
+// Strips markdown fences, then falls back to regex {…} / […] extraction.
+const _extractJSON = (raw: string): string => {
+  // 1. Strip ```json ... ``` or ``` ... ```
+  let s = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
+  // 2. If still not starting with { or [, find the first occurrence
+  if (s[0] !== '{' && s[0] !== '[') {
+    const obj = s.match(/\{[\s\S]+\}/);
+    const arr = s.match(/\[[\s\S]+\]/);
+    if (obj && arr) s = obj.index! <= arr.index! ? obj[0] : arr[0];
+    else s = (obj ?? arr)?.[0] ?? s;
+  }
+  return s;
+};
+
+// ── Public API ─────────────────────────────────────────────────────────────
+
 /**
- * Single-shot JSON call. Returns parsed response text.
+ * Single-shot call. Returns response text.
+ * Used by: Storyboard Studio (JSON parse), AI planning flows, AISupportChat
  */
 export const aiChatOnce = async (
   messages: ChatMessage[],
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  maxTokens = 4096,
 ): Promise<string> => {
-  const headers = getHeaders() as Record<string, string>;
-  const response = await fetch(`${API_BASE_URL}/ai/chat`, {
-    method: 'POST',
-    headers: { ...headers, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, stream: false }),
-    signal,
-  });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => null);
-    throw new Error(err?.error || `AI Chat HTTP ${response.status}`);
-  }
-
+  const response = await _chatFetch(messages, false, signal, maxTokens);
   const data = await response.json();
   return data?.choices?.[0]?.message?.content ?? '';
 };
 
 /**
+ * Single-shot call supporting multipart content (text + image_url).
+ * Used by: AISupportChat global widget (image upload support)
+ */
+export const aiChatOnceMultipart = aiChatOnce;
+
+/**
  * Streaming call — calls onToken per SSE delta, resolves with full accumulated text.
+ * Used by: Storyboard Studio script analysis (live terminal feedback)
  */
 export const aiChatStream = async (
   messages: ChatMessage[],
   onToken: (token: string) => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  maxTokens = 4096,
 ): Promise<string> => {
-  const headers = getHeaders() as Record<string, string>;
-  const response = await fetch(`${API_BASE_URL}/ai/chat`, {
-    method: 'POST',
-    headers: { ...headers, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, stream: true }),
-    signal,
-  });
-
-  if (!response.ok || !response.body) {
-    const err = await response.json().catch(() => null);
-    throw new Error(err?.error || `AI Chat HTTP ${response.status}`);
-  }
+  const response = await _chatFetch(messages, true, signal, maxTokens);
+  if (!response.body) throw new Error('No response body for streaming');
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -104,14 +151,15 @@ export const aiChatStream = async (
 };
 
 /**
- * Helper: call AI, parse JSON from response (strips markdown fences).
+ * Helper: call AI once, parse JSON from response.
+ * Strips markdown fences + regex fallback — robust against chatty models.
+ * Used by: any flow expecting structured JSON output
  */
-export const aiChatJSON = async <T = any>(
+export const aiChatJSON = async <T = unknown>(
   messages: ChatMessage[],
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  maxTokens = 4096,
 ): Promise<T> => {
-  const raw = await aiChatOnce(messages, signal);
-  // Strip ```json ... ``` markdown fences if present
-  const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
-  return JSON.parse(cleaned) as T;
+  const raw = await aiChatOnce(messages, signal, maxTokens);
+  return JSON.parse(_extractJSON(raw)) as T;
 };
