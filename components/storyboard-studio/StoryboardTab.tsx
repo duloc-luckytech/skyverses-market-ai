@@ -1,5 +1,5 @@
 
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence, Reorder, useDragControls, useMotionValue, useTransform } from 'framer-motion';
 import {
   Zap, Clock,
@@ -56,6 +56,7 @@ interface StoryboardTabProps {
   onReGenerateSceneImage: (sceneId: string) => void;
   onReGenerateSceneVideo: (sceneId: string) => void;
   onDeleteScene: (sceneId: string) => void;
+  onDuplicateScene?: (sceneId: string) => void;
   onEnhanceScenePrompt?: (sceneId: string) => void;
   enhancingSceneId?: string | null;
   onReorder: (reordered: Scene[]) => void;
@@ -78,6 +79,7 @@ interface SceneCardWrapperProps {
   onReGenerateImage: () => void;
   onReGenerateVideo: () => void;
   onDelete: () => void;
+  onDuplicate?: () => void;
   onEnhancePrompt?: () => void;
   onShotTypeChange: (st: ShotType) => void;
   onDurationChange: (d: DurationPreset) => void;
@@ -87,7 +89,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
   scene, index, isSelected, assets, isProcessing, isEnhancingPrompt,
   viewLayout = 'list',
   onToggle, onView, onUpdate, onReGenerateImage, onReGenerateVideo,
-  onDelete, onEnhancePrompt, onShotTypeChange, onDurationChange,
+  onDelete, onDuplicate, onEnhancePrompt, onShotTypeChange, onDurationChange,
 }) => {
   const dragControls = useDragControls();
   const y = useMotionValue(0);
@@ -196,8 +198,11 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
 
         {/* Selection checkbox */}
         <div
+          role="checkbox"
+          aria-checked={isSelected}
+          aria-label={`Chọn cảnh ${index + 1}`}
           onClick={(e) => { e.stopPropagation(); onToggle(); }}
-          className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shadow-sm z-10
+          className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shadow-sm z-10 cursor-pointer
             ${isSelected
               ? 'bg-brand-blue border-brand-blue'
               : 'bg-white/50 dark:bg-black/40 border-slate-300 dark:border-white/20 opacity-0 group-hover:opacity-100'
@@ -218,6 +223,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
         shotType={scene.shotType ?? 'WIDE'}
         duration={scene.duration ?? 8}
         status={scene.status}
+        errorMessage={scene.errorMessage}
         onShotTypeChange={onShotTypeChange}
         onDurationChange={onDurationChange}
         isProcessing={isProcessing}
@@ -264,6 +270,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
         onRegenerateVideo={onReGenerateVideo}
         onEnhancePrompt={onEnhancePrompt ?? (() => {})}
         onDelete={onDelete}
+        onDuplicate={onDuplicate}
         isListView={isListView}
       />
     </div>
@@ -311,7 +318,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   scenes, selectedSceneIds, toggleSceneSelection, selectAllScenes,
   isProcessing, isEnhancing, assetUploadRef, setActiveUploadAssetId,
   onOpenSettings, onOpenRenderConfig, onOpenAestheticConfig, onLoadSample, onLoadSuggestion, settings,
-  onReGenerateSceneImage, onReGenerateSceneVideo, onDeleteScene,
+  onReGenerateSceneImage, onReGenerateSceneVideo, onDeleteScene, onDuplicateScene,
   onEnhanceScenePrompt, enhancingSceneId,
   onReorder, onShotTypeChange, onDurationChange,
 }) => {
@@ -320,6 +327,47 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   const [viewLayout, setViewLayout] = useState<'grid' | 'list' | 'timeline'>('list');
   const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
   const [bottomTab, setBottomTab] = useState<'script' | 'scenes' | 'videos'>('scenes');
+  const [keyboardDeleteConfirm, setKeyboardDeleteConfirm] = useState<string | null>(null);
+
+  // ── Keyboard shortcuts ─────────────────────────────────────────────────────
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      // Bỏ qua nếu đang focus vào input / textarea / contentEditable
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      ) return;
+
+      // Chỉ kích hoạt khi đúng 1 scene được chọn
+      if (selectedSceneIds.length !== 1) return;
+      const sceneId = selectedSceneIds[0];
+
+      switch (e.key) {
+        case 'Delete':
+        case 'Backspace':
+          e.preventDefault();
+          setKeyboardDeleteConfirm(sceneId);
+          break;
+        case 'd':
+        case 'D':
+          e.preventDefault();
+          onDuplicateScene?.(sceneId);
+          break;
+        case 'e':
+        case 'E':
+          e.preventDefault();
+          onEnhanceScenePrompt?.(sceneId);
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [selectedSceneIds, onDuplicateScene, onEnhanceScenePrompt, onDeleteScene]);
 
   const handleMainImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -336,6 +384,8 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   };
 
   const allSelected = selectedSceneIds.length === scenes.length && scenes.length > 0;
+  const processingCount = scenes.filter(s => s.status === 'generating' || s.status === 'analyzing').length;
+  const totalScenes = scenes.length;
 
   return (
     <motion.div
@@ -594,6 +644,48 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
             </div>
           </header>
 
+          {/* ── Batch progress indicator ─────────────────────── */}
+          <AnimatePresence>
+            {processingCount > 0 && (
+              <motion.div
+                key="batch-progress"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.22 }}
+                className="overflow-hidden"
+              >
+                <div className="flex items-center gap-3 px-1 py-2">
+                  {/* Spinner */}
+                  <Loader2 size={13} className="text-brand-blue animate-spin shrink-0" />
+
+                  {/* Label */}
+                  <span className="text-[10px] font-black text-slate-500 dark:text-white/40 uppercase tracking-widest">
+                    <span className="text-brand-blue">{processingCount}</span>
+                    /{totalScenes} đang xử lý…
+                  </span>
+
+                  {/* Progress bar */}
+                  <div className="flex-1 h-1 bg-slate-100 dark:bg-white/8 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-brand-blue rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{
+                        width: `${totalScenes > 0 ? ((totalScenes - processingCount) / totalScenes) * 100 : 0}%`,
+                      }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                    />
+                  </div>
+
+                  {/* Percent */}
+                  <span className="text-[9px] font-black tabular-nums text-slate-400 dark:text-white/30 shrink-0">
+                    {totalScenes > 0 ? Math.round(((totalScenes - processingCount) / totalScenes) * 100) : 0}%
+                  </span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Scene grid / list / timeline */}
           {viewLayout === 'timeline' ? (
             <TimelineView
@@ -607,6 +699,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               onReGenerateImage={onReGenerateSceneImage}
               onReGenerateVideo={onReGenerateSceneVideo}
               onDelete={onDeleteScene}
+              onDuplicate={onDuplicateScene}
               enhancingSceneId={enhancingSceneId}
             />
           ) : isProcessing ? (
@@ -684,6 +777,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   onReGenerateImage={() => onReGenerateSceneImage(scene.id)}
                   onReGenerateVideo={() => onReGenerateSceneVideo(scene.id)}
                   onDelete={() => onDeleteScene(scene.id)}
+                  onDuplicate={onDuplicateScene ? () => onDuplicateScene(scene.id) : undefined}
                   onEnhancePrompt={onEnhanceScenePrompt ? () => onEnhanceScenePrompt(scene.id) : undefined}
                   onShotTypeChange={(st) => onShotTypeChange(scene.id, st)}
                   onDurationChange={(d) => onDurationChange(scene.id, d)}
@@ -783,6 +877,51 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
         onClose={() => setIsTemplatePickerOpen(false)}
         onSelect={(script) => setScript(script)}
       />
+
+      {/* Keyboard delete confirm dialog */}
+      <AnimatePresence>
+        {keyboardDeleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+            onClick={() => setKeyboardDeleteConfirm(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0, y: 12 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0, y: 8 }}
+              transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+              className="bg-white dark:bg-[#131318] border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <p className="text-[11px] font-black uppercase tracking-widest text-rose-500 mb-1">Xác nhận xoá</p>
+              <p className="text-[13px] font-semibold text-slate-700 dark:text-white/80 leading-snug">
+                Bạn có chắc muốn xoá cảnh này không?
+              </p>
+              <p className="text-[10px] text-slate-400 dark:text-white/30 mt-1">Hành động này không thể hoàn tác.</p>
+              <div className="flex items-center gap-2 mt-5">
+                <button
+                  onClick={() => setKeyboardDeleteConfirm(null)}
+                  className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white transition-all"
+                >
+                  Huỷ
+                </button>
+                <button
+                  onClick={() => {
+                    onDeleteScene(keyboardDeleteConfirm);
+                    setKeyboardDeleteConfirm(null);
+                  }}
+                  className="flex-1 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-md"
+                >
+                  Xoá cảnh
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Bottom Tab Bar (cố định) ─────────────────────────── */}
       <div className="shrink-0 flex items-stretch border-t border-slate-200 dark:border-white/8 bg-white dark:bg-[#0a0a0c] z-30">

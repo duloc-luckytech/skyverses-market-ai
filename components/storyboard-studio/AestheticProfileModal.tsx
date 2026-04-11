@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Sparkles, ShieldCheck, ChevronDown, Layout,
-  Camera, Music, Mic, Palette, Zap, Check, ChevronRight
+  Camera, Music, Mic, Palette, Zap, Check, ChevronRight,
+  Loader2
 } from 'lucide-react';
+import { useToast } from '../../context/ToastContext';
 
 interface AestheticProfileModalProps {
   isOpen: boolean;
@@ -106,7 +108,24 @@ const StyleCard: React.FC<{
 export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
   isOpen, onClose, settings, setSettings
 }) => {
+  const { showToast } = useToast();
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const handleSave = useCallback(() => {
+    setIsSaving(true);
+    setSaveSuccess(false);
+    setTimeout(() => {
+      setIsSaving(false);
+      setSaveSuccess(true);
+      showToast('✓ Đã lưu cấu hình Aesthetic Profile', 'success');
+      setTimeout(() => {
+        setSaveSuccess(false);
+        onClose();
+      }, 600);
+    }, 300);
+  }, [onClose, showToast]);
 
   const handleChange = (key: string, value: any) =>
     setSettings({ ...settings, [key]: value });
@@ -149,7 +168,11 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
                   </p>
                 </div>
               </div>
-              <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10">
+              <button
+                onClick={onClose}
+                aria-label="Đóng Aesthetic Profile"
+                className="p-2 text-slate-400 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10"
+              >
                 <X size={24} />
               </button>
             </div>
@@ -319,10 +342,15 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
                 <span className="text-[9px] font-black uppercase tracking-widest">Aesthetic Protocol Synchronized</span>
               </div>
               <button
-                onClick={onClose}
-                className="px-10 py-3.5 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-brand-blue/25 hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5"
+                onClick={handleSave}
+                disabled={isSaving || saveSuccess}
+                aria-label="Xác nhận và lưu Aesthetic Profile"
+                className="px-10 py-3.5 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-brand-blue/25 hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 disabled:opacity-80"
               >
-                <Sparkles size={13} fill="currentColor" /> Xác nhận thay đổi
+                {isSaving && <Loader2 size={13} className="animate-spin" />}
+                {saveSuccess && <Check size={13} strokeWidth={3.5} />}
+                {!isSaving && !saveSuccess && <Sparkles size={13} fill="currentColor" />}
+                {isSaving ? 'Đang lưu...' : saveSuccess ? 'Đã lưu!' : 'Xác nhận thay đổi'}
               </button>
             </div>
           </motion.div>

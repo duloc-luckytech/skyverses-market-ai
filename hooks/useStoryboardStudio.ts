@@ -3,6 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import { generateDemoImage } from '../services/gemini';
 import { aiChatJSON, aiChatStream, ChatMessage } from '../apis/aiChat';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { imagesApi } from '../apis/images';
 import { videosApi, VideoJobRequest } from '../apis/videos';
 import { ExplorerItem } from '../components/ExplorerDetailModal';
@@ -38,6 +39,7 @@ export interface Scene {
   status: 'idle' | 'analyzing' | 'generating' | 'done' | 'error';
   jobId?: string;
   characterIds?: string[];
+  errorMessage?: string;
 }
 
 export type AssetType = 'CHARACTER' | 'LOCATION' | 'OBJECT';
@@ -57,6 +59,7 @@ export interface ReferenceAsset {
 
 export const useStoryboardStudio = () => {
   const { credits, useCredits, addCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
+  const { showToast } = useToast();
 
   const PROJECT_KEY = 'skyverses_storyboard_project';
 
@@ -134,7 +137,31 @@ export const useStoryboardStudio = () => {
     return () => { isCancelledRef.current = true; };
   }, []);
 
-  const [settings, setSettings] = useState({
+  // ── Batch completion toast tracker ──────────────────────────────────────────
+  // Fires when ALL processing scenes finish (transition from ≥1 processing → 0)
+  const prevProcessingCountRef = useRef(0);
+  useEffect(() => {
+    const processingCount = scenes.filter(sc => sc.status === 'generating' || sc.status === 'analyzing').length;
+    const prev = prevProcessingCountRef.current;
+    prevProcessingCountRef.current = processingCount;
+
+    // Only fire when transitioning from active → idle AND there's at least 1 finished scene
+    if (prev > 0 && processingCount === 0) {
+      const doneCount  = scenes.filter(sc => sc.status === 'done').length;
+      const errorCount = scenes.filter(sc => sc.status === 'error').length;
+      if (doneCount > 0 || errorCount > 0) {
+        if (errorCount === 0) {
+          showToast(`✓ Đã xử lý ${doneCount} cảnh thành công`, 'success');
+        } else if (doneCount === 0) {
+          showToast(`⚠ ${errorCount} cảnh gặp lỗi, vui lòng thử lại`, 'error');
+        } else {
+          showToast(`⚠ ${doneCount} cảnh thành công, ${errorCount} cảnh lỗi`, 'warning');
+        }
+      }
+    }
+  }, [scenes, showToast]);
+
+  const DEFAULT_SETTINGS = {
     videoPrompt: true,
     format: 'TVC Quảng cáo',
     style: 'Hoạt hình 3D',
@@ -159,7 +186,27 @@ export const useStoryboardStudio = () => {
     exportFormat: 'MP4',
     autoDownload: false,
     watermark: false,
+  };
+
+  type StoryboardSettings = typeof DEFAULT_SETTINGS;
+
+  const SETTINGS_KEY = 'storyboard_settings';
+
+  const [settings, setSettings] = useState<StoryboardSettings>(() => {
+    try {
+      const saved = localStorage.getItem(SETTINGS_KEY);
+      return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
+    } catch {
+      return DEFAULT_SETTINGS;
+    }
   });
+
+  // Auto-save settings to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    } catch { /* quota exceeded */ }
+  }, [settings]);
 
   const [systemPrompt, setSystemPrompt] = useState(`You are an expert AI Video Producer and Concept Artist. 
 Your job is to parse scripts and extract EVERY individual entity for pre-production.

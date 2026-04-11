@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Zap, ShieldCheck, Film, ImageIcon, Settings2,
   ChevronRight, Loader2, Check, Package, Monitor, Clock
 } from 'lucide-react';
 import { pricingApi, PricingModel } from '../../apis/pricing';
+import { useToast } from '../../context/ToastContext';
 
 interface RenderConfigModalProps {
   isOpen: boolean;
@@ -117,10 +118,27 @@ const PillSelector: React.FC<{
 export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
   isOpen, onClose, settings, setSettings
 }) => {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('video');
   const [imageModels, setImageModels] = useState<PricingModel[]>([]);
   const [videoModels, setVideoModels] = useState<PricingModel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const handleSave = useCallback(() => {
+    setIsSaving(true);
+    setSaveSuccess(false);
+    setTimeout(() => {
+      setIsSaving(false);
+      setSaveSuccess(true);
+      showToast('✓ Đã lưu cấu hình render', 'success');
+      setTimeout(() => {
+        setSaveSuccess(false);
+        onClose();
+      }, 600);
+    }, 300);
+  }, [onClose, showToast]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -198,7 +216,11 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                     </p>
                   </div>
                 </div>
-                <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10">
+                <button
+                  onClick={onClose}
+                  aria-label="Đóng cấu hình render"
+                  className="p-2 text-slate-400 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10"
+                >
                   <X size={22} />
                 </button>
               </div>
@@ -462,10 +484,16 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                   Tiếp theo <ChevronRight size={13} />
                 </button>
                 <button
-                  onClick={onClose}
-                  className="px-8 py-3 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand-blue/25 hover:brightness-110 active:scale-95 transition-all"
+                  onClick={handleSave}
+                  disabled={isSaving || saveSuccess}
+                  aria-label="Xác nhận và lưu cấu hình"
+                  className="px-8 py-3 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand-blue/25 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2 disabled:opacity-80"
                 >
-                  Xác nhận
+                  {isSaving && <Loader2 size={13} className="animate-spin" />}
+                  {saveSuccess && <Check size={13} strokeWidth={3} />}
+                  {!isSaving && !saveSuccess && 'Xác nhận'}
+                  {isSaving && 'Đang lưu...'}
+                  {saveSuccess && 'Đã lưu!'}
                 </button>
               </div>
             </div>

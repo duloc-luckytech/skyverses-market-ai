@@ -29,6 +29,7 @@ export const AIQuickActions: React.FC<AIQuickActionsProps> = ({
       onClick:  onEnhanceAllPrompts,
       className:'border-brand-blue/40 text-brand-blue hover:bg-brand-blue/10',
       cost:     null,
+      ariaLabel: 'Cải thiện tất cả prompt bằng AI',
     },
     {
       label:    'Tạo tất cả hình ảnh',
@@ -37,6 +38,7 @@ export const AIQuickActions: React.FC<AIQuickActionsProps> = ({
       onClick:  onGenerateBatchImages,
       className:'border-amber-500/40 text-amber-400 hover:bg-amber-500/10',
       cost:     imageCredits,
+      ariaLabel: `Tạo hình ảnh cho tất cả cảnh — tốn ${imageCredits} credits`,
     },
     {
       label:    'Tạo tất cả video',
@@ -45,6 +47,7 @@ export const AIQuickActions: React.FC<AIQuickActionsProps> = ({
       onClick:  onGenerateBatchVideos,
       className:'border-purple-500/40 text-purple-400 hover:bg-purple-500/10',
       cost:     videoCredits,
+      ariaLabel: `Tạo video cho tất cả cảnh — tốn ${videoCredits} credits`,
     },
   ];
 
@@ -67,6 +70,7 @@ export const AIQuickActions: React.FC<AIQuickActionsProps> = ({
             whileTap={{ scale: 0.97 }}
             onClick={action.onClick}
             disabled={isProcessing}
+            aria-label={action.ariaLabel}
             className={`w-full flex items-center gap-2.5 rounded-xl px-3 py-2.5 border text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed ${action.className}`}
           >
             <span className="shrink-0">{action.icon}</span>

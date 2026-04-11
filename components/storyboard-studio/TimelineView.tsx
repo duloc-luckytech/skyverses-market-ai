@@ -44,6 +44,7 @@ interface TimelineViewProps {
   onReGenerateImage: (id: string) => void;
   onReGenerateVideo: (id: string) => void;
   onDelete: (id: string) => void;
+  onDuplicate?: (id: string) => void;
   enhancingSceneId?: string | null;
 }
 

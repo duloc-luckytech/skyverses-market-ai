@@ -100,12 +100,16 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       {/* Mobile toggle button */}
       <button
         onClick={() => setIsMobileExpanded(true)}
+        aria-label="Mở thanh điều hướng"
+        aria-expanded={isMobileExpanded}
         className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-brand-blue rounded-full shadow-2xl flex items-center justify-center text-white active:scale-95 transition-transform"
       >
         <Menu size={20} />
       </button>
 
-      <aside className={`
+      <aside
+        aria-label="Thanh điều hướng Storyboard Studio"
+        className={`
         ${isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
         w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
@@ -119,6 +123,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             <div className="flex items-center gap-2.5">
               <button
                 onClick={onClose}
+                aria-label="Đóng Storyboard Studio"
                 className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
               >
                 <ChevronRight size={16} className="rotate-180" />
@@ -132,6 +137,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             </div>
             <button
               onClick={() => setIsMobileExpanded(false)}
+              aria-label="Đóng thanh điều hướng"
               className="lg:hidden p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
             >✕</button>
           </div>
@@ -160,7 +166,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         </div>
 
         {/* ─── SIDEBAR CONTENT ─── */}
-        <div className={`flex-grow overflow-y-auto no-scrollbar ${!isMobileExpanded ? 'hidden lg:flex lg:flex-col' : 'flex flex-col'}`}>
+        <div className="flex-grow overflow-y-auto no-scrollbar flex flex-col">
           <MobileGeneratorBar
             isExpanded={isMobileExpanded}
             setIsExpanded={setIsMobileExpanded}
@@ -254,10 +260,11 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       </aside>
 
       {/* ─── MAIN CONTENT ─── */}
-      <div className="flex-grow flex flex-col overflow-hidden relative">
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden relative">
         <AnimatePresence mode="wait">
             {s.activeTab === 'STORYBOARD' && (
               <StoryboardTab
+
                 key="tab-story"
                 script={s.script}
                 setScript={s.setScript}
@@ -296,6 +303,25 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 onReGenerateSceneImage={s.handleReGenerateSceneImage}
                 onReGenerateSceneVideo={s.handleReGenerateSceneVideo}
                 onDeleteScene={(id) => s.setScenes(prev => prev.filter(sc => sc.id !== id))}
+                onDuplicateScene={(id) => {
+                  const src = s.scenes.find(sc => sc.id === id);
+                  if (!src) return;
+                  const copy = {
+                    ...src,
+                    id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+                    order: src.order + 0.5,       // will be renumbered after reorder
+                    status: 'idle' as const,
+                    visualUrl: null,
+                    videoUrl: null,
+                  };
+                  s.setScenes(prev => {
+                    const inserted = [...prev];
+                    const idx = inserted.findIndex(sc => sc.id === id);
+                    inserted.splice(idx + 1, 0, copy);
+                    // Renumber orders
+                    return inserted.map((sc, i) => ({ ...sc, order: i + 1 }));
+                  });
+                }}
                 onEnhanceScenePrompt={s.handleEnhanceScenePrompt}
                 enhancingSceneId={s.enhancingSceneId}
                 onReorder={s.handleReorder}
@@ -349,19 +375,19 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               />
             )}
           </AnimatePresence>
-      </div>
 
-      <FooterControls
-        scenesCount={s.scenes.length}
-        selectedCount={s.selectedSceneIds.length}
-        isProcessing={s.isProcessing}
-        canCreate={s.script.trim().length > 0}
-        onSynthesize={s.handleCreateStoryboard}
-        onGenerateImages={s.handleGenerateBatchImages}
-        onGenerateVideos={s.handleGenerateBatchVideos}
-        onReset={() => s.setScenes([])}
-        totalDuration={s.computedTotalDuration}
-      />
+        <FooterControls
+          scenesCount={s.scenes.length}
+          selectedCount={s.selectedSceneIds.length}
+          isProcessing={s.isProcessing}
+          canCreate={s.script.trim().length > 0}
+          onSynthesize={s.handleCreateStoryboard}
+          onGenerateImages={s.handleGenerateBatchImages}
+          onGenerateVideos={s.handleGenerateBatchVideos}
+          onReset={() => s.setScenes([])}
+          totalDuration={s.computedTotalDuration}
+        />
+      </div>
 
       <input
         type="file"

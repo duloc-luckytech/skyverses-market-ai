@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, ChevronRight } from 'lucide-react';
+import { Users, ChevronRight, UserPlus } from 'lucide-react';
 import { ReferenceAsset, AssetStatus } from '../../../hooks/useStoryboardStudio';
 
 const STATUS_DOT: Record<AssetStatus, string> = {
@@ -42,9 +42,38 @@ export const CharactersQuickView: React.FC<CharactersQuickViewProps> = ({ assets
       {/* Asset list */}
       <AnimatePresence mode="popLayout">
         {allPreview.length === 0 ? (
-          <p className="text-[10px] text-white/25 italic py-1">
-            Chưa có nhân vật — thêm ở tab Assets
-          </p>
+          <motion.div
+            key="empty-state"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="flex flex-col items-center gap-3 py-4"
+          >
+            {/* Icon placeholder */}
+            <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+              <Users size={16} className="text-white/20" />
+            </div>
+
+            <div className="text-center space-y-0.5">
+              <p className="text-[10px] font-bold text-white/30 leading-snug">
+                Chưa có nhân vật nào
+              </p>
+              <p className="text-[9px] text-white/20 leading-snug">
+                Thêm nhân vật để giữ bản sắc<br />nhất quán qua các cảnh.
+              </p>
+            </div>
+
+            {/* CTA button */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={onNavigateToAssets}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-brand-blue/15 hover:bg-brand-blue/25 border border-brand-blue/25 hover:border-brand-blue/40 text-brand-blue text-[9px] font-black uppercase tracking-widest transition-all"
+            >
+              <UserPlus size={10} />
+              Thêm nhân vật
+            </motion.button>
+          </motion.div>
         ) : (
           allPreview.map((asset, i) => (
             <motion.button
