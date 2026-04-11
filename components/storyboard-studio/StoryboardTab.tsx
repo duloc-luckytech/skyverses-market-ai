@@ -2,19 +2,16 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence, Reorder, useDragControls, useMotionValue, useTransform } from 'framer-motion';
 import {
-  Zap, Clock,
   Check, MonitorPlay, User, Maximize2,
-  Grid2X2, Film, FileText,
-  Image as LucideImage, Loader2, Square as SquareIcon, LayoutGrid, Settings,
-  Sparkles, Music, Mic, FileAudio, Clapperboard,
-  Play, Video, AlignJustify,
+  Grid2X2, Film,
+  Image as LucideImage, Loader2, Square as SquareIcon, LayoutGrid,
+  Clapperboard,
+  Play, AlignJustify,
 } from 'lucide-react';
 import { ReferenceAsset, Scene, ShotType, DurationPreset } from '../../hooks/useStoryboardStudio';
-import { IdentityAnchors } from './IdentityAnchors';
 import { SceneCardHeader }    from './scene-card/SceneCardHeader';
 import { DragHandle }         from './scene-card/DragHandle';
 import { SceneHoverActions }  from './scene-card/SceneHoverActions';
-import AIScriptAssistant      from './AIScriptAssistant';
 import TimelineView           from './TimelineView';
 import { TemplatePickerModal } from './TemplatePickerModal';
 
@@ -322,11 +319,8 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   onEnhanceScenePrompt, enhancingSceneId,
   onReorder, onShotTypeChange, onDurationChange,
 }) => {
-  const mainImageInputRef = useRef<HTMLInputElement>(null);
-  const mainAudioInputRef = useRef<HTMLInputElement>(null);
   const [viewLayout, setViewLayout] = useState<'grid' | 'list' | 'timeline'>('list');
   const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
-  const [bottomTab, setBottomTab] = useState<'script' | 'scenes' | 'videos'>('scenes');
   const [keyboardDeleteConfirm, setKeyboardDeleteConfirm] = useState<string | null>(null);
 
   // ── Keyboard shortcuts ─────────────────────────────────────────────────────
@@ -369,20 +363,6 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
     return () => window.removeEventListener('keydown', handler);
   }, [selectedSceneIds, onDuplicateScene, onEnhanceScenePrompt, onDeleteScene]);
 
-  const handleMainImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setScriptRefImage(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleMainAudioUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) setScriptRefAudio(file.name);
-  };
-
   const allSelected = selectedSceneIds.length === scenes.length && scenes.length > 0;
   const processingCount = scenes.filter(s => s.status === 'generating' || s.status === 'analyzing').length;
   const totalScenes = scenes.length;
@@ -393,205 +373,23 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
       className="flex-grow flex flex-col bg-[#fafafa] dark:bg-[#050506] transition-colors duration-500 relative"
     >
       {/* ── Scrollable content area ──────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto no-scrollbar p-5 lg:p-10 pb-24">
-      <div className="max-w-[1600px] mx-auto w-full space-y-8 lg:space-y-10">
+      <div className="flex-1 overflow-y-auto no-scrollbar p-5 lg:p-8 pb-24">
+      <div className="max-w-[1600px] mx-auto w-full">
 
-        {/* ── Header ──────────────────────────────────────────── */}
-        <div className="flex items-center gap-3 border-l-4 border-brand-blue pl-5">
-          <Zap size={18} className="text-brand-blue" />
-          <h2 className="text-2xl lg:text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Tạo Kịch Bản</h2>
-        </div>
-
-        {/* ── Script tab ───────────────────────────────────────── */}
-        {bottomTab === 'script' && (
-          <AnimatePresence mode="wait">
-            <motion.div key="script-tab" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
-
-        {/* ── Script Input ─────────────────────────────────────── */}
-        <div className="space-y-4 max-w-6xl mx-auto w-full">
-          <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-[0.4em] italic">Ý TƯỞNG KỊCH BẢN</label>
-          <div className="relative group">
-            <textarea
-              value={script}
-              onChange={(e) => setScript(e.target.value)}
-              disabled={isEnhancing}
-              className={`w-full h-40 lg:h-52 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/8 px-6 py-5 rounded-2xl text-base lg:text-lg font-medium leading-relaxed outline-none focus:border-brand-blue/50 focus:ring-4 focus:ring-brand-blue/8 transition-all resize-none shadow-sm dark:shadow-xl text-slate-800 dark:text-white placeholder:text-slate-300 dark:placeholder:text-white/15 ${isEnhancing ? 'opacity-50' : ''}`}
-              placeholder="Nhập ý tưởng kịch bản tại đây. Càng chi tiết, ảnh/video càng sát với tầm nhìn của bạn..."
-            />
-            {isEnhancing && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 dark:bg-black/40 backdrop-blur-sm rounded-2xl z-20">
-                <Loader2 size={28} className="text-brand-blue animate-spin" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white animate-pulse mt-3">AI đang phân tích...</span>
-              </div>
-            )}
-            <div className="absolute bottom-4 right-4 flex gap-3">
-              <button onClick={onLoadSuggestion} disabled={isEnhancing} className="flex items-center gap-1.5 text-[9px] font-black text-brand-blue uppercase tracking-widest hover:underline transition-all disabled:opacity-30">
-                <Sparkles size={11} /> Gợi ý AI
-              </button>
-              <button onClick={() => setIsTemplatePickerOpen(true)} disabled={isEnhancing} className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest hover:underline transition-all disabled:opacity-30">
-                <LayoutGrid size={11} /> Dùng mẫu
-              </button>
-            </div>
-          </div>
-
-          {/* Attachment pills */}
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => mainImageInputRef.current?.click()}
-              className={`flex items-center gap-2 px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${
-                scriptRefImage
-                  ? 'bg-brand-blue/10 border-brand-blue/30 text-brand-blue'
-                  : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/8 text-slate-400 dark:text-gray-500 hover:border-brand-blue/30 hover:text-brand-blue'
-              }`}
-            >
-              <LucideImage size={12} />
-              {scriptRefImage ? '✓ Ảnh reference' : 'Tải ảnh nhân vật'}
-            </button>
-            <button
-              onClick={() => mainAudioInputRef.current?.click()}
-              className={`flex items-center gap-2 px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${
-                scriptRefAudio
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
-                  : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/8 text-slate-400 dark:text-gray-500 hover:border-emerald-400/30 hover:text-emerald-500'
-              }`}
-            >
-              <FileAudio size={12} />
-              {scriptRefAudio ? `✓ ${scriptRefAudio}` : 'Tải audio lời bình'}
-            </button>
-            <input type="file" ref={mainImageInputRef} className="hidden" accept="image/*" onChange={handleMainImageUpload} />
-            <input type="file" ref={mainAudioInputRef} className="hidden" accept="audio/*" onChange={handleMainAudioUpload} />
-          </div>
-        </div>
-
-        {/* ── Config summary bar ───────────────────────────────── */}
-        <div className="max-w-6xl mx-auto w-full grid grid-cols-1 xl:grid-cols-3 gap-4">
-          {/* Models bar */}
-          <div className="xl:col-span-2 bg-white dark:bg-[#0a0a0e] border border-slate-200 dark:border-white/8 rounded-2xl p-4 lg:p-5 flex flex-wrap items-center gap-6 shadow-sm">
-            {[
-              { icon: <LucideImage size={13} />, label: 'Image', val: settings.imageModel?.replace(/_/g, ' ') || 'Auto', color: 'text-brand-blue bg-brand-blue/10' },
-              { icon: <Film size={13} />, label: 'Video', val: settings.model?.toUpperCase() || 'Auto', color: 'text-purple-500 bg-purple-500/10' },
-              { icon: <Maximize2 size={13} />, label: 'Res', val: '1080P · 16:9', color: 'text-emerald-500 bg-emerald-500/10' },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center gap-2.5">
-                <div className={`p-1.5 rounded-lg ${item.color}`}>{item.icon}</div>
-                <div>
-                  <p className="text-[7px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest leading-none">{item.label}</p>
-                  <p className="text-[10px] font-black text-slate-800 dark:text-white uppercase italic leading-tight mt-0.5 truncate max-w-[120px]">{item.val}</p>
-                </div>
-              </div>
-            ))}
-            <button
-              onClick={onOpenRenderConfig}
-              className="ml-auto flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/8 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 hover:text-slate-700 dark:hover:text-white transition-all border border-slate-100 dark:border-white/5"
-            >
-              <Settings size={12} /> Cấu hình
-            </button>
-          </div>
-
-          {/* Aesthetic profile */}
-          <div className="bg-white dark:bg-[#0a0a0e] border border-slate-200 dark:border-white/8 rounded-2xl p-4 lg:p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Sparkles size={12} className="text-brand-blue" />
-                <span className="text-[9px] font-black uppercase tracking-widest text-slate-800 dark:text-white">Aesthetic Profile</span>
-              </div>
-              <button onClick={onOpenAestheticConfig} className="text-[8px] font-black text-brand-blue uppercase tracking-wider hover:underline">Cài đặt</button>
-            </div>
-            <div className="grid grid-cols-2 gap-x-3 gap-y-2">
-              {[
-                { l: 'Format', v: settings.format },
-                { l: 'Style', v: settings.style },
-                { l: 'Culture', v: settings.culture },
-              ].map((row) => row.v && (
-                <div key={row.l} className="space-y-0.5">
-                  <p className="text-[7px] font-black text-slate-400 dark:text-gray-600 uppercase leading-none">{row.l}</p>
-                  <p className="text-[9px] font-bold text-slate-600 dark:text-gray-300 truncate leading-tight">{row.v}</p>
-                </div>
-              ))}
-              <div className="flex items-center gap-2 col-span-2">
-                <div className="flex items-center gap-1"><Music size={9} className="text-slate-300 dark:text-white/20" /><div className={`w-1.5 h-1.5 rounded-full ${settings.bgm ? 'bg-emerald-400' : 'bg-slate-200 dark:bg-white/10'}`} /></div>
-                <div className="flex items-center gap-1"><Mic size={9} className="text-slate-300 dark:text-white/20" /><div className={`w-1.5 h-1.5 rounded-full ${settings.voiceOver ? 'bg-emerald-400' : 'bg-slate-200 dark:bg-white/10'}`} /></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Duration HUD ─────────────────────────────────────── */}
-        <div className="max-w-6xl mx-auto w-full">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white dark:bg-[#0a0a0e] border border-slate-200 dark:border-white/8 rounded-2xl p-4 lg:p-5 flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-brand-blue/10 rounded-xl text-brand-blue">
-                  <Clock size={16} />
-                </div>
-                <div>
-                  <p className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 leading-none tracking-widest">Tổng thời lượng</p>
-                  <div className="flex items-baseline gap-1 mt-1">
-                    <input
-                      type="number" step={8} min={8} value={totalDuration}
-                      onChange={(e) => setTotalDuration(parseInt(e.target.value) || 8)}
-                      className="bg-transparent border-none text-2xl font-black italic tracking-tighter text-slate-900 dark:text-white w-14 outline-none focus:ring-0 p-0"
-                    />
-                    <span className="text-lg font-black italic text-slate-200 dark:text-white/20">s</span>
-                  </div>
-                </div>
-              </div>
-              <span className="text-[8px] font-black text-slate-200 dark:text-white/15 uppercase italic">÷8</span>
-            </div>
-            <div className="bg-white dark:bg-[#0a0a0e] border border-slate-200 dark:border-white/8 rounded-2xl p-4 lg:p-5 flex items-center justify-between shadow-sm opacity-60">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-slate-100 dark:bg-white/5 rounded-xl text-slate-400 dark:text-gray-500">
-                  <LayoutGrid size={16} />
-                </div>
-                <div>
-                  <p className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-500 leading-none tracking-widest">Thời lượng cảnh</p>
-                  <p className="text-2xl font-black italic tracking-tighter text-slate-900 dark:text-white mt-1 leading-none">{sceneDuration}s</p>
-                </div>
-              </div>
-              <span className="text-[8px] font-black text-slate-200 dark:text-white/15 uppercase italic">FIXED</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Identity Anchors ─────────────────────────────────── */}
-        <IdentityAnchors
-          assets={assets}
-          openAssetModal={openAssetModal}
-          onViewAsset={onViewAsset}
-          removeAsset={removeAsset}
-          handleReGenerateAsset={handleReGenerateAsset}
-        />
-
-        {/* ── AI Script Assistant ─────────────────────────────── */}
-        <AIScriptAssistant
-          script={script}
-          scenes={scenes}
-          settings={settings}
-          onScriptUpdate={setScript}
-          isProcessing={isProcessing}
-        />
-
-            </motion.div>
-          </AnimatePresence>
-        )}
-
-        {/* ── Scenes tab ───────────────────────────────────────── */}
-        {bottomTab === 'scenes' && (
-          <AnimatePresence mode="wait">
-            <motion.div key="scenes-tab" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-
-        {/* ── Scene Grid ───────────────────────────────────────── */}
+        {/* ── Scenes Panel ─────────────────────────────────────────── */}
         <div className="space-y-6 pt-2 border-slate-100 dark:border-white/5">
           {/* Header toolbar */}
           <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5">
                 <MonitorPlay size={18} className="text-brand-blue" />
-                <h3 className="text-xl lg:text-2xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Bản thảo phân cảnh</h3>
+                <h3 className="text-xl lg:text-2xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">
+                  🎬 Phân Cảnh{scenes.length > 0 ? ` (${scenes.length})` : ''}
+                </h3>
               </div>
-              {scenes.length > 0 && (
+              {scenes.length > 0 && selectedSceneIds.length > 0 && (
                 <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-600 mt-1 ml-7">
-                  {scenes.length} phân cảnh · {selectedSceneIds.length > 0 ? `${selectedSceneIds.length} đã chọn` : 'Chưa chọn'}
+                  {selectedSceneIds.length} đã chọn
                 </p>
               )}
             </div>
@@ -732,9 +530,9 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               {/* 3-step guide */}
               <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
                 {[
-                  { num: '1', text: 'Nhập kịch bản phía trên' },
+                  { num: '1', text: 'Nhập kịch bản ở thanh bên trái' },
                   { num: '2', text: 'Chọn model AI (Flux / SDXL)' },
-                  { num: '3', text: 'Nhấn "Phân tách kịch bản"' },
+                  { num: '3', text: 'Nhấn "Tạo kịch bản"' },
                 ].map((step, i) => (
                   <React.Fragment key={step.num}>
                     <div className="flex items-center gap-2.5 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/8 rounded-xl px-4 py-2.5 text-left">
@@ -786,87 +584,6 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
             </Reorder.Group>
           )}
         </div>
-
-            </motion.div>
-          </AnimatePresence>
-        )}
-
-        {/* ── Videos tab ───────────────────────────────────────── */}
-        {bottomTab === 'videos' && (
-          <AnimatePresence mode="wait">
-            <motion.div key="videos-tab" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6 pt-2">
-
-              {/* Header */}
-              <div className="flex items-center gap-2.5">
-                <Video size={18} className="text-purple-500" />
-                <h3 className="text-xl lg:text-2xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Video đã render</h3>
-                {scenes.filter(s => s.videoUrl).length > 0 && (
-                  <span className="ml-1 text-[9px] font-black uppercase tracking-widest text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded-full">
-                    {scenes.filter(s => s.videoUrl).length} video
-                  </span>
-                )}
-              </div>
-
-              {scenes.filter(s => s.videoUrl).length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-5 py-20 text-center border-2 border-dashed border-slate-200 dark:border-white/8 rounded-2xl">
-                  <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
-                    <Video size={28} className="text-slate-300 dark:text-white/20" />
-                  </div>
-                  <div>
-                    <p className="text-base font-black uppercase italic tracking-tight text-slate-400 dark:text-white/30">Chưa có video nào</p>
-                    <p className="text-[11px] text-slate-400 dark:text-gray-600 mt-1.5">Render video từ tab Bối cảnh để xem ở đây</p>
-                  </div>
-                  <button
-                    onClick={() => setBottomTab('scenes')}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 rounded-xl text-[11px] font-black uppercase tracking-widest text-purple-500 transition-all"
-                  >
-                    <Clapperboard size={13} /> Đến Bối cảnh
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
-                  {scenes.filter(s => s.videoUrl).map((scene) => (
-                    <motion.div
-                      key={scene.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.96 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="group relative rounded-2xl overflow-hidden bg-black ring-1 ring-white/10 cursor-pointer hover:ring-purple-500/50 transition-all"
-                      onClick={() => onViewScene(scene)}
-                    >
-                      <div className="relative aspect-video">
-                        <video
-                          src={scene.videoUrl!}
-                          autoPlay loop muted playsInline
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                        />
-                        {/* Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                        {/* Scene # badge */}
-                        <div className="absolute top-2 left-2 inline-flex items-center justify-center min-w-[26px] h-5 px-1.5 rounded-full bg-brand-blue/90 text-white text-[8px] font-black tabular-nums">
-                          #{scene.order}
-                        </div>
-                        <div className="absolute top-2 right-2 bg-purple-600 text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">VIDEO</div>
-                        {/* Bottom info */}
-                        <div className="absolute bottom-0 left-0 right-0 p-3">
-                          <p className="text-[10px] font-black text-white/90 uppercase tracking-wider leading-none mb-1">{scene.shotType ?? 'WIDE'} · {scene.duration ?? 8}s</p>
-                          <p className="text-[10px] text-white/60 leading-snug line-clamp-2 italic">{scene.prompt}</p>
-                        </div>
-                        {/* Play icon center */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
-                            <Play size={16} fill="currentColor" className="text-white ml-0.5" />
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-
-            </motion.div>
-          </AnimatePresence>
-        )}
 
       </div>
       </div>
@@ -922,40 +639,6 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* ── Bottom Tab Bar (cố định) ─────────────────────────── */}
-      <div className="shrink-0 flex items-stretch border-t border-slate-200 dark:border-white/8 bg-white dark:bg-[#0a0a0c] z-30">
-        {([
-          { id: 'script',  icon: <FileText size={16} />,    label: 'Script',    badge: null },
-          { id: 'scenes',  icon: <Clapperboard size={16} />, label: 'Bối cảnh', badge: scenes.length > 0 ? scenes.length : null },
-          { id: 'videos',  icon: <Video size={16} />,        label: 'Video',     badge: scenes.filter(s => s.videoUrl).length > 0 ? scenes.filter(s => s.videoUrl).length : null },
-        ] as { id: 'script' | 'scenes' | 'videos'; icon: React.ReactNode; label: string; badge: number | null }[]).map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setBottomTab(tab.id)}
-            className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 relative transition-all
-              ${bottomTab === tab.id
-                ? 'text-brand-blue'
-                : 'text-slate-400 dark:text-white/30 hover:text-slate-700 dark:hover:text-white/60'
-              }`}
-          >
-            {/* Active indicator */}
-            {bottomTab === tab.id && (
-              <motion.div layoutId="bottomTabIndicator" className="absolute top-0 left-4 right-4 h-0.5 bg-brand-blue rounded-full" />
-            )}
-            <div className="relative">
-              {tab.icon}
-              {tab.badge !== null && (
-                <span className={`absolute -top-1.5 -right-2.5 min-w-[14px] h-[14px] rounded-full text-[8px] font-black flex items-center justify-center px-0.5 leading-none
-                  ${bottomTab === tab.id ? 'bg-brand-blue text-white' : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/40'}`}>
-                  {tab.badge}
-                </span>
-              )}
-            </div>
-            <span className="text-[9px] font-black uppercase tracking-wider leading-none">{tab.label}</span>
-          </button>
-        ))}
-      </div>
 
     </motion.div>
   );
