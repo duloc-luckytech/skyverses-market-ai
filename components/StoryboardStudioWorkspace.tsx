@@ -473,8 +473,6 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           scenesCount={s.scenes.length}
           selectedCount={s.selectedSceneIds.length}
           isProcessing={s.isProcessing}
-          canCreate={s.script.trim().length > 0}
-          onSynthesize={s.handleCreateStoryboard}
           onGenerateImages={s.handleGenerateBatchImages}
           onGenerateVideos={s.handleGenerateBatchVideos}
           onReset={() => s.setScenes([])}
