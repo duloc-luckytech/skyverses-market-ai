@@ -6,7 +6,7 @@ import {
   User, Settings,
   Zap, ArrowRight, BarChart3,
   ChevronDown, Bookmark, Loader2, Sparkles,
-  Database, HelpCircle, Users, Gift, Plus,
+  Database, HelpCircle, Users, Gift, Plus, Crown,
   Search, Command
 } from 'lucide-react';
 
@@ -16,6 +16,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { Language } from '../types';
 const CreditPurchaseModal = lazy(() => import('./CreditPurchaseModal'));
+const UpgradeModal = lazy(() => import('./UpgradeModal').then(m => ({ default: m.UpgradeModal })));
 import { creditsApi } from '../apis/credits';
 import { useSearch } from '../context/SearchContext';
 
@@ -59,12 +60,13 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const [isClaiming, setIsClaiming] = useState(false);
   const [isClaimingDaily, setIsClaimingDaily] = useState(false);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
-  const { user, logout, isAuthenticated, credits, claimWelcomeCredits, refreshUserInfo } = useAuth();
+  const { user, logout, isAuthenticated, credits, claimWelcomeCredits, refreshUserInfo, isPro } = useAuth();
   const search = useSearch();
 
   const langRef = useRef<HTMLDivElement>(null);
@@ -282,6 +284,20 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                     <span className="text-[12px] font-bold text-slate-700 dark:text-white">{(credits || 0).toLocaleString()}</span>
                   </Link>
 
+                  {/* PRO Badge / Upgrade CTA — Desktop */}
+                  {isPro ? (
+                    <div className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-brand-blue/15 to-purple-500/15 border border-brand-blue/30 text-[10px] font-black uppercase tracking-widest text-brand-blue">
+                      <Crown size={11} /> PRO
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setIsUpgradeModalOpen(true)}
+                      className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:bg-amber-500/15 transition-all"
+                    >
+                      <Zap size={11} /> Upgrade
+                    </button>
+                  )}
+
                   {/* Credits — Mobile */}
                   <button
                     onClick={() => setIsPurchaseModalOpen(true)}
@@ -362,13 +378,28 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                               <Sparkles size={13} className="text-brand-blue" fill="currentColor" />
                               <span className="text-xs font-bold text-slate-700 dark:text-gray-200">{(credits || 0).toLocaleString()}</span>
                             </div>
-                            <button 
-                              onClick={() => { setIsPurchaseModalOpen(true); setShowUserMenu(false); }} 
+                            <button
+                              onClick={() => { setIsPurchaseModalOpen(true); setShowUserMenu(false); }}
                               className="text-[10px] font-bold text-brand-blue hover:underline flex items-center gap-0.5"
                             >
                               <Plus size={10} /> {t('header.topup')}
                             </button>
                           </div>
+
+                          {/* Plan badge */}
+                          {isPro ? (
+                            <div className="mt-1.5 flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-gradient-to-r from-brand-blue/10 to-purple-500/10 border border-brand-blue/20">
+                              <Crown size={11} className="text-brand-blue" />
+                              <span className="text-[10px] font-black uppercase tracking-widest text-brand-blue">Pro Member</span>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => { setIsUpgradeModalOpen(true); setShowUserMenu(false); }}
+                              className="mt-1.5 w-full flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-amber-500/8 border border-amber-500/15 text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:bg-amber-500/12 transition-all"
+                            >
+                              <Zap size={11} /> Nâng cấp lên Pro
+                            </button>
+                          )}
                         </div>
 
                         {/* Divider */}
@@ -524,6 +555,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
           </Suspense>
         )}
       </AnimatePresence>
+
+      <Suspense fallback={null}>
+        <UpgradeModal isOpen={isUpgradeModalOpen} onClose={() => setIsUpgradeModalOpen(false)} />
+      </Suspense>
     </>
   );
 };

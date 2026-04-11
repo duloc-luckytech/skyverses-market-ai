@@ -4,6 +4,8 @@ import { creditsApi } from '../apis/credits';
 
 interface User extends AuthUser {
   picture: string; // Mapping avatar -> picture for legacy UI compatibility
+  tier?: 'free' | 'pro' | 'enterprise';   // Derived from plan field
+  isPro?: boolean;                          // Convenience: tier === 'pro' | 'enterprise'
 }
 
 interface AuthContextType {
@@ -19,6 +21,7 @@ interface AuthContextType {
   isSandboxEnv: boolean;
   credits: number;
   freeImageRemaining: number;
+  isPro: boolean;
   addCredits: (amount: number) => void;
   useCredits: (amount: number) => boolean;
 }
@@ -42,6 +45,15 @@ const decodeJwt = (token: string) => {
 };
 
 const DEFAULT_AVATAR_URL = "https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png";
+
+/** Maps raw plan string from API → typed tier */
+const resolveTier = (plan?: string): 'free' | 'pro' | 'enterprise' => {
+  if (!plan) return 'free';
+  const p = plan.toLowerCase();
+  if (p.includes('enterprise')) return 'enterprise';
+  if (p.includes('pro') || p.includes('premium')) return 'pro';
+  return 'free';
+};
 
 const GOOGLE_CLIENT_ID = "942039901611-v51aehr4s94ajbk6rc6lbsiqkq2qto3l.apps.googleusercontent.com";
 const GOOGLE_OAUTH_SCOPES = "openid email profile";
@@ -136,9 +148,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshUserInfo = async () => {
     const res = await authApi.getUserInfo();
     if (res.success && res.user) {
+      const tier = resolveTier(res.user.plan);
       const userData: User = {
         ...res.user,
-        picture: res.user.avatar || DEFAULT_AVATAR_URL
+        picture: res.user.avatar || DEFAULT_AVATAR_URL,
+        tier,
+        isPro: tier === 'pro' || tier === 'enterprise',
       };
       setUser(userData);
       setCredits(res.user.creditBalance || 0);
@@ -279,7 +294,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       inviteCode: "MOCK123",
       role: 'user',
       creditBalance: 1000,
-      claimWelcomeCredit: true
+      claimWelcomeCredit: true,
+      tier: 'pro',
+      isPro: true,
     };
     setUser(mockUserData);
     setCredits(1000);
@@ -312,9 +329,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, login, mockLogin, loginWithEmail, refreshUserInfo, claimWelcomeCredits, logout, isAuthenticated: !!user, authError, 
-      isSandboxEnv, credits, freeImageRemaining, addCredits, useCredits 
+    <AuthContext.Provider value={{
+      user, login, mockLogin, loginWithEmail, refreshUserInfo, claimWelcomeCredits, logout, isAuthenticated: !!user, authError,
+      isSandboxEnv, credits, freeImageRemaining, isPro: !!(user?.isPro), addCredits, useCredits
     }}>
       {children}
     </AuthContext.Provider>

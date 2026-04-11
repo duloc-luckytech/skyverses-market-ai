@@ -1,46 +1,108 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Terminal, Loader2, Lightbulb, ChevronLeft, ChevronRight, Image as ImageIcon, Sparkles, Edit3 } from 'lucide-react';
+import {
+  X, Terminal, Loader2, Lightbulb, ChevronLeft, ChevronRight,
+  Image as ImageIcon, Sparkles, Edit3, Zap, Film, Download, Share2
+} from 'lucide-react';
 
 interface StoryboardProgressModalProps {
   logs: string[];
   onClose: () => void;
+  /** Total scenes — used for ETA calculation */
+  totalScenes?: number;
+  /** 0–100 explicit progress override (optional) */
+  progress?: number;
 }
 
+/* ── Processing stages ───────────────────────── */
+const STAGES = [
+  { id: 0, label: 'Phân tích kịch bản', icon: <Edit3 size={12} /> },
+  { id: 1, label: 'Generate ảnh',        icon: <ImageIcon size={12} /> },
+  { id: 2, label: 'Tạo video',           icon: <Film size={12} /> },
+  { id: 3, label: 'Hoàn tất',            icon: <Sparkles size={12} /> },
+];
+
+/** Heuristic: map log message → stage index */
+const detectStage = (logs: string[]): number => {
+  const last = logs[logs.length - 1]?.toLowerCase() ?? '';
+  if (last.includes('video') || last.includes('render'))   return 2;
+  if (last.includes('ảnh') || last.includes('image') || last.includes('generat')) return 1;
+  if (last.includes('hoàn') || last.includes('done') || last.includes('complete')) return 3;
+  return logs.length > 0 ? 1 : 0;
+};
+
+/* ── Tips ────────────────────────────────────── */
 const TIPS = [
   {
     id: 1,
     category: 'MÔ HÌNH AI',
     title: 'Model ảnh là gì?',
     desc: 'Model ảnh (Image Model) là mô hình AI chuyên tạo hình ảnh từ mô tả văn bản. Các model phổ biến: Flux, Midjourney, DALL-E... Mỗi model có phong cách riêng - Flux cho ảnh chân thực, Midjourney cho ảnh nghệ thuật.',
-    icon: <ImageIcon size={32} />
+    icon: <ImageIcon size={32} />,
+    pro: false,
   },
   {
     id: 2,
     category: 'KHÁI NIỆM',
     title: 'System Prompt là gì?',
     desc: 'System Prompt là lời nhắc nền hướng dẫn AI cách tạo kịch bản. Nó định nghĩa format đầu ra, phong cách viết, cấu trúc phân cảnh. Bạn có thể tùy chỉnh trong phần Thiết lập nâng cao.',
-    icon: <Edit3 size={32} />
+    icon: <Edit3 size={32} />,
+    pro: false,
   },
   {
     id: 3,
     category: 'KHÁI NIỆM',
     title: 'Loại nhân vật tham chiếu',
     desc: '• Character: Nhân vật, người\n• Location: Địa điểm, bối cảnh\n• Object: Vật thể, đạo cụ\nMỗi loại sẽ được AI xử lý khác nhau để đảm bảo đồng nhất.',
-    icon: <Sparkles size={32} />
+    icon: <Sparkles size={32} />,
+    pro: false,
   },
   {
     id: 4,
     category: 'KỸ THUẬT',
     title: 'Cách viết kịch bản tốt',
     desc: 'Hãy cung cấp đủ 3 yếu tố: Chủ thể, Hành động và Bối cảnh. AI sẽ hoạt động tốt nhất khi bạn mô tả chi tiết các góc máy và ánh sáng mong muốn.',
-    icon: <Lightbulb size={32} />
-  }
+    icon: <Lightbulb size={32} />,
+    pro: false,
+  },
+  {
+    id: 5,
+    category: 'PRO TIP',
+    title: 'Export EDL & XML',
+    desc: 'Với gói Pro, bạn có thể export EDL (CMX 3600) cho DaVinci Resolve, hoặc XML/FCPXML cho Premiere Pro và Final Cut Pro. Tiết kiệm hàng giờ đồng hồ sync thủ công.',
+    icon: <Download size={32} />,
+    pro: true,
+  },
+  {
+    id: 6,
+    category: 'PRO TIP',
+    title: 'Batch Export & Share Link',
+    desc: 'Chọn nhiều cảnh → Download All để batch export. Tạo Share Link công khai để client review storyboard trực tiếp mà không cần tài khoản.',
+    icon: <Share2 size={32} />,
+    pro: true,
+  },
 ];
 
-export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = ({ logs, onClose }) => {
-  const [currentTip, setCurrentTip] = useState(0);
+/* ── AVG render time per scene (seconds) ─────── */
+const AVG_SECS_PER_SCENE = 18;
 
+export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = ({
+  logs,
+  onClose,
+  totalScenes = 0,
+  progress: progressProp,
+}) => {
+  const [currentTip, setCurrentTip] = useState(0);
+  const [startTime] = useState(() => Date.now());
+  const [now, setNow] = useState(Date.now());
+
+  /* Tick every second for ETA */
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  /* Auto-rotate tips */
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTip(prev => (prev + 1) % TIPS.length);
@@ -51,129 +113,212 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
   const handleNext = () => setCurrentTip(prev => (prev + 1) % TIPS.length);
   const handlePrev = () => setCurrentTip(prev => (prev - 1 + TIPS.length) % TIPS.length);
 
+  /* Derive progress from logs if not provided */
+  const progress = useMemo(() => {
+    if (progressProp !== undefined) return Math.min(100, Math.max(0, progressProp));
+    if (totalScenes === 0) return logs.length > 0 ? 20 : 5;
+    // Each log roughly = one step; heuristic cap at 95% while running
+    const guess = Math.min(95, Math.round((logs.length / (totalScenes * 3 + 2)) * 100));
+    return guess;
+  }, [progressProp, logs.length, totalScenes]);
+
+  const currentStage = detectStage(logs);
+
+  /* ETA */
+  const elapsedSecs = Math.round((now - startTime) / 1000);
+  const estTotalSecs = totalScenes > 0 ? totalScenes * AVG_SECS_PER_SCENE : 30;
+  const etaSecs = Math.max(0, estTotalSecs - elapsedSecs);
+  const etaLabel = etaSecs >= 60
+    ? `~${Math.ceil(etaSecs / 60)}m còn lại`
+    : etaSecs > 5
+      ? `~${etaSecs}s còn lại`
+      : 'Sắp xong...';
+
   return (
     <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 md:p-10">
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="absolute inset-0 bg-black/80 backdrop-blur-md"
       />
-      
-      <motion.div 
+
+      <motion.div
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
         className="relative w-full max-w-6xl h-[90vh] md:h-auto md:aspect-[16/7] overflow-hidden flex flex-col md:flex-row gap-4 md:gap-6 pointer-events-none"
       >
-        {/* LEFT: TERMINAL STREAM */}
+        {/* ── LEFT: TERMINAL ───────────────────────── */}
         <div className="flex-[1.2] md:flex-grow flex flex-col bg-black border border-white/10 rounded-3xl overflow-hidden shadow-2xl pointer-events-auto min-h-0">
-           <div className="h-12 md:h-14 bg-[#0d0d0f] border-b border-white/5 flex items-center justify-between px-5 md:px-6 shrink-0">
-              <div className="flex items-center gap-3">
-                 <Terminal size={16} className="text-brand-blue" />
-                 <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-widest text-white/90 italic">Luồng thời gian thực</h3>
-              </div>
-              <div className="flex items-center gap-3">
-                 <Loader2 size={14} className="text-brand-blue animate-spin" />
-                 <span className="hidden xs:inline text-[9px] md:text-[10px] font-black uppercase tracking-widest text-brand-blue/60">Đang xử lý...</span>
-              </div>
-           </div>
-           
-           <div className="flex-grow p-5 md:p-8 font-mono text-[12px] md:text-[14px] leading-relaxed overflow-y-auto no-scrollbar bg-black/40">
-              <div className="space-y-3 md:space-y-4">
-                 {logs.map((log, i) => (
-                   <div key={i} className="flex gap-4 animate-in fade-in slide-in-from-left-2 duration-300">
-                      <p className="text-green-500 font-bold tracking-tight break-words">
-                        <span className="opacity-50 mr-2">$</span>
-                        {log}
-                        {i === logs.length - 1 && <span className="inline-block w-1.5 h-3.5 bg-green-500/50 ml-1 animate-pulse align-middle">_</span>}
-                      </p>
-                   </div>
-                 ))}
-                 {logs.length === 0 && (
-                   <div className="flex gap-4">
-                      <p className="text-green-500 font-bold tracking-tight opacity-50">Đang kết nối kịch bản...<span className="inline-block w-1.5 h-3.5 bg-green-500/50 ml-1 animate-pulse align-middle">_</span></p>
-                   </div>
-                 )}
-              </div>
-           </div>
+          {/* Terminal header */}
+          <div className="h-12 md:h-14 bg-[#0d0d0f] border-b border-white/5 flex items-center justify-between px-5 md:px-6 shrink-0">
+            <div className="flex items-center gap-3">
+              <Terminal size={16} className="text-brand-blue" />
+              <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-widest text-white/90 italic">Luồng thời gian thực</h3>
+            </div>
+            <div className="flex items-center gap-3">
+              <Loader2 size={14} className="text-brand-blue animate-spin" />
+              <span className="hidden xs:inline text-[9px] md:text-[10px] font-black uppercase tracking-widest text-brand-blue/60">Đang xử lý...</span>
+            </div>
+          </div>
+
+          {/* ── Progress bar + stages ────────────── */}
+          <div className="px-5 md:px-6 pt-4 pb-3 bg-[#060608] border-b border-white/5 space-y-2.5 shrink-0">
+            {/* Stage pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              {STAGES.map((s, i) => (
+                <React.Fragment key={s.id}>
+                  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-all
+                    ${currentStage === s.id
+                      ? 'bg-brand-blue/20 border border-brand-blue/40 text-brand-blue'
+                      : currentStage > s.id
+                        ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                        : 'bg-white/4 border border-white/8 text-white/25'
+                    }`}>
+                    {currentStage > s.id ? (
+                      <span className="text-emerald-400">✓</span>
+                    ) : currentStage === s.id ? (
+                      <span className="animate-spin inline-block">◌</span>
+                    ) : s.icon}
+                    {s.label}
+                  </div>
+                  {i < STAGES.length - 1 && (
+                    <div className={`h-px w-4 shrink-0 rounded-full transition-all ${currentStage > i ? 'bg-emerald-500/40' : 'bg-white/8'}`} />
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+
+            {/* Progress bar */}
+            <div className="relative h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+              <motion.div
+                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-brand-blue to-purple-500"
+                initial={{ width: '0%' }}
+                animate={{ width: `${progress}%` }}
+                transition={{ ease: 'easeOut', duration: 0.6 }}
+              />
+              {/* Shimmer overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[shimmer_2s_linear_infinite] bg-[length:200%_100%]" />
+            </div>
+
+            {/* Progress text + ETA */}
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue">{progress}% hoàn thành</span>
+              <span className="text-[9px] font-medium text-white/30">{etaLabel}</span>
+            </div>
+          </div>
+
+          {/* Log stream */}
+          <div className="flex-grow p-5 md:p-8 font-mono text-[12px] md:text-[14px] leading-relaxed overflow-y-auto no-scrollbar bg-black/40">
+            <div className="space-y-3 md:space-y-4">
+              {logs.length === 0 && (
+                <div className="space-y-2">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className={`h-4 bg-green-500/10 rounded animate-pulse`} style={{ width: `${60 + i * 15}%`, animationDelay: `${i * 0.2}s` }} />
+                  ))}
+                  <p className="text-green-500/40 font-bold tracking-tight opacity-50 mt-3">Đang kết nối kịch bản...<span className="inline-block w-1.5 h-3.5 bg-green-500/50 ml-1 animate-pulse align-middle">_</span></p>
+                </div>
+              )}
+              {logs.map((log, i) => (
+                <div key={i} className={`flex gap-4 animate-in fade-in slide-in-from-left-2 duration-300 ${i === logs.length - 1 ? 'drop-shadow-[0_0_8px_rgba(34,197,94,0.4)]' : ''}`}>
+                  <p className="text-green-500 font-bold tracking-tight break-words">
+                    <span className="opacity-50 mr-2">$</span>
+                    {log}
+                    {i === logs.length - 1 && <span className="inline-block w-1.5 h-3.5 bg-green-500/50 ml-1 animate-pulse align-middle">_</span>}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* RIGHT: TIPS SLIDER */}
+        {/* ── RIGHT: TIPS SLIDER ───────────────────── */}
         <div className="flex-1 md:w-[420px] md:shrink-0 flex flex-col bg-[#0d0d12] border border-white/10 rounded-3xl overflow-hidden shadow-2xl pointer-events-auto min-h-0">
-           <div className="h-12 md:h-16 bg-[#111115] border-b border-white/5 flex items-center justify-between px-5 md:px-6 shrink-0">
-              <div className="flex items-center gap-3">
-                 <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner">
-                    <Lightbulb size={18} />
-                 </div>
-                 <div className="space-y-0.5">
-                   <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-widest text-white/90 italic leading-none">Mẹo sử dụng</h3>
-                   <p className="text-[7px] md:text-[8px] font-bold text-gray-500 uppercase tracking-widest">Hệ thống gợi ý</p>
-                 </div>
+          <div className="h-12 md:h-16 bg-[#111115] border-b border-white/5 flex items-center justify-between px-5 md:px-6 shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner">
+                <Lightbulb size={18} />
               </div>
-              <button 
-                onClick={onClose}
-                className="p-1.5 hover:bg-white/5 rounded-full text-gray-500 hover:text-white transition-all"
+              <div className="space-y-0.5">
+                <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-widest text-white/90 italic leading-none">Mẹo sử dụng</h3>
+                <p className="text-[7px] md:text-[8px] font-bold text-gray-500 uppercase tracking-widest">Hệ thống gợi ý</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-1.5 hover:bg-white/5 rounded-full text-gray-500 hover:text-white transition-all"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="flex-grow p-5 md:p-8 flex flex-col justify-center relative overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentTip}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.4 }}
+                className="bg-white/[0.02] border border-white/5 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] space-y-4 md:space-y-6 relative group h-full md:h-auto overflow-y-auto no-scrollbar"
               >
-                <X size={20} />
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 md:px-3 md:py-1 bg-white/10 border border-white/10 rounded text-[8px] md:text-[9px] font-black uppercase text-gray-400 tracking-widest">
+                      {TIPS[currentTip].category}
+                    </span>
+                    {TIPS[currentTip].pro && (
+                      <span className="px-2 py-0.5 bg-gradient-to-r from-brand-blue/20 to-purple-500/20 border border-brand-blue/30 rounded text-[8px] font-black uppercase tracking-widest text-brand-blue flex items-center gap-1">
+                        <Zap size={9} /> PRO
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-brand-blue opacity-40 group-hover:opacity-100 transition-opacity">
+                    {TIPS[currentTip].icon}
+                  </div>
+                </div>
+
+                <div className="space-y-3 md:space-y-4">
+                  <h4 className="text-lg md:text-xl font-black text-white italic tracking-tight leading-tight">{TIPS[currentTip].title}</h4>
+                  <p className="text-[12px] md:text-[13px] leading-relaxed text-gray-400 font-medium whitespace-pre-line">
+                    {TIPS[currentTip].desc}
+                  </p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          <div className="h-20 md:h-28 border-t border-white/5 px-5 md:px-8 flex flex-col items-center justify-center gap-2 md:gap-4 shrink-0 bg-[#0a0a0d]">
+            <div className="flex items-center justify-between w-full">
+              <button
+                onClick={handlePrev}
+                className="p-2 md:px-5 md:py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
+              >
+                <ChevronLeft size={16} /> <span className="hidden xs:inline">Trước</span>
               </button>
-           </div>
 
-           <div className="flex-grow p-5 md:p-8 flex flex-col justify-center relative overflow-hidden">
-              <AnimatePresence mode="wait">
-                 <motion.div 
-                   key={currentTip}
-                   initial={{ opacity: 0, x: 20 }}
-                   animate={{ opacity: 1, x: 0 }}
-                   exit={{ opacity: 0, x: -20 }}
-                   transition={{ duration: 0.4 }}
-                   className="bg-white/[0.02] border border-white/5 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] space-y-4 md:space-y-6 relative group h-full md:h-auto overflow-y-auto no-scrollbar"
-                 >
-                    <div className="flex justify-between items-start">
-                       <span className="px-2 py-0.5 md:px-3 md:py-1 bg-white/10 border border-white/10 rounded text-[8px] md:text-[9px] font-black uppercase text-gray-400 tracking-widest">
-                          {TIPS[currentTip].category}
-                       </span>
-                       <div className="text-brand-blue opacity-40 group-hover:opacity-100 transition-opacity">
-                          {TIPS[currentTip].icon}
-                       </div>
-                    </div>
-                    
-                    <div className="space-y-3 md:space-y-4">
-                       <h4 className="text-lg md:text-xl font-black text-white italic tracking-tight leading-tight">{TIPS[currentTip].title}</h4>
-                       <p className="text-[12px] md:text-[13px] leading-relaxed text-gray-400 font-medium whitespace-pre-line">
-                          {TIPS[currentTip].desc}
-                       </p>
-                    </div>
-                 </motion.div>
-              </AnimatePresence>
-           </div>
-
-           <div className="h-20 md:h-28 border-t border-white/5 px-5 md:px-8 flex flex-col items-center justify-center gap-2 md:gap-4 shrink-0 bg-[#0a0a0d]">
-              <div className="flex items-center justify-between w-full">
-                 <button 
-                   onClick={handlePrev} 
-                   className="p-2 md:px-5 md:py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
-                 >
-                    <ChevronLeft size={16} /> <span className="hidden xs:inline">Trước</span>
-                 </button>
-                 
-                 <div className="flex items-center gap-2">
-                    <div className="flex gap-1 md:gap-1.5">
-                       {TIPS.map((_, i) => (
-                         <div key={i} className={`w-1 md:w-1.5 h-1 md:h-1.5 rounded-full transition-all duration-300 ${i === currentTip ? 'bg-brand-blue' : 'bg-gray-700'}`}></div>
-                       ))}
-                    </div>
-                 </div>
-
-                 <button 
-                   onClick={handleNext} 
-                   className="p-2 md:px-5 md:py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
-                 >
-                    <span className="hidden xs:inline">Tiếp</span> <ChevronRight size={16} />
-                 </button>
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1 md:gap-1.5">
+                  {TIPS.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentTip(i)}
+                      className={`transition-all duration-300 rounded-full ${i === currentTip ? 'w-4 md:w-5 h-1 md:h-1.5 bg-brand-blue' : 'w-1 md:w-1.5 h-1 md:h-1.5 bg-gray-700'}`}
+                    />
+                  ))}
+                </div>
               </div>
-              <p className="text-[9px] md:text-[10px] font-black uppercase text-gray-700 tracking-widest">{currentTip + 1} / {TIPS.length} mẹo</p>
-           </div>
+
+              <button
+                onClick={handleNext}
+                className="p-2 md:px-5 md:py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
+              >
+                <span className="hidden xs:inline">Tiếp</span> <ChevronRight size={16} />
+              </button>
+            </div>
+            <p className="text-[9px] md:text-[10px] font-black uppercase text-gray-700 tracking-widest">{currentTip + 1} / {TIPS.length} mẹo</p>
+          </div>
         </div>
       </motion.div>
     </div>

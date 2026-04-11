@@ -19,12 +19,15 @@ import {
   Play, CheckCircle, AlertCircle, Clock, Sparkles, FolderOpen,
   Plus, RefreshCw, FileText, Code2, Share2,
   Copy, Check, Link2, Loader2, Clapperboard, MonitorPlay,
-  Lock, Globe,
+  Lock, Globe, Crown, Zap,
   Pause, SkipBack, SkipForward,
   FileVideo, Printer, Layers,
 } from 'lucide-react';
 import type { Scene, ReferenceAsset } from '../../hooks/useStoryboardStudio';
 import { SHOT_TYPE_LABELS } from '../../hooks/useStoryboardStudio';
+import { useAuth } from '../../context/AuthContext';
+import { UpgradeModal } from '../UpgradeModal';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -528,6 +531,25 @@ export const ExportTab: React.FC<ExportTabProps> = ({
   const importRef = useRef<HTMLInputElement>(null);
   const [activeMode, setActiveMode] = useState<ExportMode>('overview');
   const { generatePDF, isGenerating: isPDFGenerating, progress: pdfProgress } = usePDFExport();
+  const { isPro } = useAuth();
+  const { isUpgradeOpen, closeUpgrade, canAccess, requirePro } = useFeatureAccess();
+
+  /** Map ExportMode → FeatureKey (undefined = free) */
+  const modeFeature: Partial<Record<ExportMode, Parameters<typeof canAccess>[0]>> = {
+    edl:     'export_edl',
+    xml:     'export_xml',
+    animatic:'export_animatic',
+    share:   'share_link',
+  };
+
+  const handleTabClick = (modeId: ExportMode) => {
+    const feat = modeFeature[modeId];
+    if (feat) {
+      requirePro(feat, () => setActiveMode(modeId));
+    } else {
+      setActiveMode(modeId);
+    }
+  };
 
   const done        = completedScenes(scenes);
   const hasVideo    = scenes.some(s => s.videoUrl);
@@ -545,13 +567,13 @@ export const ExportTab: React.FC<ExportTabProps> = ({
     });
   };
 
-  const MODES: { id: ExportMode; label: string; icon: React.ReactNode; desc: string; badge?: string }[] = [
-    { id: 'overview',  label: 'Tổng quan',    icon: <Layers size={14} />,      desc: 'Danh sách cảnh & tải xuống' },
-    { id: 'pdf',       label: 'PDF Board',    icon: <Printer size={14} />,     desc: 'Storyboard grid đẹp để in',   badge: 'NEW' },
-    { id: 'edl',       label: 'EDL',          icon: <FileText size={14} />,    desc: 'CMX 3600 cho editors',        badge: 'NEW' },
-    { id: 'xml',       label: 'XML / FCPXML', icon: <Code2 size={14} />,       desc: 'Premiere · DaVinci · FCP',    badge: 'NEW' },
-    { id: 'animatic',  label: 'Animatic',     icon: <MonitorPlay size={14} />, desc: 'Canvas slideshow preview',    badge: 'NEW' },
-    { id: 'share',     label: 'Share Link',   icon: <Share2 size={14} />,      desc: 'Public / Private link',       badge: 'NEW' },
+  const MODES: { id: ExportMode; label: string; icon: React.ReactNode; desc: string; badge?: string; pro?: boolean }[] = [
+    { id: 'overview',  label: 'Tổng quan',    icon: <Layers size={14} />,      desc: 'Danh sách cảnh & tải xuống',   pro: false },
+    { id: 'pdf',       label: 'PDF Board',    icon: <Printer size={14} />,     desc: 'Storyboard grid đẹp để in',    badge: 'NEW',  pro: false },
+    { id: 'edl',       label: 'EDL',          icon: <FileText size={14} />,    desc: 'CMX 3600 cho editors',         badge: 'PRO',  pro: true },
+    { id: 'xml',       label: 'XML / FCPXML', icon: <Code2 size={14} />,       desc: 'Premiere · DaVinci · FCP',     badge: 'PRO',  pro: true },
+    { id: 'animatic',  label: 'Animatic',     icon: <MonitorPlay size={14} />, desc: 'Canvas slideshow preview',     badge: 'PRO',  pro: true },
+    { id: 'share',     label: 'Share Link',   icon: <Share2 size={14} />,      desc: 'Public / Private link',        badge: 'PRO',  pro: true },
   ];
 
   return (
@@ -609,23 +631,35 @@ export const ExportTab: React.FC<ExportTabProps> = ({
 
         {/* ── Mode tabs ────────────────────────────────────────────── */}
         <div className="flex flex-wrap gap-2">
-          {MODES.map(mode => (
-            <button key={mode.id} onClick={() => setActiveMode(mode.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
-                activeMode === mode.id
-                  ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-brand-blue/20'
-                  : 'border-slate-200 dark:border-white/8 text-slate-500 dark:text-white/40 hover:border-brand-blue/30 hover:text-brand-blue bg-white dark:bg-transparent'
-              }`}
-            >
-              {mode.icon}
-              {mode.label}
-              {mode.badge && (
-                <span className={`text-[7px] font-black px-1.5 py-0.5 rounded-full ${activeMode === mode.id ? 'bg-white/20' : 'bg-brand-blue/10 text-brand-blue'}`}>
-                  {mode.badge}
-                </span>
-              )}
-            </button>
-          ))}
+          {MODES.map(mode => {
+            const locked = !!(mode.pro && !isPro);
+            const isActive = activeMode === mode.id;
+            return (
+              <button key={mode.id} onClick={() => handleTabClick(mode.id)}
+                className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
+                  isActive
+                    ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-brand-blue/20'
+                    : locked
+                      ? 'border-slate-200 dark:border-white/5 text-slate-300 dark:text-white/20 bg-white dark:bg-white/[0.01] cursor-pointer'
+                      : 'border-slate-200 dark:border-white/8 text-slate-500 dark:text-white/40 hover:border-brand-blue/30 hover:text-brand-blue bg-white dark:bg-transparent'
+                }`}
+              >
+                {locked ? <Lock size={11} className="opacity-50" /> : mode.icon}
+                {mode.label}
+                {mode.badge && (
+                  <span className={`text-[7px] font-black px-1.5 py-0.5 rounded-full ${
+                    isActive
+                      ? 'bg-white/20 text-white'
+                      : locked
+                        ? 'bg-amber-500/10 text-amber-500'
+                        : 'bg-brand-blue/10 text-brand-blue'
+                  }`}>
+                    {mode.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* ── Mode content ─────────────────────────────────────────── */}
@@ -839,6 +873,10 @@ export const ExportTab: React.FC<ExportTabProps> = ({
         </AnimatePresence>
 
       </div>
+
+      {/* ── Upgrade Modal ────────────────────────────────────────── */}
+      <UpgradeModal isOpen={isUpgradeOpen} onClose={closeUpgrade} />
+
     </motion.div>
   );
 };
