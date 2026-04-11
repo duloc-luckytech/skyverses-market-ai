@@ -31,7 +31,7 @@ export const DurationControl: React.FC<DurationControlProps> = ({ duration, onCh
               whileTap={{ scale: 0.85 }}
               onClick={e => { e.stopPropagation(); if (!disabled) onChange(preset); }}
               disabled={disabled}
-              className={`text-[9px] font-mono px-1 py-px rounded transition-all leading-none
+              className={`text-[9px] tabular-nums px-1 py-px rounded transition-all leading-none
                 ${duration === preset
                   ? 'bg-brand-blue text-white font-black'
                   : disabled

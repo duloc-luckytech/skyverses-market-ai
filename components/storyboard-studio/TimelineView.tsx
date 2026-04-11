@@ -443,7 +443,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
         </button>
 
         {/* Time display */}
-        <div className="font-mono text-[11px] text-slate-500 dark:text-white/40 min-w-[72px]">
+        <div className="tabular-nums text-[11px] text-slate-500 dark:text-white/40 min-w-[72px]">
           {fmtTime(Math.round(currentTime))} / {fmtTime(totalDuration)}
         </div>
 
@@ -607,7 +607,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
             <p className="text-[10px] text-slate-500 dark:text-white/40 truncate flex-1">
               {scenes[activeSceneIndex].prompt.slice(0, 120)}
             </p>
-            <span className="text-[9px] font-mono text-slate-300 dark:text-white/20 shrink-0">
+            <span className="text-[9px] tabular-nums text-slate-300 dark:text-white/20 shrink-0">
               {fmtTime(sceneOffsets[activeSceneIndex])} → {fmtTime(sceneOffsets[activeSceneIndex] + (scenes[activeSceneIndex].duration ?? 8))}
             </span>
           </motion.div>

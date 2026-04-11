@@ -52,7 +52,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                       {totalDuration !== undefined && totalDuration > 0 && (
                         <div className="hidden lg:flex items-center gap-1.5 ml-3 pl-3 border-l border-white/10 text-white/40">
                           <Clock size={11} />
-                          <span className="text-[10px] font-black font-mono">{formatDuration(totalDuration)}</span>
+                          <span className="text-[10px] font-black tabular-nums">{formatDuration(totalDuration)}</span>
                         </div>
                       )}
                    </div>

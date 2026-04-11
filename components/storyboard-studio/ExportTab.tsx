@@ -399,7 +399,7 @@ const AnimaticPreview: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
             className="w-8 h-8 rounded-xl border border-slate-200 dark:border-white/8 flex items-center justify-center text-slate-400 dark:text-white/30 hover:text-brand-blue hover:border-brand-blue/30 transition-all">
             <SkipForward size={12} />
           </button>
-          <span className="font-mono text-[11px] text-slate-400 dark:text-white/30">
+          <span className="tabular-nums text-[11px] text-slate-400 dark:text-white/30">
             {fmt(elapsed)} / {fmt(totalDur)}
           </span>
           <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20">
@@ -493,7 +493,7 @@ const SharePanel: React.FC<{ projectName: string; scenes: Scene[] }> = ({ projec
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
           <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/8">
             <Link2 size={13} className="text-brand-blue shrink-0" />
-            <span className="flex-1 text-[11px] font-mono text-slate-600 dark:text-white/60 truncate">{shareUrl}</span>
+            <span className="flex-1 text-[11px] text-slate-600 dark:text-white/60 truncate">{shareUrl}</span>
             <button onClick={handleCopy}
               className="shrink-0 w-7 h-7 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center hover:bg-brand-blue hover:text-white transition-all">
               {copied ? <Check size={11} /> : <Copy size={11} />}
@@ -623,7 +623,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
             { label: 'Tài nguyên', value: assets.filter(a => a.url).length,       color: 'text-amber-300',    bg: 'from-amber-500/20 to-amber-500/5',       border: 'border-amber-500/20' },
           ].map(stat => (
             <div key={stat.label} className={`bg-gradient-to-br ${stat.bg} border ${stat.border} rounded-2xl p-4`}>
-              <p className={`text-2xl font-black font-mono leading-none ${stat.color}`}>{stat.value}</p>
+              <p className={`text-2xl font-black tabular-nums leading-none ${stat.color}`}>{stat.value}</p>
               <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/30 mt-1.5">{stat.label}</p>
             </div>
           ))}
@@ -708,7 +708,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                             {scene.videoUrl && <span className="text-[8px] font-bold bg-purple-500/10 text-purple-400 px-1.5 py-0.5 rounded border border-purple-500/20">VIDEO</span>}
                             {scene.visualUrl && !scene.videoUrl && <span className="text-[8px] font-bold bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20">IMG</span>}
                             {scene.audioUrl && <Music size={10} className="text-purple-400" />}
-                            <span className="text-[8px] text-slate-300 dark:text-white/15 ml-auto font-mono">{scene.duration ?? 8}s</span>
+                            <span className="text-[8px] text-slate-300 dark:text-white/15 ml-auto tabular-nums">{scene.duration ?? 8}s</span>
                           </div>
                           <p className="text-[10px] text-slate-400 dark:text-white/30 truncate">{scene.prompt}</p>
                         </div>

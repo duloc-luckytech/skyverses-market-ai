@@ -45,7 +45,7 @@ export const SceneCardHeader: React.FC<SceneCardHeaderProps> = ({
       onClick={e => e.stopPropagation()}
     >
       {/* Scene number — pill badge nổi bật */}
-      <span className="shrink-0 inline-flex items-center justify-center min-w-[28px] h-5 px-1.5 rounded-full bg-brand-blue/90 text-white text-[8px] font-black font-mono leading-none shadow-sm">
+      <span className="shrink-0 inline-flex items-center justify-center min-w-[28px] h-5 px-1.5 rounded-full bg-brand-blue/90 text-white text-[8px] font-black tabular-nums leading-none shadow-sm">
         #{sceneIndex + 1}
       </span>
 

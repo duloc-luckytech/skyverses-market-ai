@@ -681,7 +681,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                                   transition={{ delay: i * 0.06 }}
                                   className="rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-100 dark:border-white/5 px-3 py-2.5"
                                 >
-                                  <p className={`text-sm font-black font-mono leading-none ${stat.accent}`}>{stat.value}</p>
+                                  <p className={`text-sm font-black tabular-nums leading-none ${stat.accent}`}>{stat.value}</p>
                                   <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/30 mt-1">{stat.label}</p>
                                 </motion.div>
                               ))}

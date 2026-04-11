@@ -843,7 +843,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                         {/* Overlay */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                         {/* Scene # badge */}
-                        <div className="absolute top-2 left-2 inline-flex items-center justify-center min-w-[26px] h-5 px-1.5 rounded-full bg-brand-blue/90 text-white text-[8px] font-black font-mono">
+                        <div className="absolute top-2 left-2 inline-flex items-center justify-center min-w-[26px] h-5 px-1.5 rounded-full bg-brand-blue/90 text-white text-[8px] font-black tabular-nums">
                           #{scene.order}
                         </div>
                         <div className="absolute top-2 right-2 bg-purple-600 text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">VIDEO</div>

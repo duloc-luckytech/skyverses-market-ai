@@ -89,7 +89,7 @@ export const ProductionStats: React.FC<ProductionStatsProps> = ({
             transition={{ delay: i * 0.06 }}
             className="rounded-xl bg-white/[0.04] border border-white/8 px-3 py-2.5 space-y-0.5"
           >
-            <p className={`text-sm font-black font-mono leading-none ${stat.accent}`}>
+            <p className={`text-sm font-black tabular-nums leading-none ${stat.accent}`}>
               {stat.value}
             </p>
             <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 leading-none mt-1">
@@ -111,7 +111,7 @@ export const ProductionStats: React.FC<ProductionStatsProps> = ({
             <p className="text-[9px] font-black uppercase tracking-widest text-white/30">
               Cảnh đã dùng
             </p>
-            <p className={`text-[9px] font-black font-mono ${quotaUsed >= FREE_SCENE_LIMIT ? 'text-red-400' : 'text-white/50'}`}>
+            <p className={`text-[9px] font-black tabular-nums ${quotaUsed >= FREE_SCENE_LIMIT ? 'text-red-400' : 'text-white/50'}`}>
               {quotaUsed}/{FREE_SCENE_LIMIT}
             </p>
           </div>

@@ -86,7 +86,7 @@ export const ProjectInfoSection: React.FC<ProjectInfoSectionProps> = ({
       {/* Credit cost estimate */}
       <div className="flex items-center justify-between">
         <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Dự tính credits</span>
-        <span className="text-xs font-black font-mono text-amber-400">~{creditCostEstimate.toLocaleString()} CR</span>
+        <span className="text-xs font-black tabular-nums text-amber-400">~{creditCostEstimate.toLocaleString()} CR</span>
       </div>
     </div>
   );
