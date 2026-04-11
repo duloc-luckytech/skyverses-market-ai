@@ -67,6 +67,8 @@ const pageImports = {
   captcha: () => import('./pages/ProductCaptchaToken'),
   noCodeExport: () => import('./pages/NoCodeExportPage'),
   qwenChat: () => import('./pages/QwenChatAIPage'),
+  // Slides
+  aiSlideCreator: () => import('./pages/slides/AISlideCreatorPage'),
 };
 
 // Core pages
@@ -127,6 +129,7 @@ const ProductAIAgentWorkflow = React.lazy(pageImports.aiAgent);
 const ProductCaptchaToken = React.lazy(pageImports.captcha);
 const NoCodeExportPage = React.lazy(pageImports.noCodeExport);
 const QwenChatAIPage = React.lazy(pageImports.qwenChat);
+const AISlideCreatorPage = React.lazy(pageImports.aiSlideCreator);
 
 // ═══ Ultra-fast page transition bar (no blank page) ═══
 const PageLoader = () => (
@@ -222,6 +225,7 @@ const App: React.FC = () => {
                       <Route path="/product/captcha-veo3" element={<ProductCaptchaToken />} />
                       <Route path="/product/nocode-export" element={<NoCodeExportPage />} />
                       <Route path="/product/qwen-chat-ai" element={<QwenChatAIPage />} />
+                      <Route path="/product/ai-slide-creator" element={<AISlideCreatorPage />} />
                       
                       {/* CÁC TUYẾN ĐƯỜNG SỰ KIỆN HỢP NHẤT */}
                       <Route path="/product/ai-birthday-generator" element={<EventStudioPage type="birthday" />} />

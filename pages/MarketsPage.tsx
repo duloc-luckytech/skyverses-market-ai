@@ -9,7 +9,7 @@ import {
   X, Layers, Box, Cpu, SlidersHorizontal,
   Check, Grid3X3, List, ArrowUp, Clock, Tag, ChevronUp, ChevronDown,
   Eye, GitCompare, Command,
-  Globe, Smartphone, Tablet, BadgeCheck
+  Globe, Smartphone, Tablet, BadgeCheck, Film
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -39,6 +39,7 @@ const CATEGORIES = [
   { key: 'ALL', label: 'Tất cả', icon: LayoutGrid },
   { key: 'Video', label: 'Video AI', icon: Video },
   { key: 'Image', label: 'Hình ảnh AI', icon: ImageIcon },
+  { key: 'Script', label: 'Kịch bản & Studio', icon: Film },
   { key: 'Audio', label: 'Giọng nói', icon: Mic },
   { key: 'Music', label: 'Nhạc AI', icon: Music },
   { key: 'Automation', label: 'Tự động hóa', icon: Zap },
@@ -378,8 +379,17 @@ const MarketsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   // #1: URL-BASED FILTERS — init from URL params
+  // inputValue: updates immediately (smooth typing)
+  // search: debounced 300ms (used for filtering + URL)
+  const [inputValue, setInputValue] = useState(searchParams.get('q') || '');
   const [search, setSearch] = useState(searchParams.get('q') || '');
   const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'ALL');
+
+  // Debounce search — prevents filter re-running on every keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => setSearch(inputValue), 300);
+    return () => clearTimeout(timer);
+  }, [inputValue]);
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'popular');
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showFreeOnly, setShowFreeOnly] = useState(searchParams.get('free') === 'true');
@@ -544,7 +554,8 @@ const MarketsPage: React.FC = () => {
 
   const resetFilters = () => {
     setActiveCategory('ALL'); setShowFreeOnly(false); setShowFeaturedOnly(false);
-    setActiveComplexity(null); setActiveTags([]); setActivePlatform('ALL'); setSearch('');
+    setActiveComplexity(null); setActiveTags([]); setActivePlatform('ALL');
+    setInputValue(''); setSearch('');
   };
 
   // #2: PREVIEW handler
@@ -575,9 +586,9 @@ const MarketsPage: React.FC = () => {
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 dark:text-gray-600" size={15} />
-        <input ref={searchInputRef} type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm công cụ AI... (⌘K)"
+        <input ref={searchInputRef} type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="Tìm công cụ AI... (⌘K)"
           className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] pl-9 pr-8 py-2.5 rounded-xl text-[13px] focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-600" />
-        {search && <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"><X size={13} /></button>}
+        {inputValue && <button onClick={() => { setInputValue(''); setSearch(''); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"><X size={13} /></button>}
       </div>
 
       {/* Categories Card */}

@@ -1,0 +1,217 @@
+================================================================================
+                    CODEBASE SCAN SUMMARY REPORT
+================================================================================
+Project: Skyverses Market AI
+Date: 2026-04-11
+Location: /Users/duloc/Desktop/SKYVERSES/ai-skyverses/skyverses-market-ai
+
+================================================================================
+SEARCH QUERIES & RESULTS
+================================================================================
+
+1. "100 Credits" or "100 credit" (case insensitive)
+   ├─ FOUND: 12+ locations
+   ├─ PRIMARY SOURCE: dist/index.html (6 locations - OUTDATED BUILD)
+   ├─ SECONDARY: components/ (2 UI labels - INTENTIONAL)
+   └─ PAGES: pages/videos/FibusVideoStudio.tsx (INTENTIONAL PRODUCT COPY)
+
+2. "#1 Việt Nam" mentions
+   ├─ FOUND: 6 locations
+   ├─ PRIMARY SOURCE: dist/index.html (old Vietnamese meta - NEEDS REBUILD)
+   ├─ SOURCE FILE: index.html noscript fallback (line 239 - DECISION NEEDED)
+   └─ STATUS: Not in current English meta tags (good)
+
+3. "Dùng thử miễn phí" mentions
+   ├─ FOUND: 8+ locations
+   ├─ PRIMARY: dist/index.html (OUTDATED)
+   ├─ SECONDARY: Components & pages (INTENTIONAL)
+   └─ KEYWORDS: Intentionally in index.html keywords (by design)
+
+4. "dùng thử" (any case) mentions
+   ├─ FOUND: 15+ locations
+   ├─ IN: keywords, descriptions, component labels
+   └─ STATUS: Mixed - some intentional UI copy, some in old dist/
+
+5. All usePageMeta() calls in pages/
+   ├─ FOUND: 40 files total
+   ├─ SCANNED: ✅ Complete
+   ├─ BREAKDOWN:
+   │  ├─ Root pages: 17
+   │  ├─ Image/Photo pages: 12
+   │  ├─ Video pages: 8
+   │  ├─ Audio pages: 4
+   │  └─ Dynamic (EventStudio): 1
+   └─ STATUS: All documented
+
+6. Hardcoded meta title/description in HTML
+   ├─ index.html: ✅ UPDATED to English
+   ├─ blog/index.html: ✅ OK (Vietnamese, no "100 Credits")
+   └─ dist/index.html: ❌ OUTDATED BUILD
+
+================================================================================
+FILES WITH "100 CREDITS" - DETAILED REPORT
+================================================================================
+
+CRITICAL - BUILD OUTPUT (OUTDATED):
+────────────────────────────────────────────────────────────────────────────
+dist/index.html (LINE 6):    <title>Skyverses — Marketplace AI #1 Việt Nam | Dùng thử miễn phí 100 Credits</title>
+dist/index.html (LINE 7):    <meta name="description" content="...Dùng thử ngay với 100 Credits miễn phí.">
+dist/index.html (LINE 16):   <meta property="og:title" content="...100 Credits">
+dist/index.html (LINE 29):   <meta name="twitter:title" content="...100 Credits">
+dist/index.html (LINE 30):   <meta name="twitter:description" content="...100 Credits miễn phí!">
+dist/index.html (LINE 74):   JSON-LD: "description": "Dùng thử miễn phí 100 Credits"
+dist/index.html (LINE 135):  JSON-LD FAQ: "Dùng thử miễn phí với 100 Credits"
+dist/index.html (LINE 183):  JSON-LD FAQ: "nhận ngay 100 Credits miễn phí"
+dist/index.html (LINE 215):  JSON-LD FAQ: "nhận 100 Credits"
+dist/index.html (LINE 245):  Noscript: "Dùng thử miễn phí 100 Credits — không cần thẻ quốc tế"
+
+LOW PRIORITY - UI COMPONENT LABELS (INTENTIONAL):
+────────────────────────────────────────────────────────────────────────────
+components/AIStylistWorkspace.tsx (LINE 542):
+    {s.isGenerating ? ... : <>Generate <div ... >... 100 credits</div></>}
+    → REASON: Shows actual UI cost to users - KEEP AS-IS
+
+components/VoiceStudioWorkspace.tsx (LINE 282):
+    <p>...Việc khởi tạo thiết kế giọng nói yêu cầu **100 credits** cho mỗi chu kỳ...</p>
+    → REASON: Product feature documentation - KEEP AS-IS
+
+================================================================================
+FILES WITH "#1 VIỆT NAM" - DETAILED REPORT
+================================================================================
+
+OLD BUILD (NEEDS REBUILD):
+────────────────────────────────────────────────────────────────────────────
+dist/index.html (MULTIPLE LOCATIONS):
+  - Line 6: Title tag
+  - Line 16: og:title
+  - Line 29: twitter:title
+  - Line 74: JSON-LD description
+  - Line 175: JSON-LD FAQ text
+  - Line 244: Noscript fallback
+
+SOURCE FILE - DECISION NEEDED:
+────────────────────────────────────────────────────────────────────────────
+index.html (LINE 239):
+    <h1 style="font-size:2rem; margin-bottom:16px;">Skyverses — Marketplace AI #1 Việt Nam</h1>
+    → This is NOSCRIPT FALLBACK
+    → Should this match the English title or stay Vietnamese?
+    → ACTION REQUIRED: Decide policy
+
+================================================================================
+USEPAGEMETA() CALLS - 40 FILES INVENTORY
+================================================================================
+
+STATUS: ✅ ALL SCANNED AND DOCUMENTED
+
+BREAKDOWN:
+  • Root pages: 17 files (MarketPage, AboutPage, LoginPage, etc.)
+  • Image pages: 12 files (AIImageGenerator, AIStylist, BackgroundRemoval, etc.)
+  • Video pages: 8 files (AIVideoGenerator, AvatarLipsync, FibusVideoStudio, etc.)
+  • Audio pages: 4 files (VoiceStudio, TextToSpeech, MusicGenerator, VoiceDesign)
+  • Special: EventStudioPage (dynamic)
+
+All have individual titles and descriptions in their respective usePageMeta() calls.
+See COMPREHENSIVE_CODEBASE_SCAN.md for complete list with titles/descriptions.
+
+================================================================================
+KEY FINDINGS - DECISION MATRIX
+================================================================================
+
+ITEM                              STATUS    ACTION NEEDED    PRIORITY
+─────────────────────────────────────────────────────────────────────
+dist/index.html (outdated)       ❌ FAIL   npm run build        🔴 P1
+index.html noscript (line 239)   ⚠️  WARN  Decide on content    🟡 P2
+FibusVideoStudio.tsx (line 186)  ⚠️  WARN  Decide: EN or VI?    🟡 P2
+Component "100 credits" labels   ✅ OK    Keep as-is           🟢 P3
+All 40 usePageMeta() entries     ✅ OK    Documented           🟢 P3
+
+================================================================================
+INDEX.HTML COMPARISON
+================================================================================
+
+CURRENT (MAIN APP - index.html):
+  <title>Skyverses — The AI Marketplace | Veo3, Grok, Kling, Gemini, GPT & More</title>
+  <meta name="description" content="The all-in-one AI Marketplace...">
+  STATUS: ✅ ENGLISH (GOOD)
+
+OLD BUILD (dist/index.html):
+  <title>Skyverses — Marketplace AI #1 Việt Nam | Dùng thử miễn phí 100 Credits</title>
+  STATUS: ❌ VIETNAMESE WITH "100 CREDITS" (OUTDATED)
+
+BLOG (blog/index.html):
+  <title>Skyverses Insights — Tin tức AI mới nhất mọi lĩnh vực | Hướng dẫn & Case Study</title>
+  STATUS: ✅ VIETNAMESE (INTENTIONAL, NO OLD CREDITS)
+
+================================================================================
+KEYWORDS ANALYSIS
+================================================================================
+
+index.html KEYWORDS (Line 8):
+  "marketplace AI Việt Nam, AI giá rẻ, dùng thử AI miễn phí, tạo video AI, ..."
+  STATUS: ✅ INTENTIONAL (Vietnamese SEO keywords)
+
+pages/MarketPage.tsx KEYWORDS (Line 68):
+  "marketplace AI Việt Nam, AI giá rẻ, dùng thử AI miễn phí, tạo video AI, ..."
+  STATUS: ✅ MATCHES MAIN (GOOD)
+
+================================================================================
+STATISTICS
+================================================================================
+
+Total Files Scanned:           100+ files
+Total With usePageMeta:        40 files
+"100 Credits" Occurrences:     12+
+"#1 Việt Nam" Occurrences:     6
+"Dùng thử miễn phí" Count:     8+
+"dùng thử" Total Mentions:     15+
+
+Issues Found:                  5
+  - Critical (must fix):       1 (dist/ outdated)
+  - Medium (decide):           1 (noscript)
+  - Low (consider):            3 (component copy, page content)
+
+Components Locations:
+  - pages/:                    41 tsx files
+  - components/:               ~98 files scanned
+  - blog/:                     Multiple files
+
+================================================================================
+RECOMMENDATIONS
+================================================================================
+
+IMMEDIATE (DO TODAY):
+  1. Run: npm run build
+     → This will update dist/index.html with new source content
+
+THEN DECIDE (DO THIS WEEK):
+  2. index.html line 239 noscript:
+     Option A: Change to English title
+     Option B: Keep Vietnamese (for noscript fallback)
+     → Discuss with team, make decision
+
+  3. FibusVideoStudio.tsx line 186:
+     Option A: Update description to English
+     Option B: Keep Vietnamese (product-specific)
+     → Confirm intent with team
+
+VERIFY AFTER REBUILD:
+  4. Test dist/index.html generated correctly
+  5. Verify all meta tags in dist/ match source
+  6. Check that "100 Credits" appears ONLY in:
+     - Component UI labels (intentional)
+     - Product copy (intentional)
+     - NOT in main SEO meta tags
+
+================================================================================
+DOCUMENT REFERENCE
+================================================================================
+
+Main Report:     COMPREHENSIVE_CODEBASE_SCAN.md (detailed findings)
+This Summary:    SCAN_SUMMARY.txt (quick reference)
+Previous Audits: QUICK_REFERENCE.md, CODEBASE_EXPLORATION_REPORT.md
+
+================================================================================
+END OF REPORT
+================================================================================
+Generated: 2026-04-11
+Next Scan: After rebuild - verify dist/index.html is updated
