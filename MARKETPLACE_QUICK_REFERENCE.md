@@ -1,399 +1,191 @@
-# Marketplace Quick Reference Guide
+# Marketplace Quick Reference Card
 
-## File Locations
+## 🎯 WHAT YOU ASKED FOR
 
-### Core Type Definitions
-- **Types:** `/types.ts` (Solution, HomeBlock, Language interfaces)
-- **Config:** `/constants/market-config.tsx` (HOME_BLOCK_OPTIONS)
+### 1. MarketPage Component File ✅
+**Location:** `/pages/MarketPage.tsx` (Main home marketplace)  
+**Alternative:** `/pages/MarketsPage.tsx` (Full marketplace with filters)
 
-### Frontend Pages
-- **Home:** `/pages/MarketPage.tsx` (main marketplace)
-- **Browsing:** `/pages/MarketsPage.tsx` (advanced filters)
-- **Categories:** `/pages/CategoryPage.tsx` (by category)
-- **Product:** `/pages/videos/StoryboardStudioPage.tsx` (example product)
+### 2. How Products Are Loaded ✅
+**Primary:** API-based from backend  
+**Fallback:** Hardcoded in `/data.ts`
 
-### Components
-- **Card:** `/components/market/SolutionCard.tsx`
-- **Header:** `/components/market/MarketSectionHeader.tsx`
-- **Featured:** `/components/market/FeaturedSection.tsx`
-- **List:** `/components/market/SolutionList.tsx`
+```javascript
+// API Call (Primary)
+marketApi.getSolutions({ lang, q?, category? })
+  → GET /market?q=...&category=...&lang=...
+  → 2-min cache
 
-### APIs
-- **Market API:** `/apis/market.ts` (getSolutions, getRandomFeatured, CRUD)
-- **Config API:** `/apis/config.ts` (getSystemConfig)
-
-### Backend
-- **Model:** `/skyverses-backend/src/models/MarketItem.model.ts` (MongoDB schema)
-- **Routes:** `/skyverses-backend/src/routes/market.ts` (API endpoints)
-
-### Routing
-- **Routes:** `/App.tsx` (all route definitions)
-
----
-
-## Product Definition Structure
-
-### Minimal Required Fields
-```typescript
-{
-  id: "STORYBOARD-STUDIO",
-  slug: "storyboard-studio",
-  name: { en: "Storyboard Studio", vi: "...", ko: "...", ja: "..." },
-  category: { en: "Video", vi: "..." },
-  description: { en: "...", vi: "..." },
-  imageUrl: "https://...",
-  demoType: "video",
-  tags: ["storyboard", "video"],
-  features: ["Feature 1", "Feature 2"],
-  complexity: "Standard",
-  priceReference: "100 CR / project"
-}
+// Hardcoded Data (Fallback)
+import { SOLUTIONS } from './data.ts'
 ```
 
-### Display Control Fields
-```typescript
-{
-  isActive: true,          // Show in marketplace?
-  featured: false,         // Show in featured section?
-  homeBlocks: ["video_studio", "top_trending"],  // Which sections?
-  order: 0                 // Sort order
-}
-```
+### 3. Current Product Data ✅
 
-### Pricing Fields
+**Hardcoded Products (data.ts):**
+- ✅ `paperclip-ai-agents` (Paperclip — AI Org Orchestrator)
+- ❌ NO "storyboard" product in data.ts
+- ❌ NO "ai agent perclip" exact match
+
+**Total in data.ts:** 11 products
+
+### 4. Market Config Files ✅
+**Location:** `/constants/market-config.tsx`
+
+Contains `HOME_BLOCK_OPTIONS` for homepage sections:
+- Top Choice
+- Image Studio
+- Video Studio
+- AI Agent Workflow
+- Festivals & Events
+- Other Apps
+
+### 5. Types Definition ✅
+**Location:** `/types.ts`
+
+Key interfaces:
 ```typescript
-{
-  priceCredits: 100,       // Cost in credits
-  isFree: false,           // Is it free?
-  priceReference: "100 CR / project"  // Display text
-}
+interface Solution { ... }           // Product type
+interface LocalizedString { ... }    // i18n strings
+type Language = 'en' | 'vi' | 'ko' | 'ja'
 ```
 
 ---
 
-## Categories System
+## 📋 QUICK FACTS
 
-### Home Blocks (Primary Categories)
-```
-- top-choice       → Featured products
-- top-image        → Image Studio
-- top-video        → Video Studio ← Storyboard Studio here
-- top-ai-agent     → AI Agent Workflow
-- events           → Events/Festivals
-- app-other        → Other apps
-```
+| Aspect | Details |
+|--------|---------|
+| **Home Marketplace** | `/pages/MarketPage.tsx` (1000+ lines) |
+| **Full Marketplace** | `/pages/MarketsPage.tsx` (1000+ lines) |
+| **Product Data File** | `/data.ts` (495 lines, 11 products) |
+| **Product Type Definition** | `/types.ts` (Solution interface) |
+| **Market Config** | `/constants/market-config.tsx` |
+| **API Endpoint** | `GET /market?q=...&category=...&lang=...` |
+| **API File** | `/apis/market.ts` |
+| **Caching** | 2 min (solutions), 5 min (featured) |
+| **Languages** | English, Vietnamese, Korean, Japanese |
+| **Product Count** | 11 in data.ts (backend has more) |
 
-### Secondary Categories (in category field)
-```
-- Image
-- Video
-- Audio
-- Music
-- Enhancement
-- Automation
-- 3D
-- ...
-```
+---
 
-### How They Work Together
+## 🔍 CRITICAL FINDING
 
-Products use **both**:
-1. `homeBlocks` array → Where to display (top-level sections)
-2. `category` field → What type it is (for filtering)
+### Storyboard Status
+- ✅ Route exists: `/product/storyboard-studio`
+- ✅ Page component exists: `/pages/videos/StoryboardStudioPage.tsx`
+- ❌ **NOT in `/data.ts` SOLUTIONS array**
 
-Example:
+**Interpretation:** Storyboard is managed backend-only (not in hardcoded fallback data)
+
+---
+
+## 📝 PRODUCT DATA STRUCTURE
+
+Every product (Solution) must have:
+
 ```typescript
 {
-  slug: "storyboard-studio",
-  category: { en: "Video" },        // Type
-  homeBlocks: ["video_studio"]      // Display in Video section
+  id: string,                    // Unique ID
+  slug: string,                  // URL slug
+  name: { en, vi, ko, ja },      // Multi-language
+  category: { en, vi, ko, ja },  // Product category
+  description: { en, vi, ko, ja },
+  imageUrl: string,              // Thumbnail
+  demoType: 'text|image|video|automation',
+  tags: string[],                // Search tags
+  features: [],                  // Feature list
+  complexity: 'Standard|Advanced|Enterprise',
+  
+  // Optional but common
+  priceCredits?: number,         // Cost in credits
+  isFree?: boolean,              // Free flag
+  featured?: boolean,            // Featured flag
+  isActive?: boolean,            // Visibility
+  platforms?: ['web', 'ios', 'android']
 }
 ```
 
 ---
 
-## Key API Endpoints
+## 🎨 COMPONENTS YOU'LL USE
 
-### Frontend (TypeScript)
-```typescript
-// Get solutions with filters
-marketApi.getSolutions({
-  q: "storyboard",           // Search query
-  category: "Video",         // Category filter
-  lang: "en"                 // Language
-})
+### If Modifying Marketplace Display
+- `ProductCardGrid` - Grid product cards
+- `ProductCardList` - List product cards
+- `MarketSectionHeader` - Section headers
+- `ProductToolModal` - Quick view modal
+- `ComparePanel` - Comparison footer
 
-// Get 5 random featured items
-marketApi.getRandomFeatured()
-```
-
-### Backend (Express)
-```
-GET  /market?q=...&category=...&lang=...
-GET  /market/random/featured
-GET  /market/:slug
-POST /market (admin)
-PUT  /market/:id (admin)
-DELETE /market/:id (admin)
-POST /market/:id/active (admin)
-```
+### If Managing Products
+- `marketApi.getSolutions()` - Fetch products
+- `marketApi.createSolution()` - Add product
+- `marketApi.updateSolution()` - Edit product
+- `marketApi.toggleActive()` - Show/hide product
 
 ---
 
-## Routing
+## 🔑 KEY FEATURES OF MARKETPLACE
 
-### Public Routes
-```
-/                    → MarketPage (home)
-/category/:id        → CategoryPage (e.g., /category/top-video)
-/markets             → MarketsPage (advanced browsing)
-/product/:slug       → SolutionDetail (generic product page)
-/product/storyboard-studio → StoryboardStudioPage (specific)
-```
-
-### Route Priority
-1. **Specific routes** checked first → `/product/storyboard-studio`
-2. **Generic routes** checked second → `/product/:slug`
-
-This ensures storyboard-studio uses its dedicated component.
+✅ Real-time search (Ctrl+K)  
+✅ Category filtering  
+✅ Product comparison (max 3)  
+✅ Favorites/bookmarks  
+✅ Recently viewed history  
+✅ Grid & list view toggle  
+✅ Multi-language support  
+✅ Responsive mobile design  
+✅ URL bookmarkable filters  
+✅ Animated statistics  
 
 ---
 
-## Filtering Logic
+## 📁 WHERE TO FIND THINGS
 
-### MarketPage (Home)
-```
-User enters query
-  ↓
-API call: getSolutions({ q, category, lang })
-  ↓
-Backend filters by: name, description, tags, models
-  ↓
-Frontend filters by: homeBlocks array
-  ↓
-Display grouped by HomeBlock sections
-```
+**Need to...**
 
-### CategoryPage
-```
-URL param: /category/:id
-  ↓
-Fetch all solutions
-  ↓
-Filter: sol.homeBlocks?.includes(id)
-  ↓
-Additional client-side search by name/slug/tags
-```
-
-### MarketsPage
-```
-Multiple independent filters:
-- Category (Video, Image, Audio, etc.)
-- Complexity (Standard, Advanced, Enterprise)
-- Platform (Web, iOS, Android, Extension)
-- Price (Free, Paid)
-- Sort (Popular, Newest, Name A-Z)
-  ↓
-Pagination: 12 items per page
-```
+| Task | File/Location |
+|------|---------------|
+| Add new product | `/data.ts` → SOLUTIONS array |
+| Change product display | `/components/market/ProductCard*.tsx` |
+| Modify home page layout | `/pages/MarketPage.tsx` (line 220+) |
+| Modify full marketplace | `/pages/MarketsPage.tsx` (line 362+) |
+| Add home section | `/constants/market-config.tsx` |
+| Change product type | `/types.ts` → Solution interface |
+| Make API calls | `/apis/market.ts` |
+| Add storyboard to marketplace | Create SOLUTIONS entry for `storyboard-studio` |
+| Change cache times | `/apis/market.ts` → TTL parameters |
 
 ---
 
-## Display Components
+## 🚀 NEXT STEPS
 
-### SolutionCard Props
-```typescript
-{
-  sol: Solution,           // Product data
-  idx: number,             // Index for styling
-  lang: string,            // Current language
-  isLiked: boolean,        // Heart icon state
-  isFavorited: boolean,    // Bookmark state
-  onToggleFavorite,        // Bookmark callback
-  onToggleLike,            // Like callback
-  onClick,                 // Navigate to product
-  onQuickView,             // Modal view callback
-  stats: { users, likes }, // Fake engagement stats
-  isGrid: boolean          // Grid vs horizontal layout
-}
-```
-
-### Card Display Order
-1. Image (with hover effects)
-2. Category badge
-3. Title
-4. Description (quoted)
-5. Stats (users & likes)
-6. Price (free badge or credits)
-7. Actions (Quick View, Detail buttons)
+1. **Confirm product names** - Search backend for "AI Agent PerClip"
+2. **Check storyboard status** - Is it managed backend-only?
+3. **Add storyboard to marketplace** - If needed, add SOLUTIONS entry
+4. **Modify filters** - Categories, complexity, platforms are all configurable
+5. **Update product data** - Via API endpoint or data.ts file
 
 ---
 
-## Storyboard Studio Specific
+## ⚡ DEBUGGING TIPS
 
-### Location
-- **Page:** `/pages/videos/StoryboardStudioPage.tsx`
-- **Route:** `/product/storyboard-studio`
-- **ID:** `STORYBOARD-STUDIO`
-- **Slug:** `storyboard-studio`
+### Products not showing?
+1. Check `isActive` field (must be `true` or not set)
+2. Check API response: `marketApi.getSolutions()`
+3. Check browser console for fetch errors
+4. Clear cache: `localStorage.clear()`
 
-### Features
-1. AI Script Splitting
-2. Visual Character Anchoring
-3. Batch Image Generation
-4. AI Video Rendering
-5. Visual Timeline
-6. Export & Pipeline
+### Filter not working?
+1. Products must have matching `tags` or `category`
+2. Categories auto-detect from products
+3. Tags must match exactly (case-sensitive in logic)
 
-### Demo Samples
-- Dragon Ball: Ultra Instinct Rise
-- Naruto: Final Valley Clash
-- One Piece: Gear 5 Joyboy
-- Marvel: Avengers Assemble
-- Avatar: Way of Water
-
-### Data Source
-- **Frontend:** `/data.ts` (STORYBOARD_SAMPLES)
-- **Backend:** MongoDB MarketItem document
-- **Images:** CDN (Imagedelivery.net) with CDN constants
+### Adding new product?
+1. Add to SOLUTIONS array in `/data.ts`
+2. Or POST to `/market` API endpoint
+3. Set `isActive: true` to show in marketplace
 
 ---
 
-## Localization
-
-### Supported Languages
-- `en` - English
-- `vi` - Vietnamese
-- `ko` - Korean
-- `ja` - Japanese
-
-### Usage Pattern
-```typescript
-const { lang } = useLanguage();
-const currentLang = lang as Language;
-
-// Access localized string
-const name = product.name[currentLang] || product.name.en;
-```
-
----
-
-## localStorage Keys
-
-### Favorites
-- **Key:** `skyverses_favorites`
-- **Value:** Array of product IDs
-- **Structure:** `["STORYBOARD-STUDIO", "AI-VIDEO-GENERATOR", ...]`
-
-### Recently Viewed
-- **Key:** `skyverses_recently_viewed`
-- **Max Items:** 5
-- **Structure:**
-  ```typescript
-  [{
-    id: "STORYBOARD-STUDIO",
-    slug: "storyboard-studio",
-    name: { en: "...", vi: "..." },
-    imageUrl: "https://...",
-    category: { en: "Video", vi: "..." }
-  }, ...]
-  ```
-
----
-
-## Common Development Tasks
-
-### Add New Product
-1. Create MongoDB document in `MarketItem` collection
-2. Set fields: `id`, `slug`, `name`, `category`, `imageUrl`, etc.
-3. Set `homeBlocks` to display categories
-4. Set `isActive: true` to make visible
-
-### Add New Category Section
-1. Update `HOME_BLOCK_OPTIONS` in `/constants/market-config.tsx`
-2. Add `key`, `label`, `icon`, `color`
-3. Backend will return matching products via `homeBlocks` filter
-
-### Create Dedicated Product Page
-1. Create component in `/pages/` (e.g., `/pages/videos/CustomProductPage.tsx`)
-2. Add lazy import in `/App.tsx`
-3. Add specific route: `<Route path="/product/custom" element={<CustomProductPage />} />`
-4. Route will be checked before generic `/product/:slug` route
-
-### Search Implementation
-1. User types query
-2. Calls `marketApi.getSolutions({ q: query })`
-3. Backend searches: name, description, tags, models, industries, neuralStack
-4. Frontend receives filtered array
-5. Display with SolutionCard components
-
----
-
-## Performance Optimizations
-
-### Code Splitting
-- All pages are lazy-loaded using React.lazy()
-- Routes loaded only when needed
-
-### API Caching
-- Market solutions cached for 2 minutes
-- Featured items cached for 5 minutes
-
-### Image Optimization
-- All images use `loading="lazy"`
-- Hover effects use CSS transitions (GPU accelerated)
-- CDN-hosted images from imagedelivery.net
-
-### Rendering
-- `SolutionCard` is memoized (`React.memo()`)
-- `useMemo` for filtered solutions
-- Horizontal scroll for trending/categories
-
----
-
-## Debugging Tips
-
-### Check Product Visibility
-1. Is `isActive: true`?
-2. Is `homeBlocks` array populated?
-3. Is `category` field set correctly?
-
-### Check Routing
-1. Does route exist in `/App.tsx`?
-2. Check route priority (specific before generic)
-3. Verify component is imported correctly
-
-### Check Filtering
-1. Verify `category` field matches filter criteria
-2. Check `homeBlocks` includes the target category
-3. Verify language (`lang`) matches expected values
-
-### Check API Calls
-1. Open DevTools → Network tab
-2. Look for `/market` requests
-3. Verify query parameters
-4. Check response status (200 = success)
-
----
-
-## File Sizes (as reference)
-
-- MarketPage.tsx: 104 KB
-- MarketsPage.tsx: 58 KB
-- StoryboardStudioPage.tsx: 32 KB
-- CategoryPage.tsx: ~30 KB
-- SolutionCard.tsx: 6 KB
-- market.ts (API): 4 KB
-
----
-
-## Important Notes
-
-1. **Product IDs must be unique** (indexed in MongoDB)
-2. **Slugs must be unique** (URL identifiers)
-3. **All user-facing strings should be localized** (LocalizedString)
-4. **homeBlocks** array determines which sections a product appears in
-5. **category** field is for filtering and display (second level)
-6. **Specific routes** take priority over generic routes
-7. **Featured products** appear in random featured section (5 items)
-
+Generated: April 12, 2026
