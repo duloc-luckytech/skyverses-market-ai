@@ -18,6 +18,215 @@ Before starting, read:
 
 ---
 
+## STEP 0.5 — AI Product Blueprint (tự động gọi API)
+
+> **Mục đích:** Trước khi viết bất cứ dòng code nào, gọi AI để brainstorm toàn diện sản phẩm.
+> Output của step này là đầu vào trực tiếp cho STEP 1 (metadata), STEP 3.5 (landing plan), và STEP 6 (workspace logic).
+>
+> **Cơ chế:** Claude agent tự chạy script Node.js gọi API → nhận blueprint JSON → parse và dùng ngay cho các STEP tiếp theo. **Không cần user copy/paste thủ công.**
+
+---
+
+### 1. Tạo script `blueprint-<slug>.mjs`
+
+```js
+// blueprint-<slug>.mjs
+// Gọi AI để gen full product blueprint trước khi build
+// Run: node blueprint-<slug>.mjs
+
+const PRODUCT_NAME = '<TÊN PRODUCT>';       // ← điền vào đây
+const PRODUCT_DESC = '<MÔ TẢ 1-2 CÂU>';    // ← ví dụ: "tool tạo chatbot AI cho website doanh nghiệp"
+
+const API_URL  = 'https://ezaiapi.com/v1/chat/completions';
+const API_KEY  = process.env.EZAI_API_KEY || 'sk-a872ad970097e44608731b01af1308b6f0ea1dfcaed1db93';
+const MODEL    = 'claude-sonnet-4-6';
+
+const SYSTEM_PROMPT = `Bạn là một product designer chuyên về AI SaaS tools cho marketplace.
+Trả lời bằng tiếng Việt. Trả lời đầy đủ, cụ thể, không bỏ mục nào.
+Đây là blueprint để build product thực tế — càng chi tiết càng tốt.`;
+
+const USER_PROMPT = `Thiết kế product blueprint đầy đủ cho sản phẩm AI sau:
+
+Sản phẩm: ${PRODUCT_NAME}
+Mô tả: ${PRODUCT_DESC}
+
+Trả lời đúng 10 mục theo format sau (giữ nguyên tiêu đề mục để dễ parse):
+
+## MỤC 1 — CORE VALUE PROPOSITION
+- Vấn đề giải quyết:
+- Người dùng mục tiêu (persona):
+- Lý do chọn thay vì làm thủ công:
+- Pitch 1 câu (EN, dưới 15 từ):
+
+## MỤC 2 — TÍNH NĂNG ĐẦY ĐỦ
+
+### Nhóm A — Core Features (MVP, 5-8 tính năng bắt buộc)
+(mỗi dòng: Tên tính năng — mô tả chi tiết cách hoạt động)
+
+### Nhóm B — Smart Features (AI-powered, 3-5 tính năng)
+(mỗi dòng: Tên tính năng — AI làm gì cụ thể)
+
+### Nhóm C — Power Features (nâng cao, 3-5 tính năng)
+(mỗi dòng: Tên tính năng — mô tả)
+
+## MỤC 3 — WORKSPACE UX FLOW
+- Bước 1 (User vào thấy gì):
+- Bước 2 (User input gì):
+- Bước 3 (AI xử lý thế nào: stream/async job/step-by-step):
+- Bước 4 (Output dạng gì):
+- Bước 5 (User iterate như thế nào):
+- Edge cases (fail/timeout/wrong output):
+
+## MỤC 4 — INPUT PARAMETERS SIDEBAR
+(mỗi dòng: Tên | loại UI: dropdown/toggle/slider/textarea/chip | default value)
+
+## MỤC 5 — OUTPUT TYPES
+- Output chính:
+- Format export:
+- Copy/share/embed:
+
+## MỤC 6 — INDUSTRIES & USE CASES
+(8-12 ngành, mỗi dòng: Tên ngành — use case cụ thể)
+
+## MỤC 7 — PRICING & COMPLEXITY
+- priceCredits đề xuất (tham chiếu: image=120, video=200-500, text=20-50):
+- Complexity (Standard/Advanced/Enterprise) + lý do:
+- Free tier: có/không + lý do:
+
+## MỤC 8 — LANDING PAGE CONTENT
+
+### Hero
+- Headline (EN, dưới 10 từ, impact cao):
+- Subheadline (1-2 câu):
+- Visual type (App UI mockup / Before-After / Output grid / Video demo / Live widget):
+
+### 4 Key Specs
+| Spec | Value |
+|------|-------|
+| | |
+
+### Workflow 4 bước
+| Bước | Icon gợi ý | Tên | Mô tả ngắn |
+|------|-----------|-----|------------|
+
+### Features bento (2 featured + 4 normal)
+- FEATURED 1 (col-span-2): tên — mô tả
+- FEATURED 2 (col-span-2): tên — mô tả
+- Normal 3-6: tên — mô tả
+
+### FAQ 5 câu
+Q1: ... | A1: ...
+
+## MỤC 9 — METADATA 4 LANGS
+| Trường | EN | VI | KO | JA |
+|--------|----|----|----|----|
+| name | | | | |
+| category | | | | |
+| description | | | | |
+| feature 1 | | | | |
+| feature 2 | | | | |
+| feature 3 | | | | |
+| feature 4 | | | | |
+| feature 5 | | | | |
+| feature 6 | | | | |
+
+## MỤC 10 — TAGS & PROBLEMS
+- Tags (10-15, lowercase, hyphenated):
+- Problems (3-5 pain points):`;
+
+async function runBlueprint() {
+  console.log(`\n🤖 Generating product blueprint for: ${PRODUCT_NAME}`);
+  console.log(`   Model: ${MODEL} via ezaiapi.com\n`);
+
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 4096,
+      messages: [
+        { role: 'user', content: USER_PROMPT },
+      ],
+      system: SYSTEM_PROMPT,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    console.error(`❌ API Error ${res.status}: ${err}`);
+    process.exit(1);
+  }
+
+  const data = await res.json();
+  const blueprint = data.choices?.[0]?.message?.content || data.content?.[0]?.text || '';
+
+  if (!blueprint) {
+    console.error('❌ Empty response from API');
+    process.exit(1);
+  }
+
+  // Lưu ra file để tham chiếu
+  const outputFile = `blueprint-${PRODUCT_NAME.toLowerCase().replace(/\s+/g, '-')}.md`;
+  const fs = await import('fs');
+  fs.writeFileSync(outputFile, `# Product Blueprint: ${PRODUCT_NAME}\n\n${blueprint}\n`);
+
+  console.log('━'.repeat(60));
+  console.log(blueprint);
+  console.log('━'.repeat(60));
+  console.log(`\n✅ Blueprint saved to: ${outputFile}`);
+  console.log(`\n📌 Tiếp theo: dùng output trên để điền STEP 1 → STEP 3.5 → STEP 6`);
+}
+
+runBlueprint();
+```
+
+---
+
+### 2. Chạy script
+
+```bash
+node blueprint-<slug>.mjs
+# → Blueprint in ra terminal + lưu vào blueprint-<slug>.md
+# → Đọc file .md để tham chiếu trong suốt quá trình build
+```
+
+> ⚠️ **Nếu API trả về lỗi 401:** Key expired → dùng key mới từ `.env` hoặc hỏi user.
+> ⚠️ **Nếu response bị cắt ngắn:** Tăng `max_tokens` lên `8192`.
+
+---
+
+### 3. Map blueprint output → các STEP
+
+| Mục blueprint | Dùng ở |
+|---------------|--------|
+| Mục 1 (Value Prop + Pitch) | STEP 1 — description, STEP 3.5 câu 4 (tagline hero) |
+| Mục 2A + 2B (Core + Smart features) | STEP 1 — features array (6 items), STEP 4 FeaturesSection bento |
+| Mục 2C (Power features) | STEP 6 — sidebar pickers, advanced options |
+| Mục 3 (UX Flow) | STEP 6 — workspace state design, job flow |
+| Mục 4 (Input params) | STEP 6 — sidebar pickers với đúng UI type |
+| Mục 5 (Output types) | STEP 6 — `REResult` type, export buttons |
+| Mục 6 (Industries) | STEP 6 — `INDUSTRIES` const (8-12 items) |
+| Mục 7 (Pricing) | STEP 1 — priceCredits, complexity, isFree |
+| Mục 8 (Landing content) | STEP 3.5 — toàn bộ 13 câu landing plan |
+| Mục 9 (Metadata 4 langs) | STEP 1 — name/category/description/features |
+| Mục 10 (Tags/Problems) | STEP 1 — tags[], problems[] |
+
+> **Quan trọng:** Mục 2A (Core Features) và Mục 3 (UX Flow) là 2 mục ảnh hưởng nhiều nhất.
+> Đọc kỹ 2 mục này trước khi bắt tay vào STEP 6 — sai ở đây sẽ phải refactor toàn bộ workspace.
+
+---
+
+### 4. Gitignore blueprint script (chứa API key)
+
+```bash
+echo "blueprint-*.mjs" >> .gitignore
+```
+
+---
+
 ## STEP 1 — Define product metadata
 
 Xác định trước khi làm bất cứ thứ gì:
@@ -2894,6 +3103,8 @@ Trước khi push, tự kiểm tra nhanh các điểm sau:
 echo "seed-*.mjs" >> .gitignore
 echo "gen-*.mjs" >> .gitignore
 echo "update-*.mjs" >> .gitignore
+echo "blueprint-*.mjs" >> .gitignore   # chứa EZAI_API_KEY
+echo "blueprint-*.md" >> .gitignore    # output blueprint (data nội bộ)
 
 # 2. Pre-commit safety check — phát hiện TOKEN lọt vào staged files
 echo "🔒 Checking for tokens in staged files..."
