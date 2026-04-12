@@ -638,8 +638,12 @@ const MarketsPage: React.FC = () => {
   }, [currentLang]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('skyverses_favorites');
-    if (saved) setFavorites(JSON.parse(saved));
+    try {
+      const saved = localStorage.getItem('skyverses_favorites');
+      if (saved) setFavorites(JSON.parse(saved));
+    } catch {
+      localStorage.removeItem('skyverses_favorites');
+    }
   }, []);
 
   // Reset pagination when filters change
