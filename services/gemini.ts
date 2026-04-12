@@ -148,7 +148,7 @@ export const generateMultiSpeakerAudio = async (
   }
 };
 
-export const generateDemoText = async (prompt: string, model: string = 'gemini-3-flash-preview', systemInstruction?: string): Promise<string> => {
+export const generateDemoText = async (prompt: string, model: string = 'gemini-2.5-flash', systemInstruction?: string): Promise<string> => {
   const apiKey = await getActiveApiKey();
   const ai = new GoogleGenAI({ apiKey });
   try {
