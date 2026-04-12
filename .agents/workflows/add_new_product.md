@@ -2168,7 +2168,7 @@ export default YourProductAI;
 
 ### ⚠️ RULE: Generate phải dùng Job+Poll — KHÔNG dùng `generateDemoImage` / `generateDemoVideo`
 
-> `generateDemoImage` và `generateDemoVideo` từ `services/gemini` là **demo/mock service** — **KHÔNG dùng trong workspace production**.
+> `generateDemoImage` và `generateDemoVideo` từ `services/geminiMedia` là **demo/mock service** — **KHÔNG dùng trong workspace production**.
 
 #### Image generation → `imagesApi.createJob` + `pollImageJobStatus`
 ```ts
@@ -2368,7 +2368,7 @@ const finalPrompt = industryLabel
   ? `[Lĩnh vực: ${industryLabel}] ${prompt}`
   : prompt;
 
-// Dùng finalPrompt (không phải prompt) khi gọi generateDemoImage(finalPrompt, ...)
+// Dùng finalPrompt (không phải prompt) khi gọi generateDemoImage(finalPrompt, ...) từ services/geminiMedia
 ```
 
 ### AISuggestPanel integration (sau Industry Picker, trước prompt textarea):
@@ -3072,7 +3072,7 @@ SIDEBAR — Tạo video
 | `const MODELS = ['Nano Banana', ...]` hardcode | Fetch từ `pricingApi.getPricing({ tool: 'video', engine })` → `availableModels` |
 | Không pass `familyModels={familyModels.map(m => m.raw \|\| m)}` | Luôn map `.raw` — `ModelEngineSettings` (image) cần raw PricingModel |
 | Build Video settings UI từ đầu | Dùng `VideoModelEngineSettings` (xem canonical `AIVideoGeneratorWorkspace`) |
-| `generateDemoImage` / `generateDemoVideo` từ `services/gemini` | Dùng `imagesApi.createJob` + poll / `videosApi.createJob` + poll |
+| `generateDemoImage` / `generateDemoVideo` từ `services/geminiMedia` | Dùng `imagesApi.createJob` + poll / `videosApi.createJob` + poll |
 | `useState<string\|null>(null)` — 1 result duy nhất | `useState<REResult[]>([])` — task list với status per-item |
 | Không hoàn credits khi job thất bại | `addCredits(cost)` + set `isRefunded: true` khi `status === 'error'` |
 
@@ -3448,7 +3448,7 @@ SIDEBAR
 | Bỏ qua `isModeBased` detection | Nếu `isModeBased = true` → ẩn duration selector, dùng mode làm key pricing |
 | Tự build family grouping logic | Copy `extractImageFamily` / `extractFamilyName` từ canonical workspace |
 | Ratio/Duration là select dropdown | Dùng **cycle button** (như canonical video workspace) — nhỏ gọn hơn |
-| Dùng `generateDemoImage` / `generateDemoVideo` từ `services/gemini` | Dùng `imagesApi.createJob` + poll / `videosApi.createJob` + poll |
+| Dùng `generateDemoImage` / `generateDemoVideo` từ `services/geminiMedia` | Dùng `imagesApi.createJob` + poll / `videosApi.createJob` + poll |
 | `const [result, setResult] = useState<string\|null>(null)` — 1 result duy nhất | `const [results, setResults] = useState<REResult[]>([])` — task list với status per-item |
 | Không hoàn credits khi job thất bại | Khi `status === 'error'`: gọi `addCredits(cost)` + set `isRefunded: true` |
 | Viewport chỉ hiển thị 1 ảnh, không có task list | Right rail: tab "Tác vụ" (results list) + tab "Lịch sử" (sessions localStorage) |
@@ -3461,13 +3461,13 @@ SIDEBAR
 ## STEP 6.6 — AI Message Integration (nếu workspace cần gọi AI text/JSON)
 
 > **Trigger:** Workspace có bất kỳ tính năng nào gọi AI để sinh text, phân tích, hoặc trả về structured data.
-> **Bỏ qua** nếu workspace chỉ tạo ảnh/video (đã được xử lý qua `useImageGenerator` / `generateDemoVideo`).
+> **Bỏ qua** nếu workspace chỉ tạo ảnh/video (đã được xử lý qua `useImageGenerator` / `videosApi.createJob`).
 
 ---
 
 ### Quy tắc bắt buộc — Import từ `apis/aiCommon.ts`
 
-> **KHÔNG import trực tiếp** từ `apis/aiChat.ts` hay `services/gemini.ts` trong workspace mới.
+> **KHÔNG import trực tiếp** từ `apis/aiChat.ts` hay `services/geminiMedia.ts` (cho text) trong workspace mới.
 > `apis/aiCommon.ts` là one-stop reference — export lại tất cả cần thiết + bổ sung helpers typed.
 
 ```tsx
@@ -3485,7 +3485,7 @@ import {
 
 // ❌ SAI — không import trực tiếp
 import { aiChatOnceViaProxy } from '../apis/aiChat';
-import { generateDemoText } from '../services/gemini';
+import { generateDemoText } from '../services/gemini'; // ← đã bị xóa, dùng aiTextViaProxy thay thế
 ```
 
 ---
@@ -3597,11 +3597,11 @@ const result = await aiChatJSONViaProxy<AnalysisResult>(messages, signal, 8192, 
 
 ---
 
-### Khi nào dùng `generateDemoText` (services/gemini.ts)?
+### ~~Khi nào dùng `generateDemoText` (services/gemini.ts)?~~
 
-- **Chỉ** dùng cho landing page sections (mock data, placeholder) hoặc demo animations
-- **KHÔNG** dùng trong workspace production logic — API key Gemini lộ ra browser bundle
-- Workspace production **luôn** đi qua proxy (`*ViaProxy`) để ẩn credentials
+> **`services/gemini.ts` đã bị xóa.** Dùng `aiTextViaProxy` từ `apis/aiCommon` cho mọi text generation.
+- **KHÔNG** dùng trong workspace production logic — luôn đi qua proxy (`*ViaProxy`) để ẩn credentials
+- `services/geminiMedia.ts` còn tồn tại nhưng **chỉ** cho image/video/audio synthesis
 
 ---
 
@@ -3965,7 +3965,7 @@ Cancel button (hiện bên cạnh CR cost khi đang generate):
 **Credit deduction PHẢI đặt SAU khi API trả về thành công:**
 
 ```tsx
-const imageUrl = await generateDemoImage(finalPrompt, references);
+const imageUrl = await generateDemoImage(finalPrompt, references); // từ services/geminiMedia (demo only — dùng imagesApi.createJob trong production)
 if (controller.signal.aborted) return;
 
 if (imageUrl) {
@@ -4380,7 +4380,7 @@ const handleEnhance = async () => {
   setShowEnhanceDiff(false);
   setEnhancedPreview(null);
   try {
-    const enhanced = await generateDemoText(`...system...\n\nPrompt gốc: "${prompt}"`);
+    const enhanced = await aiTextViaProxy(`...system...\n\nPrompt gốc: "${prompt}"`); // aiTextViaProxy từ apis/aiCommon
     if (enhanced && !enhanced.includes('CONNECTION_TERMINATED')) {
       setEnhancedPreview(enhanced);
       setShowEnhanceDiff(true);       // ← show diff instead of applying directly
@@ -4553,8 +4553,8 @@ Thêm trực tiếp vào page file (`pages/images/YourProductAI.tsx`), **trong `
 Thay right column mockup bằng mini-demo interactive widget. User có thể thử generate ngay trên landing page.
 
 > **⚠️ Về credits & endpoint:**
-> - Widget gọi `generateDemoImage()` từ `services/gemini` — đây là endpoint **server-side có cost** (Gemini API).
-> - Widget **KHÔNG trừ credits của user** — chi phí tính vào server budget demo.
+> - Widget gọi `generateDemoImage()` từ `services/geminiMedia` — đây là endpoint **client-side có cost** (Gemini API key từ system config).
+> - Widget **KHÔNG trừ credits của user** — chi phí tính vào budget demo Gemini API keys.
 > - **Bắt buộc rate-limit phía server** (VD: max 3 lần/IP/ngày) để tránh lạm dụng.
 > - Nếu server chưa có rate-limit → dùng phương án thay thế: **hiển thị ảnh CDN pre-generated từ STEP 3** (rotate qua 3-5 ảnh có sẵn) thay vì call API thật.
 
@@ -4577,7 +4577,7 @@ const [demoLoading, setDemoLoading] = useState(false);
 const runDemo = async () => {
   if (demoLoading) return;
   setDemoLoading(true); setDemoResult(null);
-  try { const url = await generateDemoImage(demoPrompt); setDemoResult(url ?? null); }
+  try { const url = await generateDemoImage(demoPrompt); setDemoResult(url ?? null); } // generateDemoImage từ services/geminiMedia
   catch {} finally { setDemoLoading(false); }
 };
 
@@ -4619,7 +4619,7 @@ const runDemo = async () => {
 
 Import generateDemoImage:
 ```tsx
-import { generateDemoImage } from '../../../services/gemini';
+import { generateDemoImage } from '../../../services/geminiMedia';
 ```
 
 > **💡 L6 — Demo Prompt Cycling (optional enhancement):** Nếu muốn widget không bị static, thêm `DEMO_PROMPTS` array và sau mỗi lần `runDemo()` cycle sang prompt tiếp theo: `setDemoPrompt(DEMO_PROMPTS[(demoIndex + 1) % DEMO_PROMPTS.length])`. Không cần section riêng — 3 dòng code là đủ.
