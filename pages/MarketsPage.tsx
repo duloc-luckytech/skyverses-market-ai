@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback, useDeferredValue } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -35,7 +35,7 @@ const useAnimatedCounter = (end: number, duration = 800) => {
 };
 
 // ═══════ CONSTANTS ═══════
-const CATEGORIES = [
+const STATIC_CATEGORIES = [
   { key: 'ALL', label: 'Tất cả', icon: LayoutGrid },
   { key: 'Video', label: 'Video AI', icon: Video },
   { key: 'Image', label: 'Hình ảnh AI', icon: ImageIcon },
@@ -379,17 +379,11 @@ const MarketsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   // #1: URL-BASED FILTERS — init from URL params
-  // inputValue: updates immediately (smooth typing)
-  // search: debounced 300ms (used for filtering + URL)
+  // inputValue: updates immediately (no debounce — instant UI response)
+  // deferredSearch: React defers expensive filter recalc, keeps typing smooth
   const [inputValue, setInputValue] = useState(searchParams.get('q') || '');
-  const [search, setSearch] = useState(searchParams.get('q') || '');
+  const deferredSearch = useDeferredValue(inputValue);
   const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'ALL');
-
-  // Debounce search — prevents filter re-running on every keystroke
-  useEffect(() => {
-    const timer = setTimeout(() => setSearch(inputValue), 300);
-    return () => clearTimeout(timer);
-  }, [inputValue]);
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'popular');
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showFreeOnly, setShowFreeOnly] = useState(searchParams.get('free') === 'true');
@@ -406,10 +400,10 @@ const MarketsPage: React.FC = () => {
   const [previewSol, setPreviewSol] = useState<Solution | null>(null);
   const [compareIds, setCompareIds] = useState<string[]>([]);
 
-  // #1: SYNC filters → URL
+  // #1: SYNC filters → URL (use inputValue for URL so it reflects what user typed)
   useEffect(() => {
     const params = new URLSearchParams();
-    if (search) params.set('q', search);
+    if (inputValue) params.set('q', inputValue);
     if (activeCategory !== 'ALL') params.set('category', activeCategory);
     if (sortBy !== 'popular') params.set('sort', sortBy);
     if (showFreeOnly) params.set('free', 'true');
@@ -419,7 +413,7 @@ const MarketsPage: React.FC = () => {
     if (activePlatform !== 'ALL') params.set('platform', activePlatform);
     if (viewMode !== 'grid') params.set('view', viewMode);
     setSearchParams(params, { replace: true });
-  }, [search, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, activePlatform, viewMode]);
+  }, [inputValue, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, activePlatform, viewMode]);
 
   // #5: KEYBOARD SHORTCUTS
   useEffect(() => {
@@ -467,7 +461,7 @@ const MarketsPage: React.FC = () => {
   }, []);
 
   // Reset pagination when filters change
-  useEffect(() => { setVisibleCount(ITEMS_PER_PAGE); }, [search, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, activePlatform]);
+  useEffect(() => { setVisibleCount(ITEMS_PER_PAGE); }, [deferredSearch, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, activePlatform]);
 
   const toggleFavorite = useCallback((e: React.MouseEvent, id: string) => {
     e.preventDefault(); e.stopPropagation();
@@ -490,21 +484,50 @@ const MarketsPage: React.FC = () => {
     return Array.from(tagSet).sort();
   }, [solutions]);
 
+  // Build dynamic categories: static list + any category from API not already covered
+  const CATEGORIES = useMemo(() => {
+    const staticKeys = new Set(STATIC_CATEGORIES.map(c => c.key.toLowerCase()));
+    const extraCats: { key: string; label: string; icon: typeof LayoutGrid }[] = [];
+
+    solutions.forEach(sol => {
+      const catEn = sol.category?.en;
+      if (!catEn) return;
+      const catKey = catEn.trim();
+      if (!catKey) return;
+      // Skip if already covered by a static category (case-insensitive partial match)
+      const alreadyCovered = Array.from(staticKeys).some(k =>
+        k !== 'all' && k !== 'sky partners' && (
+          catKey.toLowerCase().includes(k) || k.includes(catKey.toLowerCase())
+        )
+      );
+      if (alreadyCovered) return;
+      if (extraCats.some(c => c.key === catKey)) return;
+      extraCats.push({ key: catKey, label: catEn, icon: Cpu });
+    });
+
+    // Insert extra categories before 'Sky Partners'
+    const partnersIdx = STATIC_CATEGORIES.findIndex(c => c.key === 'Sky Partners');
+    const base = [...STATIC_CATEGORIES];
+    base.splice(partnersIdx, 0, ...extraCats);
+    return base;
+  }, [solutions]);
+
   const toggleTag = useCallback((tag: string) => {
     setActiveTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
   }, []);
 
   const filteredSolutions = useMemo(() => {
     let filtered = solutions.filter(sol => {
-      const matchSearch = !search ||
-        sol.name[currentLang]?.toLowerCase().includes(search.toLowerCase()) ||
-        sol.description[currentLang]?.toLowerCase().includes(search.toLowerCase()) ||
-        sol.tags?.some(t => t.toLowerCase().includes(search.toLowerCase()));
+      const matchSearch = !deferredSearch ||
+        sol.name[currentLang]?.toLowerCase().includes(deferredSearch.toLowerCase()) ||
+        sol.description[currentLang]?.toLowerCase().includes(deferredSearch.toLowerCase()) ||
+        sol.tags?.some(t => t.toLowerCase().includes(deferredSearch.toLowerCase()));
       const matchCat = activeCategory === 'ALL' ||
         (activeCategory === 'Sky Partners'
           ? sol.tags?.some(t => t === 'Sky Partners')
           : (
               sol.category[currentLang]?.toLowerCase().includes(activeCategory.toLowerCase()) ||
+              sol.category.en?.toLowerCase().includes(activeCategory.toLowerCase()) ||
               sol.tags?.some(t => t.toLowerCase().includes(activeCategory.toLowerCase())) ||
               sol.demoType?.toLowerCase() === activeCategory.toLowerCase()
             )
@@ -527,7 +550,7 @@ const MarketsPage: React.FC = () => {
       });
     }
     return filtered;
-  }, [solutions, search, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, currentLang]);
+  }, [solutions, deferredSearch, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, currentLang]);
 
   const paginatedSolutions = useMemo(() => filteredSolutions.slice(0, visibleCount), [filteredSolutions, visibleCount]);
   const hasMore = visibleCount < filteredSolutions.length;
@@ -535,27 +558,27 @@ const MarketsPage: React.FC = () => {
   const catCounts = useMemo(() => {
     const counts: Record<string, number> = { ALL: solutions.length };
     CATEGORIES.forEach(c => {
-      if (c.key !== 'ALL') {
-        if (c.key === 'Sky Partners') {
-          counts[c.key] = solutions.filter(s => s.tags?.some(t => t === 'Sky Partners')).length;
-        } else {
-          counts[c.key] = solutions.filter(s =>
-            s.category[currentLang]?.toLowerCase().includes(c.key.toLowerCase()) ||
-            s.tags?.some(t => t.toLowerCase().includes(c.key.toLowerCase())) ||
-            s.demoType?.toLowerCase() === c.key.toLowerCase()
-          ).length;
-        }
+      if (c.key === 'ALL') return;
+      if (c.key === 'Sky Partners') {
+        counts[c.key] = solutions.filter(s => s.tags?.some(t => t === 'Sky Partners')).length;
+      } else {
+        counts[c.key] = solutions.filter(s =>
+          s.category[currentLang]?.toLowerCase().includes(c.key.toLowerCase()) ||
+          s.category.en?.toLowerCase().includes(c.key.toLowerCase()) ||
+          s.tags?.some(t => t.toLowerCase().includes(c.key.toLowerCase())) ||
+          s.demoType?.toLowerCase() === c.key.toLowerCase()
+        ).length;
       }
     });
     return counts;
-  }, [solutions, currentLang]);
+  }, [solutions, currentLang, CATEGORIES]);
 
   const activeFilterCount = [showFreeOnly, showFeaturedOnly, !!activeComplexity, activeCategory !== 'ALL', activeTags.length > 0, activePlatform !== 'ALL'].filter(Boolean).length;
 
   const resetFilters = () => {
     setActiveCategory('ALL'); setShowFreeOnly(false); setShowFeaturedOnly(false);
     setActiveComplexity(null); setActiveTags([]); setActivePlatform('ALL');
-    setInputValue(''); setSearch('');
+    setInputValue('');
   };
 
   // #2: PREVIEW handler
@@ -588,7 +611,7 @@ const MarketsPage: React.FC = () => {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 dark:text-gray-600" size={15} />
         <input ref={searchInputRef} type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="Tìm công cụ AI... (⌘K)"
           className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] pl-9 pr-8 py-2.5 rounded-xl text-[13px] focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-600" />
-        {inputValue && <button onClick={() => { setInputValue(''); setSearch(''); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"><X size={13} /></button>}
+        {inputValue && <button onClick={() => setInputValue('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"><X size={13} /></button>}
       </div>
 
       {/* Categories Card */}
@@ -806,7 +829,7 @@ const MarketsPage: React.FC = () => {
             <RecentlyViewed lang={currentLang} onNavigate={handleNavigate} />
 
             {/* Trending */}
-            {!search && featuredSolutions.length > 0 && (
+            {!inputValue && featuredSolutions.length > 0 && (
               <TrendingSlider items={featuredSolutions} lang={currentLang} onNavigate={handleNavigate} />
             )}
 
@@ -814,7 +837,7 @@ const MarketsPage: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <p className="text-[13px] text-slate-400 dark:text-gray-500">
                 {loading ? 'Đang tải...' : <><strong className="text-slate-600 dark:text-gray-300">{filteredSolutions.length}</strong> kết quả</>}
-                {search && <span className="text-brand-blue ml-1">"{search}"</span>}
+                {deferredSearch && <span className="text-brand-blue ml-1">"{deferredSearch}"</span>}
                 {hasMore && <span className="text-slate-300 ml-1">· hiện {visibleCount}</span>}
               </p>
               <div className="flex items-center gap-2">
