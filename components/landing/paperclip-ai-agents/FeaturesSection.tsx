@@ -91,13 +91,13 @@ export const FeaturesSection: React.FC = () => {
               className={f.featured ? 'col-span-2' : 'col-span-1'}
             >
             <HoverCard
-              className={`overflow-hidden bg-black/[0.01] dark:bg-white/[0.015] cursor-pointer h-full`}
+              className={`bg-black/[0.01] dark:bg-white/[0.015] cursor-pointer h-full overflow-hidden`}
             >
               <div onClick={() => setExpanded(expanded === f.title ? null : f.title)} className="h-full flex flex-col">
               {/* Featured header accent */}
               {f.featured && (
                 <div
-                  className="h-1 w-full shrink-0"
+                  className="h-1 w-full flex-none"
                   style={{
                     background: 'linear-gradient(90deg, #0090ff 0%, #3b82f6 100%)',
                     opacity: 0.6,
@@ -106,12 +106,14 @@ export const FeaturesSection: React.FC = () => {
               )}
               {/* Featured image */}
               {f.featured && f.img && (
-                <img
-                  src={f.img}
-                  alt={f.title}
-                  className="w-full h-44 object-cover shrink-0"
-                  loading="lazy"
-                />
+                <div className="w-full flex-none overflow-hidden" style={{ height: '180px' }}>
+                  <img
+                    src={f.img}
+                    alt={f.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    loading="lazy"
+                  />
+                </div>
               )}
               <div className="p-5 flex-1">
                 <motion.div
