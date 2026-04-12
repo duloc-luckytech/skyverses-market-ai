@@ -25,6 +25,24 @@ Before starting, read:
 >
 > **Cơ chế:** Claude agent tự chạy script Node.js gọi API → nhận blueprint JSON → parse và dùng ngay cho các STEP tiếp theo. **Không cần user copy/paste thủ công.**
 
+### 🔑 Cấu hình credentials (làm 1 lần duy nhất)
+
+```bash
+# .env.local — KHÔNG commit file này (đã có trong .gitignore)
+EZAI_API_KEY=sk-...           # EzAI API key — lấy từ ezaiapi.com
+SKV_API_TOKEN=skv_...         # Skyverses Admin token — CMS Admin > API Clients
+CF_ACCOUNT_ID=...             # Cloudflare Account ID — CF Dashboard > Overview
+CF_API_TOKEN=...              # Cloudflare Images API token — CF Dashboard > My Profile > API Tokens
+```
+
+```bash
+# Load env trước khi chạy bất kỳ script nào
+export $(grep -v '^#' .env.local | xargs)
+# Hoặc dùng: source .env.local
+```
+
+> ⚠️ **KHÔNG bao giờ hardcode credentials vào script** — tất cả scripts trong workflow này đọc từ env vars và sẽ báo lỗi rõ nếu thiếu.
+
 ---
 
 ### 1. Tạo script `blueprint-<slug>.mjs`
@@ -38,7 +56,8 @@ const PRODUCT_NAME = '<TÊN PRODUCT>';       // ← điền vào đây
 const PRODUCT_DESC = '<MÔ TẢ 1-2 CÂU>';    // ← ví dụ: "tool tạo chatbot AI cho website doanh nghiệp"
 
 const API_URL  = 'https://ezaiapi.com/v1/chat/completions';
-const API_KEY  = process.env.EZAI_API_KEY || 'sk-a872ad970097e44608731b01af1308b6f0ea1dfcaed1db93';
+const API_KEY  = process.env.EZAI_API_KEY
+  ?? (() => { throw new Error('Missing EZAI_API_KEY — set it in .env.local'); })();
 const MODEL    = 'claude-sonnet-4-6';
 
 const SYSTEM_PROMPT = `Bạn là một product designer chuyên về AI SaaS tools cho marketplace.
@@ -231,7 +250,7 @@ echo "blueprint-*.mjs" >> .gitignore
 
 Xác định trước khi làm bất cứ thứ gì:
 - **slug**: e.g. `social-banner-ai`
-- **id** (SCREAMING_SNAKE): e.g. `SOCIAL-BANNER-AI`
+- **id** (SCREAMING-SNAKE — chữ HOA, dấu gạch ngang): e.g. `SOCIAL-BANNER-AI`
 - **name** (4 langs: en/vi/ko/ja)
 - **category** (4 langs)
 - **description** (4 langs)
@@ -416,11 +435,12 @@ node gen-<slug>-images.mjs
 # gen-<slug>-landing-images.sh
 # Gen + Upload → Cloudflare CDN toàn bộ hình landing <ProductName>
 # Run: bash scripts/gen-<slug>-landing-images.sh
+set -euo pipefail   # dừng ngay khi có lỗi, không chạy tiếp với biến trống
 
 API="https://api.skyverses.com/image-jobs"
-TOKEN="Bearer <SKV_API_TOKEN>"          # CMS Admin > API Clients
-CF_ACCOUNT="<CF_ACCOUNT_ID>"
-CF_TOKEN="<CF_API_TOKEN>"
+TOKEN="Bearer ${SKV_API_TOKEN:?Missing SKV_API_TOKEN — set in .env.local}"
+CF_ACCOUNT="${CF_ACCOUNT_ID:?Missing CF_ACCOUNT_ID — set in .env.local}"
+CF_TOKEN="${CF_API_TOKEN:?Missing CF_API_TOKEN — set in .env.local}"
 CF_API="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/images/v1"
 
 IMG_DIR="public/assets/<slug>"
@@ -596,11 +616,12 @@ bash scripts/gen-<slug>-landing-images.sh
 # gen-<slug>-showcase.sh
 # Gen 10-15 showcase example outputs cho ShowcaseSection
 # Run: bash scripts/gen-<slug>-showcase.sh
+set -euo pipefail
 
 API="https://api.skyverses.com/image-jobs"
-TOKEN="Bearer <SKV_API_TOKEN>"
-CF_ACCOUNT="<CF_ACCOUNT_ID>"
-CF_TOKEN="<CF_API_TOKEN>"
+TOKEN="Bearer ${SKV_API_TOKEN:?Missing SKV_API_TOKEN — set in .env.local}"
+CF_ACCOUNT="${CF_ACCOUNT_ID:?Missing CF_ACCOUNT_ID — set in .env.local}"
+CF_TOKEN="${CF_API_TOKEN:?Missing CF_API_TOKEN — set in .env.local}"
 CF_API="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/images/v1"
 
 IMG_DIR="public/assets/<slug>-showcase"
@@ -765,11 +786,12 @@ bash scripts/gen-<slug>-showcase.sh
 # gen-<slug>-feature-thumbs.sh
 # Gen 4-6 thumbnails cho non-featured feature cards (600x300)
 # Run: bash scripts/gen-<slug>-feature-thumbs.sh
+set -euo pipefail
 
 API="https://api.skyverses.com/image-jobs"
-TOKEN="Bearer <SKV_API_TOKEN>"
-CF_ACCOUNT="<CF_ACCOUNT_ID>"
-CF_TOKEN="<CF_API_TOKEN>"
+TOKEN="Bearer ${SKV_API_TOKEN:?Missing SKV_API_TOKEN — set in .env.local}"
+CF_ACCOUNT="${CF_ACCOUNT_ID:?Missing CF_ACCOUNT_ID — set in .env.local}"
+CF_TOKEN="${CF_API_TOKEN:?Missing CF_API_TOKEN — set in .env.local}"
 CF_API="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/images/v1"
 
 IMG_DIR="public/assets/<slug>-feature-thumbs"
@@ -931,9 +953,168 @@ bash scripts/gen-<slug>-feature-thumbs.sh
 
 ---
 
-## STEP 3.5 — Plan PRO landing page (Claude Code tự phân tích)
+## STEP 3.5 — Plan PRO landing page
 
-> **Không dùng script external.** Claude Code tự plan content phù hợp business của product.
+> **Cơ chế mới:** Gọi ezaiapi trước để AI generate toàn bộ nội dung text landing page → Claude Code dùng output đó fill vào 13 câu plan bên dưới. Nội dung chính xác hơn, đỡ phụ thuộc vào Claude tự suy luận.
+
+---
+
+### A. Gọi AI gen landing content — `landing-content-<slug>.mjs`
+
+> Chạy script này **trước** khi plan 13 câu bên dưới. Output sẽ là nguồn nội dung chính.
+
+```js
+// landing-content-<slug>.mjs
+// Gọi AI để gen toàn bộ nội dung text cho landing page
+// Run: node landing-content-<slug>.mjs
+
+// ─── Điền từ STEP 0.5 blueprint ───────────────────────────────────────────
+const PRODUCT_NAME   = '<TÊN PRODUCT>';        // VD: "AI Chatbot Builder"
+const PRODUCT_SLUG   = '<slug>';               // VD: "ai-chatbot-builder"
+const PRODUCT_DESC   = '<MÔ TẢ NGẮN>';        // VD: "tool tạo chatbot AI cho website doanh nghiệp"
+const PRICE_CREDITS  = '<số credits>';         // VD: "80"
+const CORE_FEATURES  = `<dán Mục 2A từ blueprint>`; // copy từ blueprint-<slug>.md
+const UX_FLOW        = `<dán Mục 3 từ blueprint>`;  // copy từ blueprint-<slug>.md
+const INDUSTRIES     = `<dán Mục 6 từ blueprint>`;  // copy từ blueprint-<slug>.md
+// ──────────────────────────────────────────────────────────────────────────
+
+const API_URL = 'https://ezaiapi.com/v1/chat/completions';
+const API_KEY = process.env.EZAI_API_KEY
+  ?? (() => { throw new Error('Missing EZAI_API_KEY — set it in .env.local'); })();
+const MODEL   = 'claude-sonnet-4-6';
+
+const PROMPT = `Bạn là copywriter chuyên viết landing page cho AI SaaS products ở thị trường Việt Nam.
+Viết nội dung landing page cho sản phẩm sau. Ngắn gọn, impact cao, không sáo rỗng.
+
+Sản phẩm: ${PRODUCT_NAME}
+Mô tả: ${PRODUCT_DESC}
+Giá: ${PRICE_CREDITS} credits/lần
+Core features: ${CORE_FEATURES}
+UX flow: ${UX_FLOW}
+Industries: ${INDUSTRIES}
+
+Trả lời đúng các mục sau (giữ nguyên tiêu đề để dễ parse):
+
+## HERO
+- headline: (tiếng Anh, dưới 8 từ, động từ mạnh, kết quả cụ thể — VD: "Build Your AI Chatbot in Minutes")
+- subheadline_vi: (1-2 câu tiếng Việt, nêu lợi ích chính + đối tượng — dưới 30 từ)
+- cta_primary: (nút CTA chính tiếng Việt — dưới 5 từ — VD: "Tạo Chatbot Ngay")
+- cta_secondary: (nút phụ — VD: "Xem demo")
+
+## KEY SPECS (4 items — số liệu cụ thể, không chung chung)
+- spec_1_label: | spec_1_value:
+- spec_2_label: | spec_2_value:
+- spec_3_label: | spec_3_value:
+- spec_4_label: | spec_4_value:
+
+## WORKFLOW STEPS (4 bước — ngắn, dùng động từ)
+- step_1_title: | step_1_desc: (1 câu)
+- step_2_title: | step_2_desc:
+- step_3_title: | step_3_desc:
+- step_4_title: | step_4_desc:
+
+## FEATURES BENTO (2 featured + 4 normal — tên ngắn + mô tả 1 câu có số liệu nếu có)
+- featured_1_title: | featured_1_desc:
+- featured_2_title: | featured_2_desc:
+- normal_3_title: | normal_3_desc:
+- normal_4_title: | normal_4_desc:
+- normal_5_title: | normal_5_desc:
+- normal_6_title: | normal_6_desc:
+
+## USE CASES (4-6 ngành — tên ngành + mô tả ứng dụng cụ thể 1 câu)
+- usecase_1_industry: | usecase_1_desc:
+- usecase_2_industry: | usecase_2_desc:
+- usecase_3_industry: | usecase_3_desc:
+- usecase_4_industry: | usecase_4_desc:
+- usecase_5_industry: | usecase_5_desc:
+- usecase_6_industry: | usecase_6_desc:
+
+## LIVE STATS (3-4 con số social proof — label + đơn vị đi kèm)
+- stat_1_label: | stat_1_suffix:
+- stat_2_label: | stat_2_suffix:
+- stat_3_label: | stat_3_suffix:
+- stat_4_label: | stat_4_suffix:
+
+## FAQ (5 câu — câu hỏi thực tế + trả lời ngắn gọn dưới 40 từ)
+- q1: | a1:
+- q2: | a2:
+- q3: | a3:
+- q4: | a4:
+- q5: | a5:
+
+## SEO
+- title: (50-60 ký tự — keyword Việt + | Skyverses)
+- description: (140-160 ký tự — verb mạnh + tính năng + số liệu + CTA)
+- keywords: (6-10 từ khoá, phân cách dấu phẩy, gồm long-tail tiếng Việt)
+
+## FINAL CTA
+- headline: (tiếng Việt, tạo urgency — VD: "Bắt đầu miễn phí hôm nay")
+- subtext: (1 câu lợi ích cuối — VD: "Không cần thẻ tín dụng. Sở hữu toàn bộ output.")
+- trust_1: | trust_2: | trust_3: (3 trust micro-copy ngắn — VD: "Miễn phí thử" | "Sở hữu output" | "Hủy bất cứ lúc nào")`;
+
+async function run() {
+  console.log(`\n✍️  Generating landing page content for: ${PRODUCT_NAME}`);
+  console.log(`   Model: ${MODEL} via ezaiapi.com\n`);
+
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 4096,
+      messages: [{ role: 'user', content: PROMPT }],
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    console.error(`❌ API Error ${res.status}: ${err}`);
+    process.exit(1);
+  }
+
+  const data  = await res.json();
+  const content = data.choices?.[0]?.message?.content || data.content?.[0]?.text || '';
+
+  if (!content) { console.error('❌ Empty response'); process.exit(1); }
+
+  const outputFile = `landing-content-${PRODUCT_SLUG}.md`;
+  const fs = await import('fs');
+  fs.writeFileSync(outputFile, `# Landing Content: ${PRODUCT_NAME}\n\n${content}\n`);
+
+  console.log('━'.repeat(60));
+  console.log(content);
+  console.log('━'.repeat(60));
+  console.log(`\n✅ Saved to: ${outputFile}`);
+  console.log(`📌 Dùng file này để fill vào 13 câu plan bên dưới`);
+}
+
+run();
+```
+
+```bash
+node landing-content-<slug>.mjs
+# → Output lưu vào landing-content-<slug>.md
+# → Đọc file này khi fill 13 câu plan bên dưới
+```
+
+> ⚠️ **Lưu ý:** Input `CORE_FEATURES`, `UX_FLOW`, `INDUSTRIES` copy từ `blueprint-<slug>.md` (STEP 0.5).
+> Nếu chưa chạy STEP 0.5 → chạy lại trước, đừng để trống 3 biến này — output sẽ generic và kém chất lượng.
+
+```bash
+# Gitignore file này (chứa API key + data nội bộ)
+echo "landing-content-*.mjs" >> .gitignore
+echo "landing-content-*.md"  >> .gitignore
+```
+
+---
+
+### B. Map landing content → 13 câu plan
+
+> Sau khi có `landing-content-<slug>.md`, dùng nội dung đó fill trực tiếp vào 13 câu dưới đây.
+> **Không tự suy luận lại** — AI đã gen xong, chỉ cần copy đúng chỗ.
 
 ---
 
@@ -963,105 +1144,91 @@ Trước khi làm bất cứ thứ gì trong STEP 3.5, xác định ngay:
 | `VideoReelGrid` | Product tạo/xử lý video | `<VideoReelGrid fetchFromExplorer />` |
 | `BeforeAfterSlider` | Product transform ảnh (xóa nền, restore, upscale) | `<BeforeAfterSlider beforeSrc afterSrc />` |
 | `PlatformMockupGrid` | Product tạo banner/content cho mạng xã hội | custom platform grid |
-| `Custom` | Nếu không có template phù hợp | Tự code right column |
+| `StaticDemoMockup` | Tool/Workflow/Chat — không tạo media | Tự code app UI mockup |
 
-### B. Phân tích product → trả lời 13 câu hỏi:
+**Decision tree — chọn theo keyword trong slug/name:**
 
 ```
-1. HERO VISUAL TYPE: [chọn từ bảng trên]
+slug chứa "image" / "poster" / "photo" / "illustration"  → ImageMasonryGrid
+slug chứa "video" / "animate" / "motion" / "reel"        → VideoReelGrid
+slug chứa "remove" / "upscale" / "restore" / "enhance"   → BeforeAfterSlider
+slug chứa "social" / "banner" / "facebook" / "instagram" → PlatformMockupGrid
+slug chứa "chat" / "agent" / "bot" / "tool" / "workflow" → StaticDemoMockup
+```
+
+> Không khớp rule nào → dùng `StaticDemoMockup` với UI mockup phù hợp product.
+
+### C. Điền 13 câu plan (dùng `landing-content-<slug>.md` làm nguồn chính)
+
+```
+1. HERO VISUAL TYPE: [chọn từ bảng trên — Claude tự quyết dựa vào loại product]
    → Import component từ components/landing/_shared/ProHeroVisuals.tsx
 
-2. KEY SPECS (4 items):
-   Số liệu / tính năng nổi bật nhất?
-   VD: "14+ Formats", "4K Export", "AI Prompt Boost", "60s Processing"
+2. KEY SPECS (4 items): ← lấy từ ## KEY SPECS trong landing-content-<slug>.md
+   spec_1_label / spec_1_value
+   spec_2_label / spec_2_value
+   spec_3_label / spec_3_value
+   spec_4_label / spec_4_value
 
-3. WORKFLOW STEPS (4 bước):
-   User dùng product theo flow nào? Liệt kê 4 bước tự nhiên.
+3. WORKFLOW STEPS (4 bước): ← lấy từ ## WORKFLOW STEPS trong landing-content-<slug>.md
+   step_1_title / step_1_desc
+   step_2_title / step_2_desc
+   step_3_title / step_3_desc
+   step_4_title / step_4_desc
 
-4. FEATURES (6-8 items cho bento-grid):
-   Phân loại: 1-2 "featured" (double size) + còn lại normal
-   Featured = tính năng QUAN TRỌNG NHẤT
+4. FEATURES (6 items cho bento-grid): ← lấy từ ## FEATURES BENTO trong landing-content-<slug>.md
+   featured_1, featured_2 → col-span-2 (tính năng quan trọng nhất)
+   normal_3 → normal_6 → col-span-1
 
 5. MEDIA OUTPUT TYPE:
    Explorer API type: 'image' | 'video'
-   productSlug để filter showcase (nếu API hỗ trợ tag filter)
+   productSlug để filter showcase
    Caption theme: mô tả ngắn hiển thị trên ảnh showcase
    → Dùng cho ShowcaseSection + FeaturesSection thumbUrl
 
-6. SEO — Điền đầy đủ 5 trường sau (dùng thẳng vào `usePageMeta` ở STEP 5):
+6. SEO: ← lấy từ ## SEO trong landing-content-<slug>.md
 
-   **a. title** — Công thức: `{Tính năng chính} — {Keyword tìm kiếm} | Skyverses`
-      - Độ dài: 50-60 ký tự (Google cắt sau ~60 ký tự)
-      - Bắt đầu bằng từ khoá người Việt thực sự tìm kiếm
-      - VD: `Tạo Banner AI — Thiết kế mạng xã hội tự động | Skyverses`
-      - VD: `Xóa Nền Ảnh AI — Background Removal miễn phí | Skyverses`
-
-   **b. description** — Công thức: `{Verb mạnh} + {tính năng 1} + {tính năng 2}. {Use case cụ thể}. {CTA ngắn}.`
-      - Độ dài: 140-160 ký tự (Google cắt sau ~160 ký tự)
-      - Bao gồm ít nhất 1 con số cụ thể (VD: "8K", "60s", "14 định dạng")
-      - Tránh từ chung chung như "công cụ AI tốt nhất" — dùng lợi ích cụ thể
-      - VD: `Tạo banner Facebook, Instagram, TikTok chỉ trong 60 giây bằng AI. Hỗ trợ 14+ định dạng, không cần kỹ năng thiết kế. Thử miễn phí ngay.`
-
-   **c. keywords** — 6-10 từ khoá, phân cách bằng dấu phẩy
-      - 3-4 từ khoá chính (tiếng Việt, người thực sự tìm)
-      - 2-3 từ khoá dài (long-tail, intent cao)
-      - 1-2 từ khoá thương hiệu
-      - VD: `tạo banner AI, thiết kế mạng xã hội AI, social media banner tự động, AI banner generator, Skyverses banner AI`
-
-   **d. canonical** — `/product/{slug}` (khớp với route trong App.tsx)
-
-   **e. jsonLd** — SoftwareApplication schema (bắt buộc nếu product tạo output ảnh/video):
+   **a. title** (50-60 ký tự | keyword Việt + "| Skyverses")
+   **b. description** (140-160 ký tự | verb mạnh + số liệu + CTA)
+   **c. keywords** (6-10 từ, gồm long-tail tiếng Việt)
+   **d. canonical** → `/product/{slug}`
+   **e. jsonLd** — chọn đúng applicationCategory:
    ```json
    {
      "@type": "SoftwareApplication",
-     "name": "{Tên product tiếng Anh}",
+     "name": "{Tên product EN}",
      "applicationCategory": "MultimediaApplication",
      "operatingSystem": "Web",
-     "offers": {
-       "@type": "Offer",
-       "price": "{priceCredits}",
-       "priceCurrency": "CREDITS"
-     },
-     "description": "{description tiếng Anh ngắn}",
+     "offers": { "@type": "Offer", "price": "{priceCredits}", "priceCurrency": "CREDITS" },
+     "description": "{description EN ngắn}",
      "url": "https://ai.skyverses.com/product/{slug}",
-     "provider": {
-       "@type": "Organization",
-       "name": "Skyverses",
-       "url": "https://ai.skyverses.com"
-     }
+     "provider": { "@type": "Organization", "name": "Skyverses", "url": "https://ai.skyverses.com" }
    }
    ```
-   → Dùng `"MultimediaApplication"` cho image/video product
-   → Dùng `"BusinessApplication"` cho workflow/automation product
-   → Dùng `"UtilitiesApplication"` cho utility tools (upscale, remove bg, convert)
+   → `"MultimediaApplication"` cho image/video product
+   → `"BusinessApplication"` cho workflow/automation product
+   → `"UtilitiesApplication"` cho utility tools (upscale, remove bg, convert)
 
-7. WORKSPACE STYLE PRESETS (6 presets):
-   Phù hợp với từng product — thay DEFAULT_STYLES trong AISuggestPanel
-   VD video product: Cinematic, Motion, Story, Promo, Social, Artistic
+7. WORKSPACE STYLE PRESETS (6 presets): ← Claude tự định nghĩa phù hợp product
+   Thay DEFAULT_STYLES trong AISuggestPanel
+   VD video: Cinematic, Motion, Story, Promo, Social, Artistic
 
-8. FEATURED TEMPLATES (3-5 mẫu):
-   Prompt templates cụ thể cho product này, user click dùng ngay
+8. FEATURED TEMPLATES (3-5 mẫu): ← Claude tự tạo prompt template cụ thể cho product
 
 9. DEMO IMAGES (từ STEP 3 — CDN URLs đã gen):
-   Liệt kê 3-5 CDN URLs đã gen → dùng cho HeroSection right column
-   - Nếu Visual Type là `BeforeAfterSlider` → chọn 1 URL làm `beforeSrc` + 1 URL làm `afterSrc`
-   - Nếu Visual Type là `PlatformMockupGrid` → map từng URL theo đúng `platform` key
-   - Nếu Visual Type là `ImageMasonryGrid` → dùng ảnh từ Explorer API (không cần hardcode)
+   Liệt kê 3-5 CDN URLs → dùng cho HeroSection right column
+   - `BeforeAfterSlider` → 1 URL làm beforeSrc + 1 URL làm afterSrc
+   - `PlatformMockupGrid` → map từng URL theo đúng platform key
+   - `ImageMasonryGrid` → dùng Explorer API (không cần hardcode)
 
-10. USE CASES (4-6 business scenarios):
-    Ai sẽ dùng product này? Mô tả 4-6 use case theo ngành cụ thể:
-    VD: { icon: Store, title: 'Cửa hàng online', desc: 'Tạo banner sale trong 60s, không cần designer' }
-    VD: { icon: Building, title: 'Agency Marketing', desc: 'Scale content x10 với AI batch generation' }
-    → Dùng cho `UseCasesSection.tsx` + define INDUSTRIES trong STEP 6 Workspace
+10. USE CASES (4-6 ngành): ← lấy từ ## USE CASES trong landing-content-<slug>.md
+    → Dùng cho UseCasesSection.tsx + INDUSTRIES const trong STEP 6
 
-11. LIVE STATS (cho LiveStatsBar — L2):
-    3-4 con số social proof phù hợp product:
-    VD image product: "Ảnh tạo hôm nay", "Người dùng", "Định dạng hỗ trợ", "Đánh giá TB"
-    VD video product: "Video tạo hôm nay", "Người dùng", "Phút video", "Đánh giá TB"
+11. LIVE STATS (3-4 con số): ← lấy từ ## LIVE STATS trong landing-content-<slug>.md
+    → Dùng cho LiveStatsBar (L2)
 
-12. FAQ (5-6 câu hỏi cho FAQSection — L3):
-    Câu hỏi phổ biến nhất của người dùng mới về product này?
-    Luôn bao gồm: quyền sở hữu ảnh/video, hết hạn credits, chất lượng output
+12. FAQ (5 câu): ← lấy từ ## FAQ trong landing-content-<slug>.md
+    → Dùng cho FAQSection (L3)
 
 13. SECTION IMAGE PLAN:
     Mỗi section nên có ít nhất 1 hình ảnh minh hoạ từ CDN hoặc Explorer API.
@@ -1619,7 +1786,137 @@ export const UseCasesSection: React.FC = () => (
 
 ---
 
-## STEP 5 — Create landing page file (thin orchestrator)
+### FAQSection rules — Accordion (L3):
+
+> 5-6 câu hỏi từ STEP 3.5 câu 12. Luôn bao gồm: quyền sở hữu output, hết hạn credits, chất lượng.
+
+```tsx
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
+import { FadeInUp, SectionLabel } from '../_shared/SectionAnimations';
+
+interface FAQItem { q: string; a: string; }
+
+// ← Nội dung từ landing-content-<slug>.md ## FAQ
+const FAQS: FAQItem[] = [
+  { q: 'Tôi có sở hữu output tạo ra không?',
+    a: 'Có — 100% output thuộc về bạn. Skyverses không lưu hay dùng lại nội dung của bạn.' },
+  { q: 'Credits hết hạn không?',
+    a: 'Credits không hết hạn. Bạn dùng khi nào thì dùng, không bị thu hồi.' },
+  { q: 'Chất lượng output như thế nào?',
+    a: '...' },  // ← điền từ landing-content
+  // thêm 2-3 câu nữa từ landing-content
+];
+
+export const FAQSection: React.FC = () => {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  return (
+    <section className="py-20 px-6 lg:px-12 bg-black/[0.01] dark:bg-white/[0.01]">
+      <div className="max-w-3xl mx-auto">
+        <FadeInUp className="mb-10 text-center">
+          <SectionLabel>FAQ</SectionLabel>
+          <h2 className="text-3xl font-bold mt-2">Câu hỏi thường gặp</h2>
+        </FadeInUp>
+
+        <div className="space-y-3">
+          {FAQS.map((item, i) => (
+            <div key={i}
+              className="rounded-xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
+            >
+              <button
+                onClick={() => setOpenIdx(openIdx === i ? null : i)}
+                className="w-full flex items-center justify-between px-5 py-4 text-left text-sm font-medium hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors"
+              >
+                {item.q}
+                <ChevronDown
+                  size={16}
+                  className={`shrink-0 text-slate-400 transition-transform duration-200 ${openIdx === i ? 'rotate-180' : ''}`}
+                />
+              </button>
+              <AnimatePresence initial={false}>
+                {openIdx === i && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    <p className="px-5 pb-4 text-sm text-slate-500 dark:text-[#888] leading-relaxed">
+                      {item.a}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+```
+
+---
+
+### FinalCTA rules (L1):
+
+> CTA cuối page — sau khi user đã qua đủ trust signals. Dùng GradientMesh làm background.
+
+```tsx
+import { motion } from 'framer-motion';
+import { ArrowRight, CheckCircle } from 'lucide-react';
+import { GradientMesh, FadeInUp } from '../_shared/SectionAnimations';
+
+interface FinalCTAProps { onStartStudio: () => void; }
+
+export const FinalCTA: React.FC<FinalCTAProps> = ({ onStartStudio }) => (
+  <section className="relative py-24 px-6 lg:px-12 overflow-hidden">
+    <GradientMesh intensity="medium" />  {/* ← animated brand-blue blob BG */}
+
+    <div className="relative z-10 max-w-3xl mx-auto text-center">
+      <FadeInUp>
+        {/* ← Nội dung từ landing-content-<slug>.md ## FINAL CTA */}
+        <h2 className="text-4xl font-bold mb-4">
+          Bắt đầu miễn phí hôm nay
+        </h2>
+        <p className="text-slate-500 dark:text-[#999] text-base mb-8">
+          Không cần thẻ tín dụng. Sở hữu toàn bộ output.
+        </p>
+
+        {/* 3 trust micro-copy */}
+        <div className="flex items-center justify-center gap-6 mb-8 flex-wrap">
+          {['Miễn phí thử', 'Sở hữu output', 'Hủy bất cứ lúc nào'].map(t => (
+            <span key={t} className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[#777]">
+              <CheckCircle size={13} className="text-brand-blue" />
+              {t}
+            </span>
+          ))}
+        </div>
+
+        <motion.button
+          onClick={onStartStudio}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-brand-blue text-white font-semibold text-sm shadow-lg shadow-brand-blue/30 hover:shadow-brand-blue/50 transition-shadow"
+        >
+          Tạo ngay — miễn phí
+          <ArrowRight size={16} />
+        </motion.button>
+      </FadeInUp>
+    </div>
+  </section>
+);
+```
+
+> **3 trust micro-copy** lấy từ `landing-content-<slug>.md` → `## FINAL CTA` → `trust_1/2/3`.
+> Headline + subtext cũng từ file đó.
+
+---
+
+## STEP 5 — Tạo file landing page chính (gắn các sections lại với nhau)
 
 ```tsx
 // pages/images/YourProductAI.tsx
@@ -2054,7 +2351,7 @@ SIDEBAR (w-[380px]) ── flex-grow VIEWPORT
 > Workspace chứa nhiều API calls + state mutations. Nếu crash không có boundary → cả landing page crash.
 
 ```tsx
-// components/landing/<slug>/<Slug>Page.tsx — trong thin orchestrator:
+// pages/landing/<slug>/index.tsx — file landing page chính:
 import { ErrorBoundary } from 'react-error-boundary';
 
 function WorkspaceCrashFallback({ resetErrorBoundary }: { resetErrorBoundary: () => void }) {
@@ -3034,6 +3331,118 @@ SIDEBAR
 
 ---
 
+## STEP 6.6 — AI Message Integration (nếu workspace cần gọi AI text/JSON)
+
+> **Trigger:** Workspace có bất kỳ tính năng nào gọi AI để sinh text, phân tích, hoặc trả về structured data.
+> **Bỏ qua** nếu workspace chỉ tạo ảnh/video (đã được xử lý qua `useImageGenerator` / `generateDemoVideo`).
+
+---
+
+### Quy tắc bắt buộc — Import từ `apis/aiCommon.ts`
+
+> **KHÔNG import trực tiếp** từ `apis/aiChat.ts` hay `services/gemini.ts` trong workspace mới.
+> `apis/aiCommon.ts` là one-stop reference — export lại tất cả cần thiết + bổ sung helpers typed.
+
+```tsx
+// ✅ ĐÚNG — import từ aiCommon
+import {
+  aiTextViaProxy,
+  aiChatJSONViaProxy,
+  aiChatStreamViaProxy,
+  buildSystemMessage,
+  parseAIJSON,
+  type ChatMessage,
+} from '../apis/aiCommon';
+
+// ❌ SAI — không import trực tiếp
+import { aiChatOnceViaProxy } from '../apis/aiChat';
+import { generateDemoText } from '../services/gemini';
+```
+
+---
+
+### Chọn function theo nhu cầu
+
+| Nhu cầu | Function | Notes |
+|---------|----------|-------|
+| Text output đơn giản (1 prompt) | `aiTextViaProxy(prompt, systemRole?)` | Ngắn gọn nhất |
+| Text output, stream live tokens | `aiChatStreamViaProxy(messages, onToken)` | UX tốt hơn cho output dài |
+| Structured JSON output, typed | `aiChatJSONViaProxy<MyType>(messages)` | Auto parse + TS type safe |
+| Build system prompt có structure | `buildSystemMessage({ role, rules?, outputFormat?, language? })` | Tái sử dụng, không hardcode |
+| Parse raw AI string → JSON | `parseAIJSON<T>(rawString)` | Dùng khi đã có raw text |
+| Full control messages array | `aiChatOnceViaProxy(messages)` | Re-exported từ aiChat.ts |
+
+---
+
+### Khi nào dùng `generateDemoText` (services/gemini.ts)?
+
+- **Chỉ** dùng cho landing page sections (mock data, placeholder) hoặc demo animations
+- **KHÔNG** dùng trong workspace production logic — API key Gemini lộ ra browser bundle
+- Workspace production **luôn** đi qua proxy (`*ViaProxy`) để ẩn credentials
+
+---
+
+### Ví dụ: workspace automation (không tạo ảnh/video)
+
+```tsx
+// Trong workspace component
+import {
+  aiTextViaProxy,
+  aiChatJSONViaProxy,
+  buildSystemMessage,
+  type ChatMessage,
+} from '../apis/aiCommon';
+
+// --- Text output đơn giản ---
+const handleRun = async () => {
+  setStatus('running');
+  try {
+    const output = await aiTextViaProxy(
+      userPrompt,
+      `You are a ${selectedDepartment} AI agent. Respond in Vietnamese.`,
+      abortRef.current?.signal,
+    );
+    setResult(output);
+    setStatus('done');
+  } catch (e) {
+    setError(String(e));
+    setStatus('error');
+  }
+};
+
+// --- JSON structured output ---
+interface TaskResult { summary: string; steps: string[]; estimatedTime: string }
+
+const handleAnalyze = async () => {
+  const sys = buildSystemMessage({
+    role: 'You are a project planning AI.',
+    rules: ['Be concise', 'Max 5 steps'],
+    outputFormat: 'Return JSON: { summary: string, steps: string[], estimatedTime: string }',
+    language: 'vi',
+  });
+  const result = await aiChatJSONViaProxy<TaskResult>([
+    sys,
+    { role: 'user', content: `Phân tích task: ${userPrompt}` },
+  ]);
+  setSteps(result.steps); // typed ✓
+};
+
+// --- Stream live ---
+const handleStream = async () => {
+  setOutput('');
+  await aiChatStreamViaProxy(
+    [
+      buildSystemMessage({ role: 'You are a copywriter.' }),
+      { role: 'user', content: userPrompt },
+    ],
+    (token) => setOutput(prev => prev + token),
+    abortRef.current?.signal,
+  );
+};
+```
+
+---
+
 ## STEP 7 — Wire routing
 
 ```tsx
@@ -3103,12 +3512,15 @@ Trước khi push, tự kiểm tra nhanh các điểm sau:
 echo "seed-*.mjs" >> .gitignore
 echo "gen-*.mjs" >> .gitignore
 echo "update-*.mjs" >> .gitignore
-echo "blueprint-*.mjs" >> .gitignore   # chứa EZAI_API_KEY
-echo "blueprint-*.md" >> .gitignore    # output blueprint (data nội bộ)
+echo "gen-*.sh" >> .gitignore            # bash scripts chứa SKV_API_TOKEN + CF_API_TOKEN
+echo "blueprint-*.mjs" >> .gitignore     # chứa EZAI_API_KEY
+echo "blueprint-*.md" >> .gitignore      # output blueprint (data nội bộ)
+echo "landing-content-*.mjs" >> .gitignore  # chứa EZAI_API_KEY
+echo "landing-content-*.md"  >> .gitignore  # output landing content (data nội bộ)
 
 # 2. Pre-commit safety check — phát hiện TOKEN lọt vào staged files
 echo "🔒 Checking for tokens in staged files..."
-if git diff --cached --name-only | xargs grep -l "TOKEN\s*=\s*['\"][a-zA-Z0-9_\-]\{20,\}" 2>/dev/null; then
+if git diff --cached --name-only | xargs grep -lE "(TOKEN\s*=\s*['\"][a-zA-Z0-9_\-]{20,}|sk-[a-zA-Z0-9]{20,}|skv_[a-zA-Z0-9]{20,})" 2>/dev/null; then
   echo "❌ FAIL: Token tìm thấy trong staged files! Chạy lại gitignore và unstage."
   exit 1
 fi
