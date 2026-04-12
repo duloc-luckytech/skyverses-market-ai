@@ -3374,10 +3374,75 @@ import { generateDemoText } from '../services/gemini';
 | **Dùng cho** | Copy, chat, JSON nhỏ, streaming live, tác vụ UX real-time | Reasoning phức tạp, phân tích tài liệu dài, lập kế hoạch nhiều bước, đánh giá logic |
 | **Default?** | ✅ Mặc định (không cần truyền) | ❌ Phải truyền tường minh |
 
-**Quy tắc chọn:**
-- **Mặc định dùng Sonnet** — đủ mạnh cho 95% tác vụ workspace, nhanh, tiết kiệm quota.
-- **Nâng lên Opus** khi tác vụ yêu cầu: reasoning nhiều bước, phân tích văn bản dài (>2000 từ), so sánh logic phức tạp, hoặc output quality phải cao nhất.
-- **Không dùng Opus cho stream** — latency cao làm UX kém.
+---
+
+### 🤖 Agent tự chọn model theo ngữ cảnh sản phẩm
+
+Khi viết workspace code, agent **phải tự phán đoán** model phù hợp dựa vào mô tả tính năng của sản phẩm.
+Không được hardcode `AI_MODELS.SONNET` mọi nơi — đọc decision tree dưới đây trước khi viết code.
+
+#### Decision Tree — chọn model cho từng action trong workspace
+
+```
+Tính năng này là gì?
+│
+├── Streaming live token ra UI (typing effect)?
+│   └── → SONNET (bắt buộc — Opus latency quá cao cho stream)
+│
+├── Generate text ngắn: copy, caption, hashtag, tiêu đề, mô tả (<500 từ)?
+│   └── → SONNET
+│
+├── Generate text trung bình: email, blog, script, plan (<1500 từ)?
+│   └── → SONNET
+│
+├── Phân tích / đánh giá / so sánh input của user?
+│   ├── Input ngắn (<500 từ) + output đơn giản?
+│   │   └── → SONNET
+│   └── Input dài (>500 từ) HOẶC output cần reasoning nhiều bước?
+│       └── → OPUS
+│
+├── JSON structured output?
+│   ├── Schema đơn giản (≤5 fields, không có nested logic)?
+│   │   └── → SONNET
+│   └── Schema phức tạp / nhiều điều kiện / cần suy luận?
+│       └── → OPUS
+│
+├── Lập kế hoạch / tạo workflow / multi-step roadmap?
+│   └── → OPUS
+│
+├── Code generation / debug / technical review?
+│   ├── Snippet nhỏ (<50 lines)?
+│   │   └── → SONNET
+│   └── Architecture / refactor / full module?
+│       └── → OPUS
+│
+└── Legal / medical / financial / risk analysis?
+    └── → OPUS (output quality là ưu tiên tuyệt đối)
+```
+
+#### Ví dụ áp dụng theo loại sản phẩm
+
+| Loại sản phẩm | Tính năng | Model |
+|---|---|---|
+| Marketing AI | Viết caption mạng xã hội | SONNET |
+| Marketing AI | Phân tích insight từ brief dài | OPUS |
+| Storyboard Studio | Gợi ý cảnh quay (streaming) | SONNET |
+| Storyboard Studio | Generate toàn bộ script episode | SONNET |
+| AI Agent Workflow | Viết task description ngắn | SONNET |
+| AI Agent Workflow | Lập kế hoạch multi-department | OPUS |
+| Legal Doc AI | Tóm tắt hợp đồng ngắn | SONNET |
+| Legal Doc AI | Phân tích rủi ro pháp lý | OPUS |
+| Code Review AI | Review function đơn lẻ | SONNET |
+| Code Review AI | Audit toàn bộ module | OPUS |
+| Slide Creator | Viết bullet points cho slide | SONNET |
+| Slide Creator | Xây dựng cấu trúc presentation | OPUS |
+
+#### Quy tắc cứng
+
+1. **Stream = luôn Sonnet** — không exception.
+2. **Mặc định Sonnet** — chỉ nâng Opus khi có lý do rõ ràng từ decision tree.
+3. **Không mix model trong 1 flow** — nếu flow có nhiều bước, chọn 1 model cho toàn bộ flow.
+4. **`maxTokens` đi kèm model**: Sonnet → 4096, Opus → 8192 (reasoning cần space hơn).
 
 ```tsx
 // Sonnet — mặc định (không cần truyền model)
@@ -3386,7 +3451,7 @@ const output = await aiTextViaProxy(prompt, systemRole);
 // Sonnet — tường minh
 const output = await aiTextViaProxy(prompt, systemRole, signal, 4096, AI_MODELS.SONNET);
 
-// Opus — cho tác vụ phân tích sâu
+// Opus — cho tác vụ phân tích sâu, maxTokens nên là 8192
 const result = await aiChatJSONViaProxy<AnalysisResult>(messages, signal, 8192, AI_MODELS.OPUS);
 ```
 
