@@ -80,6 +80,87 @@ export const SOLUTIONS: Solution[] = [
     ]
   },
   {
+    id: 'PAPERCLIP-AI-AGENTS',
+    slug: 'paperclip-ai-agents',
+    name: {
+      en: 'Paperclip — AI Org Orchestrator',
+      vi: 'Paperclip — Điều phối AI Doanh nghiệp',
+      ko: 'Paperclip — AI 조직 오케스트레이터',
+      ja: 'Paperclip — AI組織オーケストレーター'
+    },
+    category: {
+      en: 'Agent Automation',
+      vi: 'Tự động hóa AI Agent',
+      ko: 'AI 에이전트 자동화',
+      ja: 'AIエージェント自動化'
+    },
+    description: {
+      en: 'Open-source platform to run your company with AI employees. Hire agents, set goals, manage budgets — zero humans required.',
+      vi: 'Nền tảng mã nguồn mở vận hành doanh nghiệp bằng nhân viên AI. Tuyển agent, đặt mục tiêu, quản lý ngân sách — không cần con người.',
+      ko: 'AI 직원으로 회사를 운영하는 오픈소스 플랫폼. 에이전트 채용, 목표 설정, 예산 관리 — 인간 없이도 가능.',
+      ja: 'AIスタッフで会社を運営するオープンソースプラットフォーム。エージェントの採用、目標設定、予算管理 — 人間不要。'
+    },
+    problems: [
+      'Managing dozens of AI tools with no coordination layer',
+      'No audit trail or accountability for autonomous agents',
+      'Agent overspending and runaway API costs',
+      'Hard to scale multi-agent workflows across projects'
+    ],
+    industries: [
+      'SaaS Startups',
+      'Content Agencies',
+      'Software Development Teams',
+      'E-commerce Operations',
+      'Trading & Finance',
+      'Customer Support Automation',
+      'Marketing & Growth',
+      'Solo Founders / Indie Hackers'
+    ],
+    models: ['claude-sonnet-4-6', 'gpt-4o', 'cursor', 'codex', 'http-webhook'],
+    imageUrl: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&q=80&w=1600',
+    demoType: 'automation',
+    tags: [
+      'ai-agents', 'orchestration', 'autonomous', 'multi-agent', 'org-chart',
+      'budget-control', 'open-source', 'self-hosted', 'workflow', 'governance',
+      'no-code', 'agent-hiring', 'heartbeat', 'ticket-system'
+    ],
+    features: [
+      { en: 'Org Chart Agent Hierarchy', vi: 'Cấu trúc agent theo sơ đồ tổ chức', ko: '조직도 에이전트 계층 구조', ja: '組織図エージェント階層' },
+      { en: 'Goal Cascading from Company to Task', vi: 'Phân tầng mục tiêu từ công ty xuống từng task', ko: '회사에서 작업까지 목표 계단식 배분', ja: '会社からタスクへの目標カスケード' },
+      { en: 'Per-Agent Monthly Budget Limits', vi: 'Giới hạn ngân sách tháng theo từng agent', ko: '에이전트별 월별 예산 한도', ja: 'エージェントごとの月次予算上限' },
+      { en: 'Heartbeat Scheduler', vi: 'Lịch chạy định kỳ (Heartbeat)', ko: '하트비트 스케줄러', ja: 'ハートビートスケジューラー' },
+      { en: 'Full Audit Trail via Tickets', vi: 'Lịch sử audit đầy đủ qua hệ thống ticket', ko: '티켓을 통한 완전한 감사 추적', ja: 'チケットによる完全な監査証跡' },
+      { en: 'Bring-Your-Own Agent (Claude, Codex, Cursor…)', vi: 'Tích hợp agent tuỳ chọn (Claude, Codex, Cursor…)', ko: '자체 에이전트 연동 (Claude, Codex, Cursor…)', ja: '独自エージェント対応 (Claude, Codex, Cursor…)' },
+      { en: 'Multi-Company Data Isolation', vi: 'Cô lập dữ liệu đa công ty', ko: '다중 회사 데이터 격리', ja: 'マルチ企業データ分離' },
+      { en: 'Mobile Monitoring Dashboard', vi: 'Dashboard theo dõi trên mobile', ko: '모바일 모니터링 대시보드', ja: 'モバイル監視ダッシュボード' }
+    ],
+    complexity: 'Enterprise',
+    priceReference: 'Open Source / Self-hosted',
+    isActive: true,
+    priceCredits: 0,
+    isFree: true,
+    featured: true,
+    neuralStack: [
+      {
+        name: 'Agent Orchestration Engine',
+        version: 'v1.0',
+        capability: { en: 'Multi-agent goal alignment & task routing', vi: 'Phân phối task & đồng bộ mục tiêu', ko: '다중 에이전트 목표 정렬 및 작업 라우팅', ja: 'マルチエージェント目標調整とタスクルーティング' }
+      },
+      {
+        name: 'Budget Guard',
+        version: 'v1.0',
+        capability: { en: 'Hard spending limits per agent per month', vi: 'Giới hạn chi tiêu cứng theo agent/tháng', ko: '에이전트별 월별 지출 한도 강제', ja: 'エージェントごとの月次支出上限の強制' }
+      },
+      {
+        name: 'Governance Layer',
+        version: 'v1.0',
+        capability: { en: 'Human approvals, overrides & pause controls', vi: 'Phê duyệt người dùng, ghi đè & tạm dừng agent', ko: '인간 승인, 재정의 및 일시 중지 제어', ja: '人間による承認・オーバーライド・一時停止制御' }
+      }
+    ],
+    platforms: ['web'],
+    homeBlocks: ['featured', 'automation']
+  },
+  {
     id: 'AI-AGENT-WORKFLOW',
     slug: 'ai-agent-workflow',
     name: { 

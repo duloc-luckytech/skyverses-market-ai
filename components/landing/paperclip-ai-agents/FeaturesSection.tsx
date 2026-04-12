@@ -76,8 +76,8 @@ export const FeaturesSection: React.FC = () => {
             <HoverCard
               key={f.title}
               className={`overflow-hidden bg-black/[0.01] dark:bg-white/[0.015] cursor-pointer ${f.featured ? 'col-span-2' : 'col-span-1'}`}
-              onClick={() => setExpanded(expanded === f.title ? null : f.title)}
             >
+              <div onClick={() => setExpanded(expanded === f.title ? null : f.title)} className="h-full">
               {/* Featured header accent */}
               {f.featured && (
                 <div
@@ -113,6 +113,7 @@ export const FeaturesSection: React.FC = () => {
                     {f.desc}
                   </motion.p>
                 </AnimatePresence>
+              </div>
               </div>
             </HoverCard>
           ))}
