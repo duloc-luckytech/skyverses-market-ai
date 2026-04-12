@@ -48,6 +48,7 @@ const pageImports = {
   realEstateVisual: () => import('./pages/images/RealEstateVisualAI'),
   bgRemoval: () => import('./pages/images/BackgroundRemovalAI'),
   socialBanner: () => import('./pages/images/SocialBannerAI'),
+  paperclipAIAgents: () => import('./pages/images/PaperclipAIAgents'),
   // Videos
   aiVideo: () => import('./pages/videos/AIVideoGenerator'),
   genyu: () => import('./pages/videos/GenyuProduct'),
@@ -107,6 +108,7 @@ const RealEstateAI = React.lazy(pageImports.realEstate);
 const RealEstateVisualAI = React.lazy(pageImports.realEstateVisual);
 const BackgroundRemovalAI = React.lazy(pageImports.bgRemoval);
 const SocialBannerAI = React.lazy(pageImports.socialBanner);
+const PaperclipAIAgents = React.lazy(pageImports.paperclipAIAgents);
 
 // Product pages — videos
 const AIVideoGenerator = React.lazy(pageImports.aiVideo);
@@ -257,7 +259,8 @@ const App: React.FC = () => {
                       <Route path="/product/character-sync-studio" element={<Product6Image />} />
                       <Route path="/product/banana-pro-comic-engine" element={<Product7Comic />} />
                       <Route path="/product/3d-spatial-architect" element={<SpatialArchitectPage />} />
-                      
+                      <Route path="/product/paperclip-ai-agents" element={<PaperclipAIAgents />} />
+
                       <Route path="/product/:slug" element={<SolutionDetail />} />
                       
                       <Route path="/use-cases" element={<UseCasesPage />} />
