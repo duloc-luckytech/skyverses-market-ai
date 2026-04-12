@@ -1,34 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Sparkles, Settings, Zap, ImageIcon, Film, Cpu,
-  Edit3, Music, Mic, Check, ChevronDown, Maximize2,
+  ImageIcon, Film,
+  Check, ChevronDown,
   Save, Loader2, ShieldCheck,
 } from 'lucide-react';
-import { AdvancedSettings } from './AdvancedSettings';
 import { ModelEngineSettings } from '../image-generator/ModelEngineSettings';
 import { VideoModelEngineSettings } from '../video-generator/VideoModelEngineSettings';
 import { useImageModels } from '../../hooks/useImageModels';
 import { useVideoModels } from '../../hooks/useVideoModels';
 
-interface SettingsTabProps {
-  script: string;
-  setScript: (v: string) => void;
-  settings: any;
-  setSettings?: (updates: any) => void;
-  onLoadSample: () => void;
-  onLoadSuggestion: () => void;
-  onOpenAestheticConfig: () => void;
-  onOpenRenderConfig: () => void;
-  isEnhancing?: boolean;
-  isProcessing?: boolean;
-  onSaveAndGenerate?: () => void;
+// ── localStorage keys ────────────────────────────────────────────────────────
+const LS_IMG = 'sb_img_settings';
+const LS_VID = 'sb_vid_settings';
+
+interface ImgPersistedState {
+  engine: string;
+  modelKey: string;
+  family: string;
+  mode: string;
+  ratio: string;
+  res: string;
 }
+
+interface VidPersistedState {
+  engine: string;
+  modelKey: string;
+  family: string;
+  mode: string;
+  ratio: string;
+  resolution: string;
+  duration: string;
+  soundEnabled: boolean;
+}
+
+const loadLS = <T,>(key: string): T | null => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : null;
+  } catch {
+    return null;
+  }
+};
+
+const saveLS = (key: string, value: unknown) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch { /* quota errors — silently ignore */ }
+};
 
 // ── Collapsible card wrapper ─────────────────────────────────────────────────
 const SettingsCard: React.FC<{
   icon: React.ReactNode;
-  accentClass: string;          // e.g. "text-rose-500 bg-rose-500/10"
+  accentClass: string;
   title: string;
   subtitle: string;
   defaultOpen?: boolean;
@@ -83,49 +107,35 @@ const SettingsCard: React.FC<{
   );
 };
 
-// ── Pill toggle ──────────────────────────────────────────────────────────────
-const Pill: React.FC<{
-  label: string; active: boolean; onClick: () => void; disabled?: boolean;
-}> = ({ label, active, onClick, disabled }) => (
-  <button
-    onClick={onClick}
-    disabled={disabled}
-    className={`px-3 py-1.5 rounded-lg text-[10px] font-semibold border transition-all ${
-      active
-        ? 'bg-brand-blue/10 text-brand-blue border-brand-blue/25'
-        : 'bg-transparent border-black/[0.06] dark:border-white/[0.05] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
-    } disabled:opacity-40 disabled:cursor-not-allowed`}
-  >
-    {label}
-  </button>
-);
-
-// ── Summary stat chip ────────────────────────────────────────────────────────
-const StatChip: React.FC<{ icon: React.ReactNode; label: string; value: string; accent?: string }> = ({
-  icon, label, value, accent = 'text-brand-blue',
-}) => (
-  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05]">
-    <span className={`shrink-0 ${accent}`}>{icon}</span>
-    <div className="min-w-0">
-      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 leading-none">{label}</p>
-      <p className="text-[10px] font-black uppercase italic truncate text-slate-800 dark:text-white mt-0.5 leading-none">{value}</p>
-    </div>
-  </div>
-);
-
 // ─────────────────────────────────────────────────────────────────────────────
+
+interface SettingsTabProps {
+  script: string;
+  setScript: (v: string) => void;
+  settings: any;
+  setSettings?: (updates: any) => void;
+  onLoadSample: () => void;
+  onLoadSuggestion: () => void;
+  onOpenAestheticConfig: () => void;
+  onOpenRenderConfig: () => void;
+  isEnhancing?: boolean;
+  isProcessing?: boolean;
+  onSaveAndGenerate?: () => void;
+}
 
 export const SettingsTab: React.FC<SettingsTabProps> = ({
   settings,
   setSettings,
   isProcessing,
   onSaveAndGenerate,
-  onOpenAestheticConfig,
-  onOpenRenderConfig,
 }) => {
+  // ── Restore persisted state ──────────────────────────────────────────────────
+  const persistedImg = loadLS<ImgPersistedState>(LS_IMG);
+  const persistedVid = loadLS<VidPersistedState>(LS_VID);
+
   // ── Image AI ────────────────────────────────────────────────────────────────
-  const [imgEngine, setImgEngine] = useState(settings?.imageEngine ?? 'gommo');
-  const imgModels = useImageModels(imgEngine, settings?.imageModel);
+  const [imgEngine, setImgEngine] = useState(persistedImg?.engine ?? settings?.imageEngine ?? 'gommo');
+  const imgModels = useImageModels(imgEngine, persistedImg?.modelKey ?? settings?.imageModel);
   const {
     availableModels: imgAvailableModels,
     selectedModel: imgSelectedModel,       setSelectedModel: setImgSelectedModel,
@@ -140,9 +150,30 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
     familyResolutions: imgFamilyResolutions,
   } = imgModels;
 
-  // ── Video AI ─────────────────────────────────────────────────────────────────
-  const [videoEngine, setVideoEngine] = useState(settings?.videoEngine ?? 'gommo');
-  const vid = useVideoModels(videoEngine, settings?.model);
+  // Restore img family/mode/ratio/res after models load
+  useEffect(() => {
+    if (!persistedImg || imgFamilyList.length === 0) return;
+    if (persistedImg.family && imgFamilyList.includes(persistedImg.family))
+      setImgSelectedFamily(persistedImg.family);
+    if (persistedImg.mode) setImgSelectedMode(persistedImg.mode);
+    if (persistedImg.ratio) setImgSelectedRatio(persistedImg.ratio);
+    if (persistedImg.res) setImgSelectedRes(persistedImg.res);
+  // run once when family list first populates
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imgFamilyList.length > 0]);
+
+  // Persist image state on every change
+  useEffect(() => {
+    if (!imgSelectedModel) return;
+    saveLS<ImgPersistedState>(LS_IMG, {
+      engine: imgEngine,
+      modelKey: imgSelectedModel.raw?.modelKey ?? imgSelectedModel.id,
+      family: imgSelectedFamily,
+      mode: imgSelectedMode,
+      ratio: imgSelectedRatio,
+      res: imgSelectedRes,
+    });
+  }, [imgEngine, imgSelectedModel, imgSelectedFamily, imgSelectedMode, imgSelectedRatio, imgSelectedRes]);
 
   // ── Sync image → settings ────────────────────────────────────────────────────
   useEffect(() => {
@@ -156,6 +187,37 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imgEngine, imgSelectedModel, imgSelectedRatio, imgSelectedRes]);
+
+  // ── Video AI ─────────────────────────────────────────────────────────────────
+  const [videoEngine, setVideoEngine] = useState(persistedVid?.engine ?? settings?.videoEngine ?? 'gommo');
+  const vid = useVideoModels(videoEngine, persistedVid?.modelKey ?? settings?.model);
+
+  // Restore video family/mode/ratio/res after models load
+  useEffect(() => {
+    if (!persistedVid || vid.familyList.length === 0) return;
+    if (persistedVid.family && vid.familyList.includes(persistedVid.family))
+      vid.setSelectedFamily(persistedVid.family);
+    if (persistedVid.mode) vid.setSelectedMode(persistedVid.mode);
+    if (persistedVid.ratio) vid.setRatio(persistedVid.ratio);
+    if (persistedVid.resolution) vid.setResolution(persistedVid.resolution);
+  // run once when family list first populates
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vid.familyList.length > 0]);
+
+  // Persist video state on every change
+  useEffect(() => {
+    if (!vid.selectedModelObj) return;
+    saveLS<VidPersistedState>(LS_VID, {
+      engine: videoEngine,
+      modelKey: vid.selectedModelObj.modelKey,
+      family: vid.selectedFamily,
+      mode: vid.selectedMode,
+      ratio: vid.ratio,
+      resolution: vid.resolution,
+      duration: vid.duration,
+      soundEnabled: vid.soundEnabled,
+    });
+  }, [videoEngine, vid.selectedModelObj, vid.selectedFamily, vid.selectedMode, vid.ratio, vid.resolution, vid.duration, vid.soundEnabled]);
 
   // ── Sync video → settings ────────────────────────────────────────────────────
   useEffect(() => {
@@ -205,7 +267,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               Cấu hình sản xuất
             </h2>
             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-              Image AI · Video AI · Render · Nâng cao
+              Image AI · Video AI
             </p>
           </div>
           {/* Quick save */}
@@ -222,44 +284,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
         </div>
 
         {/* ══════════════════════════════════════════════════
-            1. THẨM MỸ & PHONG CÁCH
-        ══════════════════════════════════════════════════ */}
-        <SettingsCard
-          icon={<Sparkles size={15} />}
-          accentClass="text-brand-blue bg-brand-blue/10"
-          title="Thẩm mỹ & Phong cách"
-          subtitle="Ngôn ngữ hình ảnh"
-          defaultOpen
-        >
-          {/* Summary chips */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-            <StatChip icon={<Film size={11} />}       label="Định dạng" value={settings.format}  accent="text-brand-blue" />
-            <StatChip icon={<Sparkles size={11} />}   label="Phong cách" value={settings.style}  accent="text-violet-500" />
-            <StatChip icon={<Zap size={11} />}        label="Văn hóa"   value={settings.culture} accent="text-emerald-500" />
-            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05]">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-1.5">
-                  <Music size={10} className={settings.bgm ? 'text-emerald-500' : 'text-slate-400'} />
-                  <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400">Nhạc nền</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Mic size={10} className={settings.voiceOver ? 'text-emerald-500' : 'text-slate-400'} />
-                  <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400">Lời bình</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={onOpenAestheticConfig}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-brand-blue/30 bg-brand-blue/5 text-brand-blue text-[10px] font-black uppercase tracking-widest hover:bg-brand-blue hover:text-white transition-all"
-          >
-            <Edit3 size={13} /> Chỉnh sửa thẩm mỹ
-          </button>
-        </SettingsCard>
-
-        {/* ══════════════════════════════════════════════════
-            2. IMAGE AI ENGINE
+            1. IMAGE AI ENGINE
         ══════════════════════════════════════════════════ */}
         <SettingsCard
           icon={<ImageIcon size={15} />}
@@ -296,7 +321,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
         </SettingsCard>
 
         {/* ══════════════════════════════════════════════════
-            3. VIDEO AI ENGINE
+            2. VIDEO AI ENGINE
         ══════════════════════════════════════════════════ */}
         <SettingsCard
           icon={<Film size={15} />}
@@ -332,95 +357,6 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
             setSoundEnabled={vid.setSoundEnabled}
             showQuantity={false}
             isGenerating={isProcessing}
-          />
-        </SettingsCard>
-
-        {/* ══════════════════════════════════════════════════
-            4. CẤU HÌNH KẾT XUẤT — summary + shortcut
-        ══════════════════════════════════════════════════ */}
-        <SettingsCard
-          icon={<Cpu size={15} />}
-          accentClass="text-amber-500 bg-amber-500/10"
-          title="Cấu hình kết xuất"
-          subtitle="Export · Resolution · Privacy"
-          defaultOpen={false}
-        >
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
-            <StatChip
-              icon={<ImageIcon size={11} />}
-              label="Engine ảnh"
-              value={(settings.imageModel ?? '–').replace(/_/g, ' ')}
-              accent="text-rose-500"
-            />
-            <StatChip
-              icon={<Film size={11} />}
-              label="Engine video"
-              value={(settings.model ?? '–').replace(/_/g, ' ')}
-              accent="text-indigo-500"
-            />
-            <StatChip
-              icon={<Maximize2 size={11} />}
-              label="Thông số xuất"
-              value={`${(settings.resolution ?? '1080P').toUpperCase()} · ${settings.exportFormat ?? 'MP4'}`}
-              accent="text-emerald-500"
-            />
-          </div>
-
-          {/* Aspect ratio quick pills */}
-          <div className="space-y-2 mb-4">
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Tỉ lệ khung hình</p>
-            <div className="flex gap-1.5 flex-wrap">
-              {['16:9', '9:16', '1:1'].map(r => (
-                <Pill
-                  key={r}
-                  label={r}
-                  active={(settings.aspectRatio ?? '16:9') === r}
-                  onClick={() => setSettings?.({ ...settings, aspectRatio: r })}
-                  disabled={isProcessing}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Mode quick pills */}
-          <div className="space-y-2 mb-4">
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Chế độ ưu tiên</p>
-            <div className="flex gap-1.5 flex-wrap">
-              {['fast', 'quality', 'relaxed'].map(m => (
-                <Pill
-                  key={m}
-                  label={m}
-                  active={(settings.mode ?? 'fast') === m}
-                  onClick={() => setSettings?.({ ...settings, mode: m })}
-                  disabled={isProcessing}
-                />
-              ))}
-            </div>
-          </div>
-
-          <button
-            onClick={onOpenRenderConfig}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-white/60 text-[10px] font-black uppercase tracking-widest hover:border-brand-blue/40 hover:text-brand-blue dark:hover:text-white transition-all"
-          >
-            <Settings size={13} /> Mở cấu hình đầy đủ
-          </button>
-        </SettingsCard>
-
-        {/* ══════════════════════════════════════════════════
-            5. CÀI ĐẶT NÂNG CAO
-        ══════════════════════════════════════════════════ */}
-        <SettingsCard
-          icon={<Zap size={15} />}
-          accentClass="text-slate-500 bg-slate-500/10"
-          title="Cài đặt nâng cao"
-          subtitle="Retry · Threads · API Key"
-          defaultOpen={false}
-        >
-          <AdvancedSettings
-            isProcessing={isProcessing}
-            onSaveAndGenerate={onSaveAndGenerate}
-            settings={settings}
-            setSettings={setSettings || (() => {})}
           />
         </SettingsCard>
 
