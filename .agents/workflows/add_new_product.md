@@ -319,6 +319,114 @@ Nếu 404 → kiểm tra lại TOKEN hoặc slug conflict.
 
 ---
 
+## STEP 2.6 — Cập nhật `data.ts` trong repo (BẮT BUỘC)
+
+> **Tại sao cần làm bước này?**
+> `data.ts` là **single source of truth** cho product metadata trong frontend repo.
+> **16 file** import từ `data.ts`, bao gồm: card badges, marketplace filters, homepage sections, search chips, solution detail page.
+>
+> Nếu bỏ qua bước này → card có thể thiếu badge **HOT / FREE**, hiển thị sai filter, không xuất hiện trên homepage.
+
+### Fields ảnh hưởng trực tiếp đến style & placement
+
+| Field | Ảnh hưởng | Ví dụ |
+|-------|-----------|-------|
+| `featured: true` | Badge "HOT" + màu border nổi bật trên card | `featured: true` |
+| `isFree: true` | Badge "FREE" trên card thumbnail | `isFree: true` |
+| `priceCredits: 0` | Hiển thị "0 credits" trong ProductToolModal | `priceCredits: 50` |
+| `demoType` | Filter tab trên Marketplace (image/video/audio/automation) | `'automation'` |
+| `complexity` | Grey badge trên card (Basic / Advanced / Enterprise) | `'Enterprise'` |
+| `category` | Blue badge trên card (4 ngôn ngữ) | `{ en: 'Agent Automation', vi: '...', ko: '...', ja: '...' }` |
+| `tags` | Search chips + full-text search filter | `['ai-agents', 'automation']` |
+| `imageUrl` | Thumbnail trên card + OG image | Cloudflare CDN URL |
+| `homeBlocks` | Homepage section placement | `['featured', 'automation']` |
+| `neuralStack` | Tech stack hiển thị trong landing page detail | array of `{ name, version, capability }` |
+
+### Template snippet — thêm vào cuối `solutions` array trong `data.ts`
+
+```ts
+// data.ts — thêm entry này vào cuối mảng solutions (trước dấu ];)
+{
+  id: '<SLUG_UPPERCASE_UNDERSCORED>',         // e.g. 'CHATBOT-AI'
+  slug: '<your-slug>',                         // phải khớp với route trong App.tsx
+  name: {
+    en: '<Product Name EN>',
+    vi: '<Tên sản phẩm VI>',
+    ko: '<제품명 KO>',
+    ja: '<製品名 JA>',
+  },
+  category: {
+    en: '<Category EN>',
+    vi: '<Danh mục VI>',
+    ko: '<카테고리 KO>',
+    ja: '<カテゴリ JA>',
+  },
+  description: {
+    en: '<One-sentence description EN>',
+    vi: '<Mô tả 1 câu VI>',
+    ko: '<한 문장 설명 KO>',
+    ja: '<一文説明 JA>',
+  },
+  problems: [
+    '<Problem user faces 1>',
+    '<Problem user faces 2>',
+    '<Problem user faces 3>',
+  ],
+  industries: [
+    '<Industry 1>',
+    '<Industry 2>',
+  ],
+  models: ['claude-sonnet-4-6'],              // AI models used
+  imageUrl: '<Cloudflare CDN URL từ STEP 3>', // QUAN TRỌNG: dùng URL từ STEP 3
+  demoType: '<image|video|audio|automation>', // ← quyết định filter tab
+  tags: ['<tag1>', '<tag2>'],                 // lowercase, kebab-case
+  features: [
+    { en: '<Feature 1 EN>', vi: '<VI>', ko: '<KO>', ja: '<JA>' },
+    { en: '<Feature 2 EN>', vi: '<VI>', ko: '<KO>', ja: '<JA>' },
+  ],
+  complexity: '<Basic|Advanced|Enterprise>',  // ← hiển thị grey badge
+  priceReference: '<Free|From $X/mo|Credits>', 
+  isActive: true,
+  priceCredits: 0,                            // 0 = free, >0 = paid
+  isFree: true,                               // ← badge "FREE" trên card
+  featured: false,                            // ← badge "HOT" nếu true
+  neuralStack: [
+    {
+      name: '<Engine Name>',
+      version: 'v1.0',
+      capability: { en: '<EN>', vi: '<VI>', ko: '<KO>', ja: '<JA>' },
+    },
+  ],
+  platforms: ['web'],
+  homeBlocks: ['<section1>', '<section2>'],   // e.g. ['featured', 'automation']
+},
+```
+
+### Quy tắc `homeBlocks`
+
+| Giá trị | Vị trí hiển thị |
+|---------|----------------|
+| `'featured'` | Section "Nổi bật" trên Homepage |
+| `'image'` | Section AI Image trên Homepage |
+| `'video'` | Section AI Video trên Homepage |
+| `'audio'` | Section AI Audio trên Homepage |
+| `'automation'` | Section AI Automation trên Homepage |
+| `'productivity'` | Section AI Productivity trên Homepage |
+
+> ⚠️ **Không bao giờ để `homeBlocks: []`** nếu muốn product hiện trên homepage.
+> `featured: true` + `homeBlocks: ['featured']` = xuất hiện ở section nổi bật với badge HOT.
+
+### Sau khi thêm vào `data.ts`
+
+```bash
+npx tsc --noEmit 2>&1 | head -20
+# Phải 0 lỗi — Solution type rất strict, thiếu field sẽ báo lỗi ngay
+```
+
+> **Lưu ý:** `imageUrl` ở bước này có thể là placeholder tạm (Unsplash URL). Sau khi hoàn thành STEP 3 (gen ảnh + upload Cloudflare), quay lại cập nhật `imageUrl` thành Cloudflare CDN URL thực tế.
+
+---
+
 ## STEP 3 — Generate & update demo images (3-5 images per platform)
 
 Tạo `gen-<slug>-images.mjs` — gen **NHIỀU ảnh** theo từng platform/use-case:
