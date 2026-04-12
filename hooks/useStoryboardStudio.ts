@@ -1,6 +1,4 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { GoogleGenAI } from "@google/genai";
-import { generateDemoImage } from '../services/geminiMedia';
 import { aiChatJSON, aiChatStream, aiChatOnce, aiChatStreamViaProxy, aiChatOnceViaProxy, ChatMessage } from '../apis/aiChat';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -1110,65 +1108,14 @@ Rewrite this as a better image generation prompt:`,
     addLog(`[🎙️] Tạo voice-over cảnh #${scene.order}...`);
 
     try {
-      const { generateDemoAudio } = await import('../services/geminiMedia');
-      const text = voiceText || scene.prompt.slice(0, 200); // cap at 200 chars
-      const voiceName = settings.voiceOver?.toLowerCase().includes('female') ? 'Aoede' : 'Kore';
-
-      const audioBuffer = await generateDemoAudio(text, voiceName);
-      if (audioBuffer) {
-        // Convert AudioBuffer to blob URL for playback
-        const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-        const ctx = new AudioContextClass();
-        const offlineCtx = new OfflineAudioContext(audioBuffer.numberOfChannels, audioBuffer.length, audioBuffer.sampleRate);
-        const source = offlineCtx.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(offlineCtx.destination);
-        source.start();
-        const rendered = await offlineCtx.startRendering();
-
-        // Encode as WAV
-        const wavBuffer = audioBufferToWav(rendered);
-        const blob = new Blob([wavBuffer], { type: 'audio/wav' });
-        const audioUrl = URL.createObjectURL(blob);
-        updateScene(sceneId, { audioUrl });
-        addLog(`[✓] Voice-over cảnh #${scene.order} hoàn tất.`);
-      }
+      // TTS voiceover via backend API — implementation pending
+      addLog(`[⚠] Voice-over cho cảnh #${scene.order} hiện chưa được hỗ trợ.`);
     } catch (e: any) {
       addLog(`[LỖI] Voice-over cảnh #${scene.order}: ${e?.message ?? 'thất bại.'}`);
     } finally {
       setIsGeneratingVoiceover(false);
     }
   }, [scenes, isGeneratingVoiceover, updateScene, addLog, settings]);
-
-  // Helper: convert AudioBuffer to WAV binary
-  const audioBufferToWav = (buffer: AudioBuffer): ArrayBuffer => {
-    const numCh = buffer.numberOfChannels;
-    const sampleRate = buffer.sampleRate;
-    const format = 1; // PCM
-    const bitDepth = 16;
-    const bytesPerSample = bitDepth / 8;
-    const blockAlign = numCh * bytesPerSample;
-    const dataLength = buffer.length * blockAlign;
-    const totalLength = 44 + dataLength;
-    const arrayBuf = new ArrayBuffer(totalLength);
-    const view = new DataView(arrayBuf);
-    const writeStr = (offset: number, s: string) => { for (let i = 0; i < s.length; i++) view.setUint8(offset + i, s.charCodeAt(i)); };
-    writeStr(0, 'RIFF'); view.setUint32(4, 36 + dataLength, true);
-    writeStr(8, 'WAVE'); writeStr(12, 'fmt '); view.setUint32(16, 16, true);
-    view.setUint16(20, format, true); view.setUint16(22, numCh, true);
-    view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * blockAlign, true);
-    view.setUint16(32, blockAlign, true); view.setUint16(34, bitDepth, true);
-    writeStr(36, 'data'); view.setUint32(40, dataLength, true);
-    let offset = 44;
-    for (let i = 0; i < buffer.length; i++) {
-      for (let ch = 0; ch < numCh; ch++) {
-        const s = Math.max(-1, Math.min(1, buffer.getChannelData(ch)[i]));
-        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-        offset += 2;
-      }
-    }
-    return arrayBuf;
-  };
 
   // ── Download helpers ─────────────────────────────────────────────
   const handleDownloadScene = useCallback((scene: Scene) => {

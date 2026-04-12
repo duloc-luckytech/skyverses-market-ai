@@ -1,22 +1,24 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Download, Zap, Share2, Loader2, Play, Film, 
-  Terminal, Activity, ShieldCheck, Clapperboard, 
-  Lock, ExternalLink, Camera, Settings2, Sliders, 
-  LayoutGrid, Trash2, Box, Info, FastForward,
-  MonitorPlay, Maximize2, Plus, Fingerprint, Crown,
-  ArrowRight, CornerDownRight, Square, RotateCcw,
-  CheckCircle2, AlertTriangle, Cpu, Database,
+import {
+  X, Download, Zap, Share2, Loader2, Film,
+  Terminal, Activity, ShieldCheck, Sliders,
+  Camera, Settings2,
+  Trash2, FastForward,
+  MonitorPlay, Plus, Fingerprint, Crown,
+  Database, Lock,
   History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoVideo, VideoProductionParams } from '../services/geminiMedia';
+import { useAuth } from '../context/AuthContext';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 import { useLanguage } from '../context/LanguageContext';
 
 const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { lang } = useLanguage();
-  
+  const { isAuthenticated, login, useCredits } = useAuth();
+
   // Studio States
   const [activeTab, setActiveTab] = useState<'DIRECTIVES' | 'DNA' | 'PHYSICS' | 'COMPUTE'>('DIRECTIVES');
   const [logs, setLogs] = useState<{t: string, msg: string, type: 'info' | 'warn' | 'success'}[]>([
@@ -32,7 +34,6 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [isGenerating, setIsGenerating] = useState(false);
   const [resultVideo, setResultVideo] = useState<string | null>(null);
   const [history, setHistory] = useState<any[]>([]);
-  const [needsKey, setNeedsKey] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logContainerRef = useRef<HTMLDivElement>(null);
@@ -60,37 +61,61 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
   const handleSynthesis = async () => {
     if (isGenerating || !prompt.trim()) return;
-    
+    if (!isAuthenticated) { login(); return; }
+
     setIsGenerating(true);
     setResultVideo(null);
     addLog('Injecting semantic directives...', 'info');
     addLog('Synthesizing temporal lattice...', 'info');
 
     try {
-      const params: VideoProductionParams = {
-        prompt: `Directing: ${prompt}. Camera: ${cameraMotion}. Motion intensity: ${motionBucket}. Cinematic high-fidelity, 1080p.`,
-        resolution: '1080p',
-        isUltra: true,
-        references
+      const fullPrompt = `Directing: ${prompt}. Camera: ${cameraMotion}. Motion intensity: ${motionBucket}. Cinematic high-fidelity, 1080p.`;
+      const hasRef = references.length > 0;
+      const type = hasRef ? 'image-to-video' : 'text-to-video';
+
+      const payload: VideoJobRequest = {
+        type,
+        input: hasRef ? { images: references } : {},
+        config: { duration: 8, aspectRatio: "16:9", resolution: "1080p" },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt: fullPrompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
       };
 
-      const url = await generateDemoVideo(params);
-      if (url) {
-        setResultVideo(url);
-        setHistory(prev => [{ url, prompt, timestamp: new Date().toLocaleTimeString() }, ...prev]);
-        addLog('Synthesis cycle complete. Manifest generated.', 'success');
-      }
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (result) => {
+          const videoUrl = result.videoUrl ?? '';
+          if (videoUrl) {
+            setResultVideo(videoUrl);
+            setHistory(prev => [{ url: videoUrl, prompt, timestamp: new Date().toLocaleTimeString() }, ...prev]);
+            useCredits(100);
+            addLog('Synthesis cycle complete. Manifest generated.', 'success');
+          } else {
+            addLog('No output received.', 'warn');
+          }
+          setIsGenerating(false);
+        },
+        onError: () => {
+          addLog('Critical synthesis error detected.', 'warn');
+          setIsGenerating(false);
+        }
+      });
     } catch (err: any) {
+      console.error("Synthesis Error:", err);
       addLog('Critical synthesis error detected.', 'warn');
-      if (err?.message?.includes("Requested entity was not found")) setNeedsKey(true);
-    } finally {
       setIsGenerating(false);
     }
   };
 
   return (
     <div className="flex h-full w-full bg-[#050505] text-white font-mono overflow-hidden relative selection:bg-yellow-500/30">
-      
+
       {/* 1. LEFT SIDE: DIRECTIVES & DNA */}
       <aside className="w-[450px] shrink-0 h-full flex flex-col border-r border-white/5 bg-[#080808] z-50">
         <div className="p-8 flex items-center justify-between border-b border-white/5">
@@ -111,8 +136,8 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         {/* Tab Switcher */}
         <div className="grid grid-cols-4 border-b border-white/5 bg-black/40">
            {(['DIRECTIVES', 'DNA', 'PHYSICS', 'COMPUTE'] as const).map(tab => (
-             <button 
-               key={tab} 
+             <button
+               key={tab}
                onClick={() => setActiveTab(tab)}
                className={`py-4 text-[8px] font-black uppercase tracking-widest border-r border-white/5 transition-all ${activeTab === tab ? 'text-yellow-500 bg-yellow-500/5' : 'text-gray-600 hover:text-white'}`}
              >
@@ -129,7 +154,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                       <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
                         <Terminal size={14} className="text-yellow-500" /> Semantic Payload
                       </label>
-                      <textarea 
+                      <textarea
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         className="w-full h-48 p-6 bg-black border border-white/10 rounded-sm text-sm font-bold focus:outline-none focus:border-yellow-500 transition-all uppercase tracking-tighter shadow-inner text-yellow-500/90"
@@ -142,8 +167,8 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                       </label>
                       <div className="grid grid-cols-2 gap-2">
                         {['Dolly In', 'Orbit Right', 'Crane Down', 'Pan Left', 'Static Master', 'Dynamic Zoom'].map(m => (
-                           <button 
-                             key={m} 
+                           <button
+                             key={m}
                              onClick={() => setCameraMotion(m)}
                              className={`py-3 text-[9px] font-black uppercase border transition-all ${cameraMotion === m ? 'bg-yellow-500 text-black border-yellow-500' : 'border-white/5 text-gray-600 hover:text-white'}`}
                            >
@@ -174,7 +199,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                            </div>
                          ))}
                          {references.length < 3 && (
-                           <button 
+                           <button
                              onClick={() => fileInputRef.current?.click()}
                              className="aspect-square border border-dashed border-white/10 hover:border-yellow-500 flex flex-col items-center justify-center gap-2 transition-all group"
                            >
@@ -203,7 +228,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                                <span className="text-gray-400">Motion Strength</span>
                                <span className="text-yellow-500">{motionBucket}</span>
                             </div>
-                            <input 
+                            <input
                               type="range" min="64" max="255" value={motionBucket}
                               onChange={(e) => setMotionBucket(parseInt(e.target.value))}
                               className="w-full h-1 bg-white/5 appearance-none rounded-full accent-yellow-500"
@@ -225,7 +250,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                    <div className="space-y-4">
                       <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
-                        <Cpu size={14} className="text-yellow-500" /> Infrastructure
+                        <Settings2 size={14} className="text-yellow-500" /> Infrastructure
                       </label>
                       <div className="grid grid-cols-1 gap-2">
                          {[
@@ -323,7 +348,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               <motion.div key="result" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="relative group w-full max-w-7xl shadow-[0_60px_150px_rgba(0,0,0,1)] border border-white/5 rounded-sm overflow-hidden bg-black aspect-video">
                  <video key={resultVideo} src={resultVideo!} autoPlay loop muted className="w-full h-full object-cover" />
                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
-                 
+
                  <div className="absolute bottom-10 left-10 space-y-4">
                     <div className="flex gap-3">
                        <span className="bg-yellow-500 text-black px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.4em] shadow-xl flex items-center gap-3 italic">
@@ -356,7 +381,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                  </div>
                  <div className="flex gap-4">
                     {history.map((h, i) => (
-                      <button 
+                      <button
                         key={i} onClick={() => setResultVideo(h.url)}
                         className={`w-20 h-20 border-2 transition-all overflow-hidden relative group/thumb ${resultVideo === h.url ? 'border-yellow-500 scale-105 shadow-[0_0_20px_rgba(234,179,8,0.3)]' : 'border-white/5 opacity-30 hover:opacity-100'}`}
                       >
@@ -380,7 +405,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                     <span className="text-[9px] font-black uppercase tracking-[0.3em]">Extend +7s</span>
                  </button>
               )}
-              <button 
+              <button
                 onClick={handleSynthesis}
                 disabled={isGenerating || !prompt.trim()}
                 className={`h-24 px-20 lg:px-40 flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden group shadow-[0_20px_60px_rgba(0,0,0,0.5)] rounded-sm ${prompt.trim() ? 'bg-yellow-500 text-black hover:scale-105 active:scale-95' : 'bg-white/5 text-gray-800'}`}
@@ -394,7 +419,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       </main>
 
       {/* 3. RIGHT SIDEBAR: DNA INSPECTOR */}
-      <aside className="hidden xl:flex w-[350px] shrink-0 flex flex-col bg-[#080808] border-l border-white/5">
+      <aside className="hidden xl:flex w-[350px] shrink-0 flex-col bg-[#080808] border-l border-white/5">
          <div className="h-16 border-b border-white/5 flex items-center px-8 shrink-0">
             <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
                <Database className="w-4 h-4 text-yellow-500" /> DNA_Inspector
@@ -440,38 +465,6 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             <button className="w-full py-5 bg-white/5 border border-white/10 text-gray-500 text-[10px] font-black uppercase tracking-widest hover:text-white hover:border-yellow-500 transition-all">Export_Studio_Logs</button>
          </div>
       </aside>
-
-      {/* AUTH OVERLAY */}
-      {needsKey && (
-        <div className="absolute inset-0 z-[1000] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8 text-center">
-          <div className="max-w-md space-y-12 animate-in zoom-in duration-500">
-            <div className="w-24 h-24 border-2 border-yellow-500 mx-auto flex items-center justify-center shadow-2xl shadow-yellow-500/20">
-              <Lock className="w-10 h-10 text-yellow-500 animate-pulse" />
-            </div>
-            <div className="space-y-6">
-              <h3 className="text-4xl font-black uppercase tracking-tighter italic">Studio_Lock</h3>
-              <p className="text-[12px] text-gray-500 leading-relaxed uppercase tracking-widest font-bold">
-                Quyền truy cập Ultra Pro yêu cầu xác thực API Key từ dự án **PAID** GCP để khởi chạy H100 Node.
-              </p>
-              <div className="pt-10 flex flex-col gap-6 items-center">
-                <button 
-                  onClick={() => { if ((window as any).aistudio) (window as any).aistudio.openSelectKey(); setNeedsKey(false); }}
-                  className="py-6 px-16 bg-yellow-500 text-black text-[12px] tracking-[0.3em] font-black uppercase shadow-2xl w-full"
-                >
-                  Xác thực Pipeline Key
-                </button>
-                <a 
-                  href="https://ai.google.dev/gemini-api/docs/billing" 
-                  target="_blank" 
-                  className="text-[10px] text-gray-600 hover:text-yellow-500 transition-colors uppercase font-black tracking-widest"
-                >
-                  Tài liệu Billing Google <ExternalLink className="w-3 h-3 inline ml-2" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <style>{`
         @keyframes progress {

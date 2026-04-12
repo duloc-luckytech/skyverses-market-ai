@@ -1,35 +1,27 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Monitor, Play, Clapperboard, Layers, 
-  Settings2, Download, Loader2, Zap, Upload, 
-  Target, ShieldCheck, Lock, ExternalLink, 
-  History as HistoryIcon, Share2, Briefcase, Camera, Sun, 
+import React, { useState, useRef } from 'react';
+import {
+  Monitor, Play, Clapperboard, Layers,
+  Settings2, Download, Loader2, Zap, Upload,
+  Target, ShieldCheck,
+  History as HistoryIcon, Share2, Briefcase, Camera, Sun,
   Terminal, Activity, X
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/geminiMedia';
+import { useAuth } from '../context/AuthContext';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 const NexusStudioInterface = () => {
+  const { isAuthenticated, login, useCredits } = useAuth();
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [history, setHistory] = useState<{url: string, prompt: string, segment: string, timestamp: string}[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [needsKey, setNeedsKey] = useState(false);
 
   const [segment, setSegment] = useState('Product Showcase');
   const [prompt, setPrompt] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const checkKey = async () => {
-      if ((window as any).aistudio) {
-        const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-        if (!process.env.API_KEY && !hasKey) setNeedsKey(true);
-      }
-    };
-    checkKey();
-  }, []);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -40,40 +32,51 @@ const NexusStudioInterface = () => {
     }
   };
 
-  const handleSelectKey = async () => {
-    if ((window as any).aistudio) {
-      await (window as any).aistudio.openSelectKey();
-      setNeedsKey(false);
-    }
-  };
-
   const handleSynthesis = async () => {
     if ((!prompt.trim() && !selectedImage) || isGenerating) return;
+    if (!isAuthenticated) { login(); return; }
     setIsGenerating(true);
 
     try {
       const fullPrompt = `${segment} production. Scene content: ${prompt}`;
-      const videoUrl = await generateDemoVideo({
-        prompt: fullPrompt,
-        references: selectedImage ? [selectedImage] : undefined,
-        resolution: '1080p'
+      const type = selectedImage ? "image-to-video" : "text-to-video";
+      const payload: VideoJobRequest = {
+        type,
+        input: selectedImage ? { images: [selectedImage] } : {},
+        config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt: fullPrompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
+      };
+
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (result) => {
+          const videoUrl = result.videoUrl ?? '';
+          if (videoUrl) {
+            setActiveVideo(videoUrl);
+            setHistory(prev => [{
+              url: videoUrl,
+              prompt: prompt || 'Reference Take',
+              segment,
+              timestamp: new Date().toLocaleTimeString()
+            }, ...prev]);
+            useCredits(100);
+          }
+          setIsGenerating(false);
+        },
+        onError: () => {
+          console.error("Studio Render Failed");
+          setIsGenerating(false);
+        }
       });
-      
-      if (videoUrl) {
-        setActiveVideo(videoUrl);
-        setHistory(prev => [{ 
-          url: videoUrl, 
-          prompt: prompt || 'Reference Take', 
-          segment,
-          timestamp: new Date().toLocaleTimeString()
-        }, ...prev]);
-      }
     } catch (err: any) {
       console.error("Studio Render Failed:", err);
-      if (err?.message?.includes('Requested entity was not found')) {
-        setNeedsKey(true);
-      }
-    } finally {
       setIsGenerating(false);
     }
   };
@@ -87,8 +90,8 @@ const NexusStudioInterface = () => {
           </label>
           <div className="grid grid-cols-2 gap-2">
             {['Brand Film', 'Product Showcase', 'Social Ad', 'Cinematic'].map(s => (
-              <button 
-                key={s} 
+              <button
+                key={s}
                 onClick={() => setSegment(s)}
                 className={`py-3 px-3 text-[9px] font-black uppercase border transition-all text-left ${segment === s ? 'bg-brand-blue border-brand-blue text-white' : 'border-black/5 dark:border-white/5 text-gray-400 dark:text-gray-700 hover:border-brand-blue/30'}`}
               >
@@ -102,7 +105,7 @@ const NexusStudioInterface = () => {
            <label className="text-[10px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-widest flex items-center gap-3">
               <Layers className="w-4 h-4 text-brand-blue" /> Master_Keyframe
            </label>
-           <div 
+           <div
              onClick={() => fileInputRef.current?.click()}
              className="aspect-video border border-dashed border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/[0.02] flex flex-col items-center justify-center cursor-pointer group hover:border-brand-blue transition-all relative overflow-hidden"
            >
@@ -145,7 +148,7 @@ const NexusStudioInterface = () => {
         <div className="h-40 border-t border-black/10 dark:border-white/10 bg-white dark:bg-black/90 p-8 shrink-0 relative z-20">
            <div className="max-w-5xl mx-auto flex gap-6 h-full">
               <div className="flex-grow relative h-full">
-                 <textarea 
+                 <textarea
                    value={prompt}
                    onChange={(e) => setPrompt(e.target.value)}
                    placeholder="Direct industrial intent command..."
@@ -161,7 +164,7 @@ const NexusStudioInterface = () => {
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[320px] shrink-0 flex flex-col border-l border-black/10 dark:border-white/10 bg-gray-50 dark:bg-black overflow-hidden">
+      <div className="hidden xl:flex w-[320px] shrink-0 flex-col border-l border-black/10 dark:border-white/10 bg-gray-50 dark:bg-black overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <HistoryIcon className="w-4 h-4 text-brand-blue" /> Take_Archives
@@ -175,26 +178,6 @@ const NexusStudioInterface = () => {
             ))}
          </div>
       </div>
-
-      {needsKey && (
-        <div className="absolute inset-0 z-[100] bg-white/95 dark:bg-black/98 backdrop-blur-2xl flex items-center justify-center p-8 text-center">
-          <div className="max-w-md space-y-12 animate-in fade-in zoom-in duration-700">
-             <div className="w-24 h-24 border border-brand-blue mx-auto flex items-center justify-center">
-                <Lock className="w-10 h-10 text-brand-blue" />
-             </div>
-             <div className="space-y-6">
-                <h2 className="text-4xl font-black uppercase tracking-tighter text-black dark:text-white">Production Required</h2>
-                <p className="text-[12px] text-gray-500 dark:text-gray-600 leading-relaxed uppercase tracking-widest font-bold">
-                   Studio synthesis requires a paid project API key.
-                </p>
-                <div className="pt-10 flex flex-col gap-4 items-center">
-                   <button onClick={handleSelectKey} className="btn-sky-primary px-12 py-5 text-[11px] w-full">AUTH_PAID_PROJECT</button>
-                   <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="text-[10px] text-gray-400 dark:text-gray-700 hover:text-brand-blue font-black uppercase">Billing_Specs <ExternalLink className="w-3 h-3" /></a>
-                </div>
-             </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

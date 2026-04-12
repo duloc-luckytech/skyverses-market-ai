@@ -5,12 +5,16 @@ import {
   X, Zap, Download, Share2, Loader2, Play, 
   Video, Image as ImageIcon, ChevronDown, Sparkles
 } from 'lucide-react';
-import { generateDemoVideo, generateDemoImage } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 const MediaGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { lang, t } = useLanguage();
-  
+  const { credits, useCredits, isAuthenticated, login } = useAuth();
+
   const [modality, setModality] = useState<'Video' | 'Image'>('Video');
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -18,18 +22,56 @@ const MediaGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
   const handleGenerate = async () => {
     if (!prompt.trim() || isGenerating) return;
+    if (!isAuthenticated) { login(); return; }
     setIsGenerating(true);
     try {
       if (modality === 'Video') {
-        const url = await generateDemoVideo({ prompt, isUltra: false });
-        if (url) setResult({ url, type: 'video' });
+        const payload: VideoJobRequest = {
+          type: 'text-to-video',
+          input: {},
+          config: { duration: 8, aspectRatio: '16:9', resolution: '720p' },
+          engine: { provider: 'google' as any, model: 'veo_3_fast' as any },
+          enginePayload: { prompt, privacy: 'PRIVATE', translateToEn: true, projectId: 'default', mode: 'fast' }
+        };
+        const apiRes = await videosApi.createJob(payload);
+        if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+        const cancelRef = { current: false };
+        pollJobOnce({
+          jobId: apiRes.data.jobId,
+          isCancelledRef: cancelRef,
+          apiType: 'video',
+          onDone: (res) => {
+            const url = res.videoUrl ?? '';
+            if (url) { setResult({ url, type: 'video' }); useCredits(100); }
+            setIsGenerating(false);
+          },
+          onError: () => setIsGenerating(false)
+        });
       } else {
-        const url = await generateDemoImage(prompt);
-        if (url) setResult({ url, type: 'image' });
+        const payload: ImageJobRequest = {
+          type: 'text_to_image',
+          input: { prompt },
+          config: { width: 1024, height: 1024, aspectRatio: '1:1', seed: 0, style: 'cinematic' },
+          engine: { provider: 'google' as any, model: 'google_image_gen_4_5' as any },
+          enginePayload: { prompt, privacy: 'PRIVATE', projectId: 'default' }
+        };
+        const apiRes = await imagesApi.createJob(payload);
+        if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+        const cancelRef = { current: false };
+        pollJobOnce({
+          jobId: apiRes.data.jobId,
+          isCancelledRef: cancelRef,
+          apiType: 'image',
+          onDone: (res) => {
+            const url = res.images?.[0] ?? '';
+            if (url) { setResult({ url, type: 'image' }); useCredits(50); }
+            setIsGenerating(false);
+          },
+          onError: () => setIsGenerating(false)
+        });
       }
     } catch (error) {
       console.error(error);
-    } finally {
       setIsGenerating(false);
     }
   };

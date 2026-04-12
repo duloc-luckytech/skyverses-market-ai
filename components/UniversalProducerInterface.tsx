@@ -1,16 +1,20 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Globe, Film, Clapperboard, MonitorPlay, Bot, BrainCircuit, 
-  Target, Sparkles, Play, Trash2, Activity, Terminal, 
-  Layers, Cpu, ShieldCheck, Download, CheckCircle2, 
-  Sliders, LayoutGrid, Eye, CornerDownRight, Zap, 
+import {
+  Globe, Film, Clapperboard, MonitorPlay, Bot, BrainCircuit,
+  Target, Sparkles, Play, Trash2, Activity, Terminal,
+  Layers, Cpu, ShieldCheck, Download, CheckCircle2,
+  Sliders, LayoutGrid, Eye, CornerDownRight, Zap,
   Loader2, User, Camera, Music, Move, ChevronRight,
-  ArrowRight, Video, AlertCircle, RefreshCw, Share2, 
-  Lock, ExternalLink, Gamepad, Tv, UserPlus, Box
+  ArrowRight, Video, AlertCircle, RefreshCw, Share2,
+  Gamepad, Tv, UserPlus, Box
 } from 'lucide-react';
-import { generateDemoVideo, generateDemoImage } from '../services/geminiMedia';
 import { aiTextViaProxy } from '../apis/aiCommon';
+import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
+
 type Domain = 'GAME' | 'FILM' | 'ADVERTISING' | 'VIRTUAL_AVATAR';
 type PipelineStage = 'IDENTITY' | 'ASSETS' | 'MOTION' | 'SCENE' | 'DOMAIN_RENDER' | 'MASTER';
 
@@ -22,6 +26,7 @@ interface UniversalAsset {
 }
 
 const UniversalProducerInterface = () => {
+  const { isAuthenticated, login, useCredits } = useAuth();
   const [activeDomain, setActiveDomain] = useState<Domain>('GAME');
   const [activeStage, setActiveStage] = useState<PipelineStage>('IDENTITY');
   const [isBusy, setIsBusy] = useState(false);
@@ -29,60 +34,95 @@ const UniversalProducerInterface = () => {
   const [characterDna, setCharacterDna] = useState<{name: string, role: string, img: string | null}>({ name: 'ELARA_PRIME', role: 'Cyber-Ronin', img: null });
   const [assetLibrary, setAssetLibrary] = useState<UniversalAsset[]>([]);
   const [activeRender, setActiveRender] = useState<string | null>(null);
-  const [needsKey, setNeedsKey] = useState(false);
-  
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [logs]);
 
-  useEffect(() => {
-    const checkKey = async () => {
-      if ((window as any).aistudio) {
-        const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-        if (!process.env.API_KEY && !hasKey) setNeedsKey(true);
-      }
-    };
-    checkKey();
-  }, []);
-
-  const handleSelectKey = async () => {
-    if ((window as any).aistudio) {
-      await (window as any).aistudio.openSelectKey();
-      setNeedsKey(false);
-    }
-  };
-
   const addLog = (agent: string, msg: string) => {
     setLogs(prev => [...prev, { t: new Date().toLocaleTimeString(), msg, agent }]);
   };
 
   const runStage = async (stage: PipelineStage) => {
+    if (!isAuthenticated) { login(); return; }
     setIsBusy(true);
     switch(stage) {
-      case 'IDENTITY':
+      case 'IDENTITY': {
         addLog('CONSISTENCY_AGENT', 'Initializing character DNA matrix...');
-        const res = await generateDemoImage('Cyber-ronin character portrait, high-tech samurai armor, glowing purple neon elements, sharp features, white hair, cinematic lighting, ultra-high resolution.');
-        if (res) {
-          setCharacterDna(prev => ({ ...prev, img: res }));
-          addLog('DIRECTOR', 'Identity Locked: ELARA_PRIME. Visual anchors confirmed.');
-        }
+        try {
+          const imgPrompt = 'Cyber-ronin character portrait, high-tech samurai armor, glowing purple neon elements, sharp features, white hair, cinematic lighting, ultra-high resolution.';
+          const payload: ImageJobRequest = {
+            type: "text_to_image",
+            input: { prompt: imgPrompt },
+            config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+            engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+            enginePayload: { prompt: imgPrompt, privacy: "PRIVATE", projectId: "default" }
+          };
+          const apiRes = await imagesApi.createJob(payload);
+          if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+          const cancelRef = { current: false };
+          pollJobOnce({
+            jobId: apiRes.data.jobId,
+            isCancelledRef: cancelRef,
+            apiType: 'image',
+            onDone: (result) => {
+              const imageUrl = result.images?.[0] ?? '';
+              if (imageUrl) {
+                setCharacterDna(prev => ({ ...prev, img: imageUrl }));
+                addLog('DIRECTOR', 'Identity Locked: ELARA_PRIME. Visual anchors confirmed.');
+                useCredits(1);
+              }
+              setIsBusy(false);
+            },
+            onError: () => { setIsBusy(false); }
+          });
+        } catch (err) { setIsBusy(false); }
         break;
-      case 'ASSETS':
+      }
+      case 'ASSETS': {
         addLog('PLANNER', 'Synthesizing domain-neutral equipment library...');
-        const equipment = await generateDemoImage(`Full-body view of ${characterDna.name} equipment, 4-point turnaround, armor details, katana hilt, tech-pouches. Orthographic.`);
-        if (equipment) {
-          setAssetLibrary(prev => [{ id: 'eq1', url: equipment, type: 'IMAGE', label: 'MASTER_GEAR_SET' }, ...prev]);
-          addLog('REVIEW_AGENT', 'Asset library validated for cross-domain scaling.');
-        }
+        try {
+          const imgPrompt = `Full-body view of ${characterDna.name} equipment, 4-point turnaround, armor details, katana hilt, tech-pouches. Orthographic.`;
+          const payload: ImageJobRequest = {
+            type: "text_to_image",
+            input: { prompt: imgPrompt },
+            config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+            engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+            enginePayload: { prompt: imgPrompt, privacy: "PRIVATE", projectId: "default" }
+          };
+          const apiRes = await imagesApi.createJob(payload);
+          if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+          const cancelRef = { current: false };
+          pollJobOnce({
+            jobId: apiRes.data.jobId,
+            isCancelledRef: cancelRef,
+            apiType: 'image',
+            onDone: (result) => {
+              const imageUrl = result.images?.[0] ?? '';
+              if (imageUrl) {
+                setAssetLibrary(prev => [{ id: 'eq1', url: imageUrl, type: 'IMAGE', label: 'MASTER_GEAR_SET' }, ...prev]);
+                addLog('REVIEW_AGENT', 'Asset library validated for cross-domain scaling.');
+                useCredits(1);
+              }
+              setIsBusy(false);
+            },
+            onError: () => { setIsBusy(false); }
+          });
+        } catch (err) { setIsBusy(false); }
         break;
-      case 'MOTION':
+      }
+      case 'MOTION': {
         addLog('PLANNER', 'Generating platform-agnostic behavior trees...');
-        const logic = await aiTextViaProxy(`Create 3 cinematic motion intents for ${characterDna.name} (${characterDna.role}). Include: 1. Stealth Prowl, 2. Katana Unsheathe, 3. Neural Calibration.`);
-        addLog('DIRECTOR', 'Behavior blueprints compiled. Logic ready for temporal synthesis.');
+        try {
+          await aiTextViaProxy(`Create 3 cinematic motion intents for ${characterDna.name} (${characterDna.role}). Include: 1. Stealth Prowl, 2. Katana Unsheathe, 3. Neural Calibration.`);
+          addLog('DIRECTOR', 'Behavior blueprints compiled. Logic ready for temporal synthesis.');
+        } catch (err) {}
+        setIsBusy(false);
         break;
-      case 'DOMAIN_RENDER':
+      }
+      case 'DOMAIN_RENDER': {
         addLog('RENDER_ORCHESTRATOR', `Synthesizing ${activeDomain} specific visual sequence...`);
         try {
           const promptMap = {
@@ -91,29 +131,43 @@ const UniversalProducerInterface = () => {
             ADVERTISING: 'Advertising hero shot: Cyber-ronin standing on a skyscraper ledge, holding a branded luxury device, neon city lights reflecting on chrome armor, high-fashion polish.',
             VIRTUAL_AVATAR: 'Live avatar loop: cyber-ronin breathing, micro-movements, looking at camera, high-fidelity social content style.'
           };
-          const url = await generateDemoVideo({
-            prompt: promptMap[activeDomain],
-            references: characterDna.img ? [characterDna.img] : undefined
+          const hasRef = !!characterDna.img;
+          const payload: VideoJobRequest = {
+            type: hasRef ? "image-to-video" : "text-to-video",
+            input: hasRef ? { images: [characterDna.img!] } : {},
+            config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
+            engine: { provider: "google" as any, model: "veo_3_fast" as any },
+            enginePayload: { prompt: promptMap[activeDomain], privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
+          };
+          const apiRes = await videosApi.createJob(payload);
+          if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+          const cancelRef = { current: false };
+          pollJobOnce({
+            jobId: apiRes.data.jobId,
+            isCancelledRef: cancelRef,
+            apiType: 'video',
+            onDone: (result) => {
+              const videoUrl = result.videoUrl ?? '';
+              if (videoUrl) {
+                setActiveRender(videoUrl);
+                addLog('DONE', `${activeDomain} render sequence completed and verified.`);
+                useCredits(100);
+              }
+              setIsBusy(false);
+            },
+            onError: () => { setIsBusy(false); }
           });
-          if (url) {
-            setActiveRender(url);
-            addLog('DONE', `${activeDomain} render sequence completed and verified.`);
-          }
-        } catch (err: any) {
-           const errorStr = typeof err === 'string' ? err : JSON.stringify(err);
-           if (errorStr.includes('Requested entity was not found') || errorStr.includes('404')) {
-              setNeedsKey(true);
-              handleSelectKey();
-           }
-        }
+        } catch (err) { setIsBusy(false); }
         break;
+      }
+      default:
+        setIsBusy(false);
     }
-    setIsBusy(false);
   };
 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#020203] overflow-hidden text-black dark:text-white font-mono">
-      
+
       <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[#080808] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar">
          <div className="p-8 border-b border-black/10 dark:border-white/5 space-y-2">
             <h3 className="text-[10px] font-black uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
@@ -132,8 +186,8 @@ const UniversalProducerInterface = () => {
                     { id: 'ADVERTISING', icon: <Tv size={12} /> },
                     { id: 'VIRTUAL_AVATAR', icon: <UserPlus size={12} /> }
                   ].map(d => (
-                    <button 
-                      key={d.id} 
+                    <button
+                      key={d.id}
                       onClick={() => setActiveDomain(d.id as Domain)}
                       className={`flex items-center gap-3 p-3 border transition-all rounded-sm ${activeDomain === d.id ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/5 text-gray-400'}`}
                     >
@@ -154,8 +208,8 @@ const UniversalProducerInterface = () => {
                  { id: 'DOMAIN_RENDER', label: 'Domain_Synth', step: '05' },
                  { id: 'MASTER', label: 'Final_Cut', step: '06' }
                ].map((s) => (
-                 <button 
-                   key={s.id} 
+                 <button
+                   key={s.id}
                    onClick={() => setActiveStage(s.id as PipelineStage)}
                    className={`w-full flex items-center justify-between p-4 border transition-all rounded-sm group ${activeStage === s.id ? 'bg-black dark:bg-white text-white dark:text-black' : 'bg-transparent border-black/5 dark:border-white/5 text-gray-400'}`}
                  >
@@ -182,7 +236,7 @@ const UniversalProducerInterface = () => {
 
       <div className="flex-grow flex flex-col bg-white dark:bg-[#020202] relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #0090ff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-        
+
         <div className="flex-grow overflow-y-auto p-8 lg:p-12 relative z-10 no-scrollbar pb-40">
            <div className="max-w-5xl mx-auto space-y-12">
               <div className="flex justify-between items-center border-b border-black/10 dark:border-white/5 pb-8">
@@ -288,20 +342,20 @@ const UniversalProducerInterface = () => {
               <div className="space-y-1">
                  <p className="text-[7px] font-black text-gray-400 uppercase tracking-widest">System_Security</p>
                  <div className="flex items-center gap-2 text-green-500">
-                    <Lock size={10} />
+                    <ShieldCheck size={10} />
                     <span className="text-[8px] font-black uppercase tracking-widest">Private_Node_Stable</span>
                  </div>
               </div>
            </div>
 
            <div className="flex items-center gap-6 w-full lg:w-auto">
-              <button 
+              <button
                 onClick={() => {setActiveStage('IDENTITY'); setCharacterDna({name: 'ELARA_PRIME', role: 'Cyber-Ronin', img: null}); setLogs([])}}
                 className="p-5 border border-black/10 dark:border-white/10 text-gray-400 hover:text-red-500 transition-all active:scale-95 disabled:opacity-20"
               >
                 <Trash2 size={20} />
               </button>
-              <button 
+              <button
                 className="flex-grow lg:flex-none bg-brand-blue text-white px-16 py-6 text-[11px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black transition-all shadow-2xl active:scale-[0.98] rounded-sm"
               >
                 EXPORT_UNIVERSAL_MANIFEST <Download size={16} />
@@ -344,26 +398,6 @@ const UniversalProducerInterface = () => {
             )}
          </div>
       </div>
-
-      {needsKey && (
-        <div className="absolute inset-0 z-[100] bg-black/95 flex items-center justify-center p-8 text-center">
-          <div className="max-w-md space-y-8 animate-in fade-in zoom-in duration-500">
-            <div className="w-20 h-20 border border-brand-blue mx-auto flex items-center justify-center">
-              <Lock className="w-8 h-8 text-brand-blue animate-pulse" />
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-2xl font-black uppercase tracking-tighter text-white">Auth Required</h3>
-              <p className="text-[10px] text-gray-500 leading-relaxed uppercase tracking-widest font-bold">
-                Universal synthesis requires an authorized paid production API key.
-              </p>
-              <div className="pt-6 flex flex-col gap-4">
-                <button onClick={handleSelectKey} className="btn-sky-primary py-4 px-10 text-[10px] tracking-widest uppercase">Connect Paid Key</button>
-                <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="text-[9px] text-gray-600 hover:text-brand-blue flex items-center justify-center gap-2 font-black uppercase">GCP Billing Docs <ExternalLink className="w-3 h-3" /></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

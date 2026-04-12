@@ -1,9 +1,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  BookOpen, Layers, Sparkles, RefreshCw, 
-  Download, Lock, X, Check, Trash2, Zap, 
+import {
+  BookOpen, Layers, Sparkles, RefreshCw,
+  Download, X, Check, Trash2, Zap,
   Share2, Maximize2, Plus, Terminal,
   LayoutGrid, Book, AlignLeft, Palette,
   Loader2, Play, Film, MessageSquare,
@@ -13,9 +13,10 @@ import {
   Database, ShieldCheck, Copy, Eye, Edit3,
   MousePointer2, Coins, AlertTriangle
 } from 'lucide-react';
-import { generateDemoImage } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { pollJobOnce } from '../hooks/useJobPoller';
 import { Link } from 'react-router-dom';
 
 interface ActorDNA {
@@ -30,7 +31,7 @@ interface Panel {
   url: string | null;
   status: 'idle' | 'rendering' | 'done' | 'error';
   intent: string;
-  memory: string; 
+  memory: string;
 }
 
 interface Chapter {
@@ -64,7 +65,7 @@ const PRESET_ACTORS: ActorDNA[] = [
 const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { lang } = useLanguage();
   const { credits, useCredits, isAuthenticated, login } = useAuth();
-  
+
   const [actors, setActors] = useState<ActorDNA[]>(PRESET_ACTORS);
   const [chapters, setChapters] = useState<Chapter[]>([
     { id: 'ch1', title: 'Chapter 01: The Awakening', isCanon: true, panels: [
@@ -80,7 +81,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isConstructing, setIsConstructing] = useState(false);
   const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
-  
+
   const [selectedFullImage, setSelectedFullImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -116,7 +117,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     if (!currentChapter) return;
 
     const newVariant: Chapter = {
-      ...JSON.parse(JSON.stringify(currentChapter)), 
+      ...JSON.parse(JSON.stringify(currentChapter)),
       id: `var-${Date.now()}`,
       title: `${currentChapter.title} (Alternate Timeline)`,
       isCanon: false
@@ -146,7 +147,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       setStatus('QUOTA_EXCEEDED');
       return;
     }
-    
+
     const deductionSuccessful = useCredits(5);
     if (!deductionSuccessful) return;
 
@@ -158,21 +159,60 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       for (let i = 0; i < updatedPanels.length; i++) {
         const p = updatedPanels[i];
         setStatus(`SYNTHESIZING_PANEL_0${i+1}`);
-        
+
+        // Mark panel as rendering
+        updatedPanels[i] = { ...p, status: 'rendering' };
+        setChapters(prev => prev.map(c => c.id === activeChapterId ? { ...c, panels: [...updatedPanels] } : c));
+
         const actorContext = actors.map(a => `Character: ${a.name}, Role: ${a.role}`).join('. ');
         const directive = `Professional anime serial manga panel. Continuity Mode Active. ${actorContext}. Narrative Intent: ${p.intent}. Memory Context: ${p.memory}. Style: High-fidelity Shonen Anime, vibrant coloring, cinematic composition.`;
-        
-        const res = await generateDemoImage(directive, actors.flatMap(a => a.refs));
-        if (res) {
-          updatedPanels[i] = { ...p, url: res, status: 'done' };
+
+        const refImages = actors.flatMap(a => a.refs);
+        const payload: ImageJobRequest = {
+          type: "text_to_image",
+          input: { prompt: directive, images: refImages.length > 0 ? refImages : undefined },
+          config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+          engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+          enginePayload: { prompt: directive, privacy: "PRIVATE", projectId: "default" }
+        };
+
+        try {
+          const apiRes = await imagesApi.createJob(payload);
+          if (apiRes.success && apiRes.data.jobId) {
+            await new Promise<void>((resolve) => {
+              const cancelRef = { current: false };
+              pollJobOnce({
+                jobId: apiRes.data.jobId,
+                isCancelledRef: cancelRef,
+                apiType: 'image',
+                onDone: (result) => {
+                  const imageUrl = result.images?.[0] ?? '';
+                  if (imageUrl) {
+                    updatedPanels[i] = { ...updatedPanels[i], url: imageUrl, status: 'done' };
+                    setChapters(prev => prev.map(c => c.id === activeChapterId ? { ...c, panels: [...updatedPanels] } : c));
+                  } else {
+                    updatedPanels[i] = { ...updatedPanels[i], status: 'error' };
+                    setChapters(prev => prev.map(c => c.id === activeChapterId ? { ...c, panels: [...updatedPanels] } : c));
+                  }
+                  resolve();
+                },
+                onError: () => {
+                  updatedPanels[i] = { ...updatedPanels[i], status: 'error' };
+                  setChapters(prev => prev.map(c => c.id === activeChapterId ? { ...c, panels: [...updatedPanels] } : c));
+                  resolve();
+                }
+              });
+            });
+          }
+        } catch {
+          updatedPanels[i] = { ...updatedPanels[i], status: 'error' };
           setChapters(prev => prev.map(c => c.id === activeChapterId ? { ...c, panels: [...updatedPanels] } : c));
         }
-        await new Promise(r => setTimeout(r, 600));
       }
       setStatus('OPERATIONAL');
+      setIsConstructing(false);
     } catch (err) {
       setStatus('SYNTHESIS_ERROR');
-    } finally {
       setIsConstructing(false);
     }
   };
@@ -181,10 +221,10 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-[#f8f8f8] dark:bg-[#030304] text-black dark:text-white font-sans overflow-hidden relative">
-      
+
       <AnimatePresence initial={false}>
         {sidebarOpen && (
-          <motion.aside 
+          <motion.aside
             initial={{ x: -450, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -450, opacity: 0 }}
@@ -263,15 +303,15 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                  </label>
                  <div className="space-y-2">
                     {chapters.map(ch => (
-                       <div 
-                         key={ch.id} 
+                       <div
+                         key={ch.id}
                          onClick={() => { setActiveChapterId(ch.id); setIsCanonMode(ch.isCanon); }}
                          className={`w-full p-4 border transition-all text-left flex justify-between items-center cursor-pointer ${activeChapterId === ch.id ? 'border-[#FFE135] bg-[#FFE135]/5 shadow-sm' : 'border-black/5 dark:border-white/5 text-gray-500'}`}
                        >
                           <div className="space-y-1 flex-grow pr-4">
                              <span className="text-[8px] font-black opacity-40 uppercase">{ch.isCanon ? 'Serial Work' : 'Parallel Arc'}</span>
                              {activeChapterId === ch.id ? (
-                                <input 
+                                <input
                                   autoFocus
                                   value={ch.title}
                                   onChange={(e) => handleRenameChapter(ch.id, e.target.value)}
@@ -297,7 +337,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </AnimatePresence>
 
       <main className="flex-grow flex flex-col bg-[#f0f0f2] dark:bg-[#010101] relative overflow-hidden">
-        
+
         <div className="h-16 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-[70] shadow-sm">
           <div className="flex items-center gap-6">
             {!sidebarOpen && (
@@ -323,19 +363,19 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
         <div className="flex-grow overflow-y-auto custom-scrollbar p-6 lg:p-16 flex items-center justify-center">
            <div className="w-full max-w-5xl aspect-[1/1.41] bg-white dark:bg-[#0a0a0c] shadow-[0_0_100px_rgba(0,0,0,0.1)] border-[12px] border-white dark:border-[#111] p-6 lg:p-10 grid grid-cols-2 grid-rows-2 gap-4 lg:gap-8 relative overflow-hidden">
-              
+
               {currentChapter?.panels.map((p, idx) => (
-                 <div 
-                   key={p.id} 
+                 <div
+                   key={p.id}
                    className={`relative border-2 border-black/5 dark:border-white/5 transition-all group hover:border-[#FFE135] ${idx === 0 ? 'col-span-2' : ''}`}
                  >
                     {p.url ? (
                        <div className="w-full h-full relative overflow-hidden bg-black flex items-center justify-center">
                          <img src={p.url} className={`w-full h-full object-cover transition-opacity duration-1000 ${p.status === 'rendering' ? 'opacity-20' : 'opacity-100'}`} />
-                         
+
                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 z-40">
-                            <button 
-                              onClick={(e: React.MouseEvent) => { e.stopPropagation(); setSelectedFullImage(p.url); }} 
+                            <button
+                              onClick={(e: React.MouseEvent) => { e.stopPropagation(); setSelectedFullImage(p.url); }}
                               className="p-4 bg-white text-black rounded-full shadow-2xl hover:bg-[#FFE135] transition-all transform scale-90 group-hover:scale-100 active:scale-95"
                               title="Maximize Viewport"
                             >
@@ -392,7 +432,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
            </div>
 
            <div className="flex gap-4">
-              <button 
+              <button
                 onClick={constructChapter}
                 disabled={isConstructing || actors.length === 0}
                 className={`group h-24 px-16 lg:px-32 flex flex-col items-center justify-center gap-2 transition-all relative overflow-hidden rounded-sm shadow-2xl ${actors.length > 0 ? 'bg-black dark:bg-white text-white dark:text-black hover:scale-105 active:scale-95' : 'bg-gray-100 dark:bg-white/5 text-gray-300 dark:text-gray-800'}`}
@@ -407,11 +447,11 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
       <AnimatePresence>
         {showLowCreditAlert && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center p-6"
           >
-             <motion.div 
+             <motion.div
                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
                className="max-w-md w-full bg-white dark:bg-[#0c0c0e] p-10 border border-black/10 dark:border-white/10 rounded-sm space-y-8 text-center shadow-3xl"
              >
@@ -425,13 +465,13 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                    </p>
                 </div>
                 <div className="flex flex-col gap-4">
-                   <Link 
-                     to="/credits" 
+                   <Link
+                     to="/credits"
                      className="bg-brand-blue text-white py-5 rounded-sm text-xs font-black uppercase tracking-[0.4em] shadow-xl hover:scale-105 transition-all"
                    >
                      Top Up Credits
                    </Link>
-                   <button 
+                   <button
                      onClick={() => setShowLowCreditAlert(false)}
                      className="text-[10px] font-black uppercase text-gray-400 hover:text-black dark:hover:text-white transition-colors"
                    >
@@ -445,12 +485,12 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
       <AnimatePresence>
         {selectedFullImage && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[999] bg-black/95 backdrop-blur-3xl overflow-y-auto custom-scrollbar"
             onClick={() => setSelectedFullImage(null)}
           >
-            <button 
+            <button
               className="fixed top-8 right-8 text-white/50 hover:text-[#FFE135] transition-colors z-[1001] bg-black/50 p-2 rounded-full backdrop-blur-md"
               onClick={(e: React.MouseEvent) => { e.stopPropagation(); setSelectedFullImage(null); }}
             >
@@ -458,17 +498,17 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </button>
 
             <div className="min-h-screen w-full flex flex-col items-center p-4 lg:p-20 relative">
-              <motion.div 
+              <motion.div
                 initial={{ scale: 0.95, y: 30 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 30 }}
                 className="relative max-w-5xl w-full flex flex-col items-center"
                 onClick={(e: React.MouseEvent) => e.stopPropagation()}
               >
-                <img 
-                  src={selectedFullImage} 
-                  className="w-full h-auto shadow-[0_0_150px_rgba(255,225,53,0.15)] border border-white/10 rounded-sm" 
-                  alt="Full Narrative Art" 
+                <img
+                  src={selectedFullImage}
+                  className="w-full h-auto shadow-[0_0_150px_rgba(255,225,53,0.15)] border border-white/10 rounded-sm"
+                  alt="Full Narrative Art"
                 />
-                
+
                 <div className="mt-12 mb-20 flex flex-col sm:flex-row items-center gap-6">
                    <button className="flex items-center gap-3 bg-[#FFE135] text-black px-12 py-4 text-[12px] font-black uppercase rounded-sm shadow-2xl hover:scale-105 active:scale-95 transition-all">
                       <Download size={16} /> Save Masterpiece

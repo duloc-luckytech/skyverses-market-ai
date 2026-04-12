@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { generateDemoImage } from '../services/geminiMedia';
 import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 export type Gender = 'Male' | 'Female';
 
@@ -36,7 +37,7 @@ export interface StylistState {
 
 export const useAIStylist = () => {
   const { credits, useCredits, isAuthenticated, login } = useAuth();
-  
+
   const [state, setState] = useState<StylistState>({
     gender: 'Male',
     selectedOutfit: null,
@@ -50,7 +51,6 @@ export const useAIStylist = () => {
     selectedBg: null,
     selectedPose: null,
     userPhoto: null,
-    // Fixed: removed duplicate isGenerating key
     isGenerating: false,
     hasResult: false,
     history: [],
@@ -66,7 +66,7 @@ export const useAIStylist = () => {
   const [personalKey, setPersonalKey] = useState<string | undefined>(undefined);
   const [showResourceModal, setShowResourceModal] = useState(false);
   const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
-  
+
   const GEN_COST = 100;
 
   useEffect(() => {
@@ -99,8 +99,8 @@ export const useAIStylist = () => {
   const toggleAccordion = (id: string) => {
     setState(prev => ({
       ...prev,
-      openAccordions: prev.openAccordions.includes(id) 
-        ? prev.openAccordions.filter(a => a !== id) 
+      openAccordions: prev.openAccordions.includes(id)
+        ? prev.openAccordions.filter(a => a !== id)
         : [...prev.openAccordions, id]
     }));
   };
@@ -111,7 +111,7 @@ export const useAIStylist = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setState(prev => ({ ...prev, userPhoto: reader.result as string, hasResult: false }));
-        if (e.target) e.target.value = ''; 
+        if (e.target) e.target.value = '';
       };
       reader.readAsDataURL(file);
     }
@@ -136,7 +136,7 @@ export const useAIStylist = () => {
     }
 
     setState(prev => ({ ...prev, isGenerating: true, hasResult: false }));
-    
+
     try {
       if (state.usagePreference === 'credits') {
         const successful = useCredits(GEN_COST);
@@ -148,7 +148,7 @@ export const useAIStylist = () => {
 
       const clothingItemUrls: string[] = [];
       const clothingNames: string[] = [];
-      
+
       if (state.selectedOutfit) {
         const item = categoryData.selectedOutfit.find(i => i.id === state.selectedOutfit);
         if (item) {
@@ -179,57 +179,74 @@ export const useAIStylist = () => {
         inputImages.push(bgItem.url);
         referencePrompt += `Image ${inputImages.length} is the mandatory background environment. `;
       }
-      
+
       const poseItem = categoryData.pose?.find(i => i.id === state.selectedPose);
       if (poseItem) {
         inputImages.push(poseItem.url);
         referencePrompt += `Image ${inputImages.length} is the mandatory pose for the person. `;
       }
 
-      const clothingDescription = clothingNames.length > 0 
-        ? `wearing exactly the clothing items shown in the reference images: ${clothingNames.join(', ')}` 
+      const clothingDescription = clothingNames.length > 0
+        ? `wearing exactly the clothing items shown in the reference images: ${clothingNames.join(', ')}`
         : "wearing high-end fashion designer apparel";
 
       const finalPrompt = `${referencePrompt}
-      High-end professional fashion editorial photography. 
+      High-end professional fashion editorial photography.
       STRICT IDENTITY LOCK: The person from Image 1 must remain 100% IDENTICAL in terms of facial features, ethnicity, hair, and body type.
-      ACTION: The person is now ${clothingDescription}. 
+      ACTION: The person is now ${clothingDescription}.
       VISUAL MATCHING: You must exactly replicate the colors, textures, and designs of the clothing provided in the reference images.
       ${poseItem ? `POSE: Mimic the exact body position and posture from the pose reference image.` : 'POSE: Natural fashion model pose.'}
       ${bgItem ? `SETTING: The person is standing at ${bgItem.name}.` : 'SETTING: In a professional minimal studio.'}
       Cinematic lighting, sharp focus on fabric textures, 8k resolution, photorealistic quality.`;
 
-      const result = await generateDemoImage({
-        prompt: finalPrompt,
-        images: inputImages,
-        model: 'gemini-2.5-flash-image',
-        apiKey: state.usagePreference === 'key' ? personalKey : undefined
-      });
+      const payload: ImageJobRequest = {
+        type: "text_to_image",
+        input: { prompt: finalPrompt, images: inputImages },
+        config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+        enginePayload: { prompt: finalPrompt, privacy: "PRIVATE", projectId: "default" }
+      };
 
-      if (result) {
-        setState(prev => {
-          const newHistory = [...prev.history, result];
-          return { 
-            ...prev, 
-            isGenerating: false, 
-            hasResult: true, 
-            history: newHistory,
-            activeHistoryIndex: newHistory.length - 1,
-            selectedOutfit: null,
-            selectedBottom: null,
-            selectedOuterwear: null,
-            selectedTops: null,
-            selectedSets: null,
-            selectedSocks: null,
-            selectedShoes: null,
-            selectedAccessories: null,
-            selectedBg: null,
-            selectedPose: null,
-          };
-        });
-      } else {
-        throw new Error("Failed to generate image");
-      }
+      const apiRes = await imagesApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'image',
+        onDone: (result) => {
+          const imageUrl = result.images?.[0] ?? '';
+          if (imageUrl) {
+            setState(prev => {
+              const newHistory = [...prev.history, imageUrl];
+              return {
+                ...prev,
+                isGenerating: false,
+                hasResult: true,
+                history: newHistory,
+                activeHistoryIndex: newHistory.length - 1,
+                selectedOutfit: null,
+                selectedBottom: null,
+                selectedOuterwear: null,
+                selectedTops: null,
+                selectedSets: null,
+                selectedSocks: null,
+                selectedShoes: null,
+                selectedAccessories: null,
+                selectedBg: null,
+                selectedPose: null,
+              };
+            });
+          } else {
+            setState(prev => ({ ...prev, isGenerating: false }));
+          }
+        },
+        onError: () => {
+          console.error("AI Styling Error");
+          setState(prev => ({ ...prev, isGenerating: false }));
+        }
+      });
     } catch (error) {
       console.error("AI Styling Error:", error);
       setState(prev => ({ ...prev, isGenerating: false }));
@@ -266,7 +283,7 @@ export const useAIStylist = () => {
     setState(prev => {
       const currentCategoryItems = prev.userItems[category] || [];
       const newItem = { id: `custom-${Date.now()}`, url, name };
-      
+
       const nextState = {
         ...prev,
         userItems: {
@@ -276,11 +293,11 @@ export const useAIStylist = () => {
       };
 
       (nextState as any)[category] = newItem.id;
-      
+
       if (category !== 'selectedOutfit') {
         nextState.selectedOutfit = null;
       }
-      
+
       return nextState;
     });
   };
@@ -307,15 +324,15 @@ export const useAIStylist = () => {
   };
 
   const setGender = (gender: Gender) => setState(prev => ({ ...prev, gender }));
-  
+
   const setSelectedItem = (key: string, id: string | null) => {
     setState(prev => {
       const nextState = { ...prev, [key]: id };
-      
+
       if (key !== 'selectedOutfit' && id !== null) {
         nextState.selectedOutfit = null;
       }
-      
+
       if (key === 'selectedOutfit' && id !== null) {
         nextState.selectedBottom = null;
         nextState.selectedOuterwear = null;
@@ -325,7 +342,7 @@ export const useAIStylist = () => {
         nextState.selectedShoes = null;
         nextState.selectedAccessories = null;
       }
-      
+
       return nextState;
     });
   };
@@ -341,16 +358,16 @@ export const useAIStylist = () => {
   const setIsTemplateModalOpen = (val: boolean) => setState(prev => ({ ...prev, isTemplateModalOpen: val }));
   const setSelectedBg = (id: string | null) => setState(prev => ({ ...prev, selectedBg: id }));
   const setSelectedPose = (id: string | null) => setState(prev => ({ ...prev, selectedPose: id }));
-  
+
   const setUsagePreference = (pref: 'credits' | 'key') => {
     localStorage.setItem('skyverses_usage_preference', pref);
     setState(prev => ({ ...prev, usagePreference: pref }));
   };
 
-  const setActiveHistoryIndex = (index: number | null) => setState(prev => ({ 
-    ...prev, 
+  const setActiveHistoryIndex = (index: number | null) => setState(prev => ({
+    ...prev,
     activeHistoryIndex: index,
-    hasResult: index !== null 
+    hasResult: index !== null
   }));
   const setHasResult = (val: boolean) => setState(prev => ({ ...prev, hasResult: val }));
 

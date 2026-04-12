@@ -1,15 +1,19 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Film, Clapperboard, MonitorPlay, Bot, BrainCircuit, 
-  Target, Sparkles, Play, Trash2, Activity, Terminal, 
-  Layers, Cpu, ShieldCheck, Download, CheckCircle2, 
-  Sliders, LayoutGrid, Eye, CornerDownRight, Zap, 
+import {
+  Film, Clapperboard, MonitorPlay, Bot, BrainCircuit,
+  Target, Sparkles, Play, Trash2, Activity, Terminal,
+  Layers, Cpu, ShieldCheck, Download, CheckCircle2,
+  Sliders, LayoutGrid, Eye, CornerDownRight, Zap,
   Loader2, User, Camera, Music, Move, ChevronRight,
-  ArrowRight, Video, AlertCircle, RefreshCw, Share2, Lock, ExternalLink
+  ArrowRight, Video, AlertCircle, RefreshCw, Share2
 } from 'lucide-react';
-import { generateDemoVideo, generateDemoImage } from '../services/geminiMedia';
 import { aiTextViaProxy } from '../apis/aiCommon';
+import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
+
 type PipelineStage = 'FOUNDATION' | 'ANIMATION_PLAN' | 'CHAR_MOTION' | 'CUTSCENE_PLAN' | 'SCENE_GEN' | 'FINAL_CUT';
 
 interface StageData {
@@ -21,34 +25,17 @@ interface StageData {
 }
 
 const CinematicPipelineInterface = () => {
+  const { isAuthenticated, login, useCredits } = useAuth();
   const [activeStage, setActiveStage] = useState<PipelineStage>('FOUNDATION');
   const [isBusy, setIsBusy] = useState(false);
   const [logs, setLogs] = useState<{t: string; msg: string; type: string}[]>([]);
   const [data, setData] = useState<StageData>({});
-  const [needsKey, setNeedsKey] = useState(false);
-  
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [logs]);
-
-  useEffect(() => {
-    const checkKey = async () => {
-      if ((window as any).aistudio) {
-        const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-        if (!process.env.API_KEY && !hasKey) setNeedsKey(true);
-      }
-    };
-    checkKey();
-  }, []);
-
-  const handleSelectKey = async () => {
-    if ((window as any).aistudio) {
-      await (window as any).aistudio.openSelectKey();
-      setNeedsKey(false);
-    }
-  };
 
   const addLog = (type: string, msg: string) => {
     setLogs(prev => [...prev, { t: new Date().toLocaleTimeString(), msg, type }]);
@@ -61,14 +48,44 @@ const CinematicPipelineInterface = () => {
   };
 
   const runFoundation = async () => {
+    if (!isAuthenticated) { login(); return; }
     setIsBusy(true);
     addLog('THINK', 'Analyzing character identity anchors...');
-    const res = await generateDemoImage('Portrait of a cybernetic warrior princess, ornate gold armor, glowing neon blue highlights, cinematic lighting, 8k resolution, character sheet style.');
-    if (res) {
-      setData(prev => ({ ...prev, characterProfile: { name: 'AETHERA_V1', role: 'Royal Vanguard', visualUrl: res } }));
-      addLog('DONE', 'Identity matrix locked. Profile: AETHERA_V1.');
+    try {
+      const imgPrompt = 'Portrait of a cybernetic warrior princess, ornate gold armor, glowing neon blue highlights, cinematic lighting, 8k resolution, character sheet style.';
+      const payload: ImageJobRequest = {
+        type: "text_to_image",
+        input: { prompt: imgPrompt },
+        config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+        enginePayload: { prompt: imgPrompt, privacy: "PRIVATE", projectId: "default" }
+      };
+      const apiRes = await imagesApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'image',
+        onDone: (result) => {
+          const imageUrl = result.images?.[0] ?? '';
+          if (imageUrl) {
+            setData(prev => ({ ...prev, characterProfile: { name: 'AETHERA_V1', role: 'Royal Vanguard', visualUrl: imageUrl } }));
+            addLog('DONE', 'Identity matrix locked. Profile: AETHERA_V1.');
+            useCredits(1);
+          }
+          setIsBusy(false);
+        },
+        onError: () => {
+          console.error("Foundation Render Failed");
+          setIsBusy(false);
+        }
+      });
+    } catch (err) {
+      console.error("Foundation Render Failed:", err);
+      setIsBusy(false);
     }
-    setIsBusy(false);
   };
 
   const runAnimPlan = async () => {
@@ -82,25 +99,43 @@ const CinematicPipelineInterface = () => {
   };
 
   const runCharMotion = async () => {
+    if (!isAuthenticated) { login(); return; }
     setIsBusy(true);
     addLog('SYNTH', 'Orchestrating image-to-motion nodes for profile AETHERA_V1...');
     try {
-      const url = await generateDemoVideo({
-        prompt: 'A cinematic motion of a cybernetic warrior princess in gold armor, breathing, glowing neon lights, slow camera zoom, 4k high quality.',
-        references: data.characterProfile?.visualUrl ? [data.characterProfile.visualUrl] : undefined
+      const promptText = 'A cinematic motion of a cybernetic warrior princess in gold armor, breathing, glowing neon lights, slow camera zoom, 4k high quality.';
+      const hasRef = !!data.characterProfile?.visualUrl;
+      const payload: VideoJobRequest = {
+        type: hasRef ? "image-to-video" : "text-to-video",
+        input: hasRef ? { images: [data.characterProfile!.visualUrl] } : {},
+        config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt: promptText, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
+      };
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (result) => {
+          const videoUrl = result.videoUrl ?? '';
+          if (videoUrl) {
+            setData(prev => ({ ...prev, motionAssets: [{ id: 'm1', url: videoUrl, label: 'IDLE_BREATH_V1' }] }));
+            addLog('DONE', 'Primary motion asset synthesized.');
+            useCredits(100);
+          }
+          setIsBusy(false);
+        },
+        onError: () => {
+          console.error("Motion Synthesis Failed");
+          setIsBusy(false);
+        }
       });
-      if (url) {
-        setData(prev => ({ ...prev, motionAssets: [{ id: 'm1', url, label: 'IDLE_BREATH_V1' }] }));
-        addLog('DONE', 'Primary motion asset synthesized.');
-      }
-    } catch (err: any) {
-      console.error("Synthesis Error:", err);
-      const errorStr = typeof err === 'string' ? err : JSON.stringify(err);
-      if (errorStr.includes('Requested entity was not found') || errorStr.includes('404')) {
-        setNeedsKey(true);
-        handleSelectKey();
-      }
-    } finally {
+    } catch (err) {
+      console.error("Motion Synthesis Failed:", err);
       setIsBusy(false);
     }
   };
@@ -116,32 +151,50 @@ const CinematicPipelineInterface = () => {
   };
 
   const runSceneGen = async () => {
+    if (!isAuthenticated) { login(); return; }
     setIsBusy(true);
     addLog('SYNTH', 'Rendering final scenes with character identity locking...');
     try {
-      const url = await generateDemoVideo({
-        prompt: 'Cinematic trailer shot: cybernetic warrior walking through ancient desert ruins, sand storm, volumetric sun rays, high fidelity cinematography.',
-        references: data.characterProfile?.visualUrl ? [data.characterProfile.visualUrl] : undefined
+      const promptText = 'Cinematic trailer shot: cybernetic warrior walking through ancient desert ruins, sand storm, volumetric sun rays, high fidelity cinematography.';
+      const hasRef = !!data.characterProfile?.visualUrl;
+      const payload: VideoJobRequest = {
+        type: hasRef ? "image-to-video" : "text-to-video",
+        input: hasRef ? { images: [data.characterProfile!.visualUrl] } : {},
+        config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt: promptText, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
+      };
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (result) => {
+          const videoUrl = result.videoUrl ?? '';
+          if (videoUrl) {
+            setData(prev => ({ ...prev, finalScenes: [{ id: 's1', url: videoUrl, label: 'SCENE_01_RUINS' }] }));
+            addLog('DONE', 'Final scene rendering successful.');
+            useCredits(100);
+          }
+          setIsBusy(false);
+        },
+        onError: () => {
+          console.error("Scene Rendering Failed");
+          setIsBusy(false);
+        }
       });
-      if (url) {
-        setData(prev => ({ ...prev, finalScenes: [{ id: 's1', url, label: 'SCENE_01_RUINS' }] }));
-        addLog('DONE', 'Final scene rendering successful.');
-      }
-    } catch (err: any) {
-      console.error("Rendering Error:", err);
-      const errorStr = typeof err === 'string' ? err : JSON.stringify(err);
-      if (errorStr.includes('Requested entity was not found') || errorStr.includes('404')) {
-        setNeedsKey(true);
-        handleSelectKey();
-      }
-    } finally {
+    } catch (err) {
+      console.error("Scene Rendering Failed:", err);
       setIsBusy(false);
     }
   };
 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#020203] overflow-hidden text-black dark:text-white font-mono">
-      
+
       <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[#080808] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar">
          <div className="p-8 border-b border-black/10 dark:border-white/5">
             <h3 className="text-[10px] font-black uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
@@ -157,7 +210,7 @@ const CinematicPipelineInterface = () => {
               { id: 'SCENE_GEN', icon: <Video size={14} />, label: 'Final_Render' },
               { id: 'FINAL_CUT', icon: <Clapperboard size={14} />, label: 'Assembly' }
             ].map((step, idx) => (
-              <button 
+              <button
                 key={step.id}
                 onClick={() => !isBusy && setActiveStage(step.id as PipelineStage)}
                 className={`w-full flex items-center gap-4 p-4 border transition-all rounded-sm group ${activeStage === step.id ? 'bg-brand-blue border-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/5 text-gray-400 hover:border-brand-blue/30'}`}
@@ -186,7 +239,7 @@ const CinematicPipelineInterface = () => {
 
       <div className="flex-grow flex flex-col bg-white dark:bg-[#020202] relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #0090ff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-        
+
         <div className="flex-grow overflow-y-auto p-8 lg:p-12 relative z-10 no-scrollbar">
            <div className="max-w-4xl mx-auto space-y-12 pb-40">
               <div className="flex justify-between items-center border-b border-black/10 dark:border-white/5 pb-8">
@@ -364,7 +417,7 @@ const CinematicPipelineInterface = () => {
            </div>
 
            <div className="flex items-center gap-6 w-full lg:w-auto">
-              <button 
+              <button
                 onClick={() => {setData({}); setActiveStage('FOUNDATION'); setLogs([])}}
                 className="p-5 border border-black/10 dark:border-white/10 text-gray-400 hover:text-red-500 transition-all active:scale-95 disabled:opacity-20"
               >
@@ -413,26 +466,6 @@ const CinematicPipelineInterface = () => {
             )}
          </div>
       </div>
-
-      {needsKey && (
-        <div className="absolute inset-0 z-[100] bg-black/95 flex items-center justify-center p-8 text-center">
-          <div className="max-w-md space-y-8 animate-in fade-in zoom-in duration-500">
-            <div className="w-20 h-20 border border-brand-blue mx-auto flex items-center justify-center">
-              <Lock className="w-8 h-8 text-brand-blue animate-pulse" />
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-2xl font-black uppercase tracking-tighter text-white">Auth Required</h3>
-              <p className="text-[10px] text-gray-500 leading-relaxed uppercase tracking-widest font-bold">
-                Cinematic synthesis requires an authorized production API key.
-              </p>
-              <div className="pt-6 flex flex-col gap-4">
-                <button onClick={handleSelectKey} className="btn-sky-primary py-4 px-10 text-[10px] tracking-widest uppercase">Select Production Key</button>
-                <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="text-[9px] text-gray-600 hover:text-brand-blue flex items-center justify-center gap-2 font-black uppercase">Billing Architecture <ExternalLink className="w-3 h-3" /></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,14 +1,14 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Zap, Loader2, Play, Film, 
-  Terminal, Download, 
-  LayoutGrid, Plus, 
-  ArrowRight, Square, CheckCircle2, 
-  AlertTriangle, Layers, AlignLeft, 
+import {
+  X, Zap, Loader2, Play, Film,
+  Terminal, Download,
+  LayoutGrid, Plus,
+  ArrowRight, Square, CheckCircle2,
+  AlertTriangle, Layers, AlignLeft,
   Sparkles, Camera, MonitorPlay,
-  Lock, ExternalLink, Activity, Share2, 
+  Activity, Share2,
   Clapperboard, Sliders, Settings2, BookOpen,
   ChevronRight, MoreVertical, Menu, LogOut,
   Upload, MousePointer2, Move, RotateCcw,
@@ -20,8 +20,10 @@ import {
   Target, ZoomIn, Eye,
   History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 const SHOT_TYPES = [
   { id: 'wide', name: 'Wide Shot', icon: <Maximize2 size={14}/> },
@@ -54,7 +56,8 @@ interface SceneTake {
 
 const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { t } = useLanguage();
-  
+  const { isAuthenticated, login, useCredits } = useAuth();
+
   // Configuration
   const [directive, setDirective] = useState('');
   const [activeShot, setActiveShot] = useState(SHOT_TYPES[0]);
@@ -67,20 +70,9 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
   // Multi-Take Management
   const [takes, setTakes] = useState<SceneTake[]>([]);
   const [activeTakeId, setActiveTakeId] = useState<string | null>(null);
-  const [needsKey, setNeedsKey] = useState(false);
   const [logs, setLogs] = useState<string[]>([t('studio.ready'), 'Awaiting directives...']);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const checkKey = async () => {
-      if ((window as any).aistudio) {
-        const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-        setNeedsKey(!hasKey);
-      }
-    };
-    checkKey();
-  }, []);
 
   const addLog = (msg: string) => setLogs(prev => [...prev.slice(-5), `> ${msg}`]);
 
@@ -98,6 +90,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
   const handleSynthesize = async () => {
     if (!directive.trim() && !refImage) return;
+    if (!isAuthenticated) { login(); return; }
 
     const takeId = Date.now().toString();
     const newTake: SceneTake = {
@@ -119,23 +112,50 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
     try {
       const fullPrompt = `Cinematic ${activeShot.name}. Lighting: ${activeLighting.name}. Atmospheric fog: ${fogDensity}%. Motion intensity: ${motionIntensity}. Time-scale: ${timeScale}x. Directive: ${directive}. Ultra high fidelity.`;
-      
-      const url = await generateDemoVideo({ 
-        prompt: fullPrompt, 
-        references: refImage ? [refImage] : undefined,
-        resolution: '1080p',
-        aspectRatio: '16:9',
-        isUltra: true
+
+      const payload: VideoJobRequest = refImage
+        ? {
+            type: "image-to-video",
+            input: { images: [refImage] },
+            config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
+            engine: { provider: "google" as any, model: "veo_3_fast" as any },
+            enginePayload: { prompt: fullPrompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
+          }
+        : {
+            type: "text-to-video",
+            input: {},
+            config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
+            engine: { provider: "google" as any, model: "veo_3_fast" as any },
+            enginePayload: { prompt: fullPrompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
+          };
+
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (result) => {
+          const url = result.videoUrl ?? '';
+          if (url) {
+            setTakes(prev => prev.map(t => t.id === takeId ? { ...t, status: 'completed', url } : t));
+            addLog(`Take #${takeId.slice(-4)} finalized.`);
+            useCredits(100);
+          } else {
+            setTakes(prev => prev.map(t => t.id === takeId ? { ...t, status: 'error' } : t));
+            addLog(`Take #${takeId.slice(-4)} returned no output.`);
+          }
+        },
+        onError: () => {
+          setTakes(prev => prev.map(t => t.id === takeId ? { ...t, status: 'error' } : t));
+          addLog(`Critical Failure in Take #${takeId.slice(-4)}.`);
+        }
       });
-      
-      if (url) {
-        setTakes(prev => prev.map(t => t.id === takeId ? { ...t, status: 'completed', url: url } : t));
-        addLog(`Take #${takeId.slice(-4)} finalized.`);
-      }
     } catch (err: any) {
       setTakes(prev => prev.map(t => t.id === takeId ? { ...t, status: 'error' } : t));
       addLog(`Critical Failure in Take #${takeId.slice(-4)}.`);
-      if (err?.message?.includes("Requested entity was not found")) setNeedsKey(true);
     }
   };
 
@@ -144,7 +164,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#050505] text-black dark:text-white font-sans overflow-hidden relative selection:bg-yellow-500/30 transition-colors">
-      
+
       {/* 1. ARCHITECT TERMINAL (LEFT) */}
       <aside className="w-full lg:w-[420px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[#fcfcfd] dark:bg-[#080808] z-[100] shadow-2xl overflow-hidden">
          <div className="p-8 space-y-10 overflow-y-auto no-scrollbar flex-grow">
@@ -168,7 +188,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em] flex items-center gap-3">
                   <Wand2 size={14} className="text-yellow-500" /> Narrative Intent
                </label>
-               <textarea 
+               <textarea
                  value={directive}
                  onChange={(e) => setDirective(e.target.value)}
                  className="w-full h-32 bg-black/[0.03] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-4 text-[13px] font-bold uppercase tracking-tight outline-none focus:border-yellow-500 transition-all resize-none italic"
@@ -181,8 +201,8 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em]">Cinematography</label>
                <div className="grid grid-cols-2 gap-2">
                   {SHOT_TYPES.map(shot => (
-                    <button 
-                      key={shot.id} 
+                    <button
+                      key={shot.id}
                       onClick={() => setActiveShot(shot)}
                       className={`flex items-center gap-3 p-3 border text-[10px] font-black uppercase transition-all rounded-sm ${activeShot.id === shot.id ? 'border-yellow-500 bg-yellow-500/5 text-yellow-600' : 'border-black/5 dark:border-white/5 text-gray-400'}`}
                     >
@@ -196,15 +216,15 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
             <section className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
                <div className="space-y-4">
                   <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em]">Atmospheric Logic</label>
-                  <select 
-                    value={activeLighting.id} 
+                  <select
+                    value={activeLighting.id}
                     onChange={(e) => setActiveLighting(LIGHTING_MODES.find(l => l.id === e.target.value)!)}
                     className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 text-[11px] font-black uppercase outline-none focus:border-yellow-500"
                   >
                      {LIGHTING_MODES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                   </select>
                </div>
-               
+
                <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-3">
                      <div className="flex justify-between text-[9px] font-black uppercase text-gray-400">
@@ -243,7 +263,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
       {/* 2. PRODUCTION HUB (CENTER) */}
       <main className="flex-grow flex flex-col bg-[#f0f1f3] dark:bg-[#010102] relative overflow-hidden">
-         
+
          <div className="absolute top-8 left-8 right-8 flex justify-between items-start z-50 pointer-events-none">
             <div className="px-5 py-2.5 bg-white/60 dark:bg-black/60 backdrop-blur-xl border border-black/10 dark:border-white/10 flex items-center gap-3 pointer-events-auto">
                <div className={`w-2 h-2 rounded-full ${processingCount > 0 ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'}`}></div>
@@ -254,7 +274,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
          <div className="flex-grow flex items-center justify-center p-8 lg:p-16 relative">
             <AnimatePresence mode="wait">
                {activeTake ? (
-                  <motion.div 
+                  <motion.div
                     key={activeTake.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
                     className="relative w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-[0_60px_150px_rgba(0,0,0,0.5)] border border-white/5 group"
                   >
@@ -276,7 +296,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                            <AlertCircle size={60} strokeWidth={1} />
                         </div>
                      )}
-                     
+
                      {activeTake.status === 'completed' && (
                         <>
                            <div className="absolute bottom-8 left-8 space-y-4 pointer-events-none">
@@ -317,7 +337,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                   </div>
                   <div className="flex gap-4">
                      {takes.slice(0, 5).map(t => (
-                        <button 
+                        <button
                            key={t.id} onClick={() => setActiveTakeId(t.id)}
                            className={`w-16 h-10 border-2 transition-all overflow-hidden rounded-sm relative group/take ${activeTakeId === t.id ? 'border-yellow-500 scale-105 shadow-lg' : 'border-white/5 opacity-30 hover:opacity-100'}`}
                         >
@@ -331,14 +351,14 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
             <div className="flex gap-4">
                {activeTake && activeTake.status === 'completed' && (
-                  <button 
+                  <button
                     className="h-24 px-12 border border-yellow-500 text-yellow-600 dark:text-yellow-500 flex flex-col items-center justify-center gap-2 hover:bg-yellow-500 hover:text-black transition-all rounded-sm italic group shadow-xl"
                   >
                      <FastForward size={28} className="group-hover:translate-x-2 transition-transform" />
                      <span className="text-[9px] font-black uppercase tracking-widest">Extend +7s</span>
                   </button>
                )}
-               <button 
+               <button
                  onClick={handleSynthesize}
                  disabled={(!directive.trim() && !refImage) || processingCount > 0}
                  className={`group h-24 px-24 lg:px-48 flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden rounded-sm shadow-[0_20px_80px_rgba(234,179,8,0.2)] ${directive.trim() || refImage ? 'bg-yellow-500 text-black hover:scale-105 active:scale-95' : 'bg-black/5 dark:bg-white/5 text-gray-400'}`}
@@ -350,32 +370,6 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
             </div>
          </div>
       </main>
-
-      {/* AUTH OVERLAY */}
-      {needsKey && (
-        <div className="absolute inset-0 z-[1000] bg-white/95 dark:bg-black/98 backdrop-blur-3xl flex items-center justify-center p-12 text-center">
-          <div className="max-w-md space-y-12 animate-in zoom-in duration-500">
-            <div className="w-20 h-20 border-2 border-yellow-500 mx-auto flex items-center justify-center shadow-[0_0_40px_rgba(234,179,8,0.3)]">
-              <Lock className="w-8 h-8 text-yellow-600 dark:text-yellow-500 animate-pulse" />
-            </div>
-            <div className="space-y-6">
-              <h3 className="text-3xl font-black uppercase tracking-tighter italic leading-none">Security_Protocol_Active</h3>
-              <p className="text-[12px] text-gray-600 dark:text-gray-400 uppercase tracking-widest font-bold leading-loose">
-                Quyền truy cập Scene Architect Ultra yêu cầu xác thực API Key từ dự án **PAID** GCP để khởi chạy H100 Cinematic Node.
-              </p>
-              <div className="pt-8 flex flex-col gap-6 items-center">
-                <button 
-                  onClick={() => { if ((window as any).aistudio) (window as any).aistudio.openSelectKey(); setNeedsKey(false); }}
-                  className="py-6 px-20 bg-yellow-500 text-black text-[12px] tracking-[0.4em] font-black uppercase shadow-2xl w-full rounded-sm hover:scale-105 transition-all"
-                >
-                  Xác thực H100 Pipeline
-                </button>
-                <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="text-[10px] text-gray-500 hover:text-yellow-500 transition-colors uppercase font-black tracking-widest italic border-b border-transparent hover:border-yellow-500">GCP Billing Documentation <ExternalLink className="w-3 h-3 inline ml-1" /></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }

@@ -1,19 +1,21 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Zap, Download, Share2, Loader2, Play, 
-  Film, Newspaper, Globe, Music, Volume2, 
-  ChevronDown, HelpCircle, CheckCircle2, 
+import {
+  X, Zap, Download, Share2, Loader2, Play,
+  Film, Newspaper, Globe, Music, Volume2,
+  ChevronDown, HelpCircle, CheckCircle2,
   Plus, Upload, Search, RefreshCw, Sparkles,
   MoreVertical, Info, AlertTriangle, MonitorPlay
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 // Move components outside to avoid re-creation on every render and fix TS children errors
 // Added React.FC to ensure children are correctly handled by TypeScript
 const Toggle: React.FC<{ active: boolean, onChange: () => void }> = ({ active, onChange }) => (
-  <button 
+  <button
     onClick={onChange}
     className={`w-10 h-5 rounded-full relative transition-colors duration-200 ${active ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-700'}`}
   >
@@ -31,7 +33,8 @@ const Card: React.FC<{ children: React.ReactNode, className?: string }> = ({ chi
 
 const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { t } = useLanguage();
-  
+  const { isAuthenticated, login, useCredits } = useAuth();
+
   // States
   const [url, setUrl] = useState('');
   const [mediaType, setMediaType] = useState('Scraped + Stock');
@@ -51,14 +54,39 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
   const handleGenerate = async () => {
     if (!url.trim() && !instructions.trim()) return;
+    if (!isAuthenticated) { login(); return; }
     setIsGenerating(true);
+
     try {
       const prompt = `Article to Video. URL: ${url}. Handling: ${contentHandling}. Duration: ${duration}s. Instructions: ${instructions}. Voice: ${voice}. Music: ${music}.`;
-      const video = await generateDemoVideo({ prompt, isUltra: true });
-      if (video) setResultVideo(video);
+      const payload: VideoJobRequest = {
+        type: "text-to-video",
+        input: {},
+        config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
+      };
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (result) => {
+          const videoUrl = result.videoUrl ?? '';
+          if (videoUrl) setResultVideo(videoUrl);
+          useCredits(100);
+          setIsGenerating(false);
+        },
+        onError: () => {
+          console.error('ArticleToVideo generation error');
+          setIsGenerating(false);
+        }
+      });
     } catch (error) {
       console.error(error);
-    } finally {
       setIsGenerating(false);
     }
   };
@@ -80,7 +108,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
       <div className="flex-grow overflow-y-auto no-scrollbar pb-20">
         <div className="max-w-4xl mx-auto p-6 space-y-6">
-          
+
           {/* Section 1: Intro */}
           <Card>
             <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 mb-2">
@@ -99,8 +127,8 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
               <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">{t('av.url_link')}</button>
             </div>
             <div className="relative">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://www.skyverses.com/#how-it-works"
@@ -115,7 +143,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
           {/* Section 3: Customize Options */}
           <Card className="space-y-8">
             <h3 className="font-bold text-slate-700 dark:text-slate-200 border-b border-gray-100 dark:border-white/5 pb-4">{t('av.customize')}</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
@@ -123,8 +151,8 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                    <HelpCircle size={14} className="text-gray-400" />
                 </div>
                 <div className="relative">
-                  <select 
-                    value={mediaType} 
+                  <select
+                    value={mediaType}
                     onChange={e => setMediaType(e.target.value)}
                     className="w-full appearance-none bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                   >
@@ -139,8 +167,8 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-600 dark:text-slate-400">{t('av.handle_content')}</label>
                 <div className="relative">
-                  <select 
-                    value={contentHandling} 
+                  <select
+                    value={contentHandling}
                     onChange={e => setContentHandling(e.target.value)}
                     className="w-full appearance-none bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                   >
@@ -159,7 +187,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                  <div className="bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 px-3 py-1 rounded text-xs font-bold">{duration}s</div>
               </div>
               <div className="space-y-2">
-                <input 
+                <input
                   type="range" min="10" max="600" value={duration}
                   onChange={(e) => setDuration(parseInt(e.target.value))}
                   className="w-full h-1.5 bg-gray-200 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-600"
@@ -174,7 +202,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-600 dark:text-slate-400">{t('av.instructions')}</label>
-              <textarea 
+              <textarea
                 value={instructions}
                 onChange={(e) => setInstructions(e.target.value)}
                 placeholder="explain this article like I'm a child..."
@@ -188,8 +216,8 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
           <Card className="space-y-6">
             <h3 className="font-bold text-slate-700 dark:text-slate-200">{t('av.import_media')}</h3>
             <div className="flex gap-3">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={importUrl}
                 onChange={e => setImportUrl(e.target.value)}
                 placeholder="https://www.revid.ai"
@@ -243,8 +271,8 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                  <span className="text-sm font-bold text-slate-500">{t('av.library')}</span>
                  <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-lg">
                     {['All', 'Videos', 'Images', 'Audio'].map(tab => (
-                      <button 
-                        key={tab} 
+                      <button
+                        key={tab}
                         onClick={() => setActiveMediaTab(tab)}
                         className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeMediaTab === tab ? 'bg-white dark:bg-black shadow-sm text-slate-900 dark:text-white' : 'text-gray-500'}`}
                       >
@@ -289,7 +317,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
           {/* Action Footer */}
           <div className="space-y-4 pt-4">
-            <button 
+            <button
               onClick={handleGenerate}
               disabled={isGenerating}
               className="w-full bg-slate-900 dark:bg-white dark:text-black text-white py-5 rounded-xl text-sm font-bold flex items-center justify-center gap-3 shadow-lg hover:scale-[1.005] active:scale-[0.99] transition-all disabled:opacity-50"
@@ -310,7 +338,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
       {/* Video Preview Overlay */}
       <AnimatePresence>
         {resultVideo && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center p-6 backdrop-blur-md"
           >

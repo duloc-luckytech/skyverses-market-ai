@@ -1,13 +1,15 @@
 
 import React, { useState, useRef } from 'react';
-import { 
-  UserCheck, Dna, Fingerprint, Lock, 
-  Settings2, Download, Loader2, Zap, 
-  Terminal, History as HistoryIcon, Plus, Upload, 
+import {
+  UserCheck, Dna, Fingerprint, Lock,
+  Settings2, Download, Loader2, Zap,
+  Terminal, History as HistoryIcon, Plus, Upload,
   Image as ImageIcon, User, Sliders,
   CheckCircle2, Info, Camera, Palette
 } from 'lucide-react';
-import { generateDemoImage } from '../services/geminiMedia';
+import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 interface Version {
   url: string;
@@ -16,6 +18,7 @@ interface Version {
 }
 
 const IdentityDemoInterface = () => {
+  const { isAuthenticated, login, useCredits } = useAuth();
   const [charName, setCharName] = useState('NOVA_CORE_01');
   const [charDescription, setCharDescription] = useState('Pale skin, cybernetic blue eyes, sharp jawline, short silver pixie hair.');
   const [locks, setLocks] = useState({ face: true, proportions: true, skin: true });
@@ -32,24 +35,48 @@ const IdentityDemoInterface = () => {
 
   const handleSynthesis = async () => {
     if (!scenePrompt.trim() || isGenerating) return;
+    if (!isAuthenticated) { login(); return; }
     setIsGenerating(true);
 
     try {
       const identityAnchor = `Character name: ${charName}. Physical appearance: ${charDescription}. Must maintain strict facial geometry.`;
       const finalPrompt = `[IDENTITY_LOCK: ${locks.face ? 'HIGH' : 'OFF'}] ${identityAnchor} Scene: ${scenePrompt}. Wearing: ${outfit}. Style: ${style}. Camera: ${camera}. Ultra high resolution, consistent character details.`;
-      
-      const result = await generateDemoImage(finalPrompt);
-      if (result) {
-        setActiveImage(result);
-        setVersions(prev => [{
-          url: result,
-          timestamp: new Date().toLocaleTimeString(),
-          metadata: `${outfit} // ${style}`
-        }, ...prev]);
-      }
+
+      const payload: ImageJobRequest = {
+        type: "text_to_image",
+        input: { prompt: finalPrompt },
+        config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+        enginePayload: { prompt: finalPrompt, privacy: "PRIVATE", projectId: "default" }
+      };
+      const apiRes = await imagesApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'image',
+        onDone: (result) => {
+          const imageUrl = result.images?.[0] ?? '';
+          if (imageUrl) {
+            setActiveImage(imageUrl);
+            setVersions(prev => [{
+              url: imageUrl,
+              timestamp: new Date().toLocaleTimeString(),
+              metadata: `${outfit} // ${style}`
+            }, ...prev]);
+            useCredits(1);
+          }
+          setIsGenerating(false);
+        },
+        onError: () => {
+          console.error("Identity Synthesis Error");
+          setIsGenerating(false);
+        }
+      });
     } catch (err) {
       console.error("Identity Synthesis Error:", err);
-    } finally {
       setIsGenerating(false);
     }
   };
@@ -68,18 +95,18 @@ const IdentityDemoInterface = () => {
           <div className="p-4 bg-white dark:bg-white/[0.02] border border-black/5 dark:border-white/5 space-y-4 shadow-sm">
             <div className="space-y-1">
               <label className="text-[7px] font-black uppercase text-gray-400 dark:text-gray-700">Designation</label>
-              <input 
-                value={charName} 
-                onChange={(e) => setCharName(e.target.value.toUpperCase())} 
-                className="w-full bg-transparent border-b border-black/10 dark:border-white/10 text-brand-blue text-xs font-black uppercase outline-none focus:border-brand-blue pb-1" 
+              <input
+                value={charName}
+                onChange={(e) => setCharName(e.target.value.toUpperCase())}
+                className="w-full bg-transparent border-b border-black/10 dark:border-white/10 text-brand-blue text-xs font-black uppercase outline-none focus:border-brand-blue pb-1"
               />
             </div>
             <div className="space-y-1">
               <label className="text-[7px] font-black uppercase text-gray-400 dark:text-gray-700">Morphology</label>
-              <textarea 
-                value={charDescription} 
-                onChange={(e) => setCharDescription(e.target.value)} 
-                className="w-full h-16 bg-transparent border border-black/5 dark:border-white/5 p-2 text-[10px] font-medium text-gray-600 dark:text-gray-400 focus:outline-none resize-none italic" 
+              <textarea
+                value={charDescription}
+                onChange={(e) => setCharDescription(e.target.value)}
+                className="w-full h-16 bg-transparent border border-black/5 dark:border-white/5 p-2 text-[10px] font-medium text-gray-600 dark:text-gray-400 focus:outline-none resize-none italic"
               />
             </div>
           </div>
@@ -89,9 +116,9 @@ const IdentityDemoInterface = () => {
           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em]">Consistency_Matrix</label>
           <div className="space-y-1.5">
             {Object.entries(locks).map(([key, val]) => (
-              <button 
-                key={key} 
-                onClick={() => toggleLock(key as any)} 
+              <button
+                key={key}
+                onClick={() => toggleLock(key as any)}
                 className={`w-full p-3 border flex justify-between items-center transition-all ${val ? 'border-brand-blue/40 bg-brand-blue/5 text-brand-blue' : 'border-black/5 dark:border-white/5 text-gray-400 opacity-50'}`}
               >
                 <span className="text-[8px] font-black uppercase">{key}_Geometry</span>
@@ -123,7 +150,7 @@ const IdentityDemoInterface = () => {
           <div className="w-full max-w-2xl aspect-square relative z-10">
             <div className="w-full h-full bg-black border border-black/10 dark:border-white/10 relative overflow-hidden flex items-center justify-center group/view shadow-2xl">
               <img src={activeImage} className={`w-full h-full object-cover transition-all duration-[2s] ${isGenerating ? 'opacity-20 scale-105 blur-3xl' : 'opacity-100'}`} />
-              
+
               {isGenerating && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md z-20">
                    <Loader2 className="w-12 h-12 text-brand-blue animate-spin mb-4" />
@@ -141,16 +168,16 @@ const IdentityDemoInterface = () => {
         <div className="h-32 border-t border-black/10 dark:border-white/5 bg-white dark:bg-black p-4 flex gap-4 shrink-0 relative z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] dark:shadow-none">
           <div className="flex-grow flex flex-col gap-2">
             <label className="text-[8px] font-black uppercase text-gray-400 dark:text-gray-700 tracking-[0.3em] flex items-center gap-2"><Terminal size={12} className="text-brand-blue" /> Directive</label>
-            <textarea 
-              value={scenePrompt} 
-              onChange={(e) => setScenePrompt(e.target.value)} 
-              className="flex-grow bg-black/5 dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-3 text-[11px] font-black uppercase text-black dark:text-white focus:outline-none focus:border-brand-blue/30 resize-none tracking-tight" 
-              placeholder="Scene directive..." 
+            <textarea
+              value={scenePrompt}
+              onChange={(e) => setScenePrompt(e.target.value)}
+              className="flex-grow bg-black/5 dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-3 text-[11px] font-black uppercase text-black dark:text-white focus:outline-none focus:border-brand-blue/30 resize-none tracking-tight"
+              placeholder="Scene directive..."
             />
           </div>
-          <button 
-            onClick={handleSynthesis} 
-            disabled={isGenerating || !scenePrompt.trim()} 
+          <button
+            onClick={handleSynthesis}
+            disabled={isGenerating || !scenePrompt.trim()}
             className="w-32 bg-brand-blue text-white flex flex-col items-center justify-center gap-2 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all group shadow-2xl active:scale-[0.98] disabled:opacity-20"
           >
             <Zap size={20} className="fill-current group-hover:scale-110 transition-transform" />
@@ -167,17 +194,17 @@ const IdentityDemoInterface = () => {
           <div className="space-y-4">
             <div className="space-y-1">
               <span className="text-[7px] font-black uppercase text-gray-400 dark:text-gray-800 tracking-widest">Outfit</span>
-              <input 
-                value={outfit} 
-                onChange={(e) => setOutfit(e.target.value)} 
-                className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-2 text-[9px] font-bold uppercase text-black dark:text-white outline-none" 
+              <input
+                value={outfit}
+                onChange={(e) => setOutfit(e.target.value)}
+                className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-2 text-[9px] font-bold uppercase text-black dark:text-white outline-none"
               />
             </div>
             <div className="space-y-1">
               <span className="text-[7px] font-black uppercase text-gray-400 dark:text-gray-800 tracking-widest">Style</span>
-              <select 
-                value={style} 
-                onChange={(e) => setStyle(e.target.value)} 
+              <select
+                value={style}
+                onChange={(e) => setStyle(e.target.value)}
                 className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-2 text-[9px] font-black uppercase text-black dark:text-white outline-none"
               >
                 <option>Cinematic Photorealistic</option>

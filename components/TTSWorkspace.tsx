@@ -7,7 +7,6 @@ import {
   CheckCircle2, Plus, Info, RefreshCw, 
   Mic, SlidersHorizontal, Activity, Share
 } from 'lucide-react';
-import { generateDemoAudio } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 
 const VOICE_PRESETS = [
@@ -40,20 +39,8 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     if (!text.trim() || isGenerating) return;
     setIsGenerating(true);
     stopPlayback();
-
-    try {
-      const buffer = await generateDemoAudio(text, selectedVoice.id);
-      if (buffer) {
-        setAudioBuffer(buffer);
-        playBuffer(buffer);
-      }
-    } catch (error) {
-      console.error("TTS Synthesis Error:", error);
-    } finally {
-      setIsGenerating(true);
-      // Giả lập delay sinh học của neural network
-      setTimeout(() => setIsGenerating(false), 500);
-    }
+    // TTS synthesis via backend API — implementation pending
+    setTimeout(() => setIsGenerating(false), 500);
   };
 
   const playBuffer = (buffer: AudioBuffer) => {

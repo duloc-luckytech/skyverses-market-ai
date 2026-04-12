@@ -8,7 +8,7 @@ import {
   ArrowRight, Square, CheckCircle2, 
   AlertTriangle, Layers, AlignLeft, 
   Sparkles, Camera, MonitorPlay,
-  Lock, ExternalLink, Activity, Share2, 
+  Activity, Share2,
   Clapperboard, Sliders, Settings2, BookOpen,
   ChevronRight, MoreVertical, Menu, LogOut,
   Upload, MousePointer2, Move, RotateCcw,
@@ -18,8 +18,10 @@ import {
   Check, AlertCircle, Sun, CloudRain, Wind,
   Focus, Minimize2, Radio, Target, ZoomIn, Eye
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 interface Scene {
   id: string;
@@ -38,15 +40,15 @@ const MOTION_PRESETS = ['CINEMATIC TRACK', 'ZOOM IN', 'PAN RIGHT', 'STABLE STATI
 
 const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { lang, t } = useLanguage();
-  
+  const { credits, useCredits, isAuthenticated, login } = useAuth();
+
   // Studio Core States
   const [scenes, setScenes] = useState<Scene[]>([]);
   const [activeSceneId, setActiveSceneId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'STORY' | 'DIRECT' | 'HISTORY'>('STORY');
-  
+
   // UI States
   const [inputText, setInputText] = useState('');
-  const [needsKey, setNeedsKey] = useState(false);
   const [logs, setLogs] = useState<string[]>(['ARCHITECT STUDIO initialized.', 'Secure Node active.']);
 
   // Current Parameters
@@ -57,16 +59,6 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const checkKey = async () => {
-      if ((window as any).aistudio) {
-        const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-        setNeedsKey(!hasKey);
-      }
-    };
-    checkKey();
-  }, []);
-
-  useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [logs]);
 
@@ -75,10 +67,10 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const handleAddScene = () => {
     if (!inputText.trim()) return;
     const newId = Date.now().toString();
-    const newScene: Scene = { 
-      id: newId, 
-      url: null, 
-      status: 'idle', 
+    const newScene: Scene = {
+      id: newId,
+      url: null,
+      status: 'idle',
       text: inputText,
       meta: {
         shot: selectedShot,
@@ -95,30 +87,47 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const synthesizeScene = async (sceneId: string) => {
     const target = scenes.find(s => s.id === sceneId);
     if (!target || target.status === 'rendering') return;
+    if (!isAuthenticated) { login(); return; }
 
     setScenes(prev => prev.map(s => s.id === sceneId ? { ...s, status: 'rendering' } : s));
     addLog(`Synthesizing Industrial Take #${sceneId.slice(-4)}...`);
 
     try {
-      const idx = scenes.findIndex(s => s.id === sceneId);
-      const prevVideo = idx > 0 ? scenes[idx-1].url : undefined;
       const directive = `${target.text}. Shot: ${target.meta.shot}. Motion: ${target.meta.motion}. Intensity: ${intensity}. B2B Quality.`;
+      const payload: VideoJobRequest = {
+        type: 'text-to-video',
+        input: {},
+        config: { duration: 8, aspectRatio: '16:9', resolution: '720p' },
+        engine: { provider: 'google' as any, model: 'veo_3_fast' as any },
+        enginePayload: { prompt: directive, privacy: 'PRIVATE', translateToEn: true, projectId: 'default', mode: 'fast' }
+      };
 
-      const url = await generateDemoVideo({ 
-        prompt: directive, 
-        resolution: '1080p', 
-        aspectRatio: '16:9',
-        previousVideoUri: prevVideo || undefined,
-        isUltra: true
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (res) => {
+          const url = res.videoUrl ?? '';
+          if (url) {
+            setScenes(prev => prev.map(s => s.id === sceneId ? { ...s, status: 'done', url } : s));
+            useCredits(100);
+            addLog(`Synthesis complete. Take verified.`);
+          } else {
+            setScenes(prev => prev.map(s => s.id === sceneId ? { ...s, status: 'error' } : s));
+            addLog(`Critical Synthesis Failure.`);
+          }
+        },
+        onError: () => {
+          setScenes(prev => prev.map(s => s.id === sceneId ? { ...s, status: 'error' } : s));
+          addLog(`Critical Synthesis Failure.`);
+        }
       });
-      
-      if (url) {
-        setScenes(prev => prev.map(s => s.id === sceneId ? { ...s, status: 'done', url: url } : s));
-        addLog(`Synthesis complete. Take verified.`);
-      }
     } catch (err: any) {
       setScenes(prev => prev.map(s => s.id === sceneId ? { ...s, status: 'error' } : s));
-      if (err?.message?.includes("Requested entity was not found")) setNeedsKey(true);
       addLog(`Critical Synthesis Failure.`);
     }
   };
@@ -218,30 +227,6 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
          </div>
       </main>
 
-      {/* AUTH MODAL */}
-      {needsKey && (
-        <div className="absolute inset-0 z-[1000] bg-white/95 dark:bg-black/98 backdrop-blur-2xl flex items-center justify-center p-8 text-center transition-colors duration-500">
-          <div className="max-w-md space-y-12 animate-in zoom-in duration-500">
-            <div className="w-24 h-24 border-2 border-brand-blue mx-auto flex items-center justify-center shadow-2xl">
-              <Lock className="w-10 h-10 text-brand-blue animate-pulse" />
-            </div>
-            <div className="space-y-6">
-              <h3 className="text-3xl font-black uppercase tracking-tighter italic">Industrial Lock</h3>
-              <p className="text-[11px] lg:text-[12px] text-gray-500 dark:text-gray-400 leading-relaxed uppercase tracking-widest font-bold">
-                Professional narrative synthesis requires a **PAID** GCP Project API Key.
-              </p>
-              <div className="pt-8 flex flex-col gap-6 items-center">
-                <button 
-                  onClick={() => { if ((window as any).aistudio) (window as any).aistudio.openSelectKey(); setNeedsKey(false); }}
-                  className="py-5 lg:py-6 px-16 lg:px-20 bg-brand-blue text-white text-[11px] lg:text-[12px] tracking-[0.4em] font-black uppercase shadow-2xl w-full rounded-sm hover:scale-105 transition-all"
-                >
-                  Link Enterprise Key
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,20 +1,23 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Globe, Film, Clapperboard, MonitorPlay, Bot, BrainCircuit, 
-  Target, Sparkles, Play, Trash2, Activity, Terminal, 
-  Layers, Cpu, ShieldCheck, Download, CheckCircle2, 
-  Sliders, LayoutGrid, Eye, CornerDownRight, Zap, 
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Globe, Film, Clapperboard, MonitorPlay, Bot, BrainCircuit,
+  Target, Sparkles, Play, Trash2, Activity, Terminal,
+  Layers, Cpu, ShieldCheck, Download, CheckCircle2,
+  Sliders, LayoutGrid, Eye, CornerDownRight, Zap,
   Loader2, User, Camera, Music, Move, ChevronRight,
-  ArrowRight, Video, AlertCircle, RefreshCw, Share2, 
-  Lock, ExternalLink, Gamepad, Tv, UserPlus, Box,
+  ArrowRight, Video, AlertCircle, RefreshCw, Share2,
+  Gamepad, Tv, UserPlus, Box,
   Workflow, Database, ClipboardCheck, Info,
   Fingerprint, Plus, ZoomIn, Code2, ArrowUpRight,
   FastForward, CheckSquare, ShieldAlert, X,
   History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoImage, generateDemoVideo } from '../services/geminiMedia';
 import { aiTextViaProxy } from '../apis/aiCommon';
+import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type Domain = 'GAME' | 'FILM' | 'ADVERTISING' | 'VIRTUAL_AVATAR';
@@ -28,15 +31,15 @@ interface AgentLog {
 }
 
 const AUPX1Studio = () => {
+  const { isAuthenticated, login, useCredits } = useAuth();
   const [activeDomain, setActiveDomain] = useState<Domain>('FILM');
   const [activeStage, setActiveStage] = useState<PipelineStage>('ID_CORE');
   const [isBusy, setIsBusy] = useState(false);
   const [logs, setLogs] = useState<AgentLog[]>([]);
-  const [needsKey, setNeedsKey] = useState(false);
   const [renderError, setRenderError] = useState<string | null>(null);
-  
+
   const [uca, setUca] = useState<{name: string, img: string | null, metadata: string}>({
-    name: 'SENTINEL_ALPHA', 
+    name: 'SENTINEL_ALPHA',
     img: null,
     metadata: 'Physical: Ceramic Armor, Biometric Glow. Personality: Stoic.'
   });
@@ -50,24 +53,6 @@ const AUPX1Studio = () => {
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const checkKey = async () => {
-      if ((window as any).aistudio) {
-        const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-        if (!process.env.API_KEY && !hasKey) setNeedsKey(true);
-      }
-    };
-    checkKey();
-  }, []);
-
-  const handleSelectKey = async () => {
-    if ((window as any).aistudio) {
-      await (window as any).aistudio.openSelectKey();
-      setNeedsKey(false);
-      setRenderError(null);
-    }
-  };
-
   const addLog = (agent: AgentLog['agent'], message: string, type: AgentLog['type'] = 'THINK') => {
     setLogs(prev => [...prev, { timestamp: new Date().toLocaleTimeString(), agent, message, type }]);
   };
@@ -75,7 +60,7 @@ const AUPX1Studio = () => {
   const approveStage = (stage: PipelineStage) => {
     setStageProgress(prev => {
       const next = { ...prev, [stage]: true };
-      
+
       if (stage === 'SCENE_DESIGN') {
         addLog('DIRECTOR', 'Directing pipeline to Stage 5...', 'ACTION');
       }
@@ -83,7 +68,7 @@ const AUPX1Studio = () => {
       const stages: PipelineStage[] = ['ID_CORE', 'ASSET_SYSTEM', 'MOTION_INTEL', 'SCENE_DESIGN', 'ADAPTER_RENDER', 'MASTER_COMP'];
       const currentIdx = stages.indexOf(stage);
       if (currentIdx < stages.length - 1) setActiveStage(stages[currentIdx + 1]);
-      
+
       return next;
     });
   };
@@ -95,25 +80,89 @@ const AUPX1Studio = () => {
   };
 
   const runIdentity = async () => {
+    if (!isAuthenticated) { login(); return; }
     setIsBusy(true);
     addLog('DIRECTOR', 'Initializing Stage 1: Character & Identity Core...');
-    const res = await generateDemoImage('Concept art of a celestial sentinel knight, flowing white ceramic armor, internal cosmic energy glow, sharp visor, domain-neutral background, studio lighting, 8k.');
-    if (res) {
-      setUca(prev => ({ ...prev, img: res }));
-      addLog('REVIEWER', 'Character DNA locked. Profile contains zero-drift anchors.');
+    try {
+      const imgPrompt = 'Concept art of a celestial sentinel knight, flowing white ceramic armor, internal cosmic energy glow, sharp visor, domain-neutral background, studio lighting, 8k.';
+      const payload: ImageJobRequest = {
+        type: "text_to_image",
+        input: { prompt: imgPrompt },
+        config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+        enginePayload: { prompt: imgPrompt, privacy: "PRIVATE", projectId: "default" }
+      };
+      const apiRes = await imagesApi.createJob(payload);
+      if (apiRes.success && apiRes.data.jobId) {
+        const cancelRef = { current: false };
+        pollJobOnce({
+          jobId: apiRes.data.jobId,
+          isCancelledRef: cancelRef,
+          apiType: 'image',
+          onDone: (result) => {
+            const imageUrl = result.images?.[0] ?? '';
+            if (imageUrl) {
+              setUca(prev => ({ ...prev, img: imageUrl }));
+              addLog('REVIEWER', 'Character DNA locked. Profile contains zero-drift anchors.');
+              useCredits(1);
+            }
+            setIsBusy(false);
+          },
+          onError: () => {
+            addLog('REVIEWER', 'ERROR: Identity synthesis failed.', 'ALERT');
+            setIsBusy(false);
+          }
+        });
+      } else {
+        setIsBusy(false);
+      }
+    } catch (err) {
+      addLog('REVIEWER', 'ERROR: Identity synthesis failed.', 'ALERT');
+      setIsBusy(false);
     }
-    setIsBusy(false);
   };
 
   const runAssetSystem = async () => {
+    if (!isAuthenticated) { login(); return; }
     setIsBusy(true);
     addLog('PLANNER', 'Stage 2: Orchestrating Asset & Style System...');
-    const res = await generateDemoImage(`Full-body equipment set for ${uca.name}, 4-point orthographic turnaround, weapon variations, tech-pouches. Consistency lock: active.`);
-    if (res) {
-      setAssets([{ id: 'a1', url: res, label: 'MASTER_EQUIPMENT_SPEC' }]);
-      addLog('CONSISTENCY', 'Visual style normalized across props and outfits.');
+    try {
+      const imgPrompt = `Full-body equipment set for ${uca.name}, 4-point orthographic turnaround, weapon variations, tech-pouches. Consistency lock: active.`;
+      const payload: ImageJobRequest = {
+        type: "text_to_image",
+        input: { prompt: imgPrompt },
+        config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+        enginePayload: { prompt: imgPrompt, privacy: "PRIVATE", projectId: "default" }
+      };
+      const apiRes = await imagesApi.createJob(payload);
+      if (apiRes.success && apiRes.data.jobId) {
+        const cancelRef = { current: false };
+        pollJobOnce({
+          jobId: apiRes.data.jobId,
+          isCancelledRef: cancelRef,
+          apiType: 'image',
+          onDone: (result) => {
+            const imageUrl = result.images?.[0] ?? '';
+            if (imageUrl) {
+              setAssets([{ id: 'a1', url: imageUrl, label: 'MASTER_EQUIPMENT_SPEC' }]);
+              addLog('CONSISTENCY', 'Visual style normalized across props and outfits.');
+              useCredits(1);
+            }
+            setIsBusy(false);
+          },
+          onError: () => {
+            addLog('REVIEWER', 'ERROR: Asset synthesis failed.', 'ALERT');
+            setIsBusy(false);
+          }
+        });
+      } else {
+        setIsBusy(false);
+      }
+    } catch (err) {
+      addLog('REVIEWER', 'ERROR: Asset synthesis failed.', 'ALERT');
+      setIsBusy(false);
     }
-    setIsBusy(false);
   };
 
   const runMotionIntel = async () => {
@@ -135,10 +184,11 @@ const AUPX1Studio = () => {
   };
 
   const runAdapterRender = async () => {
+    if (!isAuthenticated) { login(); return; }
     setIsBusy(true);
     setRenderError(null);
     addLog('DIRECTOR', `Stage 5: Initiating ${activeDomain} Specific Rendering Adapter...`);
-    
+
     try {
       const promptMap = {
         GAME: 'Third-person game cutscene: SENTINEL_ALPHA walking through a floating stone sanctuary, Unreal Engine 5 aesthetic, real-time lighting physics.',
@@ -146,33 +196,50 @@ const AUPX1Studio = () => {
         ADVERTISING: 'Advertising hero shot: Close-up of ceramic armor reflecting a luxury brand logo, neon city skyline bokeh, high-gloss polish.',
         VIRTUAL_AVATAR: 'Social media video: Sentinel knight performing a signature idle animation, looking at camera, high-fidelity digital influencer style.'
       };
-      const url = await generateDemoVideo({
-        prompt: promptMap[activeDomain],
-        references: uca.img ? [uca.img] : undefined
+      const promptText = promptMap[activeDomain];
+      const type = uca.img ? "image-to-video" : "text-to-video";
+      const payload: VideoJobRequest = {
+        type,
+        input: uca.img ? { images: [uca.img] } : {},
+        config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt: promptText, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
+      };
+
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (result) => {
+          const videoUrl = result.videoUrl ?? '';
+          if (videoUrl) {
+            setFinalRender(videoUrl);
+            addLog('REVIEWER', 'Domain-specific output verified. Watermarked for enterprise safety.');
+            useCredits(100);
+          }
+          setIsBusy(false);
+        },
+        onError: () => {
+          setRenderError('UNKNOWN_ERROR');
+          addLog('REVIEWER', 'ERROR: Rendering failed. Check connection.', 'ALERT');
+          setIsBusy(false);
+        }
       });
-      if (url) {
-        setFinalRender(url);
-        addLog('REVIEWER', 'Domain-specific output verified. Watermarked for enterprise safety.');
-      }
     } catch (err: any) {
       console.error("Critical Render Error:", err);
-      const errorStr = typeof err === 'string' ? err : JSON.stringify(err);
-      
-      if (errorStr.includes('Requested entity was not found') || errorStr.includes('404') || errorStr.includes('code 5')) {
-        setRenderError('ENTITY_NOT_FOUND');
-        addLog('REVIEWER', 'ERROR: Veo Model not found. API Key may lack Paid Project permissions.', 'ALERT');
-      } else {
-        setRenderError('UNKNOWN_ERROR');
-        addLog('REVIEWER', `ERROR: Rendering failed. Check connection.`, 'ALERT');
-      }
-    } finally {
+      setRenderError('UNKNOWN_ERROR');
+      addLog('REVIEWER', 'ERROR: Rendering failed. Check connection.', 'ALERT');
       setIsBusy(false);
     }
   };
 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#050507] overflow-hidden text-black dark:text-white font-mono selection:bg-brand-blue/30">
-      
+
       <div className="w-full lg:w-[340px] shrink-0 flex flex-col bg-[#f9f9fb] dark:bg-[#0a0a0c] border-r border-black/5 dark:border-white/5 overflow-y-auto no-scrollbar relative z-20">
          <div className="p-8 border-b border-black/5 dark:border-white/5 space-y-2 bg-gradient-to-b from-brand-blue/10 to-transparent">
             <h3 className="text-[11px] font-black uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
@@ -193,8 +260,8 @@ const AUPX1Studio = () => {
                     { id: 'ADVERTISING', icon: <Tv size={12} /> },
                     { id: 'VIRTUAL_AVATAR', icon: <UserPlus size={12} /> }
                   ].map(d => (
-                    <button 
-                      key={d.id} 
+                    <button
+                      key={d.id}
                       onClick={() => !isBusy && setActiveDomain(d.id as Domain)}
                       className={`flex items-center gap-3 p-3 border transition-all rounded-sm ${activeDomain === d.id ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/5 text-gray-400'}`}
                     >
@@ -215,8 +282,8 @@ const AUPX1Studio = () => {
                  { id: 'ADAPTER_RENDER', label: 'Domain_Render', icon: <Cpu size={14} /> },
                  { id: 'MASTER_COMP', label: 'Final_Master', icon: <Clapperboard size={14} /> }
                ].map((s, idx) => (
-                 <button 
-                   key={s.id} 
+                 <button
+                   key={s.id}
                    onClick={() => !isBusy && setActiveStage(s.id as PipelineStage)}
                    className={`w-full flex items-center justify-between p-4 border transition-all rounded-sm group ${activeStage === s.id ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white' : 'bg-transparent border-black/5 dark:border-white/5 text-gray-400'}`}
                  >
@@ -229,7 +296,7 @@ const AUPX1Studio = () => {
                ))}
             </div>
          </div>
-         
+
          <div className="p-8 border-t border-black/5 dark:border-white/5">
             <div className="p-4 bg-brand-blue/5 border border-brand-blue/20 space-y-3 rounded-sm">
                <div className="flex items-center gap-2 text-brand-blue">
@@ -282,19 +349,19 @@ const AUPX1Studio = () => {
               {activeStage === 'MOTION_INTEL' && <button onClick={runMotionIntel} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-black uppercase tracking-widest">Synthesize Logic</button>}
               {activeStage === 'SCENE_DESIGN' && <button onClick={runSceneDesign} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-black uppercase tracking-widest">Draft Scene</button>}
               {activeStage === 'ADAPTER_RENDER' && <button onClick={runAdapterRender} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-black uppercase tracking-widest">Render Domain</button>}
-              
+
               {activeStage !== 'MASTER_COMP' && (
                 <button onClick={() => approveStage(activeStage)} className="px-10 py-4 border border-black/10 dark:border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all">Approve & Next</button>
               )}
            </div>
-           
+
            <div className="flex items-center gap-6">
               <button onClick={bypassToMaster} className="text-[10px] font-black uppercase text-gray-400 hover:text-brand-blue transition-colors">Bypass to Master</button>
            </div>
         </div>
       </div>
 
-      <aside className="hidden xl:flex w-[320px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-hidden">
+      <aside className="hidden xl:flex w-[320px] shrink-0 flex-col bg-[#fdfdfd] dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Activity className="w-4 h-4 text-brand-blue" /> Studio_Logs

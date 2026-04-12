@@ -1,14 +1,17 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Check, Download, RefreshCw, Zap, Share2, 
+import {
+  X, Check, Download, RefreshCw, Zap, Share2,
   Loader2, Play, Film, CheckCircle2,
   Plus, Users, MapPin, Move, Camera, Clapperboard, Upload,
   History as HistoryIcon, Maximize2
 } from 'lucide-react';
-import { generateDemoImage, generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 interface Actor {
   id: string;
@@ -47,18 +50,19 @@ const BLOCKING = [
 
 const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { lang } = useLanguage();
-  
+  const { isAuthenticated, login, useCredits } = useAuth();
+
   const [cast, setCast] = useState<Actor[]>(INITIAL_CAST);
   const [selectedActors, setSelectedActors] = useState<string[]>([]);
   const [selectedLocId, setSelectedLocId] = useState<string>(LOCATIONS[0].id);
   const [selectedBlocking, setSelectedBlocking] = useState(BLOCKING[0]);
-  
+
   const [isRehearsing, setIsRehearsing] = useState(false);
   const [isUnfolding, setIsUnfolding] = useState(false);
   const [resultStill, setResultStill] = useState<string | null>(null);
   const [resultScene, setResultScene] = useState<string | null>(null);
   const [status, setStatus] = useState('Awaiting Signal');
-  
+
   const castInputRef = useRef<HTMLInputElement>(null);
   const locInputRef = useRef<HTMLInputElement>(null);
 
@@ -91,6 +95,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
   const handleStageScene = async () => {
     if (isRehearsing || selectedActors.length < 1) return;
+    if (!isAuthenticated) { login(); return; }
     setIsRehearsing(true);
     setResultScene(null);
     setStatus('STAGING...');
@@ -99,43 +104,88 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       const activeActors = cast.filter(a => selectedActors.includes(a.id));
       const activeLoc = LOCATIONS.find(l => l.id === selectedLocId);
       const directive = `Directing a cinematic shot. Actors: ${activeActors.map(a => a.name).join(' and ')}. Staging: ${selectedBlocking.name}. Location: ${activeLoc?.name}. Masterpiece cinematography.`;
-      
-      const res = await generateDemoImage(directive);
-      if (res) {
-        setResultStill(res);
-        setStatus('READY');
-      }
+
+      const payload: ImageJobRequest = {
+        type: "text_to_image",
+        input: { prompt: directive },
+        config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+        enginePayload: { prompt: directive, privacy: "PRIVATE", projectId: "default" }
+      };
+      const apiRes = await imagesApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'image',
+        onDone: (result) => {
+          const imageUrl = result.images?.[0] ?? '';
+          if (imageUrl) {
+            setResultStill(imageUrl);
+            setStatus('READY');
+          }
+          useCredits(1);
+          setIsRehearsing(false);
+        },
+        onError: () => {
+          setStatus('ERROR');
+          setIsRehearsing(false);
+        }
+      });
     } catch (err) {
       setStatus('ERROR');
-    } finally {
       setIsRehearsing(false);
     }
   };
 
   const handleUnfoldScene = async () => {
     if (!resultStill || isUnfolding) return;
+    if (!isAuthenticated) { login(); return; }
     setIsUnfolding(true);
     setStatus('UNFOLDING...');
 
     try {
-      const vid = await generateDemoVideo({
-        prompt: `The scene unfolds. Suble head turns, breathing, and camera drift. ${selectedBlocking.name}.`,
-        references: resultStill ? [resultStill] : undefined
+      const promptText = `The scene unfolds. Suble head turns, breathing, and camera drift. ${selectedBlocking.name}.`;
+      const payload: VideoJobRequest = {
+        type: "image-to-video",
+        input: { images: [resultStill] },
+        config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt: promptText, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
+      };
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (result) => {
+          const videoUrl = result.videoUrl ?? '';
+          if (videoUrl) {
+            setResultScene(videoUrl);
+            setStatus('DONE');
+          }
+          useCredits(100);
+          setIsUnfolding(false);
+        },
+        onError: () => {
+          setStatus('ERROR');
+          setIsUnfolding(false);
+        }
       });
-      if (vid) {
-        setResultScene(vid);
-        setStatus('DONE');
-      }
     } catch (err) {
       setStatus('ERROR');
-    } finally {
       setIsUnfolding(false);
     }
   };
 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#050505] text-black dark:text-white font-sans overflow-hidden relative">
-      
+
       <aside className="w-full lg:w-[400px] shrink-0 h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[#fafafa] dark:bg-[#080808] z-[60] overflow-y-auto no-scrollbar shadow-2xl">
         <div className="p-8 lg:p-10 space-y-12 pb-40">
 
@@ -154,8 +204,8 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             </div>
             <div className="grid grid-cols-3 gap-3">
               {cast.map((actor) => (
-                <button 
-                  key={actor.id} 
+                <button
+                  key={actor.id}
                   onClick={() => toggleActor(actor.id)}
                   className={`relative aspect-[3/4] rounded-sm overflow-hidden border-2 transition-all ${selectedActors.includes(actor.id) ? 'border-brand-blue scale-95' : 'border-transparent opacity-40 hover:opacity-100 grayscale hover:grayscale-0'}`}
                 >
@@ -234,8 +284,8 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
            <div className="flex gap-4">
               {resultStill && (
-                 <button 
-                   onClick={handleUnfoldScene} 
+                 <button
+                   onClick={handleUnfoldScene}
                    disabled={isUnfolding || isRehearsing}
                    className={`h-20 px-12 lg:px-20 flex flex-col items-center justify-center gap-2 transition-all rounded-sm border ${resultScene ? 'border-brand-blue text-brand-blue bg-brand-blue/5' : 'border-black/10 dark:border-white/10 text-gray-400 hover:text-brand-blue'}`}
                  >
@@ -243,7 +293,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                     <span className="text-[9px] font-black uppercase tracking-[0.4em]">Unfold Scene</span>
                  </button>
               )}
-              <button 
+              <button
                 onClick={handleStageScene}
                 disabled={isRehearsing || isUnfolding || selectedActors.length < 1}
                 className={`h-20 px-16 lg:px-32 flex flex-col items-center justify-center gap-2 transition-all rounded-sm shadow-2xl ${selectedActors.length > 0 ? 'bg-brand-blue text-white hover:scale-105' : 'bg-gray-100 dark:bg-white/5 text-gray-300'}`}

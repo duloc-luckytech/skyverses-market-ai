@@ -1,14 +1,17 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Gamepad, Bot, BrainCircuit, Target, Sparkles, Play, 
-  Trash2, Activity, Terminal, Layers, Cpu, ShieldCheck, 
-  Download, CheckCircle2, Sliders, LayoutGrid, Eye, 
+import {
+  Gamepad, Bot, BrainCircuit, Target, Sparkles, Play,
+  Trash2, Activity, Terminal, Layers, Cpu, ShieldCheck,
+  Download, CheckCircle2, Sliders, LayoutGrid, Eye,
   CornerDownRight, Swords, User, Shield, Zap, Loader2,
   History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoImage } from '../services/geminiMedia';
 import { aiTextViaProxy } from '../apis/aiCommon';
+import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { pollJobOnce } from '../hooks/useJobPoller';
+
 interface AgentLog {
   timestamp: string;
   type: 'ANALYZE' | 'PLAN' | 'GENERATE' | 'REVIEW' | 'REFINE' | 'DONE';
@@ -25,16 +28,17 @@ interface CharAsset {
 }
 
 const GameCharacterAgentInterface = () => {
+  const { isAuthenticated, login, useCredits } = useAuth();
   const [brief, setBrief] = useState('Create a series of cyberpunk desert wanderers for an open-world RPG. High-contrast silhouettes, tech-wear aesthetic, mechanical eye augmentations.');
   const [role, setRole] = useState('Hero');
   const [genre, setGenre] = useState('RPG');
   const [style, setStyle] = useState('Stylized 3D');
-  
+
   const [logs, setLogs] = useState<AgentLog[]>([]);
   const [assets, setAssets] = useState<CharAsset[]>([]);
   const [isBusy, setIsBusy] = useState(false);
   const [loopState, setLoopState] = useState<'IDLE' | 'ANALYZE' | 'PLAN' | 'GENERATE' | 'REVIEW' | 'REFINE' | 'DELIVER'>('IDLE');
-  
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,6 +51,7 @@ const GameCharacterAgentInterface = () => {
 
   const startAgent = async () => {
     if (!brief.trim() || isBusy) return;
+    if (!isAuthenticated) { login(); return; }
     setIsBusy(true);
     setAssets([]);
     setLogs([]);
@@ -61,7 +66,7 @@ const GameCharacterAgentInterface = () => {
     const planningPrompt = `Based on the brief: "${brief}" and style "${style}", generate 3 production-grade character asset prompts. 1: Close-up Portrait. 2: Full-body Action Pose. 3: Orthographic Equipment View. Use game-dev terminology. Number them.`;
     const rawPlan = await aiTextViaProxy(planningPrompt);
     const planLines = rawPlan.split('\n').filter(l => /^\d\./.test(l)).slice(0, 3);
-    
+
     const newAssets = [
       { id: 'p1', label: 'Portrait_v1', prompt: planLines[0] || brief, imageUrl: null, readabilityScore: 0, status: 'pending' as const },
       { id: 'p2', label: 'Action_Pose', prompt: planLines[1] || brief, imageUrl: null, readabilityScore: 0, status: 'pending' as const },
@@ -74,12 +79,40 @@ const GameCharacterAgentInterface = () => {
     for (let i = 0; i < newAssets.length; i++) {
       const asset = newAssets[i];
       addLog('GENERATE', `Synthesizing ${asset.label}...`);
-      
+
       try {
-        const res = await generateDemoImage(`[GAME_ASSET_PIPELINE] orthographic, solid neutral background, high contrast, clear silhouette, style: ${style}, directive: ${asset.prompt}`);
-        if (res) {
-          setAssets(prev => prev.map(a => a.id === asset.id ? { ...a, imageUrl: res, status: 'success' } : a));
-          addLog('GENERATE', `${asset.label} synthesis successful.`);
+        const imgPrompt = `[GAME_ASSET_PIPELINE] orthographic, solid neutral background, high contrast, clear silhouette, style: ${style}, directive: ${asset.prompt}`;
+        const payload: ImageJobRequest = {
+          type: "text_to_image",
+          input: { prompt: imgPrompt },
+          config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+          engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+          enginePayload: { prompt: imgPrompt, privacy: "PRIVATE", projectId: "default" }
+        };
+        const apiRes = await imagesApi.createJob(payload);
+        if (apiRes.success && apiRes.data.jobId) {
+          await new Promise<void>((resolve) => {
+            const cancelRef = { current: false };
+            pollJobOnce({
+              jobId: apiRes.data.jobId,
+              isCancelledRef: cancelRef,
+              apiType: 'image',
+              onDone: (result) => {
+                const imageUrl = result.images?.[0] ?? '';
+                if (imageUrl) {
+                  setAssets(prev => prev.map(a => a.id === asset.id ? { ...a, imageUrl, status: 'success' } : a));
+                  addLog('GENERATE', `${asset.label} synthesis successful.`);
+                  useCredits(1);
+                }
+                resolve();
+              },
+              onError: () => {
+                setAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'error' } : a));
+                addLog('REFINE', `Node_${i+1} failed silhouette check. Retrying...`);
+                resolve();
+              }
+            });
+          });
         }
       } catch (err) {
         setAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'error' } : a));
@@ -100,14 +133,14 @@ const GameCharacterAgentInterface = () => {
 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#020203] overflow-hidden text-black dark:text-white font-mono">
-      
+
       <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[#080808] border-r border-black/10 dark:border-white/5 p-8 space-y-10">
          <div className="space-y-6">
             <label className="text-[10px] font-black uppercase text-emerald-500 tracking-[0.4em] flex items-center gap-3">
                <Swords className="w-4 h-4" /> Production_Brief
             </label>
             <div className="relative group">
-               <textarea 
+               <textarea
                  value={brief}
                  onChange={(e) => setBrief(e.target.value)}
                  className="w-full h-40 bg-white dark:bg-white/[0.02] border border-black/10 dark:border-white/5 p-5 text-xs font-bold leading-relaxed focus:outline-none focus:border-emerald-500/40 resize-none uppercase tracking-tighter"
@@ -155,7 +188,7 @@ const GameCharacterAgentInterface = () => {
 
       <div className="flex-grow flex flex-col bg-white dark:bg-[#020202] relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #10b981 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-        
+
         <div className="flex-grow overflow-y-auto p-8 lg:p-12 relative z-10 no-scrollbar">
            <div className="max-w-5xl mx-auto space-y-12">
               <div className="flex justify-between items-center border-b border-black/10 dark:border-white/5 pb-8">
@@ -191,7 +224,7 @@ const GameCharacterAgentInterface = () => {
                              ) : (
                                 <Loader2 className="w-10 h-10 text-emerald-500 animate-spin" />
                              )}
-                             
+
                              <div className="absolute top-4 left-4 flex flex-col gap-2">
                                 <span className="bg-black/60 backdrop-blur-md px-2 py-0.5 text-[8px] font-black text-white uppercase border border-white/10">ASSET_0{idx+1}</span>
                                 {asset.readabilityScore > 0 && <span className="bg-emerald-500 px-2 py-0.5 text-[8px] font-black text-white uppercase">READABILITY: {asset.readabilityScore}%</span>}
@@ -221,13 +254,13 @@ const GameCharacterAgentInterface = () => {
            </div>
 
            <div className="flex items-center gap-6 w-full lg:w-auto">
-              <button 
+              <button
                 onClick={() => setAssets([])} disabled={assets.length === 0 || isBusy}
                 className="p-5 border border-black/10 dark:border-white/10 text-gray-400 hover:text-red-500 transition-all active:scale-95 disabled:opacity-20"
               >
                 <Trash2 size={20} />
               </button>
-              <button 
+              <button
                 onClick={startAgent} disabled={isBusy || !brief.trim()}
                 className="flex-grow lg:flex-none bg-emerald-500 text-black px-16 py-6 text-[11px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-2xl active:scale-[0.98] disabled:opacity-20 rounded-sm"
               >
@@ -265,7 +298,7 @@ const GameCharacterAgentInterface = () => {
                ))
             )}
          </div>
-         
+
          <div className="p-8 border-t border-black/5 dark:border-white/5 bg-gray-50 dark:bg-black/40">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-3">
                <HistoryIcon className="w-4 h-4 text-emerald-500" /> Session_Vault

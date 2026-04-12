@@ -1,20 +1,22 @@
 
 import React, { useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Upload, Mic, Play, Zap, 
-  Download, Loader2, Sparkles, User, 
-  Search, Plus, History, Volume2, 
+import {
+  X, Upload, Mic, Play, Zap,
+  Download, Loader2, Sparkles, User,
+  Search, Plus, History, Volume2,
   Check, ChevronDown, MonitorPlay,
   Image as ImageIcon,
   MoreVertical, ShieldCheck, Cpu,
   Mic2, Headphones, AlertTriangle,
   Share2, Wand2, Grid, LayoutGrid
 } from 'lucide-react';
-import { generateDemoVideo, generateDemoImage } from '../services/geminiMedia';
 import { aiTextViaProxy } from '../apis/aiCommon';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 import { Link } from 'react-router-dom';
 
 const AVATAR_SAMPLES = [
@@ -39,23 +41,23 @@ const EXTENDED_AVATARS = [
   { id: 's15', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400', label: 'Content Strategist' },
 ];
 
-const AvatarLibraryModal: React.FC<{ 
-  onClose: () => void; 
+const AvatarLibraryModal: React.FC<{
+  onClose: () => void;
   onSelect: (av: any) => void;
   selectedId: string;
 }> = ({ onClose, onSelect, selectedId }) => {
   const [search, setSearch] = useState('');
-  
+
   const filtered = useMemo(() => {
     return EXTENDED_AVATARS.filter(a => a.label.toLowerCase().includes(search.toLowerCase()));
   }, [search]);
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 z-[700] bg-black/80 dark:bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 md:p-12"
     >
-      <motion.div 
+      <motion.div
         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
         className="bg-white dark:bg-[#0d0d10] border border-slate-200 dark:border-white/5 rounded-2xl w-full max-w-6xl h-[85vh] flex flex-col overflow-hidden shadow-3xl transition-colors duration-500"
       >
@@ -77,11 +79,11 @@ const AvatarLibraryModal: React.FC<{
         <div className="px-8 py-6 shrink-0">
           <div className="relative group">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-600 group-focus-within:text-purple-500 transition-colors" size={20} />
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Tìm avatar mẫu..." 
+              placeholder="Tìm avatar mẫu..."
               className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-xl py-4 pl-14 pr-6 text-sm font-bold text-slate-900 dark:text-white focus:border-purple-500/50 outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-700"
             />
           </div>
@@ -90,7 +92,7 @@ const AvatarLibraryModal: React.FC<{
         <div className="flex-grow overflow-y-auto p-8 pt-0 no-scrollbar">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {filtered.map(av => (
-              <button 
+              <button
                 key={av.id}
                 onClick={() => onSelect(av)}
                 className={`relative aspect-[3/4] rounded-xl border-2 overflow-hidden transition-all group ${selectedId === av.id ? 'border-purple-500 ring-4 ring-purple-500/10 shadow-[0_0_30px_rgba(168,85,247,0.2)]' : 'border-transparent opacity-60 hover:opacity-100 hover:border-slate-200 dark:hover:border-white/10'}`}
@@ -113,8 +115,8 @@ const AvatarLibraryModal: React.FC<{
   );
 };
 
-const AvatarGeneratorModal: React.FC<{ 
-  onClose: () => void; 
+const AvatarGeneratorModal: React.FC<{
+  onClose: () => void;
   onGenerated: (url: string) => void;
 }> = ({ onClose, onGenerated }) => {
   const { credits, useCredits, login, isAuthenticated } = useAuth();
@@ -163,29 +165,46 @@ const AvatarGeneratorModal: React.FC<{
       const successful = useCredits(GEN_COST);
       if (!successful) throw new Error("Credits deduction failed");
 
-      const modelId = model.includes('Gemini 3') ? 'gemini-3-pro-image-preview' : 'gemini-2.5-flash-image';
-      
-      const res = await generateDemoImage(
-        `High quality professional AI avatar: ${prompt}`, 
-        refImg ? [refImg] : undefined, 
-        modelId
-      );
-      
-      if (res) setResult(res);
+      const imgPrompt = `High quality professional AI avatar: ${prompt}`;
+      const payload: ImageJobRequest = {
+        type: "text_to_image",
+        input: refImg ? { prompt: imgPrompt, images: [refImg] } : { prompt: imgPrompt },
+        config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+        enginePayload: { prompt: imgPrompt, privacy: "PRIVATE", projectId: "default" }
+      };
+      const apiRes = await imagesApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'image',
+        onDone: (result) => {
+          const imageUrl = result.images?.[0] ?? '';
+          if (imageUrl) setResult(imageUrl);
+          setIsGenerating(false);
+        },
+        onError: () => {
+          console.error("Avatar generation failed");
+          alert("Lỗi kiến tạo thực thể. Vui lòng thử lại.");
+          setIsGenerating(false);
+        }
+      });
     } catch (e) {
       console.error(e);
       alert("Lỗi kiến tạo thực thể. Vui lòng thử lại.");
-    } finally {
       setIsGenerating(false);
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 z-[600] bg-black/70 dark:bg-black/80 backdrop-blur-md flex items-center justify-center p-4 md:p-10"
     >
-      <motion.div 
+      <motion.div
         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
         className="bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/10 rounded-2xl w-full max-w-5xl h-[80vh] flex flex-col overflow-hidden shadow-2xl transition-colors duration-500"
       >
@@ -206,7 +225,7 @@ const AvatarGeneratorModal: React.FC<{
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">MODEL</label>
               <div className="relative">
-                <select 
+                <select
                   value={model} onChange={e => setModel(e.target.value)}
                   className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-lg p-3 text-xs font-bold appearance-none outline-none focus:border-blue-500/50 text-slate-900 dark:text-white transition-colors"
                 >
@@ -219,7 +238,7 @@ const AvatarGeneratorModal: React.FC<{
 
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">ẢNH THAM CHIẾU</label>
-              <div 
+              <div
                 onClick={() => fileRef.current?.click()}
                 className="aspect-video border-2 border-dashed border-slate-200 dark:border-white/5 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-blue-500/30 transition-all bg-white dark:bg-black/20 group overflow-hidden"
               >
@@ -238,7 +257,7 @@ const AvatarGeneratorModal: React.FC<{
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">PROMPT</label>
-                <button 
+                <button
                   onClick={handleEnhance} disabled={isEnhancing || !prompt.trim()}
                   className="flex items-center gap-1 text-[9px] font-black text-purple-600 dark:text-purple-400 hover:text-purple-500 transition-colors disabled:opacity-30"
                 >
@@ -246,7 +265,7 @@ const AvatarGeneratorModal: React.FC<{
                   Sáng tạo
                 </button>
               </div>
-              <textarea 
+              <textarea
                 value={prompt} onChange={e => setPrompt(e.target.value)}
                 placeholder="Mô tả ảnh bạn muốn tạo..."
                 className="w-full h-32 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-lg p-4 text-xs font-bold outline-none focus:border-blue-500/50 resize-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-700 text-slate-900 dark:text-white"
@@ -277,7 +296,7 @@ const AvatarGeneratorModal: React.FC<{
                   <span className="text-sm font-black italic">{GEN_COST} credits</span>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={handleGenerate} disabled={isGenerating || !prompt.trim()}
                 className="w-full py-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:grayscale transition-all rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl text-white"
               >
@@ -294,7 +313,7 @@ const AvatarGeneratorModal: React.FC<{
                 <div className="w-full h-full relative group">
                   <img src={result} className="w-full h-full object-contain" alt="Result" />
                   <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
+                    <button
                       onClick={() => onGenerated(result)}
                       className="p-3 bg-blue-600 text-white rounded-full shadow-xl hover:scale-110 active:scale-95 transition-all"
                     >
@@ -385,21 +404,42 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       if (!success) throw new Error("Insufficient credits");
 
       const directive = `Talking avatar lipsync. Avatar: ${selectedAvatar.label}. Model: ${selectedModel}. Input: ${audioMode === 'TTS' ? ttsText : audioFile || 'Default Audio'}. High quality synthesis.`;
-      const url = await generateDemoVideo({ prompt: directive, isUltra: true });
-      if (url) {
-        setResultVideo(url);
-      }
+      const payload: VideoJobRequest = {
+        type: "text-to-video",
+        input: { images: [selectedAvatar.url] },
+        config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt: directive, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
+      };
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (result) => {
+          const videoUrl = result.videoUrl ?? '';
+          if (videoUrl) setResultVideo(videoUrl);
+          setIsGenerating(false);
+        },
+        onError: () => {
+          console.error("Lipsync video generation failed");
+          alert("Lỗi trong quá trình tạo video. Vui lòng thử lại.");
+          setIsGenerating(false);
+        }
+      });
     } catch (err) {
       console.error(err);
       alert("Lỗi trong quá trình tạo video. Vui lòng thử lại.");
-    } finally {
       setIsGenerating(false);
     }
   };
 
   return (
     <div className="h-full w-full flex flex-col bg-slate-50 dark:bg-[#08080a] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
-      
+
       <header className="h-16 border-b border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d0d10] flex items-center justify-between px-8 shrink-0 z-[100] transition-colors">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400">
@@ -421,7 +461,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       </header>
 
       <div className="flex-grow flex flex-col md:flex-row overflow-hidden p-4 md:p-8 gap-4 md:gap-8 no-scrollbar">
-        
+
         <div className="w-full md:w-[450px] flex flex-col gap-6 overflow-y-auto no-scrollbar shrink-0">
           <div className="bg-white dark:bg-[#0f0f13] rounded-2xl border border-slate-200 dark:border-white/5 p-6 lg:p-8 space-y-8 shadow-xl transition-colors">
             <div className="space-y-1">
@@ -435,7 +475,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             <div className="flex flex-col items-center">
               <div className="relative group w-48 aspect-[3/4] bg-slate-100 dark:bg-black rounded-xl border-2 border-purple-500 shadow-2xl dark:shadow-[0_0_40px_rgba(168,85,247,0.2)] overflow-hidden transition-colors">
                 <img src={selectedAvatar.url} className="w-full h-full object-cover" alt="Selected" />
-                <button 
+                <button
                   onClick={() => setSelectedAvatar(AVATAR_SAMPLES[0])}
                   className="absolute top-3 right-3 p-1.5 bg-black/60 rounded-full hover:bg-black/90 transition-colors"
                 >
@@ -448,7 +488,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              <button 
+              <button
                 onClick={() => avatarUploadRef.current?.click()}
                 className="flex flex-col items-center justify-center gap-2 py-4 bg-purple-600 rounded-xl text-[11px] font-black uppercase tracking-widest text-white hover:brightness-110 active:scale-95 transition-all shadow-lg"
               >
@@ -458,7 +498,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               <button className="flex flex-col items-center justify-center gap-2 py-4 bg-slate-100 dark:bg-[#1e1e24] rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-[#25252b] transition-all border border-slate-200 dark:border-white/5">
                 <ImageIcon size={18} /> Album
               </button>
-              <button 
+              <button
                 onClick={() => setShowGenerator(true)}
                 className="flex flex-col items-center justify-center gap-2 py-4 bg-blue-600 rounded-xl text-[11px] font-black uppercase tracking-widest text-white hover:brightness-110 active:scale-[0.98] transition-all shadow-lg"
               >
@@ -470,13 +510,13 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                <div className="flex items-center justify-between">
                   <h4 className="text-[11px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-[0.3em]">AVATAR MẪU</h4>
                   <div className="flex gap-4">
-                    <button 
+                    <button
                       onClick={() => setShowLibrary(true)}
                       className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                     >
                       Xem toàn bộ
                     </button>
-                    <button 
+                    <button
                       onClick={() => setShowGenerator(true)}
                       className="text-[10px] font-black uppercase text-purple-600 dark:text-purple-500 hover:text-purple-400 flex items-center gap-1.5 transition-colors"
                     >
@@ -487,16 +527,16 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
                <div className="relative group">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-600 group-focus-within:text-purple-500 transition-colors" size={16} />
-                  <input 
-                    type="text" 
-                    placeholder="Tìm kiếm mẫu avatar..." 
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm mẫu avatar..."
                     className="w-full bg-slate-50 dark:bg-black/60 border border-slate-200 dark:border-white/5 rounded-xl py-3.5 pl-12 pr-4 text-xs font-bold text-slate-800 dark:text-white focus:border-purple-500/50 outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-700 shadow-inner"
                   />
                </div>
 
                <div className="grid grid-cols-4 gap-3">
                   {AVATAR_SAMPLES.map(sample => (
-                    <button 
+                    <button
                       key={sample.id}
                       onClick={() => setSelectedAvatar(sample)}
                       className={`relative aspect-[3/4] rounded-lg border-2 overflow-hidden transition-all group ${selectedAvatar.id === sample.id ? 'border-purple-500 ring-4 ring-purple-500/10 shadow-lg' : 'border-transparent opacity-40 hover:opacity-100'}`}
@@ -548,7 +588,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             <div className="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-slate-100 dark:border-white/5 rounded-2xl bg-slate-50 dark:bg-black/20 relative overflow-hidden group hover:border-cyan-500/20 transition-all shadow-inner">
                <AnimatePresence mode="wait">
                   {audioMode === 'UPLOAD' && (
-                    <motion.div 
+                    <motion.div
                       key="upload" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
                       className="flex flex-col items-center gap-6 cursor-pointer p-12 text-center"
                       onClick={() => audioUploadRef.current?.click()}
@@ -565,7 +605,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                   )}
 
                   {audioMode === 'LIBRARY' && (
-                    <motion.div 
+                    <motion.div
                       key="library" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
                       className="flex flex-col items-center gap-6 text-center"
                     >
@@ -578,7 +618,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                   )}
 
                   {audioMode === 'RECORD' && (
-                    <motion.div 
+                    <motion.div
                       key="record" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
                       className="flex flex-col items-center gap-8"
                     >
@@ -593,7 +633,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                   )}
 
                   {audioMode === 'TTS' && (
-                    <motion.div 
+                    <motion.div
                       key="tts" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                       className="w-full h-full p-8 space-y-6 flex flex-col"
                     >
@@ -622,12 +662,12 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
                          <div className="relative">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-600" size={16} />
-                            <input 
-                              type="text" 
+                            <input
+                              type="text"
                               value={ttsText}
                               onChange={(e) => setTtsText(e.target.value)}
-                              placeholder="Tìm giọng hoặc nhập nội dung..." 
-                              className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-xl py-3.5 pl-12 pr-4 text-xs font-bold outline-none focus:border-cyan-500/20 text-slate-900 dark:text-white shadow-sm transition-colors" 
+                              placeholder="Tìm giọng hoặc nhập nội dung..."
+                              className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-xl py-3.5 pl-12 pr-4 text-xs font-bold outline-none focus:border-cyan-500/20 text-slate-900 dark:text-white shadow-sm transition-colors"
                             />
                          </div>
 
@@ -644,7 +684,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                <div className="space-y-3">
                   <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">CHỌN MODEL LIPSYNC</label>
                   <div className="relative">
-                     <select 
+                     <select
                        value={selectedModel}
                        onChange={e => setSelectedModel(e.target.value)}
                        className="w-full bg-white dark:bg-black/60 border border-slate-200 dark:border-white/5 rounded-xl p-5 text-sm font-black uppercase italic tracking-widest outline-none appearance-none focus:border-purple-500/50 transition-all text-purple-700 dark:text-purple-400 shadow-sm"
@@ -668,8 +708,8 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                         <span className="text-[9px] font-black uppercase text-slate-500 dark:text-gray-600">credits</span>
                      </div>
                   </div>
-                  
-                  <button 
+
+                  <button
                     onClick={handleGenerate}
                     disabled={isGenerating || (!audioFile && !ttsText.trim() && audioMode !== 'RECORD')}
                     className="w-full py-6 bg-purple-700 dark:bg-[#6d28d9] text-white rounded-2xl text-xs font-black uppercase tracking-[0.5em] shadow-xl dark:shadow-[0_15px_50px_rgba(109,40,217,0.4)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-30 disabled:grayscale group overflow-hidden relative"
@@ -686,21 +726,21 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
       <AnimatePresence>
         {resultVideo && (
-           <motion.div 
+           <motion.div
              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
              className="fixed inset-0 z-[600] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-6 lg:p-20"
            >
               <div className="max-w-5xl w-full bg-white dark:bg-[#141417] rounded-[2rem] border border-slate-200 dark:border-white/10 overflow-hidden relative shadow-3xl dark:shadow-[0_0_150px_rgba(168,85,247,0.3)] transition-colors duration-500">
-                 <button 
-                   onClick={() => setResultVideo(null)} 
+                 <button
+                   onClick={() => setResultVideo(null)}
                    className="absolute top-6 right-6 p-3 bg-black/60 rounded-full hover:bg-red-500 hover:text-white transition-all z-50 border border-white/10 text-white"
                  >
                     <X size={28}/>
                  </button>
-                 
+
                  <div className="aspect-video bg-black flex items-center justify-center relative">
                     <video src={resultVideo} autoPlay controls className="w-full h-full object-contain" />
-                    
+
                     <div className="absolute top-8 left-8 flex items-center gap-6 text-white/20 pointer-events-none uppercase mono">
                       <div className="flex flex-col">
                         <span className="text-[7px] font-black tracking-widest">ENCODING: HEVC_PRO</span>
@@ -735,26 +775,26 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
       <AnimatePresence>
         {showGenerator && (
-          <AvatarGeneratorModal 
-            onClose={() => setShowGenerator(false)} 
+          <AvatarGeneratorModal
+            onClose={() => setShowGenerator(false)}
             onGenerated={(url) => {
               const newAv = { id: `ai-${Date.now()}`, url, label: 'AI Generated' };
               setSelectedAvatar(newAv);
               setShowGenerator(false);
-            }} 
+            }}
           />
         )}
       </AnimatePresence>
 
       <AnimatePresence>
         {showLibrary && (
-          <AvatarLibraryModal 
-            onClose={() => setShowLibrary(false)} 
+          <AvatarLibraryModal
+            onClose={() => setShowLibrary(false)}
             selectedId={selectedAvatar.id}
             onSelect={(av) => {
               setSelectedAvatar(av);
               setShowLibrary(false);
-            }} 
+            }}
           />
         )}
       </AnimatePresence>
@@ -762,7 +802,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       <AnimatePresence>
         {showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-             <motion.div 
+             <motion.div
                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
                className="max-w-md w-full bg-white dark:bg-[#111114] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors"
              >

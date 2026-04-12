@@ -1,16 +1,18 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Download, RefreshCw, Zap, Share2, 
-  Loader2, Play, Film, CheckCircle2,
-  Terminal, Activity, Palette, ShieldCheck,
-  Clapperboard, Lock, ExternalLink, Camera,
-  Maximize2, Plus, Sliders, Settings2, History,
-  LayoutGrid, Trash2, Box, Wand2, Info, FastForward,
-  MonitorPlay, Camera as CameraIcon, Crown, Rocket, Fingerprint
+import {
+  X, Download, Zap, Share2,
+  Loader2, Film,
+  Terminal, Activity, ShieldCheck,
+  Clapperboard, Camera,
+  Maximize2, Plus, Settings2, History,
+  Trash2, FastForward,
+  MonitorPlay, Crown, Rocket, Fingerprint
 } from 'lucide-react';
-import { generateDemoVideo, VideoProductionParams } from '../services/geminiMedia';
+import { useAuth } from '../context/AuthContext';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 import { useLanguage } from '../context/LanguageContext';
 
 type Tier = 'PRO' | 'ULTRA';
@@ -23,18 +25,19 @@ interface Reference {
 
 const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { lang } = useLanguage();
-  
+  const { isAuthenticated, login, useCredits } = useAuth();
+
   // Tier State
   const [tier, setTier] = useState<Tier>('PRO');
-  
+
   // UI Tabs
   const [activeTab, setActiveTab] = useState<'DIRECTIVES' | 'ASSETS' | 'TECHNICAL'>('DIRECTIVES');
-  
+
   // Prompt & Config
   const [prompt, setPrompt] = useState('');
   const [resolution, setResolution] = useState<'720p' | '1080p'>('720p');
   const [aspectRatio, setAspectRatio] = useState<'16:9' | '9:16'>('16:9');
-  
+
   // Assets
   const [references, setReferences] = useState<Reference[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,18 +47,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   const [isExtending, setIsExtending] = useState(false);
   const [resultVideo, setResultVideo] = useState<string | null>(null);
   const [history, setHistory] = useState<any[]>([]);
-  const [needsKey, setNeedsKey] = useState(false);
   const [status, setStatus] = useState('SYSTEM_IDLE');
-
-  useEffect(() => {
-    const checkKey = async () => {
-      if ((window as any).aistudio) {
-        const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-        setNeedsKey(!hasKey);
-      }
-    };
-    checkKey();
-  }, []);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -76,47 +68,65 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
   const handleSynthesize = async () => {
     if (isGenerating || !prompt.trim()) return;
-    
-    if (needsKey) {
-      if ((window as any).aistudio) await (window as any).aistudio.openSelectKey();
-      setNeedsKey(false);
-      return;
-    }
+    if (!isAuthenticated) { login(); return; }
 
     setIsGenerating(true);
     setResultVideo(null);
     setStatus('ORCHESTRATING_NEURAL_LINK...');
 
     try {
-      const params: VideoProductionParams = {
-        prompt,
-        resolution,
-        aspectRatio,
-        isUltra: tier === 'ULTRA',
-        references: references.map(r => r.url)
+      const refImages = references.map(r => r.url);
+      const hasRef = refImages.length > 0;
+      const type = hasRef ? 'image-to-video' : 'text-to-video';
+
+      const payload: VideoJobRequest = {
+        type,
+        input: hasRef ? { images: refImages } : {},
+        config: { duration: 8, aspectRatio, resolution },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
       };
 
-      const url = await generateDemoVideo(params);
-      if (url) {
-        setResultVideo(url);
-        setHistory(prev => [{ url, prompt, tier, timestamp: new Date().toLocaleTimeString() }, ...prev]);
-        setStatus('MANIFEST_COMPLETED');
-      }
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (result) => {
+          const videoUrl = result.videoUrl ?? '';
+          if (videoUrl) {
+            setResultVideo(videoUrl);
+            setHistory(prev => [{ url: videoUrl, prompt, tier, timestamp: new Date().toLocaleTimeString() }, ...prev]);
+            useCredits(100);
+            setStatus('MANIFEST_COMPLETED');
+          } else {
+            setStatus('SYNTH_ERROR');
+          }
+          setIsGenerating(false);
+        },
+        onError: () => {
+          console.error("Studio Render Failed");
+          setStatus('SYNTH_ERROR');
+          setIsGenerating(false);
+        }
+      });
     } catch (err: any) {
+      console.error("Studio Render Failed:", err);
       setStatus('SYNTH_ERROR');
-      if (err?.message?.includes("Requested entity was not found")) setNeedsKey(true);
-    } finally {
       setIsGenerating(false);
     }
   };
 
   return (
     <div className={`flex flex-col lg:flex-row h-full w-full font-sans overflow-hidden relative transition-colors duration-700 ${tier === 'ULTRA' ? 'bg-[#050505] text-white' : 'bg-white text-black dark:bg-[#020202] dark:text-white'}`}>
-      
+
       {/* 1. STUDIO SIDEBAR */}
       <aside className={`w-full lg:w-[450px] shrink-0 h-full flex flex-col border-r z-[60] overflow-y-auto no-scrollbar shadow-2xl transition-all duration-700 ${tier === 'ULTRA' ? 'bg-[#0a0a0c] border-white/5 shadow-yellow-500/5' : 'bg-[#fafafa] dark:bg-[#080808] border-black/5 dark:border-white/5'}`}>
         <div className="p-8 lg:p-10 space-y-10 pb-40">
-          
+
           {/* TIER SWITCHER */}
           <div className="flex flex-col gap-4">
              <div className="flex items-center gap-4">
@@ -130,13 +140,13 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
              </div>
 
              <div className="flex bg-black/5 dark:bg-white/5 p-1.5 rounded-sm border border-black/5 dark:border-white/10">
-                <button 
+                <button
                   onClick={() => { setTier('PRO'); setResolution('720p'); }}
                   className={`flex-grow flex items-center justify-center gap-2 py-3 text-[9px] font-black uppercase transition-all rounded-sm ${tier === 'PRO' ? 'bg-white dark:bg-black text-brand-blue shadow-lg' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}
                 >
                    <Rocket size={12} /> PRO Tier
                 </button>
-                <button 
+                <button
                   onClick={() => setTier('ULTRA')}
                   className={`flex-grow flex items-center justify-center gap-2 py-3 text-[9px] font-black uppercase transition-all rounded-sm ${tier === 'ULTRA' ? 'bg-yellow-500 text-black shadow-lg' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}
                 >
@@ -148,8 +158,8 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           {/* TABS */}
           <div className="flex bg-black/5 dark:bg-white/5 p-1 rounded-sm">
              {['DIRECTIVES', 'ASSETS', 'TECHNICAL'].map(tab => (
-               <button 
-                 key={tab} 
+               <button
+                 key={tab}
                  onClick={() => setActiveTab(tab as any)}
                  className={`flex-grow py-2.5 text-[8px] font-black uppercase transition-all rounded-sm ${activeTab === tab ? 'bg-white dark:bg-black shadow-md' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}
                >
@@ -165,7 +175,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                   <label className={`text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-3 ${tier === 'ULTRA' ? 'text-yellow-500/50' : 'text-gray-400'}`}>
                     <Terminal size={14} className={tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'} /> Semantic Intent
                   </label>
-                  <textarea 
+                  <textarea
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     className={`w-full h-40 p-5 text-sm font-bold focus:outline-none transition-all rounded-sm uppercase tracking-tighter shadow-inner ${tier === 'ULTRA' ? 'bg-black/60 border-white/10 focus:border-yellow-500' : 'bg-white dark:bg-black/40 border-black/10 dark:border-white/10 focus:border-brand-blue'}`}
@@ -221,13 +231,13 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                      <div className="space-y-2">
                         <span className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Target Resolution</span>
                         <div className="grid grid-cols-2 gap-2">
-                           <button 
+                           <button
                              onClick={() => setResolution('720p')}
                              className={`py-3 text-[10px] font-black uppercase border rounded-sm transition-all ${resolution === '720p' ? 'bg-black dark:bg-white text-white dark:text-black border-transparent shadow-xl' : 'border-black/5 dark:border-white/10 text-gray-400'}`}
                            >
                               720p Fast
                            </button>
-                           <button 
+                           <button
                              disabled={tier === 'PRO'}
                              onClick={() => setResolution('1080p')}
                              className={`py-3 text-[10px] font-black uppercase border rounded-sm transition-all flex items-center justify-center gap-2 ${resolution === '1080p' ? 'bg-yellow-500 text-black border-transparent shadow-xl' : 'border-black/5 dark:border-white/10 text-gray-400'} ${tier === 'PRO' ? 'opacity-20 cursor-not-allowed' : ''}`}
@@ -240,7 +250,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                         <span className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Aspect Ratio</span>
                         <div className="grid grid-cols-2 gap-2">
                            {['16:9', '9:16'].map(ratio => (
-                             <button 
+                             <button
                                key={ratio} onClick={() => setAspectRatio(ratio as any)}
                                className={`py-3 text-[10px] font-black uppercase border rounded-sm transition-all ${aspectRatio === ratio ? (tier === 'ULTRA' ? 'bg-yellow-500 text-black border-transparent' : 'bg-black dark:bg-white text-white dark:text-black border-transparent') : 'border-black/5 dark:border-white/10 text-gray-400'}`}
                              >
@@ -251,7 +261,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                      </div>
                   </div>
                 </div>
-                
+
                 <div className={`p-6 border rounded-sm space-y-3 transition-colors duration-700 ${tier === 'ULTRA' ? 'border-yellow-500/20 bg-yellow-500/5' : 'border-brand-blue/20 bg-brand-blue/5'}`}>
                    <div className="flex items-center gap-2">
                       <ShieldCheck size={14} className={tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'} />
@@ -269,7 +279,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
       {/* 2. VIEWPORT & RENDERING */}
       <main className="flex-grow flex flex-col bg-gray-50 dark:bg-[#020202] relative overflow-hidden transition-colors">
-        
+
         {/* HUD HEADER */}
         <div className="h-16 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-30">
           <div className="flex items-center gap-6">
@@ -320,9 +330,9 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             ) : (
               <motion.div key="result" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={`relative group w-full shadow-[0_50px_100px_rgba(0,0,0,0.5)] border border-white/5 bg-black rounded-sm overflow-hidden ${aspectRatio === '16:9' ? 'max-w-6xl aspect-video' : 'max-w-md aspect-[9/16]'}`}>
                 <video key={resultVideo} src={resultVideo!} autoPlay loop muted className="w-full h-full object-cover" />
-                
+
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
-                
+
                 {/* Cinema Overlays */}
                 <div className="absolute top-8 left-8 flex items-center gap-6 text-white/20 pointer-events-none uppercase mono">
                    <div className="flex flex-col">
@@ -364,8 +374,8 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                 </div>
                 <div className="flex gap-3">
                    {history.map((take, idx) => (
-                      <button 
-                        key={idx} 
+                      <button
+                        key={idx}
                         onClick={() => setResultVideo(take.url)}
                         className={`w-16 h-16 rounded-sm border transition-all overflow-hidden relative group/take ${resultVideo === take.url ? (tier === 'ULTRA' ? 'border-yellow-500 ring-2 ring-yellow-500/30' : 'border-brand-blue ring-2 ring-brand-blue/30') : 'border-white/10 opacity-30 hover:opacity-100'}`}
                       >
@@ -382,7 +392,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
            <div className="flex gap-4">
               {resultVideo && tier === 'ULTRA' && (
-                 <button 
+                 <button
                    disabled={isExtending || isGenerating}
                    className="h-24 px-12 lg:px-20 flex flex-col items-center justify-center gap-2 transition-all rounded-sm border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black group shadow-xl"
                  >
@@ -390,8 +400,8 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                     <span className="text-[9px] font-black uppercase tracking-[0.4em]">Extend +7s</span>
                  </button>
               )}
-              
-              <button 
+
+              <button
                 onClick={handleSynthesize}
                 disabled={isGenerating || !prompt.trim()}
                 className={`h-24 px-20 lg:px-48 flex flex-col items-center justify-center gap-2 transition-all rounded-sm relative overflow-hidden group shadow-2xl ${prompt.trim() ? (tier === 'ULTRA' ? 'bg-yellow-500 text-black hover:scale-105' : 'bg-brand-blue text-white hover:scale-105') : 'bg-gray-100 dark:bg-white/5 text-gray-300 dark:text-gray-800'}`}
@@ -403,39 +413,6 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
            </div>
         </div>
       </main>
-
-      {/* AUTH OVERLAY */}
-      {needsKey && (
-        <div className="absolute inset-0 z-[500] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8 text-center">
-          <div className="max-w-md space-y-12 animate-in fade-in zoom-in duration-500">
-            <div className={`w-24 h-24 border-2 mx-auto flex items-center justify-center shadow-2xl ${tier === 'ULTRA' ? 'border-yellow-500 shadow-yellow-500/20' : 'border-brand-blue shadow-brand-blue/20'}`}>
-              <Lock className={`w-10 h-10 animate-pulse ${tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'}`} />
-            </div>
-            <div className="space-y-6">
-              <h3 className="text-4xl font-black uppercase tracking-tighter italic">Production_Lock</h3>
-              <p className="text-[12px] text-gray-500 leading-relaxed uppercase tracking-widest font-bold">
-                High-frequency temporal synthesis via Veo 3.1 requires authorization from a **PAID** GCP project node.
-              </p>
-              <div className="pt-10 flex flex-col gap-6 items-center">
-                <button 
-                  onClick={() => { if ((window as any).aistudio) (window as any).aistudio.openSelectKey(); setNeedsKey(false); }}
-                  className={`py-6 px-16 text-[12px] tracking-[0.3em] rounded-none shadow-2xl w-full font-black uppercase ${tier === 'ULTRA' ? 'bg-yellow-500 text-black' : 'bg-brand-blue text-white'}`}
-                >
-                  Authorize Pipeline Key
-                </button>
-                <a 
-                  href="https://ai.google.dev/gemini-api/docs/billing" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-[10px] text-gray-600 hover:text-brand-blue flex items-center justify-center gap-3 font-black uppercase tracking-widest transition-colors"
-                >
-                  GCP Billing Documentation <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <style>{`
         @keyframes progress {
