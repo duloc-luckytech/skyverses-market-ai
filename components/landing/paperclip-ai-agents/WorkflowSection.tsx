@@ -80,7 +80,8 @@ export const WorkflowSection: React.FC = () => (
             </div>
           </HoverCard>
           </motion.div>
-        </div>
+        ))}
+      </div>
 
       {/* Timeline connector — desktop only */}
       <div className="hidden md:flex items-center justify-between mt-6 px-8">

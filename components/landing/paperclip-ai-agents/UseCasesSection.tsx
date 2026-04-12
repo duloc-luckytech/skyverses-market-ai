@@ -123,7 +123,8 @@ export const UseCasesSection: React.FC = () => (
             </div>
           </HoverCard>
           </motion.div>
-        </div>
+        ))}
+      </div>
     </div>
   </section>
 );
