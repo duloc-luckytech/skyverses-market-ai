@@ -21,18 +21,23 @@ router.post("/chat", authenticate, async (req: any, res: any) => {
   const userId = req.user?._id?.toString() || req.ip || "unknown";
   const now = Date.now();
   const timestamps = (chatRateMap.get(userId) || []).filter(t => now - t < CHAT_RATE_WINDOW);
-  
+
   if (timestamps.length >= CHAT_RATE_LIMIT) {
     const waitSec = Math.ceil((timestamps[0] + CHAT_RATE_WINDOW - now) / 1000);
-    return res.status(429).json({ 
+    return res.status(429).json({
       error: `Bạn đang gửi quá nhanh. Vui lòng chờ ${waitSec}s.`,
-      retryAfter: waitSec 
+      retryAfter: waitSec
     });
   }
   timestamps.push(now);
   chatRateMap.set(userId, timestamps);
   try {
-    const { messages, stream = true } = req.body;
+    const {
+      messages,
+      stream = true,
+      model = "claude-sonnet-4-6",
+      max_tokens = 4096,
+    } = req.body;
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: "messages array required" });
     }
@@ -51,9 +56,9 @@ router.post("/chat", authenticate, async (req: any, res: any) => {
         "Authorization": `Bearer ${selectedKey}`,
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-5",
+        model,
         messages,
-        max_tokens: 4096,
+        max_tokens,
         stream,
       }),
     });

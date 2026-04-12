@@ -17,7 +17,7 @@ import {
   Film, Pencil, BarChart3, Send, Loader2, RefreshCw,
   Check, X, Plus, Bot, User as UserIcon,
 } from 'lucide-react';
-import { aiChatStream, aiChatOnce, type ChatMessage } from '../../apis/aiChat';
+import { aiChatStreamViaProxy, aiChatOnceViaProxy, type ChatMessage } from '../../apis/aiChat';
 import type { Scene } from '../../hooks/useStoryboardStudio';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -163,7 +163,7 @@ Always respond in the same language the user writes in. Be concise (2–4 senten
 
     let accumulated = '';
     try {
-      await aiChatStream(
+      await aiChatStreamViaProxy(
         messages,
         (token) => {
           accumulated += token;
@@ -197,7 +197,7 @@ Always respond in the same language the user writes in. Be concise (2–4 senten
     setSuggestions([]);
     try {
       const lastScenes = scenes.slice(-3).map((s, i) => `Scene ${s.order}: ${s.prompt.slice(0, 120)}`).join('\n');
-      const raw = await aiChatOnce([
+      const raw = await aiChatOnceViaProxy([
         {
           role: 'system',
           content: `You are a creative storyboard director. Suggest the next 3 scenes for an AI video storyboard.
@@ -243,7 +243,7 @@ Suggest 3 logical next scenes that continue this story naturally.`,
     const director = DIRECTORS.find(d => d.id === selectedDirector) ?? DIRECTORS[0];
     let accumulated = '';
     try {
-      await aiChatStream(
+      await aiChatStreamViaProxy(
         [
           {
             role: 'system',
@@ -278,7 +278,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
     setIsAnalyzing(true);
     setStats(null);
     try {
-      const raw = await aiChatOnce([
+      const raw = await aiChatOnceViaProxy([
         {
           role: 'system',
           content: `You are a script analyst. Analyze the given script and return ONLY a valid JSON object (no markdown, no extra text):

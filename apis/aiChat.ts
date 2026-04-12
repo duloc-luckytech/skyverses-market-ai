@@ -1,9 +1,12 @@
 /**
  * aiChat.ts — Skyverses AI Chat API client
- * Calls ezaiapi.com/v1/chat/completions directly (claude-sonnet-4-6)
- * Supports: single-shot JSON mode, streaming SSE mode, multipart image+text
- * Used by: AISupportChat (global chat), Storyboard Studio, AI planning flows
+ * Supports two modes:
+ *  - Direct: calls ezaiapi.com directly (used by AISupportChat global widget)
+ *  - Proxy:  calls /ai/chat on our own backend (no CORS, API key hidden)
+ *            Used by Storyboard Studio and other workspace features.
  */
+
+import { API_BASE_URL, getHeaders } from './config';
 
 // ── Config from env ────────────────────────────────────────────────────────
 
@@ -162,4 +165,86 @@ export const aiChatJSON = async <T = unknown>(
 ): Promise<T> => {
   const raw = await aiChatOnce(messages, signal, maxTokens);
   return JSON.parse(_extractJSON(raw)) as T;
+};
+
+// ── Proxy helpers — route through our own backend to avoid CORS + hide API key ──
+
+/**
+ * Single-shot call via backend proxy (/ai/chat).
+ * Used by: Storyboard Studio (all non-streaming calls)
+ */
+export const aiChatOnceViaProxy = async (
+  messages: ChatMessage[],
+  signal?: AbortSignal,
+  maxTokens = 4096,
+): Promise<string> => {
+  const response = await fetch(`${API_BASE_URL}/ai/chat`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ messages, stream: false, max_tokens: maxTokens }),
+    signal,
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.error || `AI Proxy HTTP ${response.status}`);
+  }
+  const data = await response.json();
+  return data?.choices?.[0]?.message?.content ?? '';
+};
+
+/**
+ * Streaming call via backend proxy (/ai/chat stream: true).
+ * Pipes SSE chunks to onToken callback, resolves with full accumulated text.
+ * Used by: Storyboard Studio (Chat tab, Rewrite tab)
+ */
+export const aiChatStreamViaProxy = async (
+  messages: ChatMessage[],
+  onToken: (token: string) => void,
+  signal?: AbortSignal,
+  maxTokens = 4096,
+): Promise<string> => {
+  const response = await fetch(`${API_BASE_URL}/ai/chat`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ messages, stream: true, max_tokens: maxTokens }),
+    signal,
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.error || `AI Proxy HTTP ${response.status}`);
+  }
+  if (!response.body) throw new Error('No response body for streaming');
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let fullText = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = chunk.split('\n').filter(l => l.startsWith('data: '));
+
+      for (const line of lines) {
+        const payload = line.slice(6).trim();
+        if (payload === '[DONE]') break;
+        try {
+          const parsed = JSON.parse(payload);
+          const token = parsed?.choices?.[0]?.delta?.content ?? '';
+          if (token) {
+            fullText += token;
+            onToken(token);
+          }
+        } catch {
+          // ignore malformed SSE lines
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  return fullText;
 };
