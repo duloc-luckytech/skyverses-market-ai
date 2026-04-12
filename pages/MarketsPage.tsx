@@ -399,6 +399,7 @@ const MarketsPage: React.FC = () => {
   // #2: PREVIEW & COMPARE states
   const [previewSol, setPreviewSol] = useState<Solution | null>(null);
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [showMoreCats, setShowMoreCats] = useState(false);
 
   // #1: SYNC filters → URL (use inputValue for URL so it reflects what user typed)
   useEffect(() => {
@@ -620,33 +621,71 @@ const MarketsPage: React.FC = () => {
           <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Danh mục</span>
         </div>
         <div className="p-2 space-y-0.5">
-          {CATEGORIES.map(cat => {
-            const Icon = cat.icon;
-            const isActive = activeCategory === cat.key;
-            const count = catCounts[cat.key] || 0;
-            const isExternal = (cat as any).isPartner;
+          {(() => {
+            const staticKeys = new Set(STATIC_CATEGORIES.map(c => c.key));
+            const mainCats = CATEGORIES.filter(c => staticKeys.has(c.key));
+            const extraCats = CATEGORIES.filter(c => !staticKeys.has(c.key));
+            const renderCatBtn = (cat: typeof CATEGORIES[0]) => {
+              const Icon = cat.icon;
+              const isActive = activeCategory === cat.key;
+              const count = catCounts[cat.key] || 0;
+              const isExternal = (cat as any).isPartner;
+              return (
+                <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all ${
+                    isActive
+                      ? isExternal
+                        ? 'bg-gradient-to-r from-brand-blue to-purple-500 text-white shadow-sm shadow-brand-blue/20'
+                        : 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
+                      : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.03]'
+                  }`}>
+                  <Icon size={14} className={isActive ? 'text-white' : isExternal ? 'text-brand-blue' : ''} />
+                  <span className="flex-1 text-left">{cat.label}</span>
+                  {isExternal && !isActive && (
+                    <span className="text-[8px] font-bold text-brand-blue bg-brand-blue/[0.07] border border-brand-blue/15 px-1.5 py-0.5 rounded-full uppercase tracking-wider mr-1">Partner</span>
+                  )}
+                  <span className={`text-[10px] font-semibold min-w-[20px] text-center py-0.5 rounded-full ${
+                    isActive
+                      ? 'bg-white/20 text-white'
+                      : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-500'
+                  }`}>{count}</span>
+                </button>
+              );
+            };
             return (
-              <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all ${
-                  isActive
-                    ? isExternal
-                      ? 'bg-gradient-to-r from-brand-blue to-purple-500 text-white shadow-sm shadow-brand-blue/20'
-                      : 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
-                    : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.03]'
-                }`}>
-                <Icon size={14} className={isActive ? 'text-white' : isExternal ? 'text-brand-blue' : ''} />
-                <span className="flex-1 text-left">{cat.label}</span>
-                {isExternal && !isActive && (
-                  <span className="text-[8px] font-bold text-brand-blue bg-brand-blue/[0.07] border border-brand-blue/15 px-1.5 py-0.5 rounded-full uppercase tracking-wider mr-1">Partner</span>
+              <>
+                {mainCats.map(renderCatBtn)}
+                {extraCats.length > 0 && (
+                  <>
+                    <AnimatePresence initial={false}>
+                      {showMoreCats && (
+                        <motion.div
+                          key="extra-cats"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden space-y-0.5"
+                        >
+                          {extraCats.map(renderCatBtn)}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    <button
+                      onClick={() => setShowMoreCats(v => !v)}
+                      className="w-full flex items-center justify-center gap-1.5 px-3 py-2 mt-0.5 rounded-lg text-[11px] font-semibold text-slate-400 dark:text-gray-500 hover:text-brand-blue hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all border border-dashed border-black/[0.06] dark:border-white/[0.06]"
+                    >
+                      {showMoreCats ? (
+                        <><ChevronUp size={12} /> Thu gọn</>
+                      ) : (
+                        <><ChevronDown size={12} /> Xem thêm {extraCats.length} danh mục</>
+                      )}
+                    </button>
+                  </>
                 )}
-                <span className={`text-[10px] font-semibold min-w-[20px] text-center py-0.5 rounded-full ${
-                  isActive
-                    ? 'bg-white/20 text-white'
-                    : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-500'
-                }`}>{count}</span>
-              </button>
+              </>
             );
-          })}
+          })()}
         </div>
       </div>
 
