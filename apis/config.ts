@@ -53,7 +53,7 @@ export const systemConfigApi = {
         return await response.json();
       } catch (error) {
         console.error('System Config Fetch Error:', error);
-        throw error;
+        return { success: false, data: {} as SystemConfig };
       }
     }, 5 * 60 * 1000); // 5 min TTL
   }
