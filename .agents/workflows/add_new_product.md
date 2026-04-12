@@ -260,18 +260,37 @@ Xác định trước khi làm bất cứ thứ gì:
 - **homeBlocks**: e.g. `['top_trending']`
 - **tags**: array
 
+> 🚨 **CRITICAL — Field `id` là BẮT BUỘC để product xuất hiện trong Marketplace!**
+>
+> `MarketsPage.tsx` filter tại line 633:
+> ```ts
+> solRes.data.filter((s) => s.isActive !== false && s.id && s.slug)
+> //                                                  ^^^^
+> // Nếu thiếu id → product bị lọc ra hoàn toàn, không xuất hiện trong /markets
+> ```
+> **Quy tắc đặt `id`:**
+> - Format: `SCREAMING-SNAKE-CASE` (chữ HOA + dấu gạch ngang)
+> - Ví dụ: `AI-SLIDE-CREATOR`, `SOCIAL-BANNER-AI`, `FIBUS-VIDEO-STUDIO`
+> - Phải **unique** trong toàn bộ marketplace
+> - Nếu seed xong mà product không hiện → kiểm tra ngay field `id` qua: `curl https://api.skyverses.com/market/<slug> | python3 -c "import sys,json; d=json.load(sys.stdin)['data']; print('id:', d.get('id', 'MISSING — BUG!'))"`
+
 ---
 
 ## STEP 2 — Create seed script
 
 Create `seed-<slug>.mjs` theo pattern `seed-products.mjs`:
 
+> ⚠️ **Checklist trước khi seed:**
+> - [ ] `id` đã được đặt theo format `SCREAMING-SNAKE-CASE` (VD: `AI-SLIDE-CREATOR`)
+> - [ ] `slug` khớp với route đã đăng ký trong `App.tsx`
+> - [ ] `isActive: true` và `status: 'active'` đều được set
+
 ```js
 const API = 'https://api.skyverses.com/market';
 const TOKEN = '<ADMIN_JWT_TOKEN>';
 const product = {
-  id: 'YOUR-ID',
-  slug: 'your-slug',
+  id: 'YOUR-ID',           // 🚨 BẮT BUỘC — VD: 'AI-SLIDE-CREATOR' (SCREAMING-SNAKE-CASE)
+  slug: 'your-slug',       // phải khớp route /product/<slug> trong App.tsx
   name: { en: '...', vi: '...', ko: '...', ja: '...' },
   category: { en: '...', vi: '...', ko: '...', ja: '...' },
   description: { en: '...', vi: '...', ko: '...', ja: '...' },

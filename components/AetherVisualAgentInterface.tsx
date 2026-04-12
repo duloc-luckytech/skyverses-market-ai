@@ -47,13 +47,11 @@ const AetherVisualAgentInterface = () => {
     setConcepts([]);
     setLogs([]);
 
-    // 1. UNDERSTAND
     setLoopState('UNDERSTAND');
     addLog('THINK', 'Analyzing creative intent from high-level uplink...');
     const analysis = await aiTextViaProxy(`ANALYZE_CREATIVE_GOAL: "${goal}"\nExtract: Subject, Style, Core Constraints. Keep it brief.`);
     addLog('PLAN', `Intent mapped: ${analysis.slice(0, 120)}...`);
 
-    // 2. PLAN
     setLoopState('PLAN');
     addLog('THINK', 'Architecting multi-stage synthesis plan...');
     const planningPrompt = `Based on this goal: "${goal}", generate 4 distinct, highly detailed image prompts that maintain visual consistency but explore different angles. Format as numbered list.`;
@@ -70,7 +68,6 @@ const AetherVisualAgentInterface = () => {
     setConcepts(newConcepts);
     addLog('PLAN', `Pipeline initialized with ${newConcepts.length} neural branches.`);
 
-    // 3. CREATE
     setLoopState('CREATE');
     for (let i = 0; i < newConcepts.length; i++) {
       const concept = newConcepts[i];
@@ -89,14 +86,12 @@ const AetherVisualAgentInterface = () => {
       }
     }
 
-    // 4. REVIEW
     setLoopState('REVIEW');
     addLog('THINK', 'Initiating neural quality audit on batch set...');
     await new Promise(r => setTimeout(r, 1500));
     setConcepts(prev => prev.map(c => ({ ...c, score: Math.floor(Math.random() * 20) + 80 })));
     addLog('REVIEW', 'Visual DNA verified. Batch alignment at 94.2% stability.');
 
-    // 5. DONE
     setLoopState('DELIVER');
     addLog('DONE', 'Creative suite finalized and ready for export.');
     setIsBusy(false);
@@ -105,7 +100,6 @@ const AetherVisualAgentInterface = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#030304] overflow-hidden text-black dark:text-white font-mono">
       
-      {/* 1. GOAL UPLINK (LEFT) */}
       <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#050506] border-r border-black/10 dark:border-white/5 p-8 space-y-10">
          <div className="space-y-6">
             <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
@@ -150,7 +144,6 @@ const AetherVisualAgentInterface = () => {
          </div>
       </div>
 
-      {/* 2. SYNTHESIS GRID (CENTER) */}
       <div className="flex-grow flex flex-col bg-white dark:bg-[#020202] relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #0090ff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
@@ -209,7 +202,6 @@ const AetherVisualAgentInterface = () => {
            </div>
         </div>
 
-        {/* BOTTOM HUD */}
         <div className="absolute bottom-0 left-0 right-0 h-32 lg:h-36 bg-[#fafafa] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
            <div className="hidden lg:flex flex-col gap-3">
               <div className="flex items-center gap-6">
@@ -243,7 +235,6 @@ const AetherVisualAgentInterface = () => {
         </div>
       </div>
 
-      {/* 3. COGNITIVE TRACE (RIGHT) */}
       <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">

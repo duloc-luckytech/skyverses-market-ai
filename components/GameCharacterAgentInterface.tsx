@@ -51,13 +51,11 @@ const GameCharacterAgentInterface = () => {
     setAssets([]);
     setLogs([]);
 
-    // 1. ANALYZE
     setLoopState('ANALYZE');
     addLog('ANALYZE', `Parsing character brief for ${genre} ${role}...`);
     const analysis = await aiTextViaProxy(`ANALYZE_GAME_CHARACTER_BRIEF: "${brief}"\nRole: ${role}. Genre: ${genre}. Style: ${style}.\nExtract game design constraints.`);
     addLog('ANALYZE', `Archetype constraints mapped: Readability prioritized.`);
 
-    // 2. PLAN
     setLoopState('PLAN');
     addLog('PLAN', 'Planning production turnaround (Portrait, Action, Gear-Focus)...');
     const planningPrompt = `Based on the brief: "${brief}" and style "${style}", generate 3 production-grade character asset prompts. 1: Close-up Portrait. 2: Full-body Action Pose. 3: Orthographic Equipment View. Use game-dev terminology. Number them.`;
@@ -72,7 +70,6 @@ const GameCharacterAgentInterface = () => {
     setAssets(newAssets);
     addLog('PLAN', 'Pipeline initialized with 3 production nodes.');
 
-    // 3. GENERATE
     setLoopState('GENERATE');
     for (let i = 0; i < newAssets.length; i++) {
       const asset = newAssets[i];
@@ -90,14 +87,12 @@ const GameCharacterAgentInterface = () => {
       }
     }
 
-    // 4. REVIEW
     setLoopState('REVIEW');
     addLog('REVIEW', 'Auditing visual DNA and silhouette readability...');
     await new Promise(r => setTimeout(r, 1200));
     setAssets(prev => prev.map(a => ({ ...a, readabilityScore: 85 + Math.floor(Math.random() * 14) })));
     addLog('REVIEW', 'Assets verified for engine integration.');
 
-    // 5. DONE
     setLoopState('DELIVER');
     addLog('DONE', 'Character suite finalized. Ready for SDK export.');
     setIsBusy(false);
@@ -106,7 +101,6 @@ const GameCharacterAgentInterface = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#020203] overflow-hidden text-black dark:text-white font-mono">
       
-      {/* 1. CHARACTER CONFIG (LEFT) */}
       <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[#080808] border-r border-black/10 dark:border-white/5 p-8 space-y-10">
          <div className="space-y-6">
             <label className="text-[10px] font-black uppercase text-emerald-500 tracking-[0.4em] flex items-center gap-3">
@@ -159,7 +153,6 @@ const GameCharacterAgentInterface = () => {
          </div>
       </div>
 
-      {/* 2. PRODUCTION GRID (CENTER) */}
       <div className="flex-grow flex flex-col bg-white dark:bg-[#020202] relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #10b981 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
@@ -215,7 +208,6 @@ const GameCharacterAgentInterface = () => {
            </div>
         </div>
 
-        {/* BOTTOM HUD */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#fafafa] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
            <div className="hidden lg:flex flex-col gap-3">
               <div className="flex items-center gap-6">
@@ -246,7 +238,6 @@ const GameCharacterAgentInterface = () => {
         </div>
       </div>
 
-      {/* 3. DECISION LOG (RIGHT) */}
       <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">

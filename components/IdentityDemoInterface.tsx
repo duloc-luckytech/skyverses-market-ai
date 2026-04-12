@@ -16,18 +16,15 @@ interface Version {
 }
 
 const IdentityDemoInterface = () => {
-  // Character DNA State
   const [charName, setCharName] = useState('NOVA_CORE_01');
   const [charDescription, setCharDescription] = useState('Pale skin, cybernetic blue eyes, sharp jawline, short silver pixie hair.');
   const [locks, setLocks] = useState({ face: true, proportions: true, skin: true });
 
-  // Directives State
   const [scenePrompt, setScenePrompt] = useState('sitting in a rain-slicked cyberpunk street, neon reflection on face');
   const [outfit, setOutfit] = useState('Obsidian tactical gear');
   const [style, setStyle] = useState('Cinematic Photorealistic');
   const [camera, setCamera] = useState('Close Up, 85mm');
 
-  // App State
   const [activeImage, setActiveImage] = useState('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1600');
   const [versions, setVersions] = useState<Version[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -63,7 +60,6 @@ const IdentityDemoInterface = () => {
 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#080808] overflow-hidden text-black dark:text-white">
-      {/* Identity Sidebar */}
       <div className="w-full lg:w-[350px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-gray-50 dark:bg-[#050506] overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
@@ -122,7 +118,6 @@ const IdentityDemoInterface = () => {
         </div>
       </div>
 
-      {/* Viewport */}
       <div className="flex-grow flex flex-col bg-gray-100 dark:bg-[#020203] relative overflow-hidden">
         <div className="flex-grow flex flex-col items-center justify-center p-6 relative">
           <div className="w-full max-w-2xl aspect-square relative z-10">
@@ -164,7 +159,6 @@ const IdentityDemoInterface = () => {
         </div>
       </div>
 
-      {/* Settings Sidebar (Desktop Only) */}
       <div className="hidden xl:flex w-[280px] shrink-0 flex flex-col bg-gray-50 dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">

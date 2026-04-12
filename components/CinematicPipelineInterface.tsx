@@ -8,7 +8,6 @@ import {
   Loader2, User, Camera, Music, Move, ChevronRight,
   ArrowRight, Video, AlertCircle, RefreshCw, Share2, Lock, ExternalLink
 } from 'lucide-react';
-// Added generateDemoImage to imports
 import { generateDemoVideo, generateDemoImage } from '../services/geminiMedia';
 import { aiTextViaProxy } from '../apis/aiCommon';
 type PipelineStage = 'FOUNDATION' | 'ANIMATION_PLAN' | 'CHAR_MOTION' | 'CUTSCENE_PLAN' | 'SCENE_GEN' | 'FINAL_CUT';
@@ -61,12 +60,9 @@ const CinematicPipelineInterface = () => {
     if (idx < stages.length - 1) setActiveStage(stages[idx + 1]);
   };
 
-  // --- STAGE EXECUTION LOGIC ---
-
   const runFoundation = async () => {
     setIsBusy(true);
     addLog('THINK', 'Analyzing character identity anchors...');
-    // Fix: generateDemoImage is now correctly imported
     const res = await generateDemoImage('Portrait of a cybernetic warrior princess, ornate gold armor, glowing neon blue highlights, cinematic lighting, 8k resolution, character sheet style.');
     if (res) {
       setData(prev => ({ ...prev, characterProfile: { name: 'AETHERA_V1', role: 'Royal Vanguard', visualUrl: res } }));
@@ -89,8 +85,6 @@ const CinematicPipelineInterface = () => {
     setIsBusy(true);
     addLog('SYNTH', 'Orchestrating image-to-motion nodes for profile AETHERA_V1...');
     try {
-      // Fix: generateDemoVideo expects a single VideoProductionParams object
-      // Fix: Changed firstFrame to references
       const url = await generateDemoVideo({
         prompt: 'A cinematic motion of a cybernetic warrior princess in gold armor, breathing, glowing neon lights, slow camera zoom, 4k high quality.',
         references: data.characterProfile?.visualUrl ? [data.characterProfile.visualUrl] : undefined
@@ -125,8 +119,6 @@ const CinematicPipelineInterface = () => {
     setIsBusy(true);
     addLog('SYNTH', 'Rendering final scenes with character identity locking...');
     try {
-      // Fix: generateDemoVideo expects a single VideoProductionParams object
-      // Fix: Changed firstFrame to references
       const url = await generateDemoVideo({
         prompt: 'Cinematic trailer shot: cybernetic warrior walking through ancient desert ruins, sand storm, volumetric sun rays, high fidelity cinematography.',
         references: data.characterProfile?.visualUrl ? [data.characterProfile.visualUrl] : undefined
@@ -150,7 +142,6 @@ const CinematicPipelineInterface = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#020203] overflow-hidden text-black dark:text-white font-mono">
       
-      {/* 1. PIPELINE STEPPER (LEFT) */}
       <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[#080808] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar">
          <div className="p-8 border-b border-black/10 dark:border-white/5">
             <h3 className="text-[10px] font-black uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
@@ -193,7 +184,6 @@ const CinematicPipelineInterface = () => {
          </div>
       </div>
 
-      {/* 2. PRODUCTION HUB (CENTER) */}
       <div className="flex-grow flex flex-col bg-white dark:bg-[#020202] relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #0090ff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
@@ -215,7 +205,6 @@ const CinematicPipelineInterface = () => {
                  </div>
               </div>
 
-              {/* STAGE SPECIFIC CONTENT */}
               <div className="min-h-[400px] flex flex-col items-center justify-center">
                  {activeStage === 'FOUNDATION' && (
                     <div className="w-full space-y-10 animate-in fade-in zoom-in-95 duration-500">
@@ -362,7 +351,6 @@ const CinematicPipelineInterface = () => {
            </div>
         </div>
 
-        {/* DIRECTOR HUD (BOTTOM) */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#fafafa] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
            <div className="hidden lg:flex flex-col gap-3">
               <div className="flex items-center gap-6">
@@ -391,7 +379,6 @@ const CinematicPipelineInterface = () => {
         </div>
       </div>
 
-      {/* 3. DIRECTOR LOG (RIGHT) */}
       <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">

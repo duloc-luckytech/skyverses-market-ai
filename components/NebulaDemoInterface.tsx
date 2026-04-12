@@ -20,7 +20,6 @@ const NebulaDemoInterface = () => {
   const [credits, setCredits] = useState(3);
   const [archives, setArchives] = useState<Archive[]>([]);
 
-  // Config States
   const [engineMode, setEngineMode] = useState('Creative_V2');
   const [resolution, setResolution] = useState('8K_Ultra');
 
@@ -49,7 +48,6 @@ const NebulaDemoInterface = () => {
 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#080808] overflow-hidden text-black dark:text-white">
-      {/* 1. PARAMETERS SIDEBAR */}
       <div className="w-full lg:w-[350px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-gray-50 dark:bg-[#050506] overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
@@ -110,7 +108,6 @@ const NebulaDemoInterface = () => {
         </div>
       </div>
 
-      {/* 2. MAIN VIEWPORT */}
       <div className="flex-grow flex flex-col bg-gray-100 dark:bg-[#020203] relative overflow-hidden">
         <div className="flex-grow flex flex-col items-center justify-center p-6 relative">
           <div className="w-full max-w-3xl aspect-[16/10] relative z-10">
@@ -135,7 +132,6 @@ const NebulaDemoInterface = () => {
           </div>
         </div>
 
-        {/* PROMPT BAR */}
         <div className="h-32 border-t border-black/10 dark:border-white/5 bg-white dark:bg-black p-4 flex gap-4 shrink-0 relative z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] dark:shadow-none">
           <div className="flex-grow flex flex-col gap-2">
             <label className="text-[8px] font-black uppercase text-gray-400 dark:text-gray-700 tracking-[0.3em] flex items-center gap-2"><Wand2 size={12} className="text-brand-blue" /> Creative_Directive</label>
@@ -157,7 +153,6 @@ const NebulaDemoInterface = () => {
         </div>
       </div>
 
-      {/* 3. ARCHIVES SIDEBAR (DESKTOP) */}
       <div className="hidden xl:flex w-[280px] shrink-0 flex flex-col bg-gray-50 dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">

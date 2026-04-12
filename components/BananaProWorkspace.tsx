@@ -136,7 +136,6 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const chapter = chapters.find(c => c.id === activeChapterId);
     if (!chapter || isConstructing) return;
 
-    // 1. Auth & Credit Validation
     if (!isAuthenticated) {
       login();
       return;
@@ -148,7 +147,6 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       return;
     }
     
-    // 2. Deduct Credits
     const deductionSuccessful = useCredits(5);
     if (!deductionSuccessful) return;
 
@@ -184,7 +182,6 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-[#f8f8f8] dark:bg-[#030304] text-black dark:text-white font-sans overflow-hidden relative">
       
-      {/* 1. EDITORIAL BOARD (SIDEBAR) */}
       <AnimatePresence initial={false}>
         {sidebarOpen && (
           <motion.aside 
@@ -209,7 +206,6 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                  </button>
               </header>
 
-              {/* CREDIT HUD */}
               <div className="p-5 border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/[0.02] rounded-sm space-y-4">
                  <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2 text-gray-500">
@@ -300,10 +296,8 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         )}
       </AnimatePresence>
 
-      {/* 2. PRODUCTION CANVAS (CENTER) */}
       <main className="flex-grow flex flex-col bg-[#f0f0f2] dark:bg-[#010101] relative overflow-hidden">
         
-        {/* HUD HEADER */}
         <div className="h-16 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-[70] shadow-sm">
           <div className="flex items-center gap-6">
             {!sidebarOpen && (
@@ -327,7 +321,6 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           </div>
         </div>
 
-        {/* CHRONICLE PAGE VIEWPORT */}
         <div className="flex-grow overflow-y-auto custom-scrollbar p-6 lg:p-16 flex items-center justify-center">
            <div className="w-full max-w-5xl aspect-[1/1.41] bg-white dark:bg-[#0a0a0c] shadow-[0_0_100px_rgba(0,0,0,0.1)] border-[12px] border-white dark:border-[#111] p-6 lg:p-10 grid grid-cols-2 grid-rows-2 gap-4 lg:gap-8 relative overflow-hidden">
               
@@ -340,7 +333,6 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                        <div className="w-full h-full relative overflow-hidden bg-black flex items-center justify-center">
                          <img src={p.url} className={`w-full h-full object-cover transition-opacity duration-1000 ${p.status === 'rendering' ? 'opacity-20' : 'opacity-100'}`} />
                          
-                         {/* Hover Controls */}
                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 z-40">
                             <button 
                               onClick={(e: React.MouseEvent) => { e.stopPropagation(); setSelectedFullImage(p.url); }} 
@@ -384,7 +376,6 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
            </div>
         </div>
 
-        {/* BOTTOM HUD */}
         <div className="h-32 border-t border-black/5 dark:border-white/10 bg-white dark:bg-[#080808] p-8 lg:px-12 flex items-center justify-between z-40 shadow-2xl shrink-0">
            <div className="flex items-center gap-12 lg:gap-16">
               <div className="hidden md:flex flex-col gap-3">
@@ -414,7 +405,6 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         </div>
       </main>
 
-      {/* LOW CREDIT DIALOG */}
       <AnimatePresence>
         {showLowCreditAlert && (
           <motion.div 
@@ -453,7 +443,6 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         )}
       </AnimatePresence>
 
-      {/* FULL IMAGE LIGHTBOX */}
       <AnimatePresence>
         {selectedFullImage && (
           <motion.div 

@@ -58,8 +58,6 @@ const UniversalProducerInterface = () => {
     setLogs(prev => [...prev, { t: new Date().toLocaleTimeString(), msg, agent }]);
   };
 
-  // --- STAGE LOGIC ---
-
   const runStage = async (stage: PipelineStage) => {
     setIsBusy(true);
     switch(stage) {
@@ -93,8 +91,6 @@ const UniversalProducerInterface = () => {
             ADVERTISING: 'Advertising hero shot: Cyber-ronin standing on a skyscraper ledge, holding a branded luxury device, neon city lights reflecting on chrome armor, high-fashion polish.',
             VIRTUAL_AVATAR: 'Live avatar loop: cyber-ronin breathing, micro-movements, looking at camera, high-fidelity social content style.'
           };
-          // Fix: generateDemoVideo expects a single VideoProductionParams object
-          // Fix: Changed firstFrame to references
           const url = await generateDemoVideo({
             prompt: promptMap[activeDomain],
             references: characterDna.img ? [characterDna.img] : undefined
@@ -118,7 +114,6 @@ const UniversalProducerInterface = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#020203] overflow-hidden text-black dark:text-white font-mono">
       
-      {/* 1. DOMAIN & STAGE NAV (LEFT) */}
       <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[#080808] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar">
          <div className="p-8 border-b border-black/10 dark:border-white/5 space-y-2">
             <h3 className="text-[10px] font-black uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
@@ -185,7 +180,6 @@ const UniversalProducerInterface = () => {
          </div>
       </div>
 
-      {/* 2. PRODUCTION HUB (CENTER) */}
       <div className="flex-grow flex flex-col bg-white dark:bg-[#020202] relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #0090ff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
@@ -207,7 +201,6 @@ const UniversalProducerInterface = () => {
                  </div>
               </div>
 
-              {/* STAGE RENDERING ENGINE */}
               <div className="min-h-[500px] flex items-center justify-center w-full">
                  {activeStage === 'IDENTITY' && (
                     <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-12 animate-in fade-in zoom-in-95 duration-500">
@@ -281,7 +274,6 @@ const UniversalProducerInterface = () => {
            </div>
         </div>
 
-        {/* PRODUCTION HUD (BOTTOM) */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#fafafa] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
            <div className="hidden lg:flex items-center gap-12">
               <div className="flex items-center gap-6">
@@ -318,7 +310,6 @@ const UniversalProducerInterface = () => {
         </div>
       </div>
 
-      {/* 3. MULTI-AGENT LOG (RIGHT) */}
       <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">

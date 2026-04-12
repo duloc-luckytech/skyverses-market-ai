@@ -44,17 +44,15 @@ const GameArchitectInterface = () => {
     setActiveImage(null);
     
     try {
-      // 1. Generate Logic Summary
-      const textPrompt = `Generate a technical 3D architectural logic for ${projectTitle} (${genre}). 
+      const textPrompt = `Generate a technical 3D architectural logic for ${projectTitle} (${genre}).
       Params: Density ${weights.voxelDensity}%, Rigidity ${weights.physicsRigidity}%, Scattering ${weights.lightScattering}%.
-      Explain: 1. Geometry Instancing 2. PBR Material Logic 3. Global Illumination Strategy. 
+      Explain: 1. Geometry Instancing 2. PBR Material Logic 3. Global Illumination Strategy.
       Tone: Chief AI Architect Technical Digest.`;
-      
+
       const resText = await aiTextViaProxy(textPrompt);
       setLogicSummary(resText);
 
-      // 2. Generate Visual Preview
-      const imgPrompt = `Extreme close-up of high-detail cinematic 3D geometry from ${projectTitle}. 
+      const imgPrompt = `Extreme close-up of high-detail cinematic 3D geometry from ${projectTitle}.
       Voxel-based environment, glowing emerald energy streams, volumetric fog, Unreal Engine 5 render style, 8k resolution.`;
       
       const resImg = await generateDemoImage(imgPrompt);
@@ -80,7 +78,6 @@ const GameArchitectInterface = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#030304] overflow-hidden text-black dark:text-white font-mono relative">
       
-      {/* 1. LEFT SIDEBAR: PARAMETERS */}
       <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-gray-50 dark:bg-[#050506] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-8 space-y-10">
         <div className="space-y-8">
            <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
@@ -137,12 +134,10 @@ const GameArchitectInterface = () => {
         </div>
       </div>
 
-      {/* 2. CENTER: RENDERING VIEWPORT */}
       <div className="flex-grow flex flex-col bg-white dark:bg-[#020202] relative overflow-hidden">
         <div className="flex-grow flex flex-col items-center justify-center p-8 lg:p-12 relative overflow-y-auto no-scrollbar">
            <div className="w-full max-w-5xl h-full flex flex-col gap-10">
               
-              {/* Visual Display */}
               <div className="h-2/3 bg-slate-50 dark:bg-black border border-black/5 dark:border-white/5 relative overflow-hidden flex items-center justify-center shadow-2xl rounded-sm">
                  <AnimatePresence mode="wait">
                     {isGenerating ? (
@@ -173,7 +168,6 @@ const GameArchitectInterface = () => {
 
                          <div className="absolute top-8 right-8 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
                             <button className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 transition-transform"><Download size={20}/></button>
-                            {/* Added missing Share2 icon */}
                             <button className="p-4 bg-emerald-500 text-black rounded-full shadow-2xl hover:scale-110 transition-transform"><Share2 size={20}/></button>
                          </div>
                       </motion.div>
@@ -185,7 +179,6 @@ const GameArchitectInterface = () => {
                     )}
                  </AnimatePresence>
 
-                 {/* HUD Layer */}
                  <div className="absolute top-8 left-8 flex items-center gap-8 pointer-events-none z-20">
                     <div className="flex items-center gap-3 text-emerald-500/60 text-[10px] font-black uppercase tracking-widest">
                        <Activity size={14} className="animate-pulse" /> CLUSTER_LOAD: 42%
@@ -197,7 +190,6 @@ const GameArchitectInterface = () => {
                  </div>
               </div>
 
-              {/* Logic Terminal */}
               <div className="h-1/3 border border-black/10 dark:border-white/5 bg-slate-50 dark:bg-white/[0.01] p-10 overflow-y-auto custom-scrollbar relative shadow-inner">
                  <div className="absolute top-4 right-4"><Code2 size={16} className="text-emerald-500 opacity-20" /></div>
                  {logicSummary ? (

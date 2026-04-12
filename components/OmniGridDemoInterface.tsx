@@ -25,7 +25,6 @@ const OmniGridDemoInterface = () => {
   const [activeItem, setActiveItem] = useState<GridItem | null>(null);
   const [credits, setCredits] = useState(3);
 
-  // Config States
   const [variation, setVariation] = useState(30);
   const [profile, setProfile] = useState('Marketing_Visuals');
 
@@ -36,23 +35,19 @@ const OmniGridDemoInterface = () => {
     setActiveItem(null);
 
     try {
-      // Simulate parallel batch calls (in a real app, this would be a single batch endpoint)
       const results: GridItem[] = [];
       const synthesisCount = batchSize;
-      
-      // We'll generate the first one properly and mock siblings for demo efficiency
-      // following the principle: Visual comparison over text
+
       const firstResult = await generateDemoImage(`[OMNI_GRID] ${prompt}. Variations for professional ${profile}. High fidelity.`);
       
       if (firstResult) {
         results.push({ id: '0', url: firstResult, isSelected: false, isRefined: false });
         
-        // Mock siblings with slight variation prompts if batchSize > 1
         for (let i = 1; i < synthesisCount; i++) {
            results.push({ 
              id: i.toString(), 
-             url: firstResult, // In a real system these would be unique
-             isSelected: false, 
+             url: firstResult,
+             isSelected: false,
              isRefined: false 
            });
         }
@@ -84,7 +79,6 @@ const OmniGridDemoInterface = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#080808] overflow-hidden text-black dark:text-white">
       
-      {/* 1. ORCHESTRATOR SIDEBAR */}
       <div className="w-full lg:w-[350px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-gray-50 dark:bg-[#050506] overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
@@ -138,7 +132,6 @@ const OmniGridDemoInterface = () => {
         </div>
       </div>
 
-      {/* 2. GRID VIEWPORT */}
       <div className="flex-grow flex flex-col bg-gray-100 dark:bg-[#020203] relative overflow-hidden">
         <div className="flex-grow flex flex-col p-6 lg:p-10 overflow-y-auto no-scrollbar relative">
            {items.length === 0 ? (
@@ -180,7 +173,6 @@ const OmniGridDemoInterface = () => {
            )}
         </div>
 
-        {/* PROMPT FOOTER */}
         <div className="h-32 border-t border-black/10 dark:border-white/5 bg-white dark:bg-black p-4 flex gap-4 shrink-0 relative z-20">
           <div className="flex-grow flex flex-col gap-2">
             <label className="text-[8px] font-black uppercase text-gray-400 dark:text-gray-700 tracking-[0.3em] flex items-center gap-2"><Wand2 size={12} className="text-brand-blue" /> Master_Directive</label>
@@ -202,7 +194,6 @@ const OmniGridDemoInterface = () => {
         </div>
       </div>
 
-      {/* 3. REFINEMENT SIDEBAR */}
       <div className="hidden xl:flex w-[320px] shrink-0 flex flex-col bg-gray-50 dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">

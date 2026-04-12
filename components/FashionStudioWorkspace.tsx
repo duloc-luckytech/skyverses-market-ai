@@ -377,7 +377,6 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
         </div>
 
         <div className="flex-grow overflow-y-auto no-scrollbar p-5 space-y-8 pb-48">
-           {/* CÔNG CỤ */}
            <section className="space-y-4">
               <label className="text-[10px] font-black text-slate-400 dark:text-gray-400 uppercase tracking-widest px-1">Chọn công cụ</label>
               <div className="grid grid-cols-2 gap-2">
@@ -393,11 +392,9 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               </div>
            </section>
            
-           {/* ẢNH THAM CHIẾU THEO LOẠI */}
            <section className="space-y-4 pt-4 border-t border-slate-100 dark:border-white/5">
               <label className="text-[10px] font-black text-slate-400 dark:text-gray-400 uppercase tracking-widest px-1">Tài sản tham chiếu</label>
-              
-              {/* NOTE GIỮA LABEL VÀ HÌNH ẢNH */}
+
               <div className="p-4 bg-pink-500/5 border border-pink-500/20 rounded-lg text-left">
                 {activeTool === 'TRY_ON' && (
                   <div className="space-y-1">
@@ -437,7 +434,6 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {/* Slot Người mẫu */}
                 <div className="space-y-2">
                   <span className="text-[8px] font-black uppercase text-gray-400 dark:text-gray-600 ml-1">Người mẫu</span>
                   <div 
@@ -471,7 +467,6 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                   <input type="file" ref={modelInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'MODEL')} />
                 </div>
 
-                {/* Slot Sản phẩm / Áo */}
                 <div className="space-y-2">
                   <span className="text-[8px] font-black uppercase text-gray-400 dark:text-gray-600 ml-1">Sản phẩm (Áo/Váy)</span>
                   <div 
@@ -522,9 +517,8 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               </div>
            </section>
 
-           {/* GÓC MÁY & KIỂU POSE */}
            <section className="grid grid-cols-2 gap-4">
-              <CustomStudioDropdown 
+              <CustomStudioDropdown
                 label="GÓC MÁY" 
                 value={angle} 
                 options={ANGLES} 
@@ -565,7 +559,6 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                    {RATIOS.map(r => <option key={r} value={r}>{r}</option>)}
                  </select>
               </div>
-              {/* NEW: RESOLUTION AND QUANTITY */}
               <div className="space-y-2">
                  <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">Độ phân giải</label>
                  <select value={res} onChange={e => setRes(e.target.value)} className="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 p-2.5 rounded-lg text-[10px] font-bold outline-none text-slate-900 dark:text-white">
@@ -630,7 +623,6 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             </AnimatePresence>
          </div>
 
-         {/* STICKY BOTTOM ACTIONS */}
          <div className="absolute bottom-0 left-0 w-full p-6 bg-white/95 dark:bg-[#0d0e12]/95 backdrop-blur-xl border-t border-slate-100 dark:border-white/5 z-[80] shadow-2xl">
             <div className="max-w-5xl mx-auto flex items-center justify-between gap-6">
                <ResourceControl 

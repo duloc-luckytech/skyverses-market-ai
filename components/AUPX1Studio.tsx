@@ -35,8 +35,7 @@ const AUPX1Studio = () => {
   const [needsKey, setNeedsKey] = useState(false);
   const [renderError, setRenderError] = useState<string | null>(null);
   
-  // Production Data
-  const [uca, setUca] = useState<{name: string, img: string | null, metadata: string}>({ 
+  const [uca, setUca] = useState<{name: string, img: string | null, metadata: string}>({
     name: 'SENTINEL_ALPHA', 
     img: null,
     metadata: 'Physical: Ceramic Armor, Biometric Glow. Personality: Stoic.'
@@ -94,8 +93,6 @@ const AUPX1Studio = () => {
     setStageProgress(prev => ({ ...prev, SCENE_DESIGN: true, ADAPTER_RENDER: true }));
     setActiveStage('MASTER_COMP');
   };
-
-  // --- STAGE LOGIC ---
 
   const runIdentity = async () => {
     setIsBusy(true);
@@ -176,7 +173,6 @@ const AUPX1Studio = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#050507] overflow-hidden text-black dark:text-white font-mono selection:bg-brand-blue/30">
       
-      {/* 1. PIPELINE ORCHESTRATOR (LEFT) */}
       <div className="w-full lg:w-[340px] shrink-0 flex flex-col bg-[#f9f9fb] dark:bg-[#0a0a0c] border-r border-black/5 dark:border-white/5 overflow-y-auto no-scrollbar relative z-20">
          <div className="p-8 border-b border-black/5 dark:border-white/5 space-y-2 bg-gradient-to-b from-brand-blue/10 to-transparent">
             <h3 className="text-[11px] font-black uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
@@ -245,7 +241,6 @@ const AUPX1Studio = () => {
          </div>
       </div>
 
-      {/* 2. PRODUCTION HUB (CENTER) */}
       <div className="flex-grow flex flex-col relative bg-white dark:bg-[#020202] overflow-hidden">
         <div className="flex-grow overflow-y-auto p-12 no-scrollbar flex flex-col items-center justify-center">
            <AnimatePresence mode="wait">
@@ -280,7 +275,6 @@ const AUPX1Studio = () => {
            </AnimatePresence>
         </div>
 
-        {/* HUD ACTIONS */}
         <div className="h-32 border-t border-black/10 dark:border-white/5 bg-[#fafafa] dark:bg-black p-6 flex items-center justify-between z-10 shadow-2xl">
            <div className="flex gap-4">
               {activeStage === 'ID_CORE' && <button onClick={runIdentity} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-black uppercase tracking-widest">Initialize ID</button>}
@@ -300,7 +294,6 @@ const AUPX1Studio = () => {
         </div>
       </div>
 
-      {/* 3. LOGS (RIGHT) */}
       <aside className="hidden xl:flex w-[320px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">

@@ -10,7 +10,6 @@ import {
   Type, Box, LayoutGrid,
   Trash2, Utensils, Baby, Briefcase, 
   CheckCircle2, LucideImage, ChevronRight,
-  // Added Coins and AlertTriangle to imports
   Percent, Gift, MessageCircle, Users, Shirt, Cpu, Plane, 
   GraduationCap, Building, Heart, TrendingUp, Car, Dog, 
   Activity, Music, Gamepad, Church, Cake, TreePine, Moon, 
@@ -27,13 +26,10 @@ import { Link } from 'react-router-dom';
 
 const STORAGE_KEY = 'skyverses_poster_vault';
 
-// Fix: Moved Star component definition before its usage in ALL_CATEGORIES to avoid hoisting error.
-// Fix: Added default fill value and made it optional to satisfy TypeScript requirements.
 const Star = ({ size, fill = "none" }: { size: number, fill?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
 );
 
-// Danh sách đầy đủ danh mục dựa trên screenshot
 const ALL_CATEGORIES = [
   { id: 'sale', label: 'Sale', icon: <Percent size={24}/> },
   { id: 'products', label: 'Sản phẩm', icon: <Briefcase size={24}/> },
@@ -96,7 +92,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const { theme } = useTheme();
   const { credits, useCredits, isAuthenticated, login } = useAuth();
   
-  // UI State
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORIES[2].id);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -106,21 +101,18 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const [showLowCreditAlert, setShowLowCreditAlert] = useState(false);
   const [viewMode, setViewMode] = useState<'current' | 'library'>('current');
 
-  // Content State
   const [prompt, setPrompt] = useState('một hình con mèo');
   const [title, setTitle] = useState('10%');
   const [subtitle, setSubtitle] = useState('');
   const [references, setReferences] = useState<string[]>([]);
   const [result, setResult] = useState<string | null>(null);
   
-  // Advanced Settings State
   const [brandName, setBrandName] = useState('');
   const [brandColors, setBrandColors] = useState(['#FF5722', '#FFC107']);
   const [hexInput, setHexInput] = useState('#2196F3');
   const [useBrandColor, setUseBrandColor] = useState(true);
   const [addTextToPoster, setAddTextToPoster] = useState(true);
 
-  // AI Configuration State
   const [selectedModel, setSelectedModel] = useState(MODELS[0]);
   const [selectedStyle, setSelectedStyle] = useState(STYLES[0]);
   const [selectedSize, setSelectedSize] = useState(SIZES[0]);
@@ -128,14 +120,12 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const [selectedRes, setSelectedRes] = useState(RESOLUTIONS[0]);
   const [quantity, setQuantity] = useState(1);
 
-  // History State
   const [sessions, setSessions] = useState<PosterSession[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const colorPickerRef = useRef<HTMLInputElement>(null);
   const [editingColorIndex, setEditingColorIndex] = useState<number | null>(null);
 
-  // LOAD HISTORY FROM BROWSER DB (localStorage)
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -147,7 +137,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     }
   }, []);
 
-  // Lấy Object danh mục đang chọn để hiển thị Tag
   const selectedCategoryObj = ALL_CATEGORIES.find(c => c.id === activeCategory);
 
   const handleEnhance = async () => {
@@ -185,7 +174,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     }
   };
 
-  // --- BRAND COLOR LOGIC ---
   const handleAddColor = () => {
     if (brandColors.length < 10) {
       setBrandColors([...brandColors, hexInput]);
@@ -257,7 +245,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           timestamp: new Date().toLocaleString()
         };
 
-        // SAVE TO LOCAL DATABASE
         const updatedSessions = [newSession, ...sessions];
         setSessions(updatedSessions);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedSessions));
@@ -287,7 +274,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   return (
     <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[#050505] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
       
-      {/* 1. TOP NAV */}
       <div className="h-14 bg-white dark:bg-[#0a0a0a] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-6 shrink-0 z-[100] transition-colors">
         <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-full border border-slate-200 dark:border-white/10 transition-colors">
           <button 
@@ -318,11 +304,9 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
       <div className="flex-grow flex overflow-hidden">
         
-        {/* 2. SIDEBAR ĐIỀU KHIỂN (TRÁI) */}
         <aside className="w-[380px] border-r border-slate-200 dark:border-white/5 bg-white dark:bg-[#0a0a0a] flex flex-col shrink-0 overflow-y-auto no-scrollbar pb-10 transition-colors duration-500">
            <div className="p-5 space-y-8">
               
-              {/* DANH MỤC */}
               <section className="space-y-4">
                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 transition-colors">
                     <Target size={14} className="text-brand-blue" /> DANH MỤC
@@ -339,7 +323,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     ))}
                  </div>
 
-                 {/* TAG DANH MỤC ĐANG CHỌN */}
                  <AnimatePresence>
                     {selectedCategoryObj && (
                        <motion.div 
@@ -372,7 +355,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  </button>
               </section>
 
-              {/* MÔ TẢ POSTER */}
               <section className="space-y-4">
                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 transition-colors">
@@ -395,7 +377,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  />
               </section>
 
-              {/* TIÊU ĐỀ */}
               <section className="space-y-5">
                  <div className="space-y-2">
                     <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">TIÊU ĐỀ CHÍNH (TÙY CHỌN)</label>
@@ -415,7 +396,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  </div>
               </section>
 
-              {/* ẢNH THAM CHIẾU */}
               <section className="space-y-4">
                  <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-widest">
                     <div className="flex items-center gap-2">
@@ -445,7 +425,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  <input type="file" ref={fileInputRef} className="hidden" accept="image/*" multiple onChange={handleFileUpload} />
               </section>
 
-              {/* MODEL SETTINGS GRID */}
               <section className="grid grid-cols-2 gap-x-4 gap-y-5 pt-4 border-t border-slate-100 dark:border-white/5 transition-colors">
                  <div className="space-y-2">
                     <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">MODEL AI</label>
@@ -483,7 +462,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  </div>
               </section>
 
-              {/* CREDIT ESTIMATE */}
               <div className="flex justify-between items-center pt-4 text-orange-600 dark:text-orange-400 transition-colors">
                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-tight">
                     <Zap size={14} fill="currentColor" /> Đơn giá: 150
@@ -493,9 +471,8 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  </div>
               </div>
 
-              {/* TÙY CHỌN NÂNG CAO */}
               <section className="space-y-5">
-                 <button 
+                 <button
                    onClick={() => setShowAdvanced(!showAdvanced)}
                    className="w-full flex items-center justify-between p-3 border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 rounded-md text-[10px] font-black uppercase tracking-widest hover:border-slate-300 dark:hover:border-white/20 transition-all text-slate-500 dark:text-white"
                  >
@@ -513,7 +490,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                              <input value={brandName} onChange={e => setBrandName(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-3 text-xs font-bold outline-none rounded-md text-slate-800 dark:text-white" placeholder="Tên thương hiệu của bạn" />
                           </div>
 
-                          {/* --- MÀU THƯƠNG HIỆU --- */}
                           <div className="space-y-3">
                              <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">MÀU THƯƠNG HIỆU</label>
                              <div className="flex flex-wrap gap-2.5 items-center p-3 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-md transition-colors">
@@ -578,8 +554,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  </AnimatePresence>
               </section>
 
-              {/* NÚT TẠO POSTER */}
-              <button 
+              <button
                 onClick={handleGenerate}
                 disabled={isGenerating || !prompt.trim()}
                 className="w-full py-5 bg-gradient-to-r from-orange-600 to-orange-400 text-white font-black uppercase text-xs tracking-[0.3em] shadow-[0_20px_80px_rgba(234,88,12,0.3)] hover:scale-102 active:scale-95 transition-all flex items-center justify-center gap-4 rounded-xl disabled:opacity-30"
@@ -588,7 +563,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  TẠO POSTER
               </button>
 
-              {/* PHIÊN LÀM VIỆC */}
               <section className="pt-8 border-t border-slate-100 dark:border-white/5 space-y-4 transition-colors">
                  <div className="flex items-center gap-3 text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">
                     <HistoryIcon size={14} /> PHIÊN LÀM VIỆC
@@ -621,7 +595,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
            </div>
         </aside>
 
-        {/* 3. MÀN HÌNH CHÍNH (PHẢI) */}
         <main className="flex-grow bg-[#f0f3f6] dark:bg-[#020202] relative overflow-hidden flex flex-col items-center justify-center p-8 transition-colors duration-500">
            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
@@ -696,7 +669,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </main>
       </div>
 
-      {/* --- ALL CATEGORIES MODAL --- */}
       <AnimatePresence>
         {showCategoryModal && (
           <motion.div 
@@ -707,7 +679,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
                className="w-full max-w-5xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/10 rounded-2xl flex flex-col max-h-[90vh] shadow-[0_50px_100px_rgba(0,0,0,0.5)] transition-colors"
              >
-                {/* Modal Header */}
                 <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-white/5 transition-colors">
                    <div className="flex items-center gap-3">
                       <LayoutGrid className="text-pink-500" size={24} />
@@ -718,7 +689,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                    </button>
                 </div>
 
-                {/* Modal Body - Scrollable Grid */}
                 <div className="flex-grow overflow-y-auto p-8 lg:p-10 no-scrollbar">
                    <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-4">
                       {ALL_CATEGORIES.map(c => (
@@ -734,7 +704,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                    </div>
                 </div>
 
-                {/* Modal Footer */}
                 <div className="p-6 border-t border-slate-100 dark:border-white/5 flex justify-end transition-colors">
                    <button 
                      onClick={() => setShowCategoryModal(false)}
@@ -748,7 +717,6 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         )}
       </AnimatePresence>
 
-      {/* LOW CREDIT DIALOG */}
       <AnimatePresence>
         {showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
