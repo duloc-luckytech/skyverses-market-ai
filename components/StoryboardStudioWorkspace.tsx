@@ -421,6 +421,10 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               onDurationChange={s.handleSceneDurationChange}
               onGenerateImages={s.handleGenerateBatchImages}
               onGenerateVideos={s.handleGenerateBatchVideos}
+              onDownloadScene={s.handleDownloadScene}
+              onDownloadAudio={s.handleDownloadAudio}
+              onGenerateVoiceover={s.handleGenerateVoiceover}
+              onMoveScene={s.handleMoveScene}
             />
           )}
 
@@ -475,8 +479,10 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           scenesCount={s.scenes.length}
           selectedCount={s.selectedSceneIds.length}
           isProcessing={s.isProcessing}
+          isZipping={s.isZipping}
           onGenerateImages={s.handleGenerateBatchImages}
           onGenerateVideos={s.handleGenerateBatchVideos}
+          onDownloadZip={() => s.handleDownloadBatchZip(s.selectedSceneIds)}
           onReset={() => s.setScenes([])}
           totalDuration={s.computedTotalDuration}
         />

@@ -44,7 +44,7 @@ interface ExportTabProps {
   isProcessing: boolean;
 }
 
-type ExportMode = 'overview' | 'pdf' | 'edl' | 'xml' | 'animatic' | 'share';
+type ExportMode = 'overview' | 'pdf' | 'edl' | 'xml' | 'animatic' | 'video' | 'share';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -521,6 +521,233 @@ const SharePanel: React.FC<{ projectName: string; scenes: Scene[] }> = ({ projec
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// VIDEO EXPORT PANEL (MediaRecorder + Canvas → WebM)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const VideoExportPanel: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
+  const canvasRef    = useRef<HTMLCanvasElement>(null);
+  const imgCacheRef  = useRef<Map<string, HTMLImageElement>>(new Map());
+  const recorderRef  = useRef<MediaRecorder | null>(null);
+  const chunksRef    = useRef<Blob[]>([]);
+
+  const [isRecording, setIsRecording] = useState(false);
+  const [progress, setProgress]       = useState(0);   // 0-100
+  const [error, setError]             = useState<string | null>(null);
+  const [done, setDone]               = useState(false);
+
+  const withImages = scenes.filter(s => s.visualUrl || s.videoUrl);
+
+  // Detect support
+  const supported = typeof MediaRecorder !== 'undefined' && (
+    MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ||
+    MediaRecorder.isTypeSupported('video/webm;codecs=vp8') ||
+    MediaRecorder.isTypeSupported('video/webm')
+  );
+
+  const mimeType = (() => {
+    if (!supported) return '';
+    if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) return 'video/webm;codecs=vp9';
+    if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) return 'video/webm;codecs=vp8';
+    return 'video/webm';
+  })();
+
+  const preloadImages = async () => {
+    await Promise.all(withImages.map(scene => {
+      const url = scene.visualUrl;
+      if (!url || imgCacheRef.current.has(url)) return Promise.resolve();
+      return new Promise<void>(resolve => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => { imgCacheRef.current.set(url, img); resolve(); };
+        img.onerror = () => resolve();
+        img.src = url;
+      });
+    }));
+  };
+
+  const drawScene = (scene: Scene, canvas: HTMLCanvasElement) => {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const url = scene.visualUrl;
+    const img = url ? imgCacheRef.current.get(url) : null;
+    if (img?.complete && img.naturalWidth > 0) {
+      const scale = Math.min(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      const w = img.naturalWidth * scale;
+      const h = img.naturalHeight * scale;
+      ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+    }
+    // Overlay bar
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(0, canvas.height - 52, canvas.width, 52);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 14px -apple-system,sans-serif';
+    ctx.fillText(`SC.${String(scene.order).padStart(2, '0')} · ${SHOT_TYPE_LABELS[scene.shotType ?? 'WIDE']} · ${scene.duration ?? 8}s`, 14, canvas.height - 30);
+    ctx.font = '11px -apple-system,sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.fillText(scene.prompt.slice(0, 100), 14, canvas.height - 12);
+  };
+
+  const handleExport = async () => {
+    setError(null);
+    setDone(false);
+    if (!supported) { setError('Trình duyệt không hỗ trợ. Vui lòng dùng Chrome hoặc Edge.'); return; }
+    if (withImages.length === 0) { setError('Cần ít nhất 1 cảnh có hình ảnh.'); return; }
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    setIsRecording(true);
+    setProgress(2);
+
+    try {
+      await preloadImages();
+      setProgress(10);
+
+      const stream = canvas.captureStream(30);
+      const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 4_000_000 });
+      recorderRef.current = recorder;
+      chunksRef.current   = [];
+
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+
+      await new Promise<void>((resolve, reject) => {
+        recorder.onstop  = () => resolve();
+        recorder.onerror = (e) => reject(new Error((e as any)?.error?.message ?? 'MediaRecorder error'));
+        recorder.start(100); // collect chunks every 100ms
+
+        let sceneIdx = 0;
+        let sceneElapsed = 0;
+        let lastTime: number | null = null;
+        const FPS = 30;
+        const FRAME_MS = 1000 / FPS;
+        const totalDur = withImages.reduce((a, s) => a + (s.duration ?? 8), 0);
+        let globalElapsed = 0;
+
+        const drawLoop = (ts: number) => {
+          if (!lastTime) lastTime = ts;
+          const dt = (ts - lastTime) / 1000;
+          lastTime = ts;
+
+          if (sceneIdx >= withImages.length) {
+            recorder.stop();
+            return;
+          }
+
+          const scene = withImages[sceneIdx];
+          drawScene(scene, canvas);
+          sceneElapsed += dt;
+          globalElapsed += dt;
+
+          setProgress(10 + Math.round((globalElapsed / totalDur) * 88));
+
+          if (sceneElapsed >= (scene.duration ?? 8)) {
+            sceneElapsed = 0;
+            sceneIdx++;
+          }
+
+          requestAnimationFrame(drawLoop);
+        };
+
+        requestAnimationFrame(drawLoop);
+      });
+
+      // Build blob + download
+      const blob = new Blob(chunksRef.current, { type: 'video/webm' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `storyboard-animatic-${Date.now()}.webm`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+      setProgress(100);
+      setDone(true);
+    } catch (err: any) {
+      setError(err?.message ?? 'Có lỗi khi xuất video.');
+    } finally {
+      setIsRecording(false);
+    }
+  };
+
+  return (
+    <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/[0.02] p-6 space-y-5">
+      <div>
+        <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-700 dark:text-white mb-1 flex items-center gap-2">
+          <FileVideo size={14} className="text-rose-500" /> Export Video WebM
+        </h3>
+        <p className="text-[10px] text-slate-400 dark:text-white/30">
+          Xuất animatic dưới dạng file <code className="bg-slate-100 dark:bg-white/8 px-1 rounded text-[9px]">.webm</code> — chạy được trong Chrome, VLC, DaVinci Resolve.
+        </p>
+      </div>
+
+      {/* Hidden canvas — 960×540 */}
+      <canvas ref={canvasRef} width={960} height={540} className="hidden" />
+
+      {!supported && (
+        <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
+          <AlertCircle size={14} className="shrink-0 mt-0.5" />
+          <p className="text-[10px] font-semibold leading-snug">
+            Animatic preview chỉ hoạt động trên Chrome/Edge. Firefox và Safari không hỗ trợ đầy đủ MediaRecorder với video/webm.
+          </p>
+        </div>
+      )}
+
+      {/* Scene summary */}
+      <div className="rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/5 px-4 py-3 flex flex-wrap items-center gap-4 text-[10px]">
+        <span className="flex items-center gap-1.5 text-slate-500 dark:text-white/40"><Film size={11} /> {withImages.length} cảnh có hình</span>
+        <span className="flex items-center gap-1.5 text-slate-500 dark:text-white/40"><Clock size={11} /> {withImages.reduce((a, s) => a + (s.duration ?? 8), 0)}s tổng</span>
+        <span className="text-slate-400 dark:text-white/25">· 960×540 · 30fps · VP9 WebM</span>
+      </div>
+
+      {/* Progress bar */}
+      {isRecording && (
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30">
+            <span>Đang ghi...</span>
+            <span>{progress}%</span>
+          </div>
+          <div className="h-1.5 rounded-full bg-slate-100 dark:bg-white/8 overflow-hidden">
+            <motion.div
+              className="h-full bg-rose-500 rounded-full"
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Error */}
+      {error && (
+        <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-[10px] font-semibold">
+          <AlertCircle size={12} className="shrink-0" /> {error}
+        </div>
+      )}
+
+      {/* Done */}
+      {done && !isRecording && (
+        <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest">
+          <CheckCircle size={12} /> Video đã tải xuống thành công!
+        </div>
+      )}
+
+      <motion.button
+        whileTap={{ scale: 0.97 }}
+        onClick={handleExport}
+        disabled={isRecording || !supported || withImages.length === 0}
+        className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-rose-600/20 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+      >
+        {isRecording
+          ? <><Loader2 size={14} className="animate-spin" /> Đang xuất {progress}%...</>
+          : <><FileVideo size={14} /> Xuất Video WebM</>
+        }
+      </motion.button>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // MAIN EXPORT TAB
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -573,6 +800,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
     { id: 'edl',       label: 'EDL',          icon: <FileText size={14} />,    desc: 'CMX 3600 cho editors',         badge: 'PRO',  pro: true },
     { id: 'xml',       label: 'XML / FCPXML', icon: <Code2 size={14} />,       desc: 'Premiere · DaVinci · FCP',     badge: 'PRO',  pro: true },
     { id: 'animatic',  label: 'Animatic',     icon: <MonitorPlay size={14} />, desc: 'Canvas slideshow preview',     badge: 'PRO',  pro: true },
+    { id: 'video',     label: 'Export Video', icon: <FileVideo size={14} />,   desc: 'WebM animatic download',       badge: 'NEW',  pro: false },
     { id: 'share',     label: 'Share Link',   icon: <Share2 size={14} />,      desc: 'Public / Private link',        badge: 'PRO',  pro: true },
   ];
 
@@ -856,6 +1084,11 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                 </div>
                 <AnimaticPreview scenes={scenes} />
               </div>
+            )}
+
+            {/* ══ VIDEO EXPORT ════════════════════════════════════ */}
+            {activeMode === 'video' && (
+              <VideoExportPanel scenes={scenes} />
             )}
 
             {/* ══ SHARE ═══════════════════════════════════════════ */}

@@ -6,7 +6,7 @@ import {
   Grid2X2, Film,
   Image as LucideImage, Loader2, Square as SquareIcon, LayoutGrid,
   Clapperboard,
-  Play, AlignJustify,
+  Play, AlignJustify, Volume2, Music2,
 } from 'lucide-react';
 import { ReferenceAsset, Scene, ShotType, DurationPreset } from '../../hooks/useStoryboardStudio';
 import { SceneCardHeader }    from './scene-card/SceneCardHeader';
@@ -61,6 +61,10 @@ interface StoryboardTabProps {
   onDurationChange: (sceneId: string, duration: DurationPreset) => void;
   onGenerateImages?: () => void;
   onGenerateVideos?: () => void;
+  onDownloadScene?: (scene: Scene) => void;
+  onDownloadAudio?: (scene: Scene) => void;
+  onGenerateVoiceover?: (sceneId: string) => void;
+  onMoveScene?: (id: string, direction: 'up' | 'down') => void;
 }
 
 // ─── SCENE CARD WRAPPER (with drag support) ─────────────────────────────────
@@ -80,6 +84,9 @@ interface SceneCardWrapperProps {
   onDelete: () => void;
   onDuplicate?: () => void;
   onEnhancePrompt?: () => void;
+  onDownload?: () => void;
+  onDownloadAudio?: () => void;
+  onGenerateVoiceover?: () => void;
   onShotTypeChange: (st: ShotType) => void;
   onDurationChange: (d: DurationPreset) => void;
 }
@@ -88,7 +95,8 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
   scene, index, isSelected, assets, isProcessing, isEnhancingPrompt,
   viewLayout = 'list',
   onToggle, onView, onUpdate, onReGenerateImage, onReGenerateVideo,
-  onDelete, onDuplicate, onEnhancePrompt, onShotTypeChange, onDurationChange,
+  onDelete, onDuplicate, onEnhancePrompt, onDownload, onDownloadAudio, onGenerateVoiceover,
+  onShotTypeChange, onDurationChange,
 }) => {
   const dragControls = useDragControls();
   const y = useMotionValue(0);
@@ -261,6 +269,32 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
         />
       </div>
 
+      {/* Audio player — hiện khi scene có audioUrl */}
+      {scene.audioUrl && (
+        <div className="px-4 py-2 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02] flex items-center gap-2.5">
+          <div className="w-5 h-5 rounded-md bg-violet-500/15 flex items-center justify-center shrink-0">
+            <Music2 size={10} className="text-violet-400" />
+          </div>
+          <span className="text-[7px] font-black uppercase text-violet-400 tracking-widest shrink-0">Voice-over</span>
+          <audio
+            src={scene.audioUrl}
+            controls
+            className="flex-1 h-6 min-w-0"
+            style={{ colorScheme: 'dark' }}
+            onClick={(e) => e.stopPropagation()}
+          />
+          {onDownloadAudio && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onDownloadAudio(); }}
+              title="Tải audio xuống"
+              className="shrink-0 w-6 h-6 flex items-center justify-center rounded-lg text-slate-400 dark:text-white/30 hover:bg-violet-500/15 hover:text-violet-400 transition-all"
+            >
+              <Volume2 size={11} />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Bottom action bar */}
       <SceneHoverActions
         isProcessing={isProcessing}
@@ -270,6 +304,8 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
         onEnhancePrompt={onEnhancePrompt ?? (() => {})}
         onDelete={onDelete}
         onDuplicate={onDuplicate}
+        onDownload={onDownload}
+        onGenerateVoiceover={onGenerateVoiceover}
         isListView={isListView}
       />
     </div>
@@ -321,6 +357,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   onEnhanceScenePrompt, enhancingSceneId,
   onReorder, onShotTypeChange, onDurationChange,
   onGenerateImages, onGenerateVideos,
+  onDownloadScene, onDownloadAudio, onGenerateVoiceover, onMoveScene,
 }) => {
   const [viewLayout, setViewLayout] = useState<'grid' | 'list' | 'timeline'>('list');
   const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
@@ -357,6 +394,14 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
           e.preventDefault();
           onEnhanceScenePrompt?.(sceneId);
           break;
+        case 'ArrowUp':
+          e.preventDefault();
+          onMoveScene?.(sceneId, 'up');
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          onMoveScene?.(sceneId, 'down');
+          break;
         default:
           break;
       }
@@ -364,7 +409,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [selectedSceneIds, onDuplicateScene, onEnhanceScenePrompt, onDeleteScene]);
+  }, [selectedSceneIds, onDuplicateScene, onEnhanceScenePrompt, onDeleteScene, onMoveScene]);
 
   const allSelected = selectedSceneIds.length === scenes.length && scenes.length > 0;
   const processingCount = scenes.filter(s => s.status === 'generating' || s.status === 'analyzing').length;
@@ -586,6 +631,9 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   onDelete={() => onDeleteScene(scene.id)}
                   onDuplicate={onDuplicateScene ? () => onDuplicateScene(scene.id) : undefined}
                   onEnhancePrompt={onEnhanceScenePrompt ? () => onEnhanceScenePrompt(scene.id) : undefined}
+                  onDownload={onDownloadScene && (scene.videoUrl || scene.visualUrl) ? () => onDownloadScene(scene) : undefined}
+                  onDownloadAudio={onDownloadAudio && scene.audioUrl ? () => onDownloadAudio(scene) : undefined}
+                  onGenerateVoiceover={onGenerateVoiceover ? () => onGenerateVoiceover(scene.id) : undefined}
                   onShotTypeChange={(st) => onShotTypeChange(scene.id, st)}
                   onDurationChange={(d) => onDurationChange(scene.id, d)}
                 />

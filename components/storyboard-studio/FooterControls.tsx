@@ -2,16 +2,18 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-  MonitorPlay, ImageIcon, X, Check, Loader2, AlertCircle, Clock
+  MonitorPlay, ImageIcon, X, Check, Loader2, AlertCircle, Clock, Package,
 } from 'lucide-react';
 
 interface FooterControlsProps {
   scenesCount: number;
   selectedCount: number;
   isProcessing: boolean;
+  isZipping?: boolean;
   onReset: () => void;
   onGenerateImages: () => void;
   onGenerateVideos: () => void;
+  onDownloadZip?: () => void;
   totalDuration?: number;
 }
 
@@ -23,7 +25,7 @@ const formatDuration = (secs: number): string => {
 };
 
 export const FooterControls: React.FC<FooterControlsProps> = ({
-  scenesCount, selectedCount, isProcessing, onReset, onGenerateImages, onGenerateVideos, totalDuration,
+  scenesCount, selectedCount, isProcessing, isZipping, onReset, onGenerateImages, onGenerateVideos, onDownloadZip, totalDuration,
 }) => {
   const hasSelection = selectedCount > 0;
 
@@ -71,6 +73,22 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                 >
                    <MonitorPlay size={12}/><span className="hidden xs:inline">Tạo video</span><span className="xs:hidden">Video</span>
                 </button>
+
+                {/* Download ZIP */}
+                {onDownloadZip && (
+                  <button
+                    onClick={onDownloadZip}
+                    disabled={!hasSelection || isZipping}
+                    title={`Tải xuống ${selectedCount} cảnh đã chọn dưới dạng ZIP`}
+                    aria-label="Tải xuống ZIP"
+                    className="flex-1 lg:flex-none bg-emerald-600/90 text-white px-3 lg:px-4 py-2.5 lg:py-3 text-[9px] lg:text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-1.5 lg:gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed"
+                  >
+                    {isZipping
+                      ? <><Loader2 size={12} className="animate-spin" /><span className="hidden xs:inline">ZIP...</span></>
+                      : <><Package size={12} /><span className="hidden xs:inline">ZIP</span></>
+                    }
+                  </button>
+                )}
 
                 {!hasSelection && (
                   <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 whitespace-nowrap pointer-events-none animate-bounce shadow-2xl">

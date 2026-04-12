@@ -1087,6 +1087,82 @@ Rewrite this as a better image generation prompt:`,
     return arrayBuf;
   };
 
+  // ── Download helpers ─────────────────────────────────────────────
+  const handleDownloadScene = useCallback((scene: Scene) => {
+    const url = scene.videoUrl || scene.visualUrl;
+    if (!url) return;
+    const ext = scene.videoUrl ? 'mp4' : 'jpg';
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `scene-${String(scene.order).padStart(2, '0')}.${ext}`;
+    a.click();
+  }, []);
+
+  const handleDownloadAudio = useCallback((scene: Scene) => {
+    if (!scene.audioUrl) return;
+    const a = document.createElement('a');
+    a.href = scene.audioUrl;
+    a.download = `voiceover-scene-${String(scene.order).padStart(2, '0')}.wav`;
+    a.click();
+  }, []);
+
+  const [isZipping, setIsZipping] = useState(false);
+
+  const handleDownloadBatchZip = useCallback(async (sceneIds: string[]) => {
+    if (isZipping) return;
+    const targets = scenes.filter(s => sceneIds.includes(s.id) && (s.videoUrl || s.visualUrl));
+    if (targets.length === 0) { showToast('Không có media để tải xuống', 'warning'); return; }
+
+    setIsZipping(true);
+    addLog(`[ZIP] Đang nén ${targets.length} file...`);
+    try {
+      const { default: JSZip } = await import('jszip');
+      const zip = new JSZip();
+      const folder = zip.folder('storyboard') ?? zip;
+
+      await Promise.all(targets.map(async (s) => {
+        const url = s.videoUrl || s.visualUrl!;
+        const ext = s.videoUrl ? 'mp4' : 'jpg';
+        const filename = `scene-${String(s.order).padStart(2, '0')}.${ext}`;
+        try {
+          const res = await fetch(url);
+          const blob = await res.blob();
+          folder.file(filename, blob);
+        } catch {
+          addLog(`[ZIP] Bỏ qua ${filename} — không tải được.`);
+        }
+      }));
+
+      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(zipBlob);
+      a.download = `storyboard-${Date.now()}.zip`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+      addLog(`[ZIP] Hoàn tất — tải về ${targets.length} file.`);
+      showToast(`✓ Đã đóng gói ${targets.length} file thành ZIP`, 'success');
+    } catch (e: any) {
+      addLog(`[ZIP LỖI] ${e?.message ?? 'unknown'}`);
+      showToast('Không thể tạo ZIP', 'error');
+    } finally {
+      setIsZipping(false);
+    }
+  }, [isZipping, scenes, addLog, showToast]);
+
+  // ── Move scene up/down (keyboard reorder) ────────────────────────
+  const handleMoveScene = useCallback((id: string, direction: 'up' | 'down') => {
+    setScenes(prev => {
+      const idx = prev.findIndex(s => s.id === id);
+      if (idx < 0) return prev;
+      if (direction === 'up' && idx === 0) return prev;
+      if (direction === 'down' && idx === prev.length - 1) return prev;
+      const next = [...prev];
+      const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+      [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
+      return next.map((sc, i) => ({ ...sc, order: i + 1 }));
+    });
+  }, []);
+
   // ── Project persistence helpers ──────────────────────────────────
   const handleNewProject = useCallback(() => {
     if (!window.confirm('Tạo project mới? Dữ liệu hiện tại đã được lưu tự động.')) return;
@@ -1178,5 +1254,8 @@ Rewrite this as a better image generation prompt:`,
     projectName, setProjectName,
     renderedScenes, computedTotalDuration, creditCostEstimate,
     handleShotTypeChange, handleSceneDurationChange, handleReorder,
+    // ── Phase 3: Download + Audio + Drag ──
+    handleDownloadScene, handleDownloadAudio, handleDownloadBatchZip, isZipping,
+    handleMoveScene,
   };
 };

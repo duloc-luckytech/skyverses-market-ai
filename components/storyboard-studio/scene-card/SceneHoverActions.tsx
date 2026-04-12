@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   RefreshCw, Video, Sparkles, Trash2, Loader2, MoreHorizontal,
-  Copy, AlertTriangle, X,
+  Copy, AlertTriangle, X, Download, Mic,
 } from 'lucide-react';
 
 interface SceneHoverActionsProps {
@@ -13,6 +13,8 @@ interface SceneHoverActionsProps {
   onEnhancePrompt:    () => void;
   onDelete:           () => void;
   onDuplicate?:       () => void;
+  onDownload?:        () => void;
+  onGenerateVoiceover?: () => void;
   /** Khi true: nút to hơn, label luôn hiện (list view ngang) */
   isListView?: boolean;
 }
@@ -61,6 +63,8 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
   onEnhancePrompt,
   onDelete,
   onDuplicate,
+  onDownload,
+  onGenerateVoiceover,
   isListView = false,
 }) => {
   const [moreOpen, setMoreOpen] = useState(false);
@@ -137,6 +141,38 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
           </span>
         </motion.button>
       ))}
+
+      {/* Divider */}
+      <div className="w-px h-4 bg-slate-200 dark:bg-white/8 mx-0.5 shrink-0" />
+
+      {/* Download button — chỉ hiện khi có media */}
+      {onDownload && (
+        <motion.button
+          whileTap={{ scale: 0.88 }}
+          onClick={e => { e.stopPropagation(); onDownload(); }}
+          title="Tải xuống file"
+          aria-label="Tải xuống ảnh hoặc video của cảnh này"
+          className={`flex items-center justify-center gap-1.5 rounded-lg text-slate-400 dark:text-white/30 transition-all hover:bg-emerald-500/15 hover:text-emerald-400 ${isListView ? 'py-2 px-2' : 'py-1.5 px-1.5'}`}
+        >
+          <Download size={11} />
+          {isListView && <span className="text-[8px] font-black uppercase tracking-wider leading-none">Tải</span>}
+        </motion.button>
+      )}
+
+      {/* Voice-over button */}
+      {onGenerateVoiceover && (
+        <motion.button
+          whileTap={{ scale: 0.88 }}
+          onClick={e => { e.stopPropagation(); onGenerateVoiceover(); }}
+          title="Tạo voice-over cho cảnh này"
+          aria-label="Tạo voice-over bằng AI"
+          disabled={isProcessing}
+          className={`flex items-center justify-center gap-1.5 rounded-lg text-slate-400 dark:text-white/30 transition-all hover:bg-violet-500/15 hover:text-violet-400 disabled:opacity-40 disabled:cursor-not-allowed ${isListView ? 'py-2 px-2' : 'py-1.5 px-1.5'}`}
+        >
+          <Mic size={11} />
+          {isListView && <span className="text-[8px] font-black uppercase tracking-wider leading-none">Voice</span>}
+        </motion.button>
+      )}
 
       {/* Divider */}
       <div className="w-px h-4 bg-slate-200 dark:bg-white/8 mx-0.5 shrink-0" />
