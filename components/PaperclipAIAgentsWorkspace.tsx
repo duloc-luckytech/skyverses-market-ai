@@ -9,7 +9,7 @@ import {
   Eye, Terminal, TrendingUp, Settings, ChevronUp, Plus,
   ArrowRight, Layers, Workflow, Star, HelpCircle, Share2,
 } from 'lucide-react';
-import { generateDemoText } from '../services/gemini';
+import { aiChatStreamViaProxy, AI_MODELS } from '../apis/aiCommon';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
@@ -685,13 +685,29 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     localStorage.setItem(STORAGE_KEY + '_prompts', JSON.stringify(newHistory));
 
     try {
-      const output = await generateDemoText(`${builtSystemPrompt}\n\nTask: ${taskPrompt}`);
+      let streamedOutput = '';
+      setIsStreaming(true);
+
+      await aiChatStreamViaProxy(
+        [
+          { role: 'system', content: builtSystemPrompt },
+          { role: 'user', content: taskPrompt },
+        ],
+        (token) => {
+          streamedOutput += token;
+          setCurrentResult(prev => prev ? { ...prev, output: streamedOutput } : prev);
+        },
+        undefined,
+        4096,
+        AI_MODELS.SONNET,
+      );
+
+      const output = streamedOutput;
       const duration = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
 
-      if (output && !output.includes('CONNECTION_TERMINATED')) {
+      if (output && output.trim().length > 0) {
         const doneResult: TaskResult = { ...pendingResult, output, status: 'done', duration, tokens: taskTokens, confidence: Math.floor(Math.random() * 16 + 82) };
         setCurrentResult(doneResult);
-        setIsStreaming(true); // trigger typewriter
         setFollowUpSuggestions(FOLLOW_UP_MAP[activeDept] ?? []);
         setShowSuccessBurst(true);
         setTimeout(() => setShowSuccessBurst(false), 2500);
