@@ -1,16 +1,18 @@
 
 import React, { useState } from 'react';
-import { 
-  BrainCircuit, Workflow, Settings2, Loader2, Zap, 
-  Terminal, ShieldCheck, History as HistoryIcon, 
-  Plus, Save, LayoutGrid, Code2, Database, Target, 
+import {
+  BrainCircuit, Workflow, Settings2, Loader2, Zap,
+  Terminal, ShieldCheck, History as HistoryIcon,
+  Plus, Save, LayoutGrid, Code2, Database, Target,
   Sliders, Activity, Bot, Cpu, MonitorPlay, Square,
   ImageIcon, Download, Boxes, Layers, ChevronRight,
   Maximize2, Box, Share2
 } from 'lucide-react';
-import { generateDemoImage } from '../services/geminiMedia';
 import { aiTextViaProxy } from '../apis/aiCommon';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 interface SimulationState {
   id: string;
@@ -23,6 +25,7 @@ interface SimulationState {
 }
 
 const GameArchitectInterface = () => {
+  const { isAuthenticated, login, useCredits } = useAuth();
   const [projectTitle, setProjectTitle] = useState('CYBER_DRIFT_2099');
   const [genre, setGenre] = useState('3D_Cinematic_Voxel');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -39,10 +42,11 @@ const GameArchitectInterface = () => {
 
   const handleSimulate = async () => {
     if (isGenerating) return;
+    if (!isAuthenticated) { login(); return; }
     setIsGenerating(true);
     setLogicSummary(null);
     setActiveImage(null);
-    
+
     try {
       const textPrompt = `Generate a technical 3D architectural logic for ${projectTitle} (${genre}).
       Params: Density ${weights.voxelDensity}%, Rigidity ${weights.physicsRigidity}%, Scattering ${weights.lightScattering}%.
@@ -54,36 +58,57 @@ const GameArchitectInterface = () => {
 
       const imgPrompt = `Extreme close-up of high-detail cinematic 3D geometry from ${projectTitle}.
       Voxel-based environment, glowing emerald energy streams, volumetric fog, Unreal Engine 5 render style, 8k resolution.`;
-      
-      const resImg = await generateDemoImage(imgPrompt);
-      if (resImg) setActiveImage(resImg);
 
-      setHistory(prev => [{
-        id: Date.now().toString(),
-        genre,
-        loop: 'Logic_Nodes_Compiled',
-        npcLogic: 'Procedural_Entity_Active',
-        difficultyCurve: weights.worldComplexity,
-        imageUrl: resImg || undefined,
-        timestamp: new Date().toLocaleTimeString()
-      }, ...prev]);
+      const payload: ImageJobRequest = {
+        type: "text_to_image",
+        input: { prompt: imgPrompt },
+        config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+        enginePayload: { prompt: imgPrompt, privacy: "PRIVATE", projectId: "default" }
+      };
+      const apiRes = await imagesApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'image',
+        onDone: (result) => {
+          const resImg = result.images?.[0] ?? null;
+          setActiveImage(resImg);
+          setHistory(prev => [{
+            id: Date.now().toString(),
+            genre,
+            loop: 'Logic_Nodes_Compiled',
+            npcLogic: 'Procedural_Entity_Active',
+            difficultyCurve: weights.worldComplexity,
+            imageUrl: resImg ?? '',
+            timestamp: new Date().toLocaleTimeString()
+          }, ...prev]);
+          useCredits(50);
+          setIsGenerating(false);
+        },
+        onError: () => {
+          setIsGenerating(false);
+        }
+      });
 
     } catch (err) {
       console.error(err);
-    } finally {
       setIsGenerating(false);
     }
   };
 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#030304] overflow-hidden text-black dark:text-white font-mono relative">
-      
+
       <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-gray-50 dark:bg-[#050506] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-8 space-y-10">
         <div className="space-y-8">
            <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
               <Settings2 className="w-4 h-4 text-emerald-500" /> Geometry_Matrix
            </label>
-           
+
            <div className="space-y-8">
               <div className="space-y-2">
                  <span className="text-[8px] font-black uppercase text-gray-500 tracking-widest px-1">Engine_Pipeline</span>
@@ -137,7 +162,7 @@ const GameArchitectInterface = () => {
       <div className="flex-grow flex flex-col bg-white dark:bg-[#020202] relative overflow-hidden">
         <div className="flex-grow flex flex-col items-center justify-center p-8 lg:p-12 relative overflow-y-auto no-scrollbar">
            <div className="w-full max-w-5xl h-full flex flex-col gap-10">
-              
+
               <div className="h-2/3 bg-slate-50 dark:bg-black border border-black/5 dark:border-white/5 relative overflow-hidden flex items-center justify-center shadow-2xl rounded-sm">
                  <AnimatePresence mode="wait">
                     {isGenerating ? (
@@ -157,7 +182,7 @@ const GameArchitectInterface = () => {
                       <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="relative w-full h-full group">
                          <img src={activeImage} className="w-full h-full object-cover" />
                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
-                         
+
                          <div className="absolute bottom-8 left-8 space-y-3">
                             <div className="flex gap-2">
                                <span className="bg-emerald-500 text-black px-3 py-1 text-[9px] font-black uppercase tracking-widest italic">NEURAL_RENDER_v7</span>
@@ -215,14 +240,14 @@ const GameArchitectInterface = () => {
               <label className="text-[9px] font-black uppercase text-gray-400 flex items-center gap-2">
                  <Target size={12} className="text-emerald-500" /> Project_Directive
               </label>
-              <input 
+              <input
                 value={projectTitle}
                 onChange={(e) => setProjectTitle(e.target.value.toUpperCase())}
                 className="w-full bg-black/5 dark:bg-white/[0.03] border border-black/5 dark:border-white/10 p-5 text-[22px] font-black text-emerald-500 outline-none focus:border-emerald-500/40 tracking-widest italic rounded-sm transition-all"
                 placeholder="NARRATIVE_IDENTIFIER..."
               />
            </div>
-           <button 
+           <button
              onClick={handleSimulate}
              disabled={isGenerating}
              className="w-80 bg-emerald-500 text-black h-24 flex flex-col items-center justify-center gap-2 hover:bg-white transition-all shadow-[0_20px_80px_rgba(16,185,129,0.3)] active:scale-95 disabled:opacity-20 group relative overflow-hidden rounded-sm"

@@ -249,11 +249,11 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         jobId: apiRes.data.jobId,
         isCancelledRef: cancelRef,
         apiType: 'image',
-        onDone: (imageUrl) => {
-          setResult(imageUrl);
+        onDone: (result) => {
+          setResult(result.images?.[0] ?? null);
           const newSession: PosterSession = {
             id: Date.now().toString(),
-            url: imageUrl,
+            url: result.images?.[0] ?? "",
             prompt: prompt,
             config: { selectedSize, selectedStyle, selectedModel },
             timestamp: new Date().toLocaleString()

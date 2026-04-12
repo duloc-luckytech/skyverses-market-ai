@@ -94,8 +94,8 @@ const AetherVisualAgentInterface = () => {
               jobId: apiRes.data.jobId,
               isCancelledRef: cancelRef,
               apiType: 'image',
-              onDone: (res) => {
-                setConcepts(prev => prev.map(c => c.id === concept.id ? { ...c, imageUrl: res, status: 'success' } : c));
+              onDone: (result) => {
+                setConcepts(prev => prev.map(c => c.id === concept.id ? { ...c, imageUrl: result.images?.[0] ?? null, status: 'success' } : c));
                 useCredits(50);
                 addLog('CREATE', `Node_${i+1} synthesis successful.`);
                 resolve();

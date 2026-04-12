@@ -64,11 +64,11 @@ const AudioToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     try {
       const promptText = `Audio to Video. Source: ${audioUrl}. Style: ${motionStyle}. Complexity: ${intensity}%. Instructions: ${instructions}. Music Sync: ${music}.`;
       const payload: VideoJobRequest = {
-        type: "text_to_video",
-        input: { prompt: promptText },
+        type: "text-to-video",
+        input: {},
         config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
         engine: { provider: "google" as any, model: "veo_3_fast" as any },
-        enginePayload: { prompt: promptText, privacy: "PRIVATE", translateToEn: true, projectId: "default" }
+        enginePayload: { prompt: promptText, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
       };
       const apiRes = await videosApi.createJob(payload);
       if (apiRes.success && apiRes.data.jobId) {
@@ -77,8 +77,8 @@ const AudioToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           jobId: apiRes.data.jobId,
           isCancelledRef: cancelRef,
           apiType: 'video',
-          onDone: (video) => {
-            setResultVideo(video);
+          onDone: (result) => {
+            setResultVideo(result.videoUrl ?? null);
             useCredits(100);
             setIsGenerating(false);
           },

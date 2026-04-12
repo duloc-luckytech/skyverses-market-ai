@@ -1,14 +1,16 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Zap, Loader2, Video, Film, Play, 
-  Terminal, ShieldCheck, History as HistoryIcon, 
-  Download, Layers, Camera, Sliders, 
-  Palette, CheckCircle2, Info, Lock, 
-  ExternalLink, Activity, Upload,
+import React, { useState, useRef } from 'react';
+import {
+  Zap, Loader2, Video, Film, Play,
+  Terminal, ShieldCheck, History as HistoryIcon,
+  Download, Layers, Camera, Sliders,
+  Palette, CheckCircle2, Info,
+  Activity, Upload,
   Square, RotateCcw, MonitorPlay
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/geminiMedia';
+import { useAuth } from '../context/AuthContext';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 interface Take {
   url: string;
@@ -18,11 +20,11 @@ interface Take {
 }
 
 const MotionCraftInterface = () => {
+  const { isAuthenticated, login, useCredits } = useAuth();
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [takes, setTakes] = useState<Take[]>([]);
-  const [needsKey, setNeedsKey] = useState(false);
 
   // Motion Config
   const [motionPreset, setMotionPreset] = useState('Orbit');
@@ -30,23 +32,6 @@ const MotionCraftInterface = () => {
   const [sourceImage, setSourceImage] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const checkKey = async () => {
-      if ((window as any).aistudio) {
-        const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-        if (!process.env.API_KEY && !hasKey) setNeedsKey(true);
-      }
-    };
-    checkKey();
-  }, []);
-
-  const handleSelectKey = async () => {
-    if ((window as any).aistudio) {
-      await (window as any).aistudio.openSelectKey();
-      setNeedsKey(false);
-    }
-  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -59,30 +44,46 @@ const MotionCraftInterface = () => {
 
   const handleSynthesis = async () => {
     if ((!prompt.trim() && !sourceImage) || isGenerating) return;
+    if (!isAuthenticated) { login(); return; }
     setIsGenerating(true);
 
     try {
       const directive = `${motionPreset} camera logic. Directive: ${prompt}`;
-      const url = await generateDemoVideo({
-        prompt: directive,
-        references: sourceImage ? [sourceImage] : undefined,
-        aspectRatio: aspectRatio as '16:9' | '9:16'
+      const hasImages = sourceImage ? [sourceImage] : undefined;
+      const payload: VideoJobRequest = {
+        type: hasImages ? "image-to-video" : "text-to-video",
+        input: { images: hasImages },
+        config: { duration: 8, aspectRatio: aspectRatio as '16:9' | '9:16', resolution: "720p" },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt: directive, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
+      };
+      const apiRes = await videosApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'video',
+        onDone: (result) => {
+          const videoUrl = result.videoUrl ?? '';
+          setActiveVideo(videoUrl);
+          setTakes(prev => [{
+            url: videoUrl,
+            prompt: prompt || 'Reference Image Synthesis',
+            motion: motionPreset,
+            timestamp: new Date().toLocaleTimeString()
+          }, ...prev]);
+          useCredits(100);
+          setIsGenerating(false);
+        },
+        onError: () => {
+          console.error("Velocity Synthesis Error");
+          setIsGenerating(false);
+        }
       });
-      if (url) {
-        setActiveVideo(url);
-        setTakes(prev => [{
-          url,
-          prompt: prompt || 'Reference Image Synthesis',
-          motion: motionPreset,
-          timestamp: new Date().toLocaleTimeString()
-        }, ...prev]);
-      }
     } catch (err: any) {
       console.error("Velocity Synthesis Error:", err);
-      if (err?.message?.includes('Requested entity was not found')) {
-        setNeedsKey(true);
-      }
-    } finally {
       setIsGenerating(false);
     }
   };
@@ -99,8 +100,8 @@ const MotionCraftInterface = () => {
               <label className="text-[7px] font-black uppercase text-gray-400 dark:text-gray-700">Camera_Motion</label>
               <div className="grid grid-cols-2 gap-2">
                 {['Orbit', 'Dolly', 'Pan', 'Zoom'].map(m => (
-                  <button 
-                    key={m} 
+                  <button
+                    key={m}
                     onClick={() => setMotionPreset(m)}
                     className={`py-2.5 text-[9px] font-black uppercase border transition-all ${motionPreset === m ? 'bg-brand-blue border-brand-blue text-white' : 'border-black/5 dark:border-white/5 text-gray-400'}`}
                   >
@@ -114,7 +115,7 @@ const MotionCraftInterface = () => {
 
         <div className="space-y-4">
            <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em]">Reference_Frame</label>
-           <div 
+           <div
              onClick={() => fileInputRef.current?.click()}
              className="aspect-video border border-dashed border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/[0.02] flex flex-col items-center justify-center cursor-pointer group hover:border-brand-blue transition-all relative overflow-hidden"
            >
@@ -143,7 +144,7 @@ const MotionCraftInterface = () => {
                    <p className="text-[11px] font-black uppercase tracking-[0.6em]">Terminal_Standby</p>
                 </div>
               )}
-              
+
               {isGenerating && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md z-20">
                    <Loader2 className="w-12 h-12 text-brand-blue animate-spin mb-4" />
@@ -157,16 +158,16 @@ const MotionCraftInterface = () => {
         <div className="h-32 border-t border-black/10 dark:border-white/5 bg-white dark:bg-black p-4 flex gap-4 shrink-0 relative z-20">
           <div className="flex-grow flex flex-col gap-2">
             <label className="text-[8px] font-black uppercase text-gray-400 dark:text-gray-700 tracking-[0.3em] flex items-center gap-2"><Zap size={12} className="text-brand-blue" /> Intent_Directive</label>
-            <textarea 
-              value={prompt} 
-              onChange={(e) => setPrompt(e.target.value)} 
-              className="flex-grow bg-black/5 dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-3 text-[11px] font-black uppercase text-black dark:text-white focus:outline-none focus:border-brand-blue/30 resize-none tracking-tight leading-relaxed" 
-              placeholder="Describe motion..." 
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              className="flex-grow bg-black/5 dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-3 text-[11px] font-black uppercase text-black dark:text-white focus:outline-none focus:border-brand-blue/30 resize-none tracking-tight leading-relaxed"
+              placeholder="Describe motion..."
             />
           </div>
-          <button 
-            onClick={handleSynthesis} 
-            disabled={isGenerating || (!prompt.trim() && !sourceImage)} 
+          <button
+            onClick={handleSynthesis}
+            disabled={isGenerating || (!prompt.trim() && !sourceImage)}
             className="w-40 bg-brand-blue text-white flex flex-col items-center justify-center gap-2 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all group shadow-2xl active:scale-[0.98] disabled:opacity-20"
           >
             <Zap size={20} className="fill-current group-hover:scale-110 transition-transform" />
@@ -191,26 +192,6 @@ const MotionCraftInterface = () => {
           </div>
         </div>
       </div>
-
-      {needsKey && (
-        <div className="absolute inset-0 z-[100] bg-black/95 flex items-center justify-center p-8 text-center">
-          <div className="max-w-md space-y-8 animate-in fade-in zoom-in duration-500">
-            <div className="w-20 h-20 border border-brand-blue mx-auto flex items-center justify-center">
-              <Lock className="w-8 h-8 text-brand-blue animate-pulse" />
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-2xl font-black uppercase tracking-tighter text-white">Auth Required</h3>
-              <p className="text-[10px] text-gray-500 leading-relaxed uppercase tracking-widest font-bold">
-                Motion Craft high-speed synthesis requires an authorized production API key.
-              </p>
-              <div className="pt-6 flex flex-col gap-4">
-                <button onClick={handleSelectKey} className="btn-sky-primary py-4 px-10 text-[10px] tracking-widest uppercase">Select Production Key</button>
-                <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="text-[9px] text-gray-600 hover:text-brand-blue flex items-center justify-center gap-2 font-black uppercase">Billing Architecture <ExternalLink className="w-3 h-3" /></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

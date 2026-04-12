@@ -652,7 +652,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           setUsagePreference(pref as any); 
           localStorage.setItem('skyverses_usage_preference', pref); 
           setShowResourceModal(false); 
-          if (isResumingGenerate) { setIsResumingGenerate(false); performInference(pref as any); } 
+          if (isResumingGenerate) { setIsResumingGenerate(false); performInference(); } 
         }} 
         hasPersonalKey={hasPersonalKey} 
         totalCost={actionCost} 

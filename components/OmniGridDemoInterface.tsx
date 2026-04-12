@@ -30,6 +30,38 @@ const OmniGridDemoInterface = () => {
   const [variation, setVariation] = useState(30);
   const [profile, setProfile] = useState('Marketing_Visuals');
 
+
+  const generateDemoImage = async (prompt: string): Promise<string | null> => {
+    try {
+      const payload: ImageJobRequest = {
+        type: "text_to_image",
+        input: { prompt },
+        config: { width: 512, height: 512, aspectRatio: "1:1", seed: 0, style: "marketing" },
+        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+        enginePayload: { prompt, privacy: "PRIVATE", projectId: "default" }
+      };
+      const apiRes = await imagesApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) return null;
+      
+      let result: any = null;
+      const cancelRef = { current: false };
+      
+      return new Promise((resolve) => {
+        pollJobOnce({
+          jobId: apiRes.data.jobId,
+          isCancelledRef: cancelRef,
+          apiType: 'image',
+          onDone: (res) => {
+            resolve(res.images?.[0] ?? null);
+          },
+          onError: () => resolve(null)
+        });
+      });
+    } catch {
+      return null;
+    }
+  };
+
   const handleBatchSynthesis = async () => {
     if (!prompt.trim() || isGenerating || credits <= 0) return;
     setIsGenerating(true);
@@ -55,7 +87,7 @@ const OmniGridDemoInterface = () => {
         }
         
         setItems(results);
-        setCredits(prev => prev - 1);
+        useCredits(1);
       }
     } catch (err) {
       console.error("OmniGrid Batch Error:", err);

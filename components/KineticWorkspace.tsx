@@ -110,11 +110,11 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       if (styleRef) references.push(styleRef);
 
       const payload: VideoJobRequest = {
-        type: "image_to_video",
-        input: { images: references, prompt: directive },
+        type: "image-to-video",
+        input: { images: references },
         config: { duration: 8, aspectRatio, resolution },
         engine: { provider: "google" as any, model: "veo_3_fast" as any },
-        enginePayload: { prompt: directive, privacy: "PRIVATE", translateToEn: true, projectId: "default" }
+        enginePayload: { prompt: directive, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
       };
       const apiRes = await videosApi.createJob(payload);
       if (apiRes.success && apiRes.data.jobId) {
@@ -123,8 +123,8 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           jobId: apiRes.data.jobId,
           isCancelledRef: cancelRef,
           apiType: 'video',
-          onDone: (url) => {
-            setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'completed', videoUrl: url } : t));
+          onDone: (result) => {
+            setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: "completed", videoUrl: result.videoUrl ?? null } : t));
             useCredits(100);
             addLog(`JOB_${taskId.slice(-4)}_SUCCESS`);
           },
@@ -154,11 +154,11 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     try {
       const extPrompt = `Continue smoothly.`;
       const payload: VideoJobRequest = {
-        type: "image_to_video",
-        input: { prompt: extPrompt },
+        type: "image-to-video",
+        input: { images: [] },
         config: { duration: 8, aspectRatio, resolution: "720p" },
         engine: { provider: "google" as any, model: "veo_3_fast" as any },
-        enginePayload: { prompt: extPrompt, privacy: "PRIVATE", translateToEn: true, projectId: "default" }
+        enginePayload: { prompt: extPrompt, privacy: "PRIVATE", translateToEn: true, projectId: "default", mode: "fast" }
       };
       const apiRes = await videosApi.createJob(payload);
       if (apiRes.success && apiRes.data.jobId) {
@@ -167,8 +167,8 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           jobId: apiRes.data.jobId,
           isCancelledRef: cancelRef,
           apiType: 'video',
-          onDone: (url) => {
-            setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'completed', videoUrl: url, duration: t.duration + 7.0 } : t));
+          onDone: (result) => {
+            setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'completed', videoUrl: result.videoUrl ?? null, duration: t.duration + 7.0 } : t));
             useCredits(100);
             addLog(`EXTENSION_SUCCESS`);
           },
