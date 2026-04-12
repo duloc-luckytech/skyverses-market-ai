@@ -7,9 +7,9 @@ import {
   History, Trash2, Bot, Activity, RefreshCw, ExternalLink,
   ShieldCheck, DollarSign, Zap, Copy, Download, GitBranch,
   Eye, Terminal, TrendingUp, Settings, ChevronUp, Plus,
-  ArrowRight, Layers, Workflow, Star, HelpCircle, Share2,
+  ArrowRight, Layers, Workflow, Star, HelpCircle, Share2, Pencil,
 } from 'lucide-react';
-import { aiChatStreamViaProxy, AI_MODELS } from '../apis/aiCommon';
+import { aiChatStreamViaProxy, AI_MODELS, buildSystemMessage } from '../apis/aiCommon';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
@@ -82,11 +82,8 @@ const DEPARTMENTS = [
 ];
 
 const LLM_MODELS = [
-  { id: 'claude-sonnet', label: 'Claude Sonnet', provider: 'Anthropic', badge: 'Best for content', color: '#f97316' },
-  { id: 'gpt-4o',        label: 'GPT-4o',        provider: 'OpenAI',    badge: 'Best for analysis', color: '#10b981' },
-  { id: 'cursor',        label: 'Cursor',         provider: 'Anysphere', badge: 'Best for code',     color: '#0090ff' },
-  { id: 'claude-haiku',  label: 'Claude Haiku',   provider: 'Anthropic', badge: 'Fast & cheap',      color: '#8b5cf6' },
-  { id: 'gpt-3.5',       label: 'GPT-3.5 Turbo',  provider: 'OpenAI',    badge: 'Budget option',     color: '#6b7280' },
+  { id: 'claude-sonnet', label: 'Claude Sonnet 4', provider: 'Anthropic', badge: 'Fast & Balanced', color: '#f97316', apiModel: AI_MODELS.SONNET },
+  { id: 'claude-opus',   label: 'Claude Opus 4',   provider: 'Anthropic', badge: 'Most Powerful',   color: '#8b5cf6', apiModel: AI_MODELS.OPUS   },
 ];
 
 const TASK_TEMPLATES: StylePreset[] = [
@@ -498,7 +495,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   const [activeRightTab, setActiveRightTab] = useState<'output' | 'log' | 'prompt'>('output');
   const [isStreaming, setIsStreaming]       = useState(false);
   const [showApprovalDialog, setShowApprovalDialog] = useState(false);
-  const pendingRunRef = useRef<(() => Promise<void>) | null>(null);
+  const pendingRunRef = useRef<((override?: string) => Promise<void>) | null>(null);
 
   // Config state
   const [activeDept, setActiveDept]         = useState(DEPARTMENTS[1].id); // marketing
@@ -554,6 +551,10 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY + '_queue') ?? '[]'); } catch { return []; }
   });
   const [showQueue, setShowQueue] = useState(false);
+
+  // Prompt Inspector: edit system prompt + re-run
+  const [editedSystemPrompt, setEditedSystemPrompt] = useState<string>('');
+  const [isEditingPrompt, setIsEditingPrompt]       = useState(false);
 
   const dept  = DEPARTMENTS.find(d => d.id === activeDept)  ?? DEPARTMENTS[1];
   const model = LLM_MODELS.find(m => m.id === activeModel)  ?? LLM_MODELS[0];
@@ -639,7 +640,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     return APPROVAL_KEYWORDS.some(kw => lower.includes(kw));
   }, []);
 
-  const executeRun = useCallback(async () => {
+  const executeRun = useCallback(async (overrideSystemPrompt?: string) => {
     if (!taskPrompt.trim() || isRunning) return;
     if (!isAuthenticated) { login(); return; }
 
@@ -658,12 +659,24 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     const taskCost = parseFloat((Math.random() * 0.35 + 0.05).toFixed(2));
     const taskTokens = Math.floor(Math.random() * 1200 + 300);
 
-    const builtSystemPrompt = `Bạn là ${dept.agent} trong hệ thống Paperclip AI Org Orchestrator. Model: ${model.label} (${model.provider}). Department: ${dept.label}. Thực hiện task được giao, trả về kết quả chi tiết, professional và actionable. Sử dụng markdown formatting với headers (##), bullet points (-) và numbered lists khi phù hợp. Viết bằng tiếng Việt hoặc tiếng Anh tùy context của task. Kết quả phải cụ thể, có thể action được.`;
+    // Build system prompt via buildSystemMessage() — or use override from Prompt Inspector
+    const builtSystemPrompt: string = overrideSystemPrompt ?? (buildSystemMessage({
+      role: `Bạn là ${dept.agent} trong hệ thống Paperclip AI Org Orchestrator. Department: ${dept.label}. Model: ${model.label} (${model.provider}).`,
+      rules: [
+        'Thực hiện task được giao, trả về kết quả chi tiết, professional và actionable.',
+        'Dùng markdown formatting: headers (##), bullet points (-), numbered lists khi phù hợp.',
+        'Viết bằng tiếng Việt hoặc tiếng Anh tùy context của task.',
+      ],
+      outputFormat: 'Kết quả phải cụ thể, có thể action được ngay.',
+    }).content as string);
 
     // Simulate multi-step activity
     addLog('CEO Agent', `Nhận task từ user → giao cho ${dept.agent}`, 'running', '#0090ff');
     setTimeout(() => addLog(dept.agent, `Bắt đầu xử lý với ${model.label}`, 'running', dept.color), 600);
     setTimeout(() => addLog('Budget Guard', `Theo dõi cost — limit $${budgetLimit.toFixed(2)}`, 'info', '#10b981'), 1200);
+    if (overrideSystemPrompt) {
+      setTimeout(() => addLog('Prompt Inspector', 'Dùng system prompt đã chỉnh sửa', 'info', '#8b5cf6'), 900);
+    }
 
     const pendingResult: TaskResult = {
       id: taskId,
@@ -699,7 +712,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         },
         undefined,
         4096,
-        AI_MODELS.SONNET,
+        model.apiModel,
       );
 
       const output = streamedOutput;
@@ -744,6 +757,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       addLog(dept.agent, 'Lỗi không xác định', 'warning', '#ef4444');
       showToast('Lỗi khi chạy agent', 'error');
     } finally {
+      setIsEditingPrompt(false);
       setIsRunning(false);
       if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
       if (thinkingTimerRef.current) { clearInterval(thinkingTimerRef.current); thinkingTimerRef.current = null; }
@@ -1615,23 +1629,72 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                           >
                             {currentResult?.systemPrompt ? (
                               <div className="space-y-3">
-                                {/* System Prompt block */}
+                                {/* System Prompt block — editable */}
                                 <div className="rounded-xl border border-purple-500/20 bg-purple-500/[0.04] overflow-hidden">
                                   <div className="flex items-center justify-between px-3 py-2 border-b border-purple-500/10">
                                     <div className="flex items-center gap-2">
                                       <div className="w-2 h-2 rounded-full bg-purple-400" />
                                       <span className="text-[9px] font-bold text-purple-400 uppercase tracking-widest">System Prompt</span>
+                                      {isEditingPrompt && (
+                                        <span className="text-[8px] font-semibold text-purple-400/70 bg-purple-500/10 border border-purple-500/20 px-1.5 py-0.5 rounded-full">Editing</span>
+                                      )}
                                     </div>
-                                    <button
-                                      onClick={() => copyOutput(currentResult.systemPrompt ?? '')}
-                                      className="text-[9px] text-purple-400/60 hover:text-purple-400 transition-colors flex items-center gap-1"
-                                    >
-                                      <Copy size={9} /> Copy
-                                    </button>
+                                    <div className="flex items-center gap-1.5">
+                                      {!isEditingPrompt && (
+                                        <>
+                                          <button
+                                            onClick={() => copyOutput(currentResult.systemPrompt ?? '')}
+                                            className="text-[9px] text-purple-400/60 hover:text-purple-400 transition-colors flex items-center gap-1"
+                                          >
+                                            <Copy size={9} /> Copy
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              setEditedSystemPrompt(currentResult.systemPrompt ?? '');
+                                              setIsEditingPrompt(true);
+                                            }}
+                                            className="text-[9px] text-purple-400/70 hover:text-purple-400 transition-colors flex items-center gap-1 ml-1 px-2 py-0.5 rounded-lg border border-purple-500/20 hover:bg-purple-500/10"
+                                          >
+                                            <Pencil size={9} /> Edit
+                                          </button>
+                                        </>
+                                      )}
+                                      {isEditingPrompt && (
+                                        <button
+                                          onClick={() => setIsEditingPrompt(false)}
+                                          className="text-[9px] text-slate-400/70 hover:text-slate-500 transition-colors flex items-center gap-1 px-2 py-0.5 rounded-lg border border-black/10 dark:border-white/10 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
+                                        >
+                                          <X size={9} /> Cancel
+                                        </button>
+                                      )}
+                                    </div>
                                   </div>
-                                  <pre className="p-3 text-[10px] leading-relaxed text-purple-800 dark:text-purple-200/80 font-mono whitespace-pre-wrap break-words">
-                                    {currentResult.systemPrompt}
-                                  </pre>
+                                  {isEditingPrompt ? (
+                                    <div className="p-3 space-y-2">
+                                      <textarea
+                                        value={editedSystemPrompt}
+                                        onChange={e => setEditedSystemPrompt(e.target.value)}
+                                        rows={6}
+                                        className="w-full p-2.5 text-[10px] leading-relaxed font-mono rounded-lg border border-purple-500/30 bg-purple-500/[0.04] text-purple-800 dark:text-purple-200/80 resize-y focus:outline-none focus:ring-1 focus:ring-purple-500/40 placeholder:text-purple-400/40"
+                                        placeholder="Nhập system prompt tùy chỉnh..."
+                                      />
+                                      <button
+                                        onClick={() => executeRun(editedSystemPrompt)}
+                                        disabled={!editedSystemPrompt.trim() || isRunning}
+                                        className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-brand-blue text-white text-[10px] font-bold hover:bg-brand-blue/90 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                      >
+                                        {isRunning ? (
+                                          <><Loader2 size={10} className="animate-spin" /> Running...</>
+                                        ) : (
+                                          <><Play size={10} /> Re-run với prompt này</>
+                                        )}
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <pre className="p-3 text-[10px] leading-relaxed text-purple-800 dark:text-purple-200/80 font-mono whitespace-pre-wrap break-words">
+                                      {currentResult.systemPrompt}
+                                    </pre>
+                                  )}
                                 </div>
                                 {/* User prompt block */}
                                 <div className="rounded-xl border border-brand-blue/20 bg-brand-blue/[0.04] overflow-hidden">
