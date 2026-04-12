@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { ShotTypeBadge } from './ShotTypeBadge';
@@ -15,39 +15,91 @@ const STATUS_CONFIG: Record<string, { dot: string; label: string; badge: string 
 
 interface SceneCardHeaderProps {
   sceneIndex: number;
+  title?: string;
   shotType: ShotType;
   duration: number;
   status: string;
   errorMessage?: string;
   onShotTypeChange: (st: ShotType) => void;
   onDurationChange: (d: DurationPreset) => void;
+  onRename?: (title: string) => void;
   isProcessing: boolean;
 }
 
 export const SceneCardHeader: React.FC<SceneCardHeaderProps> = ({
   sceneIndex,
+  title,
   shotType,
   duration,
   status,
   errorMessage,
   onShotTypeChange,
   onDurationChange,
+  onRename,
   isProcessing,
 }) => {
   const { dot, label, badge } = STATUS_CONFIG[status] ?? STATUS_CONFIG.idle;
   const [showErrorTooltip, setShowErrorTooltip] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [renameValue, setRenameValue] = useState('');
+  const renameInputRef = useRef<HTMLInputElement>(null);
   const isError = status === 'error';
   const errorText = errorMessage?.trim() || 'Lỗi không xác định';
+
+  useEffect(() => {
+    if (renaming && renameInputRef.current) {
+      renameInputRef.current.focus();
+      renameInputRef.current.select();
+    }
+  }, [renaming]);
+
+  const startRename = useCallback(() => {
+    if (!onRename) return;
+    setRenameValue(title || '');
+    setRenaming(true);
+  }, [title, onRename]);
+
+  const commitRename = useCallback(() => {
+    const trimmed = renameValue.trim();
+    if (onRename) onRename(trimmed);
+    setRenaming(false);
+  }, [renameValue, onRename]);
+
+  const handleRenameKey = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') { e.preventDefault(); commitRename(); }
+    if (e.key === 'Escape') { setRenaming(false); }
+  }, [commitRename]);
 
   return (
     <div
       className="flex items-center gap-2 px-3 py-2 border-b border-slate-100 dark:border-white/8 bg-slate-50 dark:bg-white/[0.02]"
       onClick={e => e.stopPropagation()}
     >
-      {/* Scene number — pill badge nổi bật */}
-      <span className="shrink-0 inline-flex items-center justify-center min-w-[28px] h-5 px-1.5 rounded-full bg-brand-blue/90 text-white text-[8px] font-black tabular-nums leading-none shadow-sm">
-        #{sceneIndex + 1}
-      </span>
+      {/* Scene number / title — double-click to rename */}
+      {renaming ? (
+        <input
+          ref={renameInputRef}
+          value={renameValue}
+          onChange={e => setRenameValue(e.target.value)}
+          onBlur={commitRename}
+          onKeyDown={handleRenameKey}
+          onClick={e => e.stopPropagation()}
+          placeholder={`#${sceneIndex + 1}`}
+          className="shrink-0 w-20 h-5 px-1.5 rounded-full bg-brand-blue/20 border border-brand-blue/50 text-brand-blue text-[8px] font-black leading-none outline-none text-center"
+        />
+      ) : (
+        <span
+          className={`shrink-0 inline-flex items-center justify-center min-w-[28px] h-5 px-1.5 rounded-full bg-brand-blue/90 text-white text-[8px] font-black tabular-nums leading-none shadow-sm ${onRename ? 'cursor-pointer hover:bg-brand-blue transition-colors' : ''}`}
+          onDoubleClick={onRename ? startRename : undefined}
+          title={onRename ? (title || `Cảnh ${sceneIndex + 1}`) + ' — click đúp để đổi tên' : undefined}
+        >
+          {title ? (
+            <span className="max-w-[64px] truncate">{title}</span>
+          ) : (
+            `#${sceneIndex + 1}`
+          )}
+        </span>
+      )}
 
       {/* Shot type badge */}
       <ShotTypeBadge

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Scene, ReferenceAsset } from './useStoryboardStudio';
+import { Scene, ReferenceAsset, Act } from './useStoryboardStudio';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface ProjectData {
@@ -7,6 +7,7 @@ export interface ProjectData {
   name: string;
   script: string;
   scenes: Scene[];
+  acts?: Act[];
   assets: ReferenceAsset[];
   settings: Record<string, any>;
   totalDuration: number;
@@ -221,6 +222,30 @@ export const useProjectManager = () => {
     [],
   );
 
+  // ── Duplicate ─────────────────────────────────────────────────────────────
+  const duplicateProject = useCallback(
+    (id: string): string => {
+      const source = readProject(id);
+      if (!source) return activeProjectId;
+      const copy: ProjectData = {
+        ...source,
+        id: genId(),
+        name: `${source.name} (bản sao)`,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      writeProject(copy);
+      const ids = [...readProjectIds(), copy.id];
+      writeProjectIds(ids);
+      setProjectIds(ids);
+      setActiveProjectId(copy.id);
+      localStorage.setItem(ACTIVE_PROJECT_KEY, copy.id);
+      refreshMeta(ids);
+      return copy.id;
+    },
+    [activeProjectId, refreshMeta],
+  );
+
   // ── Delete ────────────────────────────────────────────────────────────────
   const deleteProject = useCallback(
     (id: string): string => {
@@ -253,6 +278,7 @@ export const useProjectManager = () => {
     switchProject,
     saveCurrentProject,
     renameProject,
+    duplicateProject,
     deleteProject,
   };
 };

@@ -6,14 +6,16 @@ import {
   Grid2X2, Film,
   Image as LucideImage, Loader2, Square as SquareIcon, LayoutGrid,
   Clapperboard,
-  Play, AlignJustify, Volume2, Music2,
+  Play, AlignJustify, Volume2, Music2, Search, X as XIcon, Keyboard, Plus,
 } from 'lucide-react';
-import { ReferenceAsset, Scene, ShotType, DurationPreset } from '../../hooks/useStoryboardStudio';
+import { ReferenceAsset, Scene, ShotType, DurationPreset, Act } from '../../hooks/useStoryboardStudio';
 import { SceneCardHeader }    from './scene-card/SceneCardHeader';
 import { DragHandle }         from './scene-card/DragHandle';
 import { SceneHoverActions }  from './scene-card/SceneHoverActions';
 import TimelineView           from './TimelineView';
 import { TemplatePickerModal } from './TemplatePickerModal';
+import { ShortcutsModal }     from './ShortcutsModal';
+import { ActSection, UnassignedGroup } from './ActSection';
 
 interface StoryboardTabProps {
   script: string;
@@ -65,6 +67,20 @@ interface StoryboardTabProps {
   onDownloadAudio?: (scene: Scene) => void;
   onGenerateVoiceover?: (sceneId: string) => void;
   onMoveScene?: (id: string, direction: 'up' | 'down') => void;
+  // Scene UX: undo/redo + bulk duration
+  onBulkDurationChange?: (sceneIds: string[], duration: DurationPreset) => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  // Acts / Scene grouping
+  acts?: Act[];
+  onAddAct?: (name?: string) => void;
+  onRemoveAct?: (actId: string) => void;
+  onRenameAct?: (actId: string, name: string) => void;
+  onToggleActCollapse?: (actId: string) => void;
+  onAssignSceneToAct?: (sceneId: string, actId: string | undefined) => void;
+  onReorderActScenes?: (actId: string | undefined, reordered: Scene[]) => void;
 }
 
 // ─── SCENE CARD WRAPPER (with drag support) ─────────────────────────────────
@@ -227,12 +243,14 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
       {/* Header */}
       <SceneCardHeader
         sceneIndex={index}
+        title={scene.title}
         shotType={scene.shotType ?? 'WIDE'}
         duration={scene.duration ?? 8}
         status={scene.status}
         errorMessage={scene.errorMessage}
         onShotTypeChange={onShotTypeChange}
         onDurationChange={onDurationChange}
+        onRename={(t) => onUpdate({ title: t || undefined })}
         isProcessing={isProcessing}
       />
 
@@ -358,10 +376,15 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   onReorder, onShotTypeChange, onDurationChange,
   onGenerateImages, onGenerateVideos,
   onDownloadScene, onDownloadAudio, onGenerateVoiceover, onMoveScene,
+  onBulkDurationChange, onUndo, onRedo, canUndo, canRedo,
+  acts = [], onAddAct, onRemoveAct, onRenameAct, onToggleActCollapse, onAssignSceneToAct, onReorderActScenes,
 }) => {
   const [viewLayout, setViewLayout] = useState<'grid' | 'list' | 'timeline'>('list');
   const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [keyboardDeleteConfirm, setKeyboardDeleteConfirm] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // ── Keyboard shortcuts ─────────────────────────────────────────────────────
   useEffect(() => {
@@ -373,6 +396,34 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
         target.tagName === 'TEXTAREA' ||
         target.isContentEditable
       ) return;
+
+      // ⌘Z / Ctrl+Z → undo
+      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key === 'z') {
+        e.preventDefault();
+        onUndo?.();
+        return;
+      }
+
+      // ⌘⇧Z / Ctrl+Shift+Z → redo
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'z') {
+        e.preventDefault();
+        onRedo?.();
+        return;
+      }
+
+      // ? → open shortcuts modal
+      if (e.key === '?') {
+        e.preventDefault();
+        setIsShortcutsOpen(true);
+        return;
+      }
+
+      // / → focus search
+      if (e.key === '/') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        return;
+      }
 
       // Chỉ kích hoạt khi đúng 1 scene được chọn
       if (selectedSceneIds.length !== 1) return;
@@ -409,11 +460,31 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [selectedSceneIds, onDuplicateScene, onEnhanceScenePrompt, onDeleteScene, onMoveScene]);
+  }, [selectedSceneIds, onDuplicateScene, onEnhanceScenePrompt, onDeleteScene, onMoveScene, onUndo, onRedo]);
 
   const allSelected = selectedSceneIds.length === scenes.length && scenes.length > 0;
   const processingCount = scenes.filter(s => s.status === 'generating' || s.status === 'analyzing').length;
   const totalScenes = scenes.length;
+
+  // ── Search filter ──────────────────────────────────────────────────────────
+  const filteredScenes = searchQuery.trim()
+    ? scenes.filter(s =>
+        s.prompt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        String(s.order).includes(searchQuery.trim())
+      )
+    : scenes;
+
+  // ── Act grouping ───────────────────────────────────────────────────────────
+  const actsMode = acts.length > 0;
+  const scenesByAct = actsMode
+    ? acts.map(act => ({
+        act,
+        scenes: filteredScenes.filter(s => s.actId === act.id),
+      }))
+    : [];
+  const unassignedScenes = actsMode
+    ? filteredScenes.filter(s => !s.actId)
+    : filteredScenes;
 
   return (
     <motion.div
@@ -443,6 +514,27 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5">
+              {/* Scene search */}
+              {scenes.length > 0 && (
+                <div className="relative flex items-center">
+                  <Search size={11} className="absolute left-2.5 text-slate-400 dark:text-white/30 pointer-events-none" />
+                  <input
+                    ref={searchInputRef}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Tìm cảnh… (/)"
+                    className="pl-7 pr-7 py-2 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-[10px] font-medium text-slate-700 dark:text-white placeholder:text-slate-300 dark:placeholder:text-white/20 outline-none focus:border-brand-blue/50 focus:ring-2 focus:ring-brand-blue/10 w-[150px] transition-all"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-2 text-slate-300 dark:text-white/25 hover:text-slate-600 dark:hover:text-white transition-colors"
+                    >
+                      <XIcon size={11} />
+                    </button>
+                  )}
+                </div>
+              )}
               {/* Select all */}
               {scenes.length > 0 && (
                 <button
@@ -476,6 +568,47 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   </button>
                 </>
               )}
+              {/* Bulk duration selector — visible when ≥2 scenes selected */}
+              {selectedSceneIds.length >= 2 && onBulkDurationChange && (
+                <div className="flex items-center gap-1 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl px-2 py-1.5 shadow-sm">
+                  <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30 mr-1">⏱</span>
+                  {([4, 8, 12, 16] as DurationPreset[]).map((d) => (
+                    <button
+                      key={d}
+                      onClick={() => onBulkDurationChange(selectedSceneIds, d)}
+                      className="px-2 py-0.5 rounded-lg text-[9px] font-black text-slate-500 dark:text-white/50 hover:bg-brand-blue hover:text-white transition-all"
+                      title={`Đặt ${d}s cho ${selectedSceneIds.length} cảnh`}
+                    >
+                      {d}s
+                    </button>
+                  ))}
+                </div>
+              )}
+              {/* Undo / Redo buttons */}
+              {(onUndo || onRedo) && (
+                <div className="flex items-center bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-slate-200 dark:border-white/8">
+                  <button
+                    onClick={onUndo}
+                    disabled={!canUndo}
+                    title="Hoàn tác (⌘Z)"
+                    className="p-2 rounded-lg transition-all text-slate-400 dark:text-gray-500 hover:text-brand-blue disabled:opacity-25 disabled:cursor-not-allowed"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>
+                    </svg>
+                  </button>
+                  <button
+                    onClick={onRedo}
+                    disabled={!canRedo}
+                    title="Làm lại (⌘⇧Z)"
+                    className="p-2 rounded-lg transition-all text-slate-400 dark:text-gray-500 hover:text-brand-blue disabled:opacity-25 disabled:cursor-not-allowed"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>
+                    </svg>
+                  </button>
+                </div>
+              )}
               {/* Layout toggle */}
               <div className="flex items-center bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-slate-200 dark:border-white/8">
                 {[
@@ -493,6 +626,27 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   </button>
                 ))}
               </div>
+
+              {/* Shortcuts hint */}
+              <button
+                onClick={() => setIsShortcutsOpen(true)}
+                title="Xem phím tắt (?)"
+                className="p-2 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-slate-400 dark:text-white/30 hover:text-brand-blue transition-all"
+              >
+                <Keyboard size={13} />
+              </button>
+
+              {/* Add Act button */}
+              {onAddAct && (
+                <button
+                  onClick={() => onAddAct()}
+                  title="Tạo Act mới (nhóm cảnh)"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-slate-400 dark:text-white/30 hover:text-brand-blue dark:hover:text-brand-blue hover:border-brand-blue/40 transition-all text-[10px] font-black"
+                >
+                  <Plus size={11} />
+                  <span className="hidden lg:inline">Act</span>
+                </button>
+              )}
             </div>
           </header>
 
@@ -541,7 +695,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
           {/* Scene grid / list / timeline */}
           {viewLayout === 'timeline' ? (
             <TimelineView
-              scenes={scenes}
+              scenes={filteredScenes}
               assets={assets}
               selectedSceneIds={selectedSceneIds}
               isProcessing={isProcessing}
@@ -606,14 +760,107 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                 <LayoutGrid size={13} /> 📋 Dùng mẫu kịch bản có sẵn
               </button>
             </motion.div>
+          ) : filteredScenes.length === 0 && searchQuery.trim() ? (
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              className="flex flex-col items-center justify-center gap-3 py-12 text-center border-2 border-dashed border-slate-200 dark:border-white/8 rounded-2xl"
+            >
+              <Search size={24} className="text-slate-300 dark:text-white/20" />
+              <p className="text-[12px] font-semibold text-slate-400 dark:text-white/30">
+                Không tìm thấy cảnh nào phù hợp với "{searchQuery}"
+              </p>
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-[10px] font-black text-brand-blue hover:underline"
+              >
+                Xóa bộ lọc
+              </button>
+            </motion.div>
+          ) : actsMode ? (
+            /* ── Acts mode: grouped rendering ─────────────────────────────── */
+            <div className="space-y-2">
+              {scenesByAct.map(({ act, scenes: actScenes }) => (
+                <ActSection
+                  key={act.id}
+                  act={act}
+                  scenes={actScenes}
+                  isOnlyAct={acts.length === 1}
+                  onRename={(name) => onRenameAct?.(act.id, name)}
+                  onRemove={() => onRemoveAct?.(act.id)}
+                  onToggleCollapse={() => onToggleActCollapse?.(act.id)}
+                  onReorderScenes={(reordered) => onReorderActScenes?.(act.id, reordered)}
+                >
+                  {actScenes.map((scene, i) => (
+                    <SceneCardWrapper
+                      key={scene.id}
+                      scene={scene}
+                      index={scenes.indexOf(scene)}
+                      isSelected={selectedSceneIds.includes(scene.id)}
+                      assets={assets}
+                      isProcessing={isProcessing}
+                      isEnhancingPrompt={enhancingSceneId === scene.id}
+                      viewLayout={viewLayout}
+                      onToggle={() => toggleSceneSelection(scene.id)}
+                      onView={() => onViewScene(scene)}
+                      onUpdate={(updates) => updateScene(scene.id, updates)}
+                      onReGenerateImage={() => onReGenerateSceneImage(scene.id)}
+                      onReGenerateVideo={() => onReGenerateSceneVideo(scene.id)}
+                      onDelete={() => onDeleteScene(scene.id)}
+                      onDuplicate={onDuplicateScene ? () => onDuplicateScene(scene.id) : undefined}
+                      onEnhancePrompt={onEnhanceScenePrompt ? () => onEnhanceScenePrompt(scene.id) : undefined}
+                      onDownload={onDownloadScene && (scene.videoUrl || scene.visualUrl) ? () => onDownloadScene(scene) : undefined}
+                      onDownloadAudio={onDownloadAudio && scene.audioUrl ? () => onDownloadAudio(scene) : undefined}
+                      onGenerateVoiceover={onGenerateVoiceover ? () => onGenerateVoiceover(scene.id) : undefined}
+                      onShotTypeChange={(st) => onShotTypeChange(scene.id, st)}
+                      onDurationChange={(d) => onDurationChange(scene.id, d)}
+                    />
+                  ))}
+                </ActSection>
+              ))}
+
+              {/* Unassigned scenes */}
+              {unassignedScenes.length > 0 && (
+                <UnassignedGroup
+                  scenes={unassignedScenes}
+                  onReorderScenes={(reordered) => onReorderActScenes?.(undefined, reordered)}
+                >
+                  {unassignedScenes.map((scene, i) => (
+                    <SceneCardWrapper
+                      key={scene.id}
+                      scene={scene}
+                      index={scenes.indexOf(scene)}
+                      isSelected={selectedSceneIds.includes(scene.id)}
+                      assets={assets}
+                      isProcessing={isProcessing}
+                      isEnhancingPrompt={enhancingSceneId === scene.id}
+                      viewLayout={viewLayout}
+                      onToggle={() => toggleSceneSelection(scene.id)}
+                      onView={() => onViewScene(scene)}
+                      onUpdate={(updates) => updateScene(scene.id, updates)}
+                      onReGenerateImage={() => onReGenerateSceneImage(scene.id)}
+                      onReGenerateVideo={() => onReGenerateSceneVideo(scene.id)}
+                      onDelete={() => onDeleteScene(scene.id)}
+                      onDuplicate={onDuplicateScene ? () => onDuplicateScene(scene.id) : undefined}
+                      onEnhancePrompt={onEnhanceScenePrompt ? () => onEnhanceScenePrompt(scene.id) : undefined}
+                      onDownload={onDownloadScene && (scene.videoUrl || scene.visualUrl) ? () => onDownloadScene(scene) : undefined}
+                      onDownloadAudio={onDownloadAudio && scene.audioUrl ? () => onDownloadAudio(scene) : undefined}
+                      onGenerateVoiceover={onGenerateVoiceover ? () => onGenerateVoiceover(scene.id) : undefined}
+                      onShotTypeChange={(st) => onShotTypeChange(scene.id, st)}
+                      onDurationChange={(d) => onDurationChange(scene.id, d)}
+                    />
+                  ))}
+                </UnassignedGroup>
+              )}
+            </div>
           ) : (
+            /* ── Normal mode: flat Reorder.Group ──────────────────────────── */
             <Reorder.Group
               axis="y"
-              values={scenes}
+              values={filteredScenes}
               onReorder={onReorder}
               className={`grid gap-4 lg:gap-6 ${viewLayout === 'list' ? 'grid-cols-1' : 'grid-cols-2 md:grid-cols-2 xl:grid-cols-3'}`}
             >
-              {scenes.map((scene, i) => (
+              {filteredScenes.map((scene, i) => (
                 <SceneCardWrapper
                   key={scene.id}
                   scene={scene}
@@ -650,6 +897,12 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
         isOpen={isTemplatePickerOpen}
         onClose={() => setIsTemplatePickerOpen(false)}
         onSelect={(script) => setScript(script)}
+      />
+
+      {/* Keyboard Shortcuts Modal */}
+      <ShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
       />
 
       {/* Keyboard delete confirm dialog */}

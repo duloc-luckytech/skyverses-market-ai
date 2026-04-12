@@ -33,6 +33,7 @@ export interface Scene {
   order: number;
   duration: number;
   shotType?: ShotType;
+  title?: string;
   prompt: string;
   visualUrl?: string | null;
   videoUrl?: string | null;
@@ -41,6 +42,26 @@ export interface Scene {
   jobId?: string;
   characterIds?: string[];
   errorMessage?: string;
+  actId?: string;
+}
+
+// ─── Acts ─────────────────────────────────────────────────────────────────────
+export const ACT_COLORS = [
+  '#6366f1', // indigo
+  '#ec4899', // pink
+  '#f59e0b', // amber
+  '#10b981', // emerald
+  '#3b82f6', // blue
+  '#8b5cf6', // violet
+  '#ef4444', // red
+  '#14b8a6', // teal
+] as const;
+
+export interface Act {
+  id: string;
+  name: string;
+  color?: string;
+  collapsed: boolean;
 }
 
 export type AssetType = 'CHARACTER' | 'LOCATION' | 'OBJECT';
@@ -77,6 +98,58 @@ export const useStoryboardStudio = () => {
   const [sceneDuration, setSceneDuration] = useState(() => _initData().sceneDuration || 8);
   const [voiceOverEnabled, setVoiceOverEnabled] = useState(false);
   const [scenes, setScenes] = useState<Scene[]>(() => _initData().scenes || []);
+  const [acts, setActs] = useState<Act[]>(() => _initData().acts || []);
+
+  // ── Undo/Redo history ────────────────────────────────────────────────────
+  const historyRef = useRef<Scene[][]>([]);
+  const historyIndexRef = useRef<number>(-1);
+  const [historyVersion, setHistoryVersion] = useState(0); // triggers re-render
+  const skipHistoryRef = useRef(false); // set true for undo/redo setScenes itself
+
+  const pushHistory = useCallback((newScenes: Scene[]) => {
+    if (skipHistoryRef.current) return;
+    // Truncate redo branch
+    historyRef.current = historyRef.current.slice(0, historyIndexRef.current + 1);
+    historyRef.current.push(newScenes);
+    if (historyRef.current.length > 50) historyRef.current.shift();
+    historyIndexRef.current = historyRef.current.length - 1;
+    setHistoryVersion(v => v + 1);
+  }, []);
+
+  // Wrap setScenes to auto-push history for structural changes
+  const setScenesWithHistory = useCallback((updater: Scene[] | ((prev: Scene[]) => Scene[])) => {
+    setScenes(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      pushHistory(next);
+      return next;
+    });
+  }, [pushHistory]);
+
+  const undo = useCallback(() => {
+    if (historyIndexRef.current <= 0) return;
+    historyIndexRef.current -= 1;
+    const snapshot = historyRef.current[historyIndexRef.current];
+    skipHistoryRef.current = true;
+    setScenes(snapshot);
+    skipHistoryRef.current = false;
+    setHistoryVersion(v => v + 1);
+  }, []);
+
+  const redo = useCallback(() => {
+    if (historyIndexRef.current >= historyRef.current.length - 1) return;
+    historyIndexRef.current += 1;
+    const snapshot = historyRef.current[historyIndexRef.current];
+    skipHistoryRef.current = true;
+    setScenes(snapshot);
+    skipHistoryRef.current = false;
+    setHistoryVersion(v => v + 1);
+  }, []);
+
+  const canUndo = historyIndexRef.current > 0;
+  const canRedo = historyIndexRef.current < historyRef.current.length - 1;
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- historyVersion triggers re-evaluation
+  const _undoRedoState = { canUndo, canRedo }; // referenced below via historyVersion
+
   const [selectedSceneIds, setSelectedSceneIds] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -130,10 +203,11 @@ export const useStoryboardStudio = () => {
       totalDuration,
       sceneDuration,
       scenes,
+      acts,
       assets,
       name: projectName,
     });
-  }, [script, totalDuration, sceneDuration, scenes, assets, projectName, activeProjectId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [script, totalDuration, sceneDuration, scenes, acts, assets, projectName, activeProjectId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Cancel all in-flight polls on unmount
   useEffect(() => {
@@ -395,8 +469,14 @@ Return a JSON object with these exact keys:
   }, []);
 
   const updateScene = useCallback((id: string, updates: Partial<Scene>) => {
-    setScenes(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
-  }, []);
+    // Status-only updates (poll results) skip history to avoid flooding the stack
+    const isStatusOnly = Object.keys(updates).every(k => ['status', 'errorMessage', 'jobId', 'visualUrl', 'videoUrl', 'audioUrl'].includes(k));
+    if (isStatusOnly) {
+      setScenes(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+    } else {
+      setScenesWithHistory(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+    }
+  }, [setScenesWithHistory]);
 
   const closeProgressModal = useCallback(() => {
     setShowProgressModal(false);
@@ -1154,7 +1234,7 @@ Rewrite this as a better image generation prompt:`,
 
   // ── Move scene up/down (keyboard reorder) ────────────────────────
   const handleMoveScene = useCallback((id: string, direction: 'up' | 'down') => {
-    setScenes(prev => {
+    setScenesWithHistory(prev => {
       const idx = prev.findIndex(s => s.id === id);
       if (idx < 0) return prev;
       if (direction === 'up' && idx === 0) return prev;
@@ -1164,7 +1244,7 @@ Rewrite this as a better image generation prompt:`,
       [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
       return next.map((sc, i) => ({ ...sc, order: i + 1 }));
     });
-  }, []);
+  }, [setScenesWithHistory]);
 
   // ── Project persistence helpers ──────────────────────────────────
 
@@ -1173,6 +1253,7 @@ Rewrite this as a better image generation prompt:`,
     const data = projectManager.switchProject(id);
     setScript(data.script || '');
     setScenes(data.scenes || []);
+    setActs(data.acts || []);
     setAssets(data.assets || []);
     setTotalDuration(data.totalDuration || 64);
     setSceneDuration(data.sceneDuration || 8);
@@ -1235,17 +1316,56 @@ Rewrite this as a better image generation prompt:`,
 
   // ── Shot type per scene ──────────────────────────────────────────────
   const handleShotTypeChange = useCallback((sceneId: string, shotType: ShotType) => {
-    setScenes(prev => prev.map(sc => sc.id === sceneId ? { ...sc, shotType } : sc));
-  }, []);
+    setScenesWithHistory(prev => prev.map(sc => sc.id === sceneId ? { ...sc, shotType } : sc));
+  }, [setScenesWithHistory]);
 
   // ── Per-scene duration ────────────────────────────────────────────────
   const handleSceneDurationChange = useCallback((sceneId: string, duration: DurationPreset) => {
-    setScenes(prev => prev.map(sc => sc.id === sceneId ? { ...sc, duration } : sc));
-  }, []);
+    setScenesWithHistory(prev => prev.map(sc => sc.id === sceneId ? { ...sc, duration } : sc));
+  }, [setScenesWithHistory]);
+
+  // ── Bulk duration change (for selected scenes) ───────────────────────
+  const handleBulkDurationChange = useCallback((sceneIds: string[], duration: DurationPreset) => {
+    setScenesWithHistory(prev => prev.map(sc => sceneIds.includes(sc.id) ? { ...sc, duration } : sc));
+  }, [setScenesWithHistory]);
 
   // ── Drag reorder ─────────────────────────────────────────────────────
   const handleReorder = useCallback((reordered: Scene[]) => {
-    setScenes(reordered.map((sc, i) => ({ ...sc, order: i + 1 })));
+    setScenesWithHistory(reordered.map((sc, i) => ({ ...sc, order: i + 1 })));
+  }, [setScenesWithHistory]);
+
+  // ── Act CRUD ──────────────────────────────────────────────────────────
+  const addAct = useCallback((name?: string) => {
+    const newAct: Act = {
+      id: `act-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      name: name ?? `Act ${acts.length + 1}`,
+      color: ACT_COLORS[acts.length % ACT_COLORS.length],
+      collapsed: false,
+    };
+    setActs(prev => [...prev, newAct]);
+    return newAct;
+  }, [acts.length]);
+
+  const removeAct = useCallback((actId: string) => {
+    // Unassign all scenes in this act
+    setScenes(prev => prev.map(sc => sc.actId === actId ? { ...sc, actId: undefined } : sc));
+    setActs(prev => prev.filter(a => a.id !== actId));
+  }, []);
+
+  const renameAct = useCallback((actId: string, name: string) => {
+    setActs(prev => prev.map(a => a.id === actId ? { ...a, name } : a));
+  }, []);
+
+  const toggleActCollapse = useCallback((actId: string) => {
+    setActs(prev => prev.map(a => a.id === actId ? { ...a, collapsed: !a.collapsed } : a));
+  }, []);
+
+  const assignSceneToAct = useCallback((sceneId: string, actId: string | undefined) => {
+    setScenesWithHistory(prev => prev.map(sc => sc.id === sceneId ? { ...sc, actId } : sc));
+  }, [setScenesWithHistory]);
+
+  const reorderActs = useCallback((reordered: Act[]) => {
+    setActs(reordered);
   }, []);
 
   return {
@@ -1274,5 +1394,10 @@ Rewrite this as a better image generation prompt:`,
     handleMoveScene,
     // ── Multi-project ──
     projectManager, loadProjectIntoState,
+    // ── Scene UX: undo/redo + bulk duration ──
+    undo, redo, canUndo, canRedo, handleBulkDurationChange,
+    historyVersion,
+    // ── Acts ──
+    acts, addAct, removeAct, renameAct, toggleActCollapse, assignSceneToAct, reorderActs,
   };
 };

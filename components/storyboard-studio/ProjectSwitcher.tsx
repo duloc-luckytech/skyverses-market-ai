@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, FolderOpen, Plus, Trash2, Check, Pencil } from 'lucide-react';
+import { ChevronDown, FolderOpen, Plus, Trash2, Check, Pencil, Copy } from 'lucide-react';
 import { ProjectMeta } from '../../hooks/useProjectManager';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -10,6 +10,7 @@ interface Props {
   onSwitch: (id: string) => void;
   onCreate: (name: string) => void;
   onRename: (id: string, name: string) => void;
+  onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
@@ -33,6 +34,7 @@ export const ProjectSwitcher: React.FC<Props> = ({
   onSwitch,
   onCreate,
   onRename,
+  onDuplicate,
   onDelete,
 }) => {
   const [open, setOpen] = useState(false);
@@ -262,6 +264,13 @@ export const ProjectSwitcher: React.FC<Props> = ({
                             className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
                           >
                             <Pencil size={9} />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onDuplicate(p.id); setOpen(false); }}
+                            title="Nhân bản kịch bản"
+                            className="p-1 rounded text-slate-400 hover:text-sky-400 transition-colors hover:bg-sky-500/[0.08]"
+                          >
+                            <Copy size={9} />
                           </button>
                           {projects.length > 1 && (
                             <button

@@ -155,6 +155,10 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 s.loadProjectIntoState(p.id);
               }}
               onRename={(id, name) => s.projectManager.renameProject(id, name)}
+              onDuplicate={(id) => {
+                const newId = s.projectManager.duplicateProject(id);
+                s.loadProjectIntoState(newId);
+              }}
               onDelete={(id) => {
                 const wasActive = id === s.projectManager.activeProjectId;
                 const nextId = s.projectManager.deleteProject(id);
@@ -448,6 +452,29 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               onDownloadAudio={s.handleDownloadAudio}
               onGenerateVoiceover={s.handleGenerateVoiceover}
               onMoveScene={s.handleMoveScene}
+              onBulkDurationChange={s.handleBulkDurationChange}
+              onUndo={s.undo}
+              onRedo={s.redo}
+              canUndo={s.canUndo}
+              canRedo={s.canRedo}
+              acts={s.acts}
+              onAddAct={s.addAct}
+              onRemoveAct={s.removeAct}
+              onRenameAct={s.renameAct}
+              onToggleActCollapse={s.toggleActCollapse}
+              onAssignSceneToAct={s.assignSceneToAct}
+              onReorderActScenes={(actId, reordered) => {
+                // Merge reordered act-group back into global scenes list preserving order of other groups
+                s.setScenes(prev => {
+                  const reorderedIds = new Set(reordered.map(sc => sc.id));
+                  const others = prev.filter(sc => !reorderedIds.has(sc.id));
+                  // Insert reordered scenes in place of old act scenes (maintain rough position)
+                  const firstIdx = prev.findIndex(sc => reorderedIds.has(sc.id));
+                  const next = [...others];
+                  next.splice(firstIdx < 0 ? next.length : firstIdx, 0, ...reordered);
+                  return next.map((sc, i) => ({ ...sc, order: i + 1 }));
+                });
+              }}
             />
           )}
 

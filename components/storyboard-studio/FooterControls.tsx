@@ -1,8 +1,8 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  MonitorPlay, ImageIcon, X, Check, Loader2, AlertCircle, Clock, Package,
+  MonitorPlay, ImageIcon, X, Check, Loader2, AlertCircle, Clock, Package, AlertTriangle,
 } from 'lucide-react';
 
 interface FooterControlsProps {
@@ -28,6 +28,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
   scenesCount, selectedCount, isProcessing, isZipping, onReset, onGenerateImages, onGenerateVideos, onDownloadZip, totalDuration,
 }) => {
   const hasSelection = selectedCount > 0;
+  const [confirmReset, setConfirmReset] = useState(false);
 
   if (scenesCount === 0) return null;
 
@@ -101,14 +102,34 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
 
              <div className="h-6 w-px bg-white/10 mx-1 lg:mx-2"></div>
 
-             <button
-              onClick={onReset}
-              title="Xóa tất cả phân cảnh"
-              aria-label="Xóa tất cả phân cảnh"
-              className="p-1.5 lg:p-2 text-gray-500 hover:text-red-500 transition-colors"
-             >
-                <X size={18}/>
-             </button>
+             {/* Reset button with confirm */}
+             {confirmReset ? (
+               <div className="flex items-center gap-1.5">
+                 <button
+                   onClick={() => { onReset(); setConfirmReset(false); }}
+                   title="Xác nhận xóa tất cả"
+                   className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 text-[9px] font-black uppercase tracking-widest transition-all"
+                 >
+                   <AlertTriangle size={10} /> Xóa hết
+                 </button>
+                 <button
+                   onClick={() => setConfirmReset(false)}
+                   title="Hủy"
+                   className="px-2.5 py-1.5 rounded-xl bg-white/5 text-gray-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all"
+                 >
+                   Hủy
+                 </button>
+               </div>
+             ) : (
+               <button
+                 onClick={() => setConfirmReset(true)}
+                 title="Xóa tất cả phân cảnh"
+                 aria-label="Xóa tất cả phân cảnh"
+                 className="p-1.5 lg:p-2 text-gray-500 hover:text-red-500 transition-colors"
+               >
+                 <X size={18}/>
+               </button>
+             )}
           </motion.div>
        </div>
     </div>
