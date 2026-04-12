@@ -59,6 +59,8 @@ interface StoryboardTabProps {
   onReorder: (reordered: Scene[]) => void;
   onShotTypeChange: (sceneId: string, shotType: ShotType) => void;
   onDurationChange: (sceneId: string, duration: DurationPreset) => void;
+  onGenerateImages?: () => void;
+  onGenerateVideos?: () => void;
 }
 
 // ─── SCENE CARD WRAPPER (with drag support) ─────────────────────────────────
@@ -318,6 +320,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   onReGenerateSceneImage, onReGenerateSceneVideo, onDeleteScene, onDuplicateScene,
   onEnhanceScenePrompt, enhancingSceneId,
   onReorder, onShotTypeChange, onDurationChange,
+  onGenerateImages, onGenerateVideos,
 }) => {
   const [viewLayout, setViewLayout] = useState<'grid' | 'list' | 'timeline'>('list');
   const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
@@ -414,10 +417,16 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               {/* Download buttons */}
               {selectedSceneIds.length > 0 && (
                 <>
-                  <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-all shadow-sm">
+                  <button
+                    onClick={onGenerateImages}
+                    disabled={isProcessing}
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
                     <LucideImage size={12} /> Ảnh
                   </button>
-                  <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-purple-500 transition-all shadow-sm">
+                  <button
+                    onClick={onGenerateVideos}
+                    disabled={isProcessing}
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-purple-500 transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
                     <Film size={12} /> Video
                   </button>
                 </>

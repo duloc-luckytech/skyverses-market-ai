@@ -622,6 +622,10 @@ IMPORTANT:
 
       addLog(`[⚡] Khởi động tạo ${allAssets.length} identity anchors song song...`);
 
+      // ── Close loading screen now — scenes are ready, asset gen runs in bg ──
+      setShowProgressModal(false);
+      setIsProcessing(false);
+
       // ── Step 6: Trigger parallel asset image generation ─────────
       await Promise.allSettled(allAssets.map(asset => triggerImageGeneration(asset)));
 
@@ -629,7 +633,8 @@ IMPORTANT:
 
     } catch (error: any) {
       addLog(`[LỖI HỆ THỐNG] ${error?.message ?? 'Không thể phân tách kịch bản.'}`);
-      setTimeout(closeProgressModal, 3000);
+      setShowProgressModal(false);
+      setIsProcessing(false);
     }
   };
 
@@ -1164,7 +1169,7 @@ Rewrite this as a better image generation prompt:`,
     handleEnhanceScenePrompt, handleEnhanceAllPrompts,
     handleGenerateVoiceover,
     handleNewProject, handleExportProjectJSON, handleImportProjectJSON,
-    assets, addAsset: () => openAssetModal(), removeAsset: (id: string) => setAssets(prev => prev.filter(a => a.id !== id)),
+    assets, addAsset: (type?: AssetType) => openAssetModal(type ? { id: `asset-${Date.now()}`, name: 'Tài nguyên mới', url: null, mediaId: null, type, status: 'idle', description: '', designPrompt: '' } : undefined), removeAsset: (id: string) => setAssets(prev => prev.filter(a => a.id !== id)),
     updateAsset, isAssetModalOpen, openAssetModal, closeAssetModal, saveAsset, editingAsset, setEditingAsset,
     viewingExplorerItem, setViewingExplorerItem, openExplorerView, openExplorerViewScene,
     systemPrompt, setSystemPrompt, handleGenerateBatchImages, handleGenerateBatchVideos,

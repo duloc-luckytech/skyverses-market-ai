@@ -11,7 +11,7 @@ import { AssetsTab } from './storyboard-studio/AssetsTab';
 import { SettingsTab } from './storyboard-studio/SettingsTab';
 import { FooterControls } from './storyboard-studio/FooterControls';
 import { CharacterEditModal } from './storyboard-studio/CharacterEditModal';
-import { StoryboardProgressModal } from './storyboard-studio/StoryboardProgressModal';
+import { AIGeneratingScreen } from './storyboard-studio/AIGeneratingScreen';
 import { RenderConfigModal } from './storyboard-studio/RenderConfigModal';
 import { AestheticProfileModal } from './storyboard-studio/AestheticProfileModal';
 import { ExportTab } from './storyboard-studio/ExportTab';
@@ -419,6 +419,8 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               onReorder={s.handleReorder}
               onShotTypeChange={s.handleShotTypeChange}
               onDurationChange={s.handleSceneDurationChange}
+              onGenerateImages={s.handleGenerateBatchImages}
+              onGenerateVideos={s.handleGenerateBatchVideos}
             />
           )}
 
@@ -517,9 +519,9 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
       <AnimatePresence>
         {s.showProgressModal && (
-          <StoryboardProgressModal
+          <AIGeneratingScreen
             logs={s.terminalLogs}
-            onClose={s.closeProgressModal}
+            totalScenes={s.scenes.length}
           />
         )}
       </AnimatePresence>
