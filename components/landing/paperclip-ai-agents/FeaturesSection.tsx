@@ -80,17 +80,24 @@ export const FeaturesSection: React.FC = () => {
           </p>
         </FadeInUp>
 
-        <StaggerChildren className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-fr">
-          {FEATURES.map(f => (
-            <HoverCard
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {FEATURES.map((f, i) => (
+            <motion.div
               key={f.title}
-              className={`overflow-hidden bg-black/[0.01] dark:bg-white/[0.015] cursor-pointer ${f.featured ? 'col-span-2' : 'col-span-1'}`}
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.55, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+              className={f.featured ? 'col-span-2' : 'col-span-1'}
             >
-              <div onClick={() => setExpanded(expanded === f.title ? null : f.title)} className="h-full">
+            <HoverCard
+              className={`overflow-hidden bg-black/[0.01] dark:bg-white/[0.015] cursor-pointer h-full`}
+            >
+              <div onClick={() => setExpanded(expanded === f.title ? null : f.title)} className="h-full flex flex-col">
               {/* Featured header accent */}
               {f.featured && (
                 <div
-                  className="h-1 w-full"
+                  className="h-1 w-full shrink-0"
                   style={{
                     background: 'linear-gradient(90deg, #0090ff 0%, #3b82f6 100%)',
                     opacity: 0.6,
@@ -102,11 +109,11 @@ export const FeaturesSection: React.FC = () => {
                 <img
                   src={f.img}
                   alt={f.title}
-                  className="w-full h-40 object-cover"
+                  className="w-full h-44 object-cover shrink-0"
                   loading="lazy"
                 />
               )}
-              <div className="p-5">
+              <div className="p-5 flex-1">
                 <motion.div
                   whileHover={{ rotate: [0, -5, 5, 0] }}
                   transition={{ duration: 0.4 }}
@@ -134,8 +141,9 @@ export const FeaturesSection: React.FC = () => {
               </div>
               </div>
             </HoverCard>
+            </motion.div>
           ))}
-        </StaggerChildren>
+        </div>
       </div>
     </section>
   );
