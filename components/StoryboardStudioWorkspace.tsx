@@ -355,6 +355,8 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
       {/* ─── MAIN CONTENT ─── */}
       <div className="flex-1 min-w-0 flex flex-col overflow-hidden relative">
+        {/* Tab content wrapper — flex-1 + min-h-0 để các tab tự scroll trong height cố định */}
+        <div className="flex-1 min-h-0 flex flex-col">
         <AnimatePresence mode="wait">
           {s.activeTab === 'STORYBOARD' && (
             <StoryboardTab
@@ -474,6 +476,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             />
           )}
         </AnimatePresence>
+        </div>{/* end tab content wrapper */}
 
         <FooterControls
           scenesCount={s.scenes.length}
