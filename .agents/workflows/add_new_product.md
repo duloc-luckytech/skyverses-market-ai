@@ -1177,6 +1177,35 @@ import {
 
 > ⚠️ `FloatingBadge` và `ShowcaseImageStrip` đều import từ `ProHeroVisuals`, **không phải** `SectionAnimations`.
 
+### ParallaxSection — khi nào & cách dùng:
+
+> `ParallaxSection` tạo hiệu ứng depth nhẹ khi scroll — dùng để wrap **toàn bộ một section** hoặc một **background element**, KHÔNG wrap từng card nhỏ.
+
+```tsx
+// ✅ Dùng cho: FeaturesSection background, hoặc ShowcaseSection wrapper
+<ParallaxSection speed={0.15} className="relative py-24 overflow-hidden">
+  <GradientMesh intensity="soft" />
+  <div className="relative z-10 max-w-7xl mx-auto px-6">
+    {/* Section content */}
+  </div>
+</ParallaxSection>
+
+// ✅ Dùng cho: HeroSection — image column nhẹ nhàng scroll chậm hơn text
+<ParallaxSection speed={0.08} className="lg:col-span-7">
+  <ImageMasonryGrid productSlug={slug} />
+</ParallaxSection>
+
+// ❌ KHÔNG dùng: wrap từng card trong grid (gây layout jump + perf issue)
+{features.map(f => (
+  <ParallaxSection key={f.id}>  {/* ← SAI */}
+    <HoverCard>...</HoverCard>
+  </ParallaxSection>
+))}
+```
+
+> `speed` prop: `0.05–0.10` cho effect nhẹ, `0.15–0.25` cho effect rõ hơn. Default: `0.1`.
+> Tối đa **2 ParallaxSection** per landing page — quá nhiều gây motion sickness.
+
 ---
 
 ### HeroSection rules (QUAN TRỌNG):
@@ -2837,11 +2866,24 @@ Trước khi push, tự kiểm tra nhanh các điểm sau:
 - [ ] Industry picker chuyển tab → `productContext` cập nhật AISuggestPanel
 - [ ] AISuggestPanel mở 4 tabs: Prompt Ideas / Style Presets / Templates / Smart Fill
 - [ ] Nhập prompt → ⌘+Enter trigger generate
+- [ ] Prompt rỗng → Generate button disabled, KHÔNG submit
 - [ ] Credits < CREDIT_COST → Low Credit modal xuất hiện
 - [ ] Generate thành công → credits trừ đúng, toast "thành công" hiện
 - [ ] Generate thất bại → toast "credits chưa trừ" hiện, credits không đổi
+- [ ] Polling timeout (> 150s) → credits hoàn lại, status dot đỏ
 - [ ] Nút Hủy hiện khi đang generate, click abort đúng
+- [ ] Click Generate 2 lần liền → chỉ 1 job submit (concurrent guard)
 - [ ] Mobile: nút "Cài đặt" mở bottom sheet
+- [ ] Reference image upload → preview 3-col, xóa được từng ảnh
+
+**i18n:**
+- [ ] Chuyển ngôn ngữ EN/VI/KO/JA → product name, category, description hiển thị đúng
+- [ ] UI strings (label, placeholder) không có hardcode tiếng Việt trong key-value `t('...')` bị thiếu
+
+**Performance (nhanh):**
+- [ ] Landing page FCP < 3s trên 3G (Chrome DevTools → Throttle → Fast 3G)
+- [ ] Ảnh CDN load không bị layout shift (có `width`/`height` hoặc `aspect-ratio`)
+- [ ] Console không có red error sau load lần đầu
 
 ---
 
@@ -2853,7 +2895,15 @@ echo "seed-*.mjs" >> .gitignore
 echo "gen-*.mjs" >> .gitignore
 echo "update-*.mjs" >> .gitignore
 
-# 2. Commit & push
+# 2. Pre-commit safety check — phát hiện TOKEN lọt vào staged files
+echo "🔒 Checking for tokens in staged files..."
+if git diff --cached --name-only | xargs grep -l "TOKEN\s*=\s*['\"][a-zA-Z0-9_\-]\{20,\}" 2>/dev/null; then
+  echo "❌ FAIL: Token tìm thấy trong staged files! Chạy lại gitignore và unstage."
+  exit 1
+fi
+echo "✅ No tokens found."
+
+# 3. Commit & push
 git add -A && git commit -m "feat: add <product-name> — PRO landing + smart workspace + seed + banner" && git push origin main
 ```
 
