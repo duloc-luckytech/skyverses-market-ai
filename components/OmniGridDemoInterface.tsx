@@ -1,10 +1,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Zap, Loader2, Download, Terminal, 
+import {
+  Zap, Loader2, Download, Terminal,
   Settings2, History as HistoryIcon, Wand2, Info,
   Sparkles, Layers, Cpu, ShieldCheck,
-  Grid, LayoutGrid, CheckCircle2, 
+  Grid, LayoutGrid, CheckCircle2,
   Maximize2, Trash2, Sliders, Palette,
   MousePointer2, Share2, ZoomIn, RefreshCw
 } from 'lucide-react';
@@ -30,68 +30,46 @@ const OmniGridDemoInterface = () => {
   const [variation, setVariation] = useState(30);
   const [profile, setProfile] = useState('Marketing_Visuals');
 
-
-  const generateDemoImage = async (prompt: string): Promise<string | null> => {
-    try {
-      const payload: ImageJobRequest = {
-        type: "text_to_image",
-        input: { prompt },
-        config: { width: 512, height: 512, aspectRatio: "1:1", seed: 0, style: "marketing" },
-        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
-        enginePayload: { prompt, privacy: "PRIVATE", projectId: "default" }
-      };
-      const apiRes = await imagesApi.createJob(payload);
-      if (!apiRes.success || !apiRes.data.jobId) return null;
-      
-      let result: any = null;
-      const cancelRef = { current: false };
-      
-      return new Promise((resolve) => {
-        pollJobOnce({
-          jobId: apiRes.data.jobId,
-          isCancelledRef: cancelRef,
-          apiType: 'image',
-          onDone: (res) => {
-            resolve(res.images?.[0] ?? null);
-          },
-          onError: () => resolve(null)
-        });
-      });
-    } catch {
-      return null;
-    }
-  };
-
   const handleBatchSynthesis = async () => {
     if (!prompt.trim() || isGenerating || credits <= 0) return;
+    if (!isAuthenticated) { login(); return; }
     setIsGenerating(true);
     setItems([]);
     setActiveItem(null);
 
     try {
-      const results: GridItem[] = [];
-      const synthesisCount = batchSize;
+      const fullPrompt = `[OMNI_GRID] ${prompt}. Variations for professional ${profile}. High fidelity.`;
+      const payload: ImageJobRequest = {
+        type: "text_to_image",
+        input: { prompt: fullPrompt },
+        config: { width: 512, height: 512, aspectRatio: "1:1", seed: 0, style: "marketing" },
+        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+        enginePayload: { prompt: fullPrompt, privacy: "PRIVATE", projectId: "default" }
+      };
+      const apiRes = await imagesApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
 
-      const firstResult = await generateDemoImage(`[OMNI_GRID] ${prompt}. Variations for professional ${profile}. High fidelity.`);
-      
-      if (firstResult) {
-        results.push({ id: '0', url: firstResult, isSelected: false, isRefined: false });
-        
-        for (let i = 1; i < synthesisCount; i++) {
-           results.push({ 
-             id: i.toString(), 
-             url: firstResult,
-             isSelected: false,
-             isRefined: false 
-           });
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'image',
+        onDone: (result) => {
+          const imageUrl = result.images?.[0] ?? '';
+          const results: GridItem[] = [];
+          for (let i = 0; i < batchSize; i++) {
+            results.push({ id: i.toString(), url: imageUrl, isSelected: false, isRefined: false });
+          }
+          setItems(results);
+          useCredits(1);
+          setIsGenerating(false);
+        },
+        onError: () => {
+          setIsGenerating(false);
         }
-        
-        setItems(results);
-        useCredits(1);
-      }
+      });
     } catch (err) {
       console.error("OmniGrid Batch Error:", err);
-    } finally {
       setIsGenerating(false);
     }
   };
@@ -112,7 +90,7 @@ const OmniGridDemoInterface = () => {
 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#080808] overflow-hidden text-black dark:text-white">
-      
+
       <div className="w-full lg:w-[350px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-gray-50 dark:bg-[#050506] overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
@@ -120,8 +98,8 @@ const OmniGridDemoInterface = () => {
           </label>
           <div className="space-y-3">
             {['Marketing_Visuals', 'Game_Asset_Pack', 'App_UI_Kit', 'Cinematic_Art'].map(p => (
-              <button 
-                key={p} 
+              <button
+                key={p}
                 onClick={() => setProfile(p)}
                 className={`w-full p-4 border text-left text-[10px] font-black uppercase transition-all ${profile === p ? 'border-brand-blue bg-brand-blue/5 text-brand-blue' : 'border-black/5 dark:border-white/5 text-gray-400'}`}
               >
@@ -176,15 +154,15 @@ const OmniGridDemoInterface = () => {
            ) : (
               <div className={`grid gap-4 ${batchSize === 4 ? 'grid-cols-2' : batchSize === 9 ? 'grid-cols-3' : 'grid-cols-4'}`}>
                  {items.map((item) => (
-                    <div 
-                      key={item.id} 
+                    <div
+                      key={item.id}
                       onClick={() => setActiveItem(item)}
                       className={`relative aspect-square border transition-all cursor-pointer group overflow-hidden ${activeItem?.id === item.id ? 'ring-2 ring-brand-blue border-transparent' : 'border-black/5 dark:border-white/5 hover:border-brand-blue/50'}`}
                     >
                        <img src={item.url} className={`w-full h-full object-cover transition-all ${item.isRefined ? 'scale-100' : 'scale-105 blur-sm opacity-60'}`} />
                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                       
-                       <button 
+
+                       <button
                          onClick={(e) => { e.stopPropagation(); toggleSelect(item.id); }}
                          className={`absolute top-2 right-2 w-6 h-6 border flex items-center justify-center transition-all ${item.isSelected ? 'bg-brand-blue border-brand-blue text-white' : 'bg-black/40 border-white/20 text-white/50'}`}
                        >
@@ -210,16 +188,16 @@ const OmniGridDemoInterface = () => {
         <div className="h-32 border-t border-black/10 dark:border-white/5 bg-white dark:bg-black p-4 flex gap-4 shrink-0 relative z-20">
           <div className="flex-grow flex flex-col gap-2">
             <label className="text-[8px] font-black uppercase text-gray-400 dark:text-gray-700 tracking-[0.3em] flex items-center gap-2"><Wand2 size={12} className="text-brand-blue" /> Master_Directive</label>
-            <textarea 
-              value={prompt} 
-              onChange={(e) => setPrompt(e.target.value)} 
-              className="flex-grow bg-black/5 dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-3 text-[11px] font-black uppercase text-black dark:text-white focus:outline-none focus:border-brand-blue/30 resize-none tracking-tight" 
-              placeholder="Describe universal visual concept..." 
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              className="flex-grow bg-black/5 dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-3 text-[11px] font-black uppercase text-black dark:text-white focus:outline-none focus:border-brand-blue/30 resize-none tracking-tight"
+              placeholder="Describe universal visual concept..."
             />
           </div>
-          <button 
-            onClick={handleBatchSynthesis} 
-            disabled={isGenerating || !prompt.trim() || credits <= 0} 
+          <button
+            onClick={handleBatchSynthesis}
+            disabled={isGenerating || !prompt.trim() || credits <= 0}
             className="w-40 bg-brand-blue text-white flex flex-col items-center justify-center gap-2 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all group shadow-2xl active:scale-[0.98] disabled:opacity-20"
           >
             <Zap size={20} className="fill-current group-hover:scale-110 transition-transform" />
@@ -228,12 +206,12 @@ const OmniGridDemoInterface = () => {
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[320px] shrink-0 flex flex-col bg-gray-50 dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-6 space-y-8">
+      <div className="hidden xl:flex w-[320px] shrink-0 flex-col bg-gray-50 dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
             <Sparkles size={14} className="text-brand-blue" /> Selected_Node
           </label>
-          
+
           {activeItem ? (
              <div className="space-y-8">
                 <div className="aspect-square border border-black/10 dark:border-white/10 bg-black overflow-hidden relative group">
@@ -251,7 +229,7 @@ const OmniGridDemoInterface = () => {
                         { icon: <Layers size={12} />, label: 'Detail_Inject' },
                         { icon: <Palette size={12} />, label: 'Color_Norm' }
                       ].map(tool => (
-                        <button 
+                        <button
                           key={tool.label}
                           onClick={handleRefine}
                           disabled={isGenerating || activeItem.isRefined}
