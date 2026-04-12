@@ -10,6 +10,7 @@ import { ExplorerItem } from '../components/ExplorerDetailModal';
 import { STORYBOARD_SAMPLES } from '../data';
 import { uploadToGCS } from '../services/storage';
 import { pollJobOnce } from './useJobPoller';
+import { useProjectManager } from './useProjectManager';
 
 // ─── Shot Type ───────────────────────────────────────────────────────────────
 export type ShotType = 'WIDE' | 'MED' | 'CU' | 'ECU' | 'POV';
@@ -61,22 +62,21 @@ export const useStoryboardStudio = () => {
   const { credits, useCredits, addCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
   const { showToast } = useToast();
 
-  const PROJECT_KEY = 'skyverses_storyboard_project';
+  // ── Multi-project manager ─────────────────────────────────────────────
+  const projectManager = useProjectManager();
+  const { activeProjectId } = projectManager;
+
+  // Helper to read initial data for the active project
+  const _initData = () => {
+    return projectManager.loadProject(projectManager.activeProjectId);
+  };
 
   const [activeTab, setActiveTab] = useState<'STORYBOARD' | 'ASSETS' | 'SETTINGS' | 'LOGIC' | 'SCENES' | 'EXPORT'>('STORYBOARD');
-  const [script, setScript] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').script || ''; } catch { return ''; }
-  });
-  const [totalDuration, setTotalDuration] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').totalDuration || 64; } catch { return 64; }
-  });
-  const [sceneDuration, setSceneDuration] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').sceneDuration || 8; } catch { return 8; }
-  });
+  const [script, setScript] = useState(() => _initData().script || '');
+  const [totalDuration, setTotalDuration] = useState(() => _initData().totalDuration || 64);
+  const [sceneDuration, setSceneDuration] = useState(() => _initData().sceneDuration || 8);
   const [voiceOverEnabled, setVoiceOverEnabled] = useState(false);
-  const [scenes, setScenes] = useState<Scene[]>(() => {
-    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').scenes || []; } catch { return []; }
-  });
+  const [scenes, setScenes] = useState<Scene[]>(() => _initData().scenes || []);
   const [selectedSceneIds, setSelectedSceneIds] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -94,16 +94,14 @@ export const useStoryboardStudio = () => {
   const [scriptRefImage, setScriptRefImage] = useState<string | null>(null);
   const [scriptRefAudio, setScriptRefAudio] = useState<string | null>(null);
 
-  const [assets, setAssets] = useState<ReferenceAsset[]>(() => {
-    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').assets || []; } catch { return []; }
-  });
+  const [assets, setAssets] = useState<ReferenceAsset[]>(() => _initData().assets || []);
   const assetUploadRef = useRef<HTMLInputElement>(null);
   const [activeUploadAssetId, setActiveUploadAssetId] = useState<string | null>(null);
 
-  // ── Project name ─────────────────────────────────────────────────────
-  const [projectName, setProjectName] = useState<string>(() => {
-    try { return JSON.parse(localStorage.getItem(PROJECT_KEY) || '{}').projectName || 'Untitled Project'; } catch { return 'Untitled Project'; }
-  });
+  // ── Project name (derived from active project) ────────────────────────
+  const [projectName, setProjectName] = useState<string>(
+    () => _initData().name || 'Untitled Project'
+  );
 
   // ── Computed memos ────────────────────────────────────────────────────
   const renderedScenes = useMemo(
@@ -124,13 +122,18 @@ export const useStoryboardStudio = () => {
 
   const isCancelledRef = useRef(false);
 
-  // Auto-save project to localStorage when key state changes
+  // Auto-save current project via useProjectManager
   useEffect(() => {
-    try {
-      const saved = { script, totalDuration, sceneDuration, scenes, assets, projectName, updatedAt: Date.now() };
-      localStorage.setItem(PROJECT_KEY, JSON.stringify(saved));
-    } catch { /* quota exceeded */ }
-  }, [script, totalDuration, sceneDuration, scenes, assets, projectName]);
+    projectManager.saveCurrentProject({
+      id: activeProjectId,
+      script,
+      totalDuration,
+      sceneDuration,
+      scenes,
+      assets,
+      name: projectName,
+    });
+  }, [script, totalDuration, sceneDuration, scenes, assets, projectName, activeProjectId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Cancel all in-flight polls on unmount
   useEffect(() => {
@@ -1164,13 +1167,25 @@ Rewrite this as a better image generation prompt:`,
   }, []);
 
   // ── Project persistence helpers ──────────────────────────────────
+
+  /** Load a project's data into local state (called when switching projects) */
+  const loadProjectIntoState = useCallback((id: string) => {
+    const data = projectManager.switchProject(id);
+    setScript(data.script || '');
+    setScenes(data.scenes || []);
+    setAssets(data.assets || []);
+    setTotalDuration(data.totalDuration || 64);
+    setSceneDuration(data.sceneDuration || 8);
+    setProjectName(data.name || 'Untitled Project');
+  }, [projectManager]);
+
   const handleNewProject = useCallback(() => {
-    if (!window.confirm('Tạo project mới? Dữ liệu hiện tại đã được lưu tự động.')) return;
-    localStorage.removeItem(PROJECT_KEY);
+    const p = projectManager.createProject();
     setScript(''); setScenes([]); setAssets([]);
     setTotalDuration(64); setSceneDuration(8);
+    setProjectName(p.name);
     addLog('[★] Project mới đã được khởi tạo.');
-  }, [addLog]);
+  }, [projectManager, addLog]);
 
   const handleExportProjectJSON = useCallback(() => {
     const data = { script, totalDuration, sceneDuration, scenes, assets, settings, exportedAt: new Date().toISOString() };
@@ -1257,5 +1272,7 @@ Rewrite this as a better image generation prompt:`,
     // ── Phase 3: Download + Audio + Drag ──
     handleDownloadScene, handleDownloadAudio, handleDownloadBatchZip, isZipping,
     handleMoveScene,
+    // ── Multi-project ──
+    projectManager, loadProjectIntoState,
   };
 };

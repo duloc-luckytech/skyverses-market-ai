@@ -473,9 +473,8 @@ const MarketsPage: React.FC = () => {
   }, []);
 
   const handleNavigate = useCallback((slug: string) => {
-    if (!isAuthenticated) navigate('/login');
-    else navigate(`/product/${slug}`);
-  }, [isAuthenticated, navigate]);
+    navigate(`/product/${slug}`);
+  }, [navigate]);
 
   // Extract all unique tags
   const allTags = useMemo(() => {

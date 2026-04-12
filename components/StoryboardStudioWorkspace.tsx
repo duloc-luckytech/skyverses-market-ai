@@ -20,6 +20,7 @@ import { useAuth } from '../context/AuthContext';
 import { CharactersQuickView } from './storyboard-studio/sidebar/CharactersQuickView';
 import { StyleGuideChips }     from './storyboard-studio/sidebar/StyleGuideChips';
 import { OnboardingWizard, shouldShowWizard } from './storyboard-studio/OnboardingWizard';
+import { ProjectSwitcher } from './storyboard-studio/ProjectSwitcher';
 
 // ── Collapsible section wrapper ───────────────────────────────────────────────
 const CollapsibleSection: React.FC<{
@@ -141,6 +142,31 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               aria-label="Đóng thanh điều hướng"
               className="lg:hidden p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
             >✕</button>
+          </div>
+
+          {/* Project switcher dropdown */}
+          <div className="mb-2.5">
+            <ProjectSwitcher
+              projects={s.projectManager.projects}
+              activeProjectId={s.projectManager.activeProjectId}
+              onSwitch={(id) => s.loadProjectIntoState(id)}
+              onCreate={(name) => {
+                const p = s.projectManager.createProject(name);
+                s.setScript('');
+                s.setScenes([]);
+                s.setAssets([]);
+                s.setTotalDuration(64);
+                s.setSceneDuration(8);
+                s.setProjectName(p.name);
+              }}
+              onRename={(id, name) => s.projectManager.renameProject(id, name)}
+              onDelete={(id) => {
+                const wasActive = id === s.projectManager.activeProjectId;
+                const nextId = s.projectManager.deleteProject(id);
+                // Load the next project into state if we just removed the active one
+                if (wasActive) s.loadProjectIntoState(nextId);
+              }}
+            />
           </div>
 
           {/* Tab switcher */}
