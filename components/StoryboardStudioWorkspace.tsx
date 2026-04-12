@@ -152,12 +152,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               onSwitch={(id) => s.loadProjectIntoState(id)}
               onCreate={(name) => {
                 const p = s.projectManager.createProject(name);
-                s.setScript('');
-                s.setScenes([]);
-                s.setAssets([]);
-                s.setTotalDuration(64);
-                s.setSceneDuration(8);
-                s.setProjectName(p.name);
+                s.loadProjectIntoState(p.id);
               }}
               onRename={(id, name) => s.projectManager.renameProject(id, name)}
               onDelete={(id) => {
