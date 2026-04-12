@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { generateDemoImage } from '../services/gemini';
-import { aiChatJSON, aiChatStream, aiChatOnce, ChatMessage } from '../apis/aiChat';
+import { aiChatJSON, aiChatStream, aiChatOnce, aiChatStreamViaProxy, aiChatOnceViaProxy, ChatMessage } from '../apis/aiChat';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { imagesApi } from '../apis/images';
@@ -333,7 +333,7 @@ Return a JSON object with these exact keys:
       // Stream the response into terminal logs for live feedback
       let accumulated = '';
       addLog('[AI] Đang viết kịch bản...');
-      await aiChatStream(
+      await aiChatStreamViaProxy(
         messages,
         (token) => {
           accumulated += token;
@@ -539,7 +539,7 @@ IMPORTANT:
       let accumulated = '';
       let dotCount = 0;
 
-      await aiChatStream(messages, (token) => {
+      await aiChatStreamViaProxy(messages, (token) => {
         accumulated += token;
         dotCount++;
         if (dotCount % 60 === 0) {
@@ -961,7 +961,7 @@ IMPORTANT:
     addLog(`[AI] Đang cải thiện prompt cảnh #${scene.order}...`);
 
     try {
-      const enhanced = await aiChatOnce([
+      const enhanced = await aiChatOnceViaProxy([
         {
           role: 'system',
           content: `You are a cinematic prompt engineer specializing in AI video/image generation.
@@ -1003,7 +1003,7 @@ Rewrite this as a better image generation prompt:`,
     addLog(`[AI] Cải thiện toàn bộ ${scenes.length} cảnh...`);
     try {
       for (const scene of scenes) {
-        const enhanced = await aiChatOnce([
+        const enhanced = await aiChatOnceViaProxy([
           { role: 'system', content: `You are a cinematic prompt engineer. Rewrite the scene description to be more visually specific for AI image generation. Return ONLY the enhanced prompt, 40-70 words, ${settings.style || 'cinematic'} style.` },
           { role: 'user', content: `Scene ${scene.order}: "${scene.prompt}"\nContext: ${settings.format || ''} ${settings.cinematic || ''}. Rewrite:` },
         ]);
