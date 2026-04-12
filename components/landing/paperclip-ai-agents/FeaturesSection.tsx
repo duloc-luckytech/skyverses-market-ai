@@ -5,6 +5,7 @@ import {
   Zap, GitBranch, Eye, RefreshCw,
 } from 'lucide-react';
 import { FadeInUp, StaggerChildren, HoverCard, SectionLabel } from '../_shared/SectionAnimations';
+import { PAPERCLIP_CDN } from '../../../src/constants/paperclip-cdn';
 
 const FEATURES = [
   {
@@ -12,48 +13,56 @@ const FEATURES = [
     title: 'Multi-Agent Orchestration',
     desc: 'CEO Agent tự phân công tasks cho department agents. Marketing AI viết copy & chạy ads, DevOps AI deploy code, Sales AI outreach khách hàng — đồng thời, autonomous.',
     featured: true,
+    img: PAPERCLIP_CDN.featMultiAgent,
   },
   {
     icon: DollarSign,
     title: 'Budget Guard',
     desc: 'Hard spend limits per agent, per department, per project. Khi agent sắp hết budget — tự động pause, alert và chờ approval. Zero surprise billing.',
     featured: true,
+    img: PAPERCLIP_CDN.featBudgetGuard,
   },
   {
     icon: ShieldCheck,
     title: 'Governance & Audit',
     desc: 'Human-in-the-loop cho decisions quan trọng. Toàn bộ agent actions, prompts, outputs được log với timestamp.',
     featured: false,
+    img: undefined,
   },
   {
     icon: Globe,
     title: 'Self-hosted / Cloud',
     desc: 'Deploy trên server của bạn hoặc dùng managed cloud. Data không bao giờ rời khỏi infrastructure của bạn.',
     featured: false,
+    img: undefined,
   },
   {
     icon: Zap,
     title: 'Real-time Dashboard',
     desc: 'Xem toàn bộ org hoạt động live: agent nào đang chạy, task nào đang process, cost theo giờ.',
     featured: false,
+    img: undefined,
   },
   {
     icon: GitBranch,
     title: 'Workflow Builder',
     desc: 'Kéo-thả để tạo multi-step automation. Agents tự pass output cho nhau, tự retry khi fail.',
     featured: false,
+    img: undefined,
   },
   {
     icon: Eye,
     title: 'Prompt Inspector',
     desc: 'Xem chính xác prompt nào agent đang gửi tới LLM. Debug và optimize từng node trong workflow.',
     featured: false,
+    img: undefined,
   },
   {
     icon: RefreshCw,
     title: 'Auto Failover',
     desc: 'Nếu một LLM provider down — tự động failover sang provider khác. Zero downtime cho org của bạn.',
     featured: false,
+    img: undefined,
   },
 ];
 
@@ -86,6 +95,15 @@ export const FeaturesSection: React.FC = () => {
                     background: 'linear-gradient(90deg, #0090ff 0%, #3b82f6 100%)',
                     opacity: 0.6,
                   }}
+                />
+              )}
+              {/* Featured image */}
+              {f.featured && f.img && (
+                <img
+                  src={f.img}
+                  alt={f.title}
+                  className="w-full h-40 object-cover"
+                  loading="lazy"
                 />
               )}
               <div className="p-5">

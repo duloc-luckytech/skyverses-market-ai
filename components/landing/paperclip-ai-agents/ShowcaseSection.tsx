@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, Cpu, CheckCircle2 } from 'lucide-react';
 import { FadeInUp, SectionLabel } from '../_shared/SectionAnimations';
+import { PAPERCLIP_CDN } from '../../../src/constants/paperclip-cdn';
 
 // ─── Types ─────────────────────────────────────────────────────
 interface AgentRunItem {
@@ -14,6 +15,7 @@ interface AgentRunItem {
   cost: string;
   desc: string;
   tags?: string[];
+  img: string;
 }
 
 // ─── Data ──────────────────────────────────────────────────────
@@ -28,6 +30,7 @@ const AGENT_RUNS: AgentRunItem[] = [
     cost: '$0.24',
     desc: 'Marketing AI tự viết 5 blog posts SEO từ brief của CEO Agent. Output: 5 drafts + meta descriptions + internal links.',
     tags: ['Content', 'SEO', 'Marketing'],
+    img: PAPERCLIP_CDN.showcaseBlogCampaign,
   },
   {
     id: 'ci-pipeline',
@@ -39,6 +42,7 @@ const AGENT_RUNS: AgentRunItem[] = [
     cost: '$0.18',
     desc: 'DevOps AI phân tích GitHub Actions config, refactor pipeline, giảm build time từ 8 phút xuống 3 phút.',
     tags: ['CI/CD', 'GitHub', 'DevOps'],
+    img: PAPERCLIP_CDN.showcaseCicdPipeline,
   },
   {
     id: 'crm-outreach',
@@ -50,6 +54,7 @@ const AGENT_RUNS: AgentRunItem[] = [
     cost: '$0.09',
     desc: 'Sales AI gửi 50 personalized email sequences từ HubSpot leads, track open rate, auto-follow-up sau 3 ngày.',
     tags: ['CRM', 'Email', 'Sales'],
+    img: PAPERCLIP_CDN.showcaseCrmOutreach,
   },
   {
     id: 'perf-audit',
@@ -61,6 +66,7 @@ const AGENT_RUNS: AgentRunItem[] = [
     cost: '$0.31',
     desc: 'Tự động chạy Lighthouse audit cho 12 pages, phân tích Core Web Vitals, tạo báo cáo + fix recommendations.',
     tags: ['Performance', 'Web', 'Audit'],
+    img: PAPERCLIP_CDN.showcasePerfAudit,
   },
   {
     id: 'social-posts',
@@ -72,6 +78,7 @@ const AGENT_RUNS: AgentRunItem[] = [
     cost: '$0.07',
     desc: 'Tạo 30 social posts (LinkedIn + X + Facebook) cho tháng 5. Brand voice consistent, hashtags optimized.',
     tags: ['Social', 'Content', 'Batch'],
+    img: PAPERCLIP_CDN.showcaseSocialBatch,
   },
   {
     id: 'support-kb',
@@ -83,6 +90,7 @@ const AGENT_RUNS: AgentRunItem[] = [
     cost: '$0.00',
     desc: 'Đang chờ human approval để truy cập Notion database. Sẽ tổng hợp 200 support tickets thành FAQ docs.',
     tags: ['Support', 'Knowledge', 'Docs'],
+    img: PAPERCLIP_CDN.showcaseSupportKb,
   },
   {
     id: 'competitor-research',
@@ -94,6 +102,7 @@ const AGENT_RUNS: AgentRunItem[] = [
     cost: '$0.42',
     desc: 'Research 10 competitors: pricing, features, positioning. Output: 15-page analysis deck + SWOT matrix.',
     tags: ['Research', 'Strategy', 'Q2'],
+    img: PAPERCLIP_CDN.showcaseCompetitorResearch,
   },
   {
     id: 'api-docs',
@@ -105,6 +114,7 @@ const AGENT_RUNS: AgentRunItem[] = [
     cost: '$0.15',
     desc: 'Cursor agent đọc toàn bộ codebase, tự update OpenAPI spec, generate code examples cho 45 endpoints.',
     tags: ['Docs', 'API', 'Code'],
+    img: PAPERCLIP_CDN.showcaseApiDocs,
   },
 ];
 
@@ -138,29 +148,38 @@ const RunCard: React.FC<{ item: AgentRunItem; index: number }> = ({ item, index 
       {/* Top accent bar */}
       <div className="h-0.5 w-full" style={{ backgroundColor: catColor, opacity: 0.5 }} />
 
+      {/* Thumbnail */}
+      <div className="relative overflow-hidden h-28">
+        <img
+          src={item.img}
+          alt={item.label}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+        />
+        {/* Status overlay badge */}
+        <div
+          className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-full backdrop-blur-sm"
+          style={{ backgroundColor: `${statusCfg.color}CC`, border: `1px solid ${statusCfg.color}60` }}
+        >
+          {statusCfg.pulse ? (
+            <motion.div
+              animate={{ scale: [1, 1.4, 1], opacity: [0.7, 0.3, 0.7] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-1.5 h-1.5 rounded-full bg-white"
+            />
+          ) : (
+            <CheckCircle2 size={9} className="text-white" />
+          )}
+          <span className="text-[8px] font-bold text-white">{statusCfg.label}</span>
+        </div>
+      </div>
+
       <div className="p-4 space-y-3">
         {/* Header row */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <p className="text-[12px] font-bold text-slate-800 dark:text-white/90 truncate">{item.label}</p>
             <p className="text-[10px] text-slate-400 dark:text-[#555] mt-0.5">{item.department} · {item.model}</p>
-          </div>
-          {/* Status badge */}
-          <div
-            className="shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: `${statusCfg.color}15`, border: `1px solid ${statusCfg.color}35` }}
-          >
-            {statusCfg.pulse ? (
-              <motion.div
-                animate={{ scale: [1, 1.4, 1], opacity: [0.7, 0.3, 0.7] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-                className="w-1.5 h-1.5 rounded-full"
-                style={{ backgroundColor: statusCfg.color }}
-              />
-            ) : (
-              <CheckCircle2 size={9} style={{ color: statusCfg.color }} />
-            )}
-            <span className="text-[8px] font-bold" style={{ color: statusCfg.color }}>{statusCfg.label}</span>
           </div>
         </div>
 

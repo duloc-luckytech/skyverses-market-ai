@@ -5,12 +5,14 @@ import {
   HeartPulse, Megaphone, Banknote, Globe,
 } from 'lucide-react';
 import { FadeInUp, StaggerChildren, HoverCard, SectionLabel } from '../_shared/SectionAnimations';
+import { PAPERCLIP_CDN } from '../../../src/constants/paperclip-cdn';
 
 interface UseCase {
   icon: React.ElementType;
   title: string;
   desc: string;
   color: string;
+  img: string;
 }
 
 const USE_CASES: UseCase[] = [
@@ -19,48 +21,56 @@ const USE_CASES: UseCase[] = [
     title: 'Startup & Scale-up',
     desc: 'Chạy toàn bộ operations với team nhỏ. Marketing AI viết content, Sales AI outreach, DevOps AI deploy — bạn chỉ cần review kết quả.',
     color: '#0090ff',
+    img: PAPERCLIP_CDN.usecaseStartup,
   },
   {
     icon: Code2,
     title: 'Software Agency',
     desc: 'CEO Agent nhận brief từ client, tự phân việc cho devs AI: Cursor viết code, GPT-4o review, claude-sonnet viết docs. Delivery nhanh 3x.',
     color: '#8b5cf6',
+    img: PAPERCLIP_CDN.usecaseSoftwareAgency,
   },
   {
     icon: Megaphone,
     title: 'Marketing Agency',
     desc: 'Scale content cho nhiều client cùng lúc. Mỗi client có Marketing AI riêng với brand voice riêng, budget guard riêng, không bao giờ cross-pollinate.',
     color: '#f59e0b',
+    img: PAPERCLIP_CDN.usecaseMarketingAgency,
   },
   {
     icon: ShoppingBag,
     title: 'E-commerce',
     desc: 'Sales AI quản lý product listings, Marketing AI chạy ads, DevOps AI monitor uptime. Toàn bộ autonomous — chủ shop chỉ approve big decisions.',
     color: '#10b981',
+    img: PAPERCLIP_CDN.usecaseEcommerce,
   },
   {
     icon: GraduationCap,
     title: 'Edtech & Online Learning',
     desc: 'AI tạo curriculum, grading rubrics, marketing campaigns và support FAQs. Human teachers tập trung vào teaching, AI lo phần còn lại.',
     color: '#06b6d4',
+    img: PAPERCLIP_CDN.usecaseEdtech,
   },
   {
     icon: HeartPulse,
     title: 'Healthcare Admin',
     desc: 'AI agents xử lý appointment scheduling, insurance pre-auth docs, patient FAQs — với governance layer đảm bảo compliance HIPAA.',
     color: '#ef4444',
+    img: PAPERCLIP_CDN.usecaseHealthcare,
   },
   {
     icon: Banknote,
     title: 'FinTech & Finance',
     desc: 'AI agents phân tích risk, generate reports, draft compliance docs. Human-in-the-loop enforced cho mọi financial decisions quan trọng.',
     color: '#84cc16',
+    img: PAPERCLIP_CDN.usecaseFintech,
   },
   {
     icon: Globe,
     title: 'Remote-first Company',
     desc: 'Org chart AI hoạt động 24/7 across timezones. Khi team ngủ, agents vẫn xử lý tasks, gửi reports, chuẩn bị briefings cho sáng hôm sau.',
     color: '#ec4899',
+    img: PAPERCLIP_CDN.usecaseRemote,
   },
 ];
 
@@ -77,17 +87,32 @@ export const UseCasesSection: React.FC = () => (
 
       <StaggerChildren className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {USE_CASES.map(uc => (
-          <HoverCard key={uc.title} className="p-5 bg-black/[0.01] dark:bg-white/[0.015]">
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: -3 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-              className="w-9 h-9 rounded-xl flex items-center justify-center mb-3"
-              style={{ backgroundColor: `${uc.color}15` }}
-            >
-              <uc.icon size={18} style={{ color: uc.color }} />
-            </motion.div>
-            <h3 className="text-sm font-semibold mb-1">{uc.title}</h3>
-            <p className="text-[11px] text-slate-500 dark:text-[#666] leading-relaxed">{uc.desc}</p>
+          <HoverCard key={uc.title} className="p-0 overflow-hidden bg-black/[0.01] dark:bg-white/[0.015]">
+            {/* Illustration */}
+            <div className="relative overflow-hidden h-28 group">
+              <img
+                src={uc.img}
+                alt={uc.title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div
+                className="absolute inset-0 opacity-20"
+                style={{ background: `linear-gradient(to bottom, transparent 50%, ${uc.color})` }}
+              />
+            </div>
+            <div className="p-4">
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: -3 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                className="w-8 h-8 rounded-xl flex items-center justify-center mb-2.5"
+                style={{ backgroundColor: `${uc.color}15` }}
+              >
+                <uc.icon size={16} style={{ color: uc.color }} />
+              </motion.div>
+              <h3 className="text-sm font-semibold mb-1">{uc.title}</h3>
+              <p className="text-[11px] text-slate-500 dark:text-[#666] leading-relaxed">{uc.desc}</p>
+            </div>
           </HoverCard>
         ))}
       </StaggerChildren>
