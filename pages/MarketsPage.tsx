@@ -532,7 +532,7 @@ const MarketsPage: React.FC = () => {
   const [inputValue, setInputValue] = useState(searchParams.get('q') || '');
   const deferredSearch = useDeferredValue(inputValue);
   const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'ALL');
-  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'popular');
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showFreeOnly, setShowFreeOnly] = useState(searchParams.get('free') === 'true');
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(searchParams.get('featured') === 'true');
@@ -556,7 +556,7 @@ const MarketsPage: React.FC = () => {
     const currentQ = searchParams.get('q');
     if (currentQ) params.set('q', currentQ);
     if (activeCategory !== 'ALL') params.set('category', activeCategory);
-    if (sortBy !== 'popular') params.set('sort', sortBy);
+    if (sortBy !== 'newest') params.set('sort', sortBy);
     if (showFreeOnly) params.set('free', 'true');
     if (showFeaturedOnly) params.set('featured', 'true');
     if (activeComplexity) params.set('complexity', activeComplexity);
@@ -627,7 +627,7 @@ const MarketsPage: React.FC = () => {
           marketApi.getSolutions({ lang: currentLang }),
           marketApi.getRandomFeatured()
         ]);
-        if (solRes?.data) setSolutions(solRes.data.filter((s: Solution) => s.isActive !== false));
+        if (solRes?.data) setSolutions([...solRes.data.filter((s: Solution) => s.isActive !== false)].reverse());
         if (featRes?.data) setFeaturedSolutions(featRes.data);
       } catch (err) { console.error('Markets fetch:', err); }
       finally { setLoading(false); }
@@ -728,7 +728,10 @@ const MarketsPage: React.FC = () => {
     } else if (sortBy === 'name') {
       filtered.sort((a, b) => (a.name[currentLang] || '').localeCompare(b.name[currentLang] || ''));
     } else if (sortBy === 'newest') {
-      filtered.reverse();
+      // solutions đã được reverse khi fetch → thứ tự hiện tại = newest-first → giữ nguyên
+    } else if (sortBy === 'popular') {
+      // featured products lên trước, còn lại giữ nguyên thứ tự newest-first
+      filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
     }
     // Sky Partners always at the end when viewing ALL
     if (activeCategory === 'ALL') {
