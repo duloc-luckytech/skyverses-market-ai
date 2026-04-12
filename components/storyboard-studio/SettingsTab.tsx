@@ -43,7 +43,7 @@ const loadLS = <T,>(key: string): T | null => {
   }
 };
 
-const saveLS = (key: string, value: unknown) => {
+const saveLS = <T = unknown>(key: string, value: T) => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch { /* quota errors — silently ignore */ }
