@@ -549,10 +549,12 @@ const MarketsPage: React.FC = () => {
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [showMoreCats, setShowMoreCats] = useState(false);
 
-  // SYNC filters → URL
+  // SYNC filters → URL (non-search filters sync immediately)
   useEffect(() => {
     const params = new URLSearchParams();
-    if (inputValue) params.set('q', inputValue);
+    // q is synced separately with debounce — preserve the current value here
+    const currentQ = searchParams.get('q');
+    if (currentQ) params.set('q', currentQ);
     if (activeCategory !== 'ALL') params.set('category', activeCategory);
     if (sortBy !== 'popular') params.set('sort', sortBy);
     if (showFreeOnly) params.set('free', 'true');
@@ -562,7 +564,20 @@ const MarketsPage: React.FC = () => {
     if (activePlatform !== 'ALL') params.set('platform', activePlatform);
     if (viewMode !== 'grid') params.set('view', viewMode);
     setSearchParams(params, { replace: true });
-  }, [inputValue, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, activePlatform, viewMode]);
+  }, [activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, activePlatform, viewMode]);
+
+  // SYNC search query → URL with 400ms debounce to avoid jitter on every keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        if (inputValue) next.set('q', inputValue);
+        else next.delete('q');
+        return next;
+      }, { replace: true });
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [inputValue]);
 
   // KEYBOARD SHORTCUTS
   useEffect(() => {
