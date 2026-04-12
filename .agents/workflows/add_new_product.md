@@ -3351,7 +3351,9 @@ import {
   aiChatStreamViaProxy,
   buildSystemMessage,
   parseAIJSON,
+  AI_MODELS,
   type ChatMessage,
+  type AIModel,
 } from '../apis/aiCommon';
 
 // ❌ SAI — không import trực tiếp
@@ -3361,16 +3363,45 @@ import { generateDemoText } from '../services/gemini';
 
 ---
 
+### Chọn model — Sonnet vs Opus
+
+| | `AI_MODELS.SONNET` | `AI_MODELS.OPUS` |
+|---|---|---|
+| **Model ID** | `claude-sonnet-4-6` | `claude-opus-4` |
+| **Tốc độ** | ⚡ Rất nhanh | 🐢 Chậm hơn (~3–5×) |
+| **Chi phí** | $ Rẻ | $$$ Đắt hơn (~5×) |
+| **Độ thông minh** | ★★★★ Rất tốt | ★★★★★ Mạnh nhất |
+| **Dùng cho** | Copy, chat, JSON nhỏ, streaming live, tác vụ UX real-time | Reasoning phức tạp, phân tích tài liệu dài, lập kế hoạch nhiều bước, đánh giá logic |
+| **Default?** | ✅ Mặc định (không cần truyền) | ❌ Phải truyền tường minh |
+
+**Quy tắc chọn:**
+- **Mặc định dùng Sonnet** — đủ mạnh cho 95% tác vụ workspace, nhanh, tiết kiệm quota.
+- **Nâng lên Opus** khi tác vụ yêu cầu: reasoning nhiều bước, phân tích văn bản dài (>2000 từ), so sánh logic phức tạp, hoặc output quality phải cao nhất.
+- **Không dùng Opus cho stream** — latency cao làm UX kém.
+
+```tsx
+// Sonnet — mặc định (không cần truyền model)
+const output = await aiTextViaProxy(prompt, systemRole);
+
+// Sonnet — tường minh
+const output = await aiTextViaProxy(prompt, systemRole, signal, 4096, AI_MODELS.SONNET);
+
+// Opus — cho tác vụ phân tích sâu
+const result = await aiChatJSONViaProxy<AnalysisResult>(messages, signal, 8192, AI_MODELS.OPUS);
+```
+
+---
+
 ### Chọn function theo nhu cầu
 
 | Nhu cầu | Function | Notes |
 |---------|----------|-------|
-| Text output đơn giản (1 prompt) | `aiTextViaProxy(prompt, systemRole?)` | Ngắn gọn nhất |
-| Text output, stream live tokens | `aiChatStreamViaProxy(messages, onToken)` | UX tốt hơn cho output dài |
-| Structured JSON output, typed | `aiChatJSONViaProxy<MyType>(messages)` | Auto parse + TS type safe |
+| Text output đơn giản (1 prompt) | `aiTextViaProxy(prompt, systemRole?, signal?, maxTokens?, model?)` | Ngắn gọn nhất |
+| Text output, stream live tokens | `aiChatStreamViaProxy(messages, onToken, signal?, maxTokens?, model?)` | UX tốt hơn cho output dài |
+| Structured JSON output, typed | `aiChatJSONViaProxy<MyType>(messages, signal?, maxTokens?, model?)` | Auto parse + TS type safe |
 | Build system prompt có structure | `buildSystemMessage({ role, rules?, outputFormat?, language? })` | Tái sử dụng, không hardcode |
 | Parse raw AI string → JSON | `parseAIJSON<T>(rawString)` | Dùng khi đã có raw text |
-| Full control messages array | `aiChatOnceViaProxy(messages)` | Re-exported từ aiChat.ts |
+| Full control messages array | `aiChatOnceViaProxy(messages, signal?, maxTokens?, model?)` | Re-exported từ aiChat.ts |
 
 ---
 
@@ -3389,11 +3420,13 @@ import { generateDemoText } from '../services/gemini';
 import {
   aiTextViaProxy,
   aiChatJSONViaProxy,
+  aiChatStreamViaProxy,
   buildSystemMessage,
+  AI_MODELS,
   type ChatMessage,
 } from '../apis/aiCommon';
 
-// --- Text output đơn giản ---
+// --- Text output đơn giản (Sonnet mặc định) ---
 const handleRun = async () => {
   setStatus('running');
   try {
@@ -3410,7 +3443,7 @@ const handleRun = async () => {
   }
 };
 
-// --- JSON structured output ---
+// --- JSON structured output (Sonnet) ---
 interface TaskResult { summary: string; steps: string[]; estimatedTime: string }
 
 const handleAnalyze = async () => {
@@ -3427,7 +3460,25 @@ const handleAnalyze = async () => {
   setSteps(result.steps); // typed ✓
 };
 
-// --- Stream live ---
+// --- Phân tích sâu → dùng Opus ---
+interface DeepReport { risks: string[]; recommendations: string[]; score: number }
+
+const handleDeepAnalysis = async () => {
+  const sys = buildSystemMessage({
+    role: 'You are a senior business analyst. Analyze deeply and critically.',
+    outputFormat: 'Return JSON: { risks: string[], recommendations: string[], score: number (0-100) }',
+    language: 'vi',
+  });
+  const report = await aiChatJSONViaProxy<DeepReport>(
+    [sys, { role: 'user', content: longDocumentText }],
+    abortRef.current?.signal,
+    8192,
+    AI_MODELS.OPUS, // Opus cho phân tích phức tạp
+  );
+  setReport(report);
+};
+
+// --- Stream live (luôn dùng Sonnet — Opus quá chậm cho stream) ---
 const handleStream = async () => {
   setOutput('');
   await aiChatStreamViaProxy(
@@ -3437,6 +3488,7 @@ const handleStream = async () => {
     ],
     (token) => setOutput(prev => prev + token),
     abortRef.current?.signal,
+    // model omitted = Sonnet default
   );
 };
 ```

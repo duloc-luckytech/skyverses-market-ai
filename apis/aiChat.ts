@@ -177,11 +177,12 @@ export const aiChatOnceViaProxy = async (
   messages: ChatMessage[],
   signal?: AbortSignal,
   maxTokens = 4096,
+  model?: string,
 ): Promise<string> => {
   const response = await fetch(`${API_BASE_URL}/ai/chat`, {
     method: 'POST',
     headers: getHeaders(),
-    body: JSON.stringify({ messages, stream: false, max_tokens: maxTokens }),
+    body: JSON.stringify({ messages, stream: false, max_tokens: maxTokens, ...(model ? { model } : {}) }),
     signal,
   });
   if (!response.ok) {
@@ -202,11 +203,12 @@ export const aiChatStreamViaProxy = async (
   onToken: (token: string) => void,
   signal?: AbortSignal,
   maxTokens = 4096,
+  model?: string,
 ): Promise<string> => {
   const response = await fetch(`${API_BASE_URL}/ai/chat`, {
     method: 'POST',
     headers: getHeaders(),
-    body: JSON.stringify({ messages, stream: true, max_tokens: maxTokens }),
+    body: JSON.stringify({ messages, stream: true, max_tokens: maxTokens, ...(model ? { model } : {}) }),
     signal,
   });
   if (!response.ok) {

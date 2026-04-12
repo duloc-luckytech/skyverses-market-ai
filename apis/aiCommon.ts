@@ -13,6 +13,10 @@
  * │  buildSystemMessage({ role, rules })     → tái sử dụng system prompt   │
  * │  parseAIJSON<T>(rawString)               → parse khi raw text có sẵn   │
  * │                                                                         │
+ * │  Chọn model:                                                            │
+ * │  AI_MODELS.SONNET  → nhanh, rẻ, đủ dùng cho hầu hết tác vụ            │
+ * │  AI_MODELS.OPUS    → mạnh nhất, dùng cho reasoning/phân tích phức tạp  │
+ * │                                                                         │
  * │  generateDemoText (services/gemini.ts) → CHỈ dùng landing/mock data.  │
  * │  Workspace production luôn đi qua proxy để ẩn API key.                 │
  * └─────────────────────────────────────────────────────────────────────────┘
@@ -40,6 +44,27 @@ export type {
 // ── Imports để dùng nội bộ ─────────────────────────────────────────────────
 import { aiChatOnceViaProxy } from './aiChat';
 import type { ChatMessage } from './aiChat';
+
+// ── Model constants ────────────────────────────────────────────────────────
+
+/**
+ * Model IDs được hỗ trợ qua EzAI proxy.
+ *
+ * | Model          | Tốc độ | Chi phí | Độ mạnh | Dùng khi                                    |
+ * |----------------|--------|---------|---------|---------------------------------------------|
+ * | SONNET (mặc định) | ⚡⚡⚡ | $      | ★★★★   | Copy, chat, JSON nhỏ, streaming, UX real-time |
+ * | OPUS           | ⚡      | $$$    | ★★★★★  | Phân tích sâu, reasoning, plan phức tạp     |
+ *
+ * Không truyền model → backend dùng SONNET làm default.
+ */
+export const AI_MODELS = {
+  /** claude-sonnet-4-6 — nhanh, rẻ, đủ mạnh cho hầu hết tác vụ workspace */
+  SONNET: 'claude-sonnet-4-6',
+  /** claude-opus-4 — mạnh nhất, dùng cho analysis/reasoning phức tạp */
+  OPUS:   'claude-opus-4',
+} as const;
+
+export type AIModel = typeof AI_MODELS[keyof typeof AI_MODELS];
 
 // ── Language map ───────────────────────────────────────────────────────────
 const LANG_MAP: Record<string, string> = {
@@ -113,8 +138,9 @@ export const aiChatJSONViaProxy = async <T = unknown>(
   messages: ChatMessage[],
   signal?: AbortSignal,
   maxTokens = 4096,
+  model?: AIModel,
 ): Promise<T> => {
-  const raw = await aiChatOnceViaProxy(messages, signal, maxTokens);
+  const raw = await aiChatOnceViaProxy(messages, signal, maxTokens, model);
   return parseAIJSON<T>(raw);
 };
 
@@ -182,6 +208,7 @@ export const aiTextViaProxy = async (
   systemRole = 'You are a helpful AI assistant.',
   signal?: AbortSignal,
   maxTokens = 4096,
+  model?: AIModel,
 ): Promise<string> => {
   return aiChatOnceViaProxy(
     [
@@ -190,6 +217,7 @@ export const aiTextViaProxy = async (
     ],
     signal,
     maxTokens,
+    model,
   );
 };
 
