@@ -1,0 +1,186 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║          MARKETPLACE PRODUCT SORTING - QUICK SUMMARY                        ║
+║                     April 12, 2026                                          ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+📍 KEY FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• pages/MarketsPage.tsx       Main component (1,268 lines)
+• types.ts                    Product interface definition
+• data.ts                     Static product data
+• apis/market.ts              API endpoints
+
+
+🔍 WHAT WE FOUND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+"TẤT CẢ" (ALL) TAB
+  Location: STATIC_CATEGORIES[0] at line 48
+  Label: "Tất cả" in Vietnamese
+  Category Key: "ALL"
+  Filter Logic: activeCategory === 'ALL' matches ALL products (line 706)
+
+DEFAULT SORT ORDER
+  Default: "popular" (line 535)
+  Behavior: Uses whatever order API returns (NO SORTING APPLIED)
+  Issue: "Popular" sorting is undefined
+
+SORT OPTIONS (4 total)
+  1. 'popular' → ❌ NO ACTUAL SORTING (just API order)
+  2. 'newest' → ❌ FAKE IMPLEMENTATION (just reverses array)
+  3. 'name' → ✅ WORKS (localeCompare A-Z)
+  4. 'relevant' → ✅ WORKS (search only, uses relevance score)
+
+
+⚠️  CRITICAL FINDINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. NO DATE FIELDS IN PRODUCT OBJECTS
+   ✗ createdAt: MISSING
+   ✗ dateCreated: MISSING
+   ✗ updatedAt: MISSING
+   ✗ publishedAt: MISSING
+   ✗ timestamp: MISSING
+   
+   IMPACT: "Newest First" sort is impossible to implement properly
+
+2. "NEWEST" SORT IS BROKEN
+   Line 731: filtered.reverse()
+   Problem: Reverses array order without checking dates
+   Reality: Not actually newest first, just inverts API order
+
+3. "ORDER" FIELD EXISTS BUT UNUSED
+   • Defined in types.ts (line 67): order?: number
+   • Never populated in data.ts
+   • Never referenced in sorting logic (line 698-742)
+   • Could enable manual ordering but isn't implemented
+
+4. NO SORTING FOR "POPULAR"
+   • sortBy === 'popular' falls through to default behavior
+   • Uses API response order (potentially random or FIFO)
+   • No engagement/view count logic
+
+5. API ALWAYS FETCHES ALL PRODUCTS
+   Line 627: marketApi.getSolutions({ lang: currentLang })
+   Issue: No category parameter passed to filter server-side
+
+
+✅ WHAT WORKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Sort Functions
+  ✅ A-Z Name Sort (line 728-729)
+  ✅ Relevance Sort (line 723-727, search only)
+  ✅ Featured/Free Filters (line 716-717)
+  ✅ Category Filters (line 706-715)
+  ✅ Complexity Filter (line 718)
+  ✅ Platform Filter (line 720)
+  ✅ Tag Filtering (line 719)
+  ✅ Sky Partners → Always at end (line 734-740)
+
+
+📊 PRODUCT FIELDS AVAILABLE FOR SORTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Used in sorting:
+  ✓ name[language]          - localized names (A-Z sort works)
+  ✓ featured: boolean       - featured flag
+  ✓ tags: string[]          - tag matching & partner detection
+  ✓ category[language]      - category matching
+  ✓ complexity: string      - complexity filtering
+  ✓ isFree: boolean         - free vs paid
+  ✓ platforms: string[]     - platform compatibility
+
+NOT used but available:
+  ⚠ order?: number          - unused field for manual ordering
+  ⚠ priceCredits: number    - could sort by price
+  ⚠ complexity: string      - could sort by tier
+
+MISSING:
+  ✗ createdAt/timestamp     - needed for real "newest first"
+  ✗ viewCount/popularity    - needed for real "popular"
+  ✗ rating: number          - could enable "best rated" sort
+
+
+🔄 CURRENT SORT FLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+User clicks sort dropdown (line 1100)
+  ↓
+setSortBy updates (resets visibleCount to 12)
+  ↓
+filteredSolutions useMemo re-runs (line 698)
+  ↓
+FILTER stage: activeCategory === 'ALL' → includes all products
+  ↓
+SORT stage (line 723-741):
+  
+  if sortBy === 'relevant' && hasSearch
+    → Calculate scores (line 114-127)
+    → Sort by score descending
+    ✅ WORKS
+  
+  else if sortBy === 'name'
+    → localeCompare A-Z by language
+    ✅ WORKS
+  
+  else if sortBy === 'newest'
+    → reverse() array
+    ❌ BROKEN (not date-based)
+  
+  else (sortBy === 'popular')
+    → NO SORTING APPLIED
+    ❌ NOT IMPLEMENTED
+  
+  if activeCategory === 'ALL'
+    → Secondary sort: Sky Partners to end
+    ✅ WORKS
+  ↓
+Return filtered array
+  ↓
+Paginate (first 12 items shown)
+  ↓
+Render ProductCardGrid or ProductCardList
+
+
+🎯 TO FIX "NEWEST FIRST"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 1: Add to Solution interface (types.ts):
+  createdAt?: number;  // Unix timestamp
+
+Step 2: Update data.ts with timestamps for all products:
+  createdAt: Date.now(),  // or specific dates
+
+Step 3: Replace line 730-731 in MarketsPage.tsx:
+  OLD:  else if (sortBy === 'newest') { filtered.reverse(); }
+  NEW:  else if (sortBy === 'newest') { 
+          filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        }
+
+Step 4: Migrate database if using backend storage
+
+
+📋 SUMMARY TABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SORT OPTION      STATUS  TYPE              DATE-BASED  IMPLEMENTATION
+─────────────────────────────────────────────────────────────────────
+Popular          ❌      No Implementation NO          Uses API order
+Newest First     ❌      Broken            NO          Just reverse()
+Name A-Z         ✅      Working           N/A         localeCompare()
+Most Relevant    ✅      Working           N/A         Relevance score
+─────────────────────────────────────────────────────────────────────
+
+
+📁 FULL DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+See also:
+  • MARKETPLACE_SORTING_ANALYSIS.md         (Detailed technical report)
+  • MARKETPLACE_SORTING_CODE_SNIPPETS.md    (All relevant code sections)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+Generated: 2026-04-12
+Analysis by: Claude Code
