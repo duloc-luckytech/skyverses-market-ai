@@ -10,6 +10,7 @@ import {
   ArrowRight, Layers, Workflow, Star, HelpCircle, Share2, Pencil,
 } from 'lucide-react';
 import { aiChatStreamViaProxy, AI_MODELS, buildSystemMessage } from '../apis/aiCommon';
+import type { ChatMessage } from '../apis/aiCommon';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
@@ -18,6 +19,8 @@ import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'skyverses_PAPERCLIP-AI-AGENTS_vault';
+const THREAD_KEY = (deptId: string) => `${STORAGE_KEY}_thread_${deptId}`;
+const MAX_THREAD_TURNS = 10; // giữ tối đa 10 turns (20 messages: 10 user + 10 assistant)
 
 const THINKING_STEPS = [
   '🧠 Phân tích yêu cầu...',
@@ -556,6 +559,20 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   const [editedSystemPrompt, setEditedSystemPrompt] = useState<string>('');
   const [isEditingPrompt, setIsEditingPrompt]       = useState(false);
 
+  // Conversation memory per agent — persisted to localStorage
+  const [conversationThreads, setConversationThreads] = useState<Record<string, ChatMessage[]>>(() => {
+    const result: Record<string, ChatMessage[]> = {};
+    DEPARTMENTS.forEach(d => {
+      try {
+        const saved = localStorage.getItem(THREAD_KEY(d.id));
+        result[d.id] = saved ? JSON.parse(saved) : [];
+      } catch {
+        result[d.id] = [];
+      }
+    });
+    return result;
+  });
+
   const dept  = DEPARTMENTS.find(d => d.id === activeDept)  ?? DEPARTMENTS[1];
   const model = LLM_MODELS.find(m => m.id === activeModel)  ?? LLM_MODELS[0];
   const budgetPct = Math.min((spentBudget / budgetLimit) * 100, 100);
@@ -621,6 +638,17 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       color,
     };
     setActivityLogs(prev => [entry, ...prev].slice(0, 20));
+  }, []);
+
+  const saveThread = useCallback((deptId: string, thread: ChatMessage[]) => {
+    const trimmed = thread.slice(-MAX_THREAD_TURNS * 2);
+    setConversationThreads(prev => ({ ...prev, [deptId]: trimmed }));
+    localStorage.setItem(THREAD_KEY(deptId), JSON.stringify(trimmed));
+  }, []);
+
+  const clearThread = useCallback((deptId: string) => {
+    setConversationThreads(prev => ({ ...prev, [deptId]: [] }));
+    localStorage.removeItem(THREAD_KEY(deptId));
   }, []);
 
   // Auto-scroll activity feed to top (newest) when new log arrives
@@ -701,9 +729,12 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       let streamedOutput = '';
       setIsStreaming(true);
 
+      const currentThread = conversationThreads[activeDept] ?? [];
+
       await aiChatStreamViaProxy(
         [
           { role: 'system', content: builtSystemPrompt },
+          ...currentThread,
           { role: 'user', content: taskPrompt },
         ],
         (token) => {
@@ -736,6 +767,14 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         const updated = [doneResult, ...taskHistory];
         setTaskHistory(updated);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+
+        // Append turn vào conversation memory
+        const updatedThread: ChatMessage[] = [
+          ...currentThread,
+          { role: 'user', content: taskPrompt },
+          { role: 'assistant', content: output },
+        ];
+        saveThread(activeDept, updatedThread);
 
         addLog(dept.agent, `✓ Task hoàn thành trong ${duration} — ${taskCost.toFixed(2)} USD`, 'success', dept.color);
         addLog('CEO Agent', `Report nhận được từ ${dept.agent}`, 'success', '#0090ff');
@@ -774,7 +813,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         return rest;
       });
     }
-  }, [taskPrompt, isRunning, isAuthenticated, login, dept, model, budgetLimit, spentBudget, totalTokens, promptHistory, taskHistory, addLog, showToast]);
+  }, [taskPrompt, isRunning, isAuthenticated, login, dept, model, budgetLimit, spentBudget, totalTokens, promptHistory, taskHistory, addLog, showToast, activeDept, conversationThreads, saveThread]);
 
   const handleRun = useCallback(async () => {
     if (!taskPrompt.trim() || isRunning) return;
@@ -934,6 +973,11 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     {d.tier === 'orchestrator' ? '⭐ Orchestrator' : d.agent}
                   </p>
                 </div>
+                {(conversationThreads[d.id]?.length ?? 0) > 0 && (
+                  <span className="text-[8px] bg-brand-blue/20 text-brand-blue px-1.5 py-0.5 rounded-full font-bold shrink-0">
+                    {Math.floor((conversationThreads[d.id]?.length ?? 0) / 2)}t
+                  </span>
+                )}
                 {isActive && (
                   <motion.div
                     layoutId="active-dept-dot"
@@ -1720,6 +1764,45 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                   <span className="flex items-center gap-1"><dept.icon size={9} /> {currentResult.dept}</span>
                                   {currentResult.tokens && <span className="flex items-center gap-1"><Zap size={9} /> ~{currentResult.tokens?.toLocaleString()} tokens</span>}
                                   <span className="flex items-center gap-1"><Clock size={9} /> {currentResult.timestamp}</span>
+                                </div>
+                                {/* Agent Memory */}
+                                <div className="rounded-xl border border-black/[0.05] dark:border-white/[0.05] overflow-hidden">
+                                  <div className="flex items-center justify-between px-3 py-2 border-b border-black/[0.04] dark:border-white/[0.04] bg-black/[0.02] dark:bg-white/[0.02]">
+                                    <span className="text-[9px] font-bold text-slate-500 dark:text-[#888] uppercase tracking-widest flex items-center gap-1.5">
+                                      <Activity size={9} /> Agent Memory
+                                    </span>
+                                    {(conversationThreads[activeDept]?.length ?? 0) > 0 && (
+                                      <button
+                                        onClick={() => { clearThread(activeDept); showToast('Đã xóa memory của ' + dept.label, 'info'); }}
+                                        className="text-[8px] text-red-400 hover:text-red-500 flex items-center gap-0.5 transition-colors"
+                                      >
+                                        <Trash2 size={8} /> Reset
+                                      </button>
+                                    )}
+                                  </div>
+                                  <div className="p-3">
+                                    {(conversationThreads[activeDept]?.length ?? 0) === 0 ? (
+                                      <p className="text-[9px] text-slate-400 dark:text-[#555] italic">
+                                        Chưa có memory — agent sẽ nhớ sau lần run đầu tiên.
+                                      </p>
+                                    ) : (
+                                      <div className="space-y-1.5">
+                                        <p className="text-[9px] text-slate-400 dark:text-[#555]">
+                                          <span className="font-semibold text-brand-blue">{Math.floor((conversationThreads[activeDept]?.length ?? 0) / 2)}</span> turns · tối đa {MAX_THREAD_TURNS}
+                                        </p>
+                                        {(conversationThreads[activeDept] ?? []).slice(-4).map((msg, i) => (
+                                          <div key={i} className={`text-[8px] font-mono px-2 py-1 rounded-lg truncate ${
+                                            msg.role === 'user'
+                                              ? 'bg-blue-500/[0.06] text-blue-600 dark:text-blue-400'
+                                              : 'bg-purple-500/[0.06] text-purple-600 dark:text-purple-400'
+                                          }`}>
+                                            <span className="font-bold">{msg.role === 'user' ? 'You' : dept.agent}:</span>{' '}
+                                            {typeof msg.content === 'string' ? msg.content.slice(0, 70) : '[content]'}…
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             ) : (
