@@ -6,6 +6,7 @@ import { imagesApi } from '../apis/images';
 import { pollJobOnce } from './useJobPoller';
 import { aiTextViaProxy } from '../apis/aiCommon';
 import { Language } from '../types';
+import { DocxOutline } from './useDocxImport';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -89,12 +90,20 @@ function saveVault(data: VaultData): void {
 
 const genId = () => Math.random().toString(36).slice(2, 10);
 
-function buildBgPrompt(slide: Slide, stylePreset: StylePreset, refImages?: string[]): string {
+function buildBgPrompt(
+  slide: Slide,
+  stylePreset: StylePreset,
+  refImages?: string[],
+  brand?: { slogan?: string; description?: string },
+): string {
   const prefix = stylePreset.promptPrefix;
   const refHint = refImages && refImages.length > 0
     ? `, visual style inspired by provided reference images,`
     : '';
-  return `${prefix}for a presentation slide titled "${slide.title}"${refHint} 16:9 widescreen format, no text, no UI elements, no watermarks, cinematic depth, premium quality, high resolution`;
+  const brandHint = brand?.description
+    ? `, thematic context: ${brand.description.slice(0, 80)},`
+    : '';
+  return `${prefix}for a presentation slide titled "${slide.title}"${refHint}${brandHint} 16:9 widescreen format, no text, no UI elements, no watermarks, cinematic depth, premium quality, high resolution`;
 }
 
 function createBlankSlide(index: number): Slide {
@@ -129,6 +138,14 @@ export const useSlideStudio = () => {
   const [deckLanguage, setDeckLanguage] = useState<Language>(_vaultLoaded?.deckLanguage ?? 'vi');
   const [slideCount, setSlideCount] = useState<number>(_vaultLoaded?.slideCount ?? 6);
   const [refImages, setRefImages] = useState<string[]>([]);
+
+  // ── Brand identity ───────────────────────────────────────────────────────────
+  const [brandLogo, setBrandLogo] = useState<string | null>(null);
+  const [brandSlogan, setBrandSlogan] = useState('');
+  const [brandDescription, setBrandDescription] = useState('');
+
+  // ── DOCX import outline ───────────────────────────────────────────────────────
+  const [docxOutline, setDocxOutline] = useState<DocxOutline[] | null>(null);
 
   // ── Slides ───────────────────────────────────────────────────────────────────
   const [slides, setSlides] = useState<Slide[]>(_vaultLoaded?.slides ?? []);
@@ -234,7 +251,7 @@ export const useSlideStudio = () => {
     updateSlide(slideId, { bgStatus: 'generating', bgJobId: null });
 
     try {
-      const prompt = buildBgPrompt(slide, stylePreset, refImages);
+      const prompt = buildBgPrompt(slide, stylePreset, refImages, { slogan: brandSlogan, description: brandDescription });
       const res = await imagesApi.createJob({
         type: 'text_to_image',
         input: { prompt },
@@ -264,47 +281,57 @@ export const useSlideStudio = () => {
     } catch (err) {
       updateSlide(slideId, { bgStatus: 'error', bgJobId: null });
     }
-  }, [slides, deckStyle, updateSlide, showToast]);
+  }, [slides, deckStyle, refImages, brandSlogan, brandDescription, updateSlide, showToast]);
 
   // ─── Gen full deck ────────────────────────────────────────────────────────────
 
-  const generateDeck = useCallback(async () => {
-    if (!deckTopic.trim()) { showToast('Vui lòng nhập chủ đề', 'error'); return; }
+  const generateDeck = useCallback(async (importedOutline?: DocxOutline[]) => {
+    if (!importedOutline && !deckTopic.trim()) { showToast('Vui lòng nhập chủ đề', 'error'); return; }
     isCancelledRef.current = false;
     setIsGeneratingDeck(true);
     setIsGenerateModalOpen(false);
 
     try {
-      // 1. Ask AI to generate outline
-      const langLabel = { en: 'English', vi: 'Vietnamese', ko: 'Korean', ja: 'Japanese' }[deckLanguage];
-      const refHint = refImages.length > 0
-        ? `\n- Reference images provided: ${refImages.length} image(s) — incorporate their visual theme into slide descriptions`
-        : '';
-      const outlinePrompt = `You are a professional presentation designer.
+      let outline: Array<{ title: string; body: string }> = importedOutline ?? [];
+
+      if (!importedOutline) {
+        // 1. Ask AI to generate outline (with brand context)
+        const langLabel = { en: 'English', vi: 'Vietnamese', ko: 'Korean', ja: 'Japanese' }[deckLanguage];
+        const refHint = refImages.length > 0
+          ? `\n- Reference images provided: ${refImages.length} image(s) — incorporate their visual theme into slide descriptions`
+          : '';
+        const brandHint = brandDescription
+          ? `\n- Project description: ${brandDescription}`
+          : '';
+        const sloganHint = brandSlogan
+          ? `\n- Brand slogan: "${brandSlogan}"`
+          : '';
+        const outlinePrompt = `You are a professional presentation designer.
 Generate a slide deck outline for the topic: "${deckTopic}".
 Requirements:
 - Exactly ${slideCount} slides
 - Language: ${langLabel}
 - Style: ${deckStyle}
-- Each slide needs a concise title (max 8 words) and 2-4 bullet points as body text${refHint}
+- Each slide needs a concise title (max 8 words) and 2-4 bullet points as body text${refHint}${brandHint}${sloganHint}
 - Return ONLY a JSON array, no markdown, no explanation
 Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ...]`;
 
-      const raw = await aiTextViaProxy(outlinePrompt);
+        const raw = await aiTextViaProxy(outlinePrompt);
 
-      // Parse JSON from AI response
-      let outline: Array<{ title: string; body: string }> = [];
-      try {
-        const jsonMatch = raw.match(/\[[\s\S]*\]/);
-        if (jsonMatch) outline = JSON.parse(jsonMatch[0]);
-      } catch {
-        showToast('AI không trả về đúng format, thử lại nhé', 'error');
-        setIsGeneratingDeck(false);
-        return;
+        // Parse JSON from AI response
+        try {
+          const jsonMatch = raw.match(/\[[\s\S]*\]/);
+          if (jsonMatch) outline = JSON.parse(jsonMatch[0]);
+        } catch {
+          showToast('AI không trả về đúng format, thử lại nhé', 'error');
+          setIsGeneratingDeck(false);
+          return;
+        }
       }
 
       // 2. Create slides with text content
-      const newSlides: Slide[] = outline.slice(0, slideCount).map((item, i) => ({
+      const count = importedOutline ? importedOutline.length : slideCount;
+      const newSlides: Slide[] = outline.slice(0, count).map((item, i) => ({
         id: genId(),
         index: i,
         title: item.title || `Slide ${i + 1}`,
@@ -321,26 +348,33 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
       setSlides(newSlides);
       setActiveSlideId(newSlides[0]?.id ?? '');
       setIsDirty(true);
+      if (importedOutline) setDocxOutline(null); // clear after use
 
       // 3. Gen BG images for each slide (sequential to avoid rate limits)
+      const brand = { slogan: brandSlogan, description: brandDescription };
       for (const slide of newSlides) {
         if (isCancelledRef.current) break;
-        await genSlideBgDirect(slide, deckStyle, refImages);
+        await genSlideBgDirect(slide, deckStyle, refImages, brand);
       }
     } catch (err) {
       showToast('Có lỗi khi tạo deck, thử lại nhé', 'error');
     } finally {
       setIsGeneratingDeck(false);
     }
-  }, [deckTopic, deckLanguage, deckStyle, slideCount, refImages, showToast]);
+  }, [deckTopic, deckLanguage, deckStyle, slideCount, refImages, brandSlogan, brandDescription, showToast]);
 
   // Internal: gen BG for a slide object directly (used in generateDeck loop)
-  const genSlideBgDirect = async (slide: Slide, styleId: string, refImgs?: string[]) => {
+  const genSlideBgDirect = async (
+    slide: Slide,
+    styleId: string,
+    refImgs?: string[],
+    brand?: { slogan?: string; description?: string },
+  ) => {
     const stylePreset = SLIDE_STYLES.find(s => s.id === styleId) ?? SLIDE_STYLES[0];
     setSlides(prev => prev.map(s => s.id === slide.id ? { ...s, bgStatus: 'generating' } : s));
 
     try {
-      const prompt = buildBgPrompt(slide, stylePreset, refImgs);
+      const prompt = buildBgPrompt(slide, stylePreset, refImgs, brand);
       const res = await imagesApi.createJob({
         type: 'text_to_image',
         input: { prompt },
@@ -430,6 +464,14 @@ Return ONLY a JSON array, no explanation:
     deckLanguage, setDeckLanguage,
     slideCount, setSlideCount,
     refImages, setRefImages,
+
+    // Brand identity
+    brandLogo, setBrandLogo,
+    brandSlogan, setBrandSlogan,
+    brandDescription, setBrandDescription,
+
+    // DOCX outline
+    docxOutline, setDocxOutline,
 
     // Slides
     slides, setSlides,

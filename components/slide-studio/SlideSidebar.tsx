@@ -3,13 +3,14 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles, Loader2, Image as ImageIcon,
-  Globe, ChevronDown, Paperclip, X, FileText,
+  Globe, ChevronDown, X, FileText,
+  LayoutTemplate, Tag, Upload,
 } from 'lucide-react';
 import {
   SLIDE_STYLES, SLIDE_COUNT_OPTIONS,
-  StylePreset,
 } from '../../hooks/useSlideStudio';
-import { useDocxImport } from '../../hooks/useDocxImport';
+import { useDocxImport, DocxOutline } from '../../hooks/useDocxImport';
+import { useToast } from '../../context/ToastContext';
 import { Language } from '../../types';
 
 const LANGUAGES: { value: Language; label: string; flag: string }[] = [
@@ -19,11 +20,64 @@ const LANGUAGES: { value: Language; label: string; flag: string }[] = [
   { value: 'ja', label: '日本語',      flag: '🇯🇵' },
 ];
 
-const FEATURED_TEMPLATES = [
-  { label: 'Startup Pitch',         prompt: 'Pitch deck startup công nghệ, 8 slides, tối giản premium, navy + gold' },
-  { label: 'Báo cáo doanh nghiệp', prompt: 'Business report Q3 2025, 6 slides, professional, xanh dương + trắng' },
-  { label: 'Bài giảng đại học',    prompt: 'Bài giảng Machine Learning, 10 slides, educational, màu tươi dễ đọc' },
-  { label: 'Marketing Campaign',   prompt: 'Marketing campaign Q4, 7 slides, vibrant colorful, social media focus' },
+interface Template {
+  label: string;
+  emoji: string;
+  style: string;
+  slideCount: number;
+  language: Language;
+  prompt: string;
+}
+
+const FEATURED_TEMPLATES: Template[] = [
+  {
+    label: 'Startup Pitch',
+    emoji: '🚀',
+    style: 'dark',
+    slideCount: 8,
+    language: 'en',
+    prompt: 'Startup pitch deck for a tech company seeking Series A funding — problem, solution, market, team, traction',
+  },
+  {
+    label: 'Báo cáo DN',
+    emoji: '📊',
+    style: 'corporate',
+    slideCount: 6,
+    language: 'vi',
+    prompt: 'Báo cáo tổng kết kinh doanh quý 3 năm 2025 — kết quả, phân tích, kế hoạch',
+  },
+  {
+    label: 'Bài giảng',
+    emoji: '🎓',
+    style: 'gradient',
+    slideCount: 10,
+    language: 'vi',
+    prompt: 'Bài giảng Machine Learning cơ bản cho sinh viên đại học — khái niệm, thuật toán, ứng dụng',
+  },
+  {
+    label: 'Marketing',
+    emoji: '📣',
+    style: 'creative',
+    slideCount: 8,
+    language: 'vi',
+    prompt: 'Chiến dịch marketing Q4 cho sản phẩm mới — thị trường, chiến lược, KPIs, timeline',
+  },
+  {
+    label: 'Product Launch',
+    emoji: '✨',
+    style: 'dark',
+    slideCount: 8,
+    language: 'en',
+    prompt: 'Product launch presentation for a new mobile application — features, demo, roadmap, go-to-market',
+  },
+  {
+    label: 'Portfolio',
+    emoji: '🎨',
+    style: 'minimal',
+    slideCount: 6,
+    language: 'en',
+    prompt: 'Creative portfolio showcase for a design agency — about us, work samples, process, contact',
+  },
 ];
 
 interface Props {
@@ -40,6 +94,15 @@ interface Props {
   isGeneratingDeck: boolean;
   onOpenGenerateModal: () => void;
   onCancelGeneration: () => void;
+  // DOCX import
+  onDocxImport: (outline: DocxOutline[]) => void;
+  // Brand identity
+  brandLogo: string | null;
+  setBrandLogo: (v: string | null) => void;
+  brandSlogan: string;
+  setBrandSlogan: (v: string) => void;
+  brandDescription: string;
+  setBrandDescription: (v: string) => void;
 }
 
 const SlideSidebar: React.FC<Props> = ({
@@ -51,15 +114,24 @@ const SlideSidebar: React.FC<Props> = ({
   isGeneratingDeck,
   onOpenGenerateModal,
   onCancelGeneration,
+  onDocxImport,
+  brandLogo, setBrandLogo,
+  brandSlogan, setBrandSlogan,
+  brandDescription, setBrandDescription,
 }) => {
+  const { showToast } = useToast();
   const [langOpen, setLangOpen] = React.useState(false);
+  const [templatesOpen, setTemplatesOpen] = React.useState(false);
+  const [brandOpen, setBrandOpen] = React.useState(false);
   const fileRef = React.useRef<HTMLInputElement>(null);
   const docxFileRef = React.useRef<HTMLInputElement>(null);
+  const logoFileRef = React.useRef<HTMLInputElement>(null);
   const { parseDocx } = useDocxImport();
   const [isDocxLoading, setIsDocxLoading] = React.useState(false);
 
   const currentLang = LANGUAGES.find(l => l.value === deckLanguage) ?? LANGUAGES[0];
 
+  // ── Reference image upload ───────────────────────────────────────────────────
   const handleRefImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -72,6 +144,7 @@ const SlideSidebar: React.FC<Props> = ({
     reader.readAsDataURL(file);
   };
 
+  // ── DOCX import ──────────────────────────────────────────────────────────────
   const handleDocxImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -79,28 +152,40 @@ const SlideSidebar: React.FC<Props> = ({
     setIsDocxLoading(true);
     try {
       const outline = await parseDocx(file);
-      
-      // Set slide count based on number of slides in DOCX
-      const count = Math.min(Math.max(outline.length, 4), 12); // Clamp between 4-12
-      setSlideCount(count);
-      
-      // Set deck topic from outline titles
-      const titles = outline.map(o => o.title).join(', ');
-      setDeckTopic(titles);
+      showToast(`Đã nhập ${outline.length} slides từ DOCX — đang tạo...`, 'success');
+      onDocxImport(outline);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Lỗi khi nhập DOCX';
-      alert(`Failed to import DOCX: ${message}`);
+      showToast(message, 'error');
     } finally {
       setIsDocxLoading(false);
-      // Reset file input
-      if (docxFileRef.current) {
-        docxFileRef.current.value = '';
-      }
+      if (docxFileRef.current) docxFileRef.current.value = '';
     }
   };
 
+  // ── Logo upload ──────────────────────────────────────────────────────────────
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (reader.result) setBrandLogo(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // ── Template apply ───────────────────────────────────────────────────────────
+  const applyTemplate = (t: Template) => {
+    setDeckTopic(t.prompt);
+    setDeckStyle(t.style);
+    setSlideCount(t.slideCount);
+    setDeckLanguage(t.language);
+    setTemplatesOpen(false);
+    showToast(`Đã áp dụng template "${t.label}"`, 'success');
+  };
+
   return (
-    <div className="w-80 h-full flex flex-col bg-white dark:bg-[#1a1a1e] border-r border-black/[0.05] dark:border-white/[0.05] overflow-y-auto">
+    <div className="w-80 h-full flex flex-col bg-white dark:bg-[#1a1a1e] border-l border-black/[0.05] dark:border-white/[0.05] overflow-y-auto no-scrollbar">
       {/* ── Header ────────────────────────────────────────────────────── */}
       <div className="px-4 py-3 border-b border-black/[0.05] dark:border-white/[0.05]">
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/40">
@@ -119,17 +204,52 @@ const SlideSidebar: React.FC<Props> = ({
           placeholder="Nhập chủ đề bản trình chiếu..."
           className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[11px] placeholder-slate-400 dark:placeholder-white/30 focus:outline-none focus:border-brand-blue/40 resize-none h-20 text-slate-900 dark:text-white"
         />
-        <div className="mt-2 space-y-1">
-          {FEATURED_TEMPLATES.slice(0, 2).map(t => (
-            <button
-              key={t.label}
-              onClick={() => setDeckTopic(t.prompt)}
-              className="w-full text-left px-2 py-1 text-[9px] rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-white/60 transition-colors"
+      </div>
+
+      {/* ── Section: Templates ───────────────────────────────────────── */}
+      <div className="border-b border-black/[0.05] dark:border-white/[0.04]">
+        <button
+          onClick={() => setTemplatesOpen(v => !v)}
+          className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors"
+        >
+          <span className="flex items-center gap-1.5 text-[9px] font-bold uppercase text-slate-400 dark:text-white/40">
+            <LayoutTemplate size={10} />
+            Templates
+          </span>
+          <ChevronDown
+            size={10}
+            className={`text-slate-400 transition-transform duration-200 ${templatesOpen ? 'rotate-180' : ''}`}
+          />
+        </button>
+        <AnimatePresence>
+          {templatesOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              className="overflow-hidden"
             >
-              💡 {t.label}
-            </button>
-          ))}
-        </div>
+              <div className="px-4 pb-3 grid grid-cols-2 gap-2">
+                {FEATURED_TEMPLATES.map(t => (
+                  <button
+                    key={t.label}
+                    onClick={() => applyTemplate(t)}
+                    className="group flex flex-col items-start gap-1 p-2.5 rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.03] hover:border-brand-blue/40 hover:bg-brand-blue/[0.04] transition-all text-left"
+                  >
+                    <span className="text-base leading-none">{t.emoji}</span>
+                    <span className="text-[10px] font-bold text-slate-700 dark:text-white/80 leading-tight">
+                      {t.label}
+                    </span>
+                    <span className="text-[8px] text-slate-400 dark:text-white/30">
+                      {t.slideCount} slides · {t.style}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* ── Section: Slide Count ──────────────────────────────────────── */}
@@ -236,7 +356,7 @@ const SlideSidebar: React.FC<Props> = ({
                 onClick={() => setRefImages(refImages.filter((_, j) => j !== i))}
                 className="absolute -top-2 -right-2 p-1 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <X size={9} />
+                <X size={9} className="text-white" />
               </button>
             </div>
           ))}
@@ -250,17 +370,119 @@ const SlideSidebar: React.FC<Props> = ({
           )}
         </div>
         <input ref={fileRef} type="file" accept="image/*" onChange={handleRefImageUpload} className="hidden" />
-        <p className="text-[9px] text-slate-400 dark:text-white/20">Tối đa 3 ảnh — AI dùng làm tham chiếu style/brand</p>
+        <p className="text-[9px] text-slate-400 dark:text-white/20 mt-1">Tối đa 3 ảnh — AI dùng làm tham chiếu style/brand</p>
+      </div>
+
+      {/* ── Section: Brand Identity ──────────────────────────────────── */}
+      <div className="border-b border-black/[0.05] dark:border-white/[0.04]">
+        <button
+          onClick={() => setBrandOpen(v => !v)}
+          className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors"
+        >
+          <span className="flex items-center gap-1.5 text-[9px] font-bold uppercase text-slate-400 dark:text-white/40">
+            <Tag size={10} />
+            Brand Identity (tuỳ chọn)
+          </span>
+          <ChevronDown
+            size={10}
+            className={`text-slate-400 transition-transform duration-200 ${brandOpen ? 'rotate-180' : ''}`}
+          />
+        </button>
+        <AnimatePresence>
+          {brandOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              className="overflow-hidden"
+            >
+              <div className="px-4 pb-4 space-y-3">
+                {/* Logo */}
+                <div>
+                  <label className="text-[9px] font-semibold uppercase text-slate-400 dark:text-white/30 block mb-1">
+                    Logo
+                  </label>
+                  <div className="flex items-center gap-2">
+                    {brandLogo ? (
+                      <div className="relative group shrink-0">
+                        <img
+                          src={brandLogo}
+                          alt="brand logo"
+                          className="w-12 h-12 rounded-lg object-contain border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-white/5"
+                        />
+                        <button
+                          onClick={() => setBrandLogo(null)}
+                          className="absolute -top-1.5 -right-1.5 p-0.5 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X size={8} className="text-white" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => logoFileRef.current?.click()}
+                        className="w-12 h-12 rounded-lg border-2 border-dashed border-black/[0.08] dark:border-white/[0.08] flex flex-col items-center justify-center gap-0.5 hover:border-brand-blue/40 transition-colors shrink-0"
+                      >
+                        <Upload size={11} className="text-slate-400 dark:text-white/30" />
+                        <span className="text-[7px] text-slate-400 dark:text-white/30">Logo</span>
+                      </button>
+                    )}
+                    <p className="text-[9px] text-slate-400 dark:text-white/30 leading-snug">
+                      Logo sẽ được dùng làm tham chiếu thương hiệu khi tạo slide
+                    </p>
+                  </div>
+                  <input
+                    ref={logoFileRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                </div>
+
+                {/* Slogan */}
+                <div>
+                  <label className="text-[9px] font-semibold uppercase text-slate-400 dark:text-white/30 block mb-1">
+                    Slogan / Tagline
+                  </label>
+                  <input
+                    value={brandSlogan}
+                    onChange={e => setBrandSlogan(e.target.value)}
+                    placeholder="VD: Innovate · Connect · Grow"
+                    maxLength={80}
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[11px] placeholder-slate-300 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 text-slate-900 dark:text-white"
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="text-[9px] font-semibold uppercase text-slate-400 dark:text-white/30 block mb-1">
+                    Mô tả dự án
+                  </label>
+                  <textarea
+                    value={brandDescription}
+                    onChange={e => setBrandDescription(e.target.value.slice(0, 200))}
+                    placeholder="Mô tả ngắn về dự án / thương hiệu để AI có ngữ cảnh..."
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[11px] placeholder-slate-300 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 resize-none h-16 text-slate-900 dark:text-white"
+                  />
+                  <p className="text-right text-[8px] text-slate-300 dark:text-white/20 mt-0.5">
+                    {brandDescription.length}/200
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* ── Section: Import DOCX ───────────────────────────────────────── */}
       <div className="px-4 py-3 border-b border-black/[0.05] dark:border-white/[0.04]">
         <label className="text-[9px] font-bold uppercase text-slate-400 block mb-1.5">
-          📄 Import DOCX Outline (tuỳ chọn)
+          📄 Import DOCX (tuỳ chọn)
         </label>
         <button
           onClick={() => docxFileRef.current?.click()}
-          disabled={isDocxLoading}
+          disabled={isDocxLoading || isGeneratingDeck}
           className="w-full py-2 rounded-xl border-2 border-dashed border-brand-blue/40 text-brand-blue text-[11px] font-medium hover:bg-brand-blue/[0.05] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isDocxLoading ? (
@@ -283,7 +505,9 @@ const SlideSidebar: React.FC<Props> = ({
           disabled={isDocxLoading}
           className="hidden"
         />
-        <p className="text-[9px] text-slate-400 dark:text-white/20 mt-1">Tệp DOCX được phân tích từng heading → slide titles</p>
+        <p className="text-[9px] text-slate-400 dark:text-white/20 mt-1">
+          Import DOCX → AI tự phân tách từng slide + gen ảnh tuần tự
+        </p>
       </div>
 
       {/* ── CTA: Generate Deck ───────────────────────────────────────────────── */}

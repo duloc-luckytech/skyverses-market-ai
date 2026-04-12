@@ -407,6 +407,16 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
           isGeneratingDeck={s.isGeneratingDeck}
           onOpenGenerateModal={() => s.setIsGenerateModalOpen(true)}
           onCancelGeneration={s.cancelGeneration}
+          onDocxImport={(outline) => {
+            s.setDocxOutline(outline);
+            s.generateDeck(outline);
+          }}
+          brandLogo={s.brandLogo}
+          setBrandLogo={s.setBrandLogo}
+          brandSlogan={s.brandSlogan}
+          setBrandSlogan={s.setBrandSlogan}
+          brandDescription={s.brandDescription}
+          setBrandDescription={s.setBrandDescription}
         />
       </div>
 
