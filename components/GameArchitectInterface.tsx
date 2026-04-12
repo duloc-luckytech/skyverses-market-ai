@@ -8,7 +8,8 @@ import {
   ImageIcon, Download, Boxes, Layers, ChevronRight,
   Maximize2, Box, Share2
 } from 'lucide-react';
-import { generateDemoText, generateDemoImage } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
+import { aiTextViaProxy } from '../apis/aiCommon';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SimulationState {
@@ -49,7 +50,7 @@ const GameArchitectInterface = () => {
       Explain: 1. Geometry Instancing 2. PBR Material Logic 3. Global Illumination Strategy. 
       Tone: Chief AI Architect Technical Digest.`;
       
-      const resText = await generateDemoText(textPrompt);
+      const resText = await aiTextViaProxy(textPrompt);
       setLogicSummary(resText);
 
       // 2. Generate Visual Preview

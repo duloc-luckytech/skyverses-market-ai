@@ -11,7 +11,8 @@ import {
   Mic2, Headphones, AlertTriangle,
   Share2, Wand2, Grid, LayoutGrid
 } from 'lucide-react';
-import { generateDemoVideo, generateDemoImage, generateDemoText } from '../services/gemini';
+import { generateDemoVideo, generateDemoImage } from '../services/geminiMedia';
+import { aiTextViaProxy } from '../apis/aiCommon';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { Link } from 'react-router-dom';
@@ -146,7 +147,7 @@ const AvatarGeneratorModal: React.FC<{
     if (!prompt.trim() || isEnhancing) return;
     setIsEnhancing(true);
     try {
-      const enhanced = await generateDemoText(`Bạn là một chuyên gia thiết kế nhân vật AI. Hãy mở rộng và tinh chỉnh prompt sau đây thành một mô tả cực kỳ chi tiết cho một Avatar chuyên nghiệp: "${prompt}". Tập trung vào ánh sáng, chi tiết nhiếp ảnh cao cấp, biểu cảm khuôn mặt và phong cách nghệ thuật. Phản hồi bằng Tiếng Việt ngắn gọn nhưng chất lượng cao.`);
+      const enhanced = await aiTextViaProxy(`Bạn là một chuyên gia thiết kế nhân vật AI. Hãy mở rộng và tinh chỉnh prompt sau đây thành một mô tả cực kỳ chi tiết cho một Avatar chuyên nghiệp: "${prompt}". Tập trung vào ánh sáng, chi tiết nhiếp ảnh cao cấp, biểu cảm khuôn mặt và phong cách nghệ thuật. Phản hồi bằng Tiếng Việt ngắn gọn nhưng chất lượng cao.`);
       if (enhanced && !enhanced.includes("CONNECTION_TERMINATED")) setPrompt(enhanced);
     } catch (e) {
       console.error(e);

@@ -18,7 +18,7 @@ import {
   Check, AlertCircle,
   History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/gemini';
+import { generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 

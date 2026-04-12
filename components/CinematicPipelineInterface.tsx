@@ -9,8 +9,8 @@ import {
   ArrowRight, Video, AlertCircle, RefreshCw, Share2, Lock, ExternalLink
 } from 'lucide-react';
 // Added generateDemoImage to imports
-import { generateDemoVideo, generateDemoText, generateDemoImage } from '../services/gemini';
-
+import { generateDemoVideo, generateDemoImage } from '../services/geminiMedia';
+import { aiTextViaProxy } from '../apis/aiCommon';
 type PipelineStage = 'FOUNDATION' | 'ANIMATION_PLAN' | 'CHAR_MOTION' | 'CUTSCENE_PLAN' | 'SCENE_GEN' | 'FINAL_CUT';
 
 interface StageData {
@@ -78,7 +78,7 @@ const CinematicPipelineInterface = () => {
   const runAnimPlan = async () => {
     setIsBusy(true);
     addLog('PLAN', 'Drafting animation blueprint for Royal Vanguard archetype...');
-    const blueprint = await generateDemoText('Generate a list of 4 required animations for a Royal Vanguard character in a cinematic trailer. Include Motion Intent and Pacing. Keep it technical.');
+    const blueprint = await aiTextViaProxy('Generate a list of 4 required animations for a Royal Vanguard character in a cinematic trailer. Include Motion Intent and Pacing. Keep it technical.');
     const lines = blueprint.split('\n').filter(l => l.trim().length > 5).slice(0, 4);
     setData(prev => ({ ...prev, animationBlueprint: lines }));
     addLog('DONE', 'Animation blueprint validated.');
@@ -114,7 +114,7 @@ const CinematicPipelineInterface = () => {
   const runCutscenePlan = async () => {
     setIsBusy(true);
     addLog('DIRECT', 'Directing cutscene script logic...');
-    const script = await generateDemoText('Write a 3-shot cinematic script for a game reveal. Shot 1: Close-up. Shot 2: Wide. Shot 3: Action. Character is AETHERA_V1. Atmospheric desert ruins.');
+    const script = await aiTextViaProxy('Write a 3-shot cinematic script for a game reveal. Shot 1: Close-up. Shot 2: Wide. Shot 3: Action. Character is AETHERA_V1. Atmospheric desert ruins.');
     const lines = script.split('\n').filter(l => l.includes('Shot')).slice(0, 3);
     setData(prev => ({ ...prev, cutsceneScript: lines }));
     addLog('DONE', 'Cutscene script compiled.');

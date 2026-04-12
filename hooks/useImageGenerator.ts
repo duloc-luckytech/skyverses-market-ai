@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { generateDemoImage } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { GCSAssetMetadata, uploadToGCS } from '../services/storage';

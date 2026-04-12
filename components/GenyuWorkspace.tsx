@@ -18,7 +18,7 @@ import {
   Check, AlertCircle, Sun, CloudRain, Wind,
   Focus, Minimize2, Radio, Target, ZoomIn, Eye
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/gemini';
+import { generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 
 interface Scene {

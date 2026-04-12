@@ -5,7 +5,7 @@ import {
   Settings2, History as HistoryIcon, Wand2, Info,
   Sparkles, Layers, Cpu, ShieldCheck
 } from 'lucide-react';
-import { generateDemoImage } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
 
 interface Archive {
   url: string;

@@ -10,6 +10,7 @@ import SearchPage from './pages/SearchPage';
 import TagPage from './pages/TagPage';
 import SitemapPage from './pages/SitemapPage';
 import RSSFeedPage from './pages/RSSFeedPage';
+import PrivacyPage from './pages/PrivacyPage';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -38,6 +39,7 @@ const App: React.FC = () => {
                     <Route path="/search" element={<SearchPage />} />
                     <Route path="/category/:category" element={<BlogHomePage />} />
                     <Route path="/tags/:tag" element={<TagPage />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/:slug" element={<BlogPostPage />} />
                   </Routes>
                 </main>

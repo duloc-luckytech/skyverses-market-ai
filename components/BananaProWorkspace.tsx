@@ -13,7 +13,7 @@ import {
   Database, ShieldCheck, Copy, Eye, Edit3,
   MousePointer2, Coins, AlertTriangle
 } from 'lucide-react';
-import { generateDemoImage } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';

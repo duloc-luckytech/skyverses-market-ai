@@ -11,7 +11,7 @@ import {
   CheckCircle2, AlertTriangle, Cpu, Database,
   History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoVideo, VideoProductionParams } from '../services/gemini';
+import { generateDemoVideo, VideoProductionParams } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 
 const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {

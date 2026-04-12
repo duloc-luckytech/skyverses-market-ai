@@ -8,8 +8,8 @@ import {
   AlertCircle, ArrowRight, RefreshCw, Sliders,
   LayoutGrid, Eye, Share2, CornerDownRight, History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoText, generateDemoImage } from '../services/gemini';
-
+import { generateDemoImage } from '../services/geminiMedia';
+import { aiTextViaProxy } from '../apis/aiCommon';
 interface AgentLog {
   timestamp: string;
   type: 'THINK' | 'PLAN' | 'CREATE' | 'REVIEW' | 'REFINE' | 'DONE';
@@ -50,14 +50,14 @@ const AetherVisualAgentInterface = () => {
     // 1. UNDERSTAND
     setLoopState('UNDERSTAND');
     addLog('THINK', 'Analyzing creative intent from high-level uplink...');
-    const analysis = await generateDemoText(`ANALYZE_CREATIVE_GOAL: "${goal}"\nExtract: Subject, Style, Core Constraints. Keep it brief.`);
+    const analysis = await aiTextViaProxy(`ANALYZE_CREATIVE_GOAL: "${goal}"\nExtract: Subject, Style, Core Constraints. Keep it brief.`);
     addLog('PLAN', `Intent mapped: ${analysis.slice(0, 120)}...`);
 
     // 2. PLAN
     setLoopState('PLAN');
     addLog('THINK', 'Architecting multi-stage synthesis plan...');
     const planningPrompt = `Based on this goal: "${goal}", generate 4 distinct, highly detailed image prompts that maintain visual consistency but explore different angles. Format as numbered list.`;
-    const rawPlan = await generateDemoText(planningPrompt);
+    const rawPlan = await aiTextViaProxy(planningPrompt);
     const planLines = rawPlan.split('\n').filter(l => /^\d\./.test(l)).slice(0, 4);
     
     const newConcepts = planLines.map((p, i) => ({

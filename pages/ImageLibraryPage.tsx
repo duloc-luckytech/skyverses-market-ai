@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { generateDemoImage } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
 import { uploadToGCS, dataURLtoBlob, GCSAssetMetadata } from '../services/storage';
 
 const DB_NAME = 'Skyverses_GCS_Registry';

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { imagesApi } from '../apis/images';
 import { pollJobOnce } from './useJobPoller';
-import { generateDemoText } from '../services/gemini';
+import { aiTextViaProxy } from '../apis/aiCommon';
 import { Language } from '../types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -244,7 +244,7 @@ Requirements:
 - Return ONLY a JSON array, no markdown, no explanation
 Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ...]`;
 
-      const raw = await generateDemoText(outlinePrompt);
+      const raw = await aiTextViaProxy(outlinePrompt);
 
       // Parse JSON from AI response
       let outline: Array<{ title: string; body: string }> = [];
@@ -348,7 +348,7 @@ Generate 3 alternative versions of this slide content.
 Return ONLY a JSON array, no explanation:
 [{"title": "...", "body": "• ...\n• ...\n• ..."}, {"title": "...", "body": "..."}, {"title": "...", "body": "..."}]`;
 
-      const raw = await generateDemoText(prompt);
+      const raw = await aiTextViaProxy(prompt);
       let suggestions: AISuggestion[] = [];
       try {
         const match = raw.match(/\[[\s\S]*\]/);

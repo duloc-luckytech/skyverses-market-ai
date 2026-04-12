@@ -5,7 +5,7 @@ import {
   X, Zap, Download, Share2, Loader2, Play, 
   Video, Image as ImageIcon, ChevronDown, Sparkles
 } from 'lucide-react';
-import { generateDemoVideo, generateDemoImage } from '../services/gemini';
+import { generateDemoVideo, generateDemoImage } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 
 const MediaGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {

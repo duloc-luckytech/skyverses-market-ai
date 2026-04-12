@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { generateDemoImage } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
 import { useAuth } from '../context/AuthContext';
 
 export type Gender = 'Male' | 'Female';

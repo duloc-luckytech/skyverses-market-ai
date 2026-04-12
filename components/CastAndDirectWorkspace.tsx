@@ -7,7 +7,7 @@ import {
   Plus, Users, MapPin, Move, Camera, Clapperboard, Upload,
   History as HistoryIcon, Maximize2
 } from 'lucide-react';
-import { generateDemoImage, generateDemoVideo } from '../services/gemini';
+import { generateDemoImage, generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 
 interface Actor {

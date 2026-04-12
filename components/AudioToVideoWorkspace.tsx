@@ -8,7 +8,7 @@ import {
   Layers, Terminal, Trash2, Settings2, History,
   MonitorPlay, AlertTriangle, Sparkles, RefreshCw, Search, Upload, ChevronDown, HelpCircle, CheckCircle2
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/gemini';
+import { generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 
 // Move components outside and explicitly type with React.FC to resolve "children is missing" errors in JSX usage

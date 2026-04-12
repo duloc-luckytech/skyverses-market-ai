@@ -25,7 +25,7 @@ import {
   ChevronDown, ChevronUp, Loader2, Check,
   RefreshCw, ChevronRight, Clock,
 } from 'lucide-react';
-import { generateDemoText } from '../../services/gemini';
+import { aiTextViaProxy } from '../../apis/aiCommon';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface SuggestConfig {
@@ -152,7 +152,7 @@ const AISuggestPanel: React.FC<AISuggestPanelProps> = ({
     setLoadingPrompts(true);
     try {
       const context = productContext || `${productName} AI tool`;
-      const raw = await generateDemoText(
+      const raw = await aiTextViaProxy(
         `Suggest exactly 6 creative, diverse prompt ideas for the "${productName}" AI tool.
 Context: ${context}
 Requirements:
@@ -161,7 +161,6 @@ Requirements:
 - Varied styles: professional, creative, trendy, seasonal, luxury, minimal
 - Each prompt on a new line, no numbering, no bullets, no quotes
 - Start directly with the creative prompt text`,
-        'gemini-2.5-flash-preview',
         'You are a creative director specializing in AI-generated visual content. Return exactly 6 prompt lines, one per line, nothing else.'
       );
 
@@ -181,7 +180,7 @@ Requirements:
     setFilling(true);
     setFillPreview(null);
     try {
-      const raw = await generateDemoText(
+      const raw = await aiTextViaProxy(
         `Generate a complete workspace configuration for "${productName}" AI tool.
 Return ONLY a JSON object with these exact keys (no markdown, no backticks):
 {
@@ -190,7 +189,6 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
   "format": "best output format for this product",
   "category": "most relevant category"
 }`,
-        'gemini-2.5-flash-preview',
         'You are an AI workspace configuration assistant. Return ONLY valid JSON, nothing else.'
       );
 

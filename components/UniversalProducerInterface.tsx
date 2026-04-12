@@ -9,8 +9,8 @@ import {
   ArrowRight, Video, AlertCircle, RefreshCw, Share2, 
   Lock, ExternalLink, Gamepad, Tv, UserPlus, Box
 } from 'lucide-react';
-import { generateDemoVideo, generateDemoText, generateDemoImage } from '../services/gemini';
-
+import { generateDemoVideo, generateDemoImage } from '../services/geminiMedia';
+import { aiTextViaProxy } from '../apis/aiCommon';
 type Domain = 'GAME' | 'FILM' | 'ADVERTISING' | 'VIRTUAL_AVATAR';
 type PipelineStage = 'IDENTITY' | 'ASSETS' | 'MOTION' | 'SCENE' | 'DOMAIN_RENDER' | 'MASTER';
 
@@ -81,7 +81,7 @@ const UniversalProducerInterface = () => {
         break;
       case 'MOTION':
         addLog('PLANNER', 'Generating platform-agnostic behavior trees...');
-        const logic = await generateDemoText(`Create 3 cinematic motion intents for ${characterDna.name} (${characterDna.role}). Include: 1. Stealth Prowl, 2. Katana Unsheathe, 3. Neural Calibration.`);
+        const logic = await aiTextViaProxy(`Create 3 cinematic motion intents for ${characterDna.name} (${characterDna.role}). Include: 1. Stealth Prowl, 2. Katana Unsheathe, 3. Neural Calibration.`);
         addLog('DIRECTOR', 'Behavior blueprints compiled. Logic ready for temporal synthesis.');
         break;
       case 'DOMAIN_RENDER':

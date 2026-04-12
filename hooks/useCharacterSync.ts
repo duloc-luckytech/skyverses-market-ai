@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { generateDemoVideo } from '../services/gemini';
+import { generateDemoVideo } from '../services/geminiMedia';
 import { uploadToGCS } from '../services/storage';
 import { pricingApi, PricingModel } from '../apis/pricing';
 import { videosApi, VideoJobRequest } from '../apis/videos';

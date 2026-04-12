@@ -7,8 +7,8 @@ import {
   CornerDownRight, Swords, User, Shield, Zap, Loader2,
   History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoText, generateDemoImage } from '../services/gemini';
-
+import { generateDemoImage } from '../services/geminiMedia';
+import { aiTextViaProxy } from '../apis/aiCommon';
 interface AgentLog {
   timestamp: string;
   type: 'ANALYZE' | 'PLAN' | 'GENERATE' | 'REVIEW' | 'REFINE' | 'DONE';
@@ -54,14 +54,14 @@ const GameCharacterAgentInterface = () => {
     // 1. ANALYZE
     setLoopState('ANALYZE');
     addLog('ANALYZE', `Parsing character brief for ${genre} ${role}...`);
-    const analysis = await generateDemoText(`ANALYZE_GAME_CHARACTER_BRIEF: "${brief}"\nRole: ${role}. Genre: ${genre}. Style: ${style}.\nExtract game design constraints.`);
+    const analysis = await aiTextViaProxy(`ANALYZE_GAME_CHARACTER_BRIEF: "${brief}"\nRole: ${role}. Genre: ${genre}. Style: ${style}.\nExtract game design constraints.`);
     addLog('ANALYZE', `Archetype constraints mapped: Readability prioritized.`);
 
     // 2. PLAN
     setLoopState('PLAN');
     addLog('PLAN', 'Planning production turnaround (Portrait, Action, Gear-Focus)...');
     const planningPrompt = `Based on the brief: "${brief}" and style "${style}", generate 3 production-grade character asset prompts. 1: Close-up Portrait. 2: Full-body Action Pose. 3: Orthographic Equipment View. Use game-dev terminology. Number them.`;
-    const rawPlan = await generateDemoText(planningPrompt);
+    const rawPlan = await aiTextViaProxy(planningPrompt);
     const planLines = rawPlan.split('\n').filter(l => /^\d\./.test(l)).slice(0, 3);
     
     const newAssets = [

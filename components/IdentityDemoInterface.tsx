@@ -7,7 +7,7 @@ import {
   Image as ImageIcon, User, Sliders,
   CheckCircle2, Info, Camera, Palette
 } from 'lucide-react';
-import { generateDemoImage } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
 
 interface Version {
   url: string;

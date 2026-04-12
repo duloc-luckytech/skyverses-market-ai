@@ -13,7 +13,8 @@ import {
   CreditCard, PlusCircle, Edit3, ChevronLeft,
   Dices
 } from 'lucide-react';
-import { generateDemoImage, generateDemoText } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
+import { aiTextViaProxy } from '../apis/aiCommon';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -225,7 +226,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
     if (!prompt.trim() || isEnhancing) return;
     setIsEnhancing(true);
     try {
-      const enhanced = await generateDemoText(`Hãy viết lại prompt sau đây thành một mô tả chuyên nghiệp cho AI tạo ảnh thời trang: "${prompt}"`);
+      const enhanced = await aiTextViaProxy(`Hãy viết lại prompt sau đây thành một mô tả chuyên nghiệp cho AI tạo ảnh thời trang: "${prompt}"`);
       if (enhanced && !enhanced.includes('CONNECTION_TERMINATED')) {
         setPrompt(enhanced);
       }

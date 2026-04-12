@@ -20,7 +20,7 @@ import {
   Target, ZoomIn, Eye,
   History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/gemini';
+import { generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 
 const SHOT_TYPES = [

@@ -8,7 +8,7 @@ import {
   ExternalLink, Activity, Upload,
   Square, RotateCcw, MonitorPlay
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/gemini';
+import { generateDemoVideo } from '../services/geminiMedia';
 
 interface Take {
   url: string;

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { imagesApi, ImageJobRequest } from '../apis/images';
-import { generateDemoImage } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
 import { uploadToGCS } from '../services/storage';
 import { useImageModels, MappedImageModel } from './useImageModels';
 import { pollJobOnce } from './useJobPoller';

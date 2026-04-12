@@ -13,7 +13,8 @@ import {
   FastForward, CheckSquare, ShieldAlert, X,
   History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoText, generateDemoImage, generateDemoVideo } from '../services/gemini';
+import { generateDemoImage, generateDemoVideo } from '../services/geminiMedia';
+import { aiTextViaProxy } from '../apis/aiCommon';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type Domain = 'GAME' | 'FILM' | 'ADVERTISING' | 'VIRTUAL_AVATAR';
@@ -121,7 +122,7 @@ const AUPX1Studio = () => {
   const runMotionIntel = async () => {
     setIsBusy(true);
     addLog('PLANNER', 'Stage 3: Synthesizing Motion & Behavior Intelligence...');
-    const logic = await generateDemoText(`As a Chief AI Architect, design a behavior blueprint for ${uca.name} in a ${activeDomain} context. Include movement intent, emotional weight, and loop-logic.`);
+    const logic = await aiTextViaProxy(`As a Chief AI Architect, design a behavior blueprint for ${uca.name} in a ${activeDomain} context. Include movement intent, emotional weight, and loop-logic.`);
     setBlueprints(logic.split('\n').filter(l => l.length > 10).slice(0, 4));
     addLog('DIRECTOR', 'Behavioral logic compiled. Ready for domain-specific temporal synthesis.');
     setIsBusy(false);
@@ -130,7 +131,7 @@ const AUPX1Studio = () => {
   const runSceneDesign = async () => {
     setIsBusy(true);
     addLog('DIRECTOR', 'Stage 4: Drafting Scene Experience & Narrative Flow...');
-    const design = await generateDemoText(`Generate a 3-act scene plan for a ${activeDomain} project featuring ${uca.name}. Each act should have a visual directive and a camera behavior.`);
+    const design = await aiTextViaProxy(`Generate a 3-act scene plan for a ${activeDomain} project featuring ${uca.name}. Each act should have a visual directive and a camera behavior.`);
     setScenePlan(design.split('\n').filter(l => l.length > 15).slice(0, 3));
     addLog('PLANNER', 'Scene graph optimized for selected domain constraints.');
     setIsBusy(false);

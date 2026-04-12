@@ -11,7 +11,7 @@ import {
   CornerDownLeft, X, Tag, Layout, MonitorPlay,
   History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoText } from '../services/gemini';
+import { aiTextViaProxy } from '../apis/aiCommon';
 
 interface PromptField {
   id: string;
@@ -115,7 +115,7 @@ const PromptArchitectInterface = () => {
 
     try {
       const compiledPrompt = fields.filter(f => f.active).map(f => `${f.label}: ${f.value}`).join('\n');
-      const result = await generateDemoText(`ACT: Architect. EVAL: \n${compiledPrompt}`);
+      const result = await aiTextViaProxy(`ACT: Architect. EVAL: \n${compiledPrompt}`);
       setTestResult(result);
       setHistory(prev => [{
         id: `hist-${Date.now()}`,

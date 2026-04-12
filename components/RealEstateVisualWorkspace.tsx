@@ -9,7 +9,7 @@ import {
   Sofa, Image as ImageIcon, Eye,
   Navigation, Wind, Film, Clock,
 } from 'lucide-react';
-import { generateDemoText } from '../services/gemini';
+import { aiTextViaProxy } from '../apis/aiCommon';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
@@ -360,7 +360,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     setStatus('Đang tối ưu prompt...');
     try {
       const system = 'Bạn là chuyên gia bất động sản và thiết kế kiến trúc Việt Nam. Viết lại prompt sau thành mô tả chi tiết cho AI tạo ảnh/video BĐS: góc máy, ánh sáng, phong cách, vật liệu. Ngắn gọn, tiếng Việt.';
-      const enhanced = await generateDemoText(`${system}\n\nPrompt gốc: "${prompt}"`);
+      const enhanced = await aiTextViaProxy(`${system}\n\nPrompt gốc: "${prompt}"`);
       if (enhanced && !enhanced.includes('CONNECTION_TERMINATED')) {
         setEnhancedPreview(enhanced);
         setShowEnhanceDiff(true);

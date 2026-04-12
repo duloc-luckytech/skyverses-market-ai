@@ -7,7 +7,7 @@ import {
   Plus, Upload, Search, RefreshCw, Sparkles,
   MoreVertical, Info, AlertTriangle, MonitorPlay
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/gemini';
+import { generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 
 // Move components outside to avoid re-creation on every render and fix TS children errors

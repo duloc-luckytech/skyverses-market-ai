@@ -7,7 +7,7 @@ import {
   CheckCircle2, Plus, Info, RefreshCw, 
   Mic, SlidersHorizontal, Activity, Share
 } from 'lucide-react';
-import { generateDemoAudio } from '../services/gemini';
+import { generateDemoAudio } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 
 const VOICE_PRESETS = [

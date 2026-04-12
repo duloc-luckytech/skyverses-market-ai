@@ -7,7 +7,7 @@ import {
   History as HistoryIcon, Share2, Briefcase, Camera, Sun, 
   Terminal, Activity, X
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/gemini';
+import { generateDemoVideo } from '../services/geminiMedia';
 
 const NexusStudioInterface = () => {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);

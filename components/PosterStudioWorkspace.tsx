@@ -18,7 +18,8 @@ import {
   Waves, Dumbbell, Award, Megaphone, ChevronDown, Smartphone, ShieldCheck,
   Coins, AlertTriangle
 } from 'lucide-react';
-import { generateDemoImage, generateDemoText } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
+import { aiTextViaProxy } from '../apis/aiCommon';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -155,7 +156,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     setStatus('Đang tối ưu mô tả...');
     try {
       const systemInstruction = "Bạn là một chuyên gia marketing. Hãy viết lại mô tả sau đây thành một prompt cực kỳ chi tiết cho AI tạo ảnh để tạo ra một poster bán hàng ấn tượng. Giữ nội dung cốt lõi nhưng thêm vào các chi tiết về ánh sáng, vật liệu và bố cục. Trả về kết quả bằng Tiếng Việt ngắn gọn.";
-      const enhanced = await generateDemoText(`${systemInstruction}\n\nNội dung gốc: "${prompt}"`);
+      const enhanced = await aiTextViaProxy(`${systemInstruction}\n\nNội dung gốc: "${prompt}"`);
       if (enhanced && !enhanced.includes('CONNECTION_TERMINATED')) {
         setPrompt(enhanced);
         setStatus('Đã tăng cường prompt');

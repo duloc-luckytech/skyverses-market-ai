@@ -1,3 +1,10 @@
+/**
+ * geminiMedia.ts — Gemini media generation (image, video, audio)
+ * Calls Google Gemini API directly using dynamic API keys from system config.
+ *
+ * For TEXT generation in workspaces → use apis/aiCommon.ts (EzAPI proxy).
+ * This file is only for media: image synthesis, video generation, TTS audio.
+ */
 import { GoogleGenAI, Modality } from "@google/genai";
 import { systemConfigApi } from "../apis/config";
 
@@ -8,7 +15,7 @@ const CACHE_DURATION = 1000 * 60 * 5; // 5 minutes
 
 const getActiveApiKey = async (): Promise<string> => {
   const now = Date.now();
-  
+
   // Refresh cache if empty or expired
   if (cachedGeminiKeys.length === 0 || (now - lastFetchTime) > CACHE_DURATION) {
     try {
@@ -17,14 +24,14 @@ const getActiveApiKey = async (): Promise<string> => {
         const activeKeys = res.data.listKeyGommoGenmini
           .filter(k => k.isActive && k.key)
           .map(k => k.key);
-        
+
         if (activeKeys.length > 0) {
           cachedGeminiKeys = activeKeys;
           lastFetchTime = now;
         }
       }
     } catch (err) {
-      console.error("[GEMINI_SERVICE] Failed to sync dynamic keys, falling back to env.", err);
+      console.error("[GEMINI_MEDIA] Failed to sync dynamic keys, falling back to env.", err);
     }
   }
 
@@ -33,7 +40,7 @@ const getActiveApiKey = async (): Promise<string> => {
     const randomIndex = Math.floor(Math.random() * cachedGeminiKeys.length);
     return cachedGeminiKeys[randomIndex];
   }
-  
+
   return process.env.API_KEY || '';
 };
 
@@ -107,8 +114,8 @@ export const generateDemoAudio = async (prompt: string, voiceName: string = 'Kor
 };
 
 export const generateMultiSpeakerAudio = async (
-  dialoguePrompt: string, 
-  speakerA: { name: string, voice: string }, 
+  dialoguePrompt: string,
+  speakerA: { name: string, voice: string },
   speakerB: { name: string, voice: string }
 ): Promise<AudioBuffer | null> => {
   const apiKey = await getActiveApiKey();
@@ -145,24 +152,6 @@ export const generateMultiSpeakerAudio = async (
   } catch (error) {
     console.error("Multi-Speaker Synthesis Error:", error);
     return null;
-  }
-};
-
-export const generateDemoText = async (prompt: string, model: string = 'gemini-2.5-flash', systemInstruction?: string): Promise<string> => {
-  const apiKey = await getActiveApiKey();
-  const ai = new GoogleGenAI({ apiKey });
-  try {
-    const response = await ai.models.generateContent({
-      model: model,
-      contents: prompt,
-      config: {
-        systemInstruction: systemInstruction || "You are an AI Architectural Strategist. Provide concise, high-level technical responses for enterprise B2B contexts."
-      }
-    });
-    return response.text || "NO_DATA_RETURNED";
-  } catch (error: any) {
-    console.error("Text Synthesis Error:", error);
-    return "CONNECTION_TERMINATED";
   }
 };
 
@@ -216,9 +205,9 @@ export const generateDemoImage = async (params: ImageSynthesisParams | string, i
 
   let modelId = 'gemini-2.5-flash-image';
   if (
-    modelNameInput.includes('Banana Pro') || 
-    modelNameInput.includes('google_image_gen_banana_pro') || 
-    modelNameInput.includes('Gemini 3 Pro Image') || 
+    modelNameInput.includes('Banana Pro') ||
+    modelNameInput.includes('google_image_gen_banana_pro') ||
+    modelNameInput.includes('Gemini 3 Pro Image') ||
     modelNameInput === 'gemini-3-pro-image-preview'
   ) {
     modelId = 'gemini-3-pro-image-preview';
@@ -234,7 +223,7 @@ export const generateDemoImage = async (params: ImageSynthesisParams | string, i
     if (inputImages && inputImages.length > 0) {
       await Promise.all(inputImages.map(async (img) => {
         if (!img) return;
-        
+
         if (img.startsWith('data:')) {
           const mimeType = img.substring(img.indexOf(":") + 1, img.indexOf(";"));
           const data = img.substring(img.indexOf(",") + 1);
@@ -275,7 +264,7 @@ export const generateDemoImage = async (params: ImageSynthesisParams | string, i
 
 export interface VideoProductionParams {
   prompt: string;
-  references?: string[]; 
+  references?: string[];
   lastFrame?: string;
   resolution?: '720p' | '1080p';
   aspectRatio?: '16:9' | '9:16';
@@ -288,8 +277,8 @@ export const generateDemoVideo = async (params: VideoProductionParams): Promise<
   const apiKey = await getActiveApiKey();
   const ai = new GoogleGenAI({ apiKey });
   try {
-    const modelName = params.isUltra 
-      ? 'veo-3.1-generate-preview' 
+    const modelName = params.isUltra
+      ? 'veo-3.1-generate-preview'
       : 'veo-3.1-fast-generate-preview';
 
     const config: any = {
@@ -298,8 +287,8 @@ export const generateDemoVideo = async (params: VideoProductionParams): Promise<
       aspectRatio: params.aspectRatio || '16:9'
     };
 
-    const finalPrompt = params.duration 
-      ? `[STRICT DURATION: ${params.duration}] ${params.prompt}` 
+    const finalPrompt = params.duration
+      ? `[STRICT DURATION: ${params.duration}] ${params.prompt}`
       : params.prompt;
 
     const payload: any = {
@@ -313,11 +302,11 @@ export const generateDemoVideo = async (params: VideoProductionParams): Promise<
     }
 
     if (params.references && params.references.length > 0) {
-      const base64Data = params.references[0].includes(',') 
-        ? params.references[0].split(',')[1] 
+      const base64Data = params.references[0].includes(',')
+        ? params.references[0].split(',')[1]
         : params.references[0];
-      const mimeType = params.references[0].includes(';') 
-        ? params.references[0].split(';')[0].split(':')[1] 
+      const mimeType = params.references[0].includes(';')
+        ? params.references[0].split(';')[0].split(':')[1]
         : 'image/png';
 
       payload.image = {
@@ -327,11 +316,11 @@ export const generateDemoVideo = async (params: VideoProductionParams): Promise<
     }
 
     if (params.lastFrame) {
-      const base64Data = params.lastFrame.includes(',') 
-        ? params.lastFrame.split(',')[1] 
+      const base64Data = params.lastFrame.includes(',')
+        ? params.lastFrame.split(',')[1]
         : params.lastFrame;
-      const mimeType = params.lastFrame.includes(';') 
-        ? params.lastFrame.split(';')[0].split(':')[1] 
+      const mimeType = params.lastFrame.includes(';')
+        ? params.lastFrame.split(';')[0].split(':')[1]
         : 'image/png';
 
       config.lastFrame = {
@@ -346,7 +335,7 @@ export const generateDemoVideo = async (params: VideoProductionParams): Promise<
       await new Promise(resolve => setTimeout(resolve, 10000));
       operation = await ai.operations.getVideosOperation({ operation: operation });
     }
-    
+
     const videoData = operation.response?.generatedVideos?.[0]?.video;
     const downloadLink = videoData?.uri;
 
@@ -356,7 +345,7 @@ export const generateDemoVideo = async (params: VideoProductionParams): Promise<
       const blob = await response.blob();
       return URL.createObjectURL(blob);
     }
-    
+
     return null;
   } catch (error: any) {
     console.error("Video Synthesis Error:", error);

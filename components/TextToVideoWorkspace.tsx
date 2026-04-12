@@ -10,7 +10,7 @@ import {
   LayoutGrid, Trash2, Box, Wand2, Info, FastForward,
   MonitorPlay, Camera as CameraIcon, Crown, Rocket, Fingerprint
 } from 'lucide-react';
-import { generateDemoVideo, VideoProductionParams } from '../services/gemini';
+import { generateDemoVideo, VideoProductionParams } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 
 type Tier = 'PRO' | 'ULTRA';

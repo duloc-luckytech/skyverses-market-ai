@@ -36,6 +36,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.newsletter_placeholder': 'your@email.com',
     'footer.copyright': '© 2026 SKYVERSES ECOSYSTEM.',
     'footer.description': 'Leading AI production studio for work and creativity.',
+    'footer.privacy': 'Privacy Policy',
   },
   vi: {
     'blog.title': 'Insights',
@@ -65,6 +66,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.newsletter_placeholder': 'email@example.com',
     'footer.copyright': '© 2026 HỆ SINH THÁI SKYVERSES.',
     'footer.description': 'Studio sản xuất AI hàng đầu cho công việc và sáng tạo.',
+    'footer.privacy': 'Chính sách Bảo mật',
   },
   ko: {
     'blog.title': 'Insights',
@@ -94,6 +96,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.newsletter_placeholder': 'your@email.com',
     'footer.copyright': '© 2026 SKYVERSES 생태계.',
     'footer.description': '업무와 창작을 위한 최고의 AI 제작 스튜디오.',
+    'footer.privacy': '개인정보 처리방침',
   },
   ja: {
     'blog.title': 'Insights',
@@ -123,6 +126,7 @@ const translations: Record<Language, Record<string, string>> = {
     'blog.newsletter_placeholder': 'your@email.com',
     'footer.copyright': '© 2026 SKYVERSESエコシステム.',
     'footer.description': '仕事とクリエイティブのための最先端AIスタジオ.',
+    'footer.privacy': 'プライバシーポリシー',
   },
 };
 

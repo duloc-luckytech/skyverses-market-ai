@@ -10,7 +10,7 @@ import {
   LayoutGrid, Image as ImageIcon, Wand2, History,
   Maximize2, Download, RefreshCw, Bot,
 } from 'lucide-react';
-import { generateDemoText } from '../services/gemini';
+import { aiTextViaProxy } from '../apis/aiCommon';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
@@ -180,7 +180,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     setEnhancedPreview(null);
     try {
       const system = 'Bạn là chuyên gia thiết kế banner mạng xã hội. Viết lại prompt sau thành mô tả chi tiết cho AI tạo banner: bố cục, màu sắc, font chữ, hiệu ứng ánh sáng. Ngắn gọn, tiếng Việt.';
-      const enhanced = await generateDemoText(`${system}\n\nPrompt gốc: "${localPrompt}"`);
+      const enhanced = await aiTextViaProxy(`${system}\n\nPrompt gốc: "${localPrompt}"`);
       if (enhanced && !enhanced.includes('CONNECTION_TERMINATED')) {
         setEnhancedPreview(enhanced);
         setShowEnhanceDiff(true);

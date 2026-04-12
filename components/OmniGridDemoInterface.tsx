@@ -8,7 +8,7 @@ import {
   Maximize2, Trash2, Sliders, Palette,
   MousePointer2, Share2, ZoomIn, RefreshCw
 } from 'lucide-react';
-import { generateDemoImage } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
 
 interface GridItem {
   id: string;

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { GoogleGenAI } from "@google/genai";
-import { generateDemoImage } from '../services/gemini';
+import { generateDemoImage } from '../services/geminiMedia';
 import { aiChatJSON, aiChatStream, aiChatOnce, aiChatStreamViaProxy, aiChatOnceViaProxy, ChatMessage } from '../apis/aiChat';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -1110,7 +1110,7 @@ Rewrite this as a better image generation prompt:`,
     addLog(`[🎙️] Tạo voice-over cảnh #${scene.order}...`);
 
     try {
-      const { generateDemoAudio } = await import('../services/gemini');
+      const { generateDemoAudio } = await import('../services/geminiMedia');
       const text = voiceText || scene.prompt.slice(0, 200); // cap at 200 chars
       const voiceName = settings.voiceOver?.toLowerCase().includes('female') ? 'Aoede' : 'Kore';
 
