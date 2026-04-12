@@ -1,17 +1,19 @@
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Download, Undo2, Redo2, Sparkles,
   ChevronDown, Layers,
 } from 'lucide-react';
 import { useSlideStudio } from '../hooks/useSlideStudio';
+import { useSlideProjectManager } from '../hooks/useSlideProjectManager';
 import SlideThumbnailList from './slide-studio/SlideThumbnailList';
 import SlideCanvas from './slide-studio/SlideCanvas';
 import SlideSidebar from './slide-studio/SlideSidebar';
 import SlideToolbar from './slide-studio/SlideToolbar';
 import AIGenerateModal from './slide-studio/AIGenerateModal';
 import SlideExportModal from './slide-studio/SlideExportModal';
+import SlideProjectSwitcher from './slide-studio/SlideProjectSwitcher';
 
 interface Props {
   onClose: () => void;
@@ -19,8 +21,160 @@ interface Props {
 
 const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
   const s = useSlideStudio();
-  const [exportDropOpen, setExportDropOpen] = React.useState(false);
+  const pm = useSlideProjectManager();
 
+  const [exportDropOpen, setExportDropOpen] = React.useState(false);
+  const [exportFormat, setExportFormat] = React.useState<'pptx' | 'pdf' | 'png'>('pptx');
+
+  // Track if we're in the middle of loading a project (to skip the auto-save)
+  const isLoadingProjectRef = useRef(false);
+
+  // ── Load active project into studio on first mount ─────────────────────────
+  useEffect(() => {
+    const project = pm.loadProject(pm.activeProjectId);
+    isLoadingProjectRef.current = true;
+    s.setSlides(project.slides ?? []);
+    s.setDeckTopic(project.deckTopic ?? '');
+    s.setDeckStyle(project.deckStyle ?? 'corporate');
+    s.setDeckLanguage(project.deckLanguage ?? 'vi');
+    s.setSlideCount(project.slideCount ?? 6);
+    if (project.slides?.length > 0) {
+      s.setActiveSlideId(project.slides[0].id);
+    }
+    // Allow the state updates to settle before re-enabling auto-save
+    setTimeout(() => { isLoadingProjectRef.current = false; }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Auto-save studio state → current project (debounced 500ms) ────────────
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (isLoadingProjectRef.current) return;
+
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => {
+      pm.saveCurrentProject({
+        id: pm.activeProjectId,
+        slides: s.slides,
+        deckTopic: s.deckTopic,
+        deckStyle: s.deckStyle,
+        deckLanguage: s.deckLanguage,
+        slideCount: s.slideCount,
+      });
+    }, 500);
+
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [s.slides, s.deckTopic, s.deckStyle, s.deckLanguage, s.slideCount]);
+
+  // ── Project switch ─────────────────────────────────────────────────────────
+  const handleSwitchProject = useCallback((id: string) => {
+    // Save current state first
+    pm.saveCurrentProject({
+      id: pm.activeProjectId,
+      slides: s.slides,
+      deckTopic: s.deckTopic,
+      deckStyle: s.deckStyle,
+      deckLanguage: s.deckLanguage,
+      slideCount: s.slideCount,
+    });
+
+    // Load the new project
+    const project = pm.switchProject(id);
+    isLoadingProjectRef.current = true;
+    s.setSlides(project.slides ?? []);
+    s.setDeckTopic(project.deckTopic ?? '');
+    s.setDeckStyle(project.deckStyle ?? 'corporate');
+    s.setDeckLanguage(project.deckLanguage ?? 'vi');
+    s.setSlideCount(project.slideCount ?? 6);
+    if (project.slides?.length > 0) {
+      s.setActiveSlideId(project.slides[0].id);
+    } else {
+      s.setActiveSlideId('');
+    }
+    setTimeout(() => { isLoadingProjectRef.current = false; }, 100);
+  }, [pm, s]);
+
+  // ── Create project ─────────────────────────────────────────────────────────
+  const handleCreateProject = useCallback((name: string) => {
+    // Save current before creating
+    pm.saveCurrentProject({
+      id: pm.activeProjectId,
+      slides: s.slides,
+      deckTopic: s.deckTopic,
+      deckStyle: s.deckStyle,
+      deckLanguage: s.deckLanguage,
+      slideCount: s.slideCount,
+    });
+
+    const project = pm.createProject(name);
+    isLoadingProjectRef.current = true;
+    s.setSlides([]);
+    s.setDeckTopic('');
+    s.setDeckStyle('corporate');
+    s.setDeckLanguage('vi');
+    s.setSlideCount(6);
+    s.setActiveSlideId('');
+    setTimeout(() => { isLoadingProjectRef.current = false; }, 100);
+    // suppress unused-var warning — project returned but not needed here
+    void project;
+  }, [pm, s]);
+
+  // ── Duplicate project ──────────────────────────────────────────────────────
+  const handleDuplicateProject = useCallback((id: string) => {
+    // Save current first
+    pm.saveCurrentProject({
+      id: pm.activeProjectId,
+      slides: s.slides,
+      deckTopic: s.deckTopic,
+      deckStyle: s.deckStyle,
+      deckLanguage: s.deckLanguage,
+      slideCount: s.slideCount,
+    });
+
+    const newId = pm.duplicateProject(id);
+
+    // Switch into the new duplicate
+    const project = pm.loadProject(newId);
+    isLoadingProjectRef.current = true;
+    s.setSlides(project.slides ?? []);
+    s.setDeckTopic(project.deckTopic ?? '');
+    s.setDeckStyle(project.deckStyle ?? 'corporate');
+    s.setDeckLanguage(project.deckLanguage ?? 'vi');
+    s.setSlideCount(project.slideCount ?? 6);
+    if (project.slides?.length > 0) {
+      s.setActiveSlideId(project.slides[0].id);
+    } else {
+      s.setActiveSlideId('');
+    }
+    setTimeout(() => { isLoadingProjectRef.current = false; }, 100);
+  }, [pm, s]);
+
+  // ── Delete project ─────────────────────────────────────────────────────────
+  const handleDeleteProject = useCallback((id: string) => {
+    const nextActiveId = pm.deleteProject(id);
+
+    // If we deleted the active project, load the new active one
+    if (id === pm.activeProjectId) {
+      const project = pm.loadProject(nextActiveId);
+      isLoadingProjectRef.current = true;
+      s.setSlides(project.slides ?? []);
+      s.setDeckTopic(project.deckTopic ?? '');
+      s.setDeckStyle(project.deckStyle ?? 'corporate');
+      s.setDeckLanguage(project.deckLanguage ?? 'vi');
+      s.setSlideCount(project.slideCount ?? 6);
+      if (project.slides?.length > 0) {
+        s.setActiveSlideId(project.slides[0].id);
+      } else {
+        s.setActiveSlideId('');
+      }
+      setTimeout(() => { isLoadingProjectRef.current = false; }, 100);
+    }
+  }, [pm, s]);
+
+  // ── Slide update handlers ──────────────────────────────────────────────────
   const handleUpdateTitle = useCallback((id: string, val: string) => {
     s.updateSlide(id, { title: val });
   }, [s.updateSlide]);
@@ -47,7 +201,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
     >
       {/* ══ Header Nav ══════════════════════════════════════════════════════════ */}
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/[0.06] dark:border-white/[0.05] bg-white/90 dark:bg-[#0d0d0f]/90 backdrop-blur shrink-0">
-        {/* Left: Close + Title */}
+        {/* Left: Close + Title + Project Switcher */}
         <div className="flex items-center gap-3">
           <motion.button
             onClick={onClose}
@@ -69,6 +223,19 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
             {s.isDirty && (
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400" title="Có thay đổi chưa lưu" />
             )}
+          </div>
+
+          {/* Project Switcher */}
+          <div className="hidden sm:block">
+            <SlideProjectSwitcher
+              projects={pm.projects}
+              activeProjectId={pm.activeProjectId}
+              onSwitch={handleSwitchProject}
+              onCreate={handleCreateProject}
+              onRename={pm.renameProject}
+              onDuplicate={handleDuplicateProject}
+              onDelete={handleDeleteProject}
+            />
           </div>
         </div>
 
@@ -140,13 +307,17 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                     className="absolute top-full mt-1.5 right-0 z-50 bg-white dark:bg-[#1a1a1e] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl overflow-hidden min-w-[130px]"
                   >
                     {[
-                      { label: 'PowerPoint (.pptx)', value: 'pptx' },
-                      { label: 'PDF', value: 'pdf' },
-                      { label: 'PNG (zip)', value: 'png' },
+                      { label: 'PowerPoint (.pptx)', value: 'pptx' as const },
+                      { label: 'PDF', value: 'pdf' as const },
+                      { label: 'PNG (zip)', value: 'png' as const },
                     ].map(opt => (
                       <button
                         key={opt.value}
-                        onClick={() => { setExportDropOpen(false); s.setIsExportModalOpen(true); }}
+                        onClick={() => {
+                          setExportFormat(opt.value);
+                          setExportDropOpen(false);
+                          s.setIsExportModalOpen(true);
+                        }}
                         className="w-full text-left px-3 py-2 text-[11px] font-medium text-slate-600 dark:text-white/60 hover:bg-brand-blue/[0.06] hover:text-brand-blue transition-colors"
                       >
                         {opt.label}
@@ -255,6 +426,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
         isOpen={s.isExportModalOpen}
         onClose={() => s.setIsExportModalOpen(false)}
         slides={s.slides}
+        initialFormat={exportFormat}
       />
     </motion.div>
   );

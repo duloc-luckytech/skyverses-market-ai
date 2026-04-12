@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { generateDemoVideo } from '../services/geminiMedia';
 import { uploadToGCS } from '../services/storage';
 import { pricingApi, PricingModel } from '../apis/pricing';
 import { videosApi, VideoJobRequest } from '../apis/videos';
@@ -345,30 +344,6 @@ export const useCharacterSync = () => {
             } else {
               setJobs(prev => prev.map(j => j.id === localId ? {
                 ...j, status: 'FAILED', error: res.message || 'Khởi tạo Job thất bại'
-              } : j));
-            }
-          } else {
-            // Personal API Key flow (same as VideoGenerator)
-            const url = await generateDemoVideo({
-              prompt: seq.text,
-              references: charUrls.length > 0 ? charUrls : undefined,
-              resolution: resolution as '720p' | '1080p',
-              aspectRatio,
-              duration,
-              isUltra: selectedModel.modelKey.includes('ultra') || selectedModel.name.includes('PRO'),
-            });
-
-            if (url) {
-              setJobs(prev => {
-                const job = prev.find(j => j.id === localId);
-                if (job) {
-                  setHistory(h => [{ ...job, status: 'COMPLETED', url, progress: 100 }, ...h]);
-                }
-                return prev.filter(j => j.id !== localId);
-              });
-            } else {
-              setJobs(prev => prev.map(j => j.id === localId ? {
-                ...j, status: 'FAILED', error: 'Engine trả về kết quả rỗng'
               } : j));
             }
           }

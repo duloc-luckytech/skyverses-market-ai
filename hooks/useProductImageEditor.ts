@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { imagesApi, ImageJobRequest } from '../apis/images';
-import { generateDemoImage } from '../services/geminiMedia';
 import { uploadToGCS } from '../services/storage';
 import { useImageModels, MappedImageModel } from './useImageModels';
 import { pollJobOnce } from './useJobPoller';
@@ -205,42 +204,22 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     const currentCost = forceCost !== undefined ? forceCost : selectedModelCost;
     const taskId = Date.now().toString();
 
-    if (usagePreference === 'key') {
-      const activeKey = personalKey;
-      if (!activeKey) { navigate('/settings'); return; }
-      setActiveTasks(prev => [...prev, { id: taskId, prompt: finalPrompt }]);
-      setIsGenerating(true);
-      setStatus('AI đang tính toán...');
-      try {
-        const inputImages = [...references];
-        if (result) inputImages.push(result);
-        const modelId = selectedModel?.raw?.modelKey || selectedModel?.id || 'google_image_gen_4_5';
-        const url = await generateDemoImage({ prompt: finalPrompt, images: inputImages, apiKey: activeKey, model: modelId });
-        if (url) {
-          pushToHistory(url);
-          setHistory(prev => [{ id: Date.now().toString(), url, prompt: finalPrompt, timestamp: new Date().toLocaleTimeString() }, ...prev]);
-          setPrompt('');
-          setStatus('Sẵn sàng');
-        }
-      } catch (error) { setStatus('Lỗi kết nối AI'); } finally { setActiveTasks(prev => prev.filter(t => t.id !== taskId)); setIsGenerating(false); }
-    } else {
-      if (credits < currentCost) { setShowLowCreditAlert(true); return; }
-      setActiveTasks(prev => [...prev, { id: taskId, prompt: finalPrompt }]);
-      setIsGenerating(true);
-      setStatus('Đang khởi tạo job...');
-      try {
-        const payload: ImageJobRequest = {
-          type: "image_to_image",
-          input: { prompt: finalPrompt, images: references.length > 0 ? [...references] : undefined },
-          config: { width: 1024, height: 1024, aspectRatio: '1:1', seed: 0, style: "cinematic" },
-          engine: { provider: selectedEngine as any, model: (selectedModel?.raw?.modelKey || selectedModel?.id || '') as any },
-          enginePayload: { prompt: finalPrompt, privacy: "PRIVATE", projectId: "default" }
-        };
-        const apiRes = await imagesApi.createJob(payload);
-        if (apiRes.success && apiRes.data.jobId) pollJobStatus(apiRes.data.jobId, taskId, currentCost);
-        else { setActiveTasks(prev => prev.filter(t => t.id !== taskId)); setIsGenerating(false); setStatus('Lỗi khởi tạo job'); }
-      } catch (e) { setActiveTasks(prev => prev.filter(t => t.id !== taskId)); setIsGenerating(false); setStatus('Lỗi kết nối API'); }
-    }
+    if (credits < currentCost) { setShowLowCreditAlert(true); return; }
+    setActiveTasks(prev => [...prev, { id: taskId, prompt: finalPrompt }]);
+    setIsGenerating(true);
+    setStatus('Đang khởi tạo job...');
+    try {
+      const payload: ImageJobRequest = {
+        type: "image_to_image",
+        input: { prompt: finalPrompt, images: references.length > 0 ? [...references] : undefined },
+        config: { width: 1024, height: 1024, aspectRatio: '1:1', seed: 0, style: "cinematic" },
+        engine: { provider: selectedEngine as any, model: (selectedModel?.raw?.modelKey || selectedModel?.id || '') as any },
+        enginePayload: { prompt: finalPrompt, privacy: "PRIVATE", projectId: "default" }
+      };
+      const apiRes = await imagesApi.createJob(payload);
+      if (apiRes.success && apiRes.data.jobId) pollJobStatus(apiRes.data.jobId, taskId, currentCost);
+      else { setActiveTasks(prev => prev.filter(t => t.id !== taskId)); setIsGenerating(false); setStatus('Lỗi khởi tạo job'); }
+    } catch (e) { setActiveTasks(prev => prev.filter(t => t.id !== taskId)); setIsGenerating(false); setStatus('Lỗi kết nối API'); }
   };
 
   const handleDrop = async (e: React.DragEvent) => {

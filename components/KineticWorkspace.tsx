@@ -18,9 +18,11 @@ import {
   Check, AlertCircle,
   History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 const TRAJECTORIES = [
   { id: 'orbit', name: 'Orbit', desc: { en: '360 degree orbit.', vi: 'Xoay camera 360 độ.', ko: '360도 궤도.', ja: '360度軌道。' } },
@@ -42,6 +44,7 @@ interface RenderTask {
 const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { lang, t } = useLanguage();
   const { theme } = useTheme();
+  const { isAuthenticated, login, useCredits } = useAuth();
   
   // Assets & Config
   const [prompt, setPrompt] = useState('');
@@ -57,22 +60,11 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   // Multi-Video Task Management
   const [tasks, setTasks] = useState<RenderTask[]>([]);
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
-  const [needsKey, setNeedsKey] = useState(false);
   const [logs, setLogs] = useState<string[]>([t('studio.ready'), t('studio.waiting')]);
 
   const firstInputRef = useRef<HTMLInputElement>(null);
   const lastInputRef = useRef<HTMLInputElement>(null);
   const styleInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const checkKey = async () => {
-      if ((window as any).aistudio) {
-        const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-        setNeedsKey(!hasKey);
-      }
-    };
-    checkKey();
-  }, []);
 
   const addLog = (msg: string) => setLogs(prev => [...prev.slice(-4), `> ${msg}`]);
 
@@ -93,10 +85,11 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   const handleSynthesize = async () => {
     if (!firstFrame) return;
-    
+    if (!isAuthenticated) { login(); return; }
+
     const taskId = Date.now().toString();
     const currentDuration = selectedDuration;
-    
+
     const newTask: RenderTask = {
       id: taskId,
       prompt: prompt || "UNTITLED_RENDER",
@@ -116,50 +109,81 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       const references = [firstFrame];
       if (styleRef) references.push(styleRef);
 
-      const url = await generateDemoVideo({ 
-        prompt: directive, 
-        references,
-        lastFrame: lastFrame || undefined,
-        resolution,
-        aspectRatio,
-        isUltra: true
-      });
-      
-      if (url) {
-        setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'completed', videoUrl: url } : t));
-        addLog(`JOB_${taskId.slice(-4)}_SUCCESS`);
+      const payload: VideoJobRequest = {
+        type: "image_to_video",
+        input: { images: references, prompt: directive },
+        config: { duration: 8, aspectRatio, resolution },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt: directive, privacy: "PRIVATE", translateToEn: true, projectId: "default" }
+      };
+      const apiRes = await videosApi.createJob(payload);
+      if (apiRes.success && apiRes.data.jobId) {
+        const cancelRef = { current: false };
+        pollJobOnce({
+          jobId: apiRes.data.jobId,
+          isCancelledRef: cancelRef,
+          apiType: 'video',
+          onDone: (url) => {
+            setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'completed', videoUrl: url } : t));
+            useCredits(100);
+            addLog(`JOB_${taskId.slice(-4)}_SUCCESS`);
+          },
+          onError: () => {
+            setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'error' } : t));
+            addLog(`JOB_${taskId.slice(-4)}_FAILURE`);
+          }
+        });
+      } else {
+        setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'error' } : t));
+        addLog(`JOB_${taskId.slice(-4)}_FAILURE`);
       }
     } catch (err: any) {
       setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'error' } : t));
       addLog(`JOB_${taskId.slice(-4)}_FAILURE`);
-      if (err?.message?.includes("Requested entity was not found")) setNeedsKey(true);
     }
   };
 
   const handleExtend = async () => {
     const task = tasks.find(t => t.id === activeTaskId);
     if (!task || !task.videoUrl || task.status !== 'completed') return;
+    if (!isAuthenticated) { login(); return; }
 
     addLog(`EXTENDING_JOB_${task.id.slice(-4)}`);
     setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'processing' } : t));
 
     try {
-      const url = await generateDemoVideo({
-        prompt: `Continue smoothly.`,
-        previousVideoUri: task.videoUrl,
-        resolution: '720p',
-        aspectRatio: aspectRatio,
-        isUltra: true
-      });
-      
-      if (url) {
-        setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'completed', videoUrl: url, duration: t.duration + 7.0 } : t));
-        addLog(`EXTENSION_SUCCESS`);
+      const extPrompt = `Continue smoothly.`;
+      const payload: VideoJobRequest = {
+        type: "image_to_video",
+        input: { prompt: extPrompt },
+        config: { duration: 8, aspectRatio, resolution: "720p" },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt: extPrompt, privacy: "PRIVATE", translateToEn: true, projectId: "default" }
+      };
+      const apiRes = await videosApi.createJob(payload);
+      if (apiRes.success && apiRes.data.jobId) {
+        const cancelRef = { current: false };
+        pollJobOnce({
+          jobId: apiRes.data.jobId,
+          isCancelledRef: cancelRef,
+          apiType: 'video',
+          onDone: (url) => {
+            setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'completed', videoUrl: url, duration: t.duration + 7.0 } : t));
+            useCredits(100);
+            addLog(`EXTENSION_SUCCESS`);
+          },
+          onError: () => {
+            setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'completed' } : t));
+            addLog(`EXTENSION_FAILURE`);
+          }
+        });
+      } else {
+        setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'completed' } : t));
+        addLog(`EXTENSION_FAILURE`);
       }
     } catch (err: any) {
       setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'completed' } : t));
       addLog(`EXTENSION_FAILURE`);
-      if (err?.message?.includes("Requested entity was not found")) setNeedsKey(true);
     }
   };
 
@@ -413,31 +437,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
          </div>
       </main>
 
-      {/* AUTH OVERLAY */}
-      {needsKey && (
-        <div className="absolute inset-0 z-[1000] bg-white/95 dark:bg-black/98 backdrop-blur-3xl flex items-center justify-center p-8 text-center transition-colors">
-          <div className="max-w-md space-y-10 animate-in zoom-in duration-500">
-            <div className="w-16 h-16 border-2 border-yellow-500 mx-auto flex items-center justify-center">
-              <Lock className="w-6 h-6 text-yellow-600 dark:text-yellow-500 animate-pulse" />
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-2xl font-black uppercase tracking-tighter italic leading-none">Auth Required</h3>
-              <p className="text-[10px] text-gray-600 dark:text-gray-400 uppercase tracking-widest font-bold">
-                Quyền truy cập Kinetic Core yêu cầu API Key từ tài khoản trả phí GCP.
-              </p>
-              <div className="pt-6 flex flex-col gap-4 items-center">
-                <button 
-                  onClick={() => { if ((window as any).aistudio) (window as any).aistudio.openSelectKey(); setNeedsKey(false); }}
-                  className="py-4 px-12 bg-yellow-500 text-black text-[11px] tracking-widest font-black uppercase shadow-2xl w-full rounded-sm transition-all"
-                >
-                  Xác thực Pipeline
-                </button>
-                <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="text-[9px] text-gray-500 hover:text-yellow-500 transition-colors uppercase font-black tracking-widest">Google Billing <ExternalLink size={10} className="inline ml-1" /></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }

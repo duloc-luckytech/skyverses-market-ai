@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { generateDemoVideo } from '../services/geminiMedia';
 import { pricingApi, PricingModel } from '../apis/pricing';
 import { videosApi, VideoJobRequest, VideoJobResponse } from '../apis/videos';
 
@@ -134,20 +133,7 @@ export const useVideoAnimate = () => {
     setIsHistoryExpanded(true);
 
     try {
-      if (usagePreference === 'key') {
-        const directive = `${mode === 'MOTION' ? 'Motion Transfer' : 'Face Swap'} using ${selectedModel.modelKey}. Prompt: ${prompt}. Ratio: ${selectedRatio}.`;
-        const url = await generateDemoVideo({
-          prompt: directive,
-          references: [sourceImg],
-          resolution: selectedQuality.includes('1080') ? '1080p' : '720p'
-        });
-        if (url) {
-          setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'completed', url: url } : t));
-        } else {
-          throw new Error("Empty result");
-        }
-      } else {
-        const payloadType = mode === 'MOTION' ? "image-to-animation" : "swap-character";
+      const payloadType = mode === 'MOTION' ? "image-to-animation" : "swap-character";
 
         const payload: any = {
           type: payloadType,
@@ -181,7 +167,6 @@ export const useVideoAnimate = () => {
         } else {
           setTasks(prev => prev.map(r => r.id === taskId ? { ...r, status: 'error' } : r));
         }
-      }
     } catch (err: any) {
       console.error("Animate Studio Error:", err);
       setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'error' } : t));

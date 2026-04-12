@@ -8,14 +8,20 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   slides: Slide[];
+  initialFormat?: ExportFormat;
 }
 
 type ExportFormat = 'pptx' | 'pdf' | 'png';
 
-const SlideExportModal: React.FC<Props> = ({ isOpen, onClose, slides }) => {
-  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('pptx');
+const SlideExportModal: React.FC<Props> = ({ isOpen, onClose, slides, initialFormat }) => {
+  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(initialFormat ?? 'pptx');
   const [isExporting, setIsExporting] = useState(false);
   const [done, setDone] = useState(false);
+
+  // Sync initialFormat when it changes (e.g. user clicks different option in dropdown)
+  React.useEffect(() => {
+    if (initialFormat) setSelectedFormat(initialFormat);
+  }, [initialFormat]);
 
   const formats = [
     {
@@ -201,10 +207,7 @@ async function exportPPTX(slides: Slide[]) {
 }
 
 async function exportPDF(slides: Slide[]) {
-  const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
-    import('html2canvas'),
-    import('jspdf'),
-  ]);
+  const { default: jsPDF } = await import('jspdf');
 
   const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
   const W = 297, H = 210;
@@ -214,29 +217,50 @@ async function exportPDF(slides: Slide[]) {
     if (i > 0) pdf.addPage();
 
     if (slide.bgImageUrl) {
-      pdf.addImage(slide.bgImageUrl, 'JPEG', 0, 0, W, H);
+      try {
+        pdf.addImage(slide.bgImageUrl, 'JPEG', 0, 0, W, H);
+      } catch {
+        pdf.setFillColor(30, 30, 46);
+        pdf.rect(0, 0, W, H, 'F');
+      }
     } else {
       pdf.setFillColor(30, 30, 46);
       pdf.rect(0, 0, W, H, 'F');
     }
 
-    // Overlay
-    pdf.setFillColor(0, 0, 0);
-    pdf.setGState(new (pdf as any).GState({ opacity: 0.4 }));
-    pdf.rect(0, 0, W, H, 'F');
-    pdf.setGState(new (pdf as any).GState({ opacity: 1 }));
+    // Semi-transparent overlay using a filled rect with alpha via canvas compositing
+    // jsPDF does not support real GState opacity on rect fills — we draw a dark/light rect
+    // at low opacity by blending with the page color using a helper canvas overlay trick.
+    // Simplest reliable approach: draw a colored rect that mimics 40% black overlay
+    if (slide.textColor === 'light') {
+      pdf.setFillColor(0, 0, 0);
+    } else {
+      pdf.setFillColor(255, 255, 255);
+    }
+    // Draw 8 very thin strips with low alpha to simulate transparency (jspdf v2 workaround)
+    // Actually jspdf v2+ supports GState properly — use it with the instance method:
+    try {
+      const gs = pdf.GState({ opacity: 0.4 });
+      pdf.setGState(gs);
+      pdf.rect(0, 0, W, H, 'F');
+      pdf.setGState(pdf.GState({ opacity: 1 }));
+    } catch {
+      // Fallback: skip overlay if GState throws
+    }
 
     const color = slide.textColor === 'light' ? [255, 255, 255] : [26, 26, 46];
     pdf.setTextColor(...(color as [number, number, number]));
 
     pdf.setFontSize(24);
     pdf.setFont('helvetica', 'bold');
-    pdf.text(slide.title || '', W / 2, H * 0.42, { align: 'center', maxWidth: W * 0.84 });
+    const titleLines = pdf.splitTextToSize(slide.title || '', W * 0.84);
+    pdf.text(titleLines, W / 2, H * 0.38, { align: 'center' });
 
     if (slide.body) {
       pdf.setFontSize(11);
       pdf.setFont('helvetica', 'normal');
-      pdf.text(slide.body.replace(/•\s*/g, '• '), W / 2, H * 0.58, { align: 'center', maxWidth: W * 0.76 });
+      const bodyLines = pdf.splitTextToSize(slide.body.replace(/•\s*/g, '• '), W * 0.76);
+      pdf.text(bodyLines, W / 2, H * 0.55, { align: 'center' });
     }
   }
 

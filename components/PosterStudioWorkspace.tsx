@@ -17,12 +17,13 @@ import {
   Waves, Dumbbell, Award, Megaphone, ChevronDown, Smartphone, ShieldCheck,
   Coins, AlertTriangle
 } from 'lucide-react';
-import { generateDemoImage } from '../services/geminiMedia';
 import { aiTextViaProxy } from '../apis/aiCommon';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Link } from 'react-router-dom';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 const STORAGE_KEY = 'skyverses_poster_vault';
 
@@ -233,30 +234,44 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
       Mô tả chi tiết: ${prompt}. 
       Yêu cầu: Chất lượng ${selectedRes}, bố cục hiện đại, độ tương phản cao, chuẩn quảng cáo thương mại.`;
 
-      const imageUrl = await generateDemoImage(fullPrompt, references);
-      
-      if (imageUrl) {
-        setResult(imageUrl);
-        const newSession: PosterSession = {
-          id: Date.now().toString(),
-          url: imageUrl,
-          prompt: prompt,
-          config: { selectedSize, selectedStyle, selectedModel },
-          timestamp: new Date().toLocaleString()
-        };
-
-        const updatedSessions = [newSession, ...sessions];
-        setSessions(updatedSessions);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedSessions));
-        
-        setStatus('Hoàn tất');
-      } else {
-        setStatus('Lỗi tạo ảnh');
-      }
+      const imageInputs = references && references.length > 0 ? references : undefined;
+      const payload: ImageJobRequest = {
+        type: imageInputs ? "image_to_image" : "text_to_image",
+        input: { prompt: fullPrompt, images: imageInputs },
+        config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+        engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+        enginePayload: { prompt: fullPrompt, privacy: "PRIVATE", projectId: "default" }
+      };
+      const apiRes = await imagesApi.createJob(payload);
+      if (!apiRes.success || !apiRes.data.jobId) throw new Error('Job creation failed');
+      const cancelRef = { current: false };
+      pollJobOnce({
+        jobId: apiRes.data.jobId,
+        isCancelledRef: cancelRef,
+        apiType: 'image',
+        onDone: (imageUrl) => {
+          setResult(imageUrl);
+          const newSession: PosterSession = {
+            id: Date.now().toString(),
+            url: imageUrl,
+            prompt: prompt,
+            config: { selectedSize, selectedStyle, selectedModel },
+            timestamp: new Date().toLocaleString()
+          };
+          const updatedSessions = [newSession, ...sessions];
+          setSessions(updatedSessions);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedSessions));
+          setStatus('Hoàn tất');
+          setIsGenerating(false);
+        },
+        onError: () => {
+          setStatus('Lỗi tạo ảnh');
+          setIsGenerating(false);
+        }
+      });
     } catch (err) {
       console.error(err);
       setStatus('Lỗi hệ thống');
-    } finally {
       setIsGenerating(false);
     }
   };

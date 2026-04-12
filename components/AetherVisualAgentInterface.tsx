@@ -8,8 +8,10 @@ import {
   AlertCircle, ArrowRight, RefreshCw, Sliders,
   LayoutGrid, Eye, Share2, CornerDownRight, History as HistoryIcon
 } from 'lucide-react';
-import { generateDemoImage } from '../services/geminiMedia';
 import { aiTextViaProxy } from '../apis/aiCommon';
+import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { pollJobOnce } from '../hooks/useJobPoller';
 interface AgentLog {
   timestamp: string;
   type: 'THINK' | 'PLAN' | 'CREATE' | 'REVIEW' | 'REFINE' | 'DONE';
@@ -25,6 +27,7 @@ interface VisualConcept {
 }
 
 const AetherVisualAgentInterface = () => {
+  const { isAuthenticated, login, useCredits } = useAuth();
   const [goal, setGoal] = useState('Create a set of cinematic cyberpunk mascots for a luxury coffee brand. Emphasis on metallic textures and neon accents.');
   const [logs, setLogs] = useState<AgentLog[]>([]);
   const [concepts, setConcepts] = useState<VisualConcept[]>([]);
@@ -43,6 +46,7 @@ const AetherVisualAgentInterface = () => {
 
   const startAgent = async () => {
     if (!goal.trim() || isBusy) return;
+    if (!isAuthenticated) { login(); return; }
     setIsBusy(true);
     setConcepts([]);
     setLogs([]);
@@ -73,12 +77,36 @@ const AetherVisualAgentInterface = () => {
       const concept = newConcepts[i];
       addLog('CREATE', `Synthesizing Node_${i+1}...`);
       setConcepts(prev => prev.map(c => c.id === concept.id ? { ...c, status: 'pending' } : c));
-      
+
       try {
-        const res = await generateDemoImage(`[AGENT_AUTH] ${concept.prompt}`);
-        if (res) {
-           setConcepts(prev => prev.map(c => c.id === concept.id ? { ...c, imageUrl: res, status: 'success' } : c));
-           addLog('CREATE', `Node_${i+1} synthesis successful.`);
+        const payload: ImageJobRequest = {
+          type: "text_to_image",
+          input: { prompt: `[AGENT_AUTH] ${concept.prompt}` },
+          config: { width: 1024, height: 1024, aspectRatio: "1:1", seed: 0, style: "cinematic" },
+          engine: { provider: "google" as any, model: "google_image_gen_4_5" as any },
+          enginePayload: { prompt: `[AGENT_AUTH] ${concept.prompt}`, privacy: "PRIVATE", projectId: "default" }
+        };
+        const apiRes = await imagesApi.createJob(payload);
+        if (apiRes.success && apiRes.data.jobId) {
+          await new Promise<void>((resolve) => {
+            const cancelRef = { current: false };
+            pollJobOnce({
+              jobId: apiRes.data.jobId,
+              isCancelledRef: cancelRef,
+              apiType: 'image',
+              onDone: (res) => {
+                setConcepts(prev => prev.map(c => c.id === concept.id ? { ...c, imageUrl: res, status: 'success' } : c));
+                useCredits(50);
+                addLog('CREATE', `Node_${i+1} synthesis successful.`);
+                resolve();
+              },
+              onError: () => {
+                setConcepts(prev => prev.map(c => c.id === concept.id ? { ...c, status: 'error' } : c));
+                addLog('REFINE', `Node_${i+1} failed initial inference. Queueing for retry.`);
+                resolve();
+              }
+            });
+          });
         }
       } catch (err) {
         addLog('REFINE', `Node_${i+1} failed initial inference. Queueing for retry.`);

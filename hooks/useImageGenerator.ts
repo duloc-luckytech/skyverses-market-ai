@@ -1,6 +1,5 @@
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { generateDemoImage } from '../services/geminiMedia';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { GCSAssetMetadata, uploadToGCS } from '../services/storage';
@@ -369,22 +368,8 @@ export const useImageGenerator = () => {
             setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
           }
         } else {
-          addLogToTask(task.id, `[DIRECT_INFERENCE] Bypassing internal pool. Using personal SDK Uplink.`);
-          const url = await generateDemoImage({
-            prompt: task.prompt,
-            images: task.references.map(r => r.url),
-            model: selectedModel.raw.modelKey,
-            aspectRatio: task.aspectRatio || selectedRatio,
-            quality: task.resolution || selectedRes,
-            apiKey: personalKey
-          });
-          if (url) {
-            addLogToTask(task.id, `[SUCCESS] Direct synthesis complete. Asset loaded.`);
-            setResults(prev => prev.map(r => r.id === task.id ? { ...r, url, status: 'done' } : r));
-          } else {
-            addLogToTask(task.id, `[ERROR] Personal SDK node returned zero-byte manifest.`);
-            setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
-          }
+          addLogToTask(task.id, `[ERROR] No valid resource preference selected.`);
+          setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error' } : r));
         }
       }));
     } finally {

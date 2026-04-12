@@ -1,7 +1,6 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { generateDemoAudio } from '../services/geminiMedia';
 import { pricingApi, PricingModel } from '../apis/pricing';
 import { videosApi, VideoJobRequest, VideoJobResponse } from '../apis/videos';
 
@@ -152,7 +151,7 @@ export const useMusicStudio = () => {
     if (isGenerating) return;
     if (!isAuthenticated) { login(); return; }
     
-    if (usagePreference === 'credits' && credits < currentUnitCost) {
+    if (credits < currentUnitCost) {
       alert("Hạn ngạch không đủ. Vui lòng nạp thêm Credits.");
       return;
     }
@@ -172,41 +171,34 @@ export const useMusicStudio = () => {
     setResults(prev => [newSong, ...prev]);
 
     try {
-      if (usagePreference === 'credits') {
-        const payload: any = {
-          type: "text-to-music",
-          input: { images: [] },
-          config: {
-            duration: 8,
-            aspectRatio: "1:1",
-            resolution: "720p"
-          },
-          engine: {
-            provider: selectedEngine,
-            model: selectedModelObj?.modelKey || "suno_v3"
-          },
-          enginePayload: {
-            name: name,
-            prompt: lyr || 'Một bản nhạc hay',
-            styles: desc,
-            privacy: "PRIVATE",
-            translateToEn: true,
-            projectId: "default"
-          }
-        };
+      const payload: any = {
+        type: "text-to-music",
+        input: { images: [] },
+        config: {
+          duration: 8,
+          aspectRatio: "1:1",
+          resolution: "720p"
+        },
+        engine: {
+          provider: selectedEngine,
+          model: selectedModelObj?.modelKey || "suno_v3"
+        },
+        enginePayload: {
+          name: name,
+          prompt: lyr || 'Một bản nhạc hay',
+          styles: desc,
+          privacy: "PRIVATE",
+          translateToEn: true,
+          projectId: "default"
+        }
+      };
 
-        const res = await videosApi.createJob(payload);
-        if (res.success && res.data.jobId) {
-          useCredits(currentUnitCost);
-          pollMusicJobStatus(res.data.jobId, resultId, currentUnitCost);
-        } else {
-          setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
-        }
+      const res = await videosApi.createJob(payload);
+      if (res.success && res.data.jobId) {
+        useCredits(currentUnitCost);
+        pollMusicJobStatus(res.data.jobId, resultId, currentUnitCost);
       } else {
-        const buffer = await generateDemoAudio(`Style: ${desc}. Name: ${name}`, 'Kore'); 
-        if (buffer) {
-          setResults(prev => prev.map(r => r.id === resultId ? { ...r, buffer, status: 'done' } : r));
-        }
+        setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
       }
     } catch (error) {
       console.error("Music Generation Error:", error);

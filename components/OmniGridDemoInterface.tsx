@@ -8,7 +8,9 @@ import {
   Maximize2, Trash2, Sliders, Palette,
   MousePointer2, Share2, ZoomIn, RefreshCw
 } from 'lucide-react';
-import { generateDemoImage } from '../services/geminiMedia';
+import { useAuth } from '../context/AuthContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 interface GridItem {
   id: string;
@@ -18,12 +20,12 @@ interface GridItem {
 }
 
 const OmniGridDemoInterface = () => {
+  const { isAuthenticated, login, credits, useCredits } = useAuth();
   const [prompt, setPrompt] = useState('');
   const [batchSize, setBatchSize] = useState(4);
   const [items, setItems] = useState<GridItem[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeItem, setActiveItem] = useState<GridItem | null>(null);
-  const [credits, setCredits] = useState(3);
 
   const [variation, setVariation] = useState(30);
   const [profile, setProfile] = useState('Marketing_Visuals');

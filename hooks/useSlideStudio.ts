@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { imagesApi } from '../apis/images';
@@ -59,13 +59,42 @@ export const LAYOUT_OPTIONS: { id: SlideLayout; label: string }[] = [
 
 const STORAGE_KEY = 'skyverses_AI-SLIDE-CREATOR_vault';
 
+interface VaultData {
+  slides: Slide[];
+  deckTopic: string;
+  deckStyle: string;
+  deckLanguage: Language;
+  slideCount: number;
+}
+
+function loadVault(): VaultData | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as VaultData;
+  } catch {
+    return null;
+  }
+}
+
+function saveVault(data: VaultData): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch {
+    // localStorage might be full or disabled — fail silently
+  }
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const genId = () => Math.random().toString(36).slice(2, 10);
 
-function buildBgPrompt(slide: Slide, stylePreset: StylePreset): string {
+function buildBgPrompt(slide: Slide, stylePreset: StylePreset, refImages?: string[]): string {
   const prefix = stylePreset.promptPrefix;
-  return `${prefix}for a presentation slide titled "${slide.title}", 16:9 widescreen format, no text, no UI elements, no watermarks, cinematic depth, premium quality, high resolution`;
+  const refHint = refImages && refImages.length > 0
+    ? `, visual style inspired by provided reference images,`
+    : '';
+  return `${prefix}for a presentation slide titled "${slide.title}"${refHint} 16:9 widescreen format, no text, no UI elements, no watermarks, cinematic depth, premium quality, high resolution`;
 }
 
 function createBlankSlide(index: number): Slide {
@@ -91,16 +120,19 @@ export const useSlideStudio = () => {
   const { showToast } = useToast();
   const isCancelledRef = useRef(false);
 
+  // ── Load from vault (once) ────────────────────────────────────────────────
+  const [_vaultLoaded] = useState<VaultData | null>(() => loadVault());
+
   // ── Deck config ──────────────────────────────────────────────────────────────
-  const [deckTopic, setDeckTopic] = useState('');
-  const [deckStyle, setDeckStyle] = useState<string>('corporate');
-  const [deckLanguage, setDeckLanguage] = useState<Language>('vi');
-  const [slideCount, setSlideCount] = useState<number>(6);
+  const [deckTopic, setDeckTopic] = useState(_vaultLoaded?.deckTopic ?? '');
+  const [deckStyle, setDeckStyle] = useState<string>(_vaultLoaded?.deckStyle ?? 'corporate');
+  const [deckLanguage, setDeckLanguage] = useState<Language>(_vaultLoaded?.deckLanguage ?? 'vi');
+  const [slideCount, setSlideCount] = useState<number>(_vaultLoaded?.slideCount ?? 6);
   const [refImages, setRefImages] = useState<string[]>([]);
 
   // ── Slides ───────────────────────────────────────────────────────────────────
-  const [slides, setSlides] = useState<Slide[]>([]);
-  const [activeSlideId, setActiveSlideId] = useState<string>('');
+  const [slides, setSlides] = useState<Slide[]>(_vaultLoaded?.slides ?? []);
+  const [activeSlideId, setActiveSlideId] = useState<string>(_vaultLoaded?.slides?.[0]?.id ?? '');
 
   // ── UI state ─────────────────────────────────────────────────────────────────
   const [isGeneratingDeck, setIsGeneratingDeck] = useState(false);
@@ -114,6 +146,17 @@ export const useSlideStudio = () => {
 
   // ── Active slide ─────────────────────────────────────────────────────────────
   const activeSlide = slides.find(s => s.id === activeSlideId) ?? slides[0] ?? null;
+
+  // ── Legacy single-vault persistence (kept for backward-compat migration) ────
+  // Note: primary persistence is now handled by useSlideProjectManager via
+  // AISlideCreatorWorkspace. This effect only runs to keep the LEGACY_KEY in sync
+  // so existing migrateLegacy() calls can find old data if needed. After the
+  // project manager migrates the data on first load, this effect is effectively
+  // a no-op because migrateLegacy() removes LEGACY_KEY on first read.
+  // We intentionally leave it as a low-cost fallback write.
+  useEffect(() => {
+    saveVault({ slides, deckTopic, deckStyle, deckLanguage: deckLanguage as Language, slideCount });
+  }, [slides, deckTopic, deckStyle, deckLanguage, slideCount]);
 
   // ─── Slide updater ──────────────────────────────────────────────────────────
 
@@ -191,7 +234,7 @@ export const useSlideStudio = () => {
     updateSlide(slideId, { bgStatus: 'generating', bgJobId: null });
 
     try {
-      const prompt = buildBgPrompt(slide, stylePreset);
+      const prompt = buildBgPrompt(slide, stylePreset, refImages);
       const res = await imagesApi.createJob({
         type: 'text_to_image',
         input: { prompt },
@@ -234,13 +277,16 @@ export const useSlideStudio = () => {
     try {
       // 1. Ask AI to generate outline
       const langLabel = { en: 'English', vi: 'Vietnamese', ko: 'Korean', ja: 'Japanese' }[deckLanguage];
+      const refHint = refImages.length > 0
+        ? `\n- Reference images provided: ${refImages.length} image(s) — incorporate their visual theme into slide descriptions`
+        : '';
       const outlinePrompt = `You are a professional presentation designer.
 Generate a slide deck outline for the topic: "${deckTopic}".
 Requirements:
 - Exactly ${slideCount} slides
 - Language: ${langLabel}
 - Style: ${deckStyle}
-- Each slide needs a concise title (max 8 words) and 2-4 bullet points as body text
+- Each slide needs a concise title (max 8 words) and 2-4 bullet points as body text${refHint}
 - Return ONLY a JSON array, no markdown, no explanation
 Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ...]`;
 
@@ -279,22 +325,22 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
       // 3. Gen BG images for each slide (sequential to avoid rate limits)
       for (const slide of newSlides) {
         if (isCancelledRef.current) break;
-        await genSlideBgDirect(slide, deckStyle);
+        await genSlideBgDirect(slide, deckStyle, refImages);
       }
     } catch (err) {
       showToast('Có lỗi khi tạo deck, thử lại nhé', 'error');
     } finally {
       setIsGeneratingDeck(false);
     }
-  }, [deckTopic, deckLanguage, deckStyle, slideCount, showToast]);
+  }, [deckTopic, deckLanguage, deckStyle, slideCount, refImages, showToast]);
 
   // Internal: gen BG for a slide object directly (used in generateDeck loop)
-  const genSlideBgDirect = async (slide: Slide, styleId: string) => {
+  const genSlideBgDirect = async (slide: Slide, styleId: string, refImgs?: string[]) => {
     const stylePreset = SLIDE_STYLES.find(s => s.id === styleId) ?? SLIDE_STYLES[0];
     setSlides(prev => prev.map(s => s.id === slide.id ? { ...s, bgStatus: 'generating' } : s));
 
     try {
-      const prompt = buildBgPrompt(slide, stylePreset);
+      const prompt = buildBgPrompt(slide, stylePreset, refImgs);
       const res = await imagesApi.createJob({
         type: 'text_to_image',
         input: { prompt },

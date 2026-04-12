@@ -8,8 +8,10 @@ import {
   Layers, Terminal, Trash2, Settings2, History,
   MonitorPlay, AlertTriangle, Sparkles, RefreshCw, Search, Upload, ChevronDown, HelpCircle, CheckCircle2
 } from 'lucide-react';
-import { generateDemoVideo } from '../services/geminiMedia';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { videosApi, VideoJobRequest } from '../apis/videos';
+import { pollJobOnce } from '../hooks/useJobPoller';
 
 // Move components outside and explicitly type with React.FC to resolve "children is missing" errors in JSX usage
 // Added React.FC to ensure children are correctly handled by TypeScript
@@ -32,6 +34,7 @@ const Card: React.FC<{ children: React.ReactNode, className?: string }> = ({ chi
 
 const AudioToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { t } = useLanguage();
+  const { isAuthenticated, login, useCredits } = useAuth();
   
   // State form
   const [audioUrl, setAudioUrl] = useState('');
@@ -56,14 +59,36 @@ const AudioToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
   const handleGenerate = async () => {
     if (!audioUrl.trim() && !instructions.trim()) return;
+    if (!isAuthenticated) { login(); return; }
     setIsGenerating(true);
     try {
-      const prompt = `Audio to Video. Source: ${audioUrl}. Style: ${motionStyle}. Complexity: ${intensity}%. Instructions: ${instructions}. Music Sync: ${music}.`;
-      const video = await generateDemoVideo({ prompt, isUltra: true });
-      if (video) setResultVideo(video);
+      const promptText = `Audio to Video. Source: ${audioUrl}. Style: ${motionStyle}. Complexity: ${intensity}%. Instructions: ${instructions}. Music Sync: ${music}.`;
+      const payload: VideoJobRequest = {
+        type: "text_to_video",
+        input: { prompt: promptText },
+        config: { duration: 8, aspectRatio: "16:9", resolution: "720p" },
+        engine: { provider: "google" as any, model: "veo_3_fast" as any },
+        enginePayload: { prompt: promptText, privacy: "PRIVATE", translateToEn: true, projectId: "default" }
+      };
+      const apiRes = await videosApi.createJob(payload);
+      if (apiRes.success && apiRes.data.jobId) {
+        const cancelRef = { current: false };
+        pollJobOnce({
+          jobId: apiRes.data.jobId,
+          isCancelledRef: cancelRef,
+          apiType: 'video',
+          onDone: (video) => {
+            setResultVideo(video);
+            useCredits(100);
+            setIsGenerating(false);
+          },
+          onError: () => { setIsGenerating(false); }
+        });
+      } else {
+        setIsGenerating(false);
+      }
     } catch (error) {
       console.error(error);
-    } finally {
       setIsGenerating(false);
     }
   };

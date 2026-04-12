@@ -13,7 +13,6 @@ import {
   CreditCard, PlusCircle, Edit3, ChevronLeft,
   Dices
 } from 'lucide-react';
-import { generateDemoImage } from '../services/geminiMedia';
 import { aiTextViaProxy } from '../apis/aiCommon';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -259,7 +258,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
     }
   };
 
-  const performInference = async (pref: 'credits' | 'key') => {
+  const performInference = async () => {
     const cost = selectedModel.cost * quantity;
     const cleanPrompt = prompt.trim();
     let finalPrompt = `Category: ${category}. Style: ${style}. Angle: ${angle}. Pose: ${pose}. Ratio: ${ratio}. ${cleanPrompt}`;
@@ -283,23 +282,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
     if (garmentImg) inputImages.push(garmentImg);
     inputImages.push(...referenceImages);
 
-    if (pref === 'key') {
-      const activeKey = personalKey;
-      if (!activeKey) { navigate('/settings'); return; }
-      setIsGenerating(true);
-      setStatus('Đang kiến tạo...');
-      try {
-        const imageUrl = await generateDemoImage({ prompt: finalPrompt, images: inputImages, model: selectedModel.id, aspectRatio: ratio, quality: res, apiKey: activeKey });
-        if (imageUrl) {
-          setResults(prev => prev.map(r => r.id === resultId ? { ...r, url: imageUrl, status: 'done' } : r));
-          setStatus('Hoàn tất');
-        }
-      } catch (err) {
-        setResults(prev => prev.map(r => r.id === resultId ? { ...r, status: 'error' } : r));
-        setStatus('Lỗi xử lý');
-      } finally { setIsGenerating(false); }
-    } else {
-      if (credits < cost) { setShowLowCreditAlert(true); return; }
+    if (credits < cost) { setShowLowCreditAlert(true); return; }
       setIsGenerating(true);
       setStatus('Đang khởi tạo...');
       try {
@@ -322,7 +305,6 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
         setResults(prev => prev.filter(r => r.id !== resultId));
         setStatus('Lỗi kết nối');
       } finally { setIsGenerating(false); }
-    }
   };
 
   const handleGenerate = async () => {
@@ -332,7 +314,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       setShowResourceModal(true);
       return;
     }
-    performInference(usagePreference);
+    performInference();
   };
 
   const openEditor = (url: string) => {

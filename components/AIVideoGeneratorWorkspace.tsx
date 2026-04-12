@@ -2,7 +2,6 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Download, Share2, AlertTriangle, Terminal, Zap } from 'lucide-react';
-import { generateDemoVideo } from '../services/geminiMedia';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
@@ -442,16 +441,8 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error', errorMessage: res.message || 'API handshake rejected' } : r));
             }
           } else {
-            addLogToTask(task.id, `[DIRECT_INFERENCE] Bypassing internal pool. Using personal SDK Uplink.`);
-            const url = await generateDemoVideo({ prompt: task.prompt, isUltra: selectedModelObj.modelKey.includes('ultra') || selectedModelObj.name.includes('PRO'), duration, resolution: resolution as '720p' | '1080p', aspectRatio: task.ratio as any, references: task.startUrl ? [task.startUrl] : undefined, lastFrame: task.endUrl || undefined });
-            if (url) {
-              addLogToTask(task.id, `[SUCCESS] Direct synthesis complete. Asset loaded.`);
-              setResults(prev => prev.map(r => r.id === task.id ? { ...r, url, status: 'done' } : r));
-              if (autoDownloadRef.current) triggerDownload(url, `video_${task.id}.mp4`);
-            } else {
-              addLogToTask(task.id, `[ERROR] Personal SDK node returned zero-byte manifest.`);
-              setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error', errorMessage: 'Personal SDK returned empty result' } : r));
-            }
+            addLogToTask(task.id, `[ERROR] No valid resource preference selected.`);
+            setResults(prev => prev.map(r => r.id === task.id ? { ...r, status: 'error', errorMessage: 'No resource preference' } : r));
           }
         } catch (e) {
           addLogToTask(task.id, `[CRITICAL_FAIL] Logic gate error: ${String(e)}`);
