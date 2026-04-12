@@ -551,19 +551,21 @@ const MarketsPage: React.FC = () => {
 
   // SYNC filters → URL (non-search filters sync immediately)
   useEffect(() => {
-    const params = new URLSearchParams();
-    // q is synced separately with debounce — preserve the current value here
-    const currentQ = searchParams.get('q');
-    if (currentQ) params.set('q', currentQ);
-    if (activeCategory !== 'ALL') params.set('category', activeCategory);
-    if (sortBy !== 'newest') params.set('sort', sortBy);
-    if (showFreeOnly) params.set('free', 'true');
-    if (showFeaturedOnly) params.set('featured', 'true');
-    if (activeComplexity) params.set('complexity', activeComplexity);
-    if (activeTags.length > 0) params.set('tags', activeTags.join(','));
-    if (activePlatform !== 'ALL') params.set('platform', activePlatform);
-    if (viewMode !== 'grid') params.set('view', viewMode);
-    setSearchParams(params, { replace: true });
+    setSearchParams(prev => {
+      const params = new URLSearchParams();
+      // q is synced separately with debounce — preserve the current value here
+      const currentQ = prev.get('q');
+      if (currentQ) params.set('q', currentQ);
+      if (activeCategory !== 'ALL') params.set('category', activeCategory);
+      if (sortBy !== 'newest') params.set('sort', sortBy);
+      if (showFreeOnly) params.set('free', 'true');
+      if (showFeaturedOnly) params.set('featured', 'true');
+      if (activeComplexity) params.set('complexity', activeComplexity);
+      if (activeTags.length > 0) params.set('tags', activeTags.join(','));
+      if (activePlatform !== 'ALL') params.set('platform', activePlatform);
+      if (viewMode !== 'grid') params.set('view', viewMode);
+      return params;
+    }, { replace: true });
   }, [activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, activePlatform, viewMode]);
 
   // SYNC search query → URL with 400ms debounce to avoid jitter on every keystroke
