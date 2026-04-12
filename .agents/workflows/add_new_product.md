@@ -1131,6 +1131,23 @@ FAQSection.tsx           ← Accordion 5-6 câu hỏi (L3)
 FinalCTA.tsx             ← Animated CTA + trust micro-copy (L1)
 ```
 
+### Thứ tự sections — lý do cố định (KHÔNG được đảo):
+
+```
+1. HeroSection       — First impression: visual impact + value prop rõ ngay
+2. LiveStatsBar      — Social proof sớm: số liệu tạo trust ngay sau hero
+3. WorkflowSection   — Education: giải thích cách dùng trước khi thuyết phục
+4. ShowcaseSection   — FOMO trigger: thấy người khác dùng → muốn thử
+5. FeaturesSection   — Benefits deep-dive: sau khi đã quan tâm mới đọc features
+6. UseCasesSection   — Relevance: "sản phẩm này dành cho mình không?"
+7. FAQSection        — Objection handling: giải quyết lo ngại trước khi CTA cuối
+8. FinalCTA          — Conversion push: CTA lúc user đã qua đủ trust signals
+[Sticky mobile CTA]  — Persistent: luôn accessible khi scroll bất kỳ đâu
+```
+
+> **Nguyên tắc:** Awareness → Interest → Desire → Action (AIDA).
+> Đừng đặt FeaturesSection trước WorkflowSection — user chưa hiểu cách dùng, đọc features không đọng.
+
 ### Imports chuẩn cho mọi section:
 
 ```tsx
