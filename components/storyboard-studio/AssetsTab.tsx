@@ -744,7 +744,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex-grow flex flex-col p-5 lg:p-10 overflow-y-auto no-scrollbar bg-[#fafafa] dark:bg-[#050506] transition-colors duration-500"
+      className="flex-1 min-h-0 flex flex-col p-5 lg:p-10 overflow-y-auto no-scrollbar bg-[#fafafa] dark:bg-[#050506] transition-colors duration-500"
     >
       <div className="max-w-6xl mx-auto w-full space-y-8 pb-32 lg:pb-10">
 

@@ -418,7 +418,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-      className="flex-grow flex flex-col bg-[#fafafa] dark:bg-[#050506] transition-colors duration-500 relative"
+      className="flex-1 min-h-0 flex flex-col bg-[#fafafa] dark:bg-[#050506] transition-colors duration-500 relative"
     >
       {/* ── Scrollable content area ──────────────────────────────── */}
       <div className="flex-1 overflow-y-auto no-scrollbar p-5 lg:p-8 pb-24">

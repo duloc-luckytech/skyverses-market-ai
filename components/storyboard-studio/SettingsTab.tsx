@@ -256,7 +256,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex-grow flex flex-col overflow-y-auto no-scrollbar bg-slate-50 dark:bg-[#050506] transition-colors duration-300"
+      className="flex-1 min-h-0 flex flex-col overflow-y-auto no-scrollbar bg-slate-50 dark:bg-[#050506] transition-colors duration-300"
     >
       <div className="max-w-5xl mx-auto w-full px-5 lg:px-10 py-8 space-y-4 pb-40">
 
