@@ -9,13 +9,22 @@ import {
   X, Layers, Box, Cpu, SlidersHorizontal,
   Check, Grid3X3, List, ArrowUp, Clock, Tag, ChevronUp, ChevronDown,
   Eye, GitCompare, Command,
-  Globe, Smartphone, Tablet, BadgeCheck, Film
+  Globe, Smartphone, Tablet, BadgeCheck, Film, Lightbulb
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { marketApi } from '../apis/market';
 import { Solution, Language } from '../types';
+
+// ═══════ TYPES ═══════
+interface RecentlyViewedItem {
+  id: string;
+  slug: string;
+  name: { en: string; vi: string; ko: string; ja: string };
+  imageUrl: string;
+  category: { en: string; vi: string; ko: string; ja: string };
+}
 
 // ═══════ ANIMATED COUNTER HOOK ═══════
 const useAnimatedCounter = (end: number, duration = 800) => {
@@ -58,37 +67,73 @@ const SORT_OPTIONS = [
   { key: 'popular', label: 'Phổ biến nhất' },
   { key: 'newest', label: 'Mới nhất' },
   { key: 'name', label: 'Tên A-Z' },
+  { key: 'relevant', label: 'Liên quan nhất' },
 ];
 const ITEMS_PER_PAGE = 12;
 const RECENTLY_VIEWED_KEY = 'skyverses_recently_viewed';
-const MAX_RECENT = 5;
+const MAX_RECENT = 8;
+const TRENDING_LIMIT = 12;
+const CTA_FEATURED_SLUG = 'ai-video-generator';
+const SCROLL_POS_KEY = 'skyverses_markets_scroll';
 
 // ═══════ HELPERS ═══════
+
+// Module-level Map cache for getStats so it's computed once per id, not every render
+const statsCache = new Map<string, { users: number; likes: number; rating: string }>();
 const getStats = (id: string) => {
+  if (statsCache.has(id)) return statsCache.get(id)!;
   const h = id.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  return { users: (h % 900 + 100), likes: (h % 400 + 30), rating: (3.5 + (h % 15) / 10).toFixed(1) };
+  const result = { users: (h % 900 + 100), likes: (h % 400 + 30), rating: (3.5 + (h % 15) / 10).toFixed(1) };
+  statsCache.set(id, result);
+  return result;
+};
+
+// Debounce helper for localStorage writes
+let favDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+const saveFavoritesDebounced = (ids: string[]) => {
+  if (favDebounceTimer) clearTimeout(favDebounceTimer);
+  favDebounceTimer = setTimeout(() => {
+    localStorage.setItem('skyverses_favorites', JSON.stringify(ids));
+  }, 300);
 };
 
 const saveRecentlyViewed = (sol: Solution) => {
   try {
-    const stored = JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY) || '[]');
-    const filtered = stored.filter((s: any) => s.id !== sol.id);
-    filtered.unshift({ id: sol.id, slug: sol.slug, name: sol.name, imageUrl: sol.imageUrl, category: sol.category });
+    const stored: RecentlyViewedItem[] = JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY) || '[]');
+    const filtered = stored.filter((s) => s.id !== sol.id);
+    filtered.unshift({ id: sol.id, slug: sol.slug, name: sol.name as RecentlyViewedItem['name'], imageUrl: sol.imageUrl, category: sol.category as RecentlyViewedItem['category'] });
     localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(filtered.slice(0, MAX_RECENT)));
   } catch {}
 };
 
-const getRecentlyViewed = (): any[] => {
+const getRecentlyViewed = (): RecentlyViewedItem[] => {
   try { return JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY) || '[]'); } catch { return []; }
 };
 
+// Relevance score for search query
+const getRelevanceScore = (sol: Solution, query: string, lang: Language): number => {
+  if (!query) return 0;
+  const q = query.toLowerCase();
+  let score = 0;
+  const name = sol.name[lang]?.toLowerCase() || '';
+  const desc = sol.description[lang]?.toLowerCase() || '';
+  const tags = sol.tags?.map(t => t.toLowerCase()) || [];
+  if (name.startsWith(q)) score += 10;
+  else if (name.includes(q)) score += 6;
+  if (desc.includes(q)) score += 3;
+  if (tags.some(t => t.includes(q))) score += 4;
+  if (sol.featured) score += 1;
+  return score;
+};
+
 // ═══════ TRENDING SLIDER ═══════
-const TrendingSlider: React.FC<{ items: Solution[]; lang: Language; onNavigate: (slug: string) => void }> = ({ items, lang, onNavigate }) => {
+const TrendingSlider: React.FC<{ items: Solution[]; lang: Language; onNavigate: (slug: string) => void }> = React.memo(({ items, lang, onNavigate }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scroll = (dir: 'left' | 'right') => {
     if (scrollRef.current) scrollRef.current.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' });
   };
-  if (items.length === 0) return null;
+  const limitedItems = useMemo(() => items.slice(0, TRENDING_LIMIT), [items]);
+  if (limitedItems.length === 0) return null;
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-3">
@@ -102,7 +147,7 @@ const TrendingSlider: React.FC<{ items: Solution[]; lang: Language; onNavigate: 
         </div>
       </div>
       <div ref={scrollRef} className="flex gap-2.5 overflow-x-auto no-scrollbar snap-x pb-1">
-        {items.map((sol, i) => (
+        {limitedItems.map((sol, i) => (
           <div key={sol.id} onClick={() => onNavigate(sol.slug)}
             className="snap-start shrink-0 w-[200px] bg-white dark:bg-[#111114] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
             <div className="relative h-[100px] overflow-hidden">
@@ -118,11 +163,11 @@ const TrendingSlider: React.FC<{ items: Solution[]; lang: Language; onNavigate: 
       </div>
     </div>
   );
-};
+});
 
 // ═══════ RECENTLY VIEWED ═══════
-const RecentlyViewed: React.FC<{ lang: Language; onNavigate: (slug: string) => void }> = ({ lang, onNavigate }) => {
-  const [items, setItems] = useState<any[]>([]);
+const RecentlyViewed: React.FC<{ lang: Language; onNavigate: (slug: string) => void }> = React.memo(({ lang, onNavigate }) => {
+  const [items, setItems] = useState<RecentlyViewedItem[]>([]);
   useEffect(() => { setItems(getRecentlyViewed()); }, []);
   if (items.length === 0) return null;
   return (
@@ -132,7 +177,7 @@ const RecentlyViewed: React.FC<{ lang: Language; onNavigate: (slug: string) => v
         <h3 className="text-[13px] font-bold text-slate-600 dark:text-gray-300">Xem gần đây</h3>
       </div>
       <div className="flex gap-2 overflow-x-auto no-scrollbar">
-        {items.map((item: any) => (
+        {items.map((item) => (
           <div key={item.id} onClick={() => onNavigate(item.slug)}
             className="shrink-0 flex items-center gap-2.5 px-3 py-2 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl cursor-pointer hover:border-brand-blue/20 transition-all group">
             <img src={item.imageUrl} className="w-8 h-8 rounded-lg object-cover" alt="" />
@@ -145,10 +190,63 @@ const RecentlyViewed: React.FC<{ lang: Language; onNavigate: (slug: string) => v
       </div>
     </div>
   );
-};
+});
+
+// ═══════ SUGGESTED FOR YOU ═══════
+const SuggestedSection: React.FC<{ solutions: Solution[]; lang: Language; onNavigate: (slug: string) => void; onPreview: (e: React.MouseEvent, sol: Solution) => void; favorites: string[]; onToggleFav: (e: React.MouseEvent, id: string) => void }> = React.memo(({ solutions, lang, onNavigate, onPreview, favorites, onToggleFav }) => {
+  const suggested = useMemo(() => {
+    const recent = getRecentlyViewed();
+    if (recent.length === 0) return [];
+    // Count categories from recently viewed
+    const catCount: Record<string, number> = {};
+    recent.forEach(r => {
+      const cat = r.category?.[lang] || r.category?.en || '';
+      if (cat) catCount[cat] = (catCount[cat] || 0) + 1;
+    });
+    const topCat = Object.entries(catCount).sort((a, b) => b[1] - a[1])[0]?.[0];
+    if (!topCat) return [];
+    const recentIds = new Set(recent.map(r => r.id));
+    return solutions
+      .filter(s => !recentIds.has(s.id) && (s.category[lang]?.includes(topCat) || s.category.en?.includes(topCat)))
+      .slice(0, 4);
+  }, [solutions, lang]);
+
+  if (suggested.length === 0) return null;
+  return (
+    <div className="mb-6">
+      <div className="flex items-center gap-2 mb-3">
+        <Lightbulb size={14} className="text-amber-500" />
+        <h3 className="text-[13px] font-bold text-slate-600 dark:text-gray-300">Gợi ý cho bạn</h3>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        {suggested.map(sol => {
+          const stats = getStats(sol.id);
+          return (
+            <div key={sol.id} onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}
+              className="bg-white dark:bg-[#111114] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
+              <div className="relative h-[80px] overflow-hidden">
+                <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                <button onClick={(e) => { e.stopPropagation(); onToggleFav(e, sol.id); }}
+                  className="absolute top-1.5 right-1.5 p-1 rounded-lg bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                  {favorites.includes(sol.id) ? <Bookmark size={10} className="text-brand-blue" fill="currentColor" /> : <BookmarkPlus size={10} className="text-white/70" />}
+                </button>
+              </div>
+              <div className="p-2">
+                <p className="text-[11px] font-bold text-slate-700 dark:text-white truncate group-hover:text-brand-blue transition-colors">{sol.name[lang]}</p>
+                <div className="flex items-center gap-1.5 mt-0.5 text-[9px] text-slate-400">
+                  <Star size={8} fill="currentColor" className="text-amber-400" />{stats.rating}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+});
 
 // ═══════ CTA BANNER ═══════
-const CTABanner: React.FC<{ onNavigate: (slug: string) => void }> = ({ onNavigate }) => (
+const CTABanner: React.FC<{ onNavigate: (slug: string) => void }> = React.memo(({ onNavigate }) => (
   <div className="col-span-full my-2">
     <div className="relative bg-gradient-to-r from-brand-blue/[0.06] to-purple-500/[0.06] border border-brand-blue/10 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 overflow-hidden">
       <div className="absolute -right-8 -top-8 w-32 h-32 bg-brand-blue/[0.08] rounded-full blur-2xl" />
@@ -156,13 +254,13 @@ const CTABanner: React.FC<{ onNavigate: (slug: string) => void }> = ({ onNavigat
         <h4 className="text-[15px] font-bold text-slate-700 dark:text-white">Chưa biết chọn tool nào?</h4>
         <p className="text-[12px] text-slate-400 dark:text-gray-500 mt-0.5">Thử AI Video Generator — công cụ phổ biến nhất của Skyverses</p>
       </div>
-      <button onClick={() => onNavigate('ai-video-generator')}
+      <button onClick={() => onNavigate(CTA_FEATURED_SLUG)}
         className="relative z-10 shrink-0 flex items-center gap-2 px-5 py-2.5 bg-brand-blue text-white text-[13px] font-semibold rounded-xl hover:brightness-110 active:scale-[0.98] transition-all">
         Thử ngay <ArrowRight size={14} />
       </button>
     </div>
   </div>
-);
+));
 
 // ═══════ PRODUCT CARD (GRID) ═══════
 const ProductCardGrid: React.FC<{
@@ -170,8 +268,9 @@ const ProductCardGrid: React.FC<{
   isFav: boolean; onToggleFav: (e: React.MouseEvent) => void;
   onPreview?: (e: React.MouseEvent) => void;
   isCompare?: boolean; onToggleCompare?: (e: React.MouseEvent) => void;
-}> = ({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
+}> = React.memo(({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
   const stats = getStats(sol.id);
+  const models = sol.models?.slice(0, 3) || [];
   return (
     <motion.div whileHover={{ y: -2 }}
       className={`bg-white dark:bg-[#111114] border rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition-all group flex flex-col ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
@@ -196,6 +295,14 @@ const ProductCardGrid: React.FC<{
           <h3 className="text-[14px] font-bold text-slate-800 dark:text-white group-hover:text-brand-blue transition-colors truncate">{sol.name[lang]}</h3>
           <p className="text-[11px] text-slate-400 dark:text-gray-500 line-clamp-2 mt-0.5">{sol.description[lang]}</p>
         </div>
+        {/* Models badges */}
+        {models.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {models.map(m => (
+              <span key={m} className="px-1.5 py-0.5 bg-slate-800/[0.06] dark:bg-white/[0.06] text-slate-500 dark:text-gray-400 rounded text-[8px] font-mono border border-black/[0.04] dark:border-white/[0.04]">{m}</span>
+            ))}
+          </div>
+        )}
         <div className="flex flex-wrap gap-1 mt-auto pt-1">
           <span className="px-1.5 py-0.5 bg-brand-blue/[0.06] text-brand-blue rounded text-[9px] font-medium border border-brand-blue/10">{sol.category[lang]}</span>
           {sol.complexity && <span className="px-1.5 py-0.5 bg-slate-50 dark:bg-white/[0.03] text-slate-400 dark:text-gray-500 rounded text-[9px] font-medium border border-black/[0.04] dark:border-white/[0.04]">{sol.complexity}</span>}
@@ -210,7 +317,7 @@ const ProductCardGrid: React.FC<{
       </div>
     </motion.div>
   );
-};
+});
 
 // ═══════ PRODUCT CARD (LIST) ═══════
 const ProductCardList: React.FC<{
@@ -218,8 +325,9 @@ const ProductCardList: React.FC<{
   isFav: boolean; onToggleFav: (e: React.MouseEvent) => void;
   onPreview?: (e: React.MouseEvent) => void;
   isCompare?: boolean; onToggleCompare?: (e: React.MouseEvent) => void;
-}> = ({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
+}> = React.memo(({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
   const stats = getStats(sol.id);
+  const models = sol.models?.slice(0, 2) || [];
   return (
     <div className={`bg-white dark:bg-[#111114] border rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-all group flex ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
       onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}>
@@ -243,6 +351,14 @@ const ProductCardList: React.FC<{
             </div>
           </div>
           <p className="text-[12px] text-slate-400 dark:text-gray-500 line-clamp-2 mt-1">{sol.description[lang]}</p>
+          {/* Models badges */}
+          {models.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {models.map(m => (
+                <span key={m} className="px-1.5 py-0.5 bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-gray-400 rounded text-[8px] font-mono border border-black/[0.04] dark:border-white/[0.04]">{m}</span>
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-2">
@@ -256,11 +372,19 @@ const ProductCardList: React.FC<{
       </div>
     </div>
   );
-};
+});
 
 // ═══════ QUICK PREVIEW MODAL ═══════
 const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () => void; onNavigate: (slug: string) => void }> = ({ sol, lang, onClose, onNavigate }) => {
   const stats = getStats(sol.id);
+
+  // ESC key to close
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
+
   return (
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/40 dark:bg-black/60 z-[600]" onClick={onClose} />
@@ -286,6 +410,32 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
             <span className="flex items-center gap-1"><Star size={12} fill="currentColor" className="text-amber-400" /> {stats.rating}</span>
             <span className="px-2 py-0.5 bg-brand-blue/[0.06] text-brand-blue rounded text-[10px] font-medium border border-brand-blue/10">{sol.category[lang]}</span>
           </div>
+          {/* Models */}
+          {sol.models && sol.models.length > 0 && (
+            <div>
+              <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">AI Models</h4>
+              <div className="flex flex-wrap gap-1.5">
+                {sol.models.map(m => (
+                  <span key={m} className="px-2 py-1 bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-gray-300 rounded-lg text-[10px] font-mono border border-black/[0.04] dark:border-white/[0.04]">{m}</span>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Neural Stack */}
+          {sol.neuralStack && sol.neuralStack.length > 0 && (
+            <div>
+              <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Neural Stack</h4>
+              <div className="space-y-1.5">
+                {sol.neuralStack.map((ns, i) => (
+                  <div key={i} className="flex items-center gap-2 text-[11px]">
+                    <span className="px-1.5 py-0.5 bg-brand-blue/[0.08] text-brand-blue rounded font-mono text-[9px] border border-brand-blue/10">{ns.name}</span>
+                    <span className="text-slate-400">{ns.version}</span>
+                    <span className="text-slate-500 dark:text-gray-400">· {ns.capability[lang] || ns.capability.en}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           {sol.features && sol.features.length > 0 && (
             <div>
               <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tính năng</h4>
@@ -293,7 +443,7 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
                 {sol.features.map((f, i) => (
                   <div key={i} className="flex items-center gap-2 text-[12px] text-slate-600 dark:text-gray-300">
                     <Check size={12} className="text-emerald-500 shrink-0" />
-                    {typeof f === 'string' ? f : (f as any)[lang] || (f as any).en}
+                    {typeof f === 'string' ? f : (f as { [key in Language]: string })[lang] || (f as { en: string }).en}
                   </div>
                 ))}
               </div>
@@ -378,9 +528,7 @@ const MarketsPage: React.FC = () => {
   const [featuredSolutions, setFeaturedSolutions] = useState<Solution[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // #1: URL-BASED FILTERS — init from URL params
-  // inputValue: updates immediately (no debounce — instant UI response)
-  // deferredSearch: React defers expensive filter recalc, keeps typing smooth
+  // URL-BASED FILTERS — init from URL params
   const [inputValue, setInputValue] = useState(searchParams.get('q') || '');
   const deferredSearch = useDeferredValue(inputValue);
   const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'ALL');
@@ -392,16 +540,16 @@ const MarketsPage: React.FC = () => {
   const [activeTags, setActiveTags] = useState<string[]>(searchParams.get('tags')?.split(',').filter(Boolean) || []);
   const [activePlatform, setActivePlatform] = useState(searchParams.get('platform') || 'ALL');
   const [mobileSidebar, setMobileSidebar] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>((searchParams.get('view') as any) || 'grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>((searchParams.get('view') as 'grid' | 'list') || 'grid');
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const [showBackTop, setShowBackTop] = useState(false);
 
-  // #2: PREVIEW & COMPARE states
+  // PREVIEW & COMPARE states
   const [previewSol, setPreviewSol] = useState<Solution | null>(null);
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [showMoreCats, setShowMoreCats] = useState(false);
 
-  // #1: SYNC filters → URL (use inputValue for URL so it reflects what user typed)
+  // SYNC filters → URL
   useEffect(() => {
     const params = new URLSearchParams();
     if (inputValue) params.set('q', inputValue);
@@ -416,16 +564,17 @@ const MarketsPage: React.FC = () => {
     setSearchParams(params, { replace: true });
   }, [inputValue, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, activePlatform, viewMode]);
 
-  // #5: KEYBOARD SHORTCUTS
+  // KEYBOARD SHORTCUTS
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
       // Ctrl+K or Cmd+K → focus search
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         searchInputRef.current?.focus();
       }
-      // Don't trigger shortcuts when typing in input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      // Don't trigger shortcuts when typing in input / contenteditable
+      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target.isContentEditable) return;
       // G → toggle grid/list
       if (e.key === 'g' || e.key === 'G') setViewMode(v => v === 'grid' ? 'list' : 'grid');
     };
@@ -440,6 +589,21 @@ const MarketsPage: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // SCROLL RESTORATION
+  useEffect(() => {
+    const saved = sessionStorage.getItem(SCROLL_POS_KEY);
+    if (saved) {
+      const pos = parseInt(saved, 10);
+      if (!isNaN(pos)) {
+        requestAnimationFrame(() => window.scrollTo({ top: pos, behavior: 'instant' as ScrollBehavior }));
+      }
+      sessionStorage.removeItem(SCROLL_POS_KEY);
+    }
+    return () => {
+      sessionStorage.setItem(SCROLL_POS_KEY, String(window.scrollY));
+    };
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -448,7 +612,7 @@ const MarketsPage: React.FC = () => {
           marketApi.getSolutions({ lang: currentLang }),
           marketApi.getRandomFeatured()
         ]);
-        if (solRes?.data) setSolutions(solRes.data.filter(s => s.isActive !== false));
+        if (solRes?.data) setSolutions(solRes.data.filter((s: Solution) => s.isActive !== false));
         if (featRes?.data) setFeaturedSolutions(featRes.data);
       } catch (err) { console.error('Markets fetch:', err); }
       finally { setLoading(false); }
@@ -468,7 +632,7 @@ const MarketsPage: React.FC = () => {
     e.preventDefault(); e.stopPropagation();
     setFavorites(prev => {
       const n = prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id];
-      localStorage.setItem('skyverses_favorites', JSON.stringify(n));
+      saveFavoritesDebounced(n);
       return n;
     });
   }, []);
@@ -518,18 +682,20 @@ const MarketsPage: React.FC = () => {
 
   const filteredSolutions = useMemo(() => {
     let filtered = solutions.filter(sol => {
-      const matchSearch = !deferredSearch ||
-        sol.name[currentLang]?.toLowerCase().includes(deferredSearch.toLowerCase()) ||
-        sol.description[currentLang]?.toLowerCase().includes(deferredSearch.toLowerCase()) ||
-        sol.tags?.some(t => t.toLowerCase().includes(deferredSearch.toLowerCase()));
+      const q = deferredSearch.trim().toLowerCase();
+      const matchSearch = !q ||
+        sol.name[currentLang]?.toLowerCase().includes(q) ||
+        sol.description[currentLang]?.toLowerCase().includes(q) ||
+        sol.tags?.some(t => t.toLowerCase().includes(q));
+      const catKey = activeCategory.trim().toLowerCase();
       const matchCat = activeCategory === 'ALL' ||
         (activeCategory === 'Sky Partners'
           ? sol.tags?.some(t => t === 'Sky Partners')
           : (
-              sol.category[currentLang]?.toLowerCase().includes(activeCategory.toLowerCase()) ||
-              sol.category.en?.toLowerCase().includes(activeCategory.toLowerCase()) ||
-              sol.tags?.some(t => t.toLowerCase().includes(activeCategory.toLowerCase())) ||
-              sol.demoType?.toLowerCase() === activeCategory.toLowerCase()
+              sol.category[currentLang]?.trim().toLowerCase().includes(catKey) ||
+              sol.category.en?.trim().toLowerCase().includes(catKey) ||
+              sol.tags?.some(t => t.trim().toLowerCase().includes(catKey)) ||
+              sol.demoType?.trim().toLowerCase() === catKey
             )
         );
       const matchFree = !showFreeOnly || sol.isFree;
@@ -539,9 +705,17 @@ const MarketsPage: React.FC = () => {
       const matchPlatform = activePlatform === 'ALL' || !sol.platforms || sol.platforms.length === 0 || sol.platforms.includes(activePlatform);
       return matchSearch && matchCat && matchFree && matchFeatured && matchComplexity && matchTags && matchPlatform;
     });
-    if (sortBy === 'name') filtered.sort((a, b) => (a.name[currentLang] || '').localeCompare(b.name[currentLang] || ''));
-    else if (sortBy === 'newest') filtered.reverse();
-    // Sky Partners always at the end when viewing ALL (not when specifically filtered)
+    if (sortBy === 'relevant' && deferredSearch.trim()) {
+      filtered = filtered
+        .map(sol => ({ sol, score: getRelevanceScore(sol, deferredSearch.trim(), currentLang) }))
+        .sort((a, b) => b.score - a.score)
+        .map(({ sol }) => sol);
+    } else if (sortBy === 'name') {
+      filtered.sort((a, b) => (a.name[currentLang] || '').localeCompare(b.name[currentLang] || ''));
+    } else if (sortBy === 'newest') {
+      filtered.reverse();
+    }
+    // Sky Partners always at the end when viewing ALL
     if (activeCategory === 'ALL') {
       filtered.sort((a, b) => {
         const aIsPartner = a.tags?.includes('Sky Partners') ? 1 : 0;
@@ -550,7 +724,7 @@ const MarketsPage: React.FC = () => {
       });
     }
     return filtered;
-  }, [solutions, deferredSearch, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, currentLang]);
+  }, [solutions, deferredSearch, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, currentLang, activePlatform]);
 
   const paginatedSolutions = useMemo(() => filteredSolutions.slice(0, visibleCount), [filteredSolutions, visibleCount]);
   const hasMore = visibleCount < filteredSolutions.length;
@@ -562,32 +736,38 @@ const MarketsPage: React.FC = () => {
       if (c.key === 'Sky Partners') {
         counts[c.key] = solutions.filter(s => s.tags?.some(t => t === 'Sky Partners')).length;
       } else {
+        const cKeyLower = c.key.trim().toLowerCase();
         counts[c.key] = solutions.filter(s =>
-          s.category[currentLang]?.toLowerCase().includes(c.key.toLowerCase()) ||
-          s.category.en?.toLowerCase().includes(c.key.toLowerCase()) ||
-          s.tags?.some(t => t.toLowerCase().includes(c.key.toLowerCase())) ||
-          s.demoType?.toLowerCase() === c.key.toLowerCase()
+          s.category[currentLang]?.trim().toLowerCase().includes(cKeyLower) ||
+          s.category.en?.trim().toLowerCase().includes(cKeyLower) ||
+          s.tags?.some(t => t.trim().toLowerCase().includes(cKeyLower)) ||
+          s.demoType?.trim().toLowerCase() === cKeyLower
         ).length;
       }
     });
     return counts;
   }, [solutions, currentLang, CATEGORIES]);
 
-  const activeFilterCount = [showFreeOnly, showFeaturedOnly, !!activeComplexity, activeCategory !== 'ALL', activeTags.length > 0, activePlatform !== 'ALL'].filter(Boolean).length;
+  const activeFilterCount = [showFreeOnly, showFeaturedOnly, !!activeComplexity, activeCategory !== 'ALL', activeTags.length > 0, activePlatform !== 'ALL', !!inputValue].filter(Boolean).length;
 
-  const resetFilters = () => {
-    setActiveCategory('ALL'); setShowFreeOnly(false); setShowFeaturedOnly(false);
-    setActiveComplexity(null); setActiveTags([]); setActivePlatform('ALL');
+  const resetFilters = useCallback(() => {
+    setActiveCategory('ALL');
+    setShowFreeOnly(false);
+    setShowFeaturedOnly(false);
+    setActiveComplexity(null);
+    setActiveTags([]);
+    setActivePlatform('ALL');
     setInputValue('');
-  };
+    setSortBy('popular');
+  }, []);
 
-  // #2: PREVIEW handler
+  // PREVIEW handler
   const handlePreview = useCallback((e: React.MouseEvent, sol: Solution) => {
     e.preventDefault(); e.stopPropagation();
     setPreviewSol(sol);
   }, []);
 
-  // #3: COMPARE handler
+  // COMPARE handler
   const toggleCompare = useCallback((e: React.MouseEvent, id: string) => {
     e.preventDefault(); e.stopPropagation();
     setCompareIds(prev => {
@@ -598,7 +778,7 @@ const MarketsPage: React.FC = () => {
   }, []);
   const compareSolutions = useMemo(() => compareIds.map(id => solutions.find(s => s.id === id)).filter(Boolean) as Solution[], [compareIds, solutions]);
 
-  // #4: ANIMATED COUNTERS
+  // ANIMATED COUNTERS
   const animatedTotal = useAnimatedCounter(solutions.length);
   const animatedFree = useAnimatedCounter(solutions.filter(s => s.isFree).length);
   const animatedFeatured = useAnimatedCounter(solutions.filter(s => s.featured).length);
@@ -629,7 +809,7 @@ const MarketsPage: React.FC = () => {
               const Icon = cat.icon;
               const isActive = activeCategory === cat.key;
               const count = catCounts[cat.key] || 0;
-              const isExternal = (cat as any).isPartner;
+              const isExternal = (cat as { isPartner?: boolean }).isPartner;
               return (
                 <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all ${
@@ -866,6 +1046,18 @@ const MarketsPage: React.FC = () => {
             {/* Recently Viewed */}
             <RecentlyViewed lang={currentLang} onNavigate={handleNavigate} />
 
+            {/* Suggested for you */}
+            {!inputValue && solutions.length > 0 && (
+              <SuggestedSection
+                solutions={solutions}
+                lang={currentLang}
+                onNavigate={handleNavigate}
+                onPreview={handlePreview}
+                favorites={favorites}
+                onToggleFav={toggleFavorite}
+              />
+            )}
+
             {/* Trending */}
             {!inputValue && featuredSolutions.length > 0 && (
               <TrendingSlider items={featuredSolutions} lang={currentLang} onNavigate={handleNavigate} />
@@ -912,7 +1104,7 @@ const MarketsPage: React.FC = () => {
 
             {/* GRID / LIST */}
             {loading ? (
-              <div className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4' : 'space-y-3'}>
+              <div className={viewMode === 'grid' ? 'grid grid-cols-2 xl:grid-cols-3 gap-4' : 'space-y-3'}>
                 {[1,2,3,4,5,6].map(i => (
                   viewMode === 'grid' ? (
                     <div key={i} className="animate-pulse rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] overflow-hidden">
@@ -935,7 +1127,7 @@ const MarketsPage: React.FC = () => {
               </div>
             ) : paginatedSolutions.length > 0 ? (
               <>
-                <div className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4' : 'space-y-3'}>
+                <div className={viewMode === 'grid' ? 'grid grid-cols-2 xl:grid-cols-3 gap-4' : 'space-y-3'}>
                   {paginatedSolutions.map((sol, idx) => (
                     <React.Fragment key={sol.id}>
                       {/* CTA Banner after 6th item */}
@@ -972,12 +1164,33 @@ const MarketsPage: React.FC = () => {
                 )}
               </>
             ) : (
-              <div className="py-20 flex flex-col items-center justify-center text-center space-y-3">
-                <Search size={40} strokeWidth={1.5} className="text-slate-200 dark:text-gray-700" />
-                <div>
-                  <p className="text-lg font-semibold text-slate-400">Không tìm thấy công cụ</p>
-                  <button onClick={resetFilters} className="text-[13px] text-brand-blue hover:underline mt-1">Đặt lại bộ lọc</button>
+              /* ═══ CONTEXT-AWARE EMPTY STATE ═══ */
+              <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center">
+                  <Search size={28} strokeWidth={1.5} className="text-slate-300 dark:text-gray-600" />
                 </div>
+                <div>
+                  <p className="text-[16px] font-bold text-slate-500 dark:text-gray-400">
+                    {deferredSearch ? `Không tìm thấy "${deferredSearch}"` : 'Không có kết quả'}
+                  </p>
+                  <p className="text-[12px] text-slate-400 dark:text-gray-600 mt-1">
+                    {deferredSearch
+                      ? 'Thử từ khoá khác hoặc bỏ bộ lọc'
+                      : activeCategory !== 'ALL'
+                        ? `Chưa có công cụ trong danh mục "${activeCategory}"`
+                        : 'Hãy thử bỏ bớt bộ lọc đang áp dụng'}
+                  </p>
+                </div>
+                {/* Suggestion tags */}
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {['Video', 'Image', 'Audio', 'Automation'].map(s => (
+                    <button key={s} onClick={() => { setActiveCategory(s); setInputValue(''); }}
+                      className="px-3 py-1.5 bg-brand-blue/[0.06] text-brand-blue text-[11px] font-semibold rounded-lg border border-brand-blue/10 hover:bg-brand-blue/[0.12] transition-colors">
+                      {s}
+                    </button>
+                  ))}
+                </div>
+                <button onClick={resetFilters} className="text-[13px] text-brand-blue hover:underline mt-1">Đặt lại tất cả bộ lọc</button>
               </div>
             )}
           </div>
