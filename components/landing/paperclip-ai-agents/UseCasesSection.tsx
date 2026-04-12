@@ -4,7 +4,7 @@ import {
   Building, Code2, ShoppingBag, GraduationCap,
   HeartPulse, Megaphone, Banknote, Globe,
 } from 'lucide-react';
-import { FadeInUp, StaggerChildren, HoverCard, SectionLabel } from '../_shared/SectionAnimations';
+import { FadeInUp, HoverCard, SectionLabel } from '../_shared/SectionAnimations';
 import { PAPERCLIP_CDN } from '../../../src/constants/paperclip-cdn';
 
 interface UseCase {
@@ -85,15 +85,23 @@ export const UseCasesSection: React.FC = () => (
         </p>
       </FadeInUp>
 
-      <StaggerChildren className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {USE_CASES.map(uc => (
-          <HoverCard key={uc.title} className="p-0 overflow-hidden bg-black/[0.01] dark:bg-white/[0.015]">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {USE_CASES.map((uc, i) => (
+          <motion.div
+            key={uc.title}
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.55, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+          >
+          <HoverCard className="p-0 overflow-hidden bg-black/[0.01] dark:bg-white/[0.015] h-full">
             {/* Illustration */}
-            <div className="relative overflow-hidden h-28 group">
+            <div className="relative overflow-hidden group" style={{ height: '112px' }}>
               <img
                 src={uc.img}
                 alt={uc.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                className="transition-transform duration-500 group-hover:scale-105"
                 loading="lazy"
               />
               <div
@@ -114,8 +122,8 @@ export const UseCasesSection: React.FC = () => (
               <p className="text-[11px] text-slate-500 dark:text-[#666] leading-relaxed">{uc.desc}</p>
             </div>
           </HoverCard>
-        ))}
-      </StaggerChildren>
+          </motion.div>
+        </div>
     </div>
   </section>
 );

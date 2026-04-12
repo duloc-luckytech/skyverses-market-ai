@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Building2, Cpu, ShieldCheck, BarChart3 } from 'lucide-react';
-import { FadeInUp, StaggerChildren, HoverCard, SectionLabel } from '../_shared/SectionAnimations';
+import { FadeInUp, HoverCard, SectionLabel } from '../_shared/SectionAnimations';
 import { PAPERCLIP_CDN } from '../../../src/constants/paperclip-cdn';
 
 const STEPS = [
@@ -46,16 +46,25 @@ export const WorkflowSection: React.FC = () => (
         </p>
       </FadeInUp>
 
-      <StaggerChildren className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {STEPS.map(step => (
-          <HoverCard key={step.n} className="p-0 overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {STEPS.map((step, i) => (
+          <motion.div
+            key={step.n}
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.55, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+          >
+          <HoverCard className="p-0 overflow-hidden h-full">
             {/* Step screenshot */}
-            <img
-              src={step.img}
-              alt={step.title}
-              className="w-full h-32 object-cover"
-              loading="lazy"
-            />
+            <div className="w-full overflow-hidden" style={{ height: '160px' }}>
+              <img
+                src={step.img}
+                alt={step.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                loading="lazy"
+              />
+            </div>
             <div className="p-4">
               <div className="flex items-center gap-2 mb-2">
                 <motion.div
@@ -70,8 +79,8 @@ export const WorkflowSection: React.FC = () => (
               <p className="text-[11px] text-slate-500 dark:text-[#666] leading-relaxed">{step.desc}</p>
             </div>
           </HoverCard>
-        ))}
-      </StaggerChildren>
+          </motion.div>
+        </div>
 
       {/* Timeline connector — desktop only */}
       <div className="hidden md:flex items-center justify-between mt-6 px-8">
