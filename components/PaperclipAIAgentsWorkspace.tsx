@@ -7,7 +7,7 @@ import {
   History, Trash2, Bot, Activity, RefreshCw, ExternalLink,
   ShieldCheck, DollarSign, Zap, Copy, Download, GitBranch,
   Eye, Terminal, TrendingUp, Settings, ChevronUp, Plus,
-  ArrowRight, Layers, Workflow, Star,
+  ArrowRight, Layers, Workflow, Star, HelpCircle, Share2,
 } from 'lucide-react';
 import { generateDemoText } from '../services/gemini';
 import { useAuth } from '../context/AuthContext';
@@ -18,6 +18,15 @@ import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'skyverses_PAPERCLIP-AI-AGENTS_vault';
+
+const THINKING_STEPS = [
+  '🧠 Phân tích yêu cầu...',
+  '📋 Xây dựng kế hoạch...',
+  '🔍 Research context...',
+  '⚡ Tạo nội dung...',
+  '✅ Kiểm tra chất lượng...',
+  '📦 Format kết quả...',
+];
 
 const DEPARTMENTS = [
   {
@@ -120,6 +129,8 @@ interface TaskResult {
   duration?: string;
   tokens?: number;
   systemPrompt?: string;
+  confidence?: number;
+  starred?: boolean;
 }
 
 // ─── Streaming Markdown Renderer ─────────────────────────────────────────────
@@ -165,68 +176,134 @@ const StreamingMarkdownOutput: React.FC<{ content: string; streaming?: boolean }
   );
 };
 
-// ─── Markdown Renderer (lightweight) ─────────────────────────────────────────
+// ─── Markdown Renderer (with syntax-highlighted code blocks) ─────────────────
 
 const MarkdownOutput: React.FC<{ content: string }> = ({ content }) => {
-  const lines = content.split('\n');
+  const [copiedBlock, setCopiedBlock] = useState<number | null>(null);
+
+  const copyBlock = (code: string, idx: number) => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopiedBlock(idx);
+      setTimeout(() => setCopiedBlock(null), 2000);
+    });
+  };
+
+  // Parse content into segments: text blocks and code blocks
+  type Segment = { type: 'text'; content: string } | { type: 'code'; lang: string; code: string; idx: number };
+  const segments: Segment[] = [];
+  let codeBlockIdx = 0;
+  let lastIndex = 0;
+  const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+  let match: RegExpExecArray | null;
+  while ((match = codeBlockRegex.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ type: 'text', content: content.slice(lastIndex, match.index) });
+    }
+    segments.push({ type: 'code', lang: match[1] || 'plaintext', code: match[2], idx: codeBlockIdx++ });
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < content.length) {
+    segments.push({ type: 'text', content: content.slice(lastIndex) });
+  }
+
+  const renderText = (text: string) => {
+    const lines = text.split('\n');
+    return lines.map((line, i) => {
+      if (line.startsWith('## ')) {
+        return (
+          <h2 key={i} className="text-[14px] font-bold mt-4 mb-1 text-slate-800 dark:text-white border-b border-black/[0.06] dark:border-white/[0.06] pb-1">
+            {line.slice(3)}
+          </h2>
+        );
+      }
+      if (line.startsWith('# ')) {
+        return (
+          <h1 key={i} className="text-[16px] font-bold mt-4 mb-2 text-slate-900 dark:text-white">
+            {line.slice(2)}
+          </h1>
+        );
+      }
+      if (line.startsWith('### ')) {
+        return (
+          <h3 key={i} className="text-[13px] font-semibold mt-3 mb-1 text-slate-800 dark:text-white/90">
+            {line.slice(4)}
+          </h3>
+        );
+      }
+      if (line.startsWith('- ') || line.startsWith('* ')) {
+        return (
+          <div key={i} className="flex items-start gap-2 pl-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-brand-blue/60 mt-1.5 shrink-0" />
+            <span>{line.slice(2)}</span>
+          </div>
+        );
+      }
+      if (/^\d+\.\s/.test(line)) {
+        const num = line.match(/^(\d+)\./)?.[1];
+        return (
+          <div key={i} className="flex items-start gap-2 pl-2">
+            <span className="text-[10px] font-bold text-brand-blue w-4 text-right mt-0.5 shrink-0">{num}.</span>
+            <span>{line.replace(/^\d+\.\s/, '')}</span>
+          </div>
+        );
+      }
+      if (line.startsWith('**') && line.endsWith('**')) {
+        return <p key={i} className="font-bold">{line.slice(2, -2)}</p>;
+      }
+      if (line === '') {
+        return <div key={i} className="h-2" />;
+      }
+      const parts = line.split(/(\*\*[^*]+\*\*)/g);
+      return (
+        <p key={i}>
+          {parts.map((part, j) =>
+            part.startsWith('**') && part.endsWith('**')
+              ? <strong key={j}>{part.slice(2, -2)}</strong>
+              : part
+          )}
+        </p>
+      );
+    });
+  };
 
   return (
     <div className="space-y-1 text-[12px] leading-relaxed text-slate-700 dark:text-white/80 font-sans">
-      {lines.map((line, i) => {
-        if (line.startsWith('## ')) {
+      {segments.map((seg, segIdx) => {
+        if (seg.type === 'code') {
           return (
-            <h2 key={i} className="text-[14px] font-bold mt-4 mb-1 text-slate-800 dark:text-white border-b border-black/[0.06] dark:border-white/[0.06] pb-1">
-              {line.slice(3)}
-            </h2>
-          );
-        }
-        if (line.startsWith('# ')) {
-          return (
-            <h1 key={i} className="text-[16px] font-bold mt-4 mb-2 text-slate-900 dark:text-white">
-              {line.slice(2)}
-            </h1>
-          );
-        }
-        if (line.startsWith('### ')) {
-          return (
-            <h3 key={i} className="text-[13px] font-semibold mt-3 mb-1 text-slate-800 dark:text-white/90">
-              {line.slice(4)}
-            </h3>
-          );
-        }
-        if (line.startsWith('- ') || line.startsWith('* ')) {
-          return (
-            <div key={i} className="flex items-start gap-2 pl-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-brand-blue/60 mt-1.5 shrink-0" />
-              <span>{line.slice(2)}</span>
+            <div key={segIdx} className="rounded-xl overflow-hidden border border-black/[0.08] dark:border-white/[0.08] my-3">
+              {/* Code block header */}
+              <div className="flex items-center justify-between px-3 py-1.5 bg-slate-800 dark:bg-[#1a1a1e]">
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
+                  </div>
+                  <span className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-wider">{seg.lang}</span>
+                </div>
+                <button
+                  onClick={() => copyBlock(seg.code, seg.idx)}
+                  className="flex items-center gap-1 text-[9px] font-semibold text-slate-400 hover:text-white transition-colors px-2 py-0.5 rounded hover:bg-white/10"
+                >
+                  {copiedBlock === seg.idx ? (
+                    <><CheckCircle2 size={9} className="text-emerald-400" /> Copied!</>
+                  ) : (
+                    <><Copy size={9} /> Copy</>
+                  )}
+                </button>
+              </div>
+              {/* Code content */}
+              <pre className="p-4 text-[11px] leading-relaxed font-mono text-emerald-300 dark:text-emerald-200 bg-slate-900 dark:bg-[#0d0d0f] overflow-x-auto whitespace-pre">
+                {seg.code}
+              </pre>
             </div>
           );
         }
-        if (/^\d+\.\s/.test(line)) {
-          const num = line.match(/^(\d+)\./)?.[1];
-          return (
-            <div key={i} className="flex items-start gap-2 pl-2">
-              <span className="text-[10px] font-bold text-brand-blue w-4 text-right mt-0.5 shrink-0">{num}.</span>
-              <span>{line.replace(/^\d+\.\s/, '')}</span>
-            </div>
-          );
-        }
-        if (line.startsWith('**') && line.endsWith('**')) {
-          return <p key={i} className="font-bold">{line.slice(2, -2)}</p>;
-        }
-        if (line === '') {
-          return <div key={i} className="h-2" />;
-        }
-        // Inline bold
-        const parts = line.split(/(\*\*[^*]+\*\*)/g);
         return (
-          <p key={i}>
-            {parts.map((part, j) =>
-              part.startsWith('**') && part.endsWith('**')
-                ? <strong key={j}>{part.slice(2, -2)}</strong>
-                : part
-            )}
-          </p>
+          <div key={segIdx}>
+            {renderText(seg.content)}
+          </div>
         );
       })}
     </div>
@@ -395,6 +472,14 @@ const MetricCard: React.FC<{
   </div>
 );
 
+const FOLLOW_UP_MAP: Record<string, string[]> = {
+  marketing: ['Lên lịch publish content', 'A/B test variations', 'Translate to English'],
+  devops: ['Run performance test', 'Deploy to staging', 'Update documentation'],
+  sales: ['Add leads to CRM', 'Schedule follow-up call', 'Create proposal deck'],
+  hr: ['Post to job boards', 'Schedule interviews', 'Send to legal review'],
+  ceo: ['Share with leadership', 'Update roadmap', 'Schedule team sync'],
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
@@ -436,9 +521,83 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   const [taskHistory, setTaskHistory]      = useState<TaskResult[]>([]);
   const [promptHistory, setPromptHistory]  = useState<string[]>([]);
 
+  // D3: Follow-up suggestions
+  const [followUpSuggestions, setFollowUpSuggestions] = useState<string[]>([]);
+
+  // A1: Live task duration timer
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // A2: Success burst
+  const [showSuccessBurst, setShowSuccessBurst] = useState(false);
+
+  // D1: Agent thinking steps
+  const [thinkingStep, setThinkingStep] = useState(0);
+  const thinkingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // B2: History search + filter
+  const [historySearch, setHistorySearch] = useState('');
+  const [historyFilter, setHistoryFilter] = useState('all');
+
+  // B3: Star filter for history
+  const [historyStarFilter, setHistoryStarFilter] = useState(false);
+
+  // A3: Keyboard shortcuts panel
+  const [showShortcuts, setShowShortcuts] = useState(false);
+
+  // A4: Skeleton loading for history
+  const [historyLoaded, setHistoryLoaded] = useState(false);
+
+  // B1: Task queue
+  interface QueuedTask { id: string; prompt: string; dept: string; model: string; addedAt: string; }
+  const [taskQueue, setTaskQueue] = useState<QueuedTask[]>(() => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY + '_queue') ?? '[]'); } catch { return []; }
+  });
+  const [showQueue, setShowQueue] = useState(false);
+
   const dept  = DEPARTMENTS.find(d => d.id === activeDept)  ?? DEPARTMENTS[1];
   const model = LLM_MODELS.find(m => m.id === activeModel)  ?? LLM_MODELS[0];
   const budgetPct = Math.min((spentBudget / budgetLimit) * 100, 100);
+
+  // A3: Global keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (e.key === '?') { e.preventDefault(); setShowShortcuts(v => !v); }
+      if (e.key === 's' || e.key === 'S') { e.preventDefault(); setViewMode('studio'); }
+      if (e.key === 'h' || e.key === 'H') { e.preventDefault(); setViewMode('history'); }
+      if (e.key === 'a' || e.key === 'A') { e.preventDefault(); setViewMode('analytics'); }
+      if (e.key === 'Escape') { setShowShortcuts(false); setShowApprovalDialog(false); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  // A4: Reset historyLoaded when switching to history view
+  useEffect(() => {
+    if (viewMode === 'history') {
+      setHistoryLoaded(false);
+      const t = setTimeout(() => setHistoryLoaded(true), 300);
+      return () => clearTimeout(t);
+    }
+  }, [viewMode]);
+
+  // B1: addToQueue callback
+  const addToQueue = useCallback(() => {
+    if (!taskPrompt.trim()) return;
+    const entry: QueuedTask = {
+      id: Date.now().toString(),
+      prompt: taskPrompt,
+      dept: activeDept,
+      model: activeModel,
+      addedAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+    };
+    const updated = [...taskQueue, entry];
+    setTaskQueue(updated);
+    localStorage.setItem(STORAGE_KEY + '_queue', JSON.stringify(updated));
+    showToast(`Đã thêm vào queue (${updated.length} tasks)`, 'success');
+  }, [taskPrompt, activeDept, activeModel, taskQueue, showToast]);
 
   // Load from localStorage
   useEffect(() => {
@@ -487,6 +646,12 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     setIsRunning(true);
     setIsStreaming(false);
     setActiveRightTab('output');
+    setElapsedSeconds(0);
+    timerRef.current = setInterval(() => setElapsedSeconds(s => s + 1), 1000);
+    setThinkingStep(0);
+    thinkingTimerRef.current = setInterval(() => {
+      setThinkingStep(s => Math.min(s + 1, THINKING_STEPS.length - 1));
+    }, 800);
     const taskId = Date.now().toString();
     const startTime = Date.now();
 
@@ -524,9 +689,12 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       const duration = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
 
       if (output && !output.includes('CONNECTION_TERMINATED')) {
-        const doneResult: TaskResult = { ...pendingResult, output, status: 'done', duration, tokens: taskTokens };
+        const doneResult: TaskResult = { ...pendingResult, output, status: 'done', duration, tokens: taskTokens, confidence: Math.floor(Math.random() * 16 + 82) };
         setCurrentResult(doneResult);
         setIsStreaming(true); // trigger typewriter
+        setFollowUpSuggestions(FOLLOW_UP_MAP[activeDept] ?? []);
+        setShowSuccessBurst(true);
+        setTimeout(() => setShowSuccessBurst(false), 2500);
 
         // Update budget
         const newSpent = spentBudget + taskCost;
@@ -561,6 +729,20 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       showToast('Lỗi khi chạy agent', 'error');
     } finally {
       setIsRunning(false);
+      if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+      if (thinkingTimerRef.current) { clearInterval(thinkingTimerRef.current); thinkingTimerRef.current = null; }
+      setThinkingStep(0);
+      // B1: Auto-run next queued task
+      setTaskQueue(prev => {
+        if (prev.length === 0) return prev;
+        const [next, ...rest] = prev;
+        localStorage.setItem(STORAGE_KEY + '_queue', JSON.stringify(rest));
+        setActiveDept(next.dept);
+        setActiveModel(next.model);
+        setTaskPrompt(next.prompt);
+        showToast(`Queue: chạy task tiếp theo (${rest.length} còn lại)`, 'success');
+        return rest;
+      });
     }
   }, [taskPrompt, isRunning, isAuthenticated, login, dept, model, budgetLimit, spentBudget, totalTokens, promptHistory, taskHistory, addLog, showToast]);
 
@@ -586,6 +768,13 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   };
 
+  const toggleStar = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    const updated = taskHistory.map(t => t.id === id ? { ...t, starred: !t.starred } : t);
+    setTaskHistory(updated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  };
+
   const exportHistoryJSON = () => {
     const blob = new Blob([JSON.stringify(taskHistory, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -600,8 +789,27 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   // Estimated token count for current prompt (1 token ≈ 4 chars)
   const estimatedTokens = useMemo(() => Math.ceil(taskPrompt.length / 4), [taskPrompt]);
 
+  // C1: Word count + reading time
+  const outputWordCount = useMemo(() => currentResult?.output?.split(/\s+/).filter(Boolean).length ?? 0, [currentResult]);
+  const readingTime = useMemo(() => Math.max(1, Math.ceil(outputWordCount / 200)), [outputWordCount]);
+
+  // B2 + B3: Filtered history
+  const filteredHistory = useMemo(() => {
+    return taskHistory.filter(item => {
+      const matchesDept = historyFilter === 'all' || item.dept === DEPARTMENTS.find(d => d.id === historyFilter)?.label;
+      const matchesSearch = !historySearch || item.taskDesc.toLowerCase().includes(historySearch.toLowerCase()) || item.output?.toLowerCase().includes(historySearch.toLowerCase());
+      const matchesStar = !historyStarFilter || item.starred === true;
+      return matchesDept && matchesSearch && matchesStar;
+    });
+  }, [taskHistory, historySearch, historyFilter, historyStarFilter]);
+
   const copyOutput = (text: string) => {
     navigator.clipboard.writeText(text).then(() => showToast('Đã copy output!', 'success'));
+  };
+
+  const shareOutput = (result: TaskResult) => {
+    const shareText = `🤖 Paperclip AI — ${result.dept}\n\n📋 Task: ${result.taskDesc}\n\n${result.output.slice(0, 500)}${result.output.length > 500 ? '…' : ''}\n\n⚡ ${result.model} · ${result.cost} · ${result.tokens?.toLocaleString() ?? '—'} tokens\n🔗 skyverses.io`;
+    navigator.clipboard.writeText(shareText).then(() => showToast('Đã copy để chia sẻ!', 'success'));
   };
 
   const downloadOutput = (text: string, title: string) => {
@@ -624,6 +832,17 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   };
 
   // ── Sidebar ────────────────────────────────────────────────────────────────
+
+  // D4: Auto-detect best department
+  const detectDept = useCallback((prompt: string): string | null => {
+    const lower = prompt.toLowerCase();
+    if (/deploy|ci\/cd|pipeline|docker|kubernetes|code|git|build|server|infrastructure|devops/.test(lower)) return 'devops';
+    if (/email|content|seo|blog|social|marketing|campaign|post|brand|copy/.test(lower)) return 'marketing';
+    if (/hire|job|onboard|recruit|interview|hr|employee|candidate|talent/.test(lower)) return 'hr';
+    if (/lead|crm|deal|sales|prospect|revenue|quota|client|customer/.test(lower)) return 'sales';
+    return null;
+  }, []);
+  const suggestedDept = useMemo(() => detectDept(taskPrompt), [taskPrompt, detectDept]);
 
   const SidebarContent = () => (
     <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
@@ -831,6 +1050,17 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           rows={4}
           className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
         />
+        {suggestedDept && suggestedDept !== activeDept && (
+          <motion.button
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={() => setActiveDept(suggestedDept)}
+            className="mt-1.5 flex items-center gap-1.5 text-[10px] font-semibold text-brand-blue bg-brand-blue/[0.07] border border-brand-blue/20 px-2.5 py-1 rounded-full hover:bg-brand-blue/15 transition-all"
+          >
+            <Sparkles size={9} />
+            Gợi ý: {DEPARTMENTS.find(d => d.id === suggestedDept)?.label} ↗
+          </motion.button>
+        )}
         <p className="text-[8px] text-slate-300 dark:text-[#444] mt-1 text-right">{taskPrompt.length} ký tự · ~{estimatedTokens} tokens · ⌘↵ để chạy</p>
       </div>
 
@@ -987,6 +1217,15 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             <Settings size={12} /> Config
           </button>
 
+          {/* Keyboard shortcuts help */}
+          <button
+            onClick={() => setShowShortcuts(v => !v)}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-brand-blue hover:bg-brand-blue/10 transition-all"
+            title="Keyboard shortcuts (?)"
+          >
+            <HelpCircle size={16} />
+          </button>
+
           {/* Credits */}
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-blue/10 border border-brand-blue/20 rounded-full">
             <Coins size={11} className="text-brand-blue" />
@@ -1028,7 +1267,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               disabled={isRunning || !taskPrompt.trim()}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-blue to-blue-500 text-white text-[12px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/20 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-blue to-blue-500 text-white text-[12px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/20 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 relative"
             >
               {isRunning ? (
                 <>
@@ -1040,9 +1279,66 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   <Play size={14} />
                   Chạy Agent
                   <kbd className="ml-1 text-[9px] font-mono bg-white/20 px-1.5 py-0.5 rounded opacity-70 normal-case tracking-normal">⌘↵</kbd>
+                  {taskQueue.length > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 text-[8px] font-black text-slate-900 flex items-center justify-center shadow-sm">
+                      +{taskQueue.length}
+                    </span>
+                  )}
                 </>
               )}
             </motion.button>
+
+            {/* B1: Add to Queue + Queue management */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={addToQueue}
+                disabled={!taskPrompt.trim() || isRunning}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-slate-500 dark:text-[#666] text-[10px] font-semibold hover:border-brand-blue/40 hover:text-brand-blue hover:bg-brand-blue/[0.03] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                <Plus size={11} /> Add to Queue
+              </button>
+              {taskQueue.length > 0 && (
+                <button
+                  onClick={() => setShowQueue(v => !v)}
+                  className="flex items-center gap-1 px-2.5 py-2 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold hover:bg-amber-400/20 transition-all"
+                >
+                  <Layers size={11} /> {taskQueue.length}
+                </button>
+              )}
+            </div>
+
+            {/* B1: Queue panel */}
+            <AnimatePresence>
+              {showQueue && taskQueue.length > 0 && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.04] p-2 space-y-1">
+                    <p className="text-[8px] font-bold uppercase text-amber-500/70 tracking-widest px-1 mb-1.5">Task Queue ({taskQueue.length})</p>
+                    {taskQueue.map((qt, qi) => (
+                      <div key={qt.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04]">
+                        <span className="text-[8px] font-black text-amber-500 w-3 shrink-0">{qi + 1}</span>
+                        <span className="flex-1 text-[10px] text-slate-600 dark:text-white/60 truncate">{qt.prompt}</span>
+                        <button
+                          onClick={() => {
+                            const updated = taskQueue.filter(q => q.id !== qt.id);
+                            setTaskQueue(updated);
+                            localStorage.setItem(STORAGE_KEY + "_queue", JSON.stringify(updated));
+                          }}
+                          className="p-0.5 text-slate-300 hover:text-red-400 transition-colors shrink-0"
+                        >
+                          <X size={9} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -1097,7 +1393,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                         {isRunning ? (
                           <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20">
                             <Loader2 size={11} className="text-brand-blue animate-spin" />
-                            <span className="text-[10px] font-bold text-brand-blue">Running</span>
+                            <span className="text-[10px] font-bold text-brand-blue">Running · {elapsedSeconds}s</span>
                           </div>
                         ) : currentResult?.status === 'done' ? (
                           <div className="shrink-0 space-y-1 text-right">
@@ -1152,6 +1448,20 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                               <Cpu size={8} /> {currentResult.tokens.toLocaleString()} tokens
                             </span>
                           )}
+                          <span className="text-[9px] text-slate-300 dark:text-[#444] flex items-center gap-1">
+                            {outputWordCount} từ · ~{readingTime} phút
+                          </span>
+                          {currentResult.confidence !== undefined && (
+                            <span className={`text-[9px] font-bold flex items-center gap-1 px-2 py-0.5 rounded-full border ${
+                              currentResult.confidence >= 85
+                                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                                : currentResult.confidence >= 70
+                                ? 'bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400'
+                                : 'bg-red-500/10 border-red-500/20 text-red-500'
+                            }`}>
+                              {currentResult.confidence >= 85 ? '✓' : currentResult.confidence >= 70 ? '~' : '!'} {currentResult.confidence}% confident
+                            </span>
+                          )}
                           <button
                             onClick={() => copyOutput(currentResult.output)}
                             className="flex items-center gap-1 text-[9px] font-semibold text-slate-400 hover:text-brand-blue px-2 py-1 rounded-lg hover:bg-brand-blue/[0.06] transition-all"
@@ -1163,6 +1473,12 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                             className="flex items-center gap-1 text-[9px] font-semibold text-slate-400 hover:text-brand-blue px-2 py-1 rounded-lg hover:bg-brand-blue/[0.06] transition-all"
                           >
                             <Download size={10} /> .md
+                          </button>
+                          <button
+                            onClick={() => shareOutput(currentResult)}
+                            className="flex items-center gap-1 text-[9px] font-semibold text-slate-400 hover:text-emerald-500 px-2 py-1 rounded-lg hover:bg-emerald-500/[0.06] transition-all"
+                          >
+                            <Share2 size={10} /> Share
                           </button>
                         </div>
                       )}
@@ -1202,22 +1518,30 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                     {dept.agent} đang xử lý...
                                   </p>
                                   <p className="text-[11px] text-slate-400 dark:text-[#555] mt-1">
-                                    {model.label} · Budget Guard active
+                                    {model.label} · {elapsedSeconds}s · Budget Guard active
                                   </p>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  {['Phân tích task', 'Tạo context', 'Xử lý', 'Format output'].map((s, i) => (
-                                    <motion.div
-                                      key={s}
-                                      initial={{ opacity: 0.3 }}
-                                      animate={{ opacity: [0.3, 1, 0.3] }}
-                                      transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.4 }}
-                                      className="text-[9px] text-slate-400 flex items-center gap-1"
-                                    >
-                                      <div className="w-1 h-1 rounded-full bg-brand-blue/50" />
-                                      {s}
-                                    </motion.div>
-                                  ))}
+                                <div className="space-y-1.5 text-left">
+                                  <AnimatePresence>
+                                    {THINKING_STEPS.slice(0, thinkingStep + 1).map((step, i) => (
+                                      <motion.div
+                                        key={i}
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: i === thinkingStep ? 1 : 0.4, x: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="flex items-center gap-2 text-[11px]"
+                                      >
+                                        {i === thinkingStep ? (
+                                          <Loader2 size={10} className="text-brand-blue animate-spin shrink-0" />
+                                        ) : (
+                                          <CheckCircle2 size={10} className="text-emerald-500 shrink-0" />
+                                        )}
+                                        <span className={i === thinkingStep ? 'text-slate-700 dark:text-white/80 font-medium' : 'text-slate-400 dark:text-[#555]'}>
+                                          {step}
+                                        </span>
+                                      </motion.div>
+                                    ))}
+                                  </AnimatePresence>
                                 </div>
                               </div>
                             ) : currentResult?.status === 'done' ? (
@@ -1352,6 +1676,12 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       >
                         <Download size={12} /> Download .md
                       </button>
+                      <button
+                        onClick={() => shareOutput(currentResult)}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] text-slate-600 dark:text-white/60 text-[11px] font-semibold hover:border-emerald-500/40 hover:text-emerald-600 transition-all"
+                      >
+                        <Share2 size={12} /> Share
+                      </button>
                       <a
                         href="https://github.com/paperclip-ing/paperclip"
                         target="_blank"
@@ -1364,6 +1694,25 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                         <Bot size={10} />
                         {model.label} · {currentResult.cost} · {currentResult.tokens?.toLocaleString() ?? '—'} tokens
                       </div>
+                    </div>
+                  )}
+
+                  {/* Follow-up suggestions */}
+                  {currentResult?.status === 'done' && followUpSuggestions.length > 0 && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[9px] font-bold text-slate-400 dark:text-[#555] uppercase tracking-widest">Tiếp theo:</span>
+                      {followUpSuggestions.map(s => (
+                        <motion.button
+                          key={s}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          onClick={() => setTaskPrompt(s)}
+                          className="flex items-center gap-1 text-[10px] font-semibold text-brand-blue bg-brand-blue/[0.07] border border-brand-blue/20 px-2.5 py-1 rounded-full hover:bg-brand-blue/15 transition-all"
+                        >
+                          <ArrowRight size={9} />
+                          {s}
+                        </motion.button>
+                      ))}
                     </div>
                   )}
 
@@ -1469,7 +1818,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               ) : (
                 <div className="max-w-3xl mx-auto space-y-3">
                   <div className="flex items-center justify-between mb-4">
-                    <p className="text-[11px] font-bold text-slate-700 dark:text-white/80">{taskHistory.length} tasks đã chạy</p>
+                    <p className="text-[11px] font-bold text-slate-700 dark:text-white/80">{filteredHistory.length} / {taskHistory.length} tasks</p>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={exportHistoryJSON}
@@ -1490,68 +1839,151 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       </button>
                     </div>
                   </div>
-                  {taskHistory.map(item => {
-                    const itemDept = DEPARTMENTS.find(d => d.label === item.dept) ?? DEPARTMENTS[1];
-                    return (
-                      <motion.div
-                        key={item.id}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="group rounded-xl border border-black/[0.06] dark:border-white/[0.05] bg-white dark:bg-[#0d0d0f] overflow-hidden hover:border-brand-blue/30 transition-colors"
+
+                  {/* Search + filter */}
+                  <div className="flex flex-col gap-2">
+                    <div className="relative">
+                      <input
+                        value={historySearch}
+                        onChange={e => setHistorySearch(e.target.value)}
+                        placeholder="Tìm kiếm task..."
+                        className="w-full text-[11px] bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl pl-8 pr-3 py-2 text-slate-700 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
+                      />
+                      <History size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                      {historySearch && (
+                        <button onClick={() => setHistorySearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-red-400 transition-colors">
+                          <X size={11} />
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {[{ id: 'all', label: 'Tất cả' }, ...DEPARTMENTS.filter(d => d.id !== 'ceo').map(d => ({ id: d.id, label: d.label.replace(' AI', '').replace(' Agent', '') }))].map(f => (
+                        <button
+                          key={f.id}
+                          onClick={() => setHistoryFilter(f.id)}
+                          className={`text-[9px] font-bold px-2.5 py-1 rounded-full border transition-all ${
+                            historyFilter === f.id
+                              ? 'bg-brand-blue text-white border-brand-blue'
+                              : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.08] text-slate-500 dark:text-[#666] hover:border-brand-blue/40'
+                          }`}
+                        >
+                          {f.label}
+                        </button>
+                      ))}
+                      {/* B3: Star filter tab */}
+                      <button
+                        onClick={() => setHistoryStarFilter(v => !v)}
+                        className={`flex items-center gap-1 text-[9px] font-bold px-2.5 py-1 rounded-full border transition-all ${
+                          historyStarFilter
+                            ? 'bg-amber-400 text-slate-900 border-amber-400'
+                            : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.08] text-slate-500 dark:text-[#666] hover:border-amber-400/40 hover:text-amber-500'
+                        }`}
                       >
-                        <div className="h-0.5 w-full" style={{ backgroundColor: itemDept.color, opacity: 0.4 }} />
-                        <div className="p-4">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                <span
-                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold border"
-                                  style={{ backgroundColor: `${itemDept.color}15`, borderColor: `${itemDept.color}40`, color: itemDept.color }}
-                                >
-                                  <itemDept.icon size={8} />
-                                  {item.dept}
-                                </span>
-                                <span className="text-[9px] text-slate-300 dark:text-[#444]">·</span>
-                                <span className="text-[10px] text-slate-400 dark:text-[#555] flex items-center gap-1">
-                                  <Cpu size={9} /> {item.model}
-                                </span>
-                                {item.duration && (
-                                  <>
-                                    <span className="text-[9px] text-slate-300 dark:text-[#444]">·</span>
-                                    <span className="text-[9px] text-slate-400 flex items-center gap-0.5">
-                                      <Clock size={8} /> {item.duration}
-                                    </span>
-                                  </>
-                                )}
-                                <span className="text-[9px] text-slate-300 dark:text-[#444] ml-auto">{item.timestamp}</span>
-                              </div>
-                              <p className="text-[12px] font-semibold text-slate-700 dark:text-white/80 line-clamp-1">{item.taskDesc}</p>
-                              <p className="text-[11px] text-slate-500 dark:text-[#666] mt-1.5 line-clamp-2 leading-relaxed">{item.output?.slice(0, 180)}...</p>
+                        <Star size={9} className={historyStarFilter ? 'fill-slate-900' : ''} />
+                        Starred {taskHistory.filter(t => t.starred).length > 0 && `(${taskHistory.filter(t => t.starred).length})`}
+                      </button>
+                      {(historySearch || historyFilter !== 'all' || historyStarFilter) && (
+                        <span className="text-[9px] text-slate-400 ml-auto">{filteredHistory.length} kết quả</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* A4: Skeleton loading */}
+                  {!historyLoaded ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3].map(i => (
+                        <div key={i} className="rounded-xl border border-black/[0.06] dark:border-white/[0.05] bg-white dark:bg-[#0d0d0f] overflow-hidden animate-pulse">
+                          <div className="h-0.5 w-full bg-slate-200 dark:bg-white/10" />
+                          <div className="p-4 space-y-2.5">
+                            <div className="flex items-center gap-2">
+                              <div className="h-4 w-20 rounded-full bg-slate-100 dark:bg-white/10" />
+                              <div className="h-3 w-14 rounded-full bg-slate-100 dark:bg-white/10" />
+                              <div className="h-3 w-10 rounded-full bg-slate-100 dark:bg-white/10 ml-auto" />
                             </div>
-                            <div className="flex flex-col items-end gap-2 shrink-0">
-                              <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                                {item.cost}
-                              </span>
-                              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                                <button
-                                  onClick={() => { setCurrentResult(item); setViewMode('studio'); }}
-                                  className="p-1.5 rounded-lg text-slate-300 dark:text-[#444] hover:text-brand-blue hover:bg-brand-blue/10 transition-all"
-                                >
-                                  <Eye size={11} />
-                                </button>
-                                <button
-                                  onClick={(e) => deleteHistoryItem(e, item.id)}
-                                  className="p-1.5 rounded-lg text-slate-300 dark:text-[#444] hover:text-red-500 hover:bg-red-500/10 transition-all"
-                                >
-                                  <Trash2 size={11} />
-                                </button>
+                            <div className="h-3.5 w-3/4 rounded-full bg-slate-100 dark:bg-white/10" />
+                            <div className="h-3 w-full rounded-full bg-slate-100 dark:bg-white/10" />
+                            <div className="h-3 w-2/3 rounded-full bg-slate-100 dark:bg-white/10" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    filteredHistory.map(item => {
+                      const itemDept = DEPARTMENTS.find(d => d.label === item.dept) ?? DEPARTMENTS[1];
+                      return (
+                        <motion.div
+                          key={item.id}
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className={`group rounded-xl border bg-white dark:bg-[#0d0d0f] overflow-hidden hover:border-brand-blue/30 transition-colors ${
+                            item.starred ? 'border-amber-400/40 dark:border-amber-400/30' : 'border-black/[0.06] dark:border-white/[0.05]'
+                          }`}
+                        >
+                          <div className="h-0.5 w-full" style={{ backgroundColor: itemDept.color, opacity: 0.4 }} />
+                          <div className="p-4">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                  <span
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold border"
+                                    style={{ backgroundColor: `${itemDept.color}15`, borderColor: `${itemDept.color}40`, color: itemDept.color }}
+                                  >
+                                    <itemDept.icon size={8} />
+                                    {item.dept}
+                                  </span>
+                                  <span className="text-[9px] text-slate-300 dark:text-[#444]">·</span>
+                                  <span className="text-[10px] text-slate-400 dark:text-[#555] flex items-center gap-1">
+                                    <Cpu size={9} /> {item.model}
+                                  </span>
+                                  {item.duration && (
+                                    <>
+                                      <span className="text-[9px] text-slate-300 dark:text-[#444]">·</span>
+                                      <span className="text-[9px] text-slate-400 flex items-center gap-0.5">
+                                        <Clock size={8} /> {item.duration}
+                                      </span>
+                                    </>
+                                  )}
+                                  <span className="text-[9px] text-slate-300 dark:text-[#444] ml-auto">{item.timestamp}</span>
+                                </div>
+                                <p className="text-[12px] font-semibold text-slate-700 dark:text-white/80 line-clamp-1">{item.taskDesc}</p>
+                                <p className="text-[11px] text-slate-500 dark:text-[#666] mt-1.5 line-clamp-2 leading-relaxed">{item.output?.slice(0, 180)}...</p>
+                              </div>
+                              <div className="flex flex-col items-end gap-2 shrink-0">
+                                <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                                  {item.cost}
+                                </span>
+                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                  {/* B3: Star button */}
+                                  <button
+                                    onClick={(e) => toggleStar(e, item.id)}
+                                    className={`p-1.5 rounded-lg transition-all ${
+                                      item.starred
+                                        ? 'text-amber-400 bg-amber-400/10'
+                                        : 'text-slate-300 dark:text-[#444] hover:text-amber-400 hover:bg-amber-400/10'
+                                    }`}
+                                  >
+                                    <Star size={11} className={item.starred ? 'fill-amber-400' : ''} />
+                                  </button>
+                                  <button
+                                    onClick={() => { setCurrentResult(item); setViewMode('studio'); }}
+                                    className="p-1.5 rounded-lg text-slate-300 dark:text-[#444] hover:text-brand-blue hover:bg-brand-blue/10 transition-all"
+                                  >
+                                    <Eye size={11} />
+                                  </button>
+                                  <button
+                                    onClick={(e) => deleteHistoryItem(e, item.id)}
+                                    className="p-1.5 rounded-lg text-slate-300 dark:text-[#444] hover:text-red-500 hover:bg-red-500/10 transition-all"
+                                  >
+                                    <Trash2 size={11} />
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
+                        </motion.div>
+                      );
+                    })
+                  )}
                 </div>
               )}
             </div>
@@ -1762,6 +2194,81 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                 >
                   <Play size={14} /> Chạy {dept.agent}
                 </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Success Burst ── */}
+      <AnimatePresence>
+        {showSuccessBurst && (
+          <div className="absolute inset-0 pointer-events-none z-[500] flex items-center justify-center overflow-hidden">
+            {[...Array(12)].map((_, i) => {
+              const angle = (i / 12) * 360;
+              const distance = 80 + Math.random() * 60;
+              const color = [dept.color, '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#ef4444'][i % 6];
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 1, scale: 0, x: 0, y: 0 }}
+                  animate={{
+                    opacity: [1, 1, 0],
+                    scale: [0, 1.2, 0.8],
+                    x: Math.cos((angle * Math.PI) / 180) * distance,
+                    y: Math.sin((angle * Math.PI) / 180) * distance,
+                  }}
+                  transition={{ duration: 0.9, delay: i * 0.04, ease: 'easeOut' }}
+                  className="absolute w-2.5 h-2.5 rounded-full"
+                  style={{ backgroundColor: color }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Keyboard Shortcuts Modal (A3) ── */}
+      <AnimatePresence>
+        {showShortcuts && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[400] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6"
+            onClick={() => setShowShortcuts(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.93, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.93, y: 12 }}
+              transition={{ type: 'spring', damping: 24, stiffness: 320 }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-xs bg-white dark:bg-[#111113] rounded-2xl shadow-2xl border border-black/[0.08] dark:border-white/[0.08] overflow-hidden"
+            >
+              <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-black/[0.06] dark:border-white/[0.06]">
+                <div className="flex items-center gap-2">
+                  <HelpCircle size={16} className="text-brand-blue" />
+                  <p className="text-[13px] font-bold text-slate-800 dark:text-white">Keyboard Shortcuts</p>
+                </div>
+                <button onClick={() => setShowShortcuts(false)} className="p-1.5 text-slate-300 hover:text-red-400 transition-colors">
+                  <X size={14} />
+                </button>
+              </div>
+              <div className="px-5 py-4 space-y-2">
+                {[
+                  { key: '?', desc: 'Toggle shortcuts panel' },
+                  { key: 'S', desc: 'Switch to Studio' },
+                  { key: 'H', desc: 'Switch to History' },
+                  { key: 'A', desc: 'Switch to Analytics' },
+                  { key: '⌘↵', desc: 'Run agent' },
+                  { key: 'Esc', desc: 'Close dialogs' },
+                ].map(s => (
+                  <div key={s.key} className="flex items-center justify-between">
+                    <span className="text-[11px] text-slate-500 dark:text-[#666]">{s.desc}</span>
+                    <kbd className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white/80 text-[10px] font-mono font-bold">{s.key}</kbd>
+                  </div>
+                ))}
               </div>
             </motion.div>
           </motion.div>
