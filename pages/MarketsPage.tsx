@@ -81,6 +81,7 @@ const SCROLL_POS_KEY = 'skyverses_markets_scroll';
 // Module-level Map cache for getStats so it's computed once per id, not every render
 const statsCache = new Map<string, { users: number; likes: number; rating: string }>();
 const getStats = (id: string) => {
+  if (!id) return { users: 100, likes: 30, rating: '4.0' };
   if (statsCache.has(id)) return statsCache.get(id)!;
   const h = id.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   const result = { users: (h % 900 + 100), likes: (h % 400 + 30), rating: (3.5 + (h % 15) / 10).toFixed(1) };
@@ -629,8 +630,8 @@ const MarketsPage: React.FC = () => {
           marketApi.getSolutions({ lang: currentLang }),
           marketApi.getRandomFeatured()
         ]);
-        if (solRes?.data) setSolutions([...solRes.data.filter((s: Solution) => s.isActive !== false)].reverse());
-        if (featRes?.data) setFeaturedSolutions(featRes.data);
+        if (solRes?.data) setSolutions([...solRes.data.filter((s: Solution) => s.isActive !== false && s.id && s.slug)].reverse());
+        if (featRes?.data) setFeaturedSolutions(featRes.data.filter((s: Solution) => s.id && s.slug));
       } catch (err) { console.error('Markets fetch:', err); }
       finally { setLoading(false); }
     };
