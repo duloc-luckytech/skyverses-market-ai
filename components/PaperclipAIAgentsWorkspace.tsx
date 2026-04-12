@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Sparkles, ChevronDown, ChevronRight, Coins,
@@ -119,7 +119,51 @@ interface TaskResult {
   cost: string;
   duration?: string;
   tokens?: number;
+  systemPrompt?: string;
 }
+
+// ─── Streaming Markdown Renderer ─────────────────────────────────────────────
+
+const StreamingMarkdownOutput: React.FC<{ content: string; streaming?: boolean }> = ({ content, streaming = false }) => {
+  const [displayed, setDisplayed] = useState('');
+  const [done, setDone] = useState(false);
+  const indexRef = useRef(0);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!streaming || !content) {
+      setDisplayed(content);
+      setDone(true);
+      return;
+    }
+    // Reset
+    setDisplayed('');
+    setDone(false);
+    indexRef.current = 0;
+
+    const CHARS_PER_FRAME = 6; // speed: ~360 chars/s at 60fps
+    const step = () => {
+      indexRef.current = Math.min(indexRef.current + CHARS_PER_FRAME, content.length);
+      setDisplayed(content.slice(0, indexRef.current));
+      if (indexRef.current < content.length) {
+        rafRef.current = requestAnimationFrame(step);
+      } else {
+        setDone(true);
+      }
+    };
+    rafRef.current = requestAnimationFrame(step);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [content, streaming]);
+
+  return (
+    <div className="relative">
+      <MarkdownOutput content={displayed} />
+      {streaming && !done && (
+        <span className="inline-block w-0.5 h-3.5 bg-brand-blue ml-0.5 animate-pulse align-middle" />
+      )}
+    </div>
+  );
+};
 
 // ─── Markdown Renderer (lightweight) ─────────────────────────────────────────
 
@@ -366,7 +410,10 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   const [showOrgChart, setShowOrgChart]     = useState(true);
   const [showActivity, setShowActivity]     = useState(true);
   const [showPromptHistory, setShowPromptHistory] = useState(false);
-  const [activeRightTab, setActiveRightTab] = useState<'output' | 'log'>('output');
+  const [activeRightTab, setActiveRightTab] = useState<'output' | 'log' | 'prompt'>('output');
+  const [isStreaming, setIsStreaming]       = useState(false);
+  const [showApprovalDialog, setShowApprovalDialog] = useState(false);
+  const pendingRunRef = useRef<(() => Promise<void>) | null>(null);
 
   // Config state
   const [activeDept, setActiveDept]         = useState(DEPARTMENTS[1].id); // marketing
@@ -383,6 +430,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
   // Activity feed
   const [activityLogs, setActivityLogs]    = useState<ActivityLog[]>([]);
+  const activityFeedRef                    = useRef<HTMLDivElement>(null);
 
   // History
   const [taskHistory, setTaskHistory]      = useState<TaskResult[]>([]);
@@ -415,19 +463,37 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     setActivityLogs(prev => [entry, ...prev].slice(0, 20));
   }, []);
 
+  // Auto-scroll activity feed to top (newest) when new log arrives
+  useEffect(() => {
+    if (activityFeedRef.current) {
+      activityFeedRef.current.scrollTop = 0;
+    }
+  }, [activityLogs]);
+
   // ── Handlers ───────────────────────────────────────────────────────────────
 
-  const handleRun = async () => {
+  // High-stakes keywords that trigger human-in-the-loop approval
+  const APPROVAL_KEYWORDS = ['deploy', 'delete', 'remove', 'production', 'publish', 'send', 'email', 'budget', 'payment', 'fire', 'hire', 'promote'];
+
+  const requiresApproval = useCallback((prompt: string) => {
+    const lower = prompt.toLowerCase();
+    return APPROVAL_KEYWORDS.some(kw => lower.includes(kw));
+  }, []);
+
+  const executeRun = useCallback(async () => {
     if (!taskPrompt.trim() || isRunning) return;
     if (!isAuthenticated) { login(); return; }
 
     setIsRunning(true);
+    setIsStreaming(false);
     setActiveRightTab('output');
     const taskId = Date.now().toString();
     const startTime = Date.now();
 
     const taskCost = parseFloat((Math.random() * 0.35 + 0.05).toFixed(2));
     const taskTokens = Math.floor(Math.random() * 1200 + 300);
+
+    const builtSystemPrompt = `Bạn là ${dept.agent} trong hệ thống Paperclip AI Org Orchestrator. Model: ${model.label} (${model.provider}). Department: ${dept.label}. Thực hiện task được giao, trả về kết quả chi tiết, professional và actionable. Sử dụng markdown formatting với headers (##), bullet points (-) và numbered lists khi phù hợp. Viết bằng tiếng Việt hoặc tiếng Anh tùy context của task. Kết quả phải cụ thể, có thể action được.`;
 
     // Simulate multi-step activity
     addLog('CEO Agent', `Nhận task từ user → giao cho ${dept.agent}`, 'running', '#0090ff');
@@ -444,6 +510,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       timestamp: new Date().toLocaleString('vi-VN'),
       cost: `$${taskCost.toFixed(2)}`,
       tokens: taskTokens,
+      systemPrompt: builtSystemPrompt,
     };
     setCurrentResult(pendingResult);
 
@@ -453,14 +520,13 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     localStorage.setItem(STORAGE_KEY + '_prompts', JSON.stringify(newHistory));
 
     try {
-      const systemPrompt = `Bạn là ${dept.agent} trong hệ thống Paperclip AI Org Orchestrator. Model: ${model.label} (${model.provider}). Department: ${dept.label}. Thực hiện task được giao, trả về kết quả chi tiết, professional và actionable. Sử dụng markdown formatting với headers (##), bullet points (-) và numbered lists khi phù hợp. Viết bằng tiếng Việt hoặc tiếng Anh tùy context của task. Kết quả phải cụ thể, có thể action được.`;
-
-      const output = await generateDemoText(`${systemPrompt}\n\nTask: ${taskPrompt}`);
+      const output = await generateDemoText(`${builtSystemPrompt}\n\nTask: ${taskPrompt}`);
       const duration = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
 
       if (output && !output.includes('CONNECTION_TERMINATED')) {
         const doneResult: TaskResult = { ...pendingResult, output, status: 'done', duration, tokens: taskTokens };
         setCurrentResult(doneResult);
+        setIsStreaming(true); // trigger typewriter
 
         // Update budget
         const newSpent = spentBudget + taskCost;
@@ -496,7 +562,22 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     } finally {
       setIsRunning(false);
     }
-  };
+  }, [taskPrompt, isRunning, isAuthenticated, login, dept, model, budgetLimit, spentBudget, totalTokens, promptHistory, taskHistory, addLog, showToast]);
+
+  const handleRun = useCallback(async () => {
+    if (!taskPrompt.trim() || isRunning) return;
+    if (!isAuthenticated) { login(); return; }
+
+    // Check if task needs human approval
+    if (requiresApproval(taskPrompt)) {
+      pendingRunRef.current = executeRun;
+      setShowApprovalDialog(true);
+      addLog('Human-in-Loop', 'Task cần phê duyệt của bạn', 'warning', '#f59e0b');
+      return;
+    }
+
+    await executeRun();
+  }, [taskPrompt, isRunning, isAuthenticated, login, requiresApproval, executeRun, addLog]);
 
   const deleteHistoryItem = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -504,6 +585,20 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     setTaskHistory(updated);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   };
+
+  const exportHistoryJSON = () => {
+    const blob = new Blob([JSON.stringify(taskHistory, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `paperclip-history-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Đã export lịch sử!', 'success');
+  };
+
+  // Estimated token count for current prompt (1 token ≈ 4 chars)
+  const estimatedTokens = useMemo(() => Math.ceil(taskPrompt.length / 4), [taskPrompt]);
 
   const copyOutput = (text: string) => {
     navigator.clipboard.writeText(text).then(() => showToast('Đã copy output!', 'success'));
@@ -736,7 +831,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           rows={4}
           className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
         />
-        <p className="text-[8px] text-slate-300 dark:text-[#444] mt-1 text-right">{taskPrompt.length} ký tự · ⌘↵ để chạy</p>
+        <p className="text-[8px] text-slate-300 dark:text-[#444] mt-1 text-right">{taskPrompt.length} ký tự · ~{estimatedTokens} tokens · ⌘↵ để chạy</p>
       </div>
 
       {/* ── Budget Guard ── */}
@@ -812,7 +907,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="p-3 rounded-xl border border-black/[0.05] dark:border-white/[0.05] bg-black/[0.01] dark:bg-white/[0.01] max-h-40 overflow-y-auto">
+              <div ref={activityFeedRef} className="p-3 rounded-xl border border-black/[0.05] dark:border-white/[0.05] bg-black/[0.01] dark:bg-white/[0.01] max-h-40 overflow-y-auto">
                 <ActivityFeed logs={activityLogs} />
               </div>
             </motion.div>
@@ -1033,6 +1128,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       {([
                         { id: 'output', label: 'Output', icon: Eye },
                         { id: 'log',    label: 'Activity Log', icon: Terminal },
+                        { id: 'prompt', label: 'Prompt Inspector', icon: Code2 },
                       ] as const).map(tab => (
                         <button
                           key={tab.id}
@@ -1126,7 +1222,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                               </div>
                             ) : currentResult?.status === 'done' ? (
                               <div className="prose prose-sm max-w-none">
-                                <MarkdownOutput content={currentResult.output} />
+                                <StreamingMarkdownOutput content={currentResult.output} streaming={isStreaming} />
                               </div>
                             ) : currentResult?.status === 'error' ? (
                               <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
@@ -1165,6 +1261,69 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                   <span className="text-[9px] text-slate-300 dark:text-[#444] shrink-0 font-mono">{log.time}</span>
                                 </div>
                               ))
+                            )}
+                          </motion.div>
+                        )}
+
+                        {activeRightTab === 'prompt' && (
+                          <motion.div
+                            key="prompt"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.15 }}
+                          >
+                            {currentResult?.systemPrompt ? (
+                              <div className="space-y-3">
+                                {/* System Prompt block */}
+                                <div className="rounded-xl border border-purple-500/20 bg-purple-500/[0.04] overflow-hidden">
+                                  <div className="flex items-center justify-between px-3 py-2 border-b border-purple-500/10">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-2 h-2 rounded-full bg-purple-400" />
+                                      <span className="text-[9px] font-bold text-purple-400 uppercase tracking-widest">System Prompt</span>
+                                    </div>
+                                    <button
+                                      onClick={() => copyOutput(currentResult.systemPrompt ?? '')}
+                                      className="text-[9px] text-purple-400/60 hover:text-purple-400 transition-colors flex items-center gap-1"
+                                    >
+                                      <Copy size={9} /> Copy
+                                    </button>
+                                  </div>
+                                  <pre className="p-3 text-[10px] leading-relaxed text-purple-800 dark:text-purple-200/80 font-mono whitespace-pre-wrap break-words">
+                                    {currentResult.systemPrompt}
+                                  </pre>
+                                </div>
+                                {/* User prompt block */}
+                                <div className="rounded-xl border border-brand-blue/20 bg-brand-blue/[0.04] overflow-hidden">
+                                  <div className="flex items-center justify-between px-3 py-2 border-b border-brand-blue/10">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-2 h-2 rounded-full bg-brand-blue" />
+                                      <span className="text-[9px] font-bold text-brand-blue uppercase tracking-widest">User Message</span>
+                                    </div>
+                                    <button
+                                      onClick={() => copyOutput(currentResult.taskDesc)}
+                                      className="text-[9px] text-brand-blue/60 hover:text-brand-blue transition-colors flex items-center gap-1"
+                                    >
+                                      <Copy size={9} /> Copy
+                                    </button>
+                                  </div>
+                                  <pre className="p-3 text-[10px] leading-relaxed text-blue-800 dark:text-blue-200/80 font-mono whitespace-pre-wrap break-words">
+                                    Task: {currentResult.taskDesc}
+                                  </pre>
+                                </div>
+                                {/* Meta */}
+                                <div className="flex items-center gap-3 text-[9px] text-slate-400 dark:text-[#555] flex-wrap">
+                                  <span className="flex items-center gap-1"><Cpu size={9} /> {currentResult.model}</span>
+                                  <span className="flex items-center gap-1"><dept.icon size={9} /> {currentResult.dept}</span>
+                                  {currentResult.tokens && <span className="flex items-center gap-1"><Zap size={9} /> ~{currentResult.tokens?.toLocaleString()} tokens</span>}
+                                  <span className="flex items-center gap-1"><Clock size={9} /> {currentResult.timestamp}</span>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
+                                <Terminal size={24} className="text-slate-300 dark:text-[#444]" />
+                                <p className="text-[11px] text-slate-400 dark:text-[#555]">Chạy agent để xem system prompt được gửi tới LLM</p>
+                              </div>
                             )}
                           </motion.div>
                         )}
@@ -1311,16 +1470,25 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                 <div className="max-w-3xl mx-auto space-y-3">
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-[11px] font-bold text-slate-700 dark:text-white/80">{taskHistory.length} tasks đã chạy</p>
-                    <button
-                      onClick={() => {
-                        setTaskHistory([]);
-                        localStorage.removeItem(STORAGE_KEY);
-                        showToast('Đã xóa lịch sử', 'success');
-                      }}
-                      className="text-[10px] font-semibold text-slate-400 hover:text-red-400 transition-colors flex items-center gap-1"
-                    >
-                      <Trash2 size={10} /> Xóa tất cả
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={exportHistoryJSON}
+                        className="text-[10px] font-semibold text-slate-400 hover:text-brand-blue transition-colors flex items-center gap-1"
+                      >
+                        <Download size={10} /> Export JSON
+                      </button>
+                      <span className="text-slate-200 dark:text-[#333]">|</span>
+                      <button
+                        onClick={() => {
+                          setTaskHistory([]);
+                          localStorage.removeItem(STORAGE_KEY);
+                          showToast('Đã xóa lịch sử', 'success');
+                        }}
+                        className="text-[10px] font-semibold text-slate-400 hover:text-red-400 transition-colors flex items-center gap-1"
+                      >
+                        <Trash2 size={10} /> Xóa tất cả
+                      </button>
+                    </div>
                   </div>
                   {taskHistory.map(item => {
                     const itemDept = DEPARTMENTS.find(d => d.label === item.dept) ?? DEPARTMENTS[1];
@@ -1336,7 +1504,13 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                <span className="text-[10px] font-bold" style={{ color: itemDept.color }}>{item.dept}</span>
+                                <span
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold border"
+                                  style={{ backgroundColor: `${itemDept.color}15`, borderColor: `${itemDept.color}40`, color: itemDept.color }}
+                                >
+                                  <itemDept.icon size={8} />
+                                  {item.dept}
+                                </span>
                                 <span className="text-[9px] text-slate-300 dark:text-[#444]">·</span>
                                 <span className="text-[10px] text-slate-400 dark:text-[#555] flex items-center gap-1">
                                   <Cpu size={9} /> {item.model}
@@ -1588,6 +1762,95 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                 >
                   <Play size={14} /> Chạy {dept.agent}
                 </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Human-in-the-Loop Approval Dialog ── */}
+      <AnimatePresence>
+        {showApprovalDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[400] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6"
+            onClick={() => setShowApprovalDialog(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.93, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.93, y: 12 }}
+              transition={{ type: 'spring', damping: 24, stiffness: 320 }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-sm bg-white dark:bg-[#111113] rounded-2xl shadow-2xl border border-black/[0.08] dark:border-white/[0.08] overflow-hidden"
+            >
+              {/* Header */}
+              <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-black/[0.06] dark:border-white/[0.06]">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                  <ShieldCheck size={18} className="text-amber-500" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-bold text-slate-800 dark:text-white">Human Approval Required</p>
+                  <p className="text-[10px] text-slate-400 dark:text-[#555] mt-0.5">Task này yêu cầu phê duyệt của bạn</p>
+                </div>
+                <button
+                  onClick={() => setShowApprovalDialog(false)}
+                  className="p-1.5 text-slate-300 dark:text-[#444] hover:text-red-400 transition-colors shrink-0"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+
+              {/* Task preview */}
+              <div className="px-5 py-4 space-y-3">
+                <div className="rounded-xl bg-amber-500/[0.05] border border-amber-500/20 p-3">
+                  <p className="text-[9px] font-bold uppercase text-amber-500/70 tracking-widest mb-1.5">Task sẽ thực hiện</p>
+                  <p className="text-[12px] text-slate-700 dark:text-white/80 leading-relaxed line-clamp-4">{taskPrompt}</p>
+                </div>
+                <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-[#555]">
+                  <dept.icon size={10} style={{ color: dept.color }} />
+                  <span style={{ color: dept.color }} className="font-semibold">{dept.label}</span>
+                  <span>·</span>
+                  <Cpu size={9} />
+                  <span>{model.label}</span>
+                  <span>·</span>
+                  <ShieldCheck size={9} className="text-emerald-500" />
+                  <span>Budget: ${budgetLimit.toFixed(2)}</span>
+                </div>
+                <p className="text-[10px] text-slate-400 dark:text-[#555] flex items-start gap-1.5">
+                  <AlertCircle size={11} className="text-amber-400 mt-0.5 shrink-0" />
+                  Task chứa từ khóa nhạy cảm (deploy / delete / send / email…). Xem xét kỹ trước khi phê duyệt.
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-2 px-5 pb-5">
+                <button
+                  onClick={() => {
+                    setShowApprovalDialog(false);
+                    pendingRunRef.current = null;
+                    addLog('Human-in-Loop', 'Task bị từ chối bởi user', 'warning', '#ef4444');
+                    showToast('Đã hủy task', 'error');
+                  }}
+                  className="flex-1 py-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] text-slate-500 dark:text-[#666] text-[11px] font-semibold hover:border-red-400/40 hover:text-red-400 hover:bg-red-500/[0.05] transition-all"
+                >
+                  Từ chối
+                </button>
+                <button
+                  onClick={async () => {
+                    setShowApprovalDialog(false);
+                    addLog('Human-in-Loop', '✓ Task được phê duyệt — tiến hành thực thi', 'success', '#10b981');
+                    const fn = pendingRunRef.current;
+                    pendingRunRef.current = null;
+                    if (fn) await fn();
+                  }}
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand-blue to-blue-500 text-white text-[11px] font-bold shadow-md shadow-brand-blue/20 hover:brightness-110 transition-all flex items-center justify-center gap-1.5"
+                >
+                  <CheckCircle2 size={13} />
+                  Phê duyệt & Chạy
+                </button>
               </div>
             </motion.div>
           </motion.div>

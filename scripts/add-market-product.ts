@@ -61,10 +61,10 @@ const PRODUCTS: Record<string, MarketProduct> = {
       ja: 'AIスライドクリエーター',
     },
     category: {
-      en: 'Presentation',
-      vi: 'Trình chiếu',
-      ko: '프레젠테이션',
-      ja: 'プレゼンテーション',
+      en: 'Script',
+      vi: 'Kịch bản & Studio',
+      ko: '스크립트 & 스튜디오',
+      ja: 'スクリプト & スタジオ',
     },
     description: {
       en: 'Create professional AI-powered presentations in 2 minutes. Each slide gets a unique AI background image, live editor for direct editing, export to PPTX/PDF/PNG.',
