@@ -191,6 +191,11 @@ node gen-<slug>-images.mjs
 > Không chấp nhận CSS gradient placeholder trong production.
 > Khi CDN URLs có sẵn → cập nhật ShowcaseSection để import từ `@/constants/<slug>-showcase-cdn`.
 
+> **⏱ Nếu script 3.2 chưa xong khi bắt đầu build STEP 4:**
+> → Dùng Unsplash placeholder tạm (`https://images.unsplash.com/...`) để build sections trước.
+> → Đánh dấu `// TODO: replace with CDN` tại mỗi URL placeholder.
+> → Sau khi script chạy xong → find/replace toàn bộ `TODO: replace with CDN` bằng CDN URLs thực.
+
 ---
 
 ### Script 1 — `gen-<slug>-landing-images.sh` (main landing blocks)
@@ -1454,6 +1459,34 @@ export default YourProductAI;
 
 ---
 
+### 🚨 MỤC TIÊU STEP 6 — LOGIC TRƯỚC, UI SAU
+
+> **Workspace PHẢI implement đầy đủ logic nghiệp vụ. UI chỉ là phương tiện hiển thị.**
+>
+> Khi build workspace, ưu tiên theo thứ tự:
+>
+> 1. **✅ Logic bắt buộc phải đủ (KHÔNG được bỏ):**
+>    - Job submission + Poll loop (createJob → pollJobStatus → markDone/markError)
+>    - Credit deduction trước khi gọi API + refund khi job fail
+>    - AbortController — huỷ job khi user bấm Hủy (isGenerating)
+>    - Results state là **mảng tasks** (`REResult[]`) — KHÔNG dùng `useState<string | null>`
+>    - localStorage persist: session history + prompt history (`STORAGE_KEY`)
+>    - Starter prompts (4 cards 2×2 khi chưa có kết quả)
+>    - Low Credit modal đầy đủ (thông báo + nút Nạp + nút Đóng)
+>    - Status dot đổi màu (amber=processing, green=done, red=error)
+>    - Tab "Phiên hiện tại" + "Thư viện (N)" toggle
+>    - Industry context inject vào finalPrompt khi generate
+>
+> 2. **⚠️ UI chỉ là skeleton để gắn logic vào — KHÔNG tập trung polish UI ở bước này:**
+>    - Layout (sidebar / viewport / task rail) → copy từ canonical, đừng tự thiết kế lại
+>    - Pickers (platform, format, style) → thay nội dung cho đúng product, giữ nguyên pattern
+>    - AISuggestPanel + Industry Picker → wire đúng props, không cần custom style
+>
+> **❌ Sai:** Build xong UI đẹp nhưng thiếu poll loop, thiếu credit refund, thiếu abort, thiếu localStorage.
+> **✅ Đúng:** Logic hoàn chỉnh chạy được end-to-end, UI có thể rough nhưng tất cả tính năng phải hoạt động.
+
+---
+
 ### ⚠️ RULE: Generate phải dùng Job+Poll — KHÔNG dùng `generateDemoImage` / `generateDemoVideo`
 
 > `generateDemoImage` và `generateDemoVideo` từ `services/gemini` là **demo/mock service** — **KHÔNG dùng trong workspace production**.
@@ -1710,13 +1743,332 @@ SIDEBAR (w-[380px]) ── flex-grow VIEWPORT
 
 > ⚠️ **Wand2 AI Boost button**: Import `Wand2` từ `lucide-react`. KHÔNG tự define inline SVG.
 
-### Credit check (bắt buộc):
+### Mobile Layout (bắt buộc — workspace phải responsive)
+
+> Desktop (≥ 768px): layout sidebar + viewport như trên.
+> Mobile (< 768px): sidebar ẩn, thay bằng bottom sheet trigger.
+
+```tsx
+// Outer container — đổi layout theo breakpoint
+<div className="flex flex-col h-full md:flex-row">
+
+  {/* Sidebar — ẩn trên mobile, hiện trên desktop */}
+  <aside className="hidden md:flex flex-col w-[380px] border-r border-black/[0.05] dark:border-white/[0.05] overflow-y-auto">
+    {/* Pickers, AISuggestPanel, prompt, settings */}
+  </aside>
+
+  {/* Viewport — full width trên mobile */}
+  <div className="flex-1 flex flex-col min-w-0">
+
+    {/* Mobile: nút mở settings bottom sheet (thay sidebar) */}
+    <div className="md:hidden flex items-center gap-2 px-4 py-2 border-b border-black/[0.05] dark:border-white/[0.05]">
+      <button
+        onClick={() => setShowMobileSheet(true)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/[0.04] dark:bg-white/[0.04] text-xs text-slate-600 dark:text-[#aaa]"
+      >
+        <Settings size={13} />
+        Cài đặt
+      </button>
+      {/* Credits badge mobile */}
+      <span className="text-xs text-slate-400 ml-auto">{credits} CR</span>
+    </div>
+
+    {/* Viewport content */}
+    {/* ... result preview, task list ... */}
+
+    {/* Mobile sticky generate button */}
+    <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/90 dark:bg-[#111]/90 backdrop-blur-sm border-t border-black/[0.05] dark:border-white/[0.05]">
+      <button
+        onClick={handleGenerate}
+        disabled={!prompt.trim() || isGenerating}
+        className="w-full py-3 rounded-xl bg-brand-blue text-white text-sm font-semibold disabled:opacity-50"
+      >
+        {isGenerating ? 'Đang tạo...' : `Tạo — ${unitCost * quantity} CR`}
+      </button>
+    </div>
+  </div>
+</div>
+
+{/* Mobile Settings Bottom Sheet — xem pattern S1 (line ~3296) */}
+```
+
+> Tham chiếu pattern bottom sheet đầy đủ: **S1 — Mobile bottom sheet** trong phần UX Patterns bên dưới.
+
+### Error Boundary (bắt buộc — wrap toàn bộ Workspace)
+
+> Workspace chứa nhiều API calls + state mutations. Nếu crash không có boundary → cả landing page crash.
+
+```tsx
+// components/landing/<slug>/<Slug>Page.tsx — trong thin orchestrator:
+import { ErrorBoundary } from 'react-error-boundary';
+
+function WorkspaceCrashFallback({ resetErrorBoundary }: { resetErrorBoundary: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center h-full gap-4 p-8 text-center">
+      <p className="text-slate-500 dark:text-[#888] text-sm">
+        Workspace gặp lỗi không mong muốn.
+      </p>
+      <button
+        onClick={resetErrorBoundary}
+        className="px-4 py-2 rounded-lg bg-brand-blue text-white text-sm"
+      >
+        Thử lại
+      </button>
+    </div>
+  );
+}
+
+// Trong JSX của page:
+<ErrorBoundary FallbackComponent={WorkspaceCrashFallback} onReset={() => {}}>
+  <YourWorkspace onClose={() => setIsStudioOpen(false)} />
+</ErrorBoundary>
+```
+
+> `react-error-boundary` đã có trong dự án — không cần cài thêm.
 ```tsx
 const CREDIT_COST = 120;
 if (credits < CREDIT_COST * quantity) { setShowLowCreditAlert(true); return; }
 ```
 
 ### localStorage: `skyverses_<SCREAMING-SNAKE-ID>_vault`
+
+---
+
+### ⚠️ Prompt Validation (bắt buộc trước khi gọi API)
+
+```tsx
+// 1. Không cho generate khi prompt rỗng
+const trimmedPrompt = prompt.trim();
+if (!trimmedPrompt) {
+  toast.error('Vui lòng nhập mô tả trước khi tạo.');
+  return;
+}
+
+// 2. Giới hạn độ dài — tránh oversized payload
+const MAX_PROMPT_LENGTH = 2000;
+if (trimmedPrompt.length > MAX_PROMPT_LENGTH) {
+  toast.error(`Mô tả quá dài (tối đa ${MAX_PROMPT_LENGTH} ký tự).`);
+  return;
+}
+
+// 3. Hiển thị character counter trong textarea
+<div className="flex justify-between text-[10px] text-slate-400 mt-1">
+  <span>{trimmedPrompt.length}/{MAX_PROMPT_LENGTH}</span>
+  {trimmedPrompt.length > MAX_PROMPT_LENGTH * 0.9 && (
+    <span className="text-amber-500">Gần đạt giới hạn</span>
+  )}
+</div>
+
+// 4. Disable Generate button khi empty hoặc đang generate
+<button
+  disabled={!trimmedPrompt || isGenerating}
+  ...
+>
+  Tạo
+</button>
+```
+
+---
+
+### ⚠️ Concurrent Generation Guard (bắt buộc)
+
+> **Vấn đề:** User click "Tạo" 2 lần liền → 2 jobs submit → 2 credit deductions, conflict taskId.
+
+```tsx
+// isGenerating flag block duplicate submissions
+const handleGenerate = async () => {
+  if (isGenerating) return;          // ← guard đầu tiên
+  if (!trimmedPrompt) return;        // ← prompt guard
+  if (credits < unitCost * quantity) { setShowLowCreditAlert(true); return; }
+
+  setIsGenerating(true);
+  try {
+    // ... submit job
+  } finally {
+    // KHÔNG setIsGenerating(false) ở đây
+    // → chỉ set false khi job done/error (trong poll callback)
+    // → tránh UI flicker khi poll chưa kịp bắt đầu
+  }
+};
+
+// Trong poll callback — sau markDone hoặc markError:
+setIsGenerating(false);
+```
+
+> **Lưu ý:** Nếu product support queue nhiều jobs (quantity > 1), `isGenerating` chỉ lock trong lúc submit.
+> Sau khi submit xong → unlock để user có thể submit tiếp, poll chạy ngầm theo từng taskId riêng.
+
+---
+
+### ⚠️ Error Handling — 3 loại lỗi (bắt buộc phân biệt)
+
+```tsx
+// Loại 1 — API Error (job thất bại phía server)
+if (res.data?.status === 'error' || res.data?.status === 'failed') {
+  addCredits(cost);                  // ← hoàn credits
+  markTaskError(taskId, 'API_ERROR');
+  setIsGenerating(false);
+  toast.error('Tạo không thành công. Credits đã được hoàn lại.');
+  return;
+}
+
+// Loại 2 — Network Error (fetch throw exception)
+try {
+  const res = await imagesApi.getJobStatus(jobId);
+  // ...
+} catch (err) {
+  // Retry chậm hơn — KHÔNG hoàn credits (job vẫn đang chạy phía server)
+  retryCount++;
+  if (retryCount >= MAX_RETRIES) {   // MAX_RETRIES = 5
+    addCredits(cost);                // ← hoàn credits sau nhiều lần retry thất bại
+    markTaskError(taskId, 'NETWORK_ERROR');
+    setIsGenerating(false);
+    toast.error('Lỗi kết nối. Credits đã được hoàn lại.');
+    return;
+  }
+  setTimeout(() => pollImageJob(jobId, taskId, cost, retryCount), 10000); // retry 10s
+  return;
+}
+
+// Loại 3 — Timeout (polling > 30 lần x 5s = 150s)
+const MAX_POLL_ATTEMPTS = 30;
+if (attempt >= MAX_POLL_ATTEMPTS) {
+  addCredits(cost);                  // ← hoàn credits
+  markTaskError(taskId, 'TIMEOUT');
+  setIsGenerating(false);
+  toast.error('Tạo quá lâu. Credits đã được hoàn lại. Thử lại sau.');
+  return;
+}
+```
+
+```tsx
+// markTaskError helper — set status + error type
+const markTaskError = (taskId: string, errorType: 'API_ERROR' | 'NETWORK_ERROR' | 'TIMEOUT') => {
+  setResults(prev => prev.map(r =>
+    r.id === taskId ? { ...r, status: 'error', errorType, isRefunded: true } : r
+  ));
+};
+```
+
+---
+
+### ⚠️ localStorage Quota Management (bắt buộc)
+
+> **Giới hạn thực tế:** Safari iOS ≈ 5MB, Chrome ≈ 10MB. Session data (URLs, prompts) tích lũy nhanh.
+
+```tsx
+// Constants quản lý quota
+const MAX_SESSIONS = 50;
+const MAX_PROMPT_HISTORY = 10;
+const LS_SIZE_WARNING_BYTES = 4 * 1024 * 1024;  // 4MB — warn trước khi hit limit
+
+// Save session — tự động prune oldest
+const saveSession = (session: BannerSession) => {
+  try {
+    const existing: BannerSession[] = (() => {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY + '_sessions') || '[]'); }
+      catch { return []; }
+    })();
+
+    const updated = [session, ...existing].slice(0, MAX_SESSIONS); // giữ tối đa MAX_SESSIONS
+    localStorage.setItem(STORAGE_KEY + '_sessions', JSON.stringify(updated));
+  } catch (e) {
+    // QuotaExceededError → xóa oldest half rồi thử lại
+    if ((e as DOMException).name === 'QuotaExceededError') {
+      pruneOldestSessions();
+      try {
+        localStorage.setItem(STORAGE_KEY + '_sessions', JSON.stringify([session]));
+      } catch { /* ignore nếu vẫn fail */ }
+    }
+  }
+};
+
+const pruneOldestSessions = () => {
+  try {
+    const existing: BannerSession[] = JSON.parse(localStorage.getItem(STORAGE_KEY + '_sessions') || '[]');
+    const half = existing.slice(0, Math.floor(existing.length / 2));
+    localStorage.setItem(STORAGE_KEY + '_sessions', JSON.stringify(half));
+  } catch { /* ignore */ }
+};
+```
+
+---
+
+### ⚠️ Reference Image Upload Flow
+
+> Workspace sidebar có "Reference images (3-col, max 6)". Đây là flow chuẩn:
+
+```tsx
+// 1. Upload → base64 (không cần server upload riêng)
+const handleReferenceUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const files = Array.from(e.target.files || []);
+  const MAX_REF = 6;
+  const MAX_SIZE_MB = 5;
+
+  files.forEach(file => {
+    // Validation
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      toast.error('Chỉ hỗ trợ JPG, PNG, WebP');
+      return;
+    }
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      toast.error(`Ảnh tối đa ${MAX_SIZE_MB}MB`);
+      return;
+    }
+    if (references.length >= MAX_REF) {
+      toast.error(`Tối đa ${MAX_REF} ảnh tham chiếu`);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const base64 = ev.target?.result as string;
+      setReferences(prev => [...prev, { id: crypto.randomUUID(), base64, file }]);
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
+// 2. Xóa reference
+const removeReference = (id: string) => {
+  setReferences(prev => prev.filter(r => r.id !== id));
+};
+
+// 3. Truyền vào job payload
+const payload: ImageJobRequest = {
+  type: references.length > 0 ? 'image_to_image' : 'text_to_image',
+  input: {
+    prompt: finalPrompt,
+    images: references.length > 0
+      ? references.map(r => r.base64)
+      : undefined
+  },
+  // ...
+};
+```
+
+```tsx
+// 4. UI — 3-column grid, drag-to-remove
+<div className="grid grid-cols-3 gap-2 mb-3">
+  {references.map(ref => (
+    <div key={ref.id} className="relative aspect-square rounded-lg overflow-hidden group">
+      <img src={ref.base64} alt="" className="w-full h-full object-cover" />
+      <button
+        onClick={() => removeReference(ref.id)}
+        className="absolute top-1 right-1 bg-black/60 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <X size={10} className="text-white" />
+      </button>
+    </div>
+  ))}
+  {references.length < 6 && (
+    <label className="aspect-square rounded-lg border border-dashed border-slate-300 dark:border-[#333] flex items-center justify-center cursor-pointer hover:border-brand-blue transition-colors">
+      <Plus size={16} className="text-slate-400" />
+      <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" onChange={handleReferenceUpload} />
+    </label>
+  )}
+</div>
+```
 
 ---
 
@@ -3435,407 +3787,4 @@ Import cần thêm: `Link` từ `react-router-dom`, `credits` từ `useAuth()`.
 | Không có duration selector cho video workspace | Detect `isModeBased` — nếu false thì hiện duration cycle button (STEP 6.5B) |
 
 ---
-
----
-
-# 📊 PRODUCT PLAN — AI Slide Creator (`ai-slide-creator`)
-
-> **Ngày tạo:** 2026-04-11
-> **Loại product:** Tool/Workspace (Live Editor) — KHÔNG tạo ảnh/video thuần tuý → **Bỏ qua STEP 6.5**
-> **Phí:** Free (miễn phí tạm thời)
-
----
-
-## STEP 1 — Product Metadata
-
-| Trường | Giá trị |
-|--------|---------|
-| **slug** | `ai-slide-creator` |
-| **id** | `AI-SLIDE-CREATOR` |
-| **complexity** | `Advanced` |
-| **priceCredits** | `0` |
-| **isFree** | `true` |
-| **priceReference** | `Miễn phí` |
-| **homeBlocks** | `['top_trending', 'featured']` |
-| **featured** | `true` |
-| **demoType** | `image` |
-
-### Name (4 langs)
-| Lang | Name |
-|------|------|
-| en | AI Presentation Creator |
-| vi | Tạo Slide Trình Chiếu AI |
-| ko | AI 프레젠테이션 제작 |
-| ja | AIスライド作成ツール |
-
-### Category (4 langs)
-| Lang | Category |
-|------|----------|
-| en | Presentation & Slides |
-| vi | Trình Chiếu & Slide |
-| ko | 프레젠테이션 & 슬라이드 |
-| ja | プレゼンテーション & スライド |
-
-### Description (4 langs)
-| Lang | Description |
-|------|-------------|
-| en | Create stunning AI-powered presentations in minutes. Describe your topic, choose a style, and get a fully designed slide deck — with AI-generated backgrounds per slide, editable text, layouts, and live editor — ready to present or export. |
-| vi | Tạo bản trình chiếu đẹp mắt bằng AI chỉ trong vài phút. Mô tả chủ đề, chọn phong cách, nhận ngay slide hoàn chỉnh — mỗi slide có ảnh nền AI riêng, chỉnh sửa trực tiếp, xuất PPTX/PDF. |
-| ko | AI로 몇 분 안에 멋진 프레젠테이션을 만드세요. 주제를 설명하고 스타일을 선택하면, 슬라이드마다 AI 배경 이미지와 편집 가능한 텍스트가 포함된 완성 덱이 준비됩니다. |
-| ja | AIを使って数分で美しいプレゼンテーションを作成。トピックを説明してスタイルを選ぶだけで、スライドごとにAI生成背景画像、ライブ編集、PPTX/PDFエクスポートが揃った完成スライドが手に入ります。 |
-
-### Features (6 items — 4 langs each)
-```json
-[
-  { "en": "AI outline & slide content generation",         "vi": "AI tự sinh outline & nội dung từng slide",        "ko": "AI 아웃라인 및 슬라이드 내용 생성",        "ja": "AIアウトライン＆スライド内容生成" },
-  { "en": "Unique AI background image per slide",          "vi": "Mỗi slide có ảnh nền AI riêng biệt",              "ko": "슬라이드마다 고유한 AI 배경 이미지",       "ja": "スライドごとにユニークなAI背景画像" },
-  { "en": "Live editor — inline text & layout editing",    "vi": "Live editor — chỉnh text & layout trực tiếp",     "ko": "라이브 에디터 — 인라인 텍스트 & 레이아웃", "ja": "ライブエディター — インライン編集" },
-  { "en": "AI Suggest — 3 content alternatives per slide", "vi": "AI Suggest — 3 gợi ý nội dung cho mỗi slide",     "ko": "AI 제안 — 슬라이드당 3가지 대안",          "ja": "AIサジェスト — スライドごとに3案" },
-  { "en": "5 layouts: center, left, two-col, full-bg, image-right", "vi": "5 layout: giữa, trái, 2 cột, full-bg, ảnh phải", "ko": "5가지 레이아웃 지원",                "ja": "5種類のレイアウト対応" },
-  { "en": "Export to PPTX / PDF / PNG",                    "vi": "Xuất file PPTX / PDF / PNG",                      "ko": "PPTX / PDF / PNG 내보내기",                "ja": "PPTX / PDF / PNG エクスポート" }
-]
-```
-
-### Tags
-`presentation`, `slides`, `ai-design`, `powerpoint`, `pitch-deck`, `canva-alternative`, `business`, `education`, `export-pptx`, `live-editor`
-
-### Problems
-- Tạo slide mất nhiều giờ với PowerPoint/Canva thủ công
-- Không có kỹ năng thiết kế nhưng cần bản trình chiếu chuyên nghiệp
-- Background slide đơn điệu, thiếu visual impact
-- Nội dung viết không nhất quán, thiếu flow
-
-### Industries
-`education`, `business`, `marketing`, `startup`, `healthcare`, `ecommerce`
-
----
-
-## STEP 3.5 — PRO Landing Page Plan
-
-### Câu 1 — Hero Visual Type
-**`Custom StaticDemoMockup`** — Hiển thị fake app UI của workspace 3-panel (sidebar + canvas + thumbnail list) với slide preview bên trong. Dùng CDN URL từ STEP 3 (hero-demo).
-
-### Câu 2 — Key Specs (4 items)
-| Spec | Value |
-|------|-------|
-| Số layouts | 5 Layouts |
-| AI per slide | BG riêng mỗi slide |
-| Export | PPTX / PDF / PNG |
-| Thời gian | < 2 phút |
-
-### Câu 3 — Workflow Steps (4 bước)
-| Bước | Icon | Title | Desc |
-|------|------|-------|------|
-| 1 | `FileText` | Nhập chủ đề | Mô tả topic, chọn style, số slide, ngôn ngữ |
-| 2 | `Sparkles` | AI sinh nội dung | AI viết outline + nội dung từng slide tự động |
-| 3 | `Image` | Gen ảnh nền AI | Mỗi slide nhận 1 ảnh background AI riêng biệt |
-| 4 | `Edit3` | Chỉnh & Xuất | Live editor chỉnh trực tiếp → Export PPTX/PDF/PNG |
-
-### Câu 4 — Features Bento-Grid (6 items)
-| # | Icon | Title | Desc | Featured | thumbUrl |
-|---|------|-------|------|----------|---------|
-| 1 | `Sparkles` | AI sinh nội dung thông minh | Nhập chủ đề → AI outline + nội dung từng slide ngay lập tức | ✅ featured | `CDN_features_ai_content` |
-| 2 | `Image` | Ảnh nền AI riêng mỗi slide | Mỗi slide được gen 1 ảnh background độc đáo, đúng tone topic | ✅ featured | `CDN_features_ai_bg` |
-| 3 | `Edit3` | Live editor trực tiếp | Click vào text bất kỳ → chỉnh ngay trên canvas | — | — |
-| 4 | `Bot` | AI Suggest per slide | 3 gợi ý nội dung thay thế cho mỗi slide, 1-click áp dụng | — | — |
-| 5 | `LayoutGrid` | 5 layout templates | title-center, title-left, two-col, full-bg, image-right | — | — |
-| 6 | `Download` | Export đa định dạng | Xuất PPTX (PowerPoint), PDF, PNG từng slide | — | — |
-
-### Câu 5 — Media Output Type
-- Explorer API type: `image`
-- Caption theme: `"Slide AI - [topic]"`
-- ShowcaseSection: `<ShowcaseImageStrip type="image" limit={20} />`
-
-### Câu 6 — SEO
-- **title:** `Tạo Slide AI — Trình Chiếu Chuyên Nghiệp Tự Động | Skyverses`
-- **description:** `Tạo bản trình chiếu AI hoàn chỉnh trong 2 phút. Mỗi slide có ảnh nền AI riêng, live editor chỉnh trực tiếp, xuất PPTX/PDF/PNG. Miễn phí thử ngay.`
-- **keywords:** `tạo slide AI, trình chiếu AI, AI presentation, powerpoint tự động, canva alternative AI, pitch deck AI, Skyverses slide AI`
-- **canonical:** `/product/ai-slide-creator`
-- **jsonLd type:** `SoftwareApplication` → `"applicationCategory": "BusinessApplication"`
-
-### Câu 7 — Workspace Style Presets (6 presets)
-```typescript
-const SLIDE_STYLES: StylePreset[] = [
-  { id: 'corporate',  label: 'Corporate',   emoji: '💼', description: 'Professional, clean',    promptPrefix: 'professional corporate clean minimal background, ' },
-  { id: 'creative',   label: 'Creative',    emoji: '🎨', description: 'Vibrant, artistic',      promptPrefix: 'creative vibrant artistic colorful background, ' },
-  { id: 'minimal',    label: 'Minimal',     emoji: '◻️', description: 'White space, elegant',   promptPrefix: 'ultra minimal elegant white space abstract background, ' },
-  { id: 'dark',       label: 'Dark Mode',   emoji: '🌑', description: 'Premium dark',           promptPrefix: 'premium dark moody cinematic background, deep shadows, ' },
-  { id: 'gradient',   label: 'Gradient',    emoji: '🌈', description: 'Smooth gradients',       promptPrefix: 'smooth soft gradient mesh abstract background, pastel tones, ' },
-  { id: 'nature',     label: 'Nature',      emoji: '🌿', description: 'Organic, calm',          promptPrefix: 'organic natural calm serene abstract background, soft bokeh, ' },
-];
-```
-
-### Câu 8 — Featured Templates (4 mẫu)
-```typescript
-const FEATURED_TEMPLATES = [
-  { label: 'Startup Pitch Deck',     prompt: 'Pitch deck cho startup công nghệ, 8 slides, phong cách tối giản premium, màu navy + gold', style: 'Dark Mode' },
-  { label: 'Báo cáo doanh nghiệp',  prompt: 'Business report Q3 2025, 6 slides, professional corporate, màu xanh dương + trắng, có charts', style: 'Corporate' },
-  { label: 'Bài giảng đại học',     prompt: 'Bài giảng về Machine Learning, 10 slides, educational layout, màu tươi dễ đọc, flow rõ ràng', style: 'Creative' },
-  { label: 'Marketing Campaign',    prompt: 'Marketing campaign Q4 2025, 7 slides, vibrant colorful, social media focus, CTA mạnh', style: 'Gradient' },
-];
-```
-
-### Câu 9 — Demo Images Plan (5 ảnh từ STEP 3)
-| # | Platform key | Mô tả prompt | Size |
-|---|-------------|-------------|------|
-| 1 | `thumbnail` | Hero — laptop mockup hiển thị workspace 3-panel với slide đẹp bên trong, dark premium | 1024×1024 |
-| 2 | `corporate` | Corporate pitch deck 8 slides — style dark navy, gold accent, professional | 1200×630 |
-| 3 | `education` | Bài giảng đại học — slide sáng, màu xanh tươi, layout rõ ràng, có bullet points | 1200×630 |
-| 4 | `marketing` | Marketing campaign deck — vibrant gradient, bold typography, data visualization | 1200×630 |
-| 5 | `startup` | Startup investor pitch — minimal dark, white text bold, cinematic background | 1200×630 |
-
-### Câu 10 — Use Cases (6 items)
-```typescript
-const USE_CASES = [
-  { icon: 'Briefcase',     title: 'Startup Pitch',      desc: 'Tạo investor deck chuyên nghiệp trong 2 phút, không cần designer' },
-  { icon: 'GraduationCap', title: 'Giáo dục',           desc: 'Bài giảng, slide học thuật đẹp mắt với layout tối ưu cho sinh viên' },
-  { icon: 'TrendingUp',    title: 'Business Report',    desc: 'Báo cáo kinh doanh, KPI quarterly với data visualization tự động' },
-  { icon: 'Megaphone',     title: 'Marketing Campaign', desc: 'Campaign deck vibrant, CTA mạnh, phù hợp pitch cho client' },
-  { icon: 'Heart',         title: 'Healthcare',         desc: 'Medical briefing, conference slide chuẩn chỉnh, dễ đọc' },
-  { icon: 'ShoppingBag',   title: 'Product Launch',     desc: 'Launch deck showcase sản phẩm mới với visual AI ấn tượng' },
-];
-```
-
-### Câu 11 — Live Stats (3 items)
-| Label | Icon | Default |
-|-------|------|---------|
-| Slide tạo hôm nay | `Layers` | 1,240 |
-| Người dùng | `Users` | 8,500+ |
-| Đánh giá TB | `Star` | 4.8 / 5 |
-
-### Câu 12 — FAQ (5 câu)
-1. **AI tạo ảnh nền cho từng slide như thế nào?** — Mỗi slide được gen 1 ảnh background riêng bằng Skyverses Image Gen API, dựa trên topic + style bạn chọn. Hoàn toàn tự động.
-2. **Tôi có thể chỉnh sửa nội dung sau khi AI tạo không?** — Có. Workspace có live editor, click trực tiếp vào text/layout để sửa. AI cũng gợi ý 3 phiên bản thay thế cho mỗi slide.
-3. **Export ra định dạng gì?** — PPTX (dùng được trong PowerPoint, Google Slides), PDF, và PNG từng slide riêng.
-4. **Tôi có toàn quyền sở hữu slide không?** — Có. Toàn bộ nội dung và ảnh AI bạn tạo ra thuộc về bạn.
-5. **Hiện tại miễn phí, sau này có mất phí không?** — Hiện tại hoàn toàn miễn phí. Khi ra mắt chính thức sẽ thông báo trước.
-
-### Câu 13 — Section Image Plan
-| Section | Visual | Source |
-|---------|--------|--------|
-| HeroSection | Custom `StaticDemoMockup` — app UI chrome + slide canvas preview | `CDN_hero_demo_ai_slide_creator` |
-| WorkflowSection | Icon-only + result thumbnail step 4 | `CDN_workflow_result` |
-| FeaturesSection | 2 featured cards có `thumbUrl` | `CDN_features_ai_content`, `CDN_features_ai_bg` |
-| ShowcaseSection | `<ShowcaseImageStrip type="image" limit={20} />` | Explorer API |
-| UseCasesSection | Icon-only | Lucide icons |
-| FinalCTA | `<GradientMesh intensity="strong" />` | — |
-
----
-
-## STEP 4 — Landing Sections cần build
-
-```
-components/landing/ai-slide-creator/
-  ├── HeroSection.tsx          ← StaticDemoMockup (fake app chrome + slide canvas)
-  ├── LiveStatsBar.tsx         ← 3 stats: Slides tạo, Users, Rating
-  ├── WorkflowSection.tsx      ← 4 bước: Nhập → AI sinh → Gen BG → Edit & Export
-  ├── ShowcaseSection.tsx      ← ShowcaseImageStrip type="image"
-  ├── FeaturesSection.tsx      ← 6 features bento-grid (2 featured có thumbUrl)
-  ├── UseCasesSection.tsx      ← 6 use cases theo industry
-  ├── FAQSection.tsx           ← 5 câu hỏi accordion
-  └── FinalCTA.tsx             ← GradientMesh strong + CTA button
-```
-
----
-
-## STEP 5 — Page & Route
-
-```typescript
-// pages/slides/AISlideCreatorPage.tsx  (lazy load)
-// Route trong App.tsx:
-<Route path="/product/ai-slide-creator" element={<AISlideCreatorPage />} />
-```
-
-**SEO meta** (`usePageMeta`):
-```typescript
-usePageMeta({
-  title: 'Tạo Slide AI — Trình Chiếu Chuyên Nghiệp Tự Động | Skyverses',
-  description: 'Tạo bản trình chiếu AI hoàn chỉnh trong 2 phút. Mỗi slide có ảnh nền AI riêng, live editor chỉnh trực tiếp, xuất PPTX/PDF/PNG. Miễn phí thử ngay.',
-  keywords: 'tạo slide AI, trình chiếu AI, AI presentation, powerpoint tự động, canva alternative AI, pitch deck AI, Skyverses slide AI',
-  canonical: '/product/ai-slide-creator',
-});
-```
-
----
-
-## STEP 6 — Workspace Architecture
-
-> ⚡ Product loại **Tool/Workspace** — KHÔNG dùng `ModelEngineSettings` (bỏ qua STEP 6.5)
-
-### File structure
-```
-pages/slides/AISlideCreatorPage.tsx           ← Route wrapper
-components/AISlideCreatorWorkspace.tsx        ← Full-screen workspace
-components/slide-studio/
-  ├── SlideSidebar.tsx                        ← Panel trái: topic, style, lang, color, ref image
-  ├── SlideCanvas.tsx                         ← Panel giữa: canvas live editor
-  ├── SlideThumbnailList.tsx                  ← Danh sách thumbnail + reorder
-  ├── SlideToolbar.tsx                        ← Toolbar trên canvas: layout, regen BG, AI suggest
-  ├── SlideTextEditor.tsx                     ← Inline contentEditable text editor
-  ├── AIGenerateModal.tsx                     ← Modal gen toàn bộ deck (topic + options)
-  └── SlideExportModal.tsx                    ← Export PPTX / PDF / PNG
-hooks/useSlideStudio.ts                       ← Toàn bộ state + logic
-apis/slides.ts                                ← API wrapper (reuse imagesApi + generateDemoText)
-```
-
-### Layout (3 panel)
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│  [✕]  AI Slide Creator  [Undo][Redo]  [Export ▼]  [🆓 Free]         │  HeaderNav
-├──────────────┬──────────────────────────────────┬────────────────────┤
-│ THUMBNAIL    │         CANVAS                   │   AI SIDEBAR       │
-│ LIST         │  (Live Editor — active slide)    │                    │
-│              │                                  │ Topic input        │
-│ [Slide 1] ◀  │  ┌──────────────────────────┐   │ Style picker       │
-│ [Slide 2]    │  │  BG Image (AI gen)        │   │ Language select    │
-│ [Slide 3]    │  │  + Title (contentEditable)│   │ Color palette      │
-│   ...        │  │  + Body  (contentEditable)│   │ Ref image upload   │
-│              │  └──────────────────────────┘   │                    │
-│ [+ Add slide]│  [Layout ▼] [🔄 Regen BG]        │ [✨ Generate Deck] │
-│              │  [✨ AI Suggest]                  │ [✨ AI Suggest]    │
-└──────────────┴──────────────────────────────────┴────────────────────┘
-```
-
-### Core Types (`useSlideStudio.ts`)
-```typescript
-type SlideLayout = 'title-center' | 'title-left' | 'title-image' | 'full-bg' | 'two-col';
-
-interface Slide {
-  id: string;
-  index: number;
-  title: string;
-  body: string;
-  layout: SlideLayout;
-  bgImageUrl: string | null;
-  bgJobId: string | null;
-  bgStatus: 'idle' | 'generating' | 'done' | 'error';
-  colorTheme: string;
-  textColor: 'light' | 'dark';
-  aiSuggestions: Array<{ title: string; body: string }>;
-  isSuggestLoading: boolean;
-}
-
-interface SlideStudioState {
-  slides: Slide[];
-  activeSlideId: string;
-  deckTopic: string;
-  deckStyle: string;           // maps to SLIDE_STYLES preset
-  deckLanguage: Language;      // 'en' | 'vi' | 'ko' | 'ja'
-  slideCount: number;          // 4 | 6 | 8 | 10 | 12
-  colorPalette: string;
-  refImages: string[];         // brand reference images (upload → GCS)
-  isGeneratingDeck: boolean;   // đang gen toàn bộ outline + images
-  isDirty: boolean;
-  undoStack: Slide[][];
-  redoStack: Slide[][];
-}
-```
-
-### Generation Flows
-
-#### Flow 1 — Gen toàn bộ Deck
-```
-1. User nhập deckTopic + deckStyle + slideCount + deckLanguage
-2. [✨ Generate Deck] → mở AIGenerateModal confirm
-3. → generateDemoText() (Gemini): sinh JSON outline [{title, body}] x slideCount
-4. → Tạo slides[] với text content, bgStatus='idle'
-5. → Loop: forEach slide → imagesApi.createJob({
-       type: 'text_to_image',
-       input: { prompt: buildBgPrompt(slide, deckStyle) },
-       config: { width: 1280, height: 720, aspectRatio: '16:9', seed: 0, style: '' },
-       engine: { provider: 'gommo', model: 'google_image_gen_4_5' },
-       ...
-     })
-6. → setSlide bgStatus='generating', bgJobId=jobId
-7. → pollJobOnce() per slide → khi done: bgImageUrl=url, bgStatus='done'
-8. → Live update canvas: slide xong hiện ngay (không đợi toàn bộ deck)
-```
-
-#### Flow 2 — Regen Background (1 slide)
-```
-User click [🔄 Regen BG] trên slide đang active:
-→ setSlide bgStatus='generating'
-→ imagesApi.createJob() với prompt mới
-→ pollJobOnce() → update bgImageUrl
-```
-
-#### Flow 3 — AI Suggest (1 slide)
-```
-User click [✨ AI Suggest]:
-→ setSlide isSuggestLoading=true
-→ generateDemoText(prompt: context về topic + slide index + nội dung hiện tại)
-→ Parse 3 suggestions [{title, body}]
-→ setSlide aiSuggestions=[...], isSuggestLoading=false
-→ Hiển thị panel gợi ý → user click để apply vào slide
-```
-
-#### Flow 4 — Export
-```
-[Export ▼] dropdown:
-├── PPTX → pptxgenjs: render từng slide (bgImageUrl + title + body + layout)
-├── PDF  → html2canvas capture SlideCanvas × n → jsPDF
-└── PNG  → html2canvas từng slide → JSZip → download .zip
-```
-
-### Prompts builder (`buildBgPrompt`)
-```typescript
-function buildBgPrompt(slide: Slide, style: string, refImages?: string[]): string {
-  const stylePrefix = SLIDE_STYLES.find(s => s.id === style)?.promptPrefix ?? '';
-  return `${stylePrefix}abstract background for presentation slide about "${slide.title}", 
-    16:9 wide format, no text, no UI elements, cinematic depth, premium quality`;
-}
-```
-
-### Dependencies cần install
-```bash
-npm install pptxgenjs        # Export PPTX
-npm install html2canvas      # Export PDF/PNG
-npm install jspdf            # Export PDF
-npm install jszip            # Zip PNG exports
-npm install react-draggable  # Drag elements trên canvas (optional Phase 6)
-```
-
----
-
-## Build Phases
-
-| Phase | Nội dung | Files |
-|-------|---------|-------|
-| **1** | Scaffold workspace 3-panel + `useSlideStudio` state | `AISlideCreatorWorkspace.tsx`, `useSlideStudio.ts`, `SlideSidebar.tsx`, `SlideThumbnailList.tsx` |
-| **2** | AI gen deck — text outline + BG images per slide | `hooks/useSlideStudio.ts` (genDeck logic), `apis/slides.ts`, `AIGenerateModal.tsx` |
-| **3** | Live editor — inline text edit + layout swap + canvas | `SlideCanvas.tsx`, `SlideTextEditor.tsx`, `SlideToolbar.tsx` |
-| **4** | AI Suggest panel per slide | `AISuggestPanel` tích hợp trong toolbar |
-| **5** | Export PPTX / PDF / PNG | `SlideExportModal.tsx` |
-| **6** | Ref image upload + brand color extract | `SlideSidebar.tsx` mở rộng |
-
----
-
-## Files sẽ tạo/sửa
-
-| Action | File |
-|--------|------|
-| ✅ Tạo | `pages/slides/AISlideCreatorPage.tsx` |
-| ✅ Tạo | `components/AISlideCreatorWorkspace.tsx` |
-| ✅ Tạo | `components/slide-studio/SlideSidebar.tsx` |
-| ✅ Tạo | `components/slide-studio/SlideCanvas.tsx` |
-| ✅ Tạo | `components/slide-studio/SlideThumbnailList.tsx` |
-| ✅ Tạo | `components/slide-studio/SlideToolbar.tsx` |
-| ✅ Tạo | `components/slide-studio/SlideTextEditor.tsx` |
-| ✅ Tạo | `components/slide-studio/AIGenerateModal.tsx` |
-| ✅ Tạo | `components/slide-studio/SlideExportModal.tsx` |
-| ✅ Tạo | `hooks/useSlideStudio.ts` |
-| ✅ Tạo | `apis/slides.ts` |
-| ✅ Tạo | `components/landing/ai-slide-creator/HeroSection.tsx` |
-| ✅ Tạo | `components/landing/ai-slide-creator/LiveStatsBar.tsx` |
-| ✅ Tạo | `components/landing/ai-slide-creator/WorkflowSection.tsx` |
-| ✅ Tạo | `components/landing/ai-slide-creator/ShowcaseSection.tsx` |
-| ✅ Tạo | `components/landing/ai-slide-creator/FeaturesSection.tsx` |
-| ✅ Tạo | `components/landing/ai-slide-creator/UseCasesSection.tsx` |
-| ✅ Tạo | `components/landing/ai-slide-creator/FAQSection.tsx` |
-| ✅ Tạo | `components/landing/ai-slide-creator/FinalCTA.tsx` |
-| ✅ Tạo | `seed-ai-slide-creator.mjs` |
-| ✅ Tạo | `scripts/gen-ai-slide-creator-landing-images.sh` |
-| ✅ Tạo | `scripts/gen-ai-slide-creator-showcase.sh` |
-| ✅ Tạo | `scripts/gen-ai-slide-creator-feature-thumbs.sh` |
-| ✏️ Sửa | `App.tsx` — thêm route `/product/ai-slide-creator` |
 
