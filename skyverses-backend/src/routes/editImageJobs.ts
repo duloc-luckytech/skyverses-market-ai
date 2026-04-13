@@ -22,17 +22,20 @@ router.post("/", async (req: any, res) => {
   try {
     const {
       mediaId,
-      projectId,
       editType,
       cropCoordinates,
       drawPayload,
     } = req.body;
 
+    // projectId is optional — default to 'default' when not provided
+    // (FXFlow worker may not have populated it yet at the time of job creation)
+    const projectId: string = req.body.projectId || "default";
+
     // ── Validate ─────────────────────────────────────────
-    if (!mediaId || !projectId || !editType) {
+    if (!mediaId || !editType) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields: mediaId, projectId, editType",
+        message: "Missing required fields: mediaId, editType",
       });
     }
 
