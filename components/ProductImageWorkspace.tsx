@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Wand2, AlertTriangle, ImagePlus, Settings2, Coins, Zap, Layers, Send, Image as ImageIcon, Plus } from 'lucide-react';
+import { Loader2, AlertTriangle, ImagePlus, Coins, Zap, Layers, Image as ImageIcon, Settings2, ChevronUp, ChevronDown, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
@@ -8,7 +8,7 @@ import { useProductImageEditor } from '../hooks/useProductImageEditor';
 import { EditorHeader } from './product-image/EditorHeader';
 import { EditorViewport } from './product-image/EditorViewport';
 import { EditorSidebar } from './product-image/EditorSidebar';
-import { ModelAISelector } from './product-image/ModelAISelector';
+import { ModelEngineSettings } from './image-generator/ModelEngineSettings';
 import ResourceAuthModal from './common/ResourceAuthModal';
 import ImageLibraryModal from './ImageLibraryModal';
 
@@ -28,7 +28,7 @@ const RATIO_PRESETS = [
   { label: '3:4', value: 3 / 4 },
 ];
 
-const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({ 
+const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
   isOpen, onClose, initialImage, onApply
 }) => {
   const { theme } = useTheme();
@@ -36,6 +36,7 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
   const ACTION_COST = e.selectedModelCost;
 
   const [isMobileSidebarExpanded, setIsMobileSidebarExpanded] = useState(false);
+  const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
 
   if (!isOpen) return null;
 
@@ -48,28 +49,28 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
 
   return (
     <AnimatePresence>
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        exit={{ opacity: 0, y: 10 }} 
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 10 }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="fixed inset-0 z-[700] flex flex-col bg-white dark:bg-[#0b0c10] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500"
       >
-        
+
         {/* Mobile Backdrop */}
         <AnimatePresence>
           {isMobileSidebarExpanded && (
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              onClick={() => setIsMobileSidebarExpanded(false)} 
-              className="lg:hidden fixed inset-0 bg-black/60 z-[140] backdrop-blur-sm" 
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileSidebarExpanded(false)}
+              className="lg:hidden fixed inset-0 bg-black/60 z-[140] backdrop-blur-sm"
             />
           )}
         </AnimatePresence>
 
-        <EditorHeader 
+        <EditorHeader
           activeTool={e.activeTool} setActiveTool={e.setActiveTool}
           isCropping={e.isCropping} setIsCropping={e.setIsCropping}
           brushSize={e.brushSize} setBrushSize={e.setBrushSize}
@@ -92,7 +93,7 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
             reader.onload = (ev) => {
               const dataUrl = ev.target?.result as string;
               e.setOriginalSource(dataUrl);
-              e.pushToHistory(dataUrl); 
+              e.pushToHistory(dataUrl);
             };
             reader.readAsDataURL(file);
           }
@@ -101,12 +102,12 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
         {/* ═══ MAIN WORKSPACE AREA ═══ */}
         <div className="flex-grow flex overflow-hidden relative">
           {!e.isCropping && (
-            <EditorSidebar 
+            <EditorSidebar
               activeTab={e.activeTab} setActiveTab={e.setActiveTab}
               visibleLayers={e.visibleLayers} setVisibleLayers={e.setVisibleLayers}
               selectedModel={e.selectedModel} setSelectedModel={e.setSelectedModel}
               models={e.availableModels} onSetPrompt={e.setPrompt}
-              history={e.history} 
+              history={e.history}
               originalSource={e.originalSource}
               onHistoryClick={(url) => e.setResult(url)}
               isActionsDisabled={!e.result}
@@ -123,7 +124,7 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
           )}
 
           <div className="flex-grow flex flex-col relative overflow-hidden">
-            <EditorViewport 
+            <EditorViewport
               result={e.result} zoom={e.zoom} setZoom={e.setZoom}
               panOffset={e.panOffset} setPanOffset={e.setPanOffset}
               activeTool={e.activeTool} isCropping={e.isCropping} setIsCropping={e.setIsCropping}
@@ -141,69 +142,129 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
 
             {/* ═══ PROMPT + GENERATE BAR ═══ */}
             {!e.isCropping && (
-              <div className="absolute bottom-20 lg:bottom-6 left-0 right-16 md:right-24 px-4 md:px-6 z-40 transition-all">
-                <div className="relative mx-auto max-w-4xl">
+              <div className="absolute bottom-20 lg:bottom-6 left-0 right-16 md:right-24 px-3 md:px-5 z-40">
+                <div className="relative mx-auto max-w-3xl space-y-2">
+
+                  {/* AI Settings Panel — collapsible, slides up from bottom */}
+                  <AnimatePresence>
+                    {isAISettingsOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        className="bg-white/97 dark:bg-[#14151a]/97 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden"
+                      >
+                        {/* Panel header */}
+                        <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 dark:border-white/[0.04]">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                            <Settings2 size={11} className="text-brand-blue" />
+                            Cấu hình AI Model
+                          </span>
+                          <button
+                            onClick={() => setIsAISettingsOpen(false)}
+                            className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+
+                        {/* ModelEngineSettings — same component as AIImageGeneratorWorkspace */}
+                        <div className="px-4 py-3">
+                          <ModelEngineSettings
+                            availableModels={e.availableModels}
+                            selectedModel={e.selectedModel}
+                            setSelectedModel={e.setSelectedModel}
+                            selectedRatio={e.selectedRatio}
+                            setSelectedRatio={e.setSelectedRatio}
+                            selectedRes={e.selectedRes}
+                            setSelectedRes={e.setSelectedRes}
+                            quantity={1}
+                            setQuantity={() => {}}
+                            selectedEngine={e.selectedEngine}
+                            onSelectEngine={e.setSelectedEngine}
+                            selectedMode={e.selectedMode}
+                            setSelectedMode={e.setSelectedMode}
+                            activeMode="SINGLE"
+                            isGenerating={e.isGenerating}
+                            familyList={e.familyList}
+                            selectedFamily={e.selectedFamily}
+                            setSelectedFamily={e.setSelectedFamily}
+                            familyModels={e.familyModels}
+                            familyModes={e.familyModes}
+                            familyRatios={e.familyRatios}
+                            familyResolutions={e.familyResolutions}
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   {/* Main input row */}
-                  <div className="flex items-center bg-white/95 dark:bg-[#14151a]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-2xl h-14 md:h-16 px-2 md:px-4 shadow-[0_8px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] focus-within:border-brand-blue/40 transition-all overflow-hidden">
-                    {/* Ảnh tham chiếu */}
-                    <div className="flex items-center gap-1 md:gap-2 pl-2 md:pl-3 pr-1.5 border-r border-slate-100 dark:border-white/5 mr-1.5 md:mr-3 shrink-0">
+                  <div className="flex items-center gap-2">
+                    {/* Reference image button */}
+                    <div className="flex items-center gap-1 shrink-0">
                       {e.references.slice(0, 1).map((ref, idx) => (
-                        <div key={idx} className="relative w-8 h-8 md:w-9 md:h-9 rounded-lg overflow-hidden border border-slate-200 dark:border-white/10">
+                        <div key={idx} className="relative w-10 h-10 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-white/10 shrink-0">
                           <img src={ref} className="w-full h-full object-cover" />
                         </div>
                       ))}
-                      <button onClick={() => e.setIsLibraryOpen(true)} className="w-8 h-8 md:w-9 md:h-9 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-lg flex items-center justify-center text-slate-300 dark:text-white/20 hover:border-brand-blue hover:text-brand-blue transition-all" title="Thêm ảnh tham chiếu"><ImagePlus size={14} /></button>
+                      <button
+                        onClick={() => e.setIsLibraryOpen(true)}
+                        className="w-10 h-10 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-xl flex items-center justify-center text-slate-300 dark:text-white/20 hover:border-brand-blue hover:text-brand-blue transition-all shrink-0"
+                        title="Thêm ảnh tham chiếu"
+                      >
+                        <ImagePlus size={15} />
+                      </button>
                     </div>
 
-                    {/* Prompt input */}
-                    <input
-                      value={e.prompt}
-                      onChange={(ev) => e.setPrompt(ev.target.value)}
-                      onKeyDown={(ev) => ev.key === 'Enter' && !isGenerateDisabled && e.handleGenerate()}
-                      className="flex-grow bg-transparent border-none outline-none text-[11px] md:text-sm font-bold text-slate-800 dark:text-white px-2 placeholder:text-slate-300 dark:placeholder:text-slate-600 truncate"
-                      placeholder="VD: Tạo ảnh sản phẩm nền trắng, xóa nền, thêm ánh sáng..."
-                    />
+                    {/* Prompt + AI config + credits row */}
+                    <div className="flex-grow flex items-center bg-white/95 dark:bg-[#14151a]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-2xl h-12 px-3 shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)] focus-within:border-brand-blue/40 transition-all overflow-hidden">
+                      {/* Prompt input */}
+                      <input
+                        value={e.prompt}
+                        onChange={(ev) => e.setPrompt(ev.target.value)}
+                        onKeyDown={(ev) => ev.key === 'Enter' && !isGenerateDisabled && e.handleGenerate()}
+                        className="flex-grow bg-transparent border-none outline-none text-[11px] md:text-sm font-medium text-slate-800 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-600 truncate"
+                        placeholder="Nhập prompt hoặc mô tả chỉnh sửa ảnh..."
+                      />
 
-                    {/* Right: model selector + credits + settings */}
-                    <div className="flex items-center gap-1.5 md:gap-3 pl-1.5 md:pl-3 border-l border-slate-100 dark:border-white/5 shrink-0 ml-1 md:ml-2">
-                      <div className="hidden sm:block">
-                        <ModelAISelector
-                          selectedModel={e.selectedModel}
-                          models={e.availableModels}
-                          onSelect={e.setSelectedModel}
-                          selectedEngine={e.selectedEngine}
-                          onSelectEngine={e.setSelectedEngine}
-                          variant="compact"
-                        />
-                      </div>
+                      {/* Divider */}
+                      <div className="w-px h-6 bg-slate-100 dark:bg-white/5 mx-2 shrink-0" />
 
-                      {/* Credits & cost */}
-                      <div className="hidden lg:flex items-center gap-2 border-l border-slate-100 dark:border-white/5 pl-3">
-                        <div className="flex flex-col items-end gap-0.5">
-                          <div className="flex items-center gap-1">
-                            <Coins size={9} className="text-amber-500" />
-                            <span className={`text-[10px] font-black leading-none tracking-tight ${e.usagePreference === 'key' ? 'text-purple-500' : 'text-slate-700 dark:text-white'}`}>
-                              {e.usagePreference === 'key' ? 'Unlimited' : `${e.credits.toLocaleString()}`}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-0.5 text-[8px] font-bold text-orange-500">
-                            <Zap size={8} fill="currentColor" />
-                            <span>−{ACTION_COST} / lượt</span>
-                          </div>
+                      {/* Credits display */}
+                      <div className="hidden md:flex flex-col items-end gap-0 shrink-0 mr-2">
+                        <div className="flex items-center gap-1">
+                          <Coins size={9} className="text-amber-500" />
+                          <span className={`text-[10px] font-black leading-none tracking-tight ${e.usagePreference === 'key' ? 'text-purple-500' : 'text-slate-700 dark:text-white'}`}>
+                            {e.usagePreference === 'key' ? 'Key' : `${e.credits.toLocaleString()}`}
+                          </span>
                         </div>
-                        <button
-                          onClick={() => e.setShowResourceModal(true)}
-                          className="p-1.5 bg-slate-100 dark:bg-white/5 rounded-lg hover:text-brand-blue transition-colors text-slate-400"
-                          title="Đổi nguồn xử lý"
-                        >
-                          <Settings2 size={12} />
-                        </button>
+                        <div className="flex items-center gap-0.5 text-[8px] font-bold text-orange-500">
+                          <Zap size={7} fill="currentColor" />
+                          <span>−{ACTION_COST}</span>
+                        </div>
                       </div>
+
+                      {/* AI Settings toggle button */}
+                      <button
+                        onClick={() => setIsAISettingsOpen(!isAISettingsOpen)}
+                        className={`shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg border transition-all text-[10px] font-bold uppercase tracking-tight ${
+                          isAISettingsOpen
+                            ? 'bg-brand-blue/10 border-brand-blue/30 text-brand-blue'
+                            : 'bg-slate-100 dark:bg-white/5 border-slate-100 dark:border-white/[0.06] text-slate-500 dark:text-slate-400 hover:border-brand-blue/30 hover:text-brand-blue'
+                        }`}
+                        title="Cấu hình AI Model"
+                      >
+                        <Settings2 size={11} />
+                        <span className="hidden sm:inline">{e.selectedFamily || 'AI'}</span>
+                        {isAISettingsOpen ? <ChevronDown size={9} /> : <ChevronUp size={9} />}
+                      </button>
                     </div>
                   </div>
 
-                  {/* Generate button — full width below input on mobile, or as separate prominent button */}
-                  <div className="mt-2 relative group/genbtn">
+                  {/* Generate button */}
+                  <div className="relative group/genbtn">
                     <button
                       onClick={() => !isGenerateDisabled && e.handleGenerate()}
                       disabled={isGenerateDisabled}
@@ -236,8 +297,8 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
                   <Layers size={12} /> Phiên bản
                 </div>
                 {allAssets.map((asset) => (
-                  <button 
-                    key={asset.id} 
+                  <button
+                    key={asset.id}
                     onClick={() => e.setResult(asset.url)}
                     className={`relative w-11 h-11 md:w-14 md:h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 hover:scale-105 ${e.result === asset.url ? 'border-brand-blue shadow-lg shadow-brand-blue/20' : 'border-slate-200 dark:border-white/10 opacity-50 hover:opacity-100'}`}
                   >
@@ -252,24 +313,24 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
         </div>
 
         {/* ═══ MODALS ═══ */}
-        <ImageLibraryModal 
-          isOpen={e.isLibraryOpen} 
-          onClose={() => e.setIsLibraryOpen(false)} 
+        <ImageLibraryModal
+          isOpen={e.isLibraryOpen}
+          onClose={() => e.setIsLibraryOpen(false)}
           onConfirm={(assets) => e.setReferences(assets.map(a => a.url))}
           maxSelect={6}
         />
-        
-        <ResourceAuthModal 
-          isOpen={e.showResourceModal} 
-          onClose={() => e.setShowResourceModal(false)} 
+
+        <ResourceAuthModal
+          isOpen={e.showResourceModal}
+          onClose={() => e.setShowResourceModal(false)}
           onConfirm={(pref) => {
             e.setUsagePreference(pref);
             localStorage.setItem('skyverses_usage_preference', pref);
             e.setShowResourceModal(false);
             if (e.isResumingGenerate) { e.setIsResumingGenerate(false); e.handleGenerate(); }
-          }} 
-          hasPersonalKey={e.hasPersonalKey} 
-          totalCost={ACTION_COST} 
+          }}
+          hasPersonalKey={e.hasPersonalKey}
+          totalCost={ACTION_COST}
         />
 
         {/* ═══ LOW CREDIT ALERT ═══ */}
