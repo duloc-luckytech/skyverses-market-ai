@@ -172,6 +172,7 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
               onMouseDown={e.handleMouseDownViewport}
               onUploadClick={() => (window as any).document.getElementById('editor-file-input')?.click()}
               isGenerating={e.isGenerating}
+              status={e.status}
               updateTextLayer={e.updateTextLayer}
               onDrop={e.handleDrop}
             />

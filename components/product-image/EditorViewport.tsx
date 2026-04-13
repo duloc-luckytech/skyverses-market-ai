@@ -28,6 +28,7 @@ interface EditorViewportProps {
   onMouseDown: (e: React.MouseEvent) => void;
   onUploadClick: () => void;
   isGenerating: boolean;
+  status?: string;
   updateTextLayer: (id: string, newText: string) => void;
   onDrop?: (e: React.DragEvent) => void;
 }
@@ -36,7 +37,7 @@ export const EditorViewport: React.FC<EditorViewportProps> = ({
   result, zoom, setZoom, panOffset, setPanOffset, activeTool, isCropping, setIsCropping,
   cropBox, setDragStart, setResizeHandle, applyCrop, cropRatio, handleRatioSelect, ratioPresets,
   textLayers, handleTextMouseDown, selectedTextId, visibleLayers, canvasRef, imageRef, containerRef,
-  onMouseDown, onUploadClick, isGenerating, updateTextLayer, onDrop
+  onMouseDown, onUploadClick, isGenerating, status, updateTextLayer, onDrop
 }) => {
   return (
     <div 
@@ -140,7 +141,7 @@ export const EditorViewport: React.FC<EditorViewportProps> = ({
                           <Wand2 size={20} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/60 animate-pulse" />
                         </div>
                         <div className="text-center space-y-1.5">
-                          <p className="text-sm font-bold text-white animate-pulse">AI đang xử lý ảnh...</p>
+                          <p className="text-sm font-bold text-white animate-pulse">{status || 'AI đang xử lý ảnh...'}</p>
                           <p className="text-[10px] font-medium text-white/40 uppercase tracking-widest">Vui lòng chờ trong giây lát</p>
                         </div>
                       </motion.div>
