@@ -584,19 +584,49 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
   const applyDraw = async () => {
     if (!result || !prompt.trim()) return;
 
-    // result phải là URL (không phải data URL) vì BE cần referenceImageUrl truy cập được
-    let referenceImageUrl = result;
-    if (result.startsWith('data:')) {
-      setStatus('❌ Vui lòng dùng ảnh từ URL (không phải upload local)');
-      return;
-    }
-
     setIsGenerating(true);
-    setStatus('🎨 Đang gửi lệnh draw...');
+    setStatus('📤 Đang upload ảnh...');
 
     try {
+      // ── Step 1: Convert result → base64 ──────────────────────────────────
+      let base64: string;
+      let referenceImageUrl = result;
+
+      if (result.startsWith('data:')) {
+        base64 = result.split(',')[1];
+      } else {
+        const res = await fetch(result);
+        const blob = await res.blob();
+        base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve((reader.result as string).split(',')[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      // ── Step 2: Upload → get mediaId ─────────────────────────────────────
+      const uploadRes = await mediaApi.uploadImage({
+        base64,
+        fileName: `draw_source_${Date.now()}.png`,
+        size: Math.ceil(base64.length * 0.75),
+        source: 'fxflow',
+      });
+
+      if (!uploadRes.success || !uploadRes.mediaId) {
+        throw new Error(uploadRes.message || 'Upload ảnh thất bại');
+      }
+
+      const mediaId = uploadRes.mediaId;
+      const projectId = uploadRes.raw?.projectId || 'default';
+      referenceImageUrl = uploadRes.raw?.url || result;
+
+      setStatus('🎨 Đang gửi lệnh draw...');
+
+      // ── Step 3: Create draw job ───────────────────────────────────────────
       const createRes = await editImageApi.createJob({
-        projectId: 'default',
+        mediaId,
+        projectId,
         editType: 'draw',
         drawPayload: {
           prompt: prompt.trim(),
