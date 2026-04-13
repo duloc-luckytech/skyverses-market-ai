@@ -50,7 +50,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
   const [personalKey, setPersonalKey] = useState<string | undefined>(undefined);
   
   const [selectedEngine, setSelectedEngine] = useState('gommo');
-  const imageModels = useImageModels(selectedEngine, 'google_image_gen_4_5');
+  const imageModels = useImageModels(selectedEngine, 'google_image_gen_banana_pro');
   const { availableModels, selectedModel, setSelectedModel, selectedFamily, setSelectedFamily, selectedMode, setSelectedMode, selectedRatio, setSelectedRatio, selectedRes, setSelectedRes, familyList, familyModels, familyModes, familyResolutions, familyRatios, selectedModelCost } = imageModels;
 
   const [prompt, setPrompt] = useState('');
