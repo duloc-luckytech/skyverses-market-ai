@@ -10,12 +10,17 @@ export interface CropCoordinates {
   bottom: number;
 }
 
+export interface DrawPayload {
+  prompt: string;
+  referenceImageUrl: string;
+}
+
 export interface CreateEditImageJobRequest {
-  mediaId: string;
+  mediaId?: string;
   projectId: string;
   editType: 'crop' | 'draw';
   cropCoordinates?: CropCoordinates;
-  drawPayload?: any;
+  drawPayload?: DrawPayload;
 }
 
 export interface CreateEditImageJobResponse {

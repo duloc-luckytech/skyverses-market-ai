@@ -581,6 +581,83 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     }
   };
 
+  const applyDraw = async () => {
+    if (!result || !prompt.trim()) return;
+
+    // result phải là URL (không phải data URL) vì BE cần referenceImageUrl truy cập được
+    let referenceImageUrl = result;
+    if (result.startsWith('data:')) {
+      setStatus('❌ Vui lòng dùng ảnh từ URL (không phải upload local)');
+      return;
+    }
+
+    setIsGenerating(true);
+    setStatus('🎨 Đang gửi lệnh draw...');
+
+    try {
+      const createRes = await editImageApi.createJob({
+        projectId: 'default',
+        editType: 'draw',
+        drawPayload: {
+          prompt: prompt.trim(),
+          referenceImageUrl,
+        },
+      });
+
+      if (!createRes.success || !createRes.data?.jobId) {
+        throw new Error(createRes.message || 'Tạo draw job thất bại');
+      }
+
+      const jobId = createRes.data.jobId;
+      setStatus('⏳ Đang xử lý draw...');
+
+      let tickCount = 0;
+      await new Promise<void>((resolve, reject) => {
+        const poll = async () => {
+          if (isCancelledRef.current) { resolve(); return; }
+
+          tickCount++;
+          setStatus(`⏳ Đang xử lý... (${tickCount * 4}s)`);
+
+          const statusRes = await editImageApi.getJobStatus(jobId);
+          const st = statusRes.data?.status;
+
+          if (st === 'done') {
+            const resultUrl = statusRes.data?.result?.resultUrl;
+            if (resultUrl) {
+              pushToHistory(resultUrl);
+              setHistory(prev => [{
+                id: jobId,
+                url: resultUrl,
+                prompt: prompt.trim(),
+                timestamp: new Date().toLocaleTimeString()
+              }, ...prev]);
+              setPrompt('');
+              setStatus('✅ Draw hoàn tất');
+            } else {
+              reject(new Error('Không tìm thấy kết quả draw'));
+            }
+            resolve();
+          } else if (st === 'error' || st === 'cancelled') {
+            reject(new Error(statusRes.data?.error?.message || 'Draw job thất bại'));
+          } else {
+            if (tickCount >= 45) {
+              reject(new Error('Draw quá thời gian. Vui lòng thử lại.'));
+            } else {
+              setTimeout(poll, 4000);
+            }
+          }
+        };
+        setTimeout(poll, 2000);
+      });
+    } catch (err: any) {
+      console.error('[applyDraw] error:', err);
+      setStatus(`❌ Lỗi draw: ${err?.message || 'Thử lại sau'}`);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleExport = async () => {
     if (!result) return;
     try {
@@ -609,7 +686,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     textLayers, setTextLayers, selectedTextId, setSelectedTextId,
     isCropping, setIsCropping, cropRatio, setCropRatio, cropBox, setCropBox,
     showLowCreditAlert, setShowLowCreditAlert, isLibraryOpen, setIsLibraryOpen,
-    handleGenerate, applyCrop, handleExport, addTextLayer, updateTextLayer,
+    handleGenerate, applyDraw, applyCrop, handleExport, addTextLayer, updateTextLayer,
     availableModels, selectedModel, setSelectedModel, selectedEngine, setSelectedEngine,
     selectedFamily, setSelectedFamily, selectedMode, setSelectedMode,
     selectedRatio, setSelectedRatio, selectedRes, setSelectedRes,

@@ -39,7 +39,11 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
 
   if (!isOpen) return null;
 
-  const isGenerateDisabled = e.isGenerateDisabled;
+  const isDrawMode = e.activeTool === 'pen' || e.activeTool === 'eraser';
+  const handlePromptAction = isDrawMode ? e.applyDraw : e.handleGenerate;
+  const isGenerateDisabled = isDrawMode
+    ? (e.isGenerating || !e.result || !e.prompt.trim())
+    : e.isGenerateDisabled;
 
   const allAssets = [
     ...(e.originalSource ? [{ id: 'original', url: e.originalSource, label: 'Original' }] : []),
@@ -177,11 +181,11 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
               <PromptBar
                 prompt={e.prompt}
                 onPromptChange={e.setPrompt}
-                onPromptSubmit={e.handleGenerate}
+                onPromptSubmit={handlePromptAction}
                 isGenerating={e.isGenerating}
                 isGenerateDisabled={isGenerateDisabled}
-                onGenerate={e.handleGenerate}
-                generateTooltip={e.generateTooltip}
+                onGenerate={handlePromptAction}
+                generateTooltip={isDrawMode ? (!e.result ? 'Cần có ảnh để edit' : !e.prompt.trim() ? 'Vui lòng nhập mô tả chỉnh sửa' : null) : e.generateTooltip}
                 credits={e.credits}
                 usagePreference={e.usagePreference}
                 actionCost={ACTION_COST}
