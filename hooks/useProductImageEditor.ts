@@ -587,6 +587,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
 
           if (st === 'done') {
             const resultUrl = statusRes.data?.result?.resultUrl;
+            const resultMediaId = statusRes.data?.result?.mediaId;
             if (resultUrl) {
               pushToHistory(resultUrl);
               setHistory(prev => [{
@@ -596,10 +597,12 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
                 timestamp: new Date().toLocaleTimeString()
               }, ...prev]);
               setStatus('✅ Crop thành công');
+              resolve();
             } else {
-              reject(new Error('Không tìm thấy kết quả crop'));
+              // Job done but no URL — log for debugging
+              console.error('[applyCrop] Job done but resultUrl is null. mediaId=', resultMediaId);
+              reject(new Error('Worker đã xử lý xong nhưng không trả về URL kết quả. Vui lòng thử lại.'));
             }
-            resolve();
           } else if (st === 'error' || st === 'cancelled') {
             reject(new Error(statusRes.data?.error?.message || 'Crop job thất bại'));
           } else {

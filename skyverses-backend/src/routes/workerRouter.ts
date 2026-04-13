@@ -425,18 +425,21 @@ async function failLinkedVideoJob(record: any, errorMsg: string, provider: strin
 ===================================================== */
 async function handleEditImageComplete(
   job: any,
-  result: { status: string; resultUrl?: string; mediaId?: string; error?: string },
+  result: { status: string; resultUrl?: string; url?: string; imageUrl?: string; mediaId?: string; error?: string },
   res: any,
   provider: string,
 ) {
   const label = provider.toUpperCase();
 
   if (result.status === "done") {
+    // ✅ Accept multiple field name aliases — workers may send url, imageUrl, or resultUrl
+    const resolvedUrl = result.resultUrl || result.url || result.imageUrl || null;
+
     job.status = EditImageJobStatus.DONE;
     job.progress = { percent: 100, step: "done" };
     job.result = {
-      mediaId:   result.mediaId   || null,
-      resultUrl: result.resultUrl || null,
+      mediaId:   result.mediaId || null,
+      resultUrl: resolvedUrl,
     };
     job.engineResponse = {
       ...job.engineResponse,
@@ -447,7 +450,7 @@ async function handleEditImageComplete(
 
     console.log(
       `✅ [${label}][EDIT-IMG] DONE job=${job._id} editType=${job.editType} ` +
-      `mediaId=${result.mediaId} owner=${job.owner}`
+      `resultUrl=${resolvedUrl} mediaId=${result.mediaId} owner=${job.owner}`
     );
 
     return res.json({ success: true, id: String(job._id), status: "done" });

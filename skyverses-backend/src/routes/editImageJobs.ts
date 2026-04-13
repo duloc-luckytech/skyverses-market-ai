@@ -18,7 +18,7 @@ const router = express.Router();
    }
    Auth: optional (nếu gọi từ desktop app có thể skip)
 ===================================================== */
-router.post("/", async (req: any, res) => {
+router.post("/", authenticate, async (req: any, res) => {
   try {
     const {
       mediaId,
