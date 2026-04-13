@@ -13,6 +13,7 @@ import PromptGenerationJob from "../models/PromptGenerationJob"; // ✅ THÊM
 import ProviderTokenModel from "../models/ProviderToken.model";
 import { downloadVideoFromUrl } from "../utils/downloadVideoFromUrl";
 import { getAccessTokenForJob } from "../utils/getAccessTokenForJob";
+import FxflowOwner from "../models/FxflowOwner.model"; // ✅ For auto-assigning upload owner
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() }); // 👈 lưu vào RAM
@@ -1267,7 +1268,33 @@ router.post("/media/image-upload", authenticate, async (req: any, res) => {
     imageRecord.imageUrl = imageUrl;
     imageRecord.width = width || undefined;
     imageRecord.height = height || undefined;
-    imageRecord.source = source;
+
+    // ✅ Pick a random active fxflow owner and assign to source
+    // so that worker query `?owner=X` can find this task
+    try {
+      const activeOwners = await FxflowOwner.find({
+        $or: [
+          { provider: "fxflow" },
+          { provider: { $exists: false } },
+          { provider: null },
+        ],
+        status: "active",
+      }).lean();
+
+      if (activeOwners.length > 0) {
+        const randomOwner = activeOwners[Math.floor(Math.random() * activeOwners.length)];
+        imageRecord.source = (randomOwner as any).name;
+        console.log(`👤 [IMG-UPLOAD] Assigned fxflow owner: ${(randomOwner as any).name} → task ${imageRecord._id}`);
+      } else {
+        // Fallback: giữ source gốc (gommo/fxlab)
+        imageRecord.source = source;
+        console.warn(`⚠️ [IMG-UPLOAD] No active fxflow owners found, keeping source=${source}`);
+      }
+    } catch (ownerErr) {
+      imageRecord.source = source;
+      console.error(`❌ [IMG-UPLOAD] Failed to pick fxflow owner:`, ownerErr);
+    }
+
     imageRecord.status = "pending-fxflow-upload"; // FXFlow worker will pick this up
     await imageRecord.save();
 
