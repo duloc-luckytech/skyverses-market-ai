@@ -1,0 +1,267 @@
+BACKEND INVESTIGATION - FILE LOCATION MAP
+══════════════════════════════════════════════════════════════════════════════
+
+PROJECT ROOT: /Users/duloc/Desktop/SKYVERSES/ai-skyverses/skyverses-market-ai/
+
+📦 BACKEND FILES
+═══════════════════════════════════════════════════════════════════════════════
+
+skyverses-backend/
+├─ .env                                    ← Backend config (PORT=3221)
+├─ .env.prod                               ← Production env
+├─ src/
+│  ├─ index.ts                             ← Server entry point
+│  └─ routes/
+│     ├─ index.ts                          ← Routes aggregator (mounts /ai)
+│     └─ ai.ts                             ← ✅ /ai/chat endpoint (lines 19-103)
+│                                             - POST /chat (stream mode)
+│                                             - Rate limiting
+│                                             - Proxy to ezaiapi.com
+│                                             - Analytics endpoint
+└─ package.json                            ← Dependencies
+
+
+📱 FRONTEND FILES
+═══════════════════════════════════════════════════════════════════════════════
+
+.env                                       ← Frontend config
+                                              VITE_API_URL=http://localhost:3221
+
+apis/
+├─ config.ts                               ← API_BASE_URL auto-detection
+├─ aiChat.ts                               ← ✅ Implementation
+│                                             - aiChatOnceViaProxy()
+│                                             - aiChatStreamViaProxy()
+│                                             - Direct calls (deprecated)
+└─ aiCommon.ts                             ← ✅ Public API
+                                              - aiTextViaProxy()
+                                              - aiChatJSONViaProxy<T>()
+                                              - buildSystemMessage()
+                                              - AI_MODELS constants
+
+components/
+├─ storyboard-studio/
+│  └─ AIScriptAssistant.tsx                ← ✅ Uses aiChatStreamViaProxy
+│                                              (line 20, 166, 200, 246, 281)
+├─ AISupportChat.tsx                       ← Uses direct calls (legacy)
+└─ ... (other workspaces)
+
+hooks/
+└─ useStoryboardStudio.ts                  ← ✅ Uses aiChatStreamViaProxy
+                                              (line 2, 411, 623, 1045, 1087)
+
+
+🔗 API CALL FLOW
+═══════════════════════════════════════════════════════════════════════════════
+
+Frontend Component (e.g., AIScriptAssistant.tsx)
+    │
+    ├─ Import: { aiChatStreamViaProxy, aiChatOnceViaProxy } from 'apis/aiChat'
+    │
+    └─ Call:
+       ├─ aiChatStreamViaProxy(messages, onToken, signal?, maxTokens?, model?)
+       │
+       └─ POST /ai/chat
+          │
+          Body: {
+            messages: ChatMessage[],
+            stream: true,
+            model?: string,
+            max_tokens?: number,
+          }
+          │
+          Headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }
+          │
+          To: http://localhost:3221/ai/chat
+          │
+          └─ Backend skyverses-backend/src/routes/ai.ts (line 19)
+             │
+             ├─ Authenticate (middleware)
+             ├─ Rate limit check (10 req/60s)
+             ├─ Select random active API key
+             │
+             └─ Fetch https://ezaiapi.com/v1/chat/completions
+                │
+                └─ Response: SSE stream
+                   │
+                   └─ Pipe to client
+                      │
+                      └─ Frontend receives chunks via onToken callback
+
+
+📊 REQUEST/RESPONSE EXAMPLES
+═══════════════════════════════════════════════════════════════════════════════
+
+STREAMING MODE (aiChatStreamViaProxy):
+──────────────────────────────────────
+
+Request:
+  POST /ai/chat HTTP/1.1
+  Authorization: Bearer eyJhbGc...
+  Content-Type: application/json
+  
+  {
+    "messages": [
+      {"role": "system", "content": "You are a helpful AI..."},
+      {"role": "user", "content": "Help me with this..."}
+    ],
+    "stream": true,
+    "max_tokens": 4096
+  }
+
+Response (SSE):
+  HTTP/1.1 200 OK
+  Content-Type: text/event-stream
+  Cache-Control: no-cache
+  
+  data: {"choices":[{"delta":{"content":"Hello"}}]}
+  data: {"choices":[{"delta":{"content":" there"}}]}
+  data: {"choices":[{"delta":{"content":"!"}}]}
+  data: [DONE]
+
+JavaScript:
+  let accumulated = '';
+  await aiChatStreamViaProxy(
+    messages,
+    (token) => {
+      accumulated += token;  // 'Hello', ' there', '!'
+      setOutput(accumulated);
+    }
+  );
+  // accumulated = 'Hello there!'
+
+
+NON-STREAMING MODE (aiChatOnceViaProxy):
+──────────────────────────────────────
+
+Request:
+  POST /ai/chat HTTP/1.1
+  Authorization: Bearer eyJhbGc...
+  Content-Type: application/json
+  
+  {
+    "messages": [...],
+    "stream": false,
+    "max_tokens": 4096
+  }
+
+Response (JSON):
+  HTTP/1.1 200 OK
+  Content-Type: application/json
+  
+  {
+    "choices": [
+      {
+        "message": {
+          "content": "This is the complete response..."
+        }
+      }
+    ]
+  }
+
+JavaScript:
+  const result = await aiChatOnceViaProxy(messages);
+  // result = "This is the complete response..."
+
+
+🎯 USAGE PATTERNS
+═══════════════════════════════════════════════════════════════════════════════
+
+Pattern 1: Simple text generation
+  const text = await aiTextViaProxy(
+    'Suggest 3 blog titles for Python',
+    'You are a copywriter expert.'
+  );
+
+Pattern 2: Chat with streaming
+  let response = '';
+  await aiChatStreamViaProxy(
+    messages,
+    (token) => {
+      response += token;
+      setOutput(response);  // Live update UI
+    },
+    abortController.signal
+  );
+
+Pattern 3: Structured JSON
+  interface Result { title: string; description: string; }
+  const data = await aiChatJSONViaProxy<Result>([
+    buildSystemMessage({
+      role: 'You are a content creator.',
+      outputFormat: 'Return JSON: {title, description}',
+      language: 'en',
+    }),
+    { role: 'user', content: 'Create a product page...' },
+  ]);
+  console.log(data.title);  // Typed ✓
+
+Pattern 4: Custom model selection
+  const result = await aiChatOnceViaProxy(
+    messages,
+    undefined,
+    4096,
+    'claude-opus-4'  // More powerful model
+  );
+
+
+🔐 AUTHENTICATION & SECURITY
+═══════════════════════════════════════════════════════════════════════════════
+
+Frontend:
+  - Token stored in localStorage as 'skyverses_auth_token'
+  - Automatically included in getHeaders()
+  - Sent as Authorization: Bearer {token}
+
+Backend:
+  - Middleware checks authentication before handling request
+  - Rate limits per user ID (from token)
+  - API keys managed server-side (NOT exposed to frontend)
+  - Random key selection from active pool (listKeyGommoGenmini)
+
+Upstream:
+  - Backend holds actual EzAI API key
+  - Frontend only has placeholder/test key
+  - Server-side key rotation possible
+
+
+📈 RATE LIMITING
+═══════════════════════════════════════════════════════════════════════════════
+
+Limit: 10 requests per 60 seconds per user
+Status Code: 429 (Too Many Requests)
+Response:
+  {
+    "error": "Bạn đang gửi quá nhanh. Vui lòng chờ ${waitSec}s.",
+    "retryAfter": ${waitSec}
+  }
+
+
+✅ MONITORING & ANALYTICS
+═══════════════════════════════════════════════════════════════════════════════
+
+Endpoint: GET /ai/chat/stats
+Auth: Required
+Response:
+  {
+    "success": true,
+    "data": {
+      "totalChats": 1523,
+      "todayChats": 45,
+      "weekChats": 312,
+      "uniqueUsers": 89,
+      "topQuestions": [
+        {"question": "How do I...", "count": 23},
+        ...
+      ],
+      "recentChats": [
+        {"question": "...", "timestamp": "2026-04-13T12:05:30.000Z"},
+        ...
+      ]
+    }
+  }
+
+═══════════════════════════════════════════════════════════════════════════════

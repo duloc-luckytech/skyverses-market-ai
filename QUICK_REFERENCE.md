@@ -1,174 +1,325 @@
-# Quick Reference: Key Files & Locations
+# Quick Reference: Bottom Bars & Settings Components
 
-## 🏠 HOMEPAGE & LANDING PAGE
+## 🎯 The 3 Main Bottom Bar Components
 
-| Item | File Path | Lines | Notes |
-|------|-----------|-------|-------|
-| **Homepage Component** | `pages/MarketPage.tsx` | 1-203+ | Main landing page at route `/` |
-| **Homepage Route** | `App.tsx` | 203 | `<Route path="/" element={<MarketPage />}>` |
-| **Layout Wrapper** | `components/Layout.tsx` | - | Wraps all pages except login |
-| **Header** | `components/Header.tsx` | 1-32+ | Navigation & user menu |
-| **Footer** | `components/Footer.tsx` | 1-200+ | CTA section & links |
+| Component | Location | Used By | Mobile Support |
+|-----------|----------|---------|-----------------|
+| **PromptBar.tsx** | `components/product-image/` | ProductImageWorkspace | ✅ Responsive |
+| **MobileGeneratorBar.tsx** | `components/image-generator/` | AIImageGeneratorWorkspace + SidebarLeft | 📱 Mobile-first |
+| **ConfigurationPanel.tsx** | `components/video-generator/` | AIVideoGeneratorWorkspace | ✅ Responsive |
 
 ---
 
-## 🔍 SEO IMPLEMENTATION
+## 📍 File Paths (Copy-Paste Ready)
 
-| Item | File Path | Lines | Key Info |
-|------|-----------|-------|----------|
-| **SEO Hook** | `hooks/usePageMeta.ts` | 1-87 | Sets document.title, meta tags, og:*, twitter:*, JSON-LD |
-| **Homepage SEO** | `pages/MarketPage.tsx` | 65-91 | Uses `usePageMeta()` with title "Dùng thử miễn phí 100 Credits" |
-| **Static HTML** | `index.html` | 1-250 | Title (line 6), description (line 7), OG tags (line 16), Twitter (line 29) |
-| **OG Image** | `index.html` | 18 | URL: `https://ai.skyverses.com/assets/seo/seo-og-thumbnail-v2.png` |
-
-### SEO Meta Values (MarketPage):
+### Primary Components
 ```
-Title: Skyverses — Marketplace AI #1 Việt Nam | Dùng thử miễn phí 100 Credits
-Description: Truy cập 30+ ứng dụng AI sáng tạo trong một nền tảng... 100 Credits miễn phí
-Keywords: marketplace AI Việt Nam, AI giá rẻ, dùng thử AI miễn phí, ... (50+ keywords)
-Canonical: /
+📄 components/product-image/PromptBar.tsx
+   └─ 224 lines, 31 KB
+   └─ Features: Reference images, AI settings panel, generate button
+   
+📄 components/image-generator/MobileGeneratorBar.tsx
+   └─ 145 lines
+   └─ Features: Collapsible, progress animation, compact credits
+   
+📄 components/video-generator/ConfigurationPanel.tsx
+   └─ 100+ lines
+   └─ Features: Collapsible header, embedded VideoModelEngineSettings
 ```
 
----
-
-## 💳 "100 CREDITS" MENTIONS
-
-| File | Line(s) | Context | Text |
-|------|---------|---------|------|
-| `index.html` | 6 | `<title>` | `Dùng thử miễn phí 100 Credits` |
-| `index.html` | 16 | `og:title` | `Dùng thử miễn phí 100 Credits` |
-| `index.html` | 29 | `twitter:title` | `Dùng thử miễn phí 100 Credits` |
-| `index.html` | 30 | `twitter:description` | `Nhận ngay 100 Credits miễn phí` |
-| `index.html` | 135 | Schema FAQ | `Dùng thử miễn phí với 100 Credits` |
-| `index.html` | 183 | Schema FAQ | `Đăng ký tài khoản mới nhận ngay 100 Credits miễn phí` |
-| `index.html` | 215 | Schema FAQ | `nhận 100 Credits` |
-| `index.html` | 240 | Noscript fallback | `Dùng thử miễn phí 100 Credits` |
-| `pages/MarketPage.tsx` | 66 | usePageMeta title | Title includes `100 Credits` |
-| `pages/MarketPage.tsx` | 67 | usePageMeta description | Description includes `100 Credits miễn phí` |
-
-### ⚠️ DISCREPANCY:
-- **Marketing/SEO says**: 100 Credits free
-- **Actual backend gives**: 1,000 Credits welcome bonus
-  - Source: `context/AuthContext.tsx` line 296
-  - Source: `skyverses-backend/src/routes/auth.ts` line 105
+### Supporting Components
+```
+📄 components/image-generator/ModelEngineSettings.tsx
+   └─ 300+ lines, 16 KB
+   └─ Used by: PromptBar, GeneratorSidebar
+   
+📄 components/video-generator/VideoModelEngineSettings.tsx
+   └─ 300+ lines (truncated)
+   └─ Used by: ConfigurationPanel
+```
 
 ---
 
-## 🌐 VIETNAMESE "DÙNG THỬ" TEXT
+## 🎨 UI Structure Comparison
 
-| Location | Text | Language |
-|----------|------|----------|
-| `index.html:6` | `Dùng thử miễn phí 100 Credits` | Vietnamese |
-| `index.html:16` | `Dùng thử miễn phí 100 Credits` | Vietnamese |
-| `index.html:29` | `Dùng thử miễn phí 100 Credits` | Vietnamese |
-| `context/LanguageContext.tsx:534` | `Đăng ký miễn phí và nhận 50 Credits trải nghiệm ngay hôm nay.` | Vietnamese |
-| `context/LanguageContext.tsx:536` | `Bắt đầu miễn phí — Nhận 50 Credits` | Vietnamese |
+### PromptBar (Product Image Editor)
+```
+[AI Settings Panel ▼] ← Collapsible
+├─ Settings2 icon + Title + X close
 
-**Key Translation Keys**:
-- `footer.cta_title` (line 46, vi: line 533)
-- `footer.cta_desc` (line 47, vi: line 534)
-- `footer.mobile_cta` (line 154, vi: line 536)
+[Main Input Row]
+├─ [Ref Images] [+ button] │ [Input] │ [Credits] [Settings toggle]
+
+[Generate Button] ← Full width gradient
+└─ with tooltip on hover
+```
+
+### MobileGeneratorBar (Image Generator Mobile)
+```
+[Drag Handle]
+
+[Collapsed State]:
+├─ [FolderOpen] [Input] [Sliders]
+├─ [Credits Status] | [Generate Button + animation]
+
+[Expanded State]:
+└─ CẤU HÌNH THUẬT TOÁN [ChevronDown]
+```
+
+### ConfigurationPanel (Video Generator Desktop)
+```
+[Settings2] Cấu hình AI [ChevronUp/Down]
+├─ Summary: "VEO · Model Name" (when collapsed)
+
+[Expanded]:
+└─ VideoModelEngineSettings component
+   ├─ Engine/Family selectors
+   ├─ Model variant pills
+   ├─ Mode/Resolution/Ratio pills
+   ├─ Duration + Sound controls
+   └─ Quantity selector
+```
 
 ---
 
-## 🔤 I18N TRANSLATION SYSTEM
+## 🔑 Key Props Summary
 
-| Item | File Path | Lines | Type |
-|------|-----------|-------|------|
-| **Translation Provider** | `context/LanguageContext.tsx` | 1-1563 | Custom inline translations object |
-| **English** | `context/LanguageContext.tsx` | 12-393 | ~382 keys |
-| **Vietnamese** | `context/LanguageContext.tsx` | 394-775 | ~382 keys |
-| **Korean** | `context/LanguageContext.tsx` | 776-1139 | ~364 keys |
-| **Japanese** | `context/LanguageContext.tsx` | 1140-1503 | ~364 keys |
-| **Language Hook** | `context/LanguageContext.tsx` | 1558-1562 | `useLanguage()` export |
-
-### Translation Usage:
+### PromptBar
 ```typescript
-// In components:
-const { lang, setLang, t } = useLanguage();
-
-// Access translation:
-{t('footer.cta_desc')}
+{
+  // Prompt Management
+  prompt: string
+  onPromptChange: (prompt: string) => void
+  onPromptSubmit: () => void
+  
+  // Generation Control
+  isGenerating: boolean
+  isGenerateDisabled: boolean
+  onGenerate: () => void
+  generateTooltip?: string
+  
+  // Resources
+  credits: number
+  usagePreference: 'credits' | 'key' | null
+  actionCost: number
+  
+  // References
+  references: string[]
+  onAddReference: () => void
+  
+  // AI Settings (extensive)
+  availableModels: any[]
+  selectedModel: any
+  selectedRatio: string
+  selectedRes: string
+  selectedEngine: string
+  selectedMode: string
+  familyList?: string[]
+  selectedFamily?: string
+  // ... more family-based selectors
+}
 ```
 
-### Footer CTA Translations:
-| Key | English | Vietnamese |
-|-----|---------|-----------|
-| `footer.cta_title` | Ready to create with AI? | Sẵn sàng sáng tạo với AI? |
-| `footer.cta_desc` | Sign up for free and get 50 Credits to try today. | Đăng ký miễn phí và nhận 50 Credits trải nghiệm ngay hôm nay. |
-| `footer.cta_btn` | Get Started Free | Bắt đầu miễn phí |
-| `footer.mobile_cta` | Get Started Free — Get 50 Credits | Bắt đầu miễn phí — Nhận 50 Credits |
-
----
-
-## 📍 HERO SECTION TRANSLATIONS
-
-| Key | Line (en) | Line (vi) | English | Vietnamese |
-|-----|-----------|-----------|---------|-----------|
-| `home.hero.title1` | 273 | 655 | The Platform for | Nền tảng |
-| `home.hero.title_highlight` | 274 | 656 | AI Products | sản phẩm AI |
-| `home.hero.title2` | 275 | 657 | for All Creative Needs | cho mọi nhu cầu sáng tạo |
-| `home.hero.subtitle` | 276 | 658 | 30+ AI products — Video, Image, Voice, Music & Automated Workflow. | 30+ sản phẩm AI — Video, Ảnh, Giọng nói, Nhạc & Workflow tự động. |
-| `home.hero.subtitle2` | 277 | 659 | Developed by the Skyverses team. | Được phát triển bởi đội ngũ Skyverses. |
-| `home.hero.cta1` | 278 | 660 | Explore Products | Khám phá sản phẩm |
-| `home.hero.cta2` | 279 | 661 | Watch Demo | Xem demo |
-
----
-
-## 🔐 AUTHENTICATION & CREDITS
-
-| Item | File Path | Line(s) | Value | Context |
-|------|-----------|---------|-------|---------|
-| **Default Credits** | `context/AuthContext.tsx` | 296 | 1000 | Mock login default |
-| **Set Credits** | `context/AuthContext.tsx` | 302 | 1000 | Mock login call |
-| **Backend Welcome Bonus** | `skyverses-backend/src/routes/auth.ts` | 105 | 1000 | Actual welcome credits given |
-| **Free Images** | `context/AuthContext.tsx` | - | 100 | `freeImageRemaining` for new users |
-
----
-
-## 📂 DIRECTORY STRUCTURE
-
+### MobileGeneratorBar
+```typescript
+{
+  isExpanded: boolean
+  setIsExpanded: (val: boolean) => void
+  prompt: string
+  setPrompt: (val: string) => void
+  credits: number
+  totalCost: number
+  isGenerating: boolean
+  isGenerateDisabled: boolean
+  onGenerate: (e: React.MouseEvent) => void
+  onOpenLibrary: () => void
+}
 ```
-skyverses-market-ai/
-├── pages/
-│   ├── MarketPage.tsx ⭐ (Homepage)
-│   ├── LoginPage.tsx
-│   └── ... (40+ other pages)
-├── components/
-│   ├── Layout.tsx
-│   ├── Header.tsx
-│   ├── Footer.tsx
-│   ├── landing/
-│   │   ├── image-generator/
-│   │   ├── video-generator/
-│   │   ├── social-banner-ai/
-│   │   ├── realestate-visual-ai/
-│   │   ├── image-restoration/
-│   │   └── _shared/
-│   └── ... (90+ other components)
-├── context/
-│   ├── LanguageContext.tsx ⭐ (i18n)
-│   ├── AuthContext.tsx
-│   ├── ThemeContext.tsx
-│   └── ... (other contexts)
-├── hooks/
-│   ├── usePageMeta.ts ⭐ (SEO)
-│   └── ... (other hooks)
-├── App.tsx ⭐ (Routes)
-├── index.html ⭐ (Static HTML meta)
-└── ... (other files)
+
+### ConfigurationPanel
+```typescript
+{
+  // Models & Engines
+  availableModels: PricingModel[]
+  selectedModelObj: PricingModel | null
+  selectedEngine: string
+  selectedMode: string
+  
+  // Settings
+  ratio: string
+  duration: string
+  soundEnabled: boolean
+  resolution: string
+  quantity: number
+  
+  // Callbacks
+  handleGenerate: () => void
+  cycleRatio: () => void
+  cycleDuration: () => void
+  cycleSound: () => void
+  cycleResolution: () => void
+  
+  // Family grouping
+  familyList?: string[]
+  selectedFamily?: string
+  familyModes?: string[]
+  // ...
+}
 ```
 
 ---
 
-## 🎯 SUMMARY TABLE
+## 🎭 Animation Patterns
 
-| Purpose | File | Line(s) | Key Finding |
-|---------|------|---------|-------------|
-| Homepage | `pages/MarketPage.tsx` | 1-203+ | Route `/` with featured products |
-| SEO Meta | `pages/MarketPage.tsx` | 65-91 | Title: "...Dùng thử miễn phí 100 Credits" |
-| Static SEO | `index.html` | 6, 16, 29 | 100 Credits mention in 4 places |
-| i18n System | `context/LanguageContext.tsx` | 11-1504 | 4 languages, 382+ translation keys |
-| Footer CTA | `context/LanguageContext.tsx` | 152, 534 | "Get 50 Credits" (en), "Nhận 50 Credits" (vi) |
-| Welcome Bonus | `context/AuthContext.tsx` | 296, 302 | 1000 credits (not 100) |
+### Collapse/Expand
+```typescript
+initial={{ opacity: 0, y: 10, scale: 0.98 }}
+animate={{ opacity: 1, y: 0, scale: 1 }}
+exit={{ opacity: 0, y: 10, scale: 0.98 }}
+transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+```
+
+### Sidebar Mobile Slide
+```typescript
+className={`${isMobileExpanded ? 'translate-x-0' : '-translate-x-full'} 
+            transition-transform duration-300`}
+```
+
+### Progress Animation (Mobile Bar)
+```css
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+```
+
+---
+
+## 🎨 Tailwind Classes (Reusable)
+
+### Button Sizing
+- Pills: `px-2.5 py-1 rounded-md`
+- Input buttons: `px-3 py-1.5`
+- Full-size: `py-3 px-4`
+- Compact icon: `p-1.5`
+
+### Text Sizing
+- Labels: `text-[10px] font-semibold`
+- Small caps: `text-[9px] font-bold uppercase tracking-widest`
+- Descriptions: `text-[9px] text-slate-400`
+
+### Color Patterns
+- Image Generator (Rose): `bg-rose-500/10` + `border-rose-500/25` (active)
+- Video Generator (Indigo): `bg-indigo-500/10` + `border-indigo-500/25` (active)
+- Inactive pill: `bg-transparent border-black/[0.06] dark:border-white/[0.04]`
+
+### Backdrop & Glass
+- Blur: `backdrop-blur-2xl`
+- Background: `bg-white/95 dark:bg-[#14151a]/95`
+- Border: `border border-slate-200 dark:border-white/[0.06]`
+
+---
+
+## ❌ What's NOT in the Codebase
+
+- ❌ `ModalSettingImage.tsx`
+- ❌ `ModalSettingVideo.tsx`
+- ❌ Dedicated settings modals for image/video generation
+- ❌ All settings use inline collapsible panels instead
+
+---
+
+## ✅ What IS in the Codebase
+
+- ✅ Collapsible AI settings panels
+- ✅ Family-based model grouping system
+- ✅ Pill-based selection pattern for modes/resolutions/ratios
+- ✅ Mobile-responsive bottom bars
+- ✅ Resource cost tracking with visual indicators
+- ✅ Reference image management
+- ✅ Progress animations for long tasks
+
+---
+
+## 🔗 Integration Points
+
+### How PromptBar is Integrated
+```typescript
+// In ProductImageWorkspace.tsx
+<PromptBar
+  prompt={e.prompt}
+  onPromptChange={e.setPrompt}
+  onPromptSubmit={e.handlePromptAction}
+  isGenerating={e.isGenerating}
+  isGenerateDisabled={isGenerateDisabled}
+  onGenerate={handlePromptAction}
+  credits={e.credits}
+  usagePreference={e.usagePreference}
+  actionCost={ACTION_COST}
+  references={e.references}
+  onAddReference={() => { /* modal logic */ }}
+  // ... more props
+/>
+```
+
+### How ConfigurationPanel is Integrated
+```typescript
+// In AIVideoGeneratorWorkspace.tsx
+<SidebarLeft>
+  <ConfigurationPanel
+    availableModels={availableModels}
+    selectedModelObj={selectedModelObj}
+    // ... props
+  />
+</SidebarLeft>
+```
+
+---
+
+## 📊 Component Stats
+
+| Metric | Value |
+|--------|-------|
+| Total bottom bar components | 3 |
+| Total settings components | 3+ |
+| Largest component (ModelEngineSettings) | 300+ lines |
+| Animation library | Framer Motion |
+| Mobile breakpoint | `lg:` (1024px) |
+| Color theme | TailwindCSS dark mode |
+
+---
+
+## 🚀 Quick Copy-Paste References
+
+### Import PromptBar
+```typescript
+import { PromptBar } from './product-image/PromptBar';
+```
+
+### Import MobileGeneratorBar
+```typescript
+import { MobileGeneratorBar } from './image-generator/MobileGeneratorBar';
+```
+
+### Import ConfigurationPanel
+```typescript
+import { ConfigurationPanel } from './video-generator/ConfigurationPanel';
+```
+
+### Pill Button Pattern
+```typescript
+const Pill = ({ label, active, onClick, disabled }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={`px-2.5 py-1 rounded-md text-[10px] font-semibold transition-all border ${
+      active
+        ? 'bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/25'
+        : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-600 dark:text-[#888] hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
+    }`}
+  >
+    {label}
+  </button>
+);
+```
 

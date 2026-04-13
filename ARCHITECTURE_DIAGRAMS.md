@@ -1,0 +1,591 @@
+# Architecture & Component Flow Diagrams
+
+## 1. Overall Generator Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                      WORKSPACE PATTERN                              │
+│                                                                     │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │  EditorHeader / Navigation (Top)                            │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+│  ┌──────────┐  ┌─────────────────────────────┐  ┌──────────────┐  │
+│  │ Sidebar  │  │   Viewport / Results        │  │  Right Panel │  │
+│  │ (Left)   │  │   (Center - flex-grow)      │  │  (Optional)  │  │
+│  │          │  │                             │  │              │  │
+│  │ Modes    │  │   Gallery / Preview         │  │              │  │
+│  │ Prompt   │  │   Grid of cards             │  │              │  │
+│  │ Settings │  │                             │  │              │  │
+│  │          │  │                             │  │              │  │
+│  └──────────┘  └─────────────────────────────┘  └──────────────┘  │
+│                                                                     │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │  Bottom Bar / Control Panel                                 │  │
+│  │                                                              │  │
+│  │  [Prompt Input] [Credits] [Settings] [Generate Button] ◄──┐ │  │
+│  │                                                          │  │  │
+│  │  ▼ ▼ ▼ ▼ ▼ ▼ ▼ Collapsible AI Settings Panel ▼ ▼ ▼ ▼ ▼ ▼ │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. ProductImageWorkspace Component Tree
+
+```
+ProductImageWorkspace (Top Level)
+│
+├─ EditorHeader
+│  ├─ Tool buttons (pointer, crop, pen, eraser, text, etc.)
+│  ├─ Credits display
+│  ├─ Export button
+│  └─ Close button
+│
+├─ EditorSidebar (Left, expandable on mobile)
+│  ├─ Layers tab
+│  │  ├─ Layer buttons (beauty, fix, bg, style, text)
+│  │  ├─ Layer visibility toggles
+│  │  └─ Delete text layer
+│  │
+│  ├─ History tab
+│  │  ├─ Original source
+│  │  └─ Generation history grid
+│  │
+│  └─ AI Model Selector
+│     ├─ Model family selector
+│     └─ Model list
+│
+├─ EditorViewport (Center)
+│  ├─ Canvas with current result
+│  ├─ Text layers overlay
+│  └─ Crop UI (if cropping mode)
+│
+└─ PromptBar (Bottom) ⭐ KEY COMPONENT
+   │
+   ├─ [Collapsible AI Settings Panel]
+   │  └─ ModelEngineSettings
+   │     ├─ Family selector pills
+   │     ├─ Model variant pills
+   │     ├─ Mode selector pills
+   │     ├─ Resolution/Ratio pills
+   │     └─ Quantity control
+   │
+   ├─ [Main Input Row]
+   │  ├─ Reference image thumbnails
+   │  ├─ Add reference button (dashed)
+   │  ├─ Prompt input field
+   │  ├─ Credits display (md+)
+   │  ├─ Action cost display (md+)
+   │  └─ Settings toggle button
+   │
+   └─ [Generate Button] (Full width)
+      └─ Tooltip on hover
+```
+
+---
+
+## 3. AIImageGeneratorWorkspace Component Tree
+
+```
+AIImageGeneratorWorkspace (Top Level)
+│
+├─ GeneratorSidebar (Left, expandable on mobile with FAB)
+│  │
+│  ├─ Header
+│  │  ├─ Close button
+│  │  ├─ Generator icon + title
+│  │  └─ Credits display
+│  │
+│  ├─ Mode Tabs
+│  │  ├─ SINGLE tab
+│  │  └─ BATCH tab
+│  │
+│  ├─ [Mode Specific Content]
+│  │  │
+│  │  ├─ SINGLE Mode:
+│  │  │  └─ SidebarSingle
+│  │  │     ├─ Prompt suggestions dropdown
+│  │  │     └─ Textarea for prompt
+│  │  │
+│  │  └─ BATCH Mode:
+│  │     └─ SidebarBatch
+│  │        ├─ Bulk import textarea
+│  │        ├─ Parse/import buttons
+│  │        └─ Prompt list
+│  │
+│  └─ ModelEngineSettings (Collapsible)
+│     ├─ Family selector pills
+│     ├─ Model variant pills
+│     ├─ Mode selector pills
+│     ├─ Resolution/Ratio pills
+│     └─ Quantity control
+│
+├─ GeneratorViewport (Center)
+│  ├─ Results grid
+│  └─ Image result cards
+│
+└─ MobileGeneratorBar (Mobile only, lg:hidden)
+   │
+   ├─ [Collapsed State]
+   │  ├─ [FolderOpen] [Prompt input] [Sliders]
+   │  └─ [Credits status] | [Generate button]
+   │
+   └─ [Expanded State]
+      └─ CẤU HÌNH THUẬT TOÁN header
+```
+
+---
+
+## 4. AIVideoGeneratorWorkspace Component Tree
+
+```
+AIVideoGeneratorWorkspace (Top Level)
+│
+├─ SidebarLeft (Left, expandable on mobile with FAB)
+│  │
+│  ├─ Header
+│  │  ├─ Close button
+│  │  └─ Mode tabs (SINGLE / MULTI / AUTO)
+│  │
+│  ├─ MobileGeneratorBar (Mobile UI within sidebar)
+│  │  └─ Collapsed/expanded state
+│  │
+│  ├─ [Mode Specific Content]
+│  │  │
+│  │  ├─ SINGLE Mode:
+│  │  │  ├─ Prompt input
+│  │  │  ├─ Start frame slot
+│  │  │  └─ End frame slot
+│  │  │
+│  │  ├─ MULTI Mode:
+│  │  │  ├─ Multi-frame nodes (3+)
+│  │  │  │  ├─ Frame slot (video thumbnail)
+│  │  │  │  └─ Prompt input
+│  │  │  ├─ Add frame button
+│  │  │  └─ Remove frame buttons
+│  │  │
+│  │  └─ AUTO Mode:
+│  │     ├─ Auto tasks list
+│  │     │  ├─ Task type selector
+│  │     │  ├─ Start/end frame slots
+│  │     │  └─ Prompt input
+│  │     ├─ Add task button
+│  │     └─ Bulk import option
+│  │
+│  └─ ConfigurationPanel (Desktop bottom, hidden on lg:)
+│     │
+│     ├─ [Collapsible Header]
+│     │  ├─ Settings2 icon + "Cấu hình AI"
+│     │  ├─ Summary text (when collapsed)
+│     │  └─ ChevronUp/Down toggle
+│     │
+│     └─ [Expanded Content]
+│        └─ VideoModelEngineSettings
+│           ├─ Engine selector
+│           ├─ Family selector pills
+│           ├─ Model variant pills (4+ shown)
+│           ├─ Mode selector pills
+│           ├─ Resolution pills
+│           ├─ Ratio pills
+│           ├─ Duration selector
+│           ├─ Sound toggle
+│           └─ Quantity control
+│
+├─ ResultsMain (Center)
+│  ├─ Zoom level control
+│  ├─ Results grid
+│  └─ Video result cards
+│     ├─ Play button
+│     ├─ Download/share buttons
+│     └─ Upscale option
+│
+└─ ConfigurationPanel (Desktop bottom, lg:block)
+   └─ [Same as mobile version]
+```
+
+---
+
+## 5. PromptBar Detailed Structure
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ PromptBar Component                                         │
+│                                                             │
+│ Position: absolute bottom-20 lg:bottom-6 left-0 right-16   │
+│ Z-index: z-40                                              │
+│                                                             │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ [COLLAPSIBLE AI SETTINGS PANEL]                         │ │
+│ │ Framer Motion: opacity, y, scale animation              │ │
+│ │                                                         │ │
+│ │ ┌─────────────────────────────────────────────────────┐ │ │
+│ │ │ Header (border-b)                                   │ │ │
+│ │ │ [Settings2 icon] "Cấu hình AI Model"  [X close btn]│ │ │
+│ │ ├─────────────────────────────────────────────────────┤ │ │
+│ │ │ Content                                             │ │ │
+│ │ │ └─ ModelEngineSettings component (collapsible)     │ │ │
+│ │ │    ├─ Family pills                                 │ │ │
+│ │ │    ├─ Model variants                               │ │ │
+│ │ │    ├─ Mode/Res/Ratio pills                         │ │ │
+│ │ │    └─ Quantity control                             │ │ │
+│ │ └─────────────────────────────────────────────────────┘ │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ [MAIN INPUT ROW]                                        │ │
+│ │ Gap: gap-2, height: h-12                               │ │
+│ │                                                         │ │
+│ │ ┌──────────┐ ┌─────────────────────────────────────┐  │ │
+│ │ │ Left     │ │ Center                              │  │ │
+│ │ │ Section  │ │ (flex-grow)                         │  │ │
+│ │ │          │ │                                     │  │ │
+│ │ │ [Thumb1] │ │ [Input field] │ [Credits] [Btn]   │  │ │
+│ │ │ [+ btn ] │ │               │ [Zap cost]        │  │ │
+│ │ │ (dashed) │ │               │ [Settings toggle] │  │ │
+│ │ │          │ │               │ [AI | ChevUp]     │  │ │
+│ │ └──────────┘ └─────────────────────────────────────┘  │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ [GENERATE BUTTON]                                       │ │
+│ │ Full width, py-3 px-4, rounded-xl                      │ │
+│ │ Gradient: from-brand-blue to-violet-500                │ │
+│ │ Disabled state: bg-slate-200 dark:bg-white/[0.04]     │ │
+│ │                                                         │ │
+│ │ [ImageIcon] "Generate Image"  [Loader2 on generate]   │ │
+│ │                                                         │ │
+│ │ Tooltip on hover (hidden md:)                          │ │
+│ │ "Hover message for disabled state"                    │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 6. MobileGeneratorBar Detailed Structure
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ MobileGeneratorBar Component                            │
+│                                                         │
+│ Classes:                                                │
+│ lg:hidden flex flex-col items-center shrink-0           │
+│ height transitions: isExpanded ? h-14 : h-[130px]      │
+│                                                         │
+│ ┌──────────────────────────────────────────────────────┐ │
+│ │ [DRAG HANDLE]                                        │ │
+│ │ w-10 h-1 bg-slate-300 dark:bg-white/10              │ │
+│ │ rounded-full opacity-50                              │ │
+│ └──────────────────────────────────────────────────────┘ │
+│                                                         │
+│ {!isExpanded ? (                                        │
+│                                                         │
+│   ┌──────────────────────────────────────────────────┐  │
+│   │ COLLAPSED VIEW (px-5 space-y-3)                 │  │
+│   │                                                 │  │
+│   │ LINE 1: PROMPT INPUT                            │  │
+│   │ ┌────────────────────────────────────────────┐  │  │
+│   │ │ [FolderOpen │ [Input] │ [Sliders]         │  │  │
+│   │ │  button]    │         │  button]           │  │  │
+│   │ └────────────────────────────────────────────┘  │  │
+│   │                                                 │  │
+│   │ LINE 2: CREDITS & GENERATE                      │  │
+│   │ ┌────────────────────────────────────────────┐  │  │
+│   │ │ [Wallet Status] │ [Generate Button]       │  │  │
+│   │ │ Ví: 1234        │ ✨ TẠO HÌNH ẢNH       │  │  │
+│   │ │ Phí: -50        │                         │  │  │
+│   │ │                 │ [Progress animation]    │  │  │
+│   │ └────────────────────────────────────────────┘  │  │
+│   └──────────────────────────────────────────────────┘  │
+│                                                         │
+│ ) : (                                                   │
+│                                                         │
+│   ┌──────────────────────────────────────────────────┐  │
+│   │ EXPANDED VIEW (Header Only)                     │  │
+│   │                                                 │  │
+│   │ [SlidersHorizontal] "CẤU HÌNH THUẬT TOÁN"     │  │
+│   │                                   [ChevronDown] │  │
+│   └──────────────────────────────────────────────────┘  │
+│                                                         │
+│ )}                                                      │
+│                                                         │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 7. ConfigurationPanel Detailed Structure
+
+```
+┌───────────────────────────────────────────────────────────┐
+│ ConfigurationPanel Component                            │
+│                                                         │
+│ Classes:                                                │
+│ shrink-0 border-t border-black/[0.06]                  │
+│ bg-white/80 dark:bg-[#0c0c10]/80 backdrop-blur-lg      │
+│ !isMobileExpanded ? 'hidden lg:block' : 'block'        │
+│                                                         │
+│ px-4 py-3 space-y-2.5                                  │
+│                                                         │
+│ ┌─────────────────────────────────────────────────────┐ │
+│ │ [COLLAPSIBLE HEADER]                                │ │
+│ │ w-full flex items-center justify-between            │ │
+│ │ onClick: toggle isExpanded                          │ │
+│ │                                                     │ │
+│ │ Left:                                               │ │
+│ │ [Settings2] "Cấu hình AI"                          │ │
+│ │ {!isExpanded && summaryText}                        │ │
+│ │ "VEO · Model Name" (truncated, max-w)              │ │
+│ │                                                     │ │
+│ │ Right:                                              │ │
+│ │ {isExpanded ? <ChevronUp /> : <ChevronDown />}      │ │
+│ └─────────────────────────────────────────────────────┘ │
+│                                                         │
+│ {isExpanded && (                                        │
+│                                                         │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │ [EXPANDED SETTINGS]                             │   │
+│   │                                                 │   │
+│   │ VideoModelEngineSettings Component              │   │
+│   │ ├─ Engine Selector                              │   │
+│   │ │  └─ [Server pills] (gommo, veo, kling, etc) │   │
+│   │ │                                               │   │
+│   │ ├─ Family Selector Pills                        │   │
+│   │ │  └─ [VEO] [Kling] [Hailuo] [Grok] ...        │   │
+│   │ │                                               │   │
+│   │ ├─ Model Variants (max 4 visible)               │   │
+│   │ │  └─ [Variant 1] [Variant 2] [Variant 3] ...  │   │
+│   │ │     [Show all...] if more                     │   │
+│   │ │                                               │   │
+│   │ ├─ Mode Selector Pills                          │   │
+│   │ │  └─ [relaxed] [quality] [turbo] ...          │   │
+│   │ │                                               │   │
+│   │ ├─ Resolution Selector Pills                    │   │
+│   │ │  └─ [720p] [1080p] [2k] [4k] ...             │   │
+│   │ │                                               │   │
+│   │ ├─ Ratio Selector Pills                         │   │
+│   │ │  └─ [1:1] [16:9] [9:16] [4:3] ...            │   │
+│   │ │                                               │   │
+│   │ ├─ Duration Selector                            │   │
+│   │ │  └─ Cycle button or dropdown                  │   │
+│   │ │     [8s] [10s] [15s] ...                      │   │
+│   │ │                                               │   │
+│   │ ├─ Sound Toggle                                 │   │
+│   │ │  └─ [Volume2] or [VolumeX] button             │   │
+│   │ │                                               │   │
+│   │ └─ Quantity Control (if SINGLE mode)            │   │
+│   │    └─ [Decrease] [1] [Increase]                 │   │
+│   │                                                 │   │
+│   └─────────────────────────────────────────────────┘   │
+│                                                         │
+│ )}                                                      │
+│                                                         │
+└───────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 8. ModelEngineSettings Detailed Structure
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ ModelEngineSettings Component                           │
+│                                                         │
+│ Used in: PromptBar, GeneratorSidebar                    │
+│ Border-top: border-black/[0.06] dark:border-white/[0.04]
+│                                                         │
+│ ┌────────────────────────────────────────────────────┐  │
+│ │ [COLLAPSIBLE HEADER]                              │  │
+│ │ w-full flex items-center justify-between py-2.5   │  │
+│ │ onClick: toggle isExpanded                        │  │
+│ │                                                   │  │
+│ │ Left:                                             │  │
+│ │ [Settings2 icon] "Cấu hình AI"                   │  │
+│ │ {!isExpanded && summaryText}                      │  │
+│ │                                                   │  │
+│ │ Right:                                            │  │
+│ │ {isExpanded ? <ChevronDown /> : <ChevronUp />}    │  │
+│ └────────────────────────────────────────────────────┘  │
+│                                                         │
+│ {isExpanded && (                                        │
+│                                                         │
+│   ┌──────────────────────────────────────────────────┐  │
+│   │ [FAMILY SELECTOR] (if hasFamilyData)             │  │
+│   │ space-y-2.5                                      │  │
+│   │                                                  │  │
+│   │ Label: "AI Family" [Settings2 icon]             │  │
+│   │ Pills: [Banana] [Seedream] [Midjourney] ...     │  │
+│   │        (active: rose-500/10 text-rose-500)      │  │
+│   │        (inactive: bg-transparent)               │  │
+│   └──────────────────────────────────────────────────┘  │
+│                                                         │
+│   ┌──────────────────────────────────────────────────┐  │
+│   │ [MODEL VARIANTS] (collapsible groups)            │  │
+│   │                                                  │  │
+│   │ Visible: max 4 pills                            │  │
+│   │ [Variant 1] [Variant 2] [Variant 3] [Variant 4]│  │
+│   │                                                  │  │
+│   │ If more than 4:                                 │  │
+│   │ [Show all {remaining count}...] button          │  │
+│   └──────────────────────────────────────────────────┘  │
+│                                                         │
+│   ┌──────────────────────────────────────────────────┐  │
+│   │ [MODE SELECTOR]                                  │  │
+│   │ Label: "Mode" [Brain icon]                       │  │
+│   │ Pills: [relaxed] [quality] [turbo] ...           │  │
+│   │        (active: rose-500/10 text-rose-500)      │  │
+│   └──────────────────────────────────────────────────┘  │
+│                                                         │
+│   ┌──────────────────────────────────────────────────┐  │
+│   │ [RESOLUTION & RATIO]                             │  │
+│   │                                                  │  │
+│   │ Resolutions:                                    │  │
+│   │ [720p] [1080p] [4K] ...                        │  │
+│   │                                                  │  │
+│   │ Ratios:                                         │  │
+│   │ [1:1] [16:9] [9:16] [4:3] ...                  │  │
+│   │                                                  │  │
+│   │ Label: "Resolution" [MonitorUp icon]            │  │
+│   │ Label: "Aspect Ratio" [Ratio icon]              │  │
+│   └──────────────────────────────────────────────────┘  │
+│                                                         │
+│   ┌──────────────────────────────────────────────────┐  │
+│   │ [QUANTITY CONTROL] (if SINGLE mode)              │  │
+│   │ Label: "Qty" [Hash icon]                         │  │
+│   │ [Decrease] [1] [Increase]                       │  │
+│   │ Buttons: bg-rose-500/10 when active             │  │
+│   └──────────────────────────────────────────────────┘  │
+│                                                         │
+│ )}                                                      │
+│                                                         │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 9. Data Flow: From PromptBar to Generation
+
+```
+User Input (PromptBar)
+│
+├─ prompt: string
+├─ selectedFamily: string
+├─ selectedModel: any
+├─ selectedRatio: string
+├─ selectedRes: string
+├─ selectedEngine: string
+├─ selectedMode: string
+├─ references: string[]
+└─ quantity: number
+│
+↓
+│
+Validation Check
+├─ isGenerateDisabled: boolean (from parent)
+├─ generateTooltip: string | null
+└─ credits >= actionCost?
+│
+↓
+│
+onGenerate() callback (parent handler)
+│
+├─ API call (imagesApi / videosApi)
+│  ├─ Model family mapping
+│  ├─ Configuration serialization
+│  ├─ Prompt + references upload
+│  └─ Cost calculation
+│
+└─ State updates
+   ├─ isGenerating = true
+   ├─ Disable controls
+   ├─ Show loading state
+   ├─ Poll for results
+   └─ Update results gallery on complete
+```
+
+---
+
+## 10. Mobile vs Desktop Layout Comparison
+
+```
+DESKTOP (lg and above):
+┌─────────────────────────────────────┐
+│         Sticky Header               │
+├──────┬────────────────┬─────────────┤
+│      │                │             │
+│ Left │   Viewport     │   Right     │
+│ Side │   (center)     │   Panel     │
+│ bar  │                │             │
+│      │                │             │
+├──────┴────────────────┴─────────────┤
+│       Bottom Bar / Control Panel    │
+└─────────────────────────────────────┘
+
+MOBILE (below lg):
+┌─────────────────────┐
+│  Sticky Header      │
+├─────────────────────┤
+│                     │
+│  Viewport / Main    │
+│  Content Area       │
+│                     │
+├─────────────────────┤
+│ [Mobile Sidebar]    │ ← Fixed overlay on left
+│ (translate-x-0)     │   Z-index: z-[150]
+├─────────────────────┤
+│ Mobile FAB ◄────┐   │
+│ (Fixed bottom)  │   │ Opens sidebar on click
+│ z-[130]         │   │
+├─────────────────┤───┤
+│ MobileGenerator │   │
+│ Bar (Bottom)    │   │
+│ (if used)       │   │
+└─────────────────────┘
+```
+
+---
+
+## 11. State Management Pattern
+
+```
+Workspace Component (Container)
+│
+├─ Local State (useState)
+│  ├─ prompt: string
+│  ├─ selectedFamily: string
+│  ├─ selectedModel: object
+│  ├─ isGenerating: boolean
+│  ├─ results: array
+│  └─ ... other local states
+│
+├─ Auth Context (useAuth)
+│  ├─ credits: number
+│  ├─ usagePreference: 'credits' | 'key'
+│  └─ refreshUserInfo: () => void
+│
+├─ API Hooks (custom)
+│  ├─ useImageGenerator()
+│  └─ useVideoGenerator()
+│
+└─ Pass to Child Components
+   │
+   ├─ PromptBar
+   │  ├─ prompt, onPromptChange, onPromptSubmit
+   │  ├─ isGenerating, isGenerateDisabled, onGenerate
+   │  ├─ credits, usagePreference, actionCost
+   │  ├─ references, onAddReference
+   │  └─ AI settings (model, ratio, res, engine, mode, family)
+   │
+   ├─ Sidebar
+   │  ├─ activeMode, setActiveMode
+   │  ├─ prompt, setPrompt
+   │  └─ all AI settings selectors
+   │
+   └─ Viewport
+      └─ results, isGenerating
+```
+
