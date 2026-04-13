@@ -58,7 +58,7 @@ export const EditorViewport: React.FC<EditorViewportProps> = ({
 
       {/* Crop Controls */}
       <AnimatePresence>
-        {isCropping && (
+        {isCropping && !isGenerating && (
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="absolute top-20 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-2.5 w-full max-w-4xl pointer-events-none px-4">
             <div className="bg-white/95 dark:bg-[#14151a]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-xl p-1 flex items-center gap-0.5 pointer-events-auto shadow-xl overflow-x-auto no-scrollbar max-w-full">
               {ratioPresets.map(r => (
