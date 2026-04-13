@@ -30,7 +30,7 @@ export interface ActiveTask {
 }
 
 export const useProductImageEditor = (initialImage: string | null | undefined, theme: string) => {
-  const { credits, useCredits, addCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
+  const { user, credits, useCredits, addCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
   const navigate = useNavigate();
 
   const [activeTool, setActiveTool] = useState<string>('pointer');
@@ -542,7 +542,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         base64: compressed,
         fileName: `crop_source_${Date.now()}.jpg`,
         size: Math.ceil(compressed.length * 0.75),
-        source: 'fxflow',
+        source: user?.fxflowOwner || 'fxlab',
       });
 
       const recordId = uploadRes.imageId || uploadRes._id;
@@ -665,7 +665,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         base64: compressed,
         fileName: `draw_source_${Date.now()}.jpg`,
         size: Math.ceil(compressed.length * 0.75),
-        source: 'fxflow',
+        source: user?.fxflowOwner || 'fxlab',
       });
 
       const recordId = uploadRes.imageId || uploadRes._id;

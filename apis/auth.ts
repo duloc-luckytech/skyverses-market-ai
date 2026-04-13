@@ -19,6 +19,7 @@ export interface AuthUser {
   lastActiveAt?: string;
   createdAt?: string;
   googleEmail?: string;
+  fxflowOwner?: string; // Assigned fxflow account name (e.g. "thanhdatduong713")
 }
 
 export interface RegisterRequest {
