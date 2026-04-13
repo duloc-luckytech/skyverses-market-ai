@@ -626,11 +626,11 @@ export function createWorkerRouter(provider: string) {
 
         for (const job of pendingEdits) {
           const task: any = {
-            id:        String(job._id),
-            type:      "edit-image",
+            jobId:     String(job._id),   // bên thứ 3 expect "jobId"
+            editType:  job.editType,
             mediaId:   job.mediaId,
             projectId: job.projectId,
-            editType:  job.editType,
+            priority:  1,
             owner:     job.owner || null,
           };
 
@@ -639,7 +639,9 @@ export function createWorkerRouter(provider: string) {
           }
 
           if (job.editType === "draw" && job.drawPayload) {
-            task.drawPayload = job.drawPayload;
+            // Flatten drawPayload → top-level fields theo spec bên thứ 3
+            task.prompt            = job.drawPayload.prompt            || "";
+            task.referenceImageUrl = job.drawPayload.referenceImageUrl || "";
           }
 
           tasks.push(task);
