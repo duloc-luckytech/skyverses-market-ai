@@ -1765,7 +1765,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
         {/* ── SIDEBAR ── */}
         <div className="hidden md:flex w-[320px] lg:w-[360px] shrink-0 bg-white dark:bg-[#0d0d0f] border-r border-slate-200 dark:border-white/5 flex-col h-full transition-colors">
-          <SidebarContent />
+          {SidebarContent()}
 
           {/* Sticky run button */}
           <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#0d0d0f] space-y-2.5">
@@ -3312,7 +3312,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               </div>
 
               <div className="overflow-y-auto flex-1">
-                <SidebarContent />
+                {SidebarContent()}
               </div>
 
               <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/5">
