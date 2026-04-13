@@ -113,7 +113,7 @@ export const EditorViewport: React.FC<EditorViewportProps> = ({
 
                   {/* Crop overlay */}
                   <AnimatePresence>
-                    {isCropping && (
+                    {isCropping && !isGenerating && (
                       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-50 pointer-events-none">
                         <div className="absolute inset-0 bg-black/50" style={{ clipPath: `polygon(0% 0%, 0% 100%, ${cropBox.x}% 100%, ${cropBox.x}% ${cropBox.y}%, ${cropBox.x + cropBox.w}% ${cropBox.y}%, ${cropBox.x + cropBox.w}% ${cropBox.y + cropBox.h}%, ${cropBox.x}% ${cropBox.y + cropBox.h}%, ${cropBox.x}% 100%, 100% 100%, 100% 0%)` }} />
                         <div className="absolute pointer-events-auto cursor-move border border-brand-blue" style={{ left: `${cropBox.x}%`, top: `${cropBox.y}%`, width: `${cropBox.w}%`, height: `${cropBox.h}%` }} onMouseDown={(e) => { e.stopPropagation(); setDragStart({ x: e.clientX, y: e.clientY, box: { ...cropBox } }); }}>
@@ -121,6 +121,27 @@ export const EditorViewport: React.FC<EditorViewportProps> = ({
                            <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border border-brand-blue rounded-sm cursor-ne-resize" onMouseDown={(e) => { e.stopPropagation(); setResizeHandle('topright'); setDragStart({ x: e.clientX, y: e.clientY, box: { ...cropBox } }); }} />
                            <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border border-brand-blue rounded-sm cursor-sw-resize" onMouseDown={(e) => { e.stopPropagation(); setResizeHandle('bottomleft'); setDragStart({ x: e.clientX, y: e.clientY, box: { ...cropBox } }); }} />
                            <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border border-brand-blue rounded-sm cursor-se-resize" onMouseDown={(e) => { e.stopPropagation(); setResizeHandle('bottomright'); setDragStart({ x: e.clientX, y: e.clientY, box: { ...cropBox } }); }} />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* ✅ Loading overlay khi crop/draw đang xử lý */}
+                  <AnimatePresence>
+                    {isGenerating && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-[60] flex flex-col items-center justify-center gap-5 bg-black/60 backdrop-blur-sm rounded-lg"
+                      >
+                        <div className="relative">
+                          <Loader2 size={56} className="text-brand-blue animate-spin" strokeWidth={1.5} />
+                          <Wand2 size={20} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/60 animate-pulse" />
+                        </div>
+                        <div className="text-center space-y-1.5">
+                          <p className="text-sm font-bold text-white animate-pulse">AI đang xử lý ảnh...</p>
+                          <p className="text-[10px] font-medium text-white/40 uppercase tracking-widest">Vui lòng chờ trong giây lát</p>
                         </div>
                       </motion.div>
                     )}
@@ -149,6 +170,7 @@ export const EditorViewport: React.FC<EditorViewportProps> = ({
                </motion.div>
             )}
          </div>
+
       </div>
     </div>
   );
