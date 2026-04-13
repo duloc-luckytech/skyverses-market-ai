@@ -321,9 +321,27 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
 
         // Parse JSON from AI response
         try {
-          const jsonMatch = raw.match(/\[[\s\S]*\]/);
-          if (jsonMatch) outline = JSON.parse(jsonMatch[0]);
+          // Try array pattern first: [...]
+          const arrayMatch = raw.match(/\[[\s\S]*\]/);
+          if (arrayMatch) {
+            const parsed = JSON.parse(arrayMatch[0]);
+            outline = Array.isArray(parsed) ? parsed : Object.values(parsed);
+          } else {
+            // Fallback: try object with array value e.g. {"slides": [...]}
+            const objMatch = raw.match(/\{[\s\S]*\}/);
+            if (objMatch) {
+              const parsed = JSON.parse(objMatch[0]);
+              const firstArray = Object.values(parsed).find(v => Array.isArray(v));
+              if (firstArray) outline = firstArray as typeof outline;
+            }
+          }
         } catch {
+          showToast('AI không trả về đúng format, thử lại nhé', 'error');
+          setIsGeneratingDeck(false);
+          return;
+        }
+
+        if (!Array.isArray(outline) || outline.length === 0) {
           showToast('AI không trả về đúng format, thử lại nhé', 'error');
           setIsGeneratingDeck(false);
           return;
