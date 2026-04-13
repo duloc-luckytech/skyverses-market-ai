@@ -15,6 +15,8 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
+import OnboardingWizard from './PaperclipAIAgentsWizard';
+import type { WizardResult } from './PaperclipAIAgentsWizard';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -23,6 +25,8 @@ const THREAD_KEY = (deptId: string) => `${STORAGE_KEY}_thread_${deptId}`;
 const MAX_THREAD_TURNS = 10; // giữ tối đa 10 turns (20 messages: 10 user + 10 assistant)
 const BRIEF_KEY  = (deptId: string) => `${STORAGE_KEY}_brief_${deptId}`;
 const SKILLS_KEY = (deptId: string) => `${STORAGE_KEY}_skills_${deptId}`;
+const WIZARD_KEY   = 'skyverses_PAPERCLIP-AI-AGENTS_wizard_done';
+const ADVANCED_KEY = 'skyverses_PAPERCLIP-AI-AGENTS_advanced';
 
 // Skill presets per department
 const DEPT_SKILLS: Record<string, Array<{ id: string; label: string; rule: string }>> = {
@@ -597,6 +601,14 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   });
   const [showQueue, setShowQueue] = useState(false);
 
+  // Onboarding wizard
+  const [showWizard, setShowWizard] = useState(false);
+
+  // Advanced / Simple mode toggle
+  const [advancedMode, setAdvancedMode] = useState<boolean>(() => {
+    try { return localStorage.getItem(ADVANCED_KEY) === 'true'; } catch { return false; }
+  });
+
   // Prompt Inspector: edit system prompt + re-run
   const [editedSystemPrompt, setEditedSystemPrompt] = useState<string>('');
   const [isEditingPrompt, setIsEditingPrompt]       = useState(false);
@@ -712,13 +724,36 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       if (e.key === '?') { e.preventDefault(); setShowShortcuts(v => !v); }
       if (e.key === 's' || e.key === 'S') { e.preventDefault(); setViewMode('studio'); }
       if (e.key === 'h' || e.key === 'H') { e.preventDefault(); setViewMode('history'); }
-      if (e.key === 'a' || e.key === 'A') { e.preventDefault(); setViewMode('analytics'); }
-      if (e.key === 'c' || e.key === 'C') { e.preventDefault(); setViewMode('canvas'); }
+      if ((e.key === 'a' || e.key === 'A') && advancedMode) { e.preventDefault(); setViewMode('analytics'); }
+      if ((e.key === 'c' || e.key === 'C') && advancedMode) { e.preventDefault(); setViewMode('canvas'); }
       if (e.key === 'Escape') { setShowShortcuts(false); setShowApprovalDialog(false); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
+  }, [advancedMode]);
+
+  // Trigger onboarding wizard on first visit
+  useEffect(() => {
+    if (!localStorage.getItem(WIZARD_KEY)) {
+      const t = setTimeout(() => setShowWizard(true), 400);
+      return () => clearTimeout(t);
+    }
   }, []);
+
+  // Persist advancedMode to localStorage
+  useEffect(() => {
+    try { localStorage.setItem(ADVANCED_KEY, String(advancedMode)); } catch { /* ignore */ }
+  }, [advancedMode]);
+
+  // Reset viewMode when advanced mode is turned off
+  useEffect(() => {
+    if (!advancedMode && (viewMode === 'analytics' || viewMode === 'canvas')) setViewMode('studio');
+  }, [advancedMode, viewMode]);
+
+  // Reset activeRightTab when advanced mode is turned off
+  useEffect(() => {
+    if (!advancedMode && activeRightTab === 'prompt') setActiveRightTab('output');
+  }, [advancedMode, activeRightTab]);
 
   // A4: Reset historyLoaded when switching to history view
   useEffect(() => {
@@ -1200,6 +1235,20 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     addLog('Budget Guard', 'Budget reset bởi user', 'info', '#10b981');
   };
 
+  const handleWizardComplete = useCallback((result: WizardResult) => {
+    setActiveDept(result.dept);
+    setBudgetLimit(result.budget);
+    setTaskPrompt(result.prompt);
+    localStorage.setItem(WIZARD_KEY, 'true');
+    setShowWizard(false);
+    if (result.runDemo) setTimeout(() => handleRun(), 600);
+  }, [handleRun]);
+
+  const handleWizardSkip = useCallback(() => {
+    localStorage.setItem(WIZARD_KEY, 'true');
+    setShowWizard(false);
+  }, []);
+
   // ── Sidebar ────────────────────────────────────────────────────────────────
 
   // D4: Auto-detect best department
@@ -1215,6 +1264,84 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
   const SidebarContent = () => (
     <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+
+      {/* ── Compact Config Card (always visible) ── */}
+      <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] p-3 space-y-2.5">
+        {/* Agent pills */}
+        <div>
+          <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-[#444] tracking-widest mb-1.5">Agent</p>
+          <div className="flex gap-1 flex-wrap">
+            {DEPARTMENTS.map(d => {
+              const Icon = d.icon;
+              const isActive = activeDept === d.id;
+              return (
+                <button
+                  key={d.id}
+                  onClick={() => setActiveDept(d.id)}
+                  className="flex items-center gap-1 px-2 py-1 rounded-full border text-[9px] font-bold transition-all"
+                  style={isActive
+                    ? { backgroundColor: `${d.color}20`, borderColor: `${d.color}50`, color: d.color }
+                    : { backgroundColor: 'transparent', borderColor: 'rgba(0,0,0,0.07)', color: '' }
+                  }
+                >
+                  <Icon size={9} style={isActive ? { color: d.color } : {}} />
+                  <span className={isActive ? '' : 'text-slate-500 dark:text-[#555]'}>{d.id === 'ceo' ? 'CEO' : d.label.replace(' AI', '').replace(' Agent', '')}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        {/* Model pills */}
+        <div>
+          <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-[#444] tracking-widest mb-1.5">Model</p>
+          <div className="flex gap-1">
+            {LLM_MODELS.map(m => {
+              const isActive = activeModel === m.id;
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => setActiveModel(m.id)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-bold transition-all"
+                  style={isActive
+                    ? { backgroundColor: `${m.color}20`, borderColor: `${m.color}50`, color: m.color }
+                    : { backgroundColor: 'transparent', borderColor: 'rgba(0,0,0,0.07)' }
+                  }
+                >
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isActive ? m.color : '#94a3b8' }} />
+                  <span className={isActive ? '' : 'text-slate-500 dark:text-[#555]'}>{m.id === 'claude-sonnet' ? 'Sonnet' : 'Opus'}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        {/* Budget inline */}
+        <div>
+          <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-[#444] tracking-widest mb-1.5">Budget</p>
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] text-slate-400">Limit $</span>
+            <input
+              value={budgetLimit}
+              onChange={e => setBudgetLimit(parseFloat(e.target.value) || 1)}
+              className="w-14 text-[11px] bg-white dark:bg-white/[0.04] border border-emerald-500/20 rounded-lg px-2 py-0.5 text-slate-700 dark:text-white focus:outline-none focus:border-emerald-500/50"
+              type="number" min="0.5" step="0.5"
+            />
+            <div className="flex-1">
+              <div className="h-1.5 rounded-full bg-emerald-500/10 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${Math.min((spentBudget / budgetLimit) * 100, 100)}%`,
+                    backgroundColor: budgetPct > 80 ? '#ef4444' : '#10b981',
+                  }}
+                />
+              </div>
+            </div>
+            <span className={`text-[9px] font-bold ${budgetPct > 80 ? 'text-red-500' : 'text-emerald-600 dark:text-emerald-400'}`}>
+              ${spentBudget.toFixed(2)}
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* ── Org Chart ── */}
       <div>
@@ -1245,99 +1372,103 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         </AnimatePresence>
       </div>
 
-      {/* ── Department picker ── */}
-      <div>
-        <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Phòng ban / Agent</p>
-        <div className="space-y-1">
-          {DEPARTMENTS.map(d => {
-            const Icon = d.icon;
-            const isActive = activeDept === d.id;
-            return (
-              <button
-                key={d.id}
-                onClick={() => setActiveDept(d.id)}
-                className={`w-full flex items-center gap-2.5 p-2.5 rounded-xl text-left border transition-all ${
-                  isActive
-                    ? 'border-brand-blue/40 bg-brand-blue/[0.06]'
-                    : 'border-transparent bg-black/[0.02] dark:bg-white/[0.02] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
-                }`}
-              >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${d.color}20` }}>
-                  <Icon size={14} style={{ color: d.color }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-[11px] font-semibold truncate ${isActive ? 'text-brand-blue' : 'text-slate-700 dark:text-white/80'}`}>
-                    {d.label}
-                  </p>
-                  <p className="text-[9px] text-slate-400 dark:text-[#555] truncate">
-                    {d.tier === 'orchestrator' ? '⭐ Orchestrator' : d.agent}
-                  </p>
-                </div>
-                {(conversationThreads[d.id]?.length ?? 0) > 0 && (
-                  <span className="text-[8px] bg-brand-blue/20 text-brand-blue px-1.5 py-0.5 rounded-full font-bold shrink-0">
-                    {Math.floor((conversationThreads[d.id]?.length ?? 0) / 2)}t
-                  </span>
-                )}
-                {isActive && (
-                  <motion.div
-                    layoutId="active-dept-dot"
-                    className="w-1.5 h-1.5 rounded-full bg-brand-blue shrink-0"
-                  />
-                )}
-              </button>
-            );
-          })}
+      {/* ── Department picker (Advanced only) ── */}
+      {advancedMode && (
+        <div>
+          <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Phòng ban / Agent</p>
+          <div className="space-y-1">
+            {DEPARTMENTS.map(d => {
+              const Icon = d.icon;
+              const isActive = activeDept === d.id;
+              return (
+                <button
+                  key={d.id}
+                  onClick={() => setActiveDept(d.id)}
+                  className={`w-full flex items-center gap-2.5 p-2.5 rounded-xl text-left border transition-all ${
+                    isActive
+                      ? 'border-brand-blue/40 bg-brand-blue/[0.06]'
+                      : 'border-transparent bg-black/[0.02] dark:bg-white/[0.02] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${d.color}20` }}>
+                    <Icon size={14} style={{ color: d.color }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-[11px] font-semibold truncate ${isActive ? 'text-brand-blue' : 'text-slate-700 dark:text-white/80'}`}>
+                      {d.label}
+                    </p>
+                    <p className="text-[9px] text-slate-400 dark:text-[#555] truncate">
+                      {d.tier === 'orchestrator' ? '⭐ Orchestrator' : d.agent}
+                    </p>
+                  </div>
+                  {(conversationThreads[d.id]?.length ?? 0) > 0 && (
+                    <span className="text-[8px] bg-brand-blue/20 text-brand-blue px-1.5 py-0.5 rounded-full font-bold shrink-0">
+                      {Math.floor((conversationThreads[d.id]?.length ?? 0) / 2)}t
+                    </span>
+                  )}
+                  {isActive && (
+                    <motion.div
+                      layoutId="active-dept-dot"
+                      className="w-1.5 h-1.5 rounded-full bg-brand-blue shrink-0"
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* ── Quick tasks ── */}
+      {/* ── Quick tasks (horizontal scroll chips) ── */}
       <div>
         <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Task nhanh — {dept.label}</p>
-        <div className="flex flex-col gap-1">
+        <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
           {dept.tasks.map(t => (
             <button
               key={t}
               onClick={() => setTaskPrompt(t)}
-              className={`text-left px-3 py-2 rounded-lg border text-[11px] transition-all flex items-center gap-2 group ${
+              className={`shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full border text-[10px] font-semibold whitespace-nowrap transition-all ${
                 taskPrompt === t
-                  ? 'border-brand-blue/40 bg-brand-blue/[0.05] text-brand-blue'
+                  ? 'border-brand-blue/40 bg-brand-blue/[0.08] text-brand-blue'
                   : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-600 dark:text-white/60 hover:border-brand-blue/30 hover:text-brand-blue hover:bg-brand-blue/[0.02]'
               }`}
             >
-              <Zap size={9} className="opacity-60 shrink-0 group-hover:opacity-100 transition-opacity" />
+              <Zap size={8} className="opacity-60 shrink-0" />
               {t}
             </button>
           ))}
         </div>
       </div>
 
-      {/* ── LLM Model picker ── */}
-      <div>
-        <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">LLM Model</p>
-        <div className="space-y-1">
-          {LLM_MODELS.map(m => {
-            const isActive = activeModel === m.id;
-            return (
-              <button
-                key={m.id}
-                onClick={() => setActiveModel(m.id)}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl border transition-all ${
-                  isActive
-                    ? 'bg-brand-blue text-white border-brand-blue shadow-sm shadow-brand-blue/20'
-                    : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-600 dark:text-white/60 hover:border-brand-blue/30'
-                }`}
-              >
-                <div
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: isActive ? 'rgba(255,255,255,0.6)' : m.color }}
-                />
-                <span className="text-[11px] font-semibold flex-1 text-left">{m.label}</span>
-                <span className={`text-[8px] font-medium ${isActive ? 'text-white/70' : 'text-slate-400 dark:text-[#555]'}`}>{m.badge}</span>
-              </button>
-            );
-          })}
+      {/* ── LLM Model picker (Advanced only) ── */}
+      {advancedMode && (
+        <div>
+          <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">LLM Model</p>
+          <div className="space-y-1">
+            {LLM_MODELS.map(m => {
+              const isActive = activeModel === m.id;
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => setActiveModel(m.id)}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl border transition-all ${
+                    isActive
+                      ? 'bg-brand-blue text-white border-brand-blue shadow-sm shadow-brand-blue/20'
+                      : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-600 dark:text-white/60 hover:border-brand-blue/30'
+                  }`}
+                >
+                  <div
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ backgroundColor: isActive ? 'rgba(255,255,255,0.6)' : m.color }}
+                  />
+                  <span className="text-[11px] font-semibold flex-1 text-left">{m.label}</span>
+                  <span className={`text-[8px] font-medium ${isActive ? 'text-white/70' : 'text-slate-400 dark:text-[#555]'}`}>{m.badge}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── AI Suggest ── */}
       <div>
@@ -1438,53 +1569,55 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         <p className="text-[8px] text-slate-300 dark:text-[#444] mt-1 text-right">{taskPrompt.length} ký tự · ~{estimatedTokens} tokens · ⌘↵ để chạy</p>
       </div>
 
-      {/* ── Budget Guard ── */}
-      <div>
-        <button
-          onClick={() => setShowBudgetPanel(v => !v)}
-          className="flex items-center justify-between w-full text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] hover:text-brand-blue transition-colors tracking-widest mb-2"
-        >
-          <span className="flex items-center gap-1.5">
-            <ShieldCheck size={10} className="text-emerald-500" /> Budget Guard
-          </span>
-          {showBudgetPanel ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
-        </button>
-        <AnimatePresence>
-          {showBudgetPanel && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="p-3 rounded-xl bg-emerald-500/[0.05] border border-emerald-500/20 space-y-3">
-                <BudgetMeter limit={budgetLimit} spent={spentBudget} />
-                <div className="flex items-center gap-2">
-                  <span className="text-[9px] text-slate-400 shrink-0">Limit $</span>
-                  <input
-                    value={budgetLimit}
-                    onChange={e => setBudgetLimit(parseFloat(e.target.value) || 1)}
-                    className="flex-1 text-[11px] bg-white dark:bg-white/[0.04] border border-emerald-500/20 rounded-lg px-2 py-1 text-slate-700 dark:text-white focus:outline-none focus:border-emerald-500/50"
-                    type="number"
-                    min="0.5"
-                    step="0.5"
-                  />
-                  <button
-                    onClick={resetBudget}
-                    className="shrink-0 text-[9px] font-semibold text-slate-400 hover:text-red-400 transition-colors px-2 py-1 rounded-lg hover:bg-red-500/10"
-                  >
-                    Reset
-                  </button>
+      {/* ── Budget Guard (Advanced only) ── */}
+      {advancedMode && (
+        <div>
+          <button
+            onClick={() => setShowBudgetPanel(v => !v)}
+            className="flex items-center justify-between w-full text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] hover:text-brand-blue transition-colors tracking-widest mb-2"
+          >
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck size={10} className="text-emerald-500" /> Budget Guard
+            </span>
+            {showBudgetPanel ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+          </button>
+          <AnimatePresence>
+            {showBudgetPanel && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="p-3 rounded-xl bg-emerald-500/[0.05] border border-emerald-500/20 space-y-3">
+                  <BudgetMeter limit={budgetLimit} spent={spentBudget} />
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] text-slate-400 shrink-0">Limit $</span>
+                    <input
+                      value={budgetLimit}
+                      onChange={e => setBudgetLimit(parseFloat(e.target.value) || 1)}
+                      className="flex-1 text-[11px] bg-white dark:bg-white/[0.04] border border-emerald-500/20 rounded-lg px-2 py-1 text-slate-700 dark:text-white focus:outline-none focus:border-emerald-500/50"
+                      type="number"
+                      min="0.5"
+                      step="0.5"
+                    />
+                    <button
+                      onClick={resetBudget}
+                      className="shrink-0 text-[9px] font-semibold text-slate-400 hover:text-red-400 transition-colors px-2 py-1 rounded-lg hover:bg-red-500/10"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                  <p className="text-[9px] text-slate-400 dark:text-[#555]">
+                    Agent tự động pause khi sắp vượt limit. Mọi action đều có audit log.
+                  </p>
                 </div>
-                <p className="text-[9px] text-slate-400 dark:text-[#555]">
-                  Agent tự động pause khi sắp vượt limit. Mọi action đều có audit log.
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
 
       {/* ── Activity Feed ── */}
       <div>
@@ -1542,14 +1675,16 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           {/* View mode tabs */}
           <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-white/5 p-0.5 rounded-full border border-slate-200 dark:border-white/10">
             {([
-              { id: 'studio',    label: 'Studio',    icon: Layers },
-              { id: 'history',   label: `Lịch sử (${taskHistory.length})`, icon: History },
-              { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-              { id: 'canvas',    label: 'Canvas',    icon: Workflow },
-            ] as const).map(tab => (
+              { id: 'studio',  label: 'Run',                                 icon: Play      },
+              { id: 'history', label: `Lịch sử (${taskHistory.length})`,     icon: History   },
+              ...(advancedMode ? [
+                { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+                { id: 'canvas',    label: 'Canvas',    icon: Workflow   },
+              ] : []),
+            ] as { id: string; label: string; icon: React.ElementType }[]).map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setViewMode(tab.id)}
+                onClick={() => setViewMode(tab.id as 'studio' | 'history' | 'analytics' | 'canvas')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-full transition-all ${
                   viewMode === tab.id
                     ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
@@ -1592,6 +1727,20 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             <Settings size={12} /> Config
           </button>
 
+          {/* Advanced mode toggle */}
+          <button
+            onClick={() => setAdvancedMode(v => !v)}
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-bold transition-all ${
+              advancedMode
+                ? 'bg-amber-400/15 border-amber-400/40 text-amber-600 dark:text-amber-400 shadow-sm shadow-amber-400/10'
+                : 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-400 dark:text-[#555] hover:border-slate-300 dark:hover:border-white/20'
+            }`}
+            title={advancedMode ? 'Tắt Advanced Mode' : 'Bật Advanced Mode'}
+          >
+            <Zap size={11} className={advancedMode ? 'text-amber-500' : ''} />
+            Advanced
+          </button>
+
           {/* Keyboard shortcuts help */}
           <button
             onClick={() => setShowShortcuts(v => !v)}
@@ -1600,8 +1749,6 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           >
             <HelpCircle size={16} />
           </button>
-
-          {/* Credits */}
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-blue/10 border border-brand-blue/20 rounded-full">
             <Coins size={11} className="text-brand-blue" />
             <span className="text-[10px] font-black text-brand-blue">{credits.toLocaleString()}</span>
@@ -1667,57 +1814,61 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               )}
             </motion.button>
 
-            {/* B1: Add to Queue + Queue management */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={addToQueue}
-                disabled={!taskPrompt.trim() || isRunning}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-slate-500 dark:text-[#666] text-[10px] font-semibold hover:border-brand-blue/40 hover:text-brand-blue hover:bg-brand-blue/[0.03] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-              >
-                <Plus size={11} /> Add to Queue
-              </button>
-              {taskQueue.length > 0 && (
-                <button
-                  onClick={() => setShowQueue(v => !v)}
-                  className="flex items-center gap-1 px-2.5 py-2 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold hover:bg-amber-400/20 transition-all"
-                >
-                  <Layers size={11} /> {taskQueue.length}
-                </button>
-              )}
-            </div>
+            {/* B1: Add to Queue + Queue management (Advanced only) */}
+            {advancedMode && (
+              <>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={addToQueue}
+                    disabled={!taskPrompt.trim() || isRunning}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-slate-500 dark:text-[#666] text-[10px] font-semibold hover:border-brand-blue/40 hover:text-brand-blue hover:bg-brand-blue/[0.03] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  >
+                    <Plus size={11} /> Add to Queue
+                  </button>
+                  {taskQueue.length > 0 && (
+                    <button
+                      onClick={() => setShowQueue(v => !v)}
+                      className="flex items-center gap-1 px-2.5 py-2 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold hover:bg-amber-400/20 transition-all"
+                    >
+                      <Layers size={11} /> {taskQueue.length}
+                    </button>
+                  )}
+                </div>
 
-            {/* B1: Queue panel */}
-            <AnimatePresence>
-              {showQueue && taskQueue.length > 0 && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.04] p-2 space-y-1">
-                    <p className="text-[8px] font-bold uppercase text-amber-500/70 tracking-widest px-1 mb-1.5">Task Queue ({taskQueue.length})</p>
-                    {taskQueue.map((qt, qi) => (
-                      <div key={qt.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04]">
-                        <span className="text-[8px] font-black text-amber-500 w-3 shrink-0">{qi + 1}</span>
-                        <span className="flex-1 text-[10px] text-slate-600 dark:text-white/60 truncate">{qt.prompt}</span>
-                        <button
-                          onClick={() => {
-                            const updated = taskQueue.filter(q => q.id !== qt.id);
-                            setTaskQueue(updated);
-                            localStorage.setItem(STORAGE_KEY + "_queue", JSON.stringify(updated));
-                          }}
-                          className="p-0.5 text-slate-300 hover:text-red-400 transition-colors shrink-0"
-                        >
-                          <X size={9} />
-                        </button>
+                {/* B1: Queue panel */}
+                <AnimatePresence>
+                  {showQueue && taskQueue.length > 0 && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.04] p-2 space-y-1">
+                        <p className="text-[8px] font-bold uppercase text-amber-500/70 tracking-widest px-1 mb-1.5">Task Queue ({taskQueue.length})</p>
+                        {taskQueue.map((qt, qi) => (
+                          <div key={qt.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04]">
+                            <span className="text-[8px] font-black text-amber-500 w-3 shrink-0">{qi + 1}</span>
+                            <span className="flex-1 text-[10px] text-slate-600 dark:text-white/60 truncate">{qt.prompt}</span>
+                            <button
+                              onClick={() => {
+                                const updated = taskQueue.filter(q => q.id !== qt.id);
+                                setTaskQueue(updated);
+                                localStorage.setItem(STORAGE_KEY + "_queue", JSON.stringify(updated));
+                              }}
+                              className="p-0.5 text-slate-300 hover:text-red-400 transition-colors shrink-0"
+                            >
+                              <X size={9} />
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
           </div>
         </div>
 
@@ -1803,9 +1954,9 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       {([
                         { id: 'output', label: 'Output', icon: Eye },
                         { id: 'log',    label: 'Activity Log', icon: Terminal },
-                        { id: 'prompt', label: 'Prompt Inspector', icon: Code2 },
+                        ...(advancedMode ? [{ id: 'prompt', label: 'Prompt Inspector', icon: Code2 }] : []),
                         { id: 'setup',  label: 'Setup', icon: Settings },
-                      ] as const).map(tab => (
+                      ] as { id: string; label: string; icon: React.ElementType }[]).map(tab => (
                         <button
                           key={tab.id}
                           onClick={() => setActiveRightTab(tab.id)}
@@ -1815,7 +1966,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                               : 'border-transparent text-slate-400 dark:text-[#555] hover:text-slate-600 dark:hover:text-white/60'
                           }`}
                         >
-                          <tab.icon size={10} />
+                          {React.createElement(tab.icon as React.ComponentType<{ size: number }>, { size: 10 })}
                           {tab.label}
                         </button>
                       ))}

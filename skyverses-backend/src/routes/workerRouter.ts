@@ -11,6 +11,7 @@ import ImageJob, {
   ImageJobStatus,
   ImageEngineProvider,
 } from "../models/ImageJob";
+import EditImageJob, { EditImageJobStatus } from "../models/EditImageJob";
 import User from "../models/UserModel";
 import CreditTransaction from "../models/CreditTransaction.model";
 import ImageOwnerModel from "../models/ImageOwnerModel";
@@ -420,6 +421,52 @@ async function failLinkedVideoJob(record: any, errorMsg: string, provider: strin
 }
 
 /* =====================================================
+   EDIT IMAGE COMPLETE HANDLER
+===================================================== */
+async function handleEditImageComplete(
+  job: any,
+  result: { status: string; resultUrl?: string; mediaId?: string; error?: string },
+  res: any,
+  provider: string,
+) {
+  const label = provider.toUpperCase();
+
+  if (result.status === "done") {
+    job.status = EditImageJobStatus.DONE;
+    job.progress = { percent: 100, step: "done" };
+    job.result = {
+      mediaId:   result.mediaId   || null,
+      resultUrl: result.resultUrl || null,
+    };
+    job.engineResponse = {
+      ...job.engineResponse,
+      [`${provider}MediaId`]: result.mediaId,
+    };
+
+    await job.save();
+
+    console.log(
+      `✅ [${label}][EDIT-IMG] DONE job=${job._id} editType=${job.editType} ` +
+      `mediaId=${result.mediaId} owner=${job.owner}`
+    );
+
+    return res.json({ success: true, id: String(job._id), status: "done" });
+  }
+
+  // ❌ ERROR
+  job.status = EditImageJobStatus.ERROR;
+  job.progress = { percent: 0, step: "error" };
+  job.error = { message: result.error || `${label} edit-image failed` };
+  await job.save();
+
+  console.error(
+    `❌ [${label}][EDIT-IMG] ERROR job=${job._id} err=${result.error}`
+  );
+
+  return res.json({ success: true, id: String(job._id), status: "error" });
+}
+
+/* =====================================================
    🏭 FACTORY: createWorkerRouter(provider)
    Tạo Express Router với đầy đủ endpoints cho 1 provider
    Mount: router.use("/fxflow", createWorkerRouter("fxflow"))
@@ -440,8 +487,9 @@ export function createWorkerRouter(provider: string) {
       const ownerFilter = req.query.owner as string | undefined;
       const typeFilter = req.query.type as string | undefined;
 
-      const fetchImage = !typeFilter || typeFilter === "image";
-      const fetchVideo = !typeFilter || typeFilter === "video" || typeFilter === "charsync";
+      const fetchImage     = !typeFilter || typeFilter === "image";
+      const fetchVideo     = !typeFilter || typeFilter === "video" || typeFilter === "charsync";
+      const fetchEditImage = !typeFilter || typeFilter === "edit-image";
 
       const tasks: any[] = [];
 
@@ -564,6 +612,40 @@ export function createWorkerRouter(provider: string) {
         }
       }
 
+      // 3️⃣ Fetch pending EDIT-IMAGE jobs
+      if (fetchEditImage) {
+        const editFilter: any = {
+          status: EditImageJobStatus.PENDING,
+        };
+        if (ownerFilter) editFilter.owner = ownerFilter;
+
+        const pendingEdits = await EditImageJob.find(editFilter)
+          .sort({ createdAt: 1 })
+          .limit(5)
+          .lean();
+
+        for (const job of pendingEdits) {
+          const task: any = {
+            id:        String(job._id),
+            type:      "edit-image",
+            mediaId:   job.mediaId,
+            projectId: job.projectId,
+            editType:  job.editType,
+            owner:     job.owner || null,
+          };
+
+          if (job.editType === "crop" && job.cropCoordinates) {
+            task.cropCoordinates = job.cropCoordinates;
+          }
+
+          if (job.editType === "draw" && job.drawPayload) {
+            task.drawPayload = job.drawPayload;
+          }
+
+          tasks.push(task);
+        }
+      }
+
       // Sort by priority (2=high first, 0=low last)
       tasks.sort((a, b) => (b.priority ?? 1) - (a.priority ?? 1));
 
@@ -584,14 +666,22 @@ export function createWorkerRouter(provider: string) {
         return res.status(400).json({ message: "Missing id or status" });
       }
 
+      // ── 1. ImageJob ───────────────────────────────────
       let imageJob = await ImageJob.findById(taskId);
       if (imageJob) {
         return await handleImageComplete(imageJob, { status, resultUrl, mediaId, error }, res, provider);
       }
 
+      // ── 2. VideoJob ───────────────────────────────────
       let videoJob = await VideoJob.findById(taskId);
       if (videoJob) {
         return await handleVideoComplete(videoJob, { status, resultUrl, mediaId, error }, res, provider);
+      }
+
+      // ── 3. EditImageJob ───────────────────────────────
+      let editJob = await EditImageJob.findById(taskId);
+      if (editJob) {
+        return await handleEditImageComplete(editJob, { status, resultUrl, mediaId, error }, res, provider);
       }
 
       return res.status(404).json({ message: "Task not found" });

@@ -20,6 +20,7 @@ import audioRoutes from "./audio";
 import fxflowRoutes from "./fxflow";
 import grokRoutes from "./grok";
 import upscaleJobRoutes from "./upscaleJobs";
+import editImageJobRoutes from "./editImageJobs";
 
 import providerTokenRoutes from "./providerToken";
 import aiModelRoutes from "./aiModel.admin";
@@ -47,6 +48,7 @@ router.use("/image", upscaleJobRoutes);
 router.use("/video", videoRoutes);
 router.use("/video-jobs", videoV2Routes);
 router.use("/audio", audioRoutes);
+router.use("/edit-image-jobs", editImageJobRoutes);
 
 // ─── External Workers ───
 router.use("/fxflow", fxflowRoutes);

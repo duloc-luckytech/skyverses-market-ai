@@ -1,0 +1,368 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                   🎬 CROP FEATURE EXPLORATION COMPLETE                        ║
+║                   Skyverses Market AI — ProductImageEditor                    ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+DOCUMENTATION GENERATED
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ CROP_README.md (237 lines)
+   → Start here! Quick facts, usage guide, common issues
+
+✅ CROP_FEATURE_ANALYSIS.md (600 lines)
+   → Complete analysis: state, hooks, components, APIs, backend
+
+✅ CROP_FEATURE_CODE_REFERENCE.md (457 lines)
+   → Copy-paste code snippets for all crop functionality
+
+✅ CROP_IMPLEMENTATION_ROADMAP.md (417 lines)
+   → Debugging guide, maintenance tips, enhancement ideas
+
+TOTAL: 1,711 lines of documentation | 4 files | ~50 KB
+
+
+KEY FINDINGS
+═══════════════════════════════════════════════════════════════════════════════
+
+Implementation Type:     100% client-side HTML5 Canvas (NOT backend-integrated)
+Crop Box Format:        Percentage-based: { x, y, w, h } (0-100%)
+Main Function:          applyCrop() at line 466 in useProductImageEditor.ts
+UI Components:          EditorViewport (overlay) + EditorHeader (button)
+History System:         ✅ Working (each crop added to history array)
+Undo/Redo:             ✅ Working (through undoRedoState stack)
+
+State Variables:
+  • isCropping: boolean (toggle crop mode)
+  • cropBox: { x, y, w, h } in % (position & size)
+  • cropRatio: number (1=1:1, 16/9=16:9, 0=free)
+  • dragStart: { x, y, box } (drag tracking)
+  • resizeHandle: "topleft"|"topright"|etc (resize tracking)
+
+Aspect Ratio Presets:
+  • Free form
+  • 1:1 (square)
+  • 16:9 (landscape)
+  • 9:16 (portrait)
+  • 4:3 (classic)
+  • 3:4 (classic portrait)
+
+
+WHAT'S IMPLEMENTED ✅
+═══════════════════════════════════════════════════════════════════════════════
+
+1. CROP STATE MANAGEMENT
+   ✅ Initialize crop state (isCropping, cropBox, cropRatio)
+   ✅ Track drag/resize operations (dragStart, resizeHandle)
+   ✅ Store original source image
+   ✅ Maintain undo/redo history
+
+2. CROP UI RENDERING
+   ✅ Crop overlay with darkened outer area
+   ✅ Crop box with blue border
+   ✅ 8 corner/edge handles (draggable)
+   ✅ Control bar with ratio presets
+   ✅ Dimensions display (width × height)
+   ✅ Confirm/Cancel buttons
+   ✅ Crop button in header (toggle on/off)
+
+3. CROP INTERACTION
+   ✅ Drag entire crop box (move)
+   ✅ Resize from 8 handles (corners + edges)
+   ✅ Aspect ratio locking (handleRatioSelect)
+   ✅ Boundary constraints (keep box within image)
+   ✅ Mouse event listeners (global, on window)
+   ✅ Real-time visual feedback
+
+4. CROP PROCESSING (Canvas API)
+   ✅ Load image with CORS enabled
+   ✅ Create HTML5 Canvas element
+   ✅ Convert percentage coordinates to pixels
+   ✅ Draw cropped portion: ctx.drawImage(...)
+   ✅ Generate output: canvas.toDataURL('image/png')
+   ✅ Add to history: pushToHistory(croppedUrl)
+   ✅ Update viewport with result
+   ✅ Status messages
+
+
+WHAT'S MISSING ❌
+═══════════════════════════════════════════════════════════════════════════════
+
+1. FRONTEND API LAYER
+   ❌ No /apis/editImage.ts file
+   ❌ No editImageApi.createCropJob() function
+   ❌ No editImageApi.getCropJobStatus() function
+   ❌ No job polling implementation
+
+2. BACKEND INTEGRATION
+   ❌ applyCrop() never calls API endpoints
+   ❌ No jobId tracking from backend
+   ❌ No FxFlow worker utilization
+   ❌ No async processing via backend
+
+3. IMAGE METADATA
+   ❌ mediaId not passed to ProductImageWorkspace
+   ❌ projectId not available in hook
+   ❌ No way to link crop to original image database record
+
+4. FEATURES
+   ❌ Grid overlay (rule-of-thirds)
+   ❌ Keyboard shortcuts (Enter/Escape)
+   ❌ Touch support (pinch to resize)
+   ❌ Crop presets (profile/banner/thumbnail)
+   ❌ Rotation before crop
+
+
+BACKEND INFRASTRUCTURE (Ready But Unused) ⏳
+═══════════════════════════════════════════════════════════════════════════════
+
+BACKEND ROUTES EXIST:
+  ✅ POST /edit-image-jobs
+     → Create edit job
+     → Required: mediaId, projectId, editType, cropCoordinates
+     → Returns: { jobId, status, owner }
+
+  ✅ GET /edit-image-jobs/:id
+     → Poll job status
+     → Returns: { jobId, status, editType, result, error, progress }
+
+  ✅ POST /edit-image-jobs/:id/cancel
+     → Cancel pending job
+     → Returns: { success: true }
+
+BACKEND MODEL EXISTS:
+  ✅ EditImageJob interface with:
+     • userId (optional)
+     • owner (FxFlow worker)
+     • mediaId, projectId
+     • editType: "crop" | "draw"
+     • cropCoordinates: { top, left, right, bottom }
+     • status: pending | processing | done | error | cancelled
+     • result: { mediaId, resultUrl }
+     • progress tracking
+     • error handling
+
+
+FILE LOCATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+FRONTEND (Client-side, in use):
+  📄 hooks/useProductImageEditor.ts
+     • Lines 88-92: State initialization
+     • Lines 436-448: handleRatioSelect()
+     • Lines 319-414: Mouse event handlers
+     • Lines 466-491: applyCrop() [MAIN FUNCTION]
+     • Lines 519-532: Hook exports
+
+  📄 components/product-image/EditorViewport.tsx
+     • Lines 59-81: Crop control bar UI
+     • Lines 114-127: Crop overlay + handles
+     • All crop props passed from hook
+
+  📄 components/product-image/EditorHeader.tsx
+     • Line 105: Crop button
+     • Toggles isCropping on click
+
+  📄 ProductImageWorkspace.tsx
+     • Lines 22-29: RATIO_PRESETS constant
+     • Lines 131-141: Pass props to EditorViewport
+
+BACKEND (Not called by frontend):
+  📄 skyverses-backend/src/routes/editImageJobs.ts
+     • POST / — Create job
+     • GET /:id — Poll status
+     • POST /:id/cancel — Cancel job
+
+  📄 skyverses-backend/src/models/EditImageJob.ts
+     • MongoDB schema for crop/draw jobs
+     • Support for both crop and draw editing
+
+
+DATA FLOW
+═══════════════════════════════════════════════════════════════════════════════
+
+User Click Crop Button
+       ↓
+setIsCropping(true)
+       ↓
+EditorViewport renders:
+  • Crop overlay with handles
+  • Ratio presets
+  • Confirm/Cancel buttons
+       ↓
+User drags/resizes crop box
+       ↓
+handleMouseMoveGlobal fires (global listener)
+       ↓
+Calculate delta in % coordinates
+       ↓
+Update cropBox state:
+  • If dragging box: x,y change
+  • If resizing: appropriate w/h/x/y changes
+  • Enforce boundaries and minimum size
+       ↓
+User clicks "Xác nhận cắt" (Confirm)
+       ↓
+applyCrop() executes:
+  1. Load image from result (data URL)
+  2. Create <canvas> element
+  3. Convert % to pixels
+  4. ctx.drawImage(src, srcX, srcY, srcW, srcH, 0, 0, dstW, dstH)
+  5. canvas.toDataURL('image/png') → croppedUrl
+  6. pushToHistory(croppedUrl)
+  7. setIsCropping(false)
+  8. setResult(croppedUrl) ← Update viewport
+       ↓
+Cropped image displayed in viewport
+History rail updated with new thumbnail
+
+
+COORDINATE SYSTEM
+═══════════════════════════════════════════════════════════════════════════════
+
+Internal representation: PERCENTAGES (0-100)
+  cropBox = { x: 10, y: 10, w: 80, h: 80 }
+  Meaning: Top-left at (10%, 10%), size 80% × 80%
+
+For rendering on screen: CSS uses %
+  style={{ left: `${cropBox.x}%`, top: `${cropBox.y}%`, width: `${cropBox.w}%`, height: `${cropBox.h}%` }}
+
+For canvas operations: PIXELS
+  realX = (cropBox.x / 100) * img.width
+  realY = (cropBox.y / 100) * img.height
+  realW = (cropBox.w / 100) * img.width
+  realH = (cropBox.h / 100) * img.height
+
+Mouse delta calculation: % change per pixel
+  deltaX = ((e.clientX - dragStart.x) / containerRect.width) * 100
+  deltaY = ((e.clientY - dragStart.y) / containerRect.height) * 100
+
+
+NEXT STEPS FOR INTEGRATION
+═══════════════════════════════════════════════════════════════════════════════
+
+To enable backend processing:
+
+1. Add mediaId/projectId to ProductImageWorkspace props
+2. Pass to useProductImageEditor(initialImage, mediaId, projectId, theme)
+3. Create /apis/editImage.ts with job API functions
+4. Modify applyCrop() to:
+   - Check if mediaId exists
+   - If yes: POST /edit-image-jobs + poll
+   - If no: fall back to client-side canvas
+5. Add loading state during backend processing
+6. Add error handling and retry logic
+
+
+KEY CODE SNIPPETS
+═══════════════════════════════════════════════════════════════════════════════
+
+Main applyCrop() logic (simplified):
+───────────────────────────────────────
+const applyCrop = async () => {
+  // 1. Load image
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.src = result;
+  await new Promise(resolve => img.onload = resolve);
+  
+  // 2. Create canvas
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  // 3. Calculate pixels from %
+  const realX = (cropBox.x / 100) * img.width;
+  const realY = (cropBox.y / 100) * img.height;
+  const realW = (cropBox.w / 100) * img.width;
+  const realH = (cropBox.h / 100) * img.height;
+  
+  // 4. Set canvas size & draw
+  canvas.width = realW;
+  canvas.height = realH;
+  ctx.drawImage(img, realX, realY, realW, realH, 0, 0, realW, realH);
+  
+  // 5. Convert to data URL & save
+  const croppedUrl = canvas.toDataURL('image/png');
+  pushToHistory(croppedUrl);
+};
+
+Aspect ratio locking:
+──────────────────────
+const handleRatioSelect = (val: number) => {
+  setCropRatio(val);
+  if (val > 0) {
+    setCropBox(prev => {
+      const newH = prev.w / val;  // Lock aspect ratio
+      if (newH > 90) {
+        return { ...prev, h: 90, w: 90 * val };
+      }
+      return { ...prev, h: newH };
+    });
+  }
+};
+
+
+TESTING CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ Click crop button → overlay appears
+✓ Drag crop box → coordinates update
+✓ Resize from corners → box resizes with constraints
+✓ Select aspect ratio → height recalculates
+✓ Select free ratio → can move freely
+✓ Dimensions display → shows correct pixel dimensions
+✓ Click confirm → canvas API executes
+✓ Cropped image → appears in viewport
+✓ History entry → new thumbnail visible
+✓ Cancel button → closes crop without applying
+✓ Status message → shows "Cắt ảnh thành công"
+✓ Undo history → can revert to original
+
+
+PERFORMANCE NOTES
+═══════════════════════════════════════════════════════════════════════════════
+
+• History limited to 20 items (prevents memory leak)
+• Canvas operations are synchronous (client-side)
+• No server round-trip for client-side crop
+• Large images (4K+) may cause UI lag during crop operations
+• Could optimize with canvas.toDataURL('image/webp', 0.85) for smaller size
+• Consider debouncing mousemove if performance issues arise
+
+
+DOCUMENTATION STRUCTURE
+═══════════════════════════════════════════════════════════════════════════════
+
+CROP_README.md
+  └─ Start here!
+     • Quick facts table
+     • Key discoveries
+     • Usage guide
+     • Reading recommendations
+
+CROP_FEATURE_ANALYSIS.md
+  └─ Complete analysis
+     • All 5 sections detailed
+     • Flow diagrams
+     • Backend infrastructure
+     • Code locations
+
+CROP_FEATURE_CODE_REFERENCE.md
+  └─ Copy-paste code
+     • State initialization
+     • All functions
+     • UI components
+     • Formulas & constants
+
+CROP_IMPLEMENTATION_ROADMAP.md
+  └─ Maintenance & extension
+     • Data flow diagram
+     • Debugging guide
+     • Enhancement ideas
+     • Integration checklist
+
+
+═══════════════════════════════════════════════════════════════════════════════
+Generated: April 13, 2026
+Codebase: /Users/duloc/Desktop/SKYVERSES/ai-skyverses/skyverses-market-ai
+Status: ✅ Client-side complete | ⏳ Backend infrastructure ready but not integrated
+═══════════════════════════════════════════════════════════════════════════════

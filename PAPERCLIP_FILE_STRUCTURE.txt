@@ -1,0 +1,279 @@
+PAPERCLIP AI AGENTS — FILE STRUCTURE
+=====================================
+
+📁 Workspace Root
+│
+├── 📄 App.tsx (Line 51, 111, 262)
+│   └── Route: /product/paperclip-ai-agents → PaperclipAIAgents component
+│
+├── 📄 data.ts (Line 82-162)
+│   └── Product definition: PAPERCLIP-AI-AGENTS
+│
+├── 📄 types.ts
+│   └── Interface definitions (Solution, LocalizedString, etc.)
+│
+├── 📁 pages/images/
+│   └── 📄 PaperclipAIAgents.tsx
+│       ├── Main page component
+│       ├── Imports all landing sections
+│       ├── Imports PaperclipAIAgentsWorkspace (modal)
+│       └── State: isStudioOpen (toggle between landing/studio)
+│
+├── 📁 components/
+│   │
+│   ├── 📄 PaperclipAIAgentsWorkspace.tsx (LARGE FILE ~2000 lines)
+│   │   ├── Full interactive AI orchestration studio
+│   │   ├── 5 Departments: CEO, Marketing, DevOps, Sales, HR
+│   │   ├── Skill system with role-based prompts
+│   │   ├── LLM model selection (Claude Sonnet/Opus)
+│   │   ├── 6 Task templates (blog-seo, social-batch, ci-refactor, etc.)
+│   │   ├── 4 Featured templates
+│   │   ├── Streaming markdown renderer with code highlighting
+│   │   ├── Canvas visualization
+│   │   ├── Activity logging system
+│   │   ├── Local storage persistence
+│   │   └── 3 tabs: Canvas, Runs, Settings
+│   │
+│   └── 📁 landing/paperclip-ai-agents/
+│       ├── 📄 HeroSection.tsx
+│       │   ├── Main headline & tagline
+│       │   ├── 4 spec cards (Multi-Agent, Budget Guard, Governance, Self-hosted)
+│       │   ├── Dashboard mockup image
+│       │   └── Primary CTA button
+│       │
+│       ├── 📄 WorkflowSection.tsx
+│       │   ├── 4-step workflow visualization
+│       │   ├── Timeline connector
+│       │   └── Step images from CDN
+│       │
+│       ├── 📄 FeaturesSection.tsx
+│       │   ├── 2 Featured features (with images)
+│       │   ├── 6 Regular features
+│       │   ├── 2x4 grid layout
+│       │   └── Interactive expand/collapse
+│       │
+│       ├── 📄 ShowcaseSection.tsx
+│       │   ├── 8 real agent run cards
+│       │   ├── Filtering by category (All, Marketing, DevOps, Sales, Operations)
+│       │   ├── Status indicators (running, completed, waiting)
+│       │   ├── Cost & model info per card
+│       │   └── Live counters
+│       │
+│       ├── 📄 UseCasesSection.tsx
+│       │   ├── 8 industry use cases
+│       │   ├── Color-coded icons
+│       │   ├── Illustration images
+│       │   └── Responsive grid
+│       │
+│       ├── 📄 LiveStatsBar.tsx
+│       │   ├── GitHub Stars: 2400+
+│       │   ├── LLMs: 8
+│       │   ├── Uptime SLA: 99%
+│       │   ├── License: MIT ✓
+│       │   └── Setup: ~5 min
+│       │
+│       ├── 📄 FAQSection.tsx
+│       │   ├── 6 FAQ items in accordion
+│       │   ├── Smooth expand/collapse animation
+│       │   └── GitHub link for more questions
+│       │
+│       └── 📄 FinalCTA.tsx
+│           ├── Final conversion section
+│           ├── "Try Now" primary button
+│           ├── "View on GitHub" secondary button
+│           └── Benefits footer text
+│
+├── 📁 src/constants/
+│   └── 📄 paperclip-cdn.ts
+│       ├── heroDashboard (1 image)
+│       ├── workflowStep1-4 (4 images)
+│       ├── featMultiAgent, featBudgetGuard (2 images)
+│       ├── showcase* (8 run card images)
+│       └── usecase* (8 use case images)
+│
+└── 📄 PAPERCLIP_AUDIT_*.md (audit & reference docs)
+
+
+COMPONENT HIERARCHY
+===================
+
+PaperclipAIAgents (main page)
+├── Landing Mode (default)
+│   ├── HeroSection
+│   ├── LiveStatsBar
+│   ├── WorkflowSection
+│   ├── ShowcaseSection
+│   ├── FeaturesSection
+│   ├── UseCasesSection
+│   ├── FAQSection
+│   ├── FinalCTA
+│   └── Mobile Sticky CTA
+│
+└── Studio Mode (modal overlay)
+    └── PaperclipAIAgentsWorkspace
+        ├── Header (close, title)
+        ├── Department Selector
+        ├── Task Input Area
+        ├── Tabs Container
+        │   ├── Canvas Tab
+        │   ├── Runs Tab
+        │   └── Settings Tab
+        └── Activity Log
+
+
+STATE MANAGEMENT
+================
+
+Page Level (PaperclipAIAgents.tsx):
+- isStudioOpen: boolean
+
+Workspace Level (PaperclipAIAgentsWorkspace.tsx):
+- activeTab: 'canvas' | 'runs' | 'settings'
+- selectedDept: 'ceo' | 'marketing' | 'devops' | 'sales' | 'hr'
+- taskInput: string
+- isRunning: boolean
+- taskResults: TaskResult[]
+- canvasNodes: CanvasNodeState[]
+- threadData: ChatMessage[] (per department)
+- skills: selected skills per department
+- selectedModel: LLM model choice
+- activityLog: ActivityLog[]
+
+
+LOCAL STORAGE KEYS
+==================
+
+Workspace Vault:
+- skyverses_PAPERCLIP-AI-AGENTS_vault (prefix)
+  └── _thread_{deptId} — Chat history per department
+  └── _brief_{deptId} — Task brief per department
+  └── _skills_{deptId} — Selected skills per department
+
+Max thread turns: 10 (20 messages total)
+
+
+ROUTES
+======
+
+/product/paperclip-ai-agents → PaperclipAIAgents (main page)
+/ → Homepage (back link)
+https://github.com/paperclip-ing/paperclip → External GitHub
+
+
+FEATURES BREAKDOWN
+==================
+
+1. Multi-Agent Orchestration
+   - 5 departments with roles
+   - Hierarchical structure (CEO → Department agents)
+   - Task delegation & cascading
+
+2. Budget Guard
+   - Per-agent monthly limits
+   - Auto-pause on exceed
+   - Alert notifications
+
+3. Governance Layer
+   - Human-in-the-loop approvals
+   - Full audit trail
+   - Override controls
+
+4. LLM Support
+   - Claude Sonnet 4
+   - Claude Opus 4
+   - OpenAI-compatible APIs
+
+5. No-Code Interface
+   - Drag-drop workflow builder
+   - Preset templates
+   - Visual canvas
+
+6. Real-time Monitoring
+   - Live activity feed
+   - Cost tracking
+   - Status indicators
+
+7. Task Templates (6)
+   - blog-seo (Blog SEO)
+   - social-batch (Social Media Batch)
+   - ci-refactor (CI/CD)
+   - lead-outreach (Lead Outreach)
+   - competitor (Competitor Analysis)
+   - api-docs (API Documentation)
+
+8. Prompt Inspector
+   - Trace agent prompts
+   - Debug outputs
+   - Optimize performance
+
+9. Skill Profiles
+   - CEO: Strategist, Delegator, Data-Driven
+   - Marketing: SEO Expert, Copywriter, Social, Analytics
+   - DevOps: Security, Performance, IaC, Docs
+   - Sales: Closer, CRM Expert, Persona Builder
+   - HR: DEI, Legal Safe, Engagement
+
+
+ANIMATIONS & INTERACTIONS
+==========================
+
+Section Animations:
+- FadeInUp — Scroll-triggered fade + slide animation
+- GradientMesh — Animated background gradients
+- HoverCard — Interactive card hover effects
+- CountUp — Number counter animation for stats
+
+Component Interactions:
+- Streaming text animation (character-by-character)
+- Code block copy buttons
+- Department selector with color coding
+- Skill toggle switches
+- Task result starred/unstarred
+- Activity log real-time updates
+- Model selection dropdown
+
+
+ACCESSIBILITY FEATURES
+======================
+
+- Semantic HTML structure
+- Color contrast ratios
+- Icon + text labels
+- Dark mode support
+- Responsive design
+- Tab navigation support
+- Keyboard shortcuts (future)
+
+
+LOCALIZATION
+============
+
+Languages supported:
+- English (en)
+- Vietnamese (vi)
+- Korean (ko)
+- Japanese (ja)
+
+Localized fields:
+- Product name
+- Category
+- Description
+- Features
+- Use cases
+- FAQs
+
+All text uses LocalizedString type
+
+
+PERFORMANCE OPTIMIZATIONS
+=========================
+
+- Lazy-loaded components (React.lazy + Suspense)
+- Code splitting per page
+- CDN-hosted images (Cloudflare)
+- Lazy image loading (loading="lazy")
+- Framer Motion for GPU-accelerated animations
+- Local storage for client-side persistence
+- Stream-based markdown rendering
+
+

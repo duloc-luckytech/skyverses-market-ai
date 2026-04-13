@@ -2138,6 +2138,300 @@ export default YourProductAI;
 
 ---
 
+### 📂 Cấu trúc file bắt buộc — TÁCH NHỎ, không gom vào 1 file
+
+> **Quy tắc:** Mỗi workspace PHẢI được tách thành nhiều file riêng biệt theo đúng cấu trúc dưới đây.
+> **KHÔNG được** viết toàn bộ logic + UI vào 1 file `<SlugWorkspace>.tsx` duy nhất.
+>
+> **Lý do:**
+> - File monolithic >500 LOC → khó maintain, khó review, TypeScript check chậm
+> - Hook tách riêng → test được độc lập, reuse được giữa workspace + modal
+> - Config tách riêng → thay nội dung sản phẩm không đụng đến logic
+
+```
+components/<slug>/                          ← thư mục workspace riêng cho product
+│
+├── <SlugWorkspace>.tsx                     ← Shell: chỉ layout + wire props từ hook
+│                                              KHÔNG chứa generate/poll/credit logic
+│                                              Mục tiêu: < 200 LOC
+│
+├── WorkspaceSidebar.tsx                    ← UI sidebar
+│                                              Nhận props: pickers state, handlers, AISuggestPanel props
+│                                              Mục tiêu: < 250 LOC
+│
+├── WorkspaceViewport.tsx                   ← UI viewport chính
+│                                              Result preview + starter prompts + generate button bar
+│                                              Mục tiêu: < 250 LOC
+│
+└── WorkspaceTaskRail.tsx                   ← Right rail (nếu có multi-output)
+                                               Tab "Phiên hiện tại" + "Thư viện (N)" + result cards
+                                               Mục tiêu: < 200 LOC
+
+hooks/
+└── use<SlugWorkspace>.ts                   ← TẤT CẢ logic nghiệp vụ
+                                               generate, poll, credit deduct/refund, abort,
+                                               localStorage persist, results[] state, tabs state
+                                               KHÔNG chứa JSX hay Tailwind class
+                                               Mục tiêu: < 350 LOC
+
+constants/
+└── <slug>-workspace-config.ts              ← Data thuần, không có JSX hay function
+                                               INDUSTRIES[], PRODUCT_STYLES[], FEATURED_TEMPLATES[],
+                                               STORAGE_KEY, STARTER_PROMPTS[], CREDIT_COST
+```
+
+#### Quy tắc phân chia trách nhiệm
+
+| File | Chứa gì | KHÔNG chứa gì |
+|------|---------|----------------|
+| `use<SlugWorkspace>.ts` | generate, poll, credit, abort, localStorage, state | JSX, Tailwind class |
+| `WorkspaceSidebar.tsx` | UI sidebar, nhận props từ hook | Logic API, useState phức tạp |
+| `WorkspaceViewport.tsx` | Result preview, starter prompts, task list UI | Generate logic |
+| `WorkspaceTaskRail.tsx` | Tab Phiên/Thư viện, history cards | Logic, API calls |
+| `<slug>-workspace-config.ts` | INDUSTRIES[], PRODUCT_STYLES[], FEATURED_TEMPLATES[], STORAGE_KEY | JSX, function |
+| `<SlugWorkspace>.tsx` | Layout wrapper, import tất cả trên, wire props | Logic, business rules |
+
+#### Ví dụ: `<SlugWorkspace>.tsx` — Shell đúng chuẩn
+
+```tsx
+// components/<slug>/<SlugWorkspace>.tsx
+// Shell: layout + wire props — KHÔNG chứa logic
+import { use<SlugWorkspace> } from '../../hooks/use<SlugWorkspace>';
+import { WorkspaceSidebar } from './<slug>/WorkspaceSidebar';
+import { WorkspaceViewport } from './<slug>/WorkspaceViewport';
+import { WorkspaceTaskRail } from './<slug>/WorkspaceTaskRail';
+import { ErrorBoundary } from 'react-error-boundary';
+
+interface Props { onClose: () => void; }
+
+export default function <SlugWorkspace>({ onClose }: Props) {
+  const ws = use<SlugWorkspace>();  // tất cả state + handlers từ hook
+
+  return (
+    <ErrorBoundary FallbackComponent={WorkspaceCrashFallback} onReset={ws.reset}>
+      <div className="flex flex-col h-full">
+        {/* Top nav */}
+        <header className="h-14 flex items-center px-4 border-b ...">
+          {/* tabs + credits badge + close */}
+        </header>
+
+        {/* Body */}
+        <div className="flex flex-1 overflow-hidden">
+          <WorkspaceSidebar
+            prompt={ws.prompt}
+            onPromptChange={ws.setPrompt}
+            activeIndustry={ws.activeIndustry}
+            onIndustryChange={ws.setActiveIndustry}
+            activeStyle={ws.activeStyle}
+            onStyleChange={ws.setActiveStyle}
+            activeFormat={ws.activeFormat}
+            onFormatChange={ws.setActiveFormat}
+            quantity={ws.quantity}
+            onQuantityChange={ws.setQuantity}
+            isGenerating={ws.isGenerating}
+            onGenerate={ws.handleGenerate}
+          />
+
+          <WorkspaceViewport
+            activeResult={ws.activeResult}
+            isGenerating={ws.isGenerating}
+            starterPrompts={ws.starterPrompts}
+            onStarterSelect={ws.handleStarterSelect}
+            unitCost={ws.unitCost}
+            quantity={ws.quantity}
+            onGenerate={ws.handleGenerate}
+          />
+
+          <WorkspaceTaskRail
+            results={ws.results}
+            activeResultId={ws.activeResultId}
+            onSelectResult={ws.setActiveResultId}
+            activeTab={ws.activeTab}
+            onTabChange={ws.setActiveTab}
+            sessions={ws.sessions}
+          />
+        </div>
+      </div>
+    </ErrorBoundary>
+  );
+}
+```
+
+#### Ví dụ: `hooks/use<SlugWorkspace>.ts` — Logic tập trung
+
+```ts
+// hooks/use<SlugWorkspace>.ts
+// TẤT CẢ logic: generate, poll, credit, abort, localStorage
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { imagesApi, ImageJobRequest } from '../apis/images';
+import { INDUSTRIES, PRODUCT_STYLES, STORAGE_KEY, CREDIT_COST, STARTER_PROMPTS }
+  from '../constants/<slug>-workspace-config';
+
+export interface REResult {
+  id: string;
+  url: string | null;
+  prompt: string;
+  status: 'processing' | 'done' | 'error';
+  cost: number;
+  isRefunded?: boolean;
+}
+
+export function use<SlugWorkspace>() {
+  const { credits, useCredits, addCredits, refreshUserInfo } = useAuth();
+  const toast = useToast();
+
+  // ── State ─────────────────────────────────────────────
+  const [prompt, setPrompt]             = useState('');
+  const [activeIndustry, setActiveIndustry] = useState(INDUSTRIES[0].id);
+  const [activeStyle, setActiveStyle]   = useState(PRODUCT_STYLES[0].id);
+  const [activeFormat, setActiveFormat] = useState('');
+  const [quantity, setQuantity]         = useState(1);
+  const [results, setResults]           = useState<REResult[]>([]);
+  const [activeResultId, setActiveResultId] = useState<string | null>(null);
+  const [activeTab, setActiveTab]       = useState<'session' | 'library'>('session');
+  const [sessions, setSessions]         = useState<REResult[][]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+
+  // ── Derived ───────────────────────────────────────────
+  const unitCost = CREDIT_COST;
+  const activeResult = results.find(r => r.id === activeResultId) ?? results[0] ?? null;
+  const starterPrompts = STARTER_PROMPTS;
+
+  // ── localStorage ──────────────────────────────────────
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) setSessions(JSON.parse(saved));
+  }, []);
+
+  // ── Generate ──────────────────────────────────────────
+  const handleGenerate = useCallback(async () => {
+    const trimmed = prompt.trim();
+    if (!trimmed) { toast.error('Vui lòng nhập mô tả.'); return; }
+    if (credits < unitCost * quantity) { /* show low-credit modal */ return; }
+
+    abortRef.current = new AbortController();
+    setIsGenerating(true);
+
+    const industryLabel = INDUSTRIES.find(i => i.id === activeIndustry)?.label;
+    const finalPrompt = industryLabel ? `[Lĩnh vực: ${industryLabel}] ${trimmed}` : trimmed;
+
+    for (let i = 0; i < quantity; i++) {
+      const taskId = crypto.randomUUID();
+      const task: REResult = { id: taskId, url: null, prompt: finalPrompt, status: 'processing', cost: unitCost };
+      setResults(prev => [task, ...prev]);
+      setActiveResultId(taskId);
+
+      const payload: ImageJobRequest = { /* ... fill theo product */ } as ImageJobRequest;
+      const res = await imagesApi.createJob(payload);
+      if (res.success && res.data.jobId) {
+        useCredits(unitCost);
+        pollJob(res.data.jobId, taskId, unitCost);
+      } else {
+        markTaskError(taskId);
+      }
+    }
+    setIsGenerating(false);
+  }, [prompt, activeIndustry, credits, quantity]);
+
+  // ── Poll ──────────────────────────────────────────────
+  const pollJob = useCallback(async (jobId: string, taskId: string, cost: number) => {
+    try {
+      const res = await imagesApi.getJobStatus(jobId);
+      const status = res.data?.status;
+      if (status === 'done' && res.data?.result?.images?.[0]) {
+        markTaskDone(taskId, res.data.result.images[0]);
+        refreshUserInfo();
+        persistSession();
+        return;
+      }
+      if (status === 'error' || status === 'failed') {
+        addCredits(cost);
+        markTaskError(taskId);
+        return;
+      }
+      setTimeout(() => pollJob(jobId, taskId, cost), 5000);
+    } catch {
+      setTimeout(() => pollJob(jobId, taskId, cost), 10000);
+    }
+  }, []);
+
+  // ── Helpers ───────────────────────────────────────────
+  const markTaskDone  = (id: string, url: string) =>
+    setResults(p => p.map(r => r.id === id ? { ...r, status: 'done', url } : r));
+  const markTaskError = (id: string) =>
+    setResults(p => p.map(r => r.id === id ? { ...r, status: 'error', isRefunded: true } : r));
+  const persistSession = () => {
+    setSessions(prev => {
+      const updated = [results, ...prev].slice(0, 20);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  };
+  const handleStarterSelect = (p: string) => setPrompt(p);
+  const reset = () => setResults([]);
+
+  return {
+    // state
+    prompt, setPrompt, activeIndustry, setActiveIndustry,
+    activeStyle, setActiveStyle, activeFormat, setActiveFormat,
+    quantity, setQuantity, results, activeResultId, setActiveResultId,
+    activeTab, setActiveTab, sessions, isGenerating,
+    // derived
+    unitCost, activeResult, starterPrompts,
+    // handlers
+    handleGenerate, handleStarterSelect, reset,
+  };
+}
+```
+
+#### Ví dụ: `constants/<slug>-workspace-config.ts` — Data thuần
+
+```ts
+// constants/<slug>-workspace-config.ts
+// Data config — KHÔNG có JSX, KHÔNG có function
+import { Store, Building, Shirt, GraduationCap, Heart,
+         Coffee, Plane, Car, Music, Cpu } from 'lucide-react';
+import type { StylePreset } from '../components/workspace/AISuggestPanel';
+
+export const STORAGE_KEY = 'skyverses_<SCREAMING-SNAKE-ID>_vault';
+export const CREDIT_COST = 120; // CR per generation
+
+export const INDUSTRIES = [
+  { id: 'social',     label: 'MXH',        icon: Store },
+  { id: 'fashion',    label: 'Thời trang', icon: Shirt },
+  // ... 8-12 items phù hợp product
+] as const;
+
+export const PRODUCT_STYLES: StylePreset[] = [
+  { id: 'modern',  label: 'Hiện đại', emoji: '⚡', description: 'Clean, bold',    promptPrefix: 'modern clean design, ' },
+  { id: 'luxury',  label: 'Luxury',   emoji: '💎', description: 'Premium feel',   promptPrefix: 'luxury premium, ' },
+  // ... 4-6 styles phù hợp product
+];
+
+export const FEATURED_TEMPLATES = [
+  { label: 'Template phổ biến 1', prompt: '...', style: 'Hiện đại' },
+  { label: 'Template phổ biến 2', prompt: '...', style: 'Luxury'   },
+];
+
+export const STARTER_PROMPTS = [
+  'Tạo banner quảng cáo sản phẩm mới cho ngành thời trang, phong cách hiện đại...',
+  'Thiết kế poster sự kiện ra mắt, màu sắc nổi bật, chuyên nghiệp...',
+  'Banner Flash Sale 50%, nền tối, chữ vàng, premium...',
+  'Social media post cho nhà hàng, màu ấm, thực phẩm nổi bật...',
+];
+```
+
+> ⚠️ **Kiểm tra sau khi tách xong:**
+> ```bash
+> npx tsc --noEmit 2>&1 | head -20
+> # Phải 0 lỗi — props interface giữa Shell ↔ Sub-components phải khớp chính xác
+> ```
+
+---
+
 ### 🚨 MỤC TIÊU STEP 6 — LOGIC TRƯỚC, UI SAU
 
 > **Workspace PHẢI implement đầy đủ logic nghiệp vụ. UI chỉ là phương tiện hiển thị.**
@@ -2286,6 +2580,8 @@ const activeResult = results.find(r => r.id === activeResultId) || results[0] ||
 
 ### Industry Picker (thêm vào sidebar, TRÊN AISuggestPanel):
 
+> 📁 **Thuộc về:** `constants/<slug>-workspace-config.ts` (mảng `INDUSTRIES`) + `WorkspaceSidebar.tsx` (JSX render chips)
+
 ```tsx
 import { Store, Building, Shirt, GraduationCap, Heart, Coffee,
          Plane, Car, Music, Cpu, Dumbbell, MessageCircle } from 'lucide-react';
@@ -2373,6 +2669,8 @@ const finalPrompt = industryLabel
 
 ### AISuggestPanel integration (sau Industry Picker, trước prompt textarea):
 
+> 📁 **Thuộc về:** `constants/<slug>-workspace-config.ts` (PRODUCT_STYLES, FEATURED_TEMPLATES) + `WorkspaceSidebar.tsx` (JSX `<AISuggestPanel ... />`)
+
 ```tsx
 import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
 
@@ -2392,6 +2690,9 @@ const FEATURED_TEMPLATES = [
 ```
 
 ### STORAGE_KEY convention:
+
+> 📁 **Thuộc về:** `constants/<slug>-workspace-config.ts` — export constant, import vào hook và sidebar.
+
 ```tsx
 // Pattern: skyverses_<SCREAMING-SNAKE-ID>_vault  (dùng id viết HOA, khớp với canonical SocialBannerWorkspace)
 const STORAGE_KEY = 'skyverses_SOCIAL-BANNER-AI_vault';
@@ -2399,6 +2700,8 @@ const STORAGE_KEY = 'skyverses_SOCIAL-BANNER-AI_vault';
 ```
 
 ### Layout cố định (giống SocialBannerWorkspace — canonical mới):
+
+> 📁 **Thuộc về:** `<SlugWorkspace>.tsx` (top-level layout) + `WorkspaceSidebar.tsx` / `WorkspaceViewport.tsx` / `WorkspaceTaskRail.tsx` (từng vùng)
 ```
 TOP NAV (h-14)
 ├── Left: [Phiên hiện tại] [Thư viện (N)]
@@ -2423,6 +2726,8 @@ SIDEBAR (w-[380px]) ── flex-grow VIEWPORT
 > ⚠️ **Wand2 AI Boost button**: Import `Wand2` từ `lucide-react`. KHÔNG tự define inline SVG.
 
 ### Mobile Layout (bắt buộc — workspace phải responsive)
+
+> 📁 **Thuộc về:** `WorkspaceSidebar.tsx` (ẩn/hiện trên mobile) + `WorkspaceViewport.tsx` (sticky button mobile) + `<SlugWorkspace>.tsx` (bottom sheet state)
 
 > Desktop (≥ 768px): layout sidebar + viewport như trên.
 > Mobile (< 768px): sidebar ẩn, thay bằng bottom sheet trigger.
@@ -2475,6 +2780,8 @@ SIDEBAR (w-[380px]) ── flex-grow VIEWPORT
 
 ### Error Boundary (bắt buộc — wrap toàn bộ Workspace)
 
+> 📁 **Thuộc về:** `<SlugWorkspace>.tsx` — ErrorBoundary wrap ở shell, không đặt trong sub-components.
+>
 > Workspace chứa nhiều API calls + state mutations. Nếu crash không có boundary → cả landing page crash.
 
 ```tsx
@@ -2514,6 +2821,8 @@ if (credits < CREDIT_COST * quantity) { setShowLowCreditAlert(true); return; }
 ---
 
 ### ⚠️ Prompt Validation (bắt buộc trước khi gọi API)
+
+> 📁 **Thuộc về:** `hooks/use<SlugWorkspace>.ts` — đặt trong `handleGenerate()`, trước khi gọi API.
 
 ```tsx
 // 1. Không cho generate khi prompt rỗng

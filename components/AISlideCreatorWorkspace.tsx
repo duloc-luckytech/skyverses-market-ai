@@ -1,5 +1,5 @@
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Download, Undo2, Redo2, Sparkles,
@@ -14,6 +14,11 @@ import SlideToolbar from './slide-studio/SlideToolbar';
 import AIGenerateModal from './slide-studio/AIGenerateModal';
 import SlideExportModal from './slide-studio/SlideExportModal';
 import SlideProjectSwitcher from './slide-studio/SlideProjectSwitcher';
+import SlideOnboardingWizard, {
+  shouldShowSlideWizard,
+  type WizardSettings,
+} from './slide-studio/SlideOnboardingWizard';
+import SlideHelpBanner, { SLIDE_TIPS_KEY } from './slide-studio/SlideHelpBanner';
 
 interface Props {
   onClose: () => void;
@@ -23,8 +28,37 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
   const s = useSlideStudio();
   const pm = useSlideProjectManager();
 
-  const [exportDropOpen, setExportDropOpen] = React.useState(false);
-  const [exportFormat, setExportFormat] = React.useState<'pptx' | 'pdf' | 'png'>('pptx');
+  const [exportDropOpen, setExportDropOpen] = useState(false);
+  const [exportFormat, setExportFormat] = useState<'pptx' | 'pdf' | 'png'>('pptx');
+
+  // ── Wizard & Help banner ───────────────────────────────────────────────────
+  const [showWizard, setShowWizard] = useState(() => shouldShowSlideWizard());
+  const [showHelpBanner, setShowHelpBanner] = useState(false);
+
+  // Track first time slides appear after wizard/generation
+  const prevSlideCountRef = useRef(s.slides.length);
+  useEffect(() => {
+    const prev = prevSlideCountRef.current;
+    const curr = s.slides.length;
+    if (prev === 0 && curr > 0 && !localStorage.getItem(SLIDE_TIPS_KEY)) {
+      setShowHelpBanner(true);
+    }
+    prevSlideCountRef.current = curr;
+  }, [s.slides.length]);
+
+  const handleWizardComplete = useCallback((settings: WizardSettings) => {
+    s.setDeckTopic(settings.deckTopic);
+    s.setDeckStyle(settings.deckStyle);
+    s.setSlideCount(settings.slideCount);
+    s.setDeckLanguage(settings.deckLanguage);
+    setShowWizard(false);
+    // Open generate modal after a short delay so state updates settle
+    setTimeout(() => s.setIsGenerateModalOpen(true), 80);
+  }, [s]);
+
+  const handleWizardSkip = useCallback(() => {
+    setShowWizard(false);
+  }, []);
 
   // Track if we're in the middle of loading a project (to skip the auto-save)
   const isLoadingProjectRef = useRef(false);
@@ -199,6 +233,15 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
       transition={{ duration: 0.25, ease: 'easeOut' }}
       className="fixed inset-0 z-[500] flex flex-col bg-white dark:bg-[#0d0d0f] overflow-hidden"
     >
+      {/* ══ Onboarding Wizard ═══════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {showWizard && (
+          <SlideOnboardingWizard
+            onComplete={handleWizardComplete}
+            onSkip={handleWizardSkip}
+          />
+        )}
+      </AnimatePresence>
       {/* ══ Header Nav ══════════════════════════════════════════════════════════ */}
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/[0.06] dark:border-white/[0.05] bg-white/90 dark:bg-[#0d0d0f]/90 backdrop-blur shrink-0">
         {/* Left: Close + Title + Project Switcher */}
@@ -381,6 +424,12 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                   onApplySuggestion={s.applySuggestion}
                 />
               </div>
+
+              {/* Help Banner */}
+              <SlideHelpBanner
+                visible={showHelpBanner}
+                onDismiss={() => setShowHelpBanner(false)}
+              />
 
               {/* Canvas */}
               <SlideCanvas
