@@ -325,7 +325,14 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
           const arrayMatch = raw.match(/\[[\s\S]*\]/);
           if (arrayMatch) {
             const parsed = JSON.parse(arrayMatch[0]);
-            outline = Array.isArray(parsed) ? parsed : Object.values(parsed);
+            if (Array.isArray(parsed)) {
+              outline = parsed;
+            } else if (parsed && typeof parsed === 'object') {
+              // e.g. {"0": {...}, "1": {...}} — edge case
+              const vals = Object.values(parsed);
+              const firstArr = vals.find(v => Array.isArray(v));
+              outline = Array.isArray(firstArr) ? (firstArr as typeof outline) : (vals as typeof outline);
+            }
           } else {
             // Fallback: try object with array value e.g. {"slides": [...]}
             const objMatch = raw.match(/\{[\s\S]*\}/);
@@ -349,7 +356,22 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
       }
 
       // 2. Create slides with text content
-      const count = importedOutline ? importedOutline.length : slideCount;
+      // Hard guard: ensure outline is always a proper array before slicing
+      if (!Array.isArray(outline)) {
+        console.error('[generateDeck] outline is not an array after parsing:', outline);
+        showToast('AI không trả về đúng format, thử lại nhé', 'error');
+        setIsGeneratingDeck(false);
+        return;
+      }
+      if (outline.length === 0) {
+        showToast('Không có nội dung để tạo slide, thử lại nhé', 'error');
+        setIsGeneratingDeck(false);
+        return;
+      }
+
+      const count = (Array.isArray(importedOutline) && importedOutline.length > 0)
+        ? importedOutline.length
+        : slideCount;
       const newSlides: Slide[] = outline.slice(0, count).map((item, i) => ({
         id: genId(),
         index: i,
