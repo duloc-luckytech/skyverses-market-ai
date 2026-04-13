@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
   ChevronDown, Wand2, ScanFace, Droplets, Radius, Focus, SunDim, Scissors, CircleDashed, Drama, Frame, Pencil, Zap,
-  Layers, Paintbrush, Eraser, Type, SlidersHorizontal, Trash2, Clock, FileImage, Server
+  Layers, Paintbrush, Eraser, Type, SlidersHorizontal, Trash2, Clock, FileImage
 } from 'lucide-react';
-import { ModelAISelector } from './ModelAISelector';
 
 interface EditorSidebarProps {
   activeTab: 'layers' | 'history';
@@ -117,19 +116,6 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = (props) => {
                 <LayerButton label="Text" icon={<Type size={14}/>} active={props.visibleLayers.includes('text')} onToggle={() => toggleLayer('text')} />
               </div>
             </div>
-
-            {/* Infrastructure Section */}
-            <SidebarSection title="Máy chủ AI">
-               <div className="p-4 pt-1 pb-5">
-                  <ModelAISelector 
-                    selectedModel={props.selectedModel}
-                    models={props.models}
-                    onSelect={props.setSelectedModel}
-                    selectedEngine={props.selectedEngine}
-                    onSelectEngine={props.onSelectEngine}
-                  />
-               </div>
-            </SidebarSection>
 
             {/* Text edit section */}
             <AnimatePresence>
