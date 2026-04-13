@@ -14,6 +14,7 @@ import ProviderTokenModel from "../models/ProviderToken.model";
 import { downloadVideoFromUrl } from "../utils/downloadVideoFromUrl";
 import { getAccessTokenForJob } from "../utils/getAccessTokenForJob";
 import FxflowOwner from "../models/FxflowOwner.model"; // ✅ For auto-assigning upload owner
+import { getOrAssignOwnerForUser } from "./fxflow"; // ✅ Sticky owner per user
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() }); // 👈 lưu vào RAM
@@ -325,10 +326,22 @@ router.get("/upload-media/detail", authenticate, async (req: any, res) => {
 
     if (!record) return res.json(null);
 
-    const recordObj = record.toObject();
-    delete recordObj.base64;
-
-    return res.json(recordObj);
+    // ✅ Return explicit fields — ensures projectId is always included in response
+    return res.json({
+      _id:        String(record._id),
+      status:     record.status,
+      mediaId:    record.mediaId    || null,
+      projectId:  record.projectId  || null,   // ← explicitly returned
+      imageUrl:   record.imageUrl   || null,
+      width:      record.width      || null,
+      height:     record.height     || null,
+      originalName: record.originalName || null,
+      source:     record.source     || null,
+      type:       record.type       || null,
+      errorMessage: record.errorMessage || null,
+      createdAt:  record.createdAt,
+      updatedAt:  record.updatedAt,
+    });
   } catch (err: any) {
     return res.status(500).json({ error: "Lỗi server khi lấy chi tiết ảnh" });
   }
@@ -1269,30 +1282,20 @@ router.post("/media/image-upload", authenticate, async (req: any, res) => {
     imageRecord.width = width || undefined;
     imageRecord.height = height || undefined;
 
-    // ✅ Pick a random active fxflow owner and assign to source
-    // so that worker query `?owner=X` can find this task
+    // ✅ Use sticky owner per user (same as edit-image jobs)
+    // Ensures upload task + subsequent crop/draw job go to the SAME worker
     try {
-      const activeOwners = await FxflowOwner.find({
-        $or: [
-          { provider: "fxflow" },
-          { provider: { $exists: false } },
-          { provider: null },
-        ],
-        status: "active",
-      }).lean();
-
-      if (activeOwners.length > 0) {
-        const randomOwner = activeOwners[Math.floor(Math.random() * activeOwners.length)];
-        imageRecord.source = (randomOwner as any).name;
-        console.log(`👤 [IMG-UPLOAD] Assigned fxflow owner: ${(randomOwner as any).name} → task ${imageRecord._id}`);
+      const stickyOwner = await getOrAssignOwnerForUser(userId, "fxflow");
+      if (stickyOwner) {
+        imageRecord.source = stickyOwner;
+        console.log(`👤 [IMG-UPLOAD] Sticky owner: ${stickyOwner} → task ${imageRecord._id}`);
       } else {
-        // Fallback: giữ source gốc (gommo/fxlab)
         imageRecord.source = source;
         console.warn(`⚠️ [IMG-UPLOAD] No active fxflow owners found, keeping source=${source}`);
       }
     } catch (ownerErr) {
       imageRecord.source = source;
-      console.error(`❌ [IMG-UPLOAD] Failed to pick fxflow owner:`, ownerErr);
+      console.error(`❌ [IMG-UPLOAD] Failed to get sticky owner:`, ownerErr);
     }
 
     imageRecord.status = "pending-fxflow-upload"; // FXFlow worker will pick this up
