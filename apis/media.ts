@@ -100,24 +100,6 @@ export const mediaApi = {
   },
 
   /**
-   * Get single media record by _id to check if mediaId is ready
-   * GET /upload-media/:id
-   */
-  getMediaById: async (id: string): Promise<{ success: boolean; mediaId?: string | null; imageUrl?: string; message?: string }> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/upload-media/${id}`, {
-        method: 'GET',
-        headers: getHeaders(),
-      });
-      if (!response.ok) throw new Error('Not found');
-      return await response.json();
-    } catch (error) {
-      console.error('Get Media By ID Error:', error);
-      return { success: false };
-    }
-  },
-
-  /**
    * Delete media from server
    * DELETE /upload-media/delete/:id
    */

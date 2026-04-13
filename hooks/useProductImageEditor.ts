@@ -491,15 +491,16 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     });
 
   /**
-   * Poll /upload-media/:id until mediaId is populated (worker has uploaded to Google Flow).
-   * Retries every 2s for up to 60s.
+   * Poll /upload-media/list?search=_id until mediaId is populated by the async worker.
+   * Retries every 2s for up to 60s — no new BE endpoint needed.
    */
   const pollForMediaId = async (recordId: string, setStatusMsg?: (s: string) => void): Promise<string> => {
     const MAX_ATTEMPTS = 30; // 30 × 2s = 60s
     for (let i = 0; i < MAX_ATTEMPTS; i++) {
       await new Promise(r => setTimeout(r, 2000));
-      const res = await mediaApi.getMediaById(recordId);
-      if (res.mediaId) return res.mediaId;
+      const res = await mediaApi.getMediaList({ search: recordId, limit: 1 });
+      const record = res.data?.[0];
+      if (record?.mediaId) return record.mediaId;
       if (setStatusMsg) setStatusMsg(`⏳ Đang xử lý upload... (${i + 1}/${MAX_ATTEMPTS})`);
     }
     throw new Error('Upload timeout — worker chưa trả về mediaId sau 60s');
