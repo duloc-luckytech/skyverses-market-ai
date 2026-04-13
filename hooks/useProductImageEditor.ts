@@ -473,7 +473,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
-        const MAX = 1024;
+        const MAX = 800;
         let { width, height } = img;
         if (width > MAX || height > MAX) {
           if (width >= height) { height = Math.round((height / width) * MAX); width = MAX; }
@@ -483,10 +483,10 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         canvas.width = width;
         canvas.height = height;
         canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.80);
         resolve(dataUrl.split(',')[1]);
       };
-      img.onerror = () => resolve(base64); // fallback: return original
+      img.onerror = () => resolve(base64);
       img.src = `data:image/png;base64,${base64}`;
     });
 
