@@ -19,6 +19,7 @@ const ImageOwnerSchema = new mongoose.Schema(
     groupId: { type: String, default: null },
     googleEmail: { type: String }, // email dùng để gọi Google API
     mediaId: { type: String },
+    projectId: { type: String, default: null }, // ✅ Google project ID returned by FXFlow worker
     type: { type: String },
     source: { type: String },
     prompt: { type: String },

@@ -919,7 +919,7 @@ export function createWorkerRouter(provider: string) {
   /* ─── POST /image/upload-result ──────────────────── */
   router.post("/image/upload-result", async (req, res) => {
     try {
-      const { id, status, mediaId, error } = req.body;
+      const { id, status, mediaId, projectId, error } = req.body;
 
       if (!id || !status) {
         return res.status(400).json({ message: "Missing id or status" });
@@ -931,11 +931,12 @@ export function createWorkerRouter(provider: string) {
       }
 
       if (status === "done" && mediaId) {
-        record.status = "done";
-        record.mediaId = mediaId;
+        record.status   = "done";
+        record.mediaId  = mediaId;
+        if (projectId) (record as any).projectId = projectId;   // ✅ lưu projectId
         await record.save();
 
-        console.log(`✅ [${LABEL}] Image upload done: ${id} → mediaId=${mediaId}`);
+        console.log(`✅ [${LABEL}] Image upload done: ${id} → mediaId=${mediaId} projectId=${projectId || "n/a"}`);
 
         await chainMediaIdToVideoJob(record, mediaId, provider);
       } else if (status === "error") {
