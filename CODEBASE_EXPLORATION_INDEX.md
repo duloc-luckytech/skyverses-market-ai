@@ -1,243 +1,349 @@
-# 🗂️ Codebase Exploration Index
+# Skyverses Codebase Exploration - Complete Index
 
-## 📋 Generated Documentation
-
-This folder contains comprehensive documentation about the Skyverses AI Marketplace codebase structure, focusing on:
-- Homepage/Landing Page component
-- SEO meta tag implementation
-- "100 Credits" mentions throughout the codebase
-- i18n translation system
-- Vietnamese "dùng thử" text locations
+**Date**: April 13, 2026  
+**Project**: Skyverses AI Marketplace  
+**Focus**: Product Pages & Agent Workspace Structure
 
 ---
 
-## 📄 Files in This Documentation Package
+## 📚 Documentation Files Generated
 
-### 1. **CODEBASE_EXPLORATION_REPORT.md** (11 KB)
-Complete, detailed exploration report covering:
-- Homepage/Landing page component structure
-- SEO implementation (usePageMeta hook vs static HTML)
-- All "100 Credits" mentions with context
-- Vietnamese "dùng thử" text locations
-- i18n translation system details
-- Landing page visual hierarchy
-- File location summary
-- Important discrepancies (marketing vs actual credits)
-- Routing and app structure
+This exploration created 4 comprehensive documentation files:
 
-**Use this when**: You need comprehensive understanding of the entire system
+### 1. **CODEBASE_STRUCTURE_EXPLORATION.md** ⭐ START HERE
+   - **Best for**: Comprehensive deep-dive understanding
+   - **Length**: 15 detailed sections
+   - **Covers**: 
+     - Product page structure
+     - Agent workspace components
+     - Department & agent types
+     - Types & interfaces
+     - LLM models & configuration
+     - UI state management
+     - Storage & persistence
+     - API integration
+     - Task templates
+     - Complete file structure
+   - **Read time**: 20-30 minutes
 
----
+### 2. **QUICK_REFERENCE_AGENTS.md** ⭐ MOST USEFUL WHILE CODING
+   - **Best for**: Quick lookups during development
+   - **Format**: Tables, code blocks, key-value references
+   - **Covers**:
+     - File locations at a glance
+     - Agent structure table
+     - Data structures with fields
+     - UI state enum/types
+     - AI models
+     - LocalStorage keys
+     - API endpoints table
+     - Task templates
+     - Key functions
+     - Configuration constants
+   - **Read time**: 5-10 minutes (reference material)
 
-### 2. **QUICK_REFERENCE.md** (7.4 KB)
-Quick lookup table format with:
-- Homepage & Landing page file locations
-- SEO Implementation files and line numbers
-- "100 Credits" mentions in tabular format
-- Vietnamese text locations
-- i18n Translation system structure
-- Hero section translations
-- Footer CTA translations
-- Authentication & credits
-- Directory structure overview
-- Summary table
+### 3. **FILE_STRUCTURE_MAP.txt** ⭐ VISUAL ARCHITECTURE
+   - **Best for**: Understanding file organization
+   - **Format**: ASCII tree structure with annotations
+   - **Covers**:
+     - Product page entry point
+     - Landing components breakdown
+     - Workspace components
+     - Type definitions locations
+     - API layer structure
+     - Context providers
+     - Routing configuration
+     - Component hierarchy
+     - Key modification points
+   - **Read time**: 10-15 minutes
 
-**Use this when**: You need quick answers about specific locations
-
----
-
-### 3. **CODE_SNIPPETS_REFERENCE.md** (13 KB)
-Ready-to-reference code snippets showing:
-1. Homepage SEO meta setup (MarketPage.tsx)
-2. Homepage route setup (App.tsx)
-3. SEO hook implementation (usePageMeta.ts)
-4. i18n translation system (LanguageContext.tsx)
-5. Footer CTA section code
-6. Static HTML meta tags (index.html)
-7. Authentication context (AuthContext.tsx)
-8. Layout wrapper component
-9. Key translation keys
-10. Translation key access patterns
-11. Changes needed to update credits messaging
-
-**Use this when**: You need actual code to reference or modify
-
----
-
-## 🎯 Quick Navigation by Topic
-
-### Homepage/Landing Page
-| Document | Section |
-|-----------|---------|
-| CODEBASE_EXPLORATION_REPORT.md | Section 1 |
-| QUICK_REFERENCE.md | Homepage & Landing page table |
-| CODE_SNIPPETS_REFERENCE.md | Snippet #1, #2, #8 |
-
-### SEO Implementation
-| Document | Section |
-|-----------|---------|
-| CODEBASE_EXPLORATION_REPORT.md | Section 2 |
-| QUICK_REFERENCE.md | SEO Implementation table |
-| CODE_SNIPPETS_REFERENCE.md | Snippet #1, #3, #6 |
-
-### "100 Credits" Mentions
-| Document | Section |
-|-----------|---------|
-| CODEBASE_EXPLORATION_REPORT.md | Section 3 |
-| QUICK_REFERENCE.md | "100 CREDITS" MENTIONS table |
-| CODE_SNIPPETS_REFERENCE.md | Snippet #10 (Summary of Changes) |
-
-### Vietnamese "Dùng Thử" Text
-| Document | Section |
-|-----------|---------|
-| CODEBASE_EXPLORATION_REPORT.md | Section 4 |
-| QUICK_REFERENCE.md | VIETNAMESE "DÙNG THỬ" TEXT table |
-
-### i18n Translation System
-| Document | Section |
-|-----------|---------|
-| CODEBASE_EXPLORATION_REPORT.md | Section 5 |
-| QUICK_REFERENCE.md | I18N TRANSLATION SYSTEM table |
-| CODE_SNIPPETS_REFERENCE.md | Snippet #4 |
-
-### Translation Keys
-| Document | Section |
-|-----------|---------|
-| QUICK_REFERENCE.md | Footer CTA Translations, Hero Section Translations |
-| CODE_SNIPPETS_REFERENCE.md | Snippet #9, #10 |
+### 4. **EXPLORATION_SUMMARY.txt** ⭐ EXECUTIVE OVERVIEW
+   - **Best for**: High-level overview & onboarding
+   - **Format**: Structured sections with ASCII formatting
+   - **Covers**:
+     - Key findings
+     - Types & interfaces
+     - Component structure
+     - Key features
+     - AI models
+     - Storage & persistence
+     - API endpoints
+     - File locations reference
+     - UI state management
+     - Task templates
+     - Configuration constants
+     - Routing configuration
+     - Integration points
+     - Scalability & extensibility
+   - **Read time**: 15-20 minutes
 
 ---
 
-## 🔑 Key Findings Summary
+## 🎯 Quick Navigation by Use Case
 
-### 1️⃣ Homepage Component
-- **File**: `pages/MarketPage.tsx` (1-203+)
-- **Route**: `/` 
-- **Wrapper**: `components/Layout.tsx`
+### "I need to understand the whole system"
+→ Read: **CODEBASE_STRUCTURE_EXPLORATION.md** (sections 1-15)
 
-### 2️⃣ SEO Implementation
-- **Method**: Custom `usePageMeta()` hook (NOT React Helmet)
-- **Hook File**: `hooks/usePageMeta.ts` (1-87)
-- **Static HTML**: `index.html` (Lines 1-250)
-- **Homepage Usage**: `pages/MarketPage.tsx` (Lines 65-91)
+### "I need to add a new agent department"
+→ Read: **QUICK_REFERENCE_AGENTS.md** (Agent Structure section)  
+→ Modify: `components/PaperclipAIAgentsWorkspace.tsx` (line 86, DEPARTMENTS)
 
-### 3️⃣ "100 Credits" Discrepancy ⚠️
-**Marketing/SEO Says**: 100 Credits free
-**Actual Implementation**: 1,000 Credits welcome bonus
-- Occurs in: `index.html` (8 locations), `pages/MarketPage.tsx` (2 locations)
-- Backend source: `context/AuthContext.tsx` line 296, `skyverses-backend/src/routes/auth.ts` line 105
+### "I need to find where X is in the codebase"
+→ Use: **FILE_STRUCTURE_MAP.txt** (for file locations)
 
-### 4️⃣ i18n System
-- **Type**: Custom inline translation object (NOT i18next)
-- **File**: `context/LanguageContext.tsx` (Lines 11-1504)
-- **Languages**: English, Vietnamese, Korean, Japanese
-- **Hook**: `useLanguage()` (Lines 1558-1562)
+### "I'm getting up to speed quickly"
+→ Read: **EXPLORATION_SUMMARY.txt** (sections 1-4)
 
-### 5️⃣ Footer CTA Messaging
-- **Translation Key**: `footer.cta_desc`
-- **English**: "Sign up for free and get 50 Credits to try today."
-- **Vietnamese**: "Đăng ký miễn phí và nhận 50 Credits trải nghiệm ngay hôm nay."
+### "I need to add a new UI tab/feature"
+→ Use: **QUICK_REFERENCE_AGENTS.md** (Most Important Files section)
+
+### "I need to understand the data flow"
+→ Read: **FILE_STRUCTURE_MAP.txt** (section 12: Component Hierarchy)
 
 ---
 
-## 📊 File Statistics
+## 📋 Key Findings Summary
 
-| Aspect | Details |
-|--------|---------|
-| Total Languages | 4 (English, Vietnamese, Korean, Japanese) |
-| Translation Keys | ~382-364 per language |
-| "100 Credits" Mentions | 10 locations |
-| i18n Context Size | 1,493 lines |
-| usePageMeta Hook | 87 lines |
-| Hero Section Keys | 7 keys |
-| Footer CTA Keys | 4 keys |
+### Product Page Location
+```
+File: /pages/images/PaperclipAIAgents.tsx
+Route: /product/paperclip-ai-agents
+```
 
----
+### Workspace Component
+```
+File: /components/PaperclipAIAgentsWorkspace.tsx
+Size: 4,045 lines
+Views: studio, history, analytics, canvas
+```
 
-## 🚀 Common Tasks
+### Agent Departments
+- **CEO Agent** (orchestrator) - Delegates to others
+- **Marketing AI** - SEO, copywriting, social, analytics
+- **DevOps AI** - CI/CD, security, performance, IaC
+- **Sales AI** - Outreach, CRM, proposals
+- **HR AI** - Job descriptions, screening, policies
 
-### Find the SEO title
-→ See: CODE_SNIPPETS_REFERENCE.md, Snippet #1 (line 2)
-→ File: `pages/MarketPage.tsx`, line 66
+### Key Types
+- `PaperclipProject` - Main project container
+- `AgentConfig` - Agent configuration
+- `ITaskResult` - Task execution result
+- `Thread` - Conversation thread
+- `Solution` - Product definition
 
-### Update "100 Credits" to "1000 Credits"
-→ See: CODE_SNIPPETS_REFERENCE.md, Section "Summary of Changes"
-→ Files: `index.html`, `pages/MarketPage.tsx`, `context/LanguageContext.tsx`
-
-### Find all translation keys
-→ See: QUICK_REFERENCE.md, I18N TRANSLATION SYSTEM table
-→ File: `context/LanguageContext.tsx`, lines 12-1503
-
-### Add a new translation
-→ See: CODE_SNIPPETS_REFERENCE.md, Snippet #10
-→ File: `context/LanguageContext.tsx`
-
-### Change how SEO tags are set
-→ See: CODE_SNIPPETS_REFERENCE.md, Snippet #3
-→ File: `hooks/usePageMeta.ts`
+### AI Models
+- Claude Sonnet 4 (fast, cheap)
+- Claude Opus 4 (most powerful)
 
 ---
 
-## 🔍 How to Use This Documentation
+## 🔍 File Reference Quick Lookup
 
-### If you're debugging SEO issues:
-1. Start with **QUICK_REFERENCE.md** - SEO Implementation section
-2. Look at **CODE_SNIPPETS_REFERENCE.md** - Snippet #3 for how meta tags work
-3. Check **CODEBASE_EXPLORATION_REPORT.md** - Section 2 for context
-
-### If you're updating text/translations:
-1. Find the key in **QUICK_REFERENCE.md** - Translation tables
-2. See the exact location in **CODEBASE_EXPLORATION_REPORT.md** - Sections 4-5
-3. Use code examples from **CODE_SNIPPETS_REFERENCE.md** - Snippet #4
-
-### If you need the full picture:
-1. Read **CODEBASE_EXPLORATION_REPORT.md** in order
-2. Use other documents as reference for specific code
-3. Check line numbers against actual files for verification
-
----
-
-## 📝 Document Metadata
-
-| Document | Size | Lines | Last Updated |
-|----------|------|-------|--------------|
-| CODEBASE_EXPLORATION_REPORT.md | 11 KB | ~330 | Apr 11, 2026 |
-| QUICK_REFERENCE.md | 7.4 KB | ~260 | Apr 11, 2026 |
-| CODE_SNIPPETS_REFERENCE.md | 13 KB | ~390 | Apr 11, 2026 |
-| This Index | 5.5 KB | ~220 | Apr 11, 2026 |
+| What | Where |
+|------|-------|
+| Product page | `pages/images/PaperclipAIAgents.tsx` |
+| Main workspace | `components/PaperclipAIAgentsWorkspace.tsx` |
+| Onboarding wizard | `components/PaperclipAIAgentsWizard.tsx` |
+| Agent configs | In Workspace.tsx (lines 86-137) |
+| Agent skills | In Workspace.tsx (lines 47-75) |
+| LLM models | In Workspace.tsx (lines 139-142) |
+| Task templates | In Workspace.tsx (lines 144-158) |
+| Project API | `apis/paperclipProjects.ts` |
+| AI helpers | `apis/aiCommon.ts` |
+| Global types | `types.ts` |
+| Landing sections | `components/landing/paperclip-ai-agents/` |
 
 ---
 
-## ✅ Verification Checklist
+## 🚀 Most Common Modifications
 
-- ✅ Homepage component identified: `pages/MarketPage.tsx`
-- ✅ SEO method documented: `usePageMeta()` hook
-- ✅ All "100 Credits" mentions found and documented
-- ✅ Vietnamese "dùng thử" text locations identified
-- ✅ i18n system thoroughly documented
-- ✅ All file paths verified against actual codebase
-- ✅ Line numbers confirmed for accuracy
-- ✅ Code snippets extracted and formatted
-- ✅ Discrepancies identified and noted
-- ✅ Quick reference tables created
+### 1. Add New Agent Department
+```typescript
+// In components/PaperclipAIAgentsWorkspace.tsx, line 86
+const DEPARTMENTS = [
+  // ... existing
+  {
+    id: 'newdept',
+    label: 'New Department',
+    icon: SomeIcon,
+    color: '#color',
+    agent: 'New Agent',
+    tier: 'department',
+    tasks: ['Task 1', 'Task 2'],
+    subordinates: [],
+  },
+];
+```
+
+### 2. Add Department Skills
+```typescript
+// In components/PaperclipAIAgentsWorkspace.tsx, line 47
+const DEPT_SKILLS = {
+  newdept: [
+    { id: 'skill1', label: '🎯 Skill Name', rule: 'Rule text...' },
+    // ...
+  ],
+};
+```
+
+### 3. Add New UI Tab
+```typescript
+// In components/PaperclipAIAgentsWorkspace.tsx
+// Search for activeRightTab
+activeRightTab: 'output' | 'log' | 'prompt' | 'setup' | 'chat' | 'newtab'
+```
 
 ---
 
-## 📞 Need More Information?
+## 📊 Architecture at a Glance
 
-Each document contains:
-- ✓ Specific file paths
-- ✓ Exact line numbers
-- ✓ Code snippets
-- ✓ Context and explanations
-- ✓ Visual hierarchies
-- ✓ Tables for quick lookup
-- ✓ Cross-references between documents
-
-**Start with the document that matches your need**, then use the others for details.
+```
+Landing Page
+    ↓
+HeroSection (CTA button)
+    ↓
+[Click "Try Paperclip"]
+    ↓
+PaperclipAIAgentsWorkspace (modal opens)
+    ├─ PaperclipAIAgentsWizard (first time)
+    ├─ Department Selection
+    ├─ Skill Configuration
+    ├─ Real-time AI Output (streaming)
+    ├─ Task History & Analytics
+    └─ Budget Management
+```
 
 ---
 
-Generated: April 11, 2026  
-Repository: skyverses-market-ai  
-Codebase Version: 1.0.4 BETA
+## 🔗 Interconnections
+
+### Page → Workspace Flow
+1. User clicks "Try Paperclip" on landing page
+2. `setIsStudioOpen(true)` in PaperclipAIAgents.tsx
+3. Modal opens with PaperclipAIAgentsWorkspace
+4. Onboarding wizard shown if first time
+5. User selects department and runs task
+6. AI response streams in real-time
+
+### State Management
+- UI state: useState hooks in Workspace
+- User auth: useAuth() from AuthContext
+- Notifications: useToast() from ToastContext
+- Theme: useTheme() from ThemeContext
+- Persistence: localStorage + backend API
+
+### Data Flow
+1. User input → Task template
+2. System prompt built from agent rules + skills
+3. API call via aiChatStreamViaProxy()
+4. Response streams back
+5. Result stored in taskHistory
+6. Persisted to backend + localStorage
+
+---
+
+## 🧪 Testing Checklist
+
+- [ ] Navigate to `/product/paperclip-ai-agents`
+- [ ] View all 8 landing sections
+- [ ] Click "Try Paperclip" button
+- [ ] Complete onboarding wizard
+- [ ] Select each department
+- [ ] Configure budget
+- [ ] Run a task and see streaming output
+- [ ] Check task history
+- [ ] Verify localStorage persistence
+- [ ] Test with different LLM models
+- [ ] Try different skill combinations
+
+---
+
+## 📖 Reading Order Recommendations
+
+### For New Developers
+1. This index file (you're reading it!)
+2. EXPLORATION_SUMMARY.txt (10 min)
+3. FILE_STRUCTURE_MAP.txt (15 min)
+4. QUICK_REFERENCE_AGENTS.md (10 min)
+5. CODEBASE_STRUCTURE_EXPLORATION.md (30 min)
+
+### For Feature Implementation
+1. QUICK_REFERENCE_AGENTS.md (find what to modify)
+2. CODEBASE_STRUCTURE_EXPLORATION.md (understand the context)
+3. Code the feature
+4. Test using Testing Checklist
+
+### For Bug Fixing
+1. EXPLORATION_SUMMARY.txt (sections 1-8)
+2. FILE_STRUCTURE_MAP.txt (find the file)
+3. QUICK_REFERENCE_AGENTS.md (reference the type/API)
+4. Debug and fix
+
+---
+
+## 💾 Storage Keys Reference
+
+All localStorage keys are prefixed with:
+```
+skyverses_PAPERCLIP-AI-AGENTS_vault
+```
+
+Full keys:
+- `_vault` - Base key
+- `_vault_thread_{deptId}` - Conversations
+- `_vault_brief_{deptId}` - Agent briefs
+- `_vault_skills_{deptId}` - Selected skills
+- `_wizard_done` - Wizard completion flag
+- `_advanced` - Advanced mode flag
+- `__activeProjectId` - Current project
+
+---
+
+## 🎓 Key Concepts to Understand
+
+### Multi-Agent Orchestration
+CEO Agent coordinates specialized department agents. Each agent has unique skills that modify its behavior through system prompts.
+
+### Skill-Based Specialization
+Skills are rule injections that change how agents respond. Example: "SEO Expert" skill tells the marketing agent to optimize for SEO.
+
+### Budget Guard System
+Hard credit limits prevent overspending. Each task costs credits based on output tokens. System prevents execution if budget exceeded.
+
+### Real-Time Streaming
+AI responses stream character-by-character to the UI, providing immediate feedback to the user. Uses Framer Motion for smooth animations.
+
+### Project Persistence
+User projects are stored both locally (localStorage) and on the backend (via paperclipProjects API). Both are kept in sync.
+
+---
+
+## 🔧 Developer Quick Links
+
+| Task | Documentation | File | Line |
+|------|---|---|---|
+| Add agent | QUICK_REFERENCE_AGENTS.md | PaperclipAIAgentsWorkspace.tsx | 86 |
+| Add skill | QUICK_REFERENCE_AGENTS.md | PaperclipAIAgentsWorkspace.tsx | 47 |
+| Add UI tab | FILE_STRUCTURE_MAP.txt | PaperclipAIAgentsWorkspace.tsx | 140+ |
+| Change model | EXPLORATION_SUMMARY.txt | PaperclipAIAgentsWorkspace.tsx | 139 |
+| Add template | QUICK_REFERENCE_AGENTS.md | PaperclipAIAgentsWorkspace.tsx | 144 |
+| Modify API | EXPLORATION_SUMMARY.txt | apis/paperclipProjects.ts | - |
+
+---
+
+## ✅ Exploration Complete
+
+All key information about the Skyverses Agent Workspace has been documented in these 4 files. Use them as a reference while developing new features or fixing bugs.
+
+**Last Updated**: April 13, 2026
+
+---
+
+## 📞 Questions?
+
+Refer to:
+- **"Where is X?"** → FILE_STRUCTURE_MAP.txt
+- **"How do I add X?"** → QUICK_REFERENCE_AGENTS.md
+- **"How does X work?"** → CODEBASE_STRUCTURE_EXPLORATION.md
+- **"What is the overview?"** → EXPLORATION_SUMMARY.txt
+

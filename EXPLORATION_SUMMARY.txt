@@ -1,0 +1,390 @@
+================================================================================
+SKYVERSES CODEBASE EXPLORATION - EXECUTIVE SUMMARY
+================================================================================
+
+PROJECT: Skyverses AI Marketplace
+FOCUS: Product Pages & Agent Workspace Structure
+DATE: April 13, 2026
+
+================================================================================
+1. KEY FINDINGS
+================================================================================
+
+PRODUCT PAGE LOCATION:
+  → /pages/images/PaperclipAIAgents.tsx
+  → Route: /product/paperclip-ai-agents
+  → 8 landing section components in /components/landing/paperclip-ai-agents/
+
+WORKSPACE COMPONENT:
+  → /components/PaperclipAIAgentsWorkspace.tsx (4,045 lines)
+  → Supports 5 agent departments (CEO, Marketing, DevOps, Sales, HR)
+  → Multi-view interface: studio, history, analytics, canvas
+
+AGENT TYPES DISCOVERED:
+  1. CEO Agent (orchestrator) - Delegates to other agents
+  2. Marketing AI (department) - SEO, copywriting, social, analytics
+  3. DevOps AI (department) - CI/CD, security, performance, IaC
+  4. Sales AI (department) - Outreach, CRM, proposals, deal analysis
+  5. HR AI (department) - Job descriptions, screening, policies
+
+SKILL-BASED ARCHITECTURE:
+  → Each agent has 3-4 specialized skill presets
+  → Skills modify system prompt behavior
+  → Examples: "SEO Expert", "Security", "Closer", "Strategist"
+
+================================================================================
+2. TYPES & INTERFACES
+================================================================================
+
+MAIN PROJECT TYPE:
+  ├─ PaperclipProject
+  │  ├─ _id, name, budgetLimit
+  │  ├─ activeModel: 'claude-sonnet' | 'claude-opus'
+  │  ├─ agentConfigs: AgentConfig[]
+  │  ├─ conversationThreads: Thread[]
+  │  └─ taskHistory: ITaskResult[]
+
+AGENT CONFIGURATION:
+  ├─ AgentConfig
+  │  ├─ deptId: string
+  │  ├─ brief: string
+  │  └─ enabledSkills: string[]
+
+TASK RESULT:
+  ├─ ITaskResult
+  │  ├─ id, dept, prompt, output
+  │  ├─ status: 'done' | 'error'
+  │  └─ timestamp
+
+CONVERSATION THREAD:
+  ├─ Thread
+  │  ├─ deptId: string
+  │  └─ messages: { role, content }[]
+
+================================================================================
+3. COMPONENT STRUCTURE
+================================================================================
+
+Product Page Layout:
+  PaperclipAIAgents.tsx (Page Component)
+    ├─ HeroSection (with CTA button)
+    ├─ LiveStatsBar (real-time metrics)
+    ├─ WorkflowSection (agent flow visualization)
+    ├─ ShowcaseSection (demo showcase)
+    ├─ FeaturesSection (feature list)
+    ├─ UseCasesSection (use cases)
+    ├─ FAQSection (FAQ)
+    ├─ FinalCTA (bottom CTA)
+    └─ PaperclipAIAgentsWorkspace (opens in modal)
+
+Workspace Components:
+  PaperclipAIAgentsWorkspace.tsx
+    ├─ PaperclipAIAgentsWizard (first-time setup)
+    ├─ OrgChartMini (department visualization)
+    ├─ StreamingMarkdownOutput (live AI output)
+    ├─ MarkdownOutput (rendered with syntax highlighting)
+    ├─ AISuggestPanel (AI-powered suggestions)
+    └─ Multiple UI tabs (output, log, prompt, setup, chat)
+
+================================================================================
+4. KEY FEATURES
+================================================================================
+
+MULTI-AGENT ORCHESTRATION:
+  → CEO Agent delegates to 4 department agents
+  → Each agent has specialized skills
+  → Skills inject rules into system prompt
+  → Parallel execution support
+
+BUDGET GUARD SYSTEM:
+  → Hard credit limits per project
+  → Cost tracking per task
+  → Budget approval workflow
+  → Real-time cost display
+
+REAL-TIME STREAMING:
+  → Character-by-character AI output
+  → Framer Motion animations
+  → Visual feedback during generation
+  → Smooth UX
+
+ANALYTICS & AUDITING:
+  → Complete task history (max 50 tasks)
+  → Timestamps for all operations
+  → ActivityLog with live updates
+  → Export capabilities
+
+SKILL-BASED SPECIALIZATION:
+  → Marketing: SEO Expert, Copywriter, Social Media, Analytics
+  → DevOps: Security, Performance, IaC, Docs
+  → Sales: Closer, CRM Expert, Persona Builder
+  → CEO: Strategist, Delegator, Data-Driven
+  → HR: DEI, Legal Safe, Engagement
+
+ONBOARDING WIZARD:
+  → 5-step guided setup
+  → Department selection
+  → Budget configuration
+  → Task template selection
+  → Ready to go screen
+
+================================================================================
+5. AI MODELS & CONFIGURATION
+================================================================================
+
+AVAILABLE MODELS:
+  1. Claude Sonnet 4 (claude-sonnet-4-6)
+     → Fast, cheap, balanced
+     → Recommended for most tasks
+  
+  2. Claude Opus 4 (claude-opus-4)
+     → Most powerful
+     → For complex reasoning/analysis
+
+API LAYER:
+  → All calls via backend proxy (secured)
+  → aiChatStreamViaProxy() for streaming
+  → aiChatOnceViaProxy() for single calls
+  → buildSystemMessage() for prompt construction
+  → parseAIJSON<T>() for structured responses
+
+================================================================================
+6. STORAGE & PERSISTENCE
+================================================================================
+
+LOCALSTORAGE KEYS:
+  'skyverses_PAPERCLIP-AI-AGENTS_vault'                  Base vault
+  'skyverses_PAPERCLIP-AI-AGENTS_vault_thread_{deptId}'  Conversation per dept
+  'skyverses_PAPERCLIP-AI-AGENTS_vault_brief_{deptId}'   Brief per dept
+  'skyverses_PAPERCLIP-AI-AGENTS_vault_skills_{deptId}'  Skills per dept
+  'skyverses_PAPERCLIP-AI-AGENTS_wizard_done'            Wizard completed
+  'skyverses_PAPERCLIP-AI-AGENTS_advanced'               Advanced mode
+  'skyverses_PAPERCLIP-AI-AGENTS__activeProjectId'       Active project
+
+THREAD MANAGEMENT:
+  → Max 10 turns per thread (20 messages)
+  → Newest-first ordering
+  → Per-department persistence
+
+================================================================================
+7. API ENDPOINTS
+================================================================================
+
+PAPERCLIP PROJECTS API (/paperclip-projects):
+  GET    /                              List all projects
+  GET    /:id                           Get full project
+  POST   /                              Create new project
+  PATCH  /:id                           Update metadata
+  DELETE /:id                           Delete project
+  PUT    /:id/agents                    Save agent configs
+  PUT    /:id/threads                   Save threads
+  POST   /:id/history                   Append task result
+
+AUTHENTICATION:
+  → Via AuthContext (hooks/context/AuthContext.tsx)
+  → Uses getHeaders() for API Authorization
+
+================================================================================
+8. FILE LOCATIONS REFERENCE
+================================================================================
+
+PAGES:
+  pages/images/PaperclipAIAgents.tsx              Main product page
+
+COMPONENTS:
+  components/PaperclipAIAgentsWorkspace.tsx       Main workspace (4045 LOC)
+  components/PaperclipAIAgentsWizard.tsx          Onboarding wizard
+  components/workspace/AISuggestPanel.tsx         Suggestion panel
+  
+LANDING SECTIONS:
+  components/landing/paperclip-ai-agents/HeroSection.tsx
+  components/landing/paperclip-ai-agents/LiveStatsBar.tsx
+  components/landing/paperclip-ai-agents/WorkflowSection.tsx
+  components/landing/paperclip-ai-agents/ShowcaseSection.tsx
+  components/landing/paperclip-ai-agents/FeaturesSection.tsx
+  components/landing/paperclip-ai-agents/UseCasesSection.tsx
+  components/landing/paperclip-ai-agents/FAQSection.tsx
+  components/landing/paperclip-ai-agents/FinalCTA.tsx
+
+TYPES & API:
+  types.ts                               Global types (Solution)
+  apis/paperclipProjects.ts              Project types & endpoints
+  apis/aiCommon.ts                       AI helpers & model constants
+  apis/aiChat.ts                         Chat implementation
+
+CONTEXT:
+  context/AuthContext.tsx
+  context/ThemeContext.tsx
+  context/ToastContext.tsx
+
+ROUTING:
+  App.tsx                                Router configuration
+
+================================================================================
+9. UI STATE MANAGEMENT
+================================================================================
+
+VIEW MODES:
+  'studio'                               Main workspace
+  'history'                              Task history view
+  'analytics'                            Analytics view
+  'canvas'                               Workflow builder
+
+RIGHT SIDEBAR TABS:
+  'output'                               AI output/results
+  'log'                                  Activity log
+  'prompt'                               Prompt history
+  'setup'                                Agent configuration
+  'chat'                                 Multi-turn conversation
+
+BOOLEAN STATES:
+  showAISuggest                          AI suggestion panel
+  showMobileSheet                        Mobile sidebar
+  showBudgetPanel                        Budget display
+  showOrgChart                           Organization chart
+  showActivity                           Activity log
+  showPromptHistory                      Prompt history
+  isStreaming                            Currently streaming
+
+================================================================================
+10. TASK TEMPLATES
+================================================================================
+
+AVAILABLE TEMPLATES:
+  blog-seo       Blog SEO              ✍️  "Viết 3 blog posts SEO"
+  social-batch   Social Batch          📱  "30 posts LinkedIn + X"
+  ci-refactor    CI/CD                 ⚙️  "Refactor pipeline"
+  lead-outreach  Lead Outreach         📧  "Email sequence 5 bước"
+  competitor     Competitor            🔍  "Phân tích 10 đối thủ"
+  api-docs       API Docs              📚  "Generate API documentation"
+
+FEATURED TEMPLATES:
+  1. Launch Blog Campaign
+  2. Full Social Media Month
+  3. DevOps Pipeline Audit
+  4. Sales Outreach Q2
+
+================================================================================
+11. CONFIGURATION CONSTANTS
+================================================================================
+
+MAX_THREAD_TURNS:    10 (20 messages: 10 user + 10 assistant)
+STORAGE_KEY:         'skyverses_PAPERCLIP-AI-AGENTS_vault'
+THINKING_STEPS:      6 step progression display
+DEPARTMENTS:         5 department configurations
+LLM_MODELS:          2 model options (Sonnet, Opus)
+TASK_TEMPLATES:      6 template presets
+
+================================================================================
+12. ROUTING CONFIGURATION
+================================================================================
+
+MAIN ROUTE:
+  /product/paperclip-ai-agents              → PaperclipAIAgents component
+
+ROUTE SETUP IN APP.TSX:
+  • Lazy-loaded component
+  • Path: /product/paperclip-ai-agents
+  • Full-screen modal when opened from product page
+
+================================================================================
+13. INTEGRATION POINTS
+================================================================================
+
+AUTHENTICATION:
+  → AuthContext for user info & credits
+  → Login requirement for full features
+  → Credit balance tracking
+
+THEME SUPPORT:
+  → ThemeContext for dark/light mode
+  → Tailwind CSS dark: classes
+  → Framer Motion for animations
+
+NOTIFICATIONS:
+  → ToastContext for success/error messages
+  → Feedback on task completion
+  → Real-time activity display
+
+================================================================================
+14. SCALABILITY & EXTENSIBILITY
+================================================================================
+
+MODULAR DESIGN:
+  ✓ Components follow consistent patterns
+  ✓ 100+ workspace components in codebase
+  ✓ Each workspace is self-contained
+  ✓ Reusable AI helpers (aiCommon.ts)
+
+ADDING NEW AGENTS:
+  1. Add entry to DEPARTMENTS (line 86 in Workspace.tsx)
+  2. Add skills to DEPT_SKILLS (line 47)
+  3. Add to wizard setup
+  4. Implement agent logic in buildSystemMessage()
+
+ADDING NEW FEATURES:
+  ✓ New tabs: Add to activeRightTab enum + state
+  ✓ New views: Add to viewMode enum + rendering
+  ✓ New templates: Add to TASK_TEMPLATES array
+  ✓ New models: Add to LLM_MODELS array
+
+================================================================================
+15. TESTING & USAGE
+================================================================================
+
+TO TEST WORKSPACE:
+  1. Go to /product/paperclip-ai-agents
+  2. Click "Try Paperclip — Free" button
+  3. Complete 5-step wizard
+  4. Select department (Marketing, DevOps, etc)
+  5. Configure budget
+  6. Enter prompt
+  7. Watch real-time streaming output
+
+DEMO MODE:
+  → First-time users see onboarding wizard
+  → Wizard marked as complete in localStorage
+  → Can skip and go straight to workspace
+  → Projects saved locally + to backend
+
+================================================================================
+16. NEXT STEPS & RECOMMENDATIONS
+================================================================================
+
+IF MODIFYING AGENT SYSTEM:
+  → Update components/PaperclipAIAgentsWorkspace.tsx
+  → Keep DEPARTMENTS config in sync with wizard
+  → Update api types in apis/paperclipProjects.ts
+  → Test persistence to localStorage
+
+IF ADDING UI:
+  → Check activeRightTab for new tabs
+  → Use Tailwind dark: classes
+  → Keep responsive (mobile first)
+  → Test with different theme modes
+
+IF ADDING API FEATURES:
+  → Extend apis/paperclipProjects.ts
+  → Update Project/Thread types
+  → Implement error handling
+  → Add to middleware/auth
+
+================================================================================
+17. DOCUMENTATION GENERATED
+================================================================================
+
+FILES CREATED:
+  1. CODEBASE_STRUCTURE_EXPLORATION.md    (Comprehensive 15-section guide)
+  2. QUICK_REFERENCE_AGENTS.md            (Fast lookup table & code examples)
+  3. EXPLORATION_SUMMARY.txt              (This file - executive overview)
+
+USE THESE FOR:
+  ✓ Understanding current architecture
+  ✓ Quick reference while coding
+  ✓ Onboarding new developers
+  ✓ Planning extensions/modifications
+  ✓ Debugging issues with agents
+
+================================================================================
+END OF SUMMARY
+================================================================================

@@ -626,10 +626,12 @@ export function createWorkerRouter(provider: string) {
 
         for (const job of pendingEdits) {
           const task: any = {
-            jobId:     String(job._id),   // bên thứ 3 expect "jobId"
+            id:        String(job._id),           // consistent với image/video: dùng "id"
+            jobId:     String(job._id),           // backward compat — một số worker có thể dùng jobId
+            type:      "edit-image",              // ← thêm type để worker phân biệt
             editType:  job.editType,
             mediaId:   job.mediaId,
-            projectId: job.projectId,
+            projectId: job.projectId || "default",
             priority:  1,
             owner:     job.owner || null,
           };
@@ -830,6 +832,14 @@ export function createWorkerRouter(provider: string) {
     try {
       const owner = req.query.owner?.toString() || null;
       const limit = Math.min(parseInt(req.query.limit as string) || 5, 20);
+
+      // ✅ Respect ?type= filter — endpoint này chỉ xử lý upload tasks
+      // Nếu worker gọi ?type=edit-image hoặc ?type=video → trả empty ngay
+      const typeFilter = req.query.type?.toString();
+      const UPLOAD_TYPES = ["upload", "image-upload", "image_upload"];
+      if (typeFilter && !UPLOAD_TYPES.includes(typeFilter)) {
+        return res.json({ tasks: [] });
+      }
 
       const query: any = {
         status: "pending-fxflow-upload",

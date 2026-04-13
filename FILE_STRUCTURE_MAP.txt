@@ -1,0 +1,379 @@
+================================================================================
+SKYVERSES CODEBASE - FILE STRUCTURE MAP
+Agent Workspace & Product Pages
+================================================================================
+
+PROJECT ROOT: /Users/duloc/Desktop/SKYVERSES/ai-skyverses/skyverses-market-ai/
+
+================================================================================
+1. PRODUCT PAGE ENTRY POINT
+================================================================================
+
+pages/
+└── images/
+    ├── PaperclipAIAgents.tsx ★ MAIN PRODUCT PAGE
+    │   Route: /product/paperclip-ai-agents
+    │   Opens: PaperclipAIAgentsWorkspace in modal
+    │   Imports: 8 landing section components
+    │
+    ├── ProductAIAgent.tsx (Aether Flow - similar structure)
+    ├── ProductCharacterSync.tsx
+    ├── ProductCinematicAgent.tsx
+    └── ... (other product pages)
+
+================================================================================
+2. LANDING COMPONENTS (Product Page UI)
+================================================================================
+
+components/
+└── landing/
+    └── paperclip-ai-agents/ ★ 8 SECTIONS
+        ├── HeroSection.tsx
+        │   • Main banner
+        │   • "Try Paperclip" CTA button
+        │   • Leads to workspace
+        │
+        ├── LiveStatsBar.tsx
+        │   • Real-time metrics display
+        │   • Agent activity indicators
+        │
+        ├── WorkflowSection.tsx
+        │   • Agent workflow visualization
+        │   • Process explanation
+        │
+        ├── ShowcaseSection.tsx
+        │   • Feature demo showcase
+        │   • Code examples
+        │
+        ├── FeaturesSection.tsx
+        │   • Feature list + descriptions
+        │   • Icons and benefits
+        │
+        ├── UseCasesSection.tsx
+        │   • Industry use cases
+        │   • Scenario examples
+        │
+        ├── FAQSection.tsx
+        │   • Frequently asked questions
+        │   • Accordion format
+        │
+        └── FinalCTA.tsx
+            • Bottom call-to-action
+            • Contact/demo buttons
+
+================================================================================
+3. WORKSPACE COMPONENTS (Main Application)
+================================================================================
+
+components/
+├── PaperclipAIAgentsWorkspace.tsx ★★★ MAIN WORKSPACE (4,045 LOC)
+│   • Component signature: React.FC<{ onClose: () => void }>
+│   • Multi-view interface (studio, history, analytics, canvas)
+│   • Department management & orchestration
+│   • Task execution & streaming output
+│   • State management for all UI modes
+│   • Key data:
+│     - DEPARTMENTS (CEO, Marketing, DevOps, Sales, HR)
+│     - DEPT_SKILLS (specialized skills per department)
+│     - LLM_MODELS (Claude Sonnet, Claude Opus)
+│     - TASK_TEMPLATES (6 template presets)
+│
+├── PaperclipAIAgentsWizard.tsx ★ ONBOARDING WIZARD
+│   • 5-step setup flow
+│   • Welcome → Dept Selection → Task → Budget → Ready
+│   • Returns: WizardResult { dept, budget, prompt, runDemo }
+│   • First-time user experience
+│
+└── workspace/
+    └── AISuggestPanel.tsx
+        • AI-powered suggestions
+        • Template recommendations
+        • Context-aware prompts
+
+================================================================================
+4. CORE COMPONENTS (Workspace Sub-components)
+================================================================================
+
+These are defined as nested components inside PaperclipAIAgentsWorkspace.tsx:
+
+PaperclipAIAgentsWorkspace.tsx contains:
+├── StreamingMarkdownOutput
+│   • Real-time character-by-character output
+│   • Streaming indicator (blinking cursor)
+│   • Integration with Framer Motion
+│
+├── MarkdownOutput
+│   • Full markdown rendering
+│   • Syntax-highlighted code blocks
+│   • List & heading formatting
+│
+├── OrgChartMini
+│   • Organization chart visualization
+│   • CEO at top, departments below
+│   • Real-time running indicators
+│
+└── Other internal components
+    • Activity log display
+    • Task result renderer
+    • Budget panel
+    • Right sidebar tabs
+
+================================================================================
+5. TYPE DEFINITIONS
+================================================================================
+
+types.ts ★ GLOBAL TYPES (102 LOC)
+├── Language
+├── LocalizedString
+├── NeuralStackItem
+├── HomeBlock
+├── GeminiKey
+├── SystemConfig
+├── Solution ★ (Product definition)
+├── UseCase
+├── PricingPackage
+└── BookingFormData
+
+apis/paperclipProjects.ts ★ AGENT PROJECT TYPES
+├── ITaskResult
+│   • id, dept, prompt, output, status, timestamp
+│
+├── AgentConfig
+│   • deptId, brief, enabledSkills
+│
+├── Thread
+│   • deptId, messages
+│
+├── PaperclipProjectSummary
+│   • _id, name, budgetLimit, activeModel, activeDept
+│   • isDefault, createdAt, updatedAt
+│
+└── PaperclipProject (extends PaperclipProjectSummary)
+    • agentConfigs[], conversationThreads[], taskHistory[]
+
+apis/aiCommon.ts ★ AI HELPERS & MODELS
+├── AI_MODELS enum
+│   • SONNET: 'claude-sonnet-4-6'
+│   • OPUS: 'claude-opus-4'
+│
+└── Type exports
+    • ChatMessage, AIChatOptions, MessageContent, etc.
+
+================================================================================
+6. API LAYER
+================================================================================
+
+apis/
+├── paperclipProjects.ts ★ PROJECT MANAGEMENT API
+│   Base: /paperclip-projects
+│   Methods:
+│   • listProjects()                    GET /
+│   • getProject(id)                    GET /:id
+│   • createProject(name)               POST /
+│   • updateProject(id, updates)        PATCH /:id
+│   • deleteProject(id)                 DELETE /:id
+│   • saveAgentConfigs(id, configs)    PUT /:id/agents
+│   • saveThreads(id, threads)         PUT /:id/threads
+│   • appendTaskResult(id, result)     POST /:id/history
+│
+├── aiCommon.ts ★ AI HELPER FUNCTIONS
+│   • aiChatStreamViaProxy(messages, onToken)
+│   • aiChatOnceViaProxy(messages)
+│   • buildSystemMessage({ role, rules })
+│   • parseAIJSON<T>(rawString)
+│   • AI_MODELS constants
+│
+└── aiChat.ts
+    • Implementation details for AI chat
+    • Proxy integration
+
+================================================================================
+7. CONTEXT PROVIDERS
+================================================================================
+
+context/
+├── AuthContext.tsx
+│   • useAuth() hook
+│   • User authentication state
+│   • Credits balance
+│
+├── ThemeContext.tsx
+│   • useTheme() hook
+│   • Dark/light mode switching
+│
+└── ToastContext.tsx
+    • useToast() hook
+    • showToast() for notifications
+    • Success/error/warning messages
+
+================================================================================
+8. HOOKS (Custom React Hooks)
+================================================================================
+
+hooks/
+├── usePageMeta.tsx
+│   • SEO meta tags management
+│
+└── ... (other custom hooks)
+    • useDebounce (internal in Workspace)
+    • useAuth, useTheme, useToast (from context)
+
+================================================================================
+9. ROUTING & APP SETUP
+================================================================================
+
+App.tsx ★ ROUTER CONFIGURATION
+├── Route definitions
+├── pageImports (lazy loading)
+│   const pageImports = {
+│     paperclipAIAgents: () => import('./pages/images/PaperclipAIAgents'),
+│     ...
+│   }
+│
+├── Lazy component setup
+│   const PaperclipAIAgents = React.lazy(pageImports.paperclipAIAgents);
+│
+└── Route path
+    <Route path="/product/paperclip-ai-agents" element={<PaperclipAIAgents />} />
+
+================================================================================
+10. CONFIGURATION & DATA
+================================================================================
+
+data.ts (30,850 LOC) ★ STATIC DATA
+├── SOLUTIONS array
+│   • All product configurations
+│   • Includes paperclip-ai-agents solution
+│   • Product metadata, features, tiers
+│
+├── Pricing information
+└── Feature definitions
+
+constants/
+├── Product categories
+├── Pricing constants
+└── Configuration values
+
+================================================================================
+11. UTILITIES
+================================================================================
+
+utils/
+├── API helpers
+├── Formatting utilities
+└── Common functions
+
+services/
+├── AI service implementations
+├── External API integrations
+└── Utility services
+
+================================================================================
+12. OVERALL COMPONENT HIERARCHY
+================================================================================
+
+FILE: pages/images/PaperclipAIAgents.tsx
+├── usePageMeta()                       SEO meta setup
+├── State: isStudioOpen                 Modal visibility
+└── Render:
+    ├─ HeroSection                      components/landing/.../HeroSection.tsx
+    ├─ LiveStatsBar                     components/landing/.../LiveStatsBar.tsx
+    ├─ WorkflowSection                  components/landing/.../WorkflowSection.tsx
+    ├─ ShowcaseSection                  components/landing/.../ShowcaseSection.tsx
+    ├─ FeaturesSection                  components/landing/.../FeaturesSection.tsx
+    ├─ UseCasesSection                  components/landing/.../UseCasesSection.tsx
+    ├─ FAQSection                       components/landing/.../FAQSection.tsx
+    ├─ FinalCTA                         components/landing/.../FinalCTA.tsx
+    │
+    └─ [When isStudioOpen = true]
+       └─ PaperclipAIAgentsWorkspace    components/PaperclipAIAgentsWorkspace.tsx
+           ├─ useAuth()                 From context
+           ├─ useTheme()                From context
+           ├─ useToast()                From context
+           ├─ State management          Multiple useState calls
+           ├─ API calls                 From apis/paperclipProjects.ts
+           │
+           └─ Nested Components:
+               ├─ PaperclipAIAgentsWizard       (if first time)
+               ├─ OrgChartMini                 (dept visualization)
+               ├─ StreamingMarkdownOutput      (AI output)
+               ├─ MarkdownOutput               (formatted output)
+               ├─ AISuggestPanel               (suggestions)
+               └─ Multiple view renderers
+                   • Studio view
+                   • History view
+                   • Analytics view
+                   • Canvas view
+
+================================================================================
+13. KEY FILES FOR MODIFICATIONS
+================================================================================
+
+IF YOU NEED TO:
+
+Add new agent department:
+  → components/PaperclipAIAgentsWorkspace.tsx (line 86, DEPARTMENTS)
+  → components/PaperclipAIAgentsWizard.tsx (WIZARD_DEPTS)
+
+Add agent skills:
+  → components/PaperclipAIAgentsWorkspace.tsx (line 47, DEPT_SKILLS)
+
+Add new UI tab (right sidebar):
+  → components/PaperclipAIAgentsWorkspace.tsx (search activeRightTab)
+  → Add to type definition
+  → Add state management
+  → Add rendering logic
+
+Change LLM model:
+  → components/PaperclipAIAgentsWorkspace.tsx (line 139, LLM_MODELS)
+
+Add task template:
+  → components/PaperclipAIAgentsWorkspace.tsx (line 144, TASK_TEMPLATES)
+
+Modify API:
+  → apis/paperclipProjects.ts (add methods/types)
+  → Update types in same file
+
+Add landing section:
+  → Create component in components/landing/paperclip-ai-agents/
+  → Import in pages/images/PaperclipAIAgents.tsx
+  → Add to render JSX
+
+================================================================================
+14. ENVIRONMENT & CONFIGURATION
+================================================================================
+
+Environment variables:
+  → .env, .env.production
+  → Used via vite config
+
+Build & Deploy:
+  → vite.config.ts           Vite configuration
+  → tailwind.config.ts       Tailwind CSS
+  → tsconfig.json            TypeScript config
+  → package.json             Dependencies
+
+================================================================================
+15. RELATED WORKSPACE COMPONENTS (REFERENCE)
+================================================================================
+
+The codebase has 100+ workspace components following similar patterns:
+
+components/
+├── AIStylistWorkspace.tsx
+├── AIImageGeneratorWorkspace.tsx
+├── AIVideoGeneratorWorkspace.tsx
+├── SocialBannerWorkspace.tsx
+├── RealEstateVisualWorkspace.tsx
+├── CharacterSyncWorkspace.tsx
+├── CinematicPipelineInterface.tsx
+├── FashionStudioWorkspace.tsx
+├── PosterStudioWorkspace.tsx
+├── StoryboardStudioWorkspace.tsx
+└── ... (many more)
+
+These follow similar architecture patterns and can be used as reference.
+
+================================================================================
+END OF FILE STRUCTURE MAP
+================================================================================
