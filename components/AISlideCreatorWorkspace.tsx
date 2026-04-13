@@ -19,6 +19,7 @@ import SlideOnboardingWizard, {
   type WizardSettings,
 } from './slide-studio/SlideOnboardingWizard';
 import SlideHelpBanner, { SLIDE_TIPS_KEY } from './slide-studio/SlideHelpBanner';
+import SlideGeneratingOverlay from './slide-studio/SlideGeneratingOverlay';
 
 interface Props {
   onClose: () => void;
@@ -389,7 +390,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
         )}
 
         {/* Panel 2: Canvas + Toolbar */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden relative">
           {s.slides.length === 0 ? (
             /* Empty state */
             <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 dark:bg-[#0d0d0f] p-8">
@@ -439,6 +440,19 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
               />
             </>
           )}
+
+          {/* Generating overlay — covers Panel 2 while deck is being created */}
+          <AnimatePresence>
+            {s.isGeneratingDeck && (
+              <SlideGeneratingOverlay
+                isVisible={s.isGeneratingDeck}
+                stage={s.generatingStage}
+                progress={s.generatingProgress}
+                streamText={s.generatingText}
+                onCancel={s.cancelGeneration}
+              />
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Panel 3: AI Sidebar */}

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { imagesApi } from '../apis/images';
 import { pollJobOnce } from './useJobPoller';
-import { aiTextViaProxy } from '../apis/aiCommon';
+import { aiChatStreamViaProxy, aiTextViaProxy } from '../apis/aiCommon';
 import { Language } from '../types';
 import { DocxOutline } from './useDocxImport';
 
@@ -153,6 +153,9 @@ export const useSlideStudio = () => {
 
   // ── UI state ─────────────────────────────────────────────────────────────────
   const [isGeneratingDeck, setIsGeneratingDeck] = useState(false);
+  const [generatingText, setGeneratingText] = useState('');
+  const [generatingStage, setGeneratingStage] = useState<'outline' | 'building' | 'images' | 'idle'>('idle');
+  const [generatingProgress, setGeneratingProgress] = useState(0);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -317,7 +320,17 @@ Requirements:
 - Return ONLY a JSON array, no markdown, no explanation
 Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ...]`;
 
-        const raw = await aiTextViaProxy(outlinePrompt);
+        // Stream the outline generation for realtime UX
+        setGeneratingStage('outline');
+        setGeneratingText('');
+        setGeneratingProgress(5);
+        const raw = await aiChatStreamViaProxy(
+          [{ role: 'user', content: outlinePrompt }],
+          (token) => setGeneratingText(prev => prev + token),
+          undefined,
+          4096,
+        );
+        setGeneratingProgress(30);
 
         // Parse JSON from AI response
         try {
@@ -369,6 +382,9 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
         return;
       }
 
+      setGeneratingStage('building');
+      setGeneratingProgress(35);
+
       const count = (Array.isArray(importedOutline) && importedOutline.length > 0)
         ? importedOutline.length
         : slideCount;
@@ -392,10 +408,12 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
       if (importedOutline) setDocxOutline(null); // clear after use
 
       // 3. Gen BG images for each slide (sequential to avoid rate limits)
+      setGeneratingStage('images');
       const brand = { slogan: brandSlogan, description: brandDescription };
-      for (const slide of newSlides) {
+      for (let i = 0; i < newSlides.length; i++) {
         if (isCancelledRef.current) break;
-        await genSlideBgDirect(slide, deckStyle, refImages, brand);
+        await genSlideBgDirect(newSlides[i], deckStyle, refImages, brand);
+        setGeneratingProgress(35 + Math.round(((i + 1) / newSlides.length) * 65));
       }
     } catch (err) {
       console.error('[generateDeck] error:', err);
@@ -411,6 +429,9 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
       }
     } finally {
       setIsGeneratingDeck(false);
+      setGeneratingStage('idle');
+      setGeneratingProgress(0);
+      setGeneratingText('');
     }
   }, [isAuthenticated, deckTopic, deckLanguage, deckStyle, slideCount, refImages, brandSlogan, brandDescription, showToast]);
 
@@ -531,6 +552,9 @@ Return ONLY a JSON array, no explanation:
 
     // UI
     isGeneratingDeck,
+    generatingText,
+    generatingStage,
+    generatingProgress,
     isGenerateModalOpen, setIsGenerateModalOpen,
     isExportModalOpen, setIsExportModalOpen,
     isDirty,
