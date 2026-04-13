@@ -745,6 +745,16 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   // Onboarding wizard
   const [showWizard, setShowWizard] = useState(false);
 
+  // ── Agent Setup Modal (4-step wizard before running) ──
+  const [showSetupModal, setShowSetupModal]   = useState(false);
+  const [setupStep, setSetupStep]             = useState(1);
+  const [modalDept, setModalDept]             = useState(() => 'ceo');
+  const [modalBrief, setModalBrief]           = useState('');
+  const [modalSkills, setModalSkills]         = useState<string[]>([]);
+  const [modalTask, setModalTask]             = useState('');
+  const [modalModel, setModalModel]           = useState(() => 'claude-sonnet');
+  const [setupStepDir, setSetupStepDir]       = useState<1 | -1>(1); // for animation direction
+
   // Advanced / Simple mode toggle
   const [advancedMode, setAdvancedMode] = useState<boolean>(() => {
     try { return localStorage.getItem(ADVANCED_KEY) === 'true'; } catch { return false; }
@@ -1626,6 +1636,391 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   }, [chatInput, isChatStreaming, activeDept, activeModel, conversationThreads, spentBudget,
       budgetLimit, agentBriefs, saveThread, addLog, showToast]);
 
+  // ── Agent Setup Modal helpers ──────────────────────────────────────────────
+
+  const openSetupModal = useCallback(() => {
+    setModalDept(activeDept);
+    setModalBrief(agentBriefs[activeDept] ?? '');
+    setModalSkills(enabledSkills[activeDept] ?? []);
+    setModalTask('');
+    setModalModel(activeModel);
+    setSetupStep(1);
+    setSetupStepDir(1);
+    setShowSetupModal(true);
+  }, [activeDept, agentBriefs, enabledSkills, activeModel]);
+
+  const confirmAndRunSetup = useCallback(() => {
+    // 1. Apply modal state to real workspace state
+    setActiveDept(modalDept);
+    saveBrief(modalDept, modalBrief);
+    // Set skills directly (bulk replace for the dept)
+    setEnabledSkills(prev => {
+      const updated = { ...prev, [modalDept]: modalSkills };
+      try { localStorage.setItem(SKILLS_KEY(modalDept), JSON.stringify(modalSkills)); } catch { /* noop */ }
+      return updated;
+    });
+    setTaskPrompt(modalTask);
+    setActiveModel(modalModel);
+    setShowSetupModal(false);
+    // 2. Run after state flush
+    setTimeout(() => handleRun(), 80);
+  }, [modalDept, modalBrief, modalSkills, modalTask, modalModel, saveBrief, handleRun]);
+
+  // Role template chips per dept for Step 2
+  const ROLE_TEMPLATES: Record<string, string[]> = {
+    ceo: ['Strategic Leader', 'Board Advisor', 'Product Visionary', 'Turnaround CEO'],
+    marketing: ['Growth Hacker', 'Content Strategist', 'SEO Lead', 'Brand Manager'],
+    devops: ['Platform Engineer', 'Site Reliability Lead', 'Cloud Architect', 'Security Engineer'],
+    sales: ['Enterprise AE', 'SDR Lead', 'Revenue Ops', 'Customer Success'],
+    hr: ['Talent Acquisition Lead', 'People Ops', 'DEI Champion', 'Org Development'],
+  };
+
+  // ── AgentSetupModal ──────────────────────────────────────────────────────────
+  const AgentSetupModal = () => {
+    const STEP_LABELS = ['Chọn Agent', 'Vai trò & Context', 'Kỹ năng', 'Mô tả Task'];
+    const modalDeptObj = DEPARTMENTS.find(d => d.id === modalDept) ?? DEPARTMENTS[0];
+    const deptSkills = DEPT_SKILLS[modalDept] ?? [];
+    const allSkillIds = deptSkills.map(s => s.id);
+
+    const goNext = () => {
+      if (setupStep < 4) {
+        setSetupStepDir(1);
+        setSetupStep(s => s + 1);
+      } else {
+        confirmAndRunSetup();
+      }
+    };
+
+    const goBack = () => {
+      if (setupStep > 1) {
+        setSetupStepDir(-1);
+        setSetupStep(s => s - 1);
+      }
+    };
+
+    return (
+      <AnimatePresence>
+        {showSetupModal && (
+          <motion.div
+            key="setup-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={e => { if (e.target === e.currentTarget) setShowSetupModal(false); }}
+          >
+            <motion.div
+              key="setup-modal-card"
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-lg w-full rounded-2xl bg-white dark:bg-[#111] border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden"
+            >
+              {/* ── Header ── */}
+              <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-black/[0.06] dark:border-white/[0.05]">
+                <div className="flex items-center gap-3">
+                  {/* Step dots */}
+                  <div className="flex items-center gap-1.5">
+                    {[1, 2, 3, 4].map(s => (
+                      <div
+                        key={s}
+                        className="rounded-full transition-all duration-300"
+                        style={{
+                          width: s === setupStep ? 20 : 6,
+                          height: 6,
+                          backgroundColor: s === setupStep
+                            ? modalDeptObj.color
+                            : s < setupStep ? `${modalDeptObj.color}60` : 'rgba(148,163,184,0.3)',
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#555]">
+                      Bước {setupStep}/4
+                    </p>
+                    <p className="text-sm font-bold text-slate-800 dark:text-white leading-tight">
+                      {STEP_LABELS[setupStep - 1]}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowSetupModal(false)}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors text-slate-400"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+
+              {/* ── Step Content ── */}
+              <div className="overflow-hidden" style={{ minHeight: 320 }}>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={`step-${setupStep}`}
+                    initial={{ opacity: 0, x: setupStepDir * 18 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: setupStepDir * -18 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    className="px-5 py-4"
+                  >
+
+                    {/* ── Step 1: Choose Agent ── */}
+                    {setupStep === 1 && (
+                      <div className="space-y-3">
+                        <p className="text-[11px] text-slate-500 dark:text-[#666]">
+                          Chọn AI agent phù hợp với task bạn muốn thực hiện
+                        </p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {DEPARTMENTS.map(d => {
+                            const Icon = d.icon;
+                            const isActive = modalDept === d.id;
+                            return (
+                              <button
+                                key={d.id}
+                                onClick={() => {
+                                  setModalDept(d.id);
+                                  // Reset skills/brief when dept changes
+                                  setModalSkills(enabledSkills[d.id] ?? []);
+                                  setModalBrief(agentBriefs[d.id] ?? '');
+                                }}
+                                className="flex items-start gap-2.5 p-3 rounded-xl border-2 text-left transition-all"
+                                style={isActive
+                                  ? { borderColor: d.color, backgroundColor: `${d.color}10` }
+                                  : { borderColor: 'rgba(0,0,0,0.06)', backgroundColor: 'transparent' }
+                                }
+                              >
+                                <div
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                                  style={{ backgroundColor: `${d.color}15` }}
+                                >
+                                  <Icon size={15} style={{ color: d.color }} />
+                                </div>
+                                <div>
+                                  <p className="text-[11px] font-bold text-slate-700 dark:text-white/80">{d.label}</p>
+                                  <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5">
+                                    {d.tier === 'orchestrator' ? 'Điều phối toàn bộ team' : `${(DEPT_SKILLS[d.id] ?? []).length} kỹ năng`}
+                                  </p>
+                                </div>
+                                {isActive && (
+                                  <CheckCircle2 size={13} className="ml-auto flex-shrink-0 mt-0.5" style={{ color: d.color }} />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ── Step 2: Role & Context ── */}
+                    {setupStep === 2 && (
+                      <div className="space-y-3">
+                        <p className="text-[11px] text-slate-500 dark:text-[#666]">
+                          Mô tả vai trò và context để <span className="font-semibold" style={{ color: modalDeptObj.color }}>{modalDeptObj.agent}</span> hiểu đúng yêu cầu
+                        </p>
+                        {/* Role template chips */}
+                        <div className="flex flex-wrap gap-1.5">
+                          {(ROLE_TEMPLATES[modalDept] ?? []).map(tpl => (
+                            <button
+                              key={tpl}
+                              onClick={() => setModalBrief(prev => prev ? `${prev}\nVai trò: ${tpl}` : `Vai trò: ${tpl}`)}
+                              className="px-2.5 py-1 rounded-full text-[9px] font-semibold border border-black/[0.07] dark:border-white/[0.07] text-slate-500 dark:text-[#888] hover:border-brand-blue/40 hover:text-brand-blue transition-all bg-slate-50 dark:bg-white/[0.03]"
+                            >
+                              + {tpl}
+                            </button>
+                          ))}
+                        </div>
+                        <textarea
+                          autoFocus
+                          value={modalBrief}
+                          onChange={e => setModalBrief(e.target.value)}
+                          placeholder={`Ví dụ: Bạn là ${modalDeptObj.agent} của Skyverses, một startup SaaS B2B. Tập trung vào thị trường SEA, target SME 50-200 nhân viên. Tone: professional nhưng thân thiện.`}
+                          rows={5}
+                          className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.04] border border-black/[0.07] dark:border-white/[0.07] rounded-xl px-3 py-2.5 text-slate-700 dark:text-white/80 placeholder-slate-300 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 resize-none leading-relaxed"
+                        />
+                        <p className="text-[9px] text-slate-400 dark:text-[#555]">
+                          Context này sẽ được gắn vào system prompt khi agent chạy
+                        </p>
+                      </div>
+                    )}
+
+                    {/* ── Step 3: Select Skills ── */}
+                    {setupStep === 3 && (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-[11px] text-slate-500 dark:text-[#666]">
+                            Chọn kỹ năng cho <span className="font-semibold" style={{ color: modalDeptObj.color }}>{modalDeptObj.agent}</span>
+                          </p>
+                          <div className="flex gap-1.5">
+                            <button
+                              onClick={() => setModalSkills([...allSkillIds])}
+                              className="text-[9px] font-semibold px-2 py-0.5 rounded-full border border-brand-blue/30 text-brand-blue hover:bg-brand-blue/[0.07] transition-all"
+                            >
+                              Tất cả
+                            </button>
+                            <button
+                              onClick={() => setModalSkills([])}
+                              className="text-[9px] font-semibold px-2 py-0.5 rounded-full border border-slate-200 dark:border-white/[0.08] text-slate-400 hover:border-slate-300 transition-all"
+                            >
+                              Xóa
+                            </button>
+                          </div>
+                        </div>
+
+                        {deptSkills.length > 0 ? (
+                          <div className="space-y-2">
+                            {deptSkills.map(skill => {
+                              const isOn = modalSkills.includes(skill.id);
+                              return (
+                                <button
+                                  key={skill.id}
+                                  onClick={() => setModalSkills(prev =>
+                                    prev.includes(skill.id) ? prev.filter(s => s !== skill.id) : [...prev, skill.id]
+                                  )}
+                                  className="w-full flex items-start gap-3 p-3 rounded-xl border-2 text-left transition-all"
+                                  style={isOn
+                                    ? { borderColor: modalDeptObj.color, backgroundColor: `${modalDeptObj.color}08` }
+                                    : { borderColor: 'rgba(0,0,0,0.06)', backgroundColor: 'transparent' }
+                                  }
+                                >
+                                  <div
+                                    className="w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all"
+                                    style={isOn
+                                      ? { borderColor: modalDeptObj.color, backgroundColor: modalDeptObj.color }
+                                      : { borderColor: 'rgba(0,0,0,0.15)' }
+                                    }
+                                  >
+                                    {isOn && <CheckCircle2 size={11} color="white" />}
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-[11px] font-semibold text-slate-700 dark:text-white/80">{skill.label}</p>
+                                    <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5 leading-relaxed">{skill.rule}</p>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <p className="text-[11px] text-slate-400 py-4 text-center">Agent này không có skill riêng</p>
+                        )}
+
+                        <p className="text-[9px] text-slate-400 dark:text-[#555]">
+                          {modalSkills.length}/{deptSkills.length} kỹ năng được bật
+                        </p>
+                      </div>
+                    )}
+
+                    {/* ── Step 4: Enter Task ── */}
+                    {setupStep === 4 && (
+                      <div className="space-y-3">
+                        {/* Model selector */}
+                        <div className="flex items-center gap-2">
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#555] mr-1">Model</p>
+                          {LLM_MODELS.map(m => {
+                            const isActive = modalModel === m.id;
+                            return (
+                              <button
+                                key={m.id}
+                                onClick={() => setModalModel(m.id)}
+                                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-bold transition-all"
+                                style={isActive
+                                  ? { backgroundColor: `${m.color}20`, borderColor: `${m.color}50`, color: m.color }
+                                  : { backgroundColor: 'transparent', borderColor: 'rgba(0,0,0,0.08)' }
+                                }
+                              >
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isActive ? m.color : '#94a3b8' }} />
+                                <span className={isActive ? '' : 'text-slate-500 dark:text-[#555]'}>
+                                  {m.id === 'claude-sonnet' ? 'Sonnet' : 'Opus'}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        <textarea
+                          autoFocus
+                          value={modalTask}
+                          onChange={e => setModalTask(e.target.value)}
+                          onKeyDown={e => {
+                            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && modalTask.trim()) {
+                              e.preventDefault();
+                              confirmAndRunSetup();
+                            }
+                          }}
+                          placeholder={`Mô tả task cho ${modalDeptObj.agent}...\n\nVí dụ: ${modalDeptObj.tasks[0]}`}
+                          rows={4}
+                          className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.04] border border-black/[0.07] dark:border-white/[0.07] rounded-xl px-3 py-2.5 text-slate-700 dark:text-white/80 placeholder-slate-300 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 resize-none leading-relaxed"
+                        />
+
+                        {/* Quick task chips */}
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#555] mb-1.5">Quick tasks</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {modalDeptObj.tasks.map(t => (
+                              <button
+                                key={t}
+                                onClick={() => setModalTask(t)}
+                                className="flex items-center gap-1 text-[9px] font-semibold text-brand-blue bg-brand-blue/[0.06] border border-brand-blue/20 px-2.5 py-1 rounded-full hover:bg-brand-blue/10 transition-all"
+                              >
+                                <Zap size={8} /> {t}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-[9px] text-slate-400 dark:text-[#555]">
+                          <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/[0.08] font-mono text-[9px]">⌘↵</kbd> để chạy ngay
+                        </p>
+                      </div>
+                    )}
+
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* ── Footer ── */}
+              <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-black/[0.06] dark:border-white/[0.05] bg-slate-50/50 dark:bg-white/[0.01]">
+                <button
+                  onClick={goBack}
+                  disabled={setupStep === 1}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-semibold text-slate-500 dark:text-[#666] border border-black/[0.07] dark:border-white/[0.07] disabled:opacity-30 hover:border-slate-300 dark:hover:border-white/10 transition-all"
+                >
+                  <ChevronDown size={12} className="rotate-90" />
+                  Quay lại
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {setupStep < 4 && (
+                    <button
+                      onClick={() => setShowSetupModal(false)}
+                      className="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-white/50 transition-colors px-2"
+                    >
+                      Bỏ qua
+                    </button>
+                  )}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={goNext}
+                    disabled={setupStep === 4 && !modalTask.trim()}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-bold text-white transition-all disabled:opacity-40"
+                    style={{ backgroundColor: modalDeptObj.color }}
+                  >
+                    {setupStep < 4 ? (
+                      <>Tiếp theo <ChevronDown size={12} className="-rotate-90" /></>
+                    ) : (
+                      <><Zap size={12} /> Chạy Agent</>
+                    )}
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  };
+
   // ── Sidebar ────────────────────────────────────────────────────────────────
 
   // D4: Auto-detect best department
@@ -1747,6 +2142,76 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+
+      {/* ── Context & Skills Summary (always visible) ── */}
+      <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.04]">
+          <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444]">
+            Context &amp; Kỹ năng
+          </p>
+          <button
+            onClick={openSetupModal}
+            className="flex items-center gap-1 text-[8px] font-semibold text-brand-blue hover:text-brand-blue/80 transition-colors"
+          >
+            <Settings size={9} /> Chỉnh sửa
+          </button>
+        </div>
+
+        {/* Brief preview */}
+        <div className="px-3 pt-2.5 pb-2">
+          <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1">① Vai trò</p>
+          {agentBriefs[activeDept]?.trim() ? (
+            <p className="text-[10px] text-slate-600 dark:text-white/60 leading-relaxed line-clamp-2">
+              {agentBriefs[activeDept]}
+            </p>
+          ) : (
+            <button
+              onClick={openSetupModal}
+              className="text-[10px] text-slate-300 dark:text-[#444] italic hover:text-brand-blue transition-colors"
+            >
+              Chưa có vai trò — Thêm context +
+            </button>
+          )}
+        </div>
+
+        {/* Skills preview */}
+        <div className="px-3 pb-3">
+          <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1.5">② Kỹ năng bật</p>
+          {(enabledSkills[activeDept] ?? []).length > 0 ? (
+            <div className="flex flex-wrap gap-1">
+              {(enabledSkills[activeDept] ?? []).slice(0, 4).map(skillId => {
+                const skill = (DEPT_SKILLS[activeDept] ?? []).find(s => s.id === skillId);
+                return skill ? (
+                  <span
+                    key={skillId}
+                    className="text-[9px] font-semibold px-2 py-0.5 rounded-full border"
+                    style={{
+                      backgroundColor: `${dept.color}10`,
+                      borderColor: `${dept.color}30`,
+                      color: dept.color,
+                    }}
+                  >
+                    {skill.label}
+                  </span>
+                ) : null;
+              })}
+              {(enabledSkills[activeDept] ?? []).length > 4 && (
+                <span className="text-[9px] text-slate-400 dark:text-[#555] px-1">
+                  +{(enabledSkills[activeDept] ?? []).length - 4} nữa
+                </span>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={openSetupModal}
+              className="text-[10px] text-slate-300 dark:text-[#444] italic hover:text-brand-blue transition-colors"
+            >
+              Chưa chọn kỹ năng — Bật ngay +
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ── Department picker (Advanced only) ── */}
@@ -2204,6 +2669,14 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                 </>
               )}
             </motion.button>
+
+            {/* Setup Wizard shortcut */}
+            <button
+              onClick={openSetupModal}
+              className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-slate-500 dark:text-[#666] text-[10px] font-semibold hover:border-brand-blue/40 hover:text-brand-blue hover:bg-brand-blue/[0.03] transition-all"
+            >
+              <Settings size={11} /> Cấu hình vai trò &amp; kỹ năng
+            </button>
 
             {/* B1: Add to Queue + Queue management (Advanced only) */}
             {advancedMode && (
@@ -2950,8 +3423,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
                 </div>
               ) : (
-                /* ── Empty state ── */
-                <div className="flex flex-col items-center justify-center gap-6 text-center w-full max-w-lg my-auto">
+                /* ── Empty state → Setup CTA ── */
+                <div className="flex flex-col items-center justify-center gap-5 text-center w-full max-w-md my-auto">
 
                   {/* Animated org chart preview */}
                   <div className="w-full rounded-2xl border border-black/[0.06] dark:border-white/[0.06] bg-white dark:bg-white/[0.02] overflow-hidden">
@@ -2982,48 +3455,55 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     </div>
                   </div>
 
+                  {/* Agent ready badge */}
                   <div>
                     <div
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3"
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-2"
                       style={{ backgroundColor: `${dept.color}15` }}
                     >
-                      <dept.icon size={24} style={{ color: dept.color }} />
+                      <dept.icon size={22} style={{ color: dept.color }} />
                     </div>
                     <p className="text-sm font-bold text-slate-700 dark:text-white/80">
                       {dept.agent} sẵn sàng
                     </p>
-                    <p className="text-[12px] text-slate-400 dark:text-[#555] mt-1 max-w-xs mx-auto">
-                      Chọn task nhanh bên dưới hoặc mô tả task bất kỳ ở sidebar
+                    <p className="text-[11px] text-slate-400 dark:text-[#555] mt-1 max-w-xs mx-auto leading-relaxed">
+                      Cấu hình vai trò, context và kỹ năng trước khi chạy
                     </p>
                   </div>
 
-                  {/* Featured task suggestions */}
-                  <div className="grid grid-cols-2 gap-2.5 w-full">
-                    {dept.tasks.map((t, i) => (
-                      <motion.button
-                        key={t}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.07 }}
-                        onClick={() => setTaskPrompt(t)}
-                        className="p-3.5 rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-white dark:bg-white/[0.02] text-left hover:border-brand-blue/40 hover:bg-brand-blue/[0.02] transition-all group cursor-pointer"
-                      >
-                        <div
-                          className="w-6 h-6 rounded-lg flex items-center justify-center mb-2"
-                          style={{ backgroundColor: `${dept.color}15` }}
+                  {/* Primary CTA */}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={openSetupModal}
+                    className="w-full py-3.5 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all"
+                    style={{ backgroundColor: dept.color, boxShadow: `0 8px 24px ${dept.color}30` }}
+                  >
+                    <Settings size={15} />
+                    Cấu hình &amp; Chạy Agent
+                  </motion.button>
+
+                  {/* Quick task chips */}
+                  <div className="w-full">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-[#444] mb-2">Quick start</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {dept.tasks.slice(0, 3).map((t, i) => (
+                        <motion.button
+                          key={t}
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.05 }}
+                          onClick={() => { setTaskPrompt(t); handleRun(); }}
+                          className="flex items-center gap-1.5 text-[10px] font-semibold px-3 py-1.5 rounded-full border border-black/[0.07] dark:border-white/[0.07] text-slate-500 dark:text-[#888] hover:border-brand-blue/40 hover:text-brand-blue hover:bg-brand-blue/[0.04] transition-all"
                         >
-                          <Zap size={11} style={{ color: dept.color }} />
-                        </div>
-                        <p className="text-[11px] font-semibold text-slate-700 dark:text-white/70 group-hover:text-brand-blue transition-colors">{t}</p>
-                        <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5 flex items-center gap-1">
-                          <Cpu size={8} /> {model.label}
-                        </p>
-                      </motion.button>
-                    ))}
+                          <Zap size={9} style={{ color: dept.color }} /> {t}
+                        </motion.button>
+                      ))}
+                    </div>
                   </div>
 
-                  <p className="text-[10px] text-slate-400 dark:text-[#555]">
-                    Hoặc nhập task tùy chỉnh bất kỳ ở sidebar <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 font-mono text-[9px]">⌘↵</kbd>
+                  <p className="text-[10px] text-slate-300 dark:text-[#444]">
+                    Hoặc nhập task ở sidebar <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 font-mono text-[9px]">⌘↵</kbd>
                   </p>
                 </div>
               )}
@@ -4037,6 +4517,9 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           <OnboardingWizard onComplete={handleWizardComplete} onSkip={handleWizardSkip} />
         )}
       </AnimatePresence>
+
+      {/* Agent Setup Modal */}
+      <AgentSetupModal />
 
     </div>
   );
