@@ -164,29 +164,37 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     }
   }, [result, zoom]);
 
-  const pollJobStatus = (jobId: string, resultId: string, cost: number) => {
+  const pollJobStatus = (jobId: string, taskId: string, cost: number, taskPrompt: string) => {
     pollJobOnce({
       jobId,
       isCancelledRef,
       apiType: 'image',
       intervalMs: 5000,
       networkRetryMs: 10000,
-      onDone: (result) => {
-        const imageUrl = result.images?.[0] ?? null;
+      onDone: (jobResult) => {
+        const imageUrl = jobResult.images?.[0] ?? null;
         if (imageUrl) {
           pushToHistory(imageUrl);
-          setHistory(prev => [{ id: Date.now().toString(), url: imageUrl, prompt: '', timestamp: new Date().toLocaleTimeString() }, ...prev]);
+          setHistory(prev => [{
+            id: jobId,
+            url: imageUrl,
+            prompt: taskPrompt,
+            timestamp: new Date().toLocaleTimeString()
+          }, ...prev]);
           refreshUserInfo();
         }
-        setStatus('Hoàn tất');
+        setStatus('✅ Hoàn tất');
         setIsGenerating(false);
-        setActiveTasks(prev => prev.filter(t => t.id !== resultId));
+        setActiveTasks(prev => prev.filter(t => t.id !== taskId));
       },
-      onError: () => {
+      onError: (errorMsg) => {
         if (usagePreference === 'credits') addCredits(cost);
-        setActiveTasks(prev => prev.filter(t => t.id !== resultId));
-        setStatus('Lỗi xử lý từ máy chủ');
+        setActiveTasks(prev => prev.filter(t => t.id !== taskId));
+        setStatus(`❌ Lỗi: ${errorMsg || 'Xử lý thất bại'}`);
         setIsGenerating(false);
+      },
+      onTick: ({ tickCount }) => {
+        setStatus(`⏳ Đang xử lý... (${tickCount * 5}s)`);
       },
     });
   };
@@ -202,6 +210,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
   const isGenerateDisabledComputed = isGenerating || !!generateTooltip || !selectedModel;
 
   const handleGenerate = async (overridePrompt?: string, forceCost?: number) => {
+    if (generateTooltip) return;
     const finalPrompt = overridePrompt || prompt;
     if (!finalPrompt.trim() || isGenerating) return;
     if (!isAuthenticated) { login(); return; }
@@ -210,14 +219,20 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
       setShowResourceModal(true);
       return;
     }
+    if (!selectedModel) return;
 
     const currentCost = forceCost !== undefined ? forceCost : selectedModelCost;
-    const taskId = Date.now().toString();
 
-    if (credits < currentCost) { setShowLowCreditAlert(true); return; }
+    if (usagePreference === 'credits' && credits < currentCost) {
+      setShowLowCreditAlert(true);
+      return;
+    }
+
+    const taskId = `pimg-${Date.now()}`;
     setActiveTasks(prev => [...prev, { id: taskId, prompt: finalPrompt }]);
     setIsGenerating(true);
-    setStatus('Đang khởi tạo job...');
+    setStatus('🚀 Đang khởi tạo job...');
+
     try {
       const hasRefs = references.length > 0;
       const payload: ImageJobRequest = {
@@ -235,7 +250,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         },
         engine: {
           provider: selectedEngine as any,
-          model: (selectedModel?.raw?.modelKey || selectedModel?.id || '') as any
+          model: (selectedModel.raw?.modelKey || selectedModel.id || '') as any
         },
         enginePayload: {
           prompt: finalPrompt,
@@ -244,10 +259,27 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
           mode: selectedMode || undefined
         }
       };
+
       const apiRes = await imagesApi.createJob(payload);
-      if (apiRes.success && apiRes.data.jobId) pollJobStatus(apiRes.data.jobId, taskId, currentCost);
-      else { setActiveTasks(prev => prev.filter(t => t.id !== taskId)); setIsGenerating(false); setStatus('Lỗi khởi tạo job'); }
-    } catch (e) { setActiveTasks(prev => prev.filter(t => t.id !== taskId)); setIsGenerating(false); setStatus('Lỗi kết nối API'); }
+
+      if (apiRes.success && apiRes.data.jobId) {
+        const serverJobId = apiRes.data.jobId;
+        // Deduct credits immediately after job is accepted (optimistic)
+        if (usagePreference === 'credits') useCredits(currentCost);
+        setStatus('🔄 Đang xử lý...');
+        // Update taskId to serverJobId for tracking
+        setActiveTasks(prev => prev.map(t => t.id === taskId ? { ...t, id: serverJobId } : t));
+        pollJobStatus(serverJobId, serverJobId, currentCost, finalPrompt);
+      } else {
+        setActiveTasks(prev => prev.filter(t => t.id !== taskId));
+        setIsGenerating(false);
+        setStatus('❌ Lỗi khởi tạo job');
+      }
+    } catch {
+      setActiveTasks(prev => prev.filter(t => t.id !== taskId));
+      setIsGenerating(false);
+      setStatus('❌ Lỗi kết nối API');
+    }
   };
 
   const handleDrop = async (e: React.DragEvent) => {
