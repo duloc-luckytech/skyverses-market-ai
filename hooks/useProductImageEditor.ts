@@ -490,6 +490,21 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
       img.src = `data:image/png;base64,${base64}`;
     });
 
+  /**
+   * Poll /upload-media/:id until mediaId is populated (worker has uploaded to Google Flow).
+   * Retries every 2s for up to 60s.
+   */
+  const pollForMediaId = async (recordId: string, setStatusMsg?: (s: string) => void): Promise<string> => {
+    const MAX_ATTEMPTS = 30; // 30 × 2s = 60s
+    for (let i = 0; i < MAX_ATTEMPTS; i++) {
+      await new Promise(r => setTimeout(r, 2000));
+      const res = await mediaApi.getMediaById(recordId);
+      if (res.mediaId) return res.mediaId;
+      if (setStatusMsg) setStatusMsg(`⏳ Đang xử lý upload... (${i + 1}/${MAX_ATTEMPTS})`);
+    }
+    throw new Error('Upload timeout — worker chưa trả về mediaId sau 60s');
+  };
+
   const applyCrop = async () => {
     if (!result) return;
     setIsGenerating(true);
@@ -524,11 +539,13 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         source: 'fxflow',
       });
 
-      if (!uploadRes.success || (!uploadRes.mediaId && !uploadRes.imageId)) {
+      if (!uploadRes.success || !uploadRes._id) {
         throw new Error(uploadRes.message || 'Upload ảnh thất bại');
       }
 
-      const mediaId = uploadRes.mediaId || uploadRes.imageId || '';
+      // Worker uploads async — poll until mediaId is ready
+      setStatus('⏳ Đang chờ worker xử lý ảnh...');
+      const mediaId = uploadRes.mediaId || await pollForMediaId(uploadRes._id!, setStatus);
       const projectId = uploadRes.raw?.projectId || 'default';
 
       // ── Step 3: Convert cropBox (% 0-100) → normalized coordinates (0-1) ─
@@ -644,11 +661,13 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         source: 'fxflow',
       });
 
-      if (!uploadRes.success || (!uploadRes.mediaId && !uploadRes.imageId)) {
+      if (!uploadRes.success || !uploadRes._id) {
         throw new Error(uploadRes.message || 'Upload ảnh thất bại');
       }
 
-      const mediaId = uploadRes.mediaId || uploadRes.imageId || '';
+      // Worker uploads async — poll until mediaId is ready
+      setStatus('⏳ Đang chờ worker xử lý ảnh...');
+      const mediaId = uploadRes.mediaId || await pollForMediaId(uploadRes._id!, setStatus);
       const projectId = uploadRes.raw?.projectId || 'default';
       referenceImageUrl = uploadRes.raw?.url || result;
 
