@@ -465,6 +465,31 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     setTextDragStart({ id: layer.id, x: layer.x, y: layer.y, startX: e.clientX, startY: e.clientY });
   };
 
+  /**
+   * Compress + resize an image to max 1024px on longest side, JPEG quality 0.85.
+   * Returns base64 string (no data: prefix).
+   */
+  const compressImageBase64 = (base64: string): Promise<string> =>
+    new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 1024;
+        let { width, height } = img;
+        if (width > MAX || height > MAX) {
+          if (width >= height) { height = Math.round((height / width) * MAX); width = MAX; }
+          else { width = Math.round((width / height) * MAX); height = MAX; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        resolve(dataUrl.split(',')[1]);
+      };
+      img.onerror = () => resolve(base64); // fallback: return original
+      img.src = `data:image/png;base64,${base64}`;
+    });
+
   const applyCrop = async () => {
     if (!result) return;
     setIsGenerating(true);
@@ -488,11 +513,14 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         });
       }
 
-      // ── Step 2: Upload to media → get mediaId ────────────────────────────
+      // ── Step 2: Compress before upload (avoid 520 on large images) ────────
+      const compressed = await compressImageBase64(base64);
+
+      // ── Step 3: Upload to media → get mediaId ────────────────────────────
       const uploadRes = await mediaApi.uploadImage({
-        base64,
-        fileName: `crop_source_${Date.now()}.png`,
-        size: Math.ceil(base64.length * 0.75), // approximate byte size
+        base64: compressed,
+        fileName: `crop_source_${Date.now()}.jpg`,
+        size: Math.ceil(compressed.length * 0.75),
         source: 'fxflow',
       });
 
@@ -605,11 +633,14 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         });
       }
 
-      // ── Step 2: Upload → get mediaId ─────────────────────────────────────
+      // ── Step 2: Compress before upload (avoid 520 on large images) ────────
+      const compressed = await compressImageBase64(base64);
+
+      // ── Step 3: Upload → get mediaId ─────────────────────────────────────
       const uploadRes = await mediaApi.uploadImage({
-        base64,
-        fileName: `draw_source_${Date.now()}.png`,
-        size: Math.ceil(base64.length * 0.75),
+        base64: compressed,
+        fileName: `draw_source_${Date.now()}.jpg`,
+        size: Math.ceil(compressed.length * 0.75),
         source: 'fxflow',
       });
 

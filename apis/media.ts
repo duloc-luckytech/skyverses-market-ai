@@ -50,17 +50,37 @@ export interface MediaListResponse {
   error?: string;
 }
 
+// Auth header only — no Content-Type (browser sets multipart boundary automatically)
+const getAuthHeader = (): Record<string, string> => {
+  const token = localStorage.getItem('skyverses_auth_token');
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
+
 export const mediaApi = {
   /**
-   * Upload image via base64
+   * Upload image — tries multipart first, falls back to JSON base64
    * POST /media/image-upload
    */
   uploadImage: async (payload: ImageUploadRequest): Promise<ImageUploadResponse> => {
     try {
+      // Convert base64 → Blob → File for multipart upload
+      const byteString = atob(payload.base64);
+      const bytes = new Uint8Array(byteString.length);
+      for (let i = 0; i < byteString.length; i++) {
+        bytes[i] = byteString.charCodeAt(i);
+      }
+      const blob = new Blob([bytes], { type: 'image/png' });
+      const file = new File([blob], payload.fileName, { type: 'image/png' });
+
+      const form = new FormData();
+      form.append('file', file);
+      if (payload.source) form.append('source', payload.source);
+      if (payload.aspectRatio) form.append('aspectRatio', payload.aspectRatio);
+
       const response = await fetch(`${API_BASE_URL}/media/image-upload`, {
         method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(payload),
+        headers: getAuthHeader(),
+        body: form,
       });
       return await response.json();
     } catch (error) {
