@@ -23,6 +23,7 @@ import SlideOnboardingWizard, {
 } from './slide-studio/SlideOnboardingWizard';
 import SlideHelpBanner, { SLIDE_TIPS_KEY } from './slide-studio/SlideHelpBanner';
 import SlideGeneratingOverlay from './slide-studio/SlideGeneratingOverlay';
+import SlidePromptBar from './slide-studio/SlidePromptBar';
 
 interface Props {
   onClose: () => void;
@@ -410,9 +411,6 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
             onAddSlide={s.addSlide}
             onRemoveSlide={s.removeSlide}
             onMoveSlide={s.moveSlide}
-            onGenSlideBg={s.genSlideBg}
-            onAISuggest={s.fetchAISuggestions}
-            onUpdateSlide={s.updateSlide}
           />
         )}
 
@@ -507,6 +505,14 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                 slide={s.activeSlide}
                 onUpdateTitle={handleUpdateTitle}
                 onUpdateBody={handleUpdateBody}
+              />
+
+              {/* Prompt bar — bottom of canvas */}
+              <SlidePromptBar
+                slide={s.activeSlide}
+                onUpdateSlide={s.updateSlide}
+                onGenSlideBg={s.genSlideBg}
+                onAISuggest={s.fetchAISuggestions}
               />
             </>
           )}
