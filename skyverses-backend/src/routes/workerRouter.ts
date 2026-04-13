@@ -828,19 +828,55 @@ export function createWorkerRouter(provider: string) {
   });
 
   /* ─── GET /image/upload-tasks ────────────────────── */
+  // Universal endpoint: worker có thể gọi với ?type= để lấy đúng loại task
+  // ?type=edit-image  → trả edit-image tasks (crop, draw)  
+  // ?type=upload | không có type → trả upload tasks (pending-fxflow-upload)
   router.get("/image/upload-tasks", async (req, res) => {
     try {
       const owner = req.query.owner?.toString() || null;
       const limit = Math.min(parseInt(req.query.limit as string) || 5, 20);
-
-      // ✅ Respect ?type= filter — endpoint này chỉ xử lý upload tasks
-      // Nếu worker gọi ?type=edit-image hoặc ?type=video → trả empty ngay
       const typeFilter = req.query.type?.toString();
-      const UPLOAD_TYPES = ["upload", "image-upload", "image_upload"];
-      if (typeFilter && !UPLOAD_TYPES.includes(typeFilter)) {
-        return res.json({ tasks: [] });
+
+      // ── DELEGATE: edit-image tasks ────────────────────────────────────────
+      if (typeFilter === "edit-image") {
+        const editFilter: any = {
+          status: EditImageJobStatus.PENDING,
+        };
+        if (owner) editFilter.owner = owner;
+
+        const pendingEdits = await EditImageJob.find(editFilter)
+          .sort({ createdAt: 1 })
+          .limit(limit)
+          .lean();
+
+        const tasks = pendingEdits.map((job: any) => {
+          const task: any = {
+            id:        String(job._id),
+            jobId:     String(job._id),
+            type:      "edit-image",
+            editType:  job.editType,
+            mediaId:   job.mediaId,
+            projectId: job.projectId || "default",
+            priority:  1,
+            owner:     job.owner || null,
+          };
+
+          if (job.editType === "crop" && job.cropCoordinates) {
+            task.cropCoordinates = job.cropCoordinates;
+          }
+          if (job.editType === "draw" && job.drawPayload) {
+            task.prompt            = job.drawPayload.prompt            || "";
+            task.referenceImageUrl = job.drawPayload.referenceImageUrl || "";
+          }
+
+          return task;
+        });
+
+        console.log(`✂️ [${LABEL}] /image/upload-tasks?type=edit-image → ${tasks.length} tasks`);
+        return res.json({ tasks });
       }
 
+      // ── DEFAULT: image upload tasks (pending-fxflow-upload) ───────────────
       const query: any = {
         status: "pending-fxflow-upload",
         imageUrl: { $ne: null },
