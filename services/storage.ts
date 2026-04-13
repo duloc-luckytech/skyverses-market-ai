@@ -7,7 +7,8 @@ import { mediaApi } from '../apis/media';
 export interface GCSAssetMetadata {
   id: string;
   url: string;
-  mediaId?: string; // New field for FXLab specific identifier
+  mediaId?: string;   // Resolved after background poll
+  jobId?: string;     // Present when server processes async — use to poll for mediaId/projectId
   gcsPath: string;
   bucket: string;
   name: string;
@@ -20,6 +21,8 @@ export interface GCSAssetMetadata {
 
 /**
  * Uploads a file to Server via base64 API and maps to GCS style metadata.
+ * Returns IMMEDIATELY with imageUrl (Gommo CDN URL) and jobId (if server returns one).
+ * The caller is responsible for background polling via jobId to get mediaId/projectId.
  */
 export const uploadToGCS = async (file: File, source: string = 'gommo'): Promise<GCSAssetMetadata> => {
   // Convert File to Base64
@@ -45,10 +48,12 @@ export const uploadToGCS = async (file: File, source: string = 'gommo'): Promise
     throw new Error(response.message || 'Server rejected the upload');
   }
 
+  // Return immediately — jobId is passed back to caller for background polling
   return {
     id: response.imageId || response._id || `gcs-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-    url: response.imageUrl, // Use the real URL from CDN/Server
-    mediaId: response.mediaId, // Capture the provider-specific mediaId
+    url: response.imageUrl,       // Gommo CDN URL — available immediately
+    mediaId: response.mediaId,    // May be undefined until poll resolves
+    jobId: response.jobId,        // Present when server processes async
     gcsPath: response.imageUrl,
     bucket: 'skyverses-production-vault',
     name: response.fileName || file.name,

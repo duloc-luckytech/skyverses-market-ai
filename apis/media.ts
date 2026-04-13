@@ -16,6 +16,7 @@ export interface ImageUploadResponse {
   imageUrl?: string;
   fileName?: string;
   mediaId?: string;
+  jobId?: string;   // returned when server processes async — use to poll for mediaId
   width?: number;
   height?: number;
   source?: string;
@@ -38,6 +39,7 @@ export interface MediaListResponse {
   data: Array<{
     _id: string;
     mediaId: string | null;
+    projectId?: string | null;
     width: number | null;
     height: number | null;
     createdAt: string;
@@ -103,7 +105,14 @@ export const mediaApi = {
    * Get single media record by _id to check if mediaId is ready
    * GET /upload-media/detail?id=<recordId>
    */
-  getMediaById: async (id: string): Promise<{ success: boolean; mediaId?: string | null; imageUrl?: string; message?: string }> => {
+  getMediaById: async (id: string): Promise<{
+    success: boolean;
+    status?: string;
+    mediaId?: string | null;
+    projectId?: string | null;
+    imageUrl?: string;
+    message?: string;
+  }> => {
     try {
       const response = await fetch(`${API_BASE_URL}/upload-media/detail?id=${encodeURIComponent(id)}`, {
         method: 'GET',
@@ -112,7 +121,13 @@ export const mediaApi = {
       if (!response.ok) throw new Error('Not found');
       const data = await response.json();
       if (!data) return { success: false };
-      return { success: true, mediaId: data.mediaId ?? null, imageUrl: data.imageUrl };
+      return {
+        success: true,
+        status: data.status ?? undefined,
+        mediaId: data.mediaId ?? null,
+        projectId: data.projectId ?? null,
+        imageUrl: data.imageUrl,
+      };
     } catch (error) {
       console.error('Get Media By ID Error:', error);
       return { success: false };

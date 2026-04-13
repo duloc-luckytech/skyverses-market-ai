@@ -3,8 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { imagesApi, ImageJobRequest } from '../apis/images';
 import { editImageApi } from '../apis/editImage';
-import { mediaApi } from '../apis/media';
 import { uploadToGCS } from '../services/storage';
+import { waitForUploadPoll } from '../services/uploadPoller';
 import { useImageModels, MappedImageModel } from './useImageModels';
 import { pollJobOnce } from './useJobPoller';
 
@@ -490,27 +490,6 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
       img.src = `data:image/png;base64,${base64}`;
     });
 
-  /**
-   * Poll until mediaId is populated by the async upload worker.
-   * Uses GET /upload-media/:id (preferred) with fallback to list search.
-   * Retries every 2s for up to 60s.
-   */
-  const pollForMediaId = async (recordId: string, setStatusMsg?: (s: string) => void): Promise<string> => {
-    const MAX_ATTEMPTS = 30; // 30 × 2s = 60s
-    for (let i = 0; i < MAX_ATTEMPTS; i++) {
-      await new Promise(r => setTimeout(r, 2000));
-      // Try dedicated endpoint first, fallback to list search
-      const single = await mediaApi.getMediaById(recordId);
-      if (single.mediaId) return single.mediaId;
-      // Fallback: search by _id in list
-      const list = await mediaApi.getMediaList({ search: recordId, limit: 1 });
-      const record = list.data?.[0];
-      if (record?.mediaId) return record.mediaId;
-      if (setStatusMsg) setStatusMsg(`⏳ Đang xử lý upload... (${i + 1}/${MAX_ATTEMPTS})`);
-    }
-    throw new Error('Upload timeout — worker chưa trả về mediaId sau 60s');
-  };
-
   const applyCrop = async () => {
     if (!result) return;
     setIsGenerating(true);
@@ -538,22 +517,33 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
       const compressed = await compressImageBase64(base64);
 
       // ── Step 3: Upload to media → get mediaId ────────────────────────────
-      const uploadRes = await mediaApi.uploadImage({
-        base64: compressed,
-        fileName: `crop_source_${Date.now()}.jpg`,
-        size: Math.ceil(compressed.length * 0.75),
-        source: user?.fxflowOwner || 'fxlab',
-      });
+      const cropFile = new File(
+        [Uint8Array.from(atob(compressed), c => c.charCodeAt(0))],
+        `crop_source_${Date.now()}.jpg`,
+        { type: 'image/jpeg' }
+      );
+      const asset = await uploadToGCS(cropFile, user?.fxflowOwner || 'fxlab');
 
-      const recordId = uploadRes.imageId || uploadRes._id;
-      if (!uploadRes.success || !recordId) {
-        throw new Error(uploadRes.message || 'Upload ảnh thất bại');
+      if (!asset.url) {
+        throw new Error('Upload ảnh thất bại');
       }
 
-      // Worker uploads async — poll until mediaId is ready
+      // Wait for mediaId + projectId from background worker
       setStatus('⏳ Đang chờ worker xử lý ảnh...');
-      const mediaId = uploadRes.mediaId || await pollForMediaId(recordId, setStatus);
-      const projectId = uploadRes.raw?.projectId || 'default';
+      let mediaId = asset.mediaId;
+      let projectId: string | null = null;
+      if (asset.jobId && !mediaId) {
+        const pollResult = await waitForUploadPoll({
+          jobId: asset.jobId,
+          onTick: (n) => setStatus(`⏳ Đang chờ xử lý ảnh... (${n * 3}s)`),
+        });
+        mediaId = pollResult.mediaId;
+        projectId = pollResult.projectId ?? null;
+      }
+
+      if (!mediaId) {
+        throw new Error('Không lấy được mediaId sau khi upload');
+      }
 
       // ── Step 3: Convert cropBox (% 0-100) → normalized coordinates (0-1) ─
       const left   = cropBox.x / 100;
@@ -566,7 +556,7 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
       // ── Step 4: Create edit-image job ─────────────────────────────────────
       const createRes = await editImageApi.createJob({
         mediaId,
-        projectId,
+        projectId: projectId || 'default',
         editType: 'crop',
         cropCoordinates: {
           top: parseFloat(top.toFixed(4)),
@@ -661,30 +651,42 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
       const compressed = await compressImageBase64(base64);
 
       // ── Step 3: Upload → get mediaId ─────────────────────────────────────
-      const uploadRes = await mediaApi.uploadImage({
-        base64: compressed,
-        fileName: `draw_source_${Date.now()}.jpg`,
-        size: Math.ceil(compressed.length * 0.75),
-        source: user?.fxflowOwner || 'fxlab',
-      });
+      const drawFile = new File(
+        [Uint8Array.from(atob(compressed), c => c.charCodeAt(0))],
+        `draw_source_${Date.now()}.jpg`,
+        { type: 'image/jpeg' }
+      );
+      const asset = await uploadToGCS(drawFile, user?.fxflowOwner || 'fxlab');
 
-      const recordId = uploadRes.imageId || uploadRes._id;
-      if (!uploadRes.success || !recordId) {
-        throw new Error(uploadRes.message || 'Upload ảnh thất bại');
+      if (!asset.url) {
+        throw new Error('Upload ảnh thất bại');
       }
 
-      // Worker uploads async — poll until mediaId is ready
+      // Wait for mediaId + projectId from background worker
       setStatus('⏳ Đang chờ worker xử lý ảnh...');
-      const mediaId = uploadRes.mediaId || await pollForMediaId(recordId, setStatus);
-      const projectId = uploadRes.raw?.projectId || 'default';
-      referenceImageUrl = uploadRes.raw?.url || result;
+      let mediaId = asset.mediaId;
+      let projectId: string | null = null;
+      if (asset.jobId && !mediaId) {
+        const pollResult = await waitForUploadPoll({
+          jobId: asset.jobId,
+          onTick: (n) => setStatus(`⏳ Đang chờ xử lý ảnh... (${n * 3}s)`),
+        });
+        mediaId = pollResult.mediaId;
+        projectId = pollResult.projectId ?? null;
+      }
+
+      if (!mediaId) {
+        throw new Error('Không lấy được mediaId sau khi upload');
+      }
+
+      referenceImageUrl = asset.url;
 
       setStatus('🎨 Đang gửi lệnh draw...');
 
       // ── Step 3: Create draw job ───────────────────────────────────────────
       const createRes = await editImageApi.createJob({
         mediaId,
-        projectId,
+        projectId: projectId || 'default',
         editType: 'draw',
         drawPayload: {
           prompt: prompt.trim(),

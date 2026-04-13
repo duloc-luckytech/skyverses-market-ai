@@ -13,6 +13,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { mediaApi, MediaListResponse } from '../apis/media';
 import { uploadToGCS, GCSAssetMetadata } from '../services/storage';
+import { startBackgroundUploadPoll } from '../services/uploadPoller';
 import { QuickImageGenModal } from './QuickImageGenModal';
 import { useToast } from '../context/ToastContext';
 
@@ -165,6 +166,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
 
   // UI
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadingJobs, setUploadingJobs] = useState<{ id: string; fileName: string }[]>([]);
   const [showQuickGen, setShowQuickGen] = useState(false);
   const [selectedAssets, setSelectedAssets] = useState<GCSAssetMetadata[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -365,15 +367,36 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
      UPLOAD / DELETE / DOWNLOAD
   ===================================================== */
   const processUpload = async (file: File) => {
+    const tempId = `pending-${Date.now()}`;
+    setUploadingJobs(prev => [...prev, { id: tempId, fileName: file.name }]);
     setIsUploading(true);
     setErrorMessage(null);
     try {
-      await uploadToGCS(file);
+      // Step 1: Upload → returns immediately with imageUrl + jobId (no blocking poll)
+      const asset = await uploadToGCS(file);
+
+      // Step 2: Refresh list right away so the image appears in grid (no mediaId yet)
       await fetchMedia(1);
       showToast('Tải ảnh thành công', 'success');
+
+      // Step 3: If server returned a jobId, poll in background for mediaId/projectId
+      if (asset.jobId) {
+        startBackgroundUploadPoll({
+          jobId: asset.jobId,
+          onDone: () => {
+            // Second refresh — updates mediaId + projectId in the list
+            fetchMedia(1);
+          },
+          onError: (msg) => {
+            console.warn('[uploadPoller] Poll failed:', msg);
+          },
+        });
+      }
     } catch (error: any) {
       setErrorMessage(error.message || 'Lỗi tải ảnh lên máy chủ');
     } finally {
+      // Remove spinner after upload + first fetchMedia (not waiting for poll)
+      setUploadingJobs(prev => prev.filter(j => j.id !== tempId));
       setIsUploading(false);
     }
   };
@@ -490,9 +513,9 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
               <button onClick={() => setShowQuickGen(true)} className="bg-gradient-to-r from-purple-600 to-violet-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold flex items-center gap-1.5 hover:brightness-110 transition-all shadow-lg shadow-purple-500/20">
                 <Wand2 size={12} /> Tạo AI
               </button>
-              <button onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="bg-slate-900 dark:bg-white/10 text-white px-4 py-2 rounded-xl text-[10px] font-bold flex items-center gap-1.5 hover:brightness-110 transition-all disabled:opacity-50">
-                {isUploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
-                Tải lên
+              <button onClick={() => fileInputRef.current?.click()} disabled={isUploading || uploadingJobs.length > 0} className="bg-slate-900 dark:bg-white/10 text-white px-4 py-2 rounded-xl text-[10px] font-bold flex items-center gap-1.5 hover:brightness-110 transition-all disabled:opacity-50">
+                {(isUploading || uploadingJobs.length > 0) ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                {uploadingJobs.length > 0 ? `Đang xử lý (${uploadingJobs.length})` : 'Tải lên'}
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleGCSUpload} />
               <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 rounded-full transition-colors">
@@ -595,13 +618,13 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
                   {Array.from({ length: 12 }).map((_, i) => <SkeletonCard key={i} />)}
                 </div>
               </div>
-            ) : sortedAssets.length > 0 || isUploading ? (
+            ) : sortedAssets.length > 0 || uploadingJobs.length > 0 || isUploading ? (
               <div className="space-y-8">
-                {isUploading && !groupedAssets['Hôm nay'] && (
+                {uploadingJobs.length > 0 && !groupedAssets['Hôm nay'] && (
                   <div className="space-y-4">
                     <DateHeader label="Hôm nay" />
                     <div className="grid gap-3 md:gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
-                      <UploadPlaceholder />
+                      {uploadingJobs.map(job => <UploadPlaceholder key={job.id} fileName={job.fileName} />)}
                     </div>
                   </div>
                 )}
@@ -610,7 +633,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
                   <div key={dateLabel} className="space-y-4">
                     <DateHeader label={dateLabel} count={items.length} />
                     <div className="grid gap-3 md:gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
-                      {dateLabel === 'Hôm nay' && isUploading && <UploadPlaceholder />}
+                      {dateLabel === 'Hôm nay' && uploadingJobs.map(job => <UploadPlaceholder key={job.id} fileName={job.fileName} />)}
                       {items.map(item => {
                         const isSelected = selectedAssets.some(a => a.id === item._id);
                         const isBulkChecked = bulkSelected.includes(item._id);
@@ -876,10 +899,11 @@ const DateHeader = ({ label, count }: { label: string; count?: number }) => (
   </div>
 );
 
-const UploadPlaceholder = () => (
+const UploadPlaceholder = ({ fileName }: { fileName?: string }) => (
   <div className="relative aspect-square rounded-xl overflow-hidden border-2 border-dashed border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] animate-pulse flex flex-col items-center justify-center gap-2">
     <Loader2 size={20} className="animate-spin text-rose-400" />
-    <span className="text-[8px] font-bold uppercase text-slate-400 tracking-wider">Đang tải...</span>
+    <span className="text-[8px] font-bold uppercase text-slate-400 tracking-wider">Đang xử lý...</span>
+    {fileName && <span className="text-[7px] text-slate-300 dark:text-slate-600 truncate px-2 max-w-full">{fileName}</span>}
   </div>
 );
 
