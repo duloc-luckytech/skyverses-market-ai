@@ -505,14 +505,14 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                 slide={s.activeSlide}
                 onUpdateTitle={handleUpdateTitle}
                 onUpdateBody={handleUpdateBody}
-              />
-
-              {/* Prompt bar — bottom of canvas */}
-              <SlidePromptBar
-                slide={s.activeSlide}
-                onUpdateSlide={s.updateSlide}
-                onGenSlideBg={s.genSlideBg}
-                onAISuggest={s.fetchAISuggestions}
+                bottomBar={
+                  <SlidePromptBar
+                    slide={s.activeSlide}
+                    onUpdateSlide={s.updateSlide}
+                    onGenSlideBg={s.genSlideBg}
+                    onAISuggest={s.fetchAISuggestions}
+                  />
+                }
               />
             </>
           )}

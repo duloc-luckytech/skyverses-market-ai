@@ -8,6 +8,7 @@ interface Props {
   slide: Slide | null;
   onUpdateTitle: (id: string, value: string) => void;
   onUpdateBody: (id: string, value: string) => void;
+  bottomBar?: React.ReactNode;
 }
 
 // Layout-aware text positioning
@@ -81,7 +82,7 @@ const EditableText: React.FC<{
   );
 };
 
-const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody }) => {
+const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, bottomBar }) => {
   if (!slide) {
     return (
       <div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-[#0d0d0f]">
@@ -96,9 +97,9 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody }) =>
   const placeholderClass = slide.textColor === 'light' ? 'placeholder-white/30' : 'placeholder-slate-400';
 
   return (
-    <div className="flex-1 flex flex-col bg-slate-100 dark:bg-[#0d0d0f] overflow-hidden p-4">
+    <div className="flex-1 flex flex-col bg-slate-100 dark:bg-[#0d0d0f] overflow-hidden p-4 pb-0">
       {/* Canvas frame */}
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center min-h-0">
         <div className="w-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.04]">
 
           {/* Background image */}
@@ -231,6 +232,9 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody }) =>
           </div>
         </div>
       </div>
+
+      {/* Bottom bar — sits directly below the canvas frame */}
+      {bottomBar}
     </div>
   );
 };
