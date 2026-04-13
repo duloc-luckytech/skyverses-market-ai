@@ -4,8 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles, Loader2, Image as ImageIcon,
   Globe, ChevronDown, X, FileText,
-  LayoutTemplate, Tag, Upload,
+  LayoutTemplate, Tag, Upload, Download,
 } from 'lucide-react';
+import { downloadDocxTemplate } from '../../utils/downloadDocxTemplate';
 import {
   SLIDE_STYLES, SLIDE_COUNT_OPTIONS,
 } from '../../hooks/useSlideStudio';
@@ -508,6 +509,16 @@ const SlideSidebar: React.FC<Props> = ({
         <p className="text-[9px] text-slate-400 dark:text-white/20 mt-1">
           Import DOCX → AI tự phân tách từng slide + gen ảnh tuần tự
         </p>
+
+        {/* Download template */}
+        <button
+          type="button"
+          onClick={() => downloadDocxTemplate()}
+          className="mt-2 w-full flex items-center justify-center gap-1.5 py-1.5 text-[10px] font-medium text-slate-400 dark:text-white/30 hover:text-brand-blue dark:hover:text-brand-blue transition-colors"
+        >
+          <Download size={10} />
+          Tải template mẫu (.docx)
+        </button>
       </div>
 
       {/* ── CTA: Generate Deck ───────────────────────────────────────────────── */}
