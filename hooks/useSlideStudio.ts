@@ -286,6 +286,7 @@ export const useSlideStudio = () => {
   // ─── Gen full deck ────────────────────────────────────────────────────────────
 
   const generateDeck = useCallback(async (importedOutline?: DocxOutline[]) => {
+    if (!isAuthenticated) { showToast('Vui lòng đăng nhập để tạo deck', 'error'); return; }
     if (!importedOutline && !deckTopic.trim()) { showToast('Vui lòng nhập chủ đề', 'error'); return; }
     isCancelledRef.current = false;
     setIsGeneratingDeck(true);
@@ -357,11 +358,21 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
         await genSlideBgDirect(slide, deckStyle, refImages, brand);
       }
     } catch (err) {
-      showToast('Có lỗi khi tạo deck, thử lại nhé', 'error');
+      console.error('[generateDeck] error:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes('401') || msg.toLowerCase().includes('unauthorized')) {
+        showToast('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại', 'error');
+      } else if (msg.includes('429') || msg.toLowerCase().includes('rate limit')) {
+        showToast('Quá nhiều yêu cầu, vui lòng thử lại sau vài giây', 'error');
+      } else if (msg.toLowerCase().includes('network') || msg.toLowerCase().includes('fetch')) {
+        showToast('Lỗi kết nối mạng, kiểm tra lại internet', 'error');
+      } else {
+        showToast(`Lỗi tạo deck: ${msg.slice(0, 80)}`, 'error');
+      }
     } finally {
       setIsGeneratingDeck(false);
     }
-  }, [deckTopic, deckLanguage, deckStyle, slideCount, refImages, brandSlogan, brandDescription, showToast]);
+  }, [isAuthenticated, deckTopic, deckLanguage, deckStyle, slideCount, refImages, brandSlogan, brandDescription, showToast]);
 
   // Internal: gen BG for a slide object directly (used in generateDeck loop)
   const genSlideBgDirect = async (

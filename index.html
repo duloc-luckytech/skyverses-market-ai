@@ -246,13 +246,16 @@
 
     <script>
       /* --- MATRIX BACKGROUND (deferred) --- */
-      (window.requestIdleCallback||setTimeout)(function(){
-        var c=document.getElementById('matrix-container');
-        var k=['AI','3D','SYSTEM','SKYVERSES','DATA'];
-        var ch='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        function mk(){var col=document.createElement('div');col.className='matrix-column';col.style.cssText='position:absolute;top:-100px;left:'+Math.random()*100+'%;font:800 14px/1.2 JetBrains Mono,monospace;color:#fff;white-space:pre;user-select:none';var s='',l=15+Math.floor(Math.random()*15);for(var i=0;i<l;i++)s+=(Math.random()>.92?k[Math.floor(Math.random()*k.length)]:ch[Math.floor(Math.random()*ch.length)])+'\n';col.textContent=s;c.appendChild(col);col.animate([{transform:'translateY(0)',opacity:0},{opacity:.8,offset:.1},{opacity:.8,offset:.9},{transform:'translateY(120vh)',opacity:0}],{duration:(12+Math.random()*18)*1e3,easing:'linear',iterations:Infinity,delay:Math.random()*-2e4})}
-        for(var i=0;i<20;i++)mk();
-      },200);
+      (function(){
+        var fn=function(){
+          var c=document.getElementById('matrix-container');
+          var k=['AI','3D','SYSTEM','SKYVERSES','DATA'];
+          var ch='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+          function mk(){var col=document.createElement('div');col.className='matrix-column';col.style.cssText='position:absolute;top:-100px;left:'+Math.random()*100+'%;font:800 14px/1.2 JetBrains Mono,monospace;color:#fff;white-space:pre;user-select:none';var s='',l=15+Math.floor(Math.random()*15);for(var i=0;i<l;i++)s+=(Math.random()>.92?k[Math.floor(Math.random()*k.length)]:ch[Math.floor(Math.random()*ch.length)])+'\n';col.textContent=s;c.appendChild(col);col.animate([{transform:'translateY(0)',opacity:0},{opacity:.8,offset:.1},{opacity:.8,offset:.9},{transform:'translateY(120vh)',opacity:0}],{duration:(12+Math.random()*18)*1e3,easing:'linear',iterations:Infinity,delay:Math.random()*-2e4})}
+          for(var i=0;i<20;i++)mk();
+        };
+        if(window.requestIdleCallback){window.requestIdleCallback(fn,{timeout:200});}else{setTimeout(fn,200);}
+      })();
     </script>
   </body>
 </html>
