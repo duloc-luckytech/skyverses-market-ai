@@ -21,6 +21,39 @@ import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
 const STORAGE_KEY = 'skyverses_PAPERCLIP-AI-AGENTS_vault';
 const THREAD_KEY = (deptId: string) => `${STORAGE_KEY}_thread_${deptId}`;
 const MAX_THREAD_TURNS = 10; // giữ tối đa 10 turns (20 messages: 10 user + 10 assistant)
+const BRIEF_KEY  = (deptId: string) => `${STORAGE_KEY}_brief_${deptId}`;
+const SKILLS_KEY = (deptId: string) => `${STORAGE_KEY}_skills_${deptId}`;
+
+// Skill presets per department
+const DEPT_SKILLS: Record<string, Array<{ id: string; label: string; rule: string }>> = {
+  ceo: [
+    { id: 'strategist',  label: '🎯 Strategist',    rule: 'Think like a board-level strategist. Prioritise long-term value over short-term gain.' },
+    { id: 'delegator',   label: '🤝 Delegator',      rule: 'Break every goal into clear, delegatable sub-tasks with owners and deadlines.' },
+    { id: 'data-driven', label: '📊 Data-Driven',    rule: 'Back every recommendation with metrics, KPIs, or industry benchmarks.' },
+  ],
+  marketing: [
+    { id: 'seo',        label: '🔍 SEO Expert',     rule: 'Optimize all content for SEO: target keywords, meta description, internal links, readability score.' },
+    { id: 'copywriter', label: '✍️ Copywriter',      rule: 'Apply AIDA framework (Attention, Interest, Desire, Action) in all copy.' },
+    { id: 'social',     label: '📱 Social Media',    rule: 'Tailor tone for each platform: LinkedIn (professional), X (concise), Facebook (friendly).' },
+    { id: 'analytics',  label: '📈 Analytics',       rule: 'Include measurable KPIs and A/B test hypotheses in every campaign plan.' },
+  ],
+  devops: [
+    { id: 'security', label: '🔒 Security',    rule: 'Apply OWASP top-10 security checks to every code review and pipeline step.' },
+    { id: 'perf',     label: '⚡ Performance', rule: 'Benchmark before and after every change. Target p95 latency improvements.' },
+    { id: 'iac',      label: '🏗️ IaC',          rule: 'Prefer Infrastructure-as-Code (Terraform / Helm) over manual steps.' },
+    { id: 'docs',     label: '📚 Docs',         rule: 'Every code change must include updated documentation and changelog.' },
+  ],
+  sales: [
+    { id: 'closer',  label: '💰 Closer',          rule: 'Use SPIN selling technique. Focus on Pain → Impact → Need-Payoff.' },
+    { id: 'crm',     label: '🗂️ CRM Expert',       rule: 'Structure all outputs as CRM-importable fields (Name, Company, Stage, Next Action).' },
+    { id: 'persona', label: '🎭 Persona Builder',  rule: 'Define ICP (Ideal Customer Profile) for each campaign segment.' },
+  ],
+  hr: [
+    { id: 'dei',        label: '🌍 DEI',         rule: 'Ensure all job descriptions and policies are inclusive and DEI-compliant.' },
+    { id: 'legal',      label: '⚖️ Legal Safe',  rule: 'Flag any language that could create legal liability. Suggest legally safe alternatives.' },
+    { id: 'engagement', label: '💬 Engagement',  rule: 'Apply employee-first tone. Prioritize psychological safety and clarity.' },
+  ],
+};
 
 const THINKING_STEPS = [
   '🧠 Phân tích yêu cầu...',
@@ -131,6 +164,15 @@ interface TaskResult {
   systemPrompt?: string;
   confidence?: number;
   starred?: boolean;
+}
+
+interface CanvasNodeState {
+  id: string;
+  x: number;
+  y: number;
+  status: 'idle' | 'running' | 'done' | 'error';
+  output: string;
+  streaming: boolean;
 }
 
 // ─── Streaming Markdown Renderer ─────────────────────────────────────────────
@@ -488,14 +530,14 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   const { showToast } = useToast();
 
   // UI state
-  const [viewMode, setViewMode]             = useState<'studio' | 'history' | 'analytics'>('studio');
+  const [viewMode, setViewMode]             = useState<'studio' | 'history' | 'analytics' | 'canvas'>('studio');
   const [showAISuggest, setShowAISuggest]   = useState(false);
   const [showMobileSheet, setShowMobileSheet] = useState(false);
   const [showBudgetPanel, setShowBudgetPanel] = useState(true);
   const [showOrgChart, setShowOrgChart]     = useState(true);
   const [showActivity, setShowActivity]     = useState(true);
   const [showPromptHistory, setShowPromptHistory] = useState(false);
-  const [activeRightTab, setActiveRightTab] = useState<'output' | 'log' | 'prompt'>('output');
+  const [activeRightTab, setActiveRightTab] = useState<'output' | 'log' | 'prompt' | 'setup'>('output');
   const [isStreaming, setIsStreaming]       = useState(false);
   const [showApprovalDialog, setShowApprovalDialog] = useState(false);
   const pendingRunRef = useRef<((override?: string) => Promise<void>) | null>(null);
@@ -573,6 +615,91 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     return result;
   });
 
+  // Agent briefs — free-text context per dept, persisted
+  const [agentBriefs, setAgentBriefs] = useState<Record<string, string>>(() => {
+    const result: Record<string, string> = {};
+    DEPARTMENTS.forEach(d => {
+      try { result[d.id] = localStorage.getItem(BRIEF_KEY(d.id)) ?? ''; } catch { result[d.id] = ''; }
+    });
+    return result;
+  });
+
+  // Enabled skills per dept, persisted
+  const [enabledSkills, setEnabledSkills] = useState<Record<string, string[]>>(() => {
+    const result: Record<string, string[]> = {};
+    DEPARTMENTS.forEach(d => {
+      try { result[d.id] = JSON.parse(localStorage.getItem(SKILLS_KEY(d.id)) ?? '[]'); } catch { result[d.id] = []; }
+    });
+    return result;
+  });
+
+  // Canvas multi-agent flow
+  const CANVAS_INITIAL_POSITIONS: Record<string, { x: number; y: number }> = {
+    ceo:       { x: 300, y: 30  },
+    marketing: { x: 40,  y: 220 },
+    devops:    { x: 210, y: 220 },
+    sales:     { x: 380, y: 220 },
+    hr:        { x: 550, y: 220 },
+    report:    { x: 300, y: 420 },
+  };
+  const [canvasNodes, setCanvasNodes] = useState<CanvasNodeState[]>(() => {
+    // P1: Restore persisted canvas nodes (outputs + positions)
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY + '_canvas_nodes');
+      if (saved) {
+        const parsed: CanvasNodeState[] = JSON.parse(saved);
+        // Merge saved positions/outputs into fresh node states (reset streaming/running)
+        return DEPARTMENTS.map(d => {
+          const s = parsed.find(n => n.id === d.id);
+          return {
+            id: d.id,
+            x: s?.x ?? CANVAS_INITIAL_POSITIONS[d.id]?.x ?? 100,
+            y: s?.y ?? CANVAS_INITIAL_POSITIONS[d.id]?.y ?? 100,
+            status: (s?.status === 'done' || s?.status === 'error') ? s.status : 'idle',
+            output: s?.output ?? '',
+            streaming: false,
+          };
+        });
+      }
+    } catch { /* ignore */ }
+    return DEPARTMENTS.map(d => ({
+      id: d.id,
+      x: CANVAS_INITIAL_POSITIONS[d.id]?.x ?? 100,
+      y: CANVAS_INITIAL_POSITIONS[d.id]?.y ?? 100,
+      status: 'idle' as const,
+      output: '',
+      streaming: false,
+    }));
+  });
+  const [canvasReport, setCanvasReport] = useState<{ status: 'idle' | 'running' | 'done'; output: string }>(() => {
+    // P1: Restore last completed canvas report from localStorage
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY + '_canvas_report');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.output) return { status: 'done', output: parsed.output };
+      }
+    } catch { /* ignore */ }
+    return { status: 'idle', output: '' };
+  });
+  const [isCanvasRunning, setIsCanvasRunning] = useState(false);
+  const [canvasPrompt, setCanvasPrompt] = useState('');
+  const [dragNode, setDragNode] = useState<string | null>(null);
+  const dragOffset = useRef({ x: 0, y: 0 });
+
+  // P0: AbortControllers for cancelling in-flight AI streams
+  const abortRef = useRef<AbortController | null>(null);
+  const canvasAbortRef = useRef<AbortController | null>(null);
+
+  // P1-7: Mobile detection — canvas uses absolute positions, needs list fallback on mobile
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
   const dept  = DEPARTMENTS.find(d => d.id === activeDept)  ?? DEPARTMENTS[1];
   const model = LLM_MODELS.find(m => m.id === activeModel)  ?? LLM_MODELS[0];
   const budgetPct = Math.min((spentBudget / budgetLimit) * 100, 100);
@@ -586,6 +713,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       if (e.key === 's' || e.key === 'S') { e.preventDefault(); setViewMode('studio'); }
       if (e.key === 'h' || e.key === 'H') { e.preventDefault(); setViewMode('history'); }
       if (e.key === 'a' || e.key === 'A') { e.preventDefault(); setViewMode('analytics'); }
+      if (e.key === 'c' || e.key === 'C') { e.preventDefault(); setViewMode('canvas'); }
       if (e.key === 'Escape') { setShowShortcuts(false); setShowApprovalDialog(false); }
     };
     window.addEventListener('keydown', handler);
@@ -651,6 +779,22 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     localStorage.removeItem(THREAD_KEY(deptId));
   }, []);
 
+  const saveBrief = useCallback((deptId: string, brief: string) => {
+    setAgentBriefs(prev => ({ ...prev, [deptId]: brief }));
+    localStorage.setItem(BRIEF_KEY(deptId), brief);
+  }, []);
+
+  const toggleSkill = useCallback((deptId: string, skillId: string) => {
+    setEnabledSkills(prev => {
+      const current = prev[deptId] ?? [];
+      const updated = current.includes(skillId)
+        ? current.filter(s => s !== skillId)
+        : [...current, skillId];
+      localStorage.setItem(SKILLS_KEY(deptId), JSON.stringify(updated));
+      return { ...prev, [deptId]: updated };
+    });
+  }, []);
+
   // Auto-scroll activity feed to top (newest) when new log arrives
   useEffect(() => {
     if (activityFeedRef.current) {
@@ -684,16 +828,27 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     const taskId = Date.now().toString();
     const startTime = Date.now();
 
-    const taskCost = parseFloat((Math.random() * 0.35 + 0.05).toFixed(2));
-    const taskTokens = Math.floor(Math.random() * 1200 + 300);
+    // P0: Create fresh AbortController for this run
+    abortRef.current = new AbortController();
+
+    // P0: Cost/tokens tracked from real output length (estimated — no mock random)
+    // We'll update these after completion based on output chars
+    let taskCost = 0;
+    let taskTokens = 0;
 
     // Build system prompt via buildSystemMessage() — or use override from Prompt Inspector
+    const brief = agentBriefs[activeDept]?.trim();
+    const activeSkillRules = (enabledSkills[activeDept] ?? [])
+      .map(sid => DEPT_SKILLS[activeDept]?.find(s => s.id === sid)?.rule)
+      .filter(Boolean) as string[];
+
     const builtSystemPrompt: string = overrideSystemPrompt ?? (buildSystemMessage({
-      role: `Bạn là ${dept.agent} trong hệ thống Paperclip AI Org Orchestrator. Department: ${dept.label}. Model: ${model.label} (${model.provider}).`,
+      role: `Bạn là ${dept.agent} trong hệ thống Paperclip AI Org Orchestrator. Department: ${dept.label}. Model: ${model.label} (${model.provider}).${brief ? `\n\nCOMPANY CONTEXT:\n${brief}` : ''}`,
       rules: [
         'Thực hiện task được giao, trả về kết quả chi tiết, professional và actionable.',
         'Dùng markdown formatting: headers (##), bullet points (-), numbered lists khi phù hợp.',
         'Viết bằng tiếng Việt hoặc tiếng Anh tùy context của task.',
+        ...activeSkillRules,
       ],
       outputFormat: 'Kết quả phải cụ thể, có thể action được ngay.',
     }).content as string);
@@ -714,8 +869,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       output: '',
       status: 'running',
       timestamp: new Date().toLocaleString('vi-VN'),
-      cost: `$${taskCost.toFixed(2)}`,
-      tokens: taskTokens,
+      cost: '~est.',
+      tokens: undefined,
       systemPrompt: builtSystemPrompt,
     };
     setCurrentResult(pendingResult);
@@ -741,7 +896,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           streamedOutput += token;
           setCurrentResult(prev => prev ? { ...prev, output: streamedOutput } : prev);
         },
-        undefined,
+        abortRef.current?.signal,
         4096,
         model.apiModel,
       );
@@ -749,8 +904,21 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       const output = streamedOutput;
       const duration = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
 
+      // Check if aborted mid-stream — save partial output with 'done' status
+      const wasAborted = abortRef.current?.signal.aborted ?? false;
+
       if (output && output.trim().length > 0) {
-        const doneResult: TaskResult = { ...pendingResult, output, status: 'done', duration, tokens: taskTokens, confidence: Math.floor(Math.random() * 16 + 82) };
+        // Estimate tokens from output length (~4 chars/token) + system prompt
+        taskTokens = Math.ceil((output.length + builtSystemPrompt.length + taskPrompt.length) / 4);
+        // Estimate cost: Sonnet ≈ $3/$15 per M tokens input/output, Opus ≈ $15/$75
+        const isOpus = model.apiModel === AI_MODELS.OPUS;
+        const outTokens = Math.ceil(output.length / 4);
+        const inTokens = taskTokens - outTokens;
+        const inRate  = isOpus ? 0.000015 : 0.000003;
+        const outRate = isOpus ? 0.000075 : 0.000015;
+        taskCost = parseFloat((inTokens * inRate + outTokens * outRate).toFixed(4));
+
+        const doneResult: TaskResult = { ...pendingResult, output, status: wasAborted ? 'done' : 'done', duration, tokens: taskTokens, cost: `~$${taskCost.toFixed(3)}` };
         setCurrentResult(doneResult);
         setFollowUpSuggestions(FOLLOW_UP_MAP[activeDept] ?? []);
         setShowSuccessBurst(true);
@@ -776,7 +944,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         ];
         saveThread(activeDept, updatedThread);
 
-        addLog(dept.agent, `✓ Task hoàn thành trong ${duration} — ${taskCost.toFixed(2)} USD`, 'success', dept.color);
+        addLog(dept.agent, `✓ Task hoàn thành trong ${duration} — ~$${taskCost.toFixed(3)} est.`, 'success', dept.color);
         addLog('CEO Agent', `Report nhận được từ ${dept.agent}`, 'success', '#0090ff');
         showToast(`${dept.agent} hoàn thành task!`, 'success');
 
@@ -790,11 +958,25 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         addLog(dept.agent, 'Lỗi kết nối AI service', 'warning', '#ef4444');
         showToast('Lỗi kết nối AI', 'error');
       }
-    } catch {
-      const errResult: TaskResult = { ...pendingResult, output: 'Đã xảy ra lỗi khi chạy agent. Vui lòng thử lại.', status: 'error' };
-      setCurrentResult(errResult);
-      addLog(dept.agent, 'Lỗi không xác định', 'warning', '#ef4444');
-      showToast('Lỗi khi chạy agent', 'error');
+    } catch (err) {
+      // P0: If aborted by user — save partial output as done (not error)
+      if (abortRef.current?.signal.aborted) {
+        const partialOutput = currentResult?.output ?? '';
+        if (partialOutput.trim()) {
+          const abortedResult: TaskResult = { ...pendingResult, output: partialOutput, status: 'done', duration: ((Date.now() - startTime) / 1000).toFixed(1) + 's', cost: '~est.' };
+          setCurrentResult(abortedResult);
+          addLog(dept.agent, '⏹ Task dừng bởi user — kết quả một phần đã lưu', 'warning', '#f59e0b');
+          showToast('Đã dừng — kết quả một phần đã lưu', 'success');
+        } else {
+          setCurrentResult(prev => prev ? { ...prev, status: 'error', output: '⏹ Task bị dừng bởi user.' } : prev);
+          addLog(dept.agent, '⏹ Task bị dừng bởi user', 'warning', '#f59e0b');
+        }
+      } else {
+        const errResult: TaskResult = { ...pendingResult, output: 'Đã xảy ra lỗi khi chạy agent. Vui lòng thử lại.', status: 'error' };
+        setCurrentResult(errResult);
+        addLog(dept.agent, 'Lỗi không xác định', 'warning', '#ef4444');
+        showToast('Lỗi khi chạy agent', 'error');
+      }
     } finally {
       setIsEditingPrompt(false);
       setIsRunning(false);
@@ -813,7 +995,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         return rest;
       });
     }
-  }, [taskPrompt, isRunning, isAuthenticated, login, dept, model, budgetLimit, spentBudget, totalTokens, promptHistory, taskHistory, addLog, showToast, activeDept, conversationThreads, saveThread]);
+  }, [taskPrompt, isRunning, isAuthenticated, login, dept, model, budgetLimit, spentBudget, totalTokens, promptHistory, taskHistory, addLog, showToast, activeDept, conversationThreads, saveThread, agentBriefs, enabledSkills]);
 
   const handleRun = useCallback(async () => {
     if (!taskPrompt.trim() || isRunning) return;
@@ -829,6 +1011,124 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
     await executeRun();
   }, [taskPrompt, isRunning, isAuthenticated, login, requiresApproval, executeRun, addLog]);
+
+  const runCanvasFlow = useCallback(async () => {
+    if (!canvasPrompt.trim() || isCanvasRunning) return;
+    if (!isAuthenticated) { login(); return; }
+
+    // P0: Create fresh AbortController for canvas run
+    canvasAbortRef.current = new AbortController();
+    const signal = canvasAbortRef.current.signal;
+
+    setIsCanvasRunning(true);
+    setCanvasReport({ status: 'idle', output: '' });
+    setCanvasNodes(prev => prev.map(n => ({ ...n, status: 'idle' as const, output: '', streaming: false })));
+
+    const deptAgents = DEPARTMENTS.filter(d => d.tier === 'department');
+    const allOutputs: string[] = [];
+
+    // Run all dept agents in parallel
+    await Promise.all(deptAgents.map(async (d) => {
+      const deptDef = DEPARTMENTS.find(dep => dep.id === d.id)!;
+      const deptModel = LLM_MODELS[0];
+
+      setCanvasNodes(prev => prev.map(n => n.id === d.id ? { ...n, status: 'running' as const, streaming: true } : n));
+
+      const brief = agentBriefs[d.id]?.trim();
+      const activeSkillRules = (enabledSkills[d.id] ?? [])
+        .map(sid => DEPT_SKILLS[d.id]?.find(s => s.id === sid)?.rule)
+        .filter(Boolean) as string[];
+
+      const sysPrompt = buildSystemMessage({
+        role: `Bạn là ${deptDef.agent}. Hãy thực hiện phần công việc liên quan đến ${deptDef.label} cho brief sau đây.${brief ? `\n\nCOMPANY CONTEXT:\n${brief}` : ''}`,
+        rules: [
+          'Trả lời ngắn gọn, actionable, đúng chuyên môn của department.',
+          'Dùng markdown: bullet points và numbered list.',
+          ...activeSkillRules,
+        ],
+        outputFormat: `Kết quả cho phần ${deptDef.label}. Tối đa 300 từ.`,
+      }).content as string;
+
+      let out = '';
+      try {
+        await aiChatStreamViaProxy(
+          [
+            { role: 'system', content: sysPrompt },
+            { role: 'user', content: canvasPrompt },
+          ],
+          (token) => {
+            out += token;
+            setCanvasNodes(prev => prev.map(n => n.id === d.id ? { ...n, output: out } : n));
+          },
+          signal,
+          1500,
+          deptModel.apiModel,
+        );
+        allOutputs.push(`## ${deptDef.label}\n${out}`);
+        setCanvasNodes(prev => prev.map(n => n.id === d.id ? { ...n, status: 'done' as const, streaming: false } : n));
+      } catch {
+        const isAbort = signal.aborted;
+        setCanvasNodes(prev => prev.map(n => n.id === d.id ? {
+          ...n,
+          status: isAbort && out.trim() ? 'done' as const : isAbort ? 'idle' as const : 'error' as const,
+          streaming: false,
+          output: out,
+        } : n));
+        if (out.trim()) allOutputs.push(`## ${deptDef.label}\n${out}`);
+      }
+    }));
+
+    // Stop if aborted
+    if (signal.aborted) {
+      setIsCanvasRunning(false);
+      // P1: Persist partial canvas state
+      try { localStorage.setItem(STORAGE_KEY + '_canvas_nodes', JSON.stringify(canvasNodes)); } catch { /* ignore */ }
+      return;
+    }
+
+    // CEO synthesizes final report
+    setCanvasReport({ status: 'running', output: '' });
+    const ceoBrief = agentBriefs['ceo']?.trim();
+    const ceoSys = buildSystemMessage({
+      role: `Bạn là CEO Agent. Tổng hợp báo cáo từ tất cả departments thành một executive summary.${ceoBrief ? `\n\nCOMPANY CONTEXT:\n${ceoBrief}` : ''}`,
+      rules: ['Tổng hợp ngắn gọn, highlight key actions, assign priorities.', 'Giữ CEO perspective: strategic, decisive.'],
+      outputFormat: 'Executive Summary với: 1. Key Highlights, 2. Priority Actions, 3. Next Steps.',
+    }).content as string;
+
+    let reportOut = '';
+    try {
+      await aiChatStreamViaProxy(
+        [
+          { role: 'system', content: ceoSys },
+          { role: 'user', content: `Tổng hợp report từ tất cả departments cho brief: "${canvasPrompt}"\n\n${allOutputs.join('\n\n')}` },
+        ],
+        (token) => {
+          reportOut += token;
+          setCanvasReport({ status: 'running', output: reportOut });
+        },
+        signal,
+        2048,
+        AI_MODELS.OPUS,
+      );
+      setCanvasReport({ status: 'done', output: reportOut });
+      // P1: Persist completed report to localStorage
+      try { localStorage.setItem(STORAGE_KEY + '_canvas_report', JSON.stringify({ prompt: canvasPrompt, output: reportOut, ts: new Date().toISOString() })); } catch { /* ignore */ }
+    } catch {
+      const finalOut = reportOut.trim() ? reportOut : '⚠️ Lỗi khi tổng hợp report.';
+      setCanvasReport({ status: 'done', output: finalOut });
+      if (reportOut.trim()) {
+        try { localStorage.setItem(STORAGE_KEY + '_canvas_report', JSON.stringify({ prompt: canvasPrompt, output: finalOut, ts: new Date().toISOString() })); } catch { /* ignore */ }
+      }
+    }
+
+    // P1: Persist canvas node outputs to localStorage
+    setCanvasNodes(prev => {
+      try { localStorage.setItem(STORAGE_KEY + '_canvas_nodes', JSON.stringify(prev)); } catch { /* ignore */ }
+      return prev;
+    });
+
+    setIsCanvasRunning(false);
+  }, [canvasPrompt, isCanvasRunning, isAuthenticated, login, agentBriefs, enabledSkills, canvasNodes]);
 
   const deleteHistoryItem = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -1245,6 +1545,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               { id: 'studio',    label: 'Studio',    icon: Layers },
               { id: 'history',   label: `Lịch sử (${taskHistory.length})`, icon: History },
               { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+              { id: 'canvas',    label: 'Canvas',    icon: Workflow },
             ] as const).map(tab => (
               <button
                 key={tab.id}
@@ -1337,16 +1638,20 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             </div>
 
             <motion.button
-              onClick={handleRun}
-              disabled={isRunning || !taskPrompt.trim()}
+              onClick={isRunning ? () => { abortRef.current?.abort(); } : handleRun}
+              disabled={!isRunning && (!taskPrompt.trim())}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-blue to-blue-500 text-white text-[12px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/20 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 relative"
+              className={`w-full py-3.5 rounded-xl text-white text-[12px] font-bold uppercase tracking-widest shadow-lg transition-all flex items-center justify-center gap-2 relative ${
+                isRunning
+                  ? 'bg-gradient-to-r from-red-500 to-rose-500 shadow-red-500/20 hover:brightness-110'
+                  : 'bg-gradient-to-r from-brand-blue to-blue-500 shadow-brand-blue/20 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed'
+              }`}
             >
               {isRunning ? (
                 <>
-                  <Loader2 size={14} className="animate-spin" />
-                  {dept.agent} đang chạy...
+                  <div className="w-3 h-3 rounded-sm bg-white/80" />
+                  Dừng Agent
                 </>
               ) : (
                 <>
@@ -1499,6 +1804,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                         { id: 'output', label: 'Output', icon: Eye },
                         { id: 'log',    label: 'Activity Log', icon: Terminal },
                         { id: 'prompt', label: 'Prompt Inspector', icon: Code2 },
+                        { id: 'setup',  label: 'Setup', icon: Settings },
                       ] as const).map(tab => (
                         <button
                           key={tab.id}
@@ -1811,6 +2117,83 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                 <p className="text-[11px] text-slate-400 dark:text-[#555]">Chạy agent để xem system prompt được gửi tới LLM</p>
                               </div>
                             )}
+                          </motion.div>
+                        )}
+
+                        {activeRightTab === 'setup' && (
+                          <motion.div
+                            key="setup"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.15 }}
+                          >
+                            <div className="space-y-4">
+                              {/* Brief textarea */}
+                              <div>
+                                <label className="block text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] tracking-widest mb-1.5">
+                                  Agent Brief — {dept.label}
+                                </label>
+                                <textarea
+                                  value={agentBriefs[activeDept] ?? ''}
+                                  onChange={e => saveBrief(activeDept, e.target.value)}
+                                  placeholder={`Mô tả context công ty, tone, sản phẩm cho ${dept.agent}...\nVD: Chúng tôi là startup B2B SaaS, target SMB Việt Nam, tone friendly-professional, product: AI workflow automation platform.`}
+                                  rows={5}
+                                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
+                                />
+                                <p className="text-[8px] text-slate-300 dark:text-[#444] mt-1">Brief này sẽ được inject vào system prompt của {dept.agent}.</p>
+                              </div>
+
+                              {/* Skills toggles */}
+                              {(DEPT_SKILLS[activeDept]?.length ?? 0) > 0 && (
+                                <div>
+                                  <label className="block text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] tracking-widest mb-1.5">
+                                    Skills — Bật kỹ năng cho {dept.agent}
+                                  </label>
+                                  <div className="grid grid-cols-2 gap-1.5">
+                                    {DEPT_SKILLS[activeDept].map(skill => {
+                                      const isOn = (enabledSkills[activeDept] ?? []).includes(skill.id);
+                                      return (
+                                        <button
+                                          key={skill.id}
+                                          onClick={() => toggleSkill(activeDept, skill.id)}
+                                          className={`text-left px-2.5 py-2 rounded-xl border text-[10px] font-semibold transition-all flex items-center gap-2 ${
+                                            isOn
+                                              ? 'bg-brand-blue/10 border-brand-blue/40 text-brand-blue'
+                                              : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-500 dark:text-[#666] hover:border-brand-blue/30 hover:text-brand-blue'
+                                          }`}
+                                        >
+                                          <div className={`w-2.5 h-2.5 rounded-sm border flex items-center justify-center shrink-0 ${isOn ? 'bg-brand-blue border-brand-blue' : 'border-current opacity-40'}`}>
+                                            {isOn && <CheckCircle2 size={7} className="text-white" />}
+                                          </div>
+                                          <span className="truncate">{skill.label}</span>
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                  {(enabledSkills[activeDept]?.length ?? 0) > 0 && (
+                                    <p className="text-[8px] text-brand-blue mt-1.5 font-semibold">
+                                      {enabledSkills[activeDept].length} skill active → sẽ thêm rules vào system prompt khi run
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Preview of active config */}
+                              {(agentBriefs[activeDept]?.trim() || (enabledSkills[activeDept]?.length ?? 0) > 0) && (
+                                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.04] p-3">
+                                  <p className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1.5">Setup active</p>
+                                  {agentBriefs[activeDept]?.trim() && (
+                                    <p className="text-[9px] text-slate-500 dark:text-[#888]">📋 Brief: {agentBriefs[activeDept].slice(0, 80)}{agentBriefs[activeDept].length > 80 ? '…' : ''}</p>
+                                  )}
+                                  {(enabledSkills[activeDept]?.length ?? 0) > 0 && (
+                                    <p className="text-[9px] text-slate-500 dark:text-[#888] mt-0.5">
+                                      ⚡ Skills: {(enabledSkills[activeDept] ?? []).map(sid => DEPT_SKILLS[activeDept]?.find(s => s.id === sid)?.label).filter(Boolean).join(', ')}
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -2314,6 +2697,423 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             </div>
           )}
 
+          {/* ── CANVAS VIEW ── */}
+          {viewMode === 'canvas' && (() => {
+            const deptNodes = DEPARTMENTS.filter(d => d.tier === 'department');
+            const ceoNode = canvasNodes.find(n => n.id === 'ceo')!;
+            const NODE_W = 152;
+            const NODE_H = 100;
+            const CANVAS_H = 560;
+
+            const getNodeCenter = (id: string) => {
+              const n = canvasNodes.find(x => x.id === id);
+              if (!n) return { x: 0, y: 0 };
+              return { x: n.x + NODE_W / 2, y: n.y + NODE_H / 2 };
+            };
+
+            const reportCenter = { x: (CANVAS_INITIAL_POSITIONS.report.x) + NODE_W / 2, y: CANVAS_INITIAL_POSITIONS.report.y + 56 };
+
+            const statusColor = (s: CanvasNodeState['status']) => {
+              if (s === 'running') return '#0090ff';
+              if (s === 'done')    return '#10b981';
+              if (s === 'error')   return '#ef4444';
+              return '#334155';
+            };
+
+            return (
+              <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+                <div className="max-w-4xl mx-auto space-y-4">
+
+                  {/* Header */}
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <div>
+                      <h3 className="text-[15px] font-bold text-slate-800 dark:text-white/90 flex items-center gap-2">
+                        <Workflow size={15} className="text-brand-blue" /> Multi-Agent Canvas
+                      </h3>
+                      <p className="text-[11px] text-slate-400 dark:text-[#555] mt-0.5">Run tất cả agents song song — CEO tổng hợp executive summary</p>
+                    </div>
+                    {isCanvasRunning && (
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[10px] font-bold">
+                        <Loader2 size={10} className="animate-spin" /> Running…
+                      </div>
+                    )}
+                    {canvasReport.status === 'done' && !isCanvasRunning && (
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
+                        <CheckCircle2 size={10} /> Flow completed
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Prompt input */}
+                  <div className="flex gap-2">
+                    <textarea
+                      value={canvasPrompt}
+                      onChange={e => setCanvasPrompt(e.target.value)}
+                      onKeyDown={e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); runCanvasFlow(); } }}
+                      placeholder="Mô tả brief / mục tiêu cho toàn bộ org… VD: Lên kế hoạch ra mắt sản phẩm mới trong Q2, target SMB Việt Nam"
+                      rows={2}
+                      disabled={isCanvasRunning}
+                      className="flex-1 text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors disabled:opacity-50"
+                    />
+                    <motion.button
+                      onClick={runCanvasFlow}
+                      disabled={isCanvasRunning || !canvasPrompt.trim()}
+                      whileTap={{ scale: 0.97 }}
+                      className="px-5 rounded-xl bg-gradient-to-r from-brand-blue to-blue-500 text-white text-[11px] font-bold uppercase tracking-widest shadow-md shadow-brand-blue/20 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0"
+                    >
+                      {isCanvasRunning ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} />}
+                      {isCanvasRunning ? 'Running' : 'Run All'}
+                    </motion.button>
+                    {isCanvasRunning && (
+                      <motion.button
+                        onClick={() => canvasAbortRef.current?.abort()}
+                        whileTap={{ scale: 0.97 }}
+                        className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-[11px] font-bold flex items-center gap-1.5 shrink-0 hover:bg-red-500/20 transition-colors"
+                      >
+                        <div className="w-2.5 h-2.5 rounded-sm bg-red-500" />
+                        Stop All
+                      </motion.button>
+                    )}
+                  </div>
+
+                  {/* Canvas area — desktop drag canvas OR mobile list fallback */}
+                  {isMobile ? (
+                    /* ── Mobile list view ── */
+                    <div className="space-y-2">
+                      <p className="text-[9px] text-slate-400 dark:text-[#555] uppercase tracking-widest font-bold">Agents</p>
+                      {/* CEO */}
+                      {(() => {
+                        const ceoDept = DEPARTMENTS.find(d => d.id === 'ceo')!;
+                        const ceoNodeM = canvasNodes.find(n => n.id === 'ceo');
+                        const CIcon = ceoDept.icon;
+                        return (
+                          <div className="rounded-xl border-2 border-brand-blue/30 bg-white dark:bg-[#0d0d0f] shadow-sm overflow-hidden">
+                            <div className="flex items-center gap-2 px-3 py-2 bg-brand-blue/[0.06]">
+                              <CIcon size={11} className="text-brand-blue shrink-0" />
+                              <span className="text-[10px] font-bold text-brand-blue">{ceoDept.label}</span>
+                              <span className="ml-auto text-[8px] text-slate-400">Orchestrator</span>
+                            </div>
+                            {ceoNodeM?.output && (
+                              <div className="px-3 py-2 text-[9px] text-slate-500 dark:text-[#888]">
+                                {ceoNodeM.output.slice(0, 120)}…
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+                      {/* Dept nodes */}
+                      {deptNodes.map(d => {
+                        const n = canvasNodes.find(x => x.id === d.id);
+                        const DIcon = d.icon;
+                        return (
+                          <div
+                            key={d.id}
+                            className="rounded-xl border bg-white dark:bg-[#0d0d0f] shadow-sm overflow-hidden transition-all"
+                            style={{ borderColor: n?.status === 'running' ? d.color : n?.status === 'done' ? '#10b981' : n?.status === 'error' ? '#ef4444' : 'rgba(0,0,0,0.06)' }}
+                          >
+                            <div className="flex items-center gap-2 px-3 py-2" style={{ backgroundColor: `${d.color}0d` }}>
+                              <DIcon size={10} style={{ color: d.color }} className="shrink-0" />
+                              <span className="text-[10px] font-bold" style={{ color: d.color }}>{d.label.replace(' Agent', '').replace(' AI', '')}</span>
+                              <div className="ml-auto shrink-0">
+                                {n?.status === 'running' && <Loader2 size={9} className="animate-spin text-brand-blue" />}
+                                {n?.status === 'done'    && <CheckCircle2 size={9} className="text-emerald-500" />}
+                                {n?.status === 'error'   && <AlertCircle size={9} className="text-red-400" />}
+                                {(!n || n.status === 'idle') && <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#444]" />}
+                              </div>
+                            </div>
+                            {n?.output && (
+                              <div className="px-3 py-2 text-[9px] text-slate-500 dark:text-[#888] line-clamp-3">
+                                {n.output.slice(0, 120)}{n.output.length > 120 ? '…' : ''}
+                              </div>
+                            )}
+                            {!n?.output && (
+                              <div className="px-3 py-1.5 text-[9px] text-slate-300 dark:text-[#555] italic">{d.tasks[0]}</div>
+                            )}
+                          </div>
+                        );
+                      })}
+                      {/* Report summary */}
+                      <div
+                        className="rounded-xl border bg-white dark:bg-[#0d0d0f] shadow-sm overflow-hidden transition-all"
+                        style={{ borderColor: canvasReport.status === 'running' ? '#8b5cf6' : canvasReport.status === 'done' ? '#10b981' : 'rgba(0,0,0,0.06)' }}
+                      >
+                        <div className="flex items-center gap-2 px-3 py-2 bg-purple-500/[0.06]">
+                          <Network size={10} className="text-purple-500 shrink-0" />
+                          <span className="text-[10px] font-bold text-purple-500">CEO Executive Summary</span>
+                          {canvasReport.status === 'running' && <Loader2 size={9} className="animate-spin text-purple-400 ml-auto" />}
+                          {canvasReport.status === 'done'    && <CheckCircle2 size={9} className="text-emerald-500 ml-auto" />}
+                          {canvasReport.status === 'idle'    && <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#444] ml-auto" />}
+                        </div>
+                        <div className="px-3 py-2 text-[9px] text-slate-500 dark:text-[#888]">
+                          {canvasReport.output ? canvasReport.output.slice(0, 140) + (canvasReport.output.length > 140 ? '…' : '') : <span className="italic text-slate-300 dark:text-[#555]">Chờ tất cả departments…</span>}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                  /* ── Desktop drag canvas ── */
+                  <div
+                    className="relative rounded-2xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50/80 dark:bg-white/[0.015] overflow-hidden select-none"
+                    style={{ height: CANVAS_H }}
+                    onMouseMove={e => {
+                      if (!dragNode) return;
+                      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                      const x = Math.max(0, Math.min(e.clientX - rect.left - dragOffset.current.x, rect.width - NODE_W));
+                      const y = Math.max(0, Math.min(e.clientY - rect.top - dragOffset.current.y, CANVAS_H - NODE_H));
+                      setCanvasNodes(prev => prev.map(n => n.id === dragNode ? { ...n, x, y } : n));
+                    }}
+                    onMouseUp={() => {
+                      // P1: Persist node positions on drag end
+                      if (dragNode) {
+                        setCanvasNodes(prev => {
+                          try { localStorage.setItem(STORAGE_KEY + '_canvas_nodes', JSON.stringify(prev)); } catch { /* ignore */ }
+                          return prev;
+                        });
+                      }
+                      setDragNode(null);
+                    }}
+                    onMouseLeave={() => setDragNode(null)}
+                  >
+                    {/* Grid dots */}
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30 dark:opacity-10" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <pattern id="canvas-grid" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+                          <circle cx="1" cy="1" r="1" fill="#94a3b8" />
+                        </pattern>
+                      </defs>
+                      <rect width="100%" height="100%" fill="url(#canvas-grid)" />
+                    </svg>
+
+                    {/* SVG arrows */}
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        {(['idle','running','done','error'] as const).map(s => (
+                          <marker key={s} id={`arrow-${s}`} markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                            <path d="M0,0 L0,6 L8,3 z" fill={statusColor(s)} />
+                          </marker>
+                        ))}
+                      </defs>
+                      {/* CEO → dept arrows */}
+                      {deptNodes.map(d => {
+                        const from = ceoNode ? getNodeCenter('ceo') : { x: 0, y: 0 };
+                        const to   = getNodeCenter(d.id);
+                        const n    = canvasNodes.find(x => x.id === d.id);
+                        const s    = n?.status ?? 'idle';
+                        return (
+                          <line
+                            key={`ceo-${d.id}`}
+                            x1={from.x} y1={from.y + NODE_H / 2 - 8}
+                            x2={to.x}   y2={to.y - NODE_H / 2 + 8}
+                            stroke={statusColor(s)}
+                            strokeWidth="1.5"
+                            strokeDasharray={s === 'idle' ? '4 4' : 'none'}
+                            markerEnd={`url(#arrow-${s})`}
+                            opacity={0.7}
+                          />
+                        );
+                      })}
+                      {/* dept → report arrows */}
+                      {deptNodes.map(d => {
+                        const from = getNodeCenter(d.id);
+                        const n    = canvasNodes.find(x => x.id === d.id);
+                        const s    = n?.status ?? 'idle';
+                        return (
+                          <line
+                            key={`${d.id}-report`}
+                            x1={from.x} y1={from.y + NODE_H / 2 - 8}
+                            x2={reportCenter.x} y2={reportCenter.y - 20}
+                            stroke={statusColor(s)}
+                            strokeWidth="1.5"
+                            strokeDasharray={s === 'idle' ? '4 4' : 'none'}
+                            markerEnd={`url(#arrow-${s})`}
+                            opacity={0.5}
+                          />
+                        );
+                      })}
+                    </svg>
+
+                    {/* CEO node */}
+                    {ceoNode && (() => {
+                      const ceoDept = DEPARTMENTS.find(d => d.id === 'ceo')!;
+                      return (
+                        <div
+                          className="absolute cursor-grab active:cursor-grabbing"
+                          style={{ left: ceoNode.x, top: ceoNode.y, width: NODE_W, zIndex: dragNode === 'ceo' ? 10 : 1 }}
+                          onMouseDown={e => {
+                            e.preventDefault();
+                            dragOffset.current = { x: e.clientX - (e.currentTarget.getBoundingClientRect().left), y: e.clientY - (e.currentTarget.getBoundingClientRect().top) };
+                            setDragNode('ceo');
+                          }}
+                        >
+                          <div className="rounded-2xl border-2 border-brand-blue/40 bg-white dark:bg-[#0d0d0f] shadow-lg shadow-brand-blue/10 overflow-hidden" style={{ height: NODE_H }}>
+                            <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5 border-b border-black/[0.05] dark:border-white/[0.05]" style={{ backgroundColor: `${ceoDept.color}15` }}>
+                              <ceoDept.icon size={11} style={{ color: ceoDept.color }} className="shrink-0" />
+                              <span className="text-[10px] font-bold truncate" style={{ color: ceoDept.color }}>{ceoDept.label}</span>
+                              <div className="ml-auto w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: statusColor(ceoNode.status) }} />
+                            </div>
+                            <div className="px-3 py-1.5">
+                              <p className="text-[8px] text-slate-400 dark:text-[#555] line-clamp-2 leading-relaxed">
+                                {ceoNode.status === 'idle' ? 'Tổng hợp executive summary từ tất cả departments' : ceoNode.output.slice(0, 80) || '…'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Dept nodes */}
+                    {deptNodes.map(d => {
+                      const n = canvasNodes.find(x => x.id === d.id);
+                      if (!n) return null;
+                      const DIcon = d.icon;
+                      return (
+                        <div
+                          key={d.id}
+                          className="absolute cursor-grab active:cursor-grabbing"
+                          style={{ left: n.x, top: n.y, width: NODE_W, zIndex: dragNode === d.id ? 10 : 1 }}
+                          onMouseDown={e => {
+                            e.preventDefault();
+                            dragOffset.current = { x: e.clientX - (e.currentTarget.getBoundingClientRect().left), y: e.clientY - (e.currentTarget.getBoundingClientRect().top) };
+                            setDragNode(d.id);
+                          }}
+                        >
+                          <div
+                            className="rounded-2xl border bg-white dark:bg-[#0d0d0f] shadow-md overflow-hidden transition-shadow"
+                            style={{
+                              height: NODE_H,
+                              borderColor: n.status === 'running' ? d.color : n.status === 'done' ? '#10b981' : n.status === 'error' ? '#ef4444' : 'rgba(0,0,0,0.06)',
+                              boxShadow: n.status === 'running' ? `0 0 0 2px ${d.color}30` : undefined,
+                            }}
+                          >
+                            <div className="flex items-center gap-2 px-2.5 pt-2 pb-1.5 border-b border-black/[0.04] dark:border-white/[0.04]" style={{ backgroundColor: `${d.color}10` }}>
+                              <DIcon size={10} style={{ color: d.color }} className="shrink-0" />
+                              <span className="text-[9px] font-bold truncate" style={{ color: d.color }}>{d.label.replace(' Agent', '').replace(' AI', '')}</span>
+                              <div className="ml-auto shrink-0">
+                                {n.status === 'running' && <Loader2 size={9} className="animate-spin text-brand-blue" />}
+                                {n.status === 'done'    && <CheckCircle2 size={9} className="text-emerald-500" />}
+                                {n.status === 'error'   && <AlertCircle size={9} className="text-red-400" />}
+                                {n.status === 'idle'    && <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#444]" />}
+                              </div>
+                            </div>
+                            <div className="px-2.5 py-1.5">
+                              <p className="text-[8px] text-slate-400 dark:text-[#666] line-clamp-3 leading-relaxed">
+                                {n.status === 'idle' ? d.tasks[0] : (n.output.slice(0, 100) || '…')}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Report node — pinned at bottom center */}
+                    <div
+                      className="absolute"
+                      style={{
+                        left: CANVAS_INITIAL_POSITIONS.report.x,
+                        top: CANVAS_INITIAL_POSITIONS.report.y,
+                        width: NODE_W * 2 + 16,
+                      }}
+                    >
+                      <div
+                        className="rounded-2xl border bg-white dark:bg-[#0d0d0f] shadow-lg overflow-hidden transition-all"
+                        style={{
+                          borderColor: canvasReport.status === 'running' ? '#8b5cf6' : canvasReport.status === 'done' ? '#10b981' : 'rgba(0,0,0,0.06)',
+                          boxShadow: canvasReport.status === 'running' ? '0 0 0 2px #8b5cf630' : undefined,
+                        }}
+                      >
+                        <div className="flex items-center gap-2 px-3 py-2 border-b border-black/[0.04] dark:border-white/[0.04] bg-purple-500/[0.06]">
+                          <Network size={10} className="text-purple-500 shrink-0" />
+                          <span className="text-[9px] font-bold text-purple-500">CEO Executive Summary</span>
+                          <div className="ml-auto shrink-0">
+                            {canvasReport.status === 'running' && <Loader2 size={9} className="animate-spin text-purple-500" />}
+                            {canvasReport.status === 'done'    && <CheckCircle2 size={9} className="text-emerald-500" />}
+                            {canvasReport.status === 'idle'    && <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#444]" />}
+                          </div>
+                        </div>
+                        <div className="px-3 py-2">
+                          {canvasReport.output ? (
+                            <p className="text-[8px] text-slate-500 dark:text-[#888] line-clamp-3 leading-relaxed">{canvasReport.output.slice(0, 160)}{canvasReport.output.length > 160 ? '…' : ''}</p>
+                          ) : (
+                            <p className="text-[8px] text-slate-300 dark:text-[#555] italic">Chờ tất cả departments hoàn thành…</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  )} {/* end isMobile ternary */}
+
+                  {/* Full report output */}
+                  {canvasReport.output && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="rounded-2xl border border-purple-500/20 bg-white dark:bg-[#0d0d0f] shadow-md overflow-hidden"
+                    >
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-purple-500/10 bg-purple-500/[0.04]">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-purple-400" />
+                          <span className="text-[10px] font-bold text-purple-500 uppercase tracking-widest">CEO Executive Summary</span>
+                          {canvasReport.status === 'running' && <Loader2 size={9} className="animate-spin text-purple-400" />}
+                          {canvasReport.status === 'done' && <CheckCircle2 size={10} className="text-emerald-500" />}
+                        </div>
+                        {canvasReport.status === 'done' && (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => { navigator.clipboard.writeText(canvasReport.output); showToast('Copied!', 'success'); }}
+                              className="text-[9px] text-purple-400/60 hover:text-purple-400 transition-colors flex items-center gap-1"
+                            >
+                              <Copy size={9} /> Copy
+                            </button>
+                            <button
+                              onClick={() => downloadOutput(canvasReport.output, `executive-summary-${new Date().toISOString().slice(0,10)}`)}
+                              className="text-[9px] text-purple-400/60 hover:text-purple-400 transition-colors flex items-center gap-1"
+                            >
+                              <Download size={9} /> .md
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <StreamingMarkdownOutput content={canvasReport.output} streaming={canvasReport.status === 'running'} />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Dept output cards */}
+                  {canvasNodes.some(n => n.output) && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {deptNodes.map(d => {
+                        const n = canvasNodes.find(x => x.id === d.id);
+                        if (!n?.output) return null;
+                        const DIcon = d.icon;
+                        return (
+                          <motion.div
+                            key={d.id}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="rounded-2xl border bg-white dark:bg-[#0d0d0f] overflow-hidden shadow-sm"
+                            style={{ borderColor: n.status === 'done' ? '#10b98130' : `${d.color}25` }}
+                          >
+                            <div className="flex items-center gap-2 px-3 py-2 border-b border-black/[0.04] dark:border-white/[0.04]" style={{ backgroundColor: `${d.color}08` }}>
+                              <DIcon size={10} style={{ color: d.color }} />
+                              <span className="text-[10px] font-bold" style={{ color: d.color }}>{d.label}</span>
+                              {n.status === 'running' && <Loader2 size={9} className="animate-spin ml-auto" style={{ color: d.color }} />}
+                              {n.status === 'done'    && <CheckCircle2 size={9} className="text-emerald-500 ml-auto" />}
+                              {n.status === 'error'   && <AlertCircle size={9} className="text-red-400 ml-auto" />}
+                            </div>
+                            <div className="p-3 max-h-48 overflow-y-auto">
+                              <StreamingMarkdownOutput content={n.output} streaming={n.streaming} />
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                </div>
+              </div>
+            );
+          })()}
+
         </div>
       </div>
 
@@ -2423,6 +3223,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   { key: 'S', desc: 'Switch to Studio' },
                   { key: 'H', desc: 'Switch to History' },
                   { key: 'A', desc: 'Switch to Analytics' },
+                  { key: 'C', desc: 'Switch to Canvas' },
                   { key: '⌘↵', desc: 'Run agent' },
                   { key: 'Esc', desc: 'Close dialogs' },
                 ].map(s => (
