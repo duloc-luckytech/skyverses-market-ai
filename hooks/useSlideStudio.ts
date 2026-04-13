@@ -29,6 +29,8 @@ export interface Slide {
   textColor: 'light' | 'dark';
   aiSuggestions: AISuggestion[];
   isSuggestLoading: boolean;
+  bgPrompt?: string;
+  slideRefImages?: string[];
 }
 
 export interface StylePreset {
@@ -254,7 +256,14 @@ export const useSlideStudio = () => {
     updateSlide(slideId, { bgStatus: 'generating', bgJobId: null });
 
     try {
-      const prompt = buildBgPrompt(slide, stylePreset, refImages, { slogan: brandSlogan, description: brandDescription });
+      const prompt = slide.bgPrompt?.trim()
+        ? slide.bgPrompt.trim()
+        : buildBgPrompt(
+            slide,
+            stylePreset,
+            [...(refImages ?? []), ...(slide.slideRefImages ?? [])],
+            { slogan: brandSlogan, description: brandDescription },
+          );
       const res = await imagesApi.createJob({
         type: 'text_to_image',
         input: { prompt },

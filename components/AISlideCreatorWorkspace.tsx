@@ -410,6 +410,9 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
             onAddSlide={s.addSlide}
             onRemoveSlide={s.removeSlide}
             onMoveSlide={s.moveSlide}
+            onGenSlideBg={s.genSlideBg}
+            onAISuggest={s.fetchAISuggestions}
+            onUpdateSlide={s.updateSlide}
           />
         )}
 
