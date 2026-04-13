@@ -97,10 +97,12 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, bott
   const placeholderClass = slide.textColor === 'light' ? 'placeholder-white/30' : 'placeholder-slate-400';
 
   return (
-    <div className="flex-1 flex flex-col bg-slate-100 dark:bg-[#0d0d0f] overflow-hidden p-4 pb-0">
-      {/* Canvas frame */}
-      <div className="flex-1 flex items-center justify-center min-h-0">
-        <div className="w-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.04]">
+    <div className="flex-1 flex flex-col bg-slate-100 dark:bg-[#0d0d0f] overflow-hidden min-h-0">
+      {/* Scrollable area: canvas frame + bottom bar stacked from top */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="flex flex-col items-center p-4 pb-3 gap-0">
+        {/* Canvas frame */}
+        <div className="w-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.04] shrink-0">
 
           {/* Background image */}
           <AnimatePresence mode="wait">
@@ -231,10 +233,11 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, bott
             )}
           </div>
         </div>
-      </div>
 
-      {/* Bottom bar — sits directly below the canvas frame */}
-      {bottomBar}
+        {/* Bottom bar — sits directly below the canvas frame */}
+        {bottomBar}
+        </div>
+      </div>
     </div>
   );
 };
