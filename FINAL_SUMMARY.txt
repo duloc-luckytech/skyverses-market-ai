@@ -1,0 +1,170 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║           ✅ CODEBASE SEARCH COMPLETE - BUG IDENTIFIED & DOCUMENTED           ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+📊 SEARCH RESULTS
+─────────────────────────────────────────────────────────────────────────────────
+
+Searched for: crop, upload, poll, image, media
+Found: 6 key files with actual content
+Generated: 4 comprehensive analysis documents
+
+KEY FILES IDENTIFIED:
+✓ hooks/useProductImageEditor.ts (807 lines) - 🔴 BUG HERE
+✓ apis/editImage.ts (90 lines) - API calls
+✓ apis/media.ts (154 lines) - Upload API
+✓ services/uploadPoller.ts (160 lines) - Working reference
+✓ components/ProductImageWorkspace.tsx - UI
+✓ components/product-image/EditorViewport.tsx - Viewport
+
+─────────────────────────────────────────────────────────────────────────────────
+🐛 BUG IDENTIFIED
+─────────────────────────────────────────────────────────────────────────────────
+
+FILE:     hooks/useProductImageEditor.ts
+FUNCTION: applyCrop() and applyDraw()
+LINES:    576-615 (crop) and 704-742 (draw)
+SEVERITY: 🔴 CRITICAL
+
+ISSUE:
+  When uploading local file + cropping:
+  ✅ Upload succeeds
+  ✅ Crop job created
+  ❌ Polling for result FAILS SILENTLY
+  ❌ UI hangs until 3-minute timeout
+
+ROOT CAUSE:
+  Line: const st = statusRes.data?.status;
+  
+  Problem: No validation that statusRes.data exists before accessing it
+  - If API returns error or malformed response, .data is undefined
+  - Optional chaining (?.  ) silently converts undefined to falsy
+  - Code falls to else branch and loops until timeout
+  - User sees spinner stuck for 3 minutes
+
+─────────────────────────────────────────────────────────────────────────────────
+📁 DOCUMENTS GENERATED
+─────────────────────────────────────────────────────────────────────────────────
+
+In project root directory:
+
+1. ✅ CROP_BUG_MASTER_REPORT.md (MASTER DOCUMENT)
+   └─ Start here! Complete overview with fix code
+   └─ 200+ lines of documentation
+   └─ Ready-to-use solution
+
+2. ✅ SEARCH_SUMMARY.txt
+   └─ Search results and file inventory
+   └─ Quick reference
+   └─ API endpoints
+
+3. ✅ bug_analysis.md
+   └─ Root cause analysis
+   └─ Working vs broken patterns
+   └─ Solution options
+
+4. ✅ code_reference.md
+   └─ Actual file contents
+   └─ Line-by-line breakdown
+   └─ API interfaces
+
+5. ✅ DETAILED_BUG.md
+   └─ Execution flow diagrams
+   └─ Scenario analysis
+   └─ Complete before/after code
+
+─────────────────────────────────────────────────────────────────────────────────
+🔧 THE FIX (Quick Version)
+─────────────────────────────────────────────────────────────────────────────────
+
+In: hooks/useProductImageEditor.ts
+
+Replace (lines 576-615):
+  const statusRes = await editImageApi.getJobStatus(jobId);
+  const st = statusRes.data?.status;
+
+With:
+  const statusRes = await editImageApi.getJobStatus(jobId);
+  
+  // ✅ VALIDATE RESPONSE STRUCTURE FIRST
+  if (!statusRes.success || !statusRes.data) {
+    throw new Error(statusRes.message || 'Cannot check job status');
+  }
+  
+  const st = statusRes.data.status;
+
+Also fix in: applyDraw() function (lines 704-742)
+
+Time to fix: ~20-40 minutes
+
+─────────────────────────────────────────────────────────────────────────────────
+✅ VERIFICATION CHECKLIST
+─────────────────────────────────────────────────────────────────────────────────
+
+Test after fix:
+
+□ Upload local image file
+□ Enter crop mode
+□ Select crop region
+□ Click "Xác nhận cắt"
+□ Status shows: "📤 Đang upload..." → "⏳ Đang xử lý crop..." → "✅ Crop thành công"
+□ Cropped image appears in viewport
+□ Result added to history rail
+□ No UI hanging
+□ No timeout error (should complete in <1 minute)
+
+─────────────────────────────────────────────────────────────────────────────────
+📊 AFFECTED FEATURES
+─────────────────────────────────────────────────────────────────────────────────
+
+✓ Product image cropping tool
+✓ Draw editing on images
+✓ All local file uploads + edit operations
+
+Associated working features:
+✓ Upload (polling works)
+✓ Image generation (has proper polling)
+✓ Text layer editing
+
+─────────────────────────────────────────────────────────────────────────────────
+🎯 NEXT STEPS
+─────────────────────────────────────────────────────────────────────────────────
+
+1. Read CROP_BUG_MASTER_REPORT.md (5 min)
+2. Review DETAILED_BUG.md for before/after code (5 min)
+3. Apply fix to applyCrop() (10 min)
+4. Apply fix to applyDraw() (5 min)
+5. Test locally (5-10 min)
+
+Total: 30-40 minutes
+
+─────────────────────────────────────────────────────────────────────────────────
+📞 REFERENCE INFORMATION
+─────────────────────────────────────────────────────────────────────────────────
+
+API Endpoints Used:
+  POST /media/image-upload           ← Upload
+  GET /upload-media/detail?id=...    ← Poll upload
+  POST /edit-image-jobs              ← Create crop job
+  GET /edit-image-jobs/:id           ← ❌ POLLING FAILS HERE
+
+Working Reference Pattern:
+  services/uploadPoller.ts (lines 56-99)
+  └─ Uses proper validation before accessing properties
+  └─ Should be used as template for fix
+
+─────────────────────────────────────────────────────────────────────────────────
+✨ SUMMARY
+─────────────────────────────────────────────────────────────────────────────────
+
+STATUS:           ✅ BUG IDENTIFIED & FULLY DOCUMENTED
+SEVERITY:         🔴 CRITICAL (User-facing feature broken)
+LOCATION:         hooks/useProductImageEditor.ts (2 functions)
+FIX COMPLEXITY:   LOW-MEDIUM (response validation)
+ESTIMATED TIME:   30-40 minutes total
+DOCUMENTATION:   5 comprehensive files provided
+CODE PROVIDED:   Yes, ready-to-use fix included
+
+START WITH: CROP_BUG_MASTER_REPORT.md

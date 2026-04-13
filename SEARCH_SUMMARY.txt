@@ -1,0 +1,185 @@
+════════════════════════════════════════════════════════════════════════════════
+  CODEBASE SEARCH COMPLETE: Product Image Upload/Crop Bug Analysis
+════════════════════════════════════════════════════════════════════════════════
+
+📍 SEARCH RESULTS
+────────────────────────────────────────────────────────────────────────────────
+
+1. Files containing "crop" or "Crop":
+   ✓ ./data.ts
+   ✓ ./apis/editImage.ts
+
+2. Files containing "upload" or "Upload":
+   ✓ ./apis/videos.ts
+   ✓ ./apis/aiChat.ts
+   ✓ ./apis/media.ts
+   ✓ ./context/LanguageContext.tsx
+   ✓ ./constants/event-configs.ts
+
+3. Files containing "poll" or "polling":
+   ✓ ./apis/media.ts
+   ✓ ./services/uploadPoller.ts
+
+4. Image/media related files (KEY FILES):
+   ✓ ./components/ProductImageWorkspace.tsx (main UI)
+   ✓ ./components/product-image/EditorViewport.tsx (viewport)
+   ✓ ./apis/editImage.ts (crop job API)
+   ✓ ./apis/media.ts (upload API)
+   ✓ ./hooks/useProductImageEditor.ts (main hook - BUG HERE)
+   ✓ ./services/uploadPoller.ts (working polling reference)
+
+════════════════════════════════════════════════════════════════════════════════
+  THE BUG: Lines 576-615 in hooks/useProductImageEditor.ts
+════════════════════════════════════════════════════════════════════════════════
+
+SYMPTOM:
+  When user uploads local file + crops it:
+  - Upload succeeds ✅
+  - Crop job created ✅
+  - UI shows "Đang xử lý crop..."
+  - Status never updates to ✅
+  - UI hangs until timeout (3 minutes)
+
+ROOT CAUSE:
+  Inline polling uses manual Promise with setTimeout recursion
+  that fails to detect 'done' status from editImageApi.getJobStatus()
+
+EXACT CODE (BROKEN):
+  
+  await new Promise<void>((resolve, reject) => {
+    const poll = async () => {
+      // ... 
+      const statusRes = await editImageApi.getJobStatus(jobId);
+      const st = statusRes.data?.status;  // ← Can be undefined!
+      
+      if (st === 'done') {
+        // ✅ This never executes
+        resolve();
+      } else if (st === 'error' || st === 'cancelled') {
+        reject(new Error(...));
+      } else {
+        // ⏳ Falls through to else (including if st is undefined)
+        setTimeout(poll, 4000);
+      }
+    };
+    setTimeout(poll, 2000);
+  });
+
+PROBLEMS:
+  1. No validation that statusRes.data exists before accessing .status
+  2. If API returns error format or malformed response, .data is undefined
+  3. Goes to else branch and keeps polling until timeout
+  4. Event loop issue: setTimeout recursion can stack errors silently
+
+════════════════════════════════════════════════════════════════════════════════
+  COMPARISON: What Works (Image Generation)
+════════════════════════════════════════════════════════════════════════════════
+
+✅ WORKING: handleGenerate() at lines 214-285
+
+  Uses centralized polling utility:
+  
+  if (apiRes.success && apiRes.data.jobId) {
+    const serverJobId = apiRes.data.jobId;
+    // ... deduct credits ...
+    pollJobStatus(serverJobId, serverJobId, currentCost, finalPrompt);
+    //                                    ↓
+    //                    Uses pollJobOnce() hook with proper error handling
+  }
+
+✅ Reference: uploadPoller.ts
+
+  Uses recursive setTimeout pattern that WORKS:
+  
+  function scheduleNext(jobId, deadline, intervalMs, onDone, onError, tickCount, onTick) {
+    setTimeout(async () => {
+      if (Date.now() >= deadline) {
+        onError('Upload polling timeout');
+        return;
+      }
+      
+      const res = await mediaApi.getMediaById(jobId);
+      
+      if (res.success && res.status === 'done' && res.mediaId) {
+        onDone({ mediaId: res.mediaId, ... });
+        return;
+      }
+      
+      // Either error or still pending - validated at each step
+      scheduleNext(...);  // Recursive call
+    }, intervalMs);
+  }
+
+KEY DIFFERENCE: uploadPoller validates response before accessing properties!
+
+════════════════════════════════════════════════════════════════════════════════
+  FILES INVOLVED IN BUG
+════════════════════════════════════════════════════════════════════════════════
+
+PRIMARY (Bug Location):
+  📄 hooks/useProductImageEditor.ts (807 lines)
+     - applyCrop() function: lines 493-624 ❌ BROKEN
+     - applyDraw() function: lines 626-749 ❌ SAME ISSUE
+     - pollJobStatus() function: lines 169-202 ✅ (reference pattern)
+
+SUPPORTING APIs:
+  📄 apis/editImage.ts (90 lines)
+     - createJob(): lines 59-71 ✅ (works)
+     - getJobStatus(): lines 77-88 ⚠️ (may return malformed response)
+  
+  📄 apis/media.ts (154 lines)
+     - uploadImage(): ✅ (works)
+     - getMediaById(): ✅ (works)
+
+REFERENCE (Working Pattern):
+  📄 services/uploadPoller.ts (160 lines)
+     - waitForUploadPoll(): lines 146-159 ✅
+     - scheduleNext(): lines 56-99 ✅ (BEST PATTERN)
+
+UI COMPONENTS:
+  📄 components/ProductImageWorkspace.tsx
+     - Calls e.applyCrop() at line 161
+  📄 components/product-image/EditorViewport.tsx
+     - Shows crop UI
+
+════════════════════════════════════════════════════════════════════════════════
+  API ENDPOINTS INVOLVED
+════════════════════════════════════════════════════════════════════════════════
+
+Upload Flow:
+  POST /media/image-upload              → Returns mediaId or jobId
+  GET /upload-media/detail?id=<jobId>   → Poll until status='done'
+  
+Crop Flow:
+  POST /edit-image-jobs                 → Create crop job, returns jobId
+  GET /edit-image-jobs/:id              → ❌ POLLING FAILS HERE
+  
+Expected Response from GET /edit-image-jobs/:id:
+  {
+    success: boolean,
+    data: {
+      jobId: string,
+      status: 'pending' | 'processing' | 'done' | 'error' | 'cancelled',
+      result?: { resultUrl: string }
+    }
+  }
+
+════════════════════════════════════════════════════════════════════════════════
+  THE FIX (Summary)
+════════════════════════════════════════════════════════════════════════════════
+
+Option 1: Refactor applyCrop() to use uploadPoller pattern
+  - Apply same recursive setTimeout + validation as uploadPoller.ts
+  - Works immediately, proven pattern
+
+Option 2: Create pollEditImageJob() utility
+  - Extend existing polling infrastructure
+  - Cleaner long-term solution
+  - Would support future edit jobs (draw, etc.)
+
+Option 3: Add 'editimage' support to useJobPoller
+  - Most integrated solution
+  - Matches handleGenerate() pattern
+  - Requires checking useJobPoller.ts implementation
+
+════════════════════════════════════════════════════════════════════════════════

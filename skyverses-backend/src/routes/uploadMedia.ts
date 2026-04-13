@@ -1306,6 +1306,7 @@ router.post("/media/image-upload", authenticate, async (req: any, res) => {
     return res.json({
       success: true,
       imageId: imageRecord._id,
+      jobId: imageRecord._id,   // ← FE polls /upload-media/detail?id=<jobId> to get mediaId
       imageUrl,
       mediaId: null, // Will be filled async by FXFlow worker
       width,
