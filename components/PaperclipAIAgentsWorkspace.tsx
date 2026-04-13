@@ -8,7 +8,7 @@ import {
   ShieldCheck, DollarSign, Zap, Copy, Download, GitBranch,
   Eye, Terminal, TrendingUp, Settings, ChevronUp, Plus,
   ArrowRight, Layers, Workflow, Star, HelpCircle, Share2, Pencil,
-  MessageCircle, Send, User,
+  MessageCircle, Send, User, FolderOpen,
 } from 'lucide-react';
 import { aiChatStreamViaProxy, AI_MODELS, buildSystemMessage } from '../apis/aiCommon';
 import type { ChatMessage } from '../apis/aiCommon';
@@ -18,6 +18,8 @@ import { useToast } from '../context/ToastContext';
 import AISuggestPanel, { StylePreset } from './workspace/AISuggestPanel';
 import OnboardingWizard from './PaperclipAIAgentsWizard';
 import type { WizardResult } from './PaperclipAIAgentsWizard';
+import * as projectsApi from '../apis/paperclipProjects';
+import type { PaperclipProjectSummary, PaperclipProject } from '../apis/paperclipProjects';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -28,6 +30,18 @@ const BRIEF_KEY  = (deptId: string) => `${STORAGE_KEY}_brief_${deptId}`;
 const SKILLS_KEY = (deptId: string) => `${STORAGE_KEY}_skills_${deptId}`;
 const WIZARD_KEY   = 'skyverses_PAPERCLIP-AI-AGENTS_wizard_done';
 const ADVANCED_KEY = 'skyverses_PAPERCLIP-AI-AGENTS_advanced';
+const ACTIVE_PROJECT_KEY = 'skyverses_PAPERCLIP-AI-AGENTS__activeProjectId';
+
+// ─── useDebounce hook ─────────────────────────────────────────────────────────
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debouncedValue;
+}
 
 // Skill presets per department
 const DEPT_SKILLS: Record<string, Array<{ id: string; label: string; rule: string }>> = {
@@ -527,6 +541,132 @@ const FOLLOW_UP_MAP: Record<string, string[]> = {
   ceo: ['Share with leadership', 'Update roadmap', 'Schedule team sync'],
 };
 
+// ─── ProjectSelector ──────────────────────────────────────────────────────────
+
+interface ProjectSelectorProps {
+  projects: PaperclipProjectSummary[];
+  activeProjectId: string | null;
+  isLoading: boolean;
+  newName: string;
+  onNewNameChange: (v: string) => void;
+  onCreate: () => void;
+  onSwitch: (id: string) => void;
+  onDelete: (id: string) => void;
+}
+
+const ProjectSelector: React.FC<ProjectSelectorProps> = ({
+  projects, activeProjectId, isLoading, newName, onNewNameChange, onCreate, onSwitch, onDelete,
+}) => {
+  const [open, setOpen] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setOpen(false);
+        setConfirmDeleteId(null);
+      }
+    };
+    if (open) document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, [open]);
+
+  const active = projects.find(p => p._id === activeProjectId);
+
+  return (
+    <div className="relative" ref={panelRef}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-brand-blue/25 bg-brand-blue/[0.06] text-brand-blue text-[10px] font-bold hover:bg-brand-blue/[0.12] transition-all max-w-[160px]"
+      >
+        {isLoading ? <Loader2 size={11} className="animate-spin shrink-0" /> : <FolderOpen size={11} className="shrink-0" />}
+        <span className="truncate">{active?.name ?? 'Projects'}</span>
+        <ChevronDown size={9} className={`shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.15 }}
+            className="absolute left-0 top-full mt-1.5 z-[200] w-64 bg-white dark:bg-[#111113] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden"
+          >
+            {/* Header */}
+            <div className="px-3 py-2.5 border-b border-black/[0.05] dark:border-white/[0.05]">
+              <p className="text-[9px] font-bold uppercase text-slate-400 tracking-widest">Projects ({projects.length}/20)</p>
+            </div>
+
+            {/* Project list */}
+            <div className="max-h-52 overflow-y-auto">
+              {projects.length === 0 && (
+                <p className="text-[10px] text-slate-400 text-center py-4">Chưa có project nào</p>
+              )}
+              {projects.map(p => (
+                <div
+                  key={p._id}
+                  className={`group flex items-center gap-2 px-3 py-2.5 hover:bg-brand-blue/[0.05] transition-colors cursor-pointer ${p._id === activeProjectId ? 'bg-brand-blue/[0.08]' : ''}`}
+                  onClick={() => { onSwitch(p._id); setOpen(false); setConfirmDeleteId(null); }}
+                >
+                  <FolderOpen size={11} className={p._id === activeProjectId ? 'text-brand-blue' : 'text-slate-400'} />
+                  <span className={`flex-1 text-[11px] font-semibold truncate ${p._id === activeProjectId ? 'text-brand-blue' : 'text-slate-700 dark:text-white/80'}`}>
+                    {p.name}
+                  </span>
+                  {p.isDefault && (
+                    <span className="text-[8px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded-full font-bold shrink-0">default</span>
+                  )}
+                  {confirmDeleteId === p._id ? (
+                    <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                      <button
+                        onClick={() => { onDelete(p._id); setConfirmDeleteId(null); setOpen(false); }}
+                        className="text-[8px] font-bold text-red-500 hover:text-red-600 px-1.5 py-0.5 rounded bg-red-500/10 hover:bg-red-500/20 transition-colors"
+                      >Xoá</button>
+                      <button
+                        onClick={() => setConfirmDeleteId(null)}
+                        className="text-[8px] font-bold text-slate-400 hover:text-slate-600 px-1.5 py-0.5 rounded hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                      >Huỷ</button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={e => { e.stopPropagation(); setConfirmDeleteId(p._id); }}
+                      className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-slate-300 hover:text-red-400 transition-all"
+                    >
+                      <Trash2 size={10} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Create new project */}
+            <div className="px-3 py-2.5 border-t border-black/[0.05] dark:border-white/[0.05] space-y-2">
+              <p className="text-[9px] font-bold uppercase text-slate-400 tracking-widest">Tạo project mới</p>
+              <div className="flex gap-1.5">
+                <input
+                  value={newName}
+                  onChange={e => onNewNameChange(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { onCreate(); setOpen(false); } }}
+                  placeholder="Tên project..."
+                  className="flex-1 text-[11px] bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-lg px-2.5 py-1.5 text-slate-700 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
+                />
+                <button
+                  onClick={() => { onCreate(); setOpen(false); }}
+                  disabled={projects.length >= 20}
+                  className="shrink-0 p-1.5 rounded-lg bg-brand-blue text-white hover:bg-brand-blue/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  <Plus size={12} />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
@@ -619,6 +759,15 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   const [isChatStreaming, setIsChatStreaming]  = useState(false);
   const chatAbortRef                          = useRef<AbortController | null>(null);
   const chatEndRef                            = useRef<HTMLDivElement>(null);
+
+  // ── Project management state ──
+  const [projects, setProjects]               = useState<PaperclipProjectSummary[]>([]);
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(
+    () => { try { return localStorage.getItem(ACTIVE_PROJECT_KEY); } catch { return null; } }
+  );
+  const [isProjectsLoading, setIsProjectsLoading] = useState(false);
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [newProjectName, setNewProjectName]       = useState('');
 
   // Conversation memory per agent — persisted to localStorage
   const [conversationThreads, setConversationThreads] = useState<Record<string, ChatMessage[]>>(() => {
@@ -722,6 +871,29 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   const dept  = DEPARTMENTS.find(d => d.id === activeDept)  ?? DEPARTMENTS[1];
   const model = LLM_MODELS.find(m => m.id === activeModel)  ?? LLM_MODELS[0];
   const budgetPct = Math.min((spentBudget / budgetLimit) * 100, 100);
+
+  // ── applyProjectToState — hydrate all workspace state from a DB project ──
+  const applyProjectToState = useCallback((project: PaperclipProject) => {
+    const briefs: Record<string, string> = {};
+    const skills: Record<string, string[]> = {};
+    project.agentConfigs.forEach(c => {
+      briefs[c.deptId]  = c.brief;
+      skills[c.deptId]  = c.enabledSkills;
+    });
+    setAgentBriefs(prev => ({ ...prev, ...briefs }));
+    setEnabledSkills(prev => ({ ...prev, ...skills }));
+
+    const threads: Record<string, ChatMessage[]> = {};
+    project.conversationThreads.forEach(t => {
+      threads[t.deptId] = t.messages as ChatMessage[];
+    });
+    setConversationThreads(threads);
+
+    setTaskHistory((project.taskHistory ?? []) as unknown as TaskResult[]);
+    setBudgetLimit(project.budgetLimit);
+    setActiveModel(project.activeModel);
+    setActiveDept(project.activeDept);
+  }, []);
 
   // A3: Global keyboard shortcuts
   useEffect(() => {
@@ -837,6 +1009,51 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     });
   }, []);
 
+  // ── Project management handlers ──
+
+  const handleSwitchProject = useCallback(async (id: string) => {
+    if (id === activeProjectId) return;
+    setIsProjectsLoading(true);
+    try {
+      const full = await projectsApi.getProject(id);
+      setActiveProjectId(full._id);
+      try { localStorage.setItem(ACTIVE_PROJECT_KEY, full._id); } catch { /* ignore */ }
+      applyProjectToState(full);
+    } catch {
+      showToast('Không thể tải project', 'error');
+    } finally {
+      setIsProjectsLoading(false);
+    }
+  }, [activeProjectId, applyProjectToState, showToast]);
+
+  const handleCreateProject = useCallback(async () => {
+    const name = newProjectName.trim() || `Project ${projects.length + 1}`;
+    if (projects.length >= 20) { showToast('Tối đa 20 projects', 'error'); return; }
+    setIsCreatingProject(true);
+    try {
+      const created = await projectsApi.createProject(name);
+      setProjects(prev => [...prev, created]);
+      await handleSwitchProject(created._id);
+      setNewProjectName('');
+    } catch {
+      showToast('Tạo project thất bại', 'error');
+    } finally {
+      setIsCreatingProject(false);
+    }
+  }, [newProjectName, projects.length, handleSwitchProject, showToast]);
+
+  const handleDeleteProject = useCallback(async (id: string) => {
+    if (projects.length <= 1) { showToast('Phải có ít nhất 1 project', 'error'); return; }
+    try {
+      await projectsApi.deleteProject(id);
+      const updated = projects.filter(p => p._id !== id);
+      setProjects(updated);
+      if (activeProjectId === id) await handleSwitchProject(updated[0]._id);
+    } catch {
+      showToast('Xoá project thất bại', 'error');
+    }
+  }, [projects, activeProjectId, handleSwitchProject, showToast]);
+
   // Auto-scroll activity feed to top (newest) when new log arrives
   useEffect(() => {
     if (activityFeedRef.current) {
@@ -850,6 +1067,65 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [conversationThreads, activeDept, activeRightTab]);
+
+  // ── Initial project load (authenticated users only) ──
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    setIsProjectsLoading(true);
+    projectsApi.listProjects().then(async list => {
+      setProjects(list);
+      const savedId = (() => { try { return localStorage.getItem(ACTIVE_PROJECT_KEY); } catch { return null; } })();
+      const target = list.find(p => p._id === savedId) ?? list.find(p => p.isDefault) ?? list[0];
+      if (target) {
+        const full = await projectsApi.getProject(target._id);
+        setActiveProjectId(full._id);
+        try { localStorage.setItem(ACTIVE_PROJECT_KEY, full._id); } catch { /* ignore */ }
+        applyProjectToState(full);
+      } else {
+        // No projects yet — auto-create "Default Project"
+        const created = await projectsApi.createProject('Default Project');
+        setProjects([created]);
+        setActiveProjectId(created._id);
+        try { localStorage.setItem(ACTIVE_PROJECT_KEY, created._id); } catch { /* ignore */ }
+      }
+    }).catch(console.error).finally(() => setIsProjectsLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
+
+  // ── Auto-save debounced values ──
+  const debouncedBriefs  = useDebounce(agentBriefs,         1500);
+  const debouncedSkills  = useDebounce(enabledSkills,        1500);
+  const debouncedThreads = useDebounce(conversationThreads,  1500);
+
+  // Save agentConfigs when briefs or skills change
+  useEffect(() => {
+    if (!isAuthenticated || !activeProjectId) return;
+    const configs = DEPARTMENTS.map(d => ({
+      deptId:        d.id,
+      brief:         debouncedBriefs[d.id]  ?? '',
+      enabledSkills: debouncedSkills[d.id]  ?? [],
+    }));
+    projectsApi.saveAgentConfigs(activeProjectId, configs).catch(console.error);
+  }, [debouncedBriefs, debouncedSkills, activeProjectId, isAuthenticated]);
+
+  // Save threads when they change
+  useEffect(() => {
+    if (!isAuthenticated || !activeProjectId) return;
+    const threads = Object.entries(debouncedThreads).map(([deptId, messages]) => ({
+      deptId,
+      messages: messages.map(m => ({
+        role:    m.role as 'user' | 'assistant',
+        content: typeof m.content === 'string' ? m.content : '',
+      })),
+    }));
+    projectsApi.saveThreads(activeProjectId, threads).catch(console.error);
+  }, [debouncedThreads, activeProjectId, isAuthenticated]);
+
+  // Save budgetLimit immediately on change
+  useEffect(() => {
+    if (!isAuthenticated || !activeProjectId) return;
+    projectsApi.updateProject(activeProjectId, { budgetLimit }).catch(console.error);
+  }, [budgetLimit, activeProjectId, isAuthenticated]);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 
@@ -984,6 +1260,16 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         const updated = [doneResult, ...taskHistory];
         setTaskHistory(updated);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        if (isAuthenticated && activeProjectId) {
+          projectsApi.appendTaskResult(activeProjectId, {
+            id: doneResult.id,
+            dept: doneResult.dept,
+            prompt: doneResult.taskDesc,
+            output: doneResult.output,
+            status: (doneResult.status === 'error' ? 'error' : 'done') as 'done' | 'error',
+            timestamp: doneResult.timestamp,
+          }).catch(() => {});
+        }
 
         // Append turn vào conversation memory
         const updatedThread: ChatMessage[] = [
@@ -1787,6 +2073,20 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               </button>
             ))}
           </div>
+
+          {/* Project Selector */}
+          {isAuthenticated && (
+            <ProjectSelector
+              projects={projects}
+              activeProjectId={activeProjectId}
+              isLoading={isProjectsLoading}
+              onCreate={handleCreateProject}
+              onSwitch={handleSwitchProject}
+              onDelete={handleDeleteProject}
+              newName={newProjectName}
+              onNewNameChange={setNewProjectName}
+            />
+          )}
         </div>
 
         {/* Right: Dept badge + Budget pill + Credits + Close */}
