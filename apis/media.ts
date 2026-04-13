@@ -101,16 +101,18 @@ export const mediaApi = {
 
   /**
    * Get single media record by _id to check if mediaId is ready
-   * GET /upload-media/:id
+   * GET /upload-media/detail?id=<recordId>
    */
   getMediaById: async (id: string): Promise<{ success: boolean; mediaId?: string | null; imageUrl?: string; message?: string }> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/upload-media/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/upload-media/detail?id=${encodeURIComponent(id)}`, {
         method: 'GET',
         headers: getHeaders(),
       });
       if (!response.ok) throw new Error('Not found');
-      return await response.json();
+      const data = await response.json();
+      if (!data) return { success: false };
+      return { success: true, mediaId: data.mediaId ?? null, imageUrl: data.imageUrl };
     } catch (error) {
       console.error('Get Media By ID Error:', error);
       return { success: false };
