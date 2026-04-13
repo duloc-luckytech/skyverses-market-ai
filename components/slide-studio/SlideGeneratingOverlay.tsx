@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Stage = 'outline' | 'building' | 'images' | 'idle';
+type Stage = 'outline' | 'building' | 'idle';
 
 interface Props {
   isVisible: boolean;
@@ -20,10 +20,9 @@ interface Props {
 const STAGES: { id: Stage; label: string }[] = [
   { id: 'outline',  label: '✨ Tạo outline' },
   { id: 'building', label: '📐 Xây dựng slides' },
-  { id: 'images',   label: '🖼️ Tạo ảnh nền' },
 ];
 
-const STAGE_ORDER: Stage[] = ['outline', 'building', 'images'];
+const STAGE_ORDER: Stage[] = ['outline', 'building'];
 
 function getStageStatus(stageId: Stage, current: Stage): 'done' | 'active' | 'pending' {
   const currentIdx = STAGE_ORDER.indexOf(current);
@@ -54,7 +53,6 @@ const SlideGeneratingOverlay: React.FC<Props> = ({
   const stageLabel = {
     outline:  'Đang tạo nội dung outline...',
     building: 'Đang xây dựng slides...',
-    images:   'Đang tạo ảnh nền cho từng slide...',
     idle:     '',
   }[stage];
 
@@ -82,7 +80,6 @@ const SlideGeneratingOverlay: React.FC<Props> = ({
               <div className="absolute inset-0 flex items-center justify-center text-2xl">
                 {stage === 'outline'  && '✨'}
                 {stage === 'building' && '📐'}
-                {stage === 'images'   && '🖼️'}
                 {stage === 'idle'     && '⚡'}
               </div>
             </div>

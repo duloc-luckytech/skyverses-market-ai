@@ -154,7 +154,7 @@ export const useSlideStudio = () => {
   // ── UI state ─────────────────────────────────────────────────────────────────
   const [isGeneratingDeck, setIsGeneratingDeck] = useState(false);
   const [generatingText, setGeneratingText] = useState('');
-  const [generatingStage, setGeneratingStage] = useState<'outline' | 'building' | 'images' | 'idle'>('idle');
+  const [generatingStage, setGeneratingStage] = useState<'outline' | 'building' | 'idle'>('idle');
   const [generatingProgress, setGeneratingProgress] = useState(0);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -407,14 +407,8 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
       setIsDirty(true);
       if (importedOutline) setDocxOutline(null); // clear after use
 
-      // 3. Gen BG images for each slide (sequential to avoid rate limits)
-      setGeneratingStage('images');
-      const brand = { slogan: brandSlogan, description: brandDescription };
-      for (let i = 0; i < newSlides.length; i++) {
-        if (isCancelledRef.current) break;
-        await genSlideBgDirect(newSlides[i], deckStyle, refImages, brand);
-        setGeneratingProgress(35 + Math.round(((i + 1) / newSlides.length) * 65));
-      }
+      // Background images are generated manually per-slide via the toolbar
+      setGeneratingProgress(100);
     } catch (err) {
       console.error('[generateDeck] error:', err);
       const msg = err instanceof Error ? err.message : String(err);
@@ -434,56 +428,6 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
       setGeneratingText('');
     }
   }, [isAuthenticated, deckTopic, deckLanguage, deckStyle, slideCount, refImages, brandSlogan, brandDescription, showToast]);
-
-  // Internal: gen BG for a slide object directly (used in generateDeck loop)
-  const genSlideBgDirect = async (
-    slide: Slide,
-    styleId: string,
-    refImgs?: string[],
-    brand?: { slogan?: string; description?: string },
-  ) => {
-    const stylePreset = SLIDE_STYLES.find(s => s.id === styleId) ?? SLIDE_STYLES[0];
-    setSlides(prev => prev.map(s => s.id === slide.id ? { ...s, bgStatus: 'generating' } : s));
-
-    try {
-      const prompt = buildBgPrompt(slide, stylePreset, refImgs, brand);
-      const res = await imagesApi.createJob({
-        type: 'text_to_image',
-        input: { prompt },
-        config: { width: 1280, height: 720, aspectRatio: '16:9', seed: 0, style: '' },
-        engine: { provider: 'gommo', model: 'google_image_gen_4_5' },
-        enginePayload: { prompt, privacy: 'PRIVATE', projectId: 'default' },
-      });
-
-      if (!res?.data?.jobId) throw new Error('No jobId');
-
-      const jobId = res.data.jobId;
-      setSlides(prev => prev.map(s => s.id === slide.id ? { ...s, bgJobId: jobId } : s));
-
-      await pollJobOnce({
-        jobId,
-        isCancelledRef,
-        apiType: 'image',
-        onDone: (result) => {
-          const url = result.images?.[0] ?? null;
-          setSlides(prev => prev.map(s =>
-            s.id === slide.id
-              ? { ...s, bgImageUrl: url, bgStatus: url ? 'done' : 'error', bgJobId: null }
-              : s
-          ));
-        },
-        onError: () => {
-          setSlides(prev => prev.map(s =>
-            s.id === slide.id ? { ...s, bgStatus: 'error', bgJobId: null } : s
-          ));
-        },
-      });
-    } catch {
-      setSlides(prev => prev.map(s =>
-        s.id === slide.id ? { ...s, bgStatus: 'error' } : s
-      ));
-    }
-  };
 
   // ─── AI Suggest for 1 slide ───────────────────────────────────────────────────
 
