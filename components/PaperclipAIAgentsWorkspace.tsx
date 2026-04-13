@@ -1959,7 +1959,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       ] as { id: string; label: string; icon: React.ElementType }[]).map(tab => (
                         <button
                           key={tab.id}
-                          onClick={() => setActiveRightTab(tab.id)}
+                          onClick={() => setActiveRightTab(tab.id as 'output' | 'prompt' | 'log' | 'setup')}
                           className={`flex items-center gap-1.5 px-3 py-2.5 text-[10px] font-bold border-b-2 transition-all -mb-px ${
                             activeRightTab === tab.id
                               ? 'border-brand-blue text-brand-blue'
@@ -2295,8 +2295,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                 <p className="text-[8px] text-slate-300 dark:text-[#444] mt-1">Brief này sẽ được inject vào system prompt của {dept.agent}.</p>
                               </div>
 
-                              {/* Skills toggles */}
-                              {(DEPT_SKILLS[activeDept]?.length ?? 0) > 0 && (
+                              {/* Skills toggles — Advanced only */}
+                              {advancedMode && (DEPT_SKILLS[activeDept]?.length ?? 0) > 0 && (
                                 <div>
                                   <label className="block text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] tracking-widest mb-1.5">
                                     Skills — Bật kỹ năng cho {dept.agent}
@@ -2535,6 +2535,23 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       </button>
                     </div>
                   </div>
+
+                  {/* Mini stats — shown in Simple mode */}
+                  {!advancedMode && taskHistory.length > 0 && (
+                    <div className="flex items-center gap-2 flex-wrap mb-3">
+                      <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-[10px] font-bold text-brand-blue">
+                        <History size={9} /> {taskHistory.length} tasks
+                      </span>
+                      <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                        <DollarSign size={9} /> ${spentBudget.toFixed(2)} spent
+                      </span>
+                      {totalTokens > 0 && (
+                        <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] font-bold text-purple-600 dark:text-purple-400">
+                          <Cpu size={9} /> {(totalTokens / 1000).toFixed(1)}K tokens
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   {/* Search + filter */}
                   <div className="flex flex-col gap-2">
@@ -3475,6 +3492,13 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Onboarding Wizard */}
+      <AnimatePresence>
+        {showWizard && (
+          <OnboardingWizard onComplete={handleWizardComplete} onSkip={handleWizardSkip} />
         )}
       </AnimatePresence>
 
