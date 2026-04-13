@@ -1,0 +1,22 @@
+#!/bin/bash
+# AUTO-GENERATED: Cloudflare CDN URLs for Character Sync AI landing page
+# Sections: Hero, Problem, Features (6), Workflow (4), Use Cases (6), Testimonials (2)
+CDN_feat_context_memory="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/44e564aa-271d-42c8-5197-b6d148e52b00/public"
+CDN_feat_dna_anchoring="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/f1ef27a7-5eee-4342-8e61-b6a848585600/public"
+CDN_feat_multi_actor="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/09cce2e7-6c1e-4576-cad6-9110f3260300/public"
+CDN_feat_semantic_binding="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a1c88938-3554-494e-3324-28ea91b70300/public"
+CDN_feat_shared_library="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/b3b332a7-0573-417e-305a-4e4d9ceb9200/public"
+CDN_feat_zero_drift="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/8dc2a353-3e41-4575-229e-190bba2ff600/public"
+CDN_hero_main="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/b6cb8a64-e7ca-4ae8-ee41-7e4901828600/public"
+CDN_problem_broken_identity="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/1247acb3-3fc8-4f19-3d89-70b573eaca00/public"
+CDN_step_naming="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/caa65b86-17c2-4260-4ddf-4b284b1c2e00/public"
+CDN_step_output="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/c6fe8f70-9edf-420b-0805-217bcff17a00/public"
+CDN_step_scripting="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/b4ab437c-3227-4b2c-2923-eea26f200b00/public"
+CDN_step_upload="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/363b0a32-f368-4e20-3479-c7312ff7e300/public"
+CDN_testimonial_avatar_2="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/5b8a2ba8-fd5f-413a-5bc2-372f28ccd100/public"
+CDN_usecase_ai_anchor="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/e6440b55-171e-49d8-0b55-f5be50cf9100/public"
+CDN_usecase_content_series="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/587b4777-d746-45bb-206e-a412d1a6a400/public"
+CDN_usecase_game_npc="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/2ac999df-b44c-478d-d0e9-89ea77d16c00/public"
+CDN_usecase_manga_webtoon="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/83d37479-769e-4a5d-e1a0-7d18674d8300/public"
+CDN_usecase_short_film="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/52cf39ca-8c4f-496d-3533-8e72227cef00/public"
+CDN_usecase_virtual_model="https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/188da88f-4df4-4ca1-91cf-6fe686774800/public"
