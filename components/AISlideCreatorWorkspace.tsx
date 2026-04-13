@@ -473,7 +473,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
       <AIGenerateModal
         isOpen={s.isGenerateModalOpen}
         onClose={() => s.setIsGenerateModalOpen(false)}
-        onConfirm={s.generateDeck}
+        onConfirm={() => s.generateDeck()}
         deckTopic={s.deckTopic}
         deckStyle={s.deckStyle}
         deckLanguage={s.deckLanguage}
