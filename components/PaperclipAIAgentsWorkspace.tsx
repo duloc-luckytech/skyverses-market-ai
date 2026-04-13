@@ -8,6 +8,7 @@ import {
   ShieldCheck, DollarSign, Zap, Copy, Download, GitBranch,
   Eye, Terminal, TrendingUp, Settings, ChevronUp, Plus,
   ArrowRight, Layers, Workflow, Star, HelpCircle, Share2, Pencil,
+  MessageCircle, Send, User,
 } from 'lucide-react';
 import { aiChatStreamViaProxy, AI_MODELS, buildSystemMessage } from '../apis/aiCommon';
 import type { ChatMessage } from '../apis/aiCommon';
@@ -541,7 +542,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   const [showOrgChart, setShowOrgChart]     = useState(true);
   const [showActivity, setShowActivity]     = useState(true);
   const [showPromptHistory, setShowPromptHistory] = useState(false);
-  const [activeRightTab, setActiveRightTab] = useState<'output' | 'log' | 'prompt' | 'setup'>('output');
+  const [activeRightTab, setActiveRightTab] = useState<'output' | 'log' | 'prompt' | 'setup' | 'chat'>('output');
   const [isStreaming, setIsStreaming]       = useState(false);
   const [showApprovalDialog, setShowApprovalDialog] = useState(false);
   const pendingRunRef = useRef<((override?: string) => Promise<void>) | null>(null);
@@ -612,6 +613,12 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   // Prompt Inspector: edit system prompt + re-run
   const [editedSystemPrompt, setEditedSystemPrompt] = useState<string>('');
   const [isEditingPrompt, setIsEditingPrompt]       = useState(false);
+
+  // Direct chat with agent
+  const [chatInput, setChatInput]             = useState('');
+  const [isChatStreaming, setIsChatStreaming]  = useState(false);
+  const chatAbortRef                          = useRef<AbortController | null>(null);
+  const chatEndRef                            = useRef<HTMLDivElement>(null);
 
   // Conversation memory per agent — persisted to localStorage
   const [conversationThreads, setConversationThreads] = useState<Record<string, ChatMessage[]>>(() => {
@@ -836,6 +843,13 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       activityFeedRef.current.scrollTop = 0;
     }
   }, [activityLogs]);
+
+  // Auto-scroll chat to bottom when messages update or tab switches to chat
+  useEffect(() => {
+    if (activeRightTab === 'chat') {
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [conversationThreads, activeDept, activeRightTab]);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 
@@ -1248,6 +1262,83 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     localStorage.setItem(WIZARD_KEY, 'true');
     setShowWizard(false);
   }, []);
+
+  // ── Direct Chat with Agent ─────────────────────────────────────────────────
+
+  const handleChatSend = useCallback(async () => {
+    const text = chatInput.trim();
+    if (!text || isChatStreaming) return;
+
+    const dept = DEPARTMENTS.find(d => d.id === activeDept)!;
+    const model = LLM_MODELS.find(m => m.id === activeModel) ?? LLM_MODELS[0];
+
+    if (spentBudget >= budgetLimit) {
+      showToast('Budget limit reached!', 'error');
+      return;
+    }
+
+    // Append user message optimistically
+    const userMsg: ChatMessage = { role: 'user', content: text };
+    const currentThread = conversationThreads[activeDept] ?? [];
+    const newThread = [...currentThread, userMsg];
+    saveThread(activeDept, newThread);
+    setChatInput('');
+    setIsChatStreaming(true);
+    addLog(dept.agent, `Chat: "${text.slice(0, 40)}${text.length > 40 ? '…' : ''}"`, 'info', dept.color);
+
+    // Build system prompt same as executeRun
+    const brief = agentBriefs[activeDept]?.trim();
+    const systemContent = buildSystemMessage({
+      role: `Bạn là ${dept.agent} trong hệ thống Paperclip AI Org Orchestrator. Department: ${dept.label}. Model: ${model.label} (${model.provider}).${brief ? `\n\nCOMPANY CONTEXT:\n${brief}` : ''}`,
+      rules: [
+        'Trả lời ngắn gọn, súc tích và có cấu trúc rõ ràng',
+        'Luôn format output bằng Markdown: bullet points, bold headers, code blocks khi cần',
+        'Đây là cuộc hội thoại trực tiếp — trả lời tự nhiên như một AI assistant chuyên nghiệp',
+      ],
+      language: 'vi',
+    });
+
+    const messages: ChatMessage[] = [
+      systemContent,
+      ...newThread,
+    ];
+
+    const abort = new AbortController();
+    chatAbortRef.current = abort;
+    let assistantReply = '';
+
+    try {
+      await aiChatStreamViaProxy(
+        messages,
+        (chunk) => {
+          assistantReply += chunk;
+          // Stream assistant reply into thread in real-time
+          setConversationThreads(prev => ({
+            ...prev,
+            [activeDept]: [
+              ...newThread,
+              { role: 'assistant' as const, content: assistantReply },
+            ],
+          }));
+        },
+        abort.signal,
+        2048,
+        model.apiModel,
+      );
+      // Persist final thread
+      saveThread(activeDept, [...newThread, { role: 'assistant' as const, content: assistantReply }]);
+      addLog(dept.agent, 'Chat response complete', 'success', dept.color);
+    } catch (err: unknown) {
+      if ((err as Error)?.name !== 'AbortError') {
+        showToast('Chat error — please retry', 'error');
+        addLog(dept.agent, 'Chat error', 'warning', '#ef4444');
+      }
+    } finally {
+      setIsChatStreaming(false);
+      chatAbortRef.current = null;
+    }
+  }, [chatInput, isChatStreaming, activeDept, activeModel, conversationThreads, spentBudget,
+      budgetLimit, agentBriefs, saveThread, addLog, showToast]);
 
   // ── Sidebar ────────────────────────────────────────────────────────────────
 
@@ -1954,12 +2045,19 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       {([
                         { id: 'output', label: 'Output', icon: Eye },
                         { id: 'log',    label: 'Activity Log', icon: Terminal },
+                        {
+                          id: 'chat',
+                          label: (conversationThreads[activeDept]?.length ?? 0) > 0
+                            ? `Chat (${Math.ceil((conversationThreads[activeDept]?.length ?? 0) / 2)})`
+                            : 'Chat',
+                          icon: MessageCircle,
+                        },
                         ...(advancedMode ? [{ id: 'prompt', label: 'Prompt Inspector', icon: Code2 }] : []),
                         { id: 'setup',  label: 'Setup', icon: Settings },
                       ] as { id: string; label: string; icon: React.ElementType }[]).map(tab => (
                         <button
                           key={tab.id}
-                          onClick={() => setActiveRightTab(tab.id as 'output' | 'prompt' | 'log' | 'setup')}
+                          onClick={() => setActiveRightTab(tab.id as 'output' | 'prompt' | 'log' | 'setup' | 'chat')}
                           className={`flex items-center gap-1.5 px-3 py-2.5 text-[10px] font-bold border-b-2 transition-all -mb-px ${
                             activeRightTab === tab.id
                               ? 'border-brand-blue text-brand-blue'
@@ -2117,6 +2215,144 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                 </div>
                               ))
                             )}
+                          </motion.div>
+                        )}
+
+                        {activeRightTab === 'chat' && (
+                          <motion.div
+                            key="chat"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.15 }}
+                            className="flex flex-col"
+                            style={{ minHeight: 320 }}
+                          >
+                            {/* Message list */}
+                            <div
+                              className="flex-1 overflow-y-auto space-y-3 pb-3 pr-0.5"
+                              style={{ maxHeight: 340 }}
+                            >
+                              {(conversationThreads[activeDept] ?? []).length === 0 ? (
+                                <div className="flex flex-col items-center justify-center gap-3 py-10 text-center">
+                                  <div
+                                    className="w-12 h-12 rounded-2xl flex items-center justify-center opacity-40"
+                                    style={{ backgroundColor: `${dept.color}15` }}
+                                  >
+                                    <dept.icon size={22} style={{ color: dept.color }} />
+                                  </div>
+                                  <div>
+                                    <p className="text-[12px] font-semibold text-slate-500 dark:text-[#555]">
+                                      Chat với {dept.agent}
+                                    </p>
+                                    <p className="text-[10px] text-slate-300 dark:text-[#333] mt-1">
+                                      Gửi câu hỏi để bắt đầu cuộc hội thoại
+                                    </p>
+                                    <p className="text-[10px] text-slate-300 dark:text-[#333]">
+                                      Chat dùng chung memory với task runs
+                                    </p>
+                                  </div>
+                                </div>
+                              ) : (
+                                (conversationThreads[activeDept] ?? []).map((msg, i) => (
+                                  <div
+                                    key={i}
+                                    className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                                  >
+                                    {msg.role === 'assistant' && (
+                                      <div
+                                        className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center mb-0.5"
+                                        style={{ backgroundColor: `${dept.color}20` }}
+                                      >
+                                        <dept.icon size={12} style={{ color: dept.color }} />
+                                      </div>
+                                    )}
+                                    <div
+                                      className={`max-w-[82%] px-3 py-2 text-[11px] leading-relaxed whitespace-pre-wrap break-words ${
+                                        msg.role === 'user'
+                                          ? 'rounded-2xl rounded-tr-sm bg-brand-blue text-white'
+                                          : 'rounded-2xl rounded-tl-sm bg-slate-100 dark:bg-white/[0.06] text-slate-700 dark:text-white/80'
+                                      }`}
+                                    >
+                                      {typeof msg.content === 'string' ? msg.content : (msg.content as { type: string; text?: string }[]).map(c => ('text' in c ? c.text : '')).join('')}
+                                    </div>
+                                    {msg.role === 'user' && (
+                                      <div className="w-6 h-6 rounded-full shrink-0 bg-brand-blue/20 flex items-center justify-center mb-0.5">
+                                        <User size={10} className="text-brand-blue" />
+                                      </div>
+                                    )}
+                                  </div>
+                                ))
+                              )}
+
+                              {/* Typing indicator */}
+                              {isChatStreaming && (
+                                <div className="flex items-end gap-2 justify-start">
+                                  <div
+                                    className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center mb-0.5"
+                                    style={{ backgroundColor: `${dept.color}20` }}
+                                  >
+                                    <dept.icon size={12} style={{ color: dept.color }} />
+                                  </div>
+                                  <div className="px-3 py-2.5 rounded-2xl rounded-tl-sm bg-slate-100 dark:bg-white/[0.06]">
+                                    <div className="flex items-center gap-1">
+                                      {[0, 1, 2].map(d => (
+                                        <motion.div
+                                          key={d}
+                                          className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-white/30"
+                                          animate={{ opacity: [0.3, 1, 0.3] }}
+                                          transition={{ duration: 1, repeat: Infinity, delay: d * 0.2 }}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              <div ref={chatEndRef} />
+                            </div>
+
+                            {/* Input bar */}
+                            <div className="border-t border-black/[0.05] dark:border-white/[0.05] pt-3 mt-2">
+                              <div className="flex items-end gap-2">
+                                <textarea
+                                  value={chatInput}
+                                  onChange={e => setChatInput(e.target.value)}
+                                  onKeyDown={e => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                      e.preventDefault();
+                                      handleChatSend();
+                                    }
+                                  }}
+                                  placeholder={`Hỏi ${dept.agent}… (Enter gửi, Shift+Enter xuống dòng)`}
+                                  rows={2}
+                                  disabled={isChatStreaming}
+                                  className="flex-1 text-[11px] bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-xl px-3 py-2 text-slate-700 dark:text-white/80 resize-none focus:outline-none focus:border-brand-blue/40 placeholder:text-slate-300 dark:placeholder:text-[#333] transition-colors disabled:opacity-50"
+                                />
+                                <div className="flex flex-col gap-1.5 shrink-0">
+                                  <button
+                                    onClick={handleChatSend}
+                                    disabled={!chatInput.trim() || isChatStreaming}
+                                    className="w-8 h-8 rounded-xl flex items-center justify-center bg-brand-blue disabled:opacity-30 hover:brightness-110 transition-all shadow-sm shadow-brand-blue/20"
+                                    title="Gửi (Enter)"
+                                  >
+                                    {isChatStreaming
+                                      ? <Loader2 size={13} className="text-white animate-spin" />
+                                      : <Send size={13} className="text-white" />
+                                    }
+                                  </button>
+                                  {(conversationThreads[activeDept] ?? []).length > 0 && !isChatStreaming && (
+                                    <button
+                                      onClick={() => clearThread(activeDept)}
+                                      title="Xoá lịch sử chat"
+                                      className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-300 dark:text-[#444] hover:text-red-400 hover:bg-red-500/[0.08] transition-all border border-black/[0.06] dark:border-white/[0.06]"
+                                    >
+                                      <Trash2 size={12} />
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
                           </motion.div>
                         )}
 
