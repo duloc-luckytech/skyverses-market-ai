@@ -545,13 +545,14 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         source: 'fxflow',
       });
 
-      if (!uploadRes.success || !uploadRes._id) {
+      const recordId = uploadRes.imageId || uploadRes._id;
+      if (!uploadRes.success || !recordId) {
         throw new Error(uploadRes.message || 'Upload ảnh thất bại');
       }
 
       // Worker uploads async — poll until mediaId is ready
       setStatus('⏳ Đang chờ worker xử lý ảnh...');
-      const mediaId = uploadRes.mediaId || await pollForMediaId(uploadRes._id!, setStatus);
+      const mediaId = uploadRes.mediaId || await pollForMediaId(recordId, setStatus);
       const projectId = uploadRes.raw?.projectId || 'default';
 
       // ── Step 3: Convert cropBox (% 0-100) → normalized coordinates (0-1) ─
@@ -667,13 +668,14 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         source: 'fxflow',
       });
 
-      if (!uploadRes.success || !uploadRes._id) {
+      const recordId = uploadRes.imageId || uploadRes._id;
+      if (!uploadRes.success || !recordId) {
         throw new Error(uploadRes.message || 'Upload ảnh thất bại');
       }
 
       // Worker uploads async — poll until mediaId is ready
       setStatus('⏳ Đang chờ worker xử lý ảnh...');
-      const mediaId = uploadRes.mediaId || await pollForMediaId(uploadRes._id!, setStatus);
+      const mediaId = uploadRes.mediaId || await pollForMediaId(recordId, setStatus);
       const projectId = uploadRes.raw?.projectId || 'default';
       referenceImageUrl = uploadRes.raw?.url || result;
 
