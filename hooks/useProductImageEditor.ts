@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { imagesApi, ImageJobRequest } from '../apis/images';
+import { editImageApi } from '../apis/editImage';
+import { mediaApi } from '../apis/media';
 import { uploadToGCS } from '../services/storage';
 import { useImageModels, MappedImageModel } from './useImageModels';
 import { pollJobOnce } from './useJobPoller';
@@ -464,30 +466,119 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
   };
 
   const applyCrop = async () => {
-    if (!result || !imageRef.current) return;
+    if (!result) return;
     setIsGenerating(true);
-    setStatus('Đang cắt ảnh...');
+    setStatus('📤 Đang upload ảnh...');
+
     try {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = result;
-      await new Promise(resolve => img.onload = resolve);
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      const realX = (cropBox.x / 100) * img.width;
-      const realY = (cropBox.y / 100) * img.height;
-      const realW = (cropBox.w / 100) * img.width;
-      const realH = (cropBox.h / 100) * img.height;
-      canvas.width = realW;
-      canvas.height = realH;
-      ctx.drawImage(img, realX, realY, realW, realH, 0, 0, realW, realH);
-      const croppedUrl = canvas.toDataURL('image/png');
-      pushToHistory(croppedUrl);
+      // ── Step 1: Convert result URL → base64 ──────────────────────────────
+      let base64: string;
+      if (result.startsWith('data:')) {
+        // Already a data URL — strip the prefix
+        base64 = result.split(',')[1];
+      } else {
+        // Remote URL — fetch and convert
+        const res = await fetch(result);
+        const blob = await res.blob();
+        base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve((reader.result as string).split(',')[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      // ── Step 2: Upload to media → get mediaId ────────────────────────────
+      const uploadRes = await mediaApi.uploadImage({
+        base64,
+        fileName: `crop_source_${Date.now()}.png`,
+        size: Math.ceil(base64.length * 0.75), // approximate byte size
+        source: 'fxflow',
+      });
+
+      if (!uploadRes.success || !uploadRes.mediaId) {
+        throw new Error(uploadRes.message || 'Upload ảnh thất bại');
+      }
+
+      const mediaId = uploadRes.mediaId;
+      const projectId = uploadRes.raw?.projectId || 'default';
+
+      // ── Step 3: Convert cropBox (% 0-100) → normalized coordinates (0-1) ─
+      const left   = cropBox.x / 100;
+      const top    = cropBox.y / 100;
+      const right  = (cropBox.x + cropBox.w) / 100;
+      const bottom = (cropBox.y + cropBox.h) / 100;
+
+      setStatus('✂️ Đang gửi lệnh crop...');
+
+      // ── Step 4: Create edit-image job ─────────────────────────────────────
+      const createRes = await editImageApi.createJob({
+        mediaId,
+        projectId,
+        editType: 'crop',
+        cropCoordinates: {
+          top: parseFloat(top.toFixed(4)),
+          left: parseFloat(left.toFixed(4)),
+          right: parseFloat(right.toFixed(4)),
+          bottom: parseFloat(bottom.toFixed(4)),
+        },
+      });
+
+      if (!createRes.success || !createRes.data?.jobId) {
+        throw new Error(createRes.message || 'Tạo crop job thất bại');
+      }
+
+      const jobId = createRes.data.jobId;
+      setStatus('⏳ Đang xử lý crop...');
+
+      // ── Step 5: Poll until done ───────────────────────────────────────────
+      let tickCount = 0;
+      await new Promise<void>((resolve, reject) => {
+        const poll = async () => {
+          if (isCancelledRef.current) { resolve(); return; }
+
+          tickCount++;
+          setStatus(`⏳ Đang crop... (${tickCount * 4}s)`);
+
+          const statusRes = await editImageApi.getJobStatus(jobId);
+          const st = statusRes.data?.status;
+
+          if (st === 'done') {
+            const resultUrl = statusRes.data?.result?.resultUrl;
+            if (resultUrl) {
+              pushToHistory(resultUrl);
+              setHistory(prev => [{
+                id: jobId,
+                url: resultUrl,
+                prompt: 'Crop Edit',
+                timestamp: new Date().toLocaleTimeString()
+              }, ...prev]);
+              setStatus('✅ Crop thành công');
+            } else {
+              reject(new Error('Không tìm thấy kết quả crop'));
+            }
+            resolve();
+          } else if (st === 'error' || st === 'cancelled') {
+            reject(new Error(statusRes.data?.error?.message || 'Crop job thất bại'));
+          } else {
+            // pending / processing — poll again in 4s
+            if (tickCount >= 45) { // ~3 min timeout
+              reject(new Error('Crop quá thời gian. Vui lòng thử lại.'));
+            } else {
+              setTimeout(poll, 4000);
+            }
+          }
+        };
+        setTimeout(poll, 2000); // initial delay 2s
+      });
+
       setIsCropping(false);
-      setStatus('Cắt ảnh thành công');
-      setHistory(prev => [{ id: Date.now().toString(), url: croppedUrl, prompt: 'Crop Edit', timestamp: new Date().toLocaleTimeString() }, ...prev]);
-    } catch (err) { setStatus('Lỗi cắt ảnh'); } finally { setIsGenerating(false); }
+    } catch (err: any) {
+      console.error('[applyCrop] error:', err);
+      setStatus(`❌ Lỗi crop: ${err?.message || 'Thử lại sau'}`);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleExport = async () => {
