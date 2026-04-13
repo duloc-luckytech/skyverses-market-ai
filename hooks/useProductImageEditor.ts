@@ -191,6 +191,16 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     });
   };
 
+  const generateTooltip = (() => {
+    if (!isAuthenticated) return 'Vui lòng đăng nhập';
+    if (!usagePreference) return 'Chọn nguồn tài nguyên';
+    if (usagePreference === 'credits' && credits < selectedModelCost) return `Số dư không đủ (Cần ${selectedModelCost} CR)`;
+    if (!prompt.trim()) return 'Vui lòng nhập prompt';
+    return null;
+  })();
+
+  const isGenerateDisabledComputed = isGenerating || !!generateTooltip || !selectedModel;
+
   const handleGenerate = async (overridePrompt?: string, forceCost?: number) => {
     const finalPrompt = overridePrompt || prompt;
     if (!finalPrompt.trim() || isGenerating) return;
@@ -209,12 +219,30 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     setIsGenerating(true);
     setStatus('Đang khởi tạo job...');
     try {
+      const hasRefs = references.length > 0;
       const payload: ImageJobRequest = {
-        type: "image_to_image",
-        input: { prompt: finalPrompt, images: references.length > 0 ? [...references] : undefined },
-        config: { width: 1024, height: 1024, aspectRatio: '1:1', seed: 0, style: "cinematic" },
-        engine: { provider: selectedEngine as any, model: (selectedModel?.raw?.modelKey || selectedModel?.id || '') as any },
-        enginePayload: { prompt: finalPrompt, privacy: "PRIVATE", projectId: "default" }
+        type: hasRefs ? "image_to_image" : "text_to_image",
+        input: {
+          prompt: finalPrompt,
+          images: hasRefs ? [...references] : undefined
+        },
+        config: {
+          width: 1024,
+          height: 1024,
+          aspectRatio: selectedRatio || '1:1',
+          seed: 0,
+          style: "cinematic"
+        },
+        engine: {
+          provider: selectedEngine as any,
+          model: (selectedModel?.raw?.modelKey || selectedModel?.id || '') as any
+        },
+        enginePayload: {
+          prompt: finalPrompt,
+          privacy: "PRIVATE",
+          projectId: "default",
+          mode: selectedMode || undefined
+        }
       };
       const apiRes = await imagesApi.createJob(payload);
       if (apiRes.success && apiRes.data.jobId) pollJobStatus(apiRes.data.jobId, taskId, currentCost);
@@ -464,6 +492,8 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     selectedRatio, setSelectedRatio, selectedRes, setSelectedRes,
     familyList, familyModels, familyModes, familyResolutions, familyRatios,
     selectedModelCost,
+    generateTooltip,
+    isGenerateDisabled: isGenerateDisabledComputed,
     isResumingGenerate, setIsResumingGenerate,
     activeTab, setActiveTab,
     visibleLayers, setVisibleLayers,

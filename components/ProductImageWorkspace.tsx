@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Wand2, AlertTriangle, ImagePlus, Settings2, Coins, Zap, Layers, Send } from 'lucide-react';
+import { Loader2, Wand2, AlertTriangle, ImagePlus, Settings2, Coins, Zap, Layers, Send, Image as ImageIcon, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
@@ -34,12 +34,12 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
   const { theme } = useTheme();
   const e = useProductImageEditor(initialImage, theme);
   const ACTION_COST = e.selectedModelCost;
-  
+
   const [isMobileSidebarExpanded, setIsMobileSidebarExpanded] = useState(false);
 
   if (!isOpen) return null;
 
-  const isGenerateDisabled = e.isGenerating || (!e.isAuthenticated) || (!e.usagePreference) || (!e.prompt.trim());
+  const isGenerateDisabled = e.isGenerateDisabled;
 
   const allAssets = [
     ...(e.originalSource ? [{ id: 'original', url: e.originalSource, label: 'Original' }] : []),
@@ -139,10 +139,12 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
               onDrop={e.handleDrop}
             />
 
-            {/* ═══ PROMPT BAR ═══ */}
+            {/* ═══ PROMPT + GENERATE BAR ═══ */}
             {!e.isCropping && (
               <div className="absolute bottom-20 lg:bottom-6 left-0 right-16 md:right-24 px-4 md:px-6 z-40 transition-all">
-                <div className="relative mx-auto flex items-center bg-white/95 dark:bg-[#14151a]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-2xl h-14 md:h-16 px-2 md:px-4 shadow-[0_8px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] focus-within:border-brand-blue/40 transition-all overflow-hidden max-w-4xl">
+                <div className="relative mx-auto max-w-4xl">
+                  {/* Main input row */}
+                  <div className="flex items-center bg-white/95 dark:bg-[#14151a]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-2xl h-14 md:h-16 px-2 md:px-4 shadow-[0_8px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] focus-within:border-brand-blue/40 transition-all overflow-hidden">
                     {/* Ảnh tham chiếu */}
                     <div className="flex items-center gap-1 md:gap-2 pl-2 md:pl-3 pr-1.5 border-r border-slate-100 dark:border-white/5 mr-1.5 md:mr-3 shrink-0">
                       {e.references.slice(0, 1).map((ref, idx) => (
@@ -154,60 +156,76 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
                     </div>
 
                     {/* Prompt input */}
-                    <input 
-                      value={e.prompt} 
-                      onChange={(ev) => e.setPrompt(ev.target.value)} 
-                      onKeyDown={(ev) => ev.key === 'Enter' && e.handleGenerate()} 
-                      className="flex-grow bg-transparent border-none outline-none text-[11px] md:text-sm font-bold text-slate-800 dark:text-white px-2 placeholder:text-slate-300 dark:placeholder:text-slate-600 truncate" 
-                      placeholder="VD: Xóa nền, thêm ánh sáng vàng, làm mịn da..." 
+                    <input
+                      value={e.prompt}
+                      onChange={(ev) => e.setPrompt(ev.target.value)}
+                      onKeyDown={(ev) => ev.key === 'Enter' && !isGenerateDisabled && e.handleGenerate()}
+                      className="flex-grow bg-transparent border-none outline-none text-[11px] md:text-sm font-bold text-slate-800 dark:text-white px-2 placeholder:text-slate-300 dark:placeholder:text-slate-600 truncate"
+                      placeholder="VD: Tạo ảnh sản phẩm nền trắng, xóa nền, thêm ánh sáng..."
                     />
 
-                    {/* Right actions */}
+                    {/* Right: model selector + credits + settings */}
                     <div className="flex items-center gap-1.5 md:gap-3 pl-1.5 md:pl-3 border-l border-slate-100 dark:border-white/5 shrink-0 ml-1 md:ml-2">
-                        <div className="hidden sm:block">
-                          <ModelAISelector 
-                            selectedModel={e.selectedModel}
-                            models={e.availableModels}
-                            onSelect={e.setSelectedModel}
-                            selectedEngine={e.selectedEngine}
-                            onSelectEngine={e.setSelectedEngine}
-                            variant="compact"
-                          />
-                        </div>
+                      <div className="hidden sm:block">
+                        <ModelAISelector
+                          selectedModel={e.selectedModel}
+                          models={e.availableModels}
+                          onSelect={e.setSelectedModel}
+                          selectedEngine={e.selectedEngine}
+                          onSelectEngine={e.setSelectedEngine}
+                          variant="compact"
+                        />
+                      </div>
 
-                        {/* Số dư & Chi phí */}
-                        <div className="hidden lg:flex items-center gap-2 border-l border-slate-100 dark:border-white/5 pl-3">
-                           <div className="flex flex-col items-end gap-0.5">
-                              <div className="flex items-center gap-1">
-                                <Coins size={9} className="text-amber-500" />
-                                <span className={`text-[10px] font-black leading-none tracking-tight ${e.usagePreference === 'key' ? 'text-purple-500' : 'text-slate-700 dark:text-white'}`}>
-                                   {e.usagePreference === 'key' ? 'Unlimited' : `${e.credits.toLocaleString()}`}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-0.5 text-[8px] font-bold text-orange-500">
-                                 <Zap size={8} fill="currentColor" />
-                                 <span>−{ACTION_COST} / lượt</span>
-                              </div>
-                           </div>
-                           <button 
-                             onClick={() => e.setShowResourceModal(true)}
-                             className="p-1.5 bg-slate-100 dark:bg-white/5 rounded-lg hover:text-brand-blue transition-colors text-slate-400"
-                             title="Đổi nguồn xử lý"
-                           >
-                              <Settings2 size={12} />
-                           </button>
+                      {/* Credits & cost */}
+                      <div className="hidden lg:flex items-center gap-2 border-l border-slate-100 dark:border-white/5 pl-3">
+                        <div className="flex flex-col items-end gap-0.5">
+                          <div className="flex items-center gap-1">
+                            <Coins size={9} className="text-amber-500" />
+                            <span className={`text-[10px] font-black leading-none tracking-tight ${e.usagePreference === 'key' ? 'text-purple-500' : 'text-slate-700 dark:text-white'}`}>
+                              {e.usagePreference === 'key' ? 'Unlimited' : `${e.credits.toLocaleString()}`}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-0.5 text-[8px] font-bold text-orange-500">
+                            <Zap size={8} fill="currentColor" />
+                            <span>−{ACTION_COST} / lượt</span>
+                          </div>
                         </div>
-
-                        {/* Nút tạo ảnh */}
-                        <button 
-                          onClick={() => e.handleGenerate()} 
-                          disabled={isGenerateDisabled} 
-                          className={`w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center transition-all shadow-lg active:scale-95 shrink-0 ${isGenerateDisabled ? 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/20 cursor-not-allowed' : 'bg-brand-blue text-white hover:scale-105 hover:shadow-brand-blue/30'}`}
-                          title="Chạy AI chỉnh sửa"
+                        <button
+                          onClick={() => e.setShowResourceModal(true)}
+                          className="p-1.5 bg-slate-100 dark:bg-white/5 rounded-lg hover:text-brand-blue transition-colors text-slate-400"
+                          title="Đổi nguồn xử lý"
                         >
-                          {e.isGenerating ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                          <Settings2 size={12} />
                         </button>
+                      </div>
                     </div>
+                  </div>
+
+                  {/* Generate button — full width below input on mobile, or as separate prominent button */}
+                  <div className="mt-2 relative group/genbtn">
+                    <button
+                      onClick={() => !isGenerateDisabled && e.handleGenerate()}
+                      disabled={isGenerateDisabled}
+                      className={`w-full py-3 rounded-xl text-white font-semibold uppercase text-[11px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2 ${
+                        isGenerateDisabled
+                          ? 'bg-slate-200 dark:bg-white/[0.04] text-slate-400 dark:text-slate-600 cursor-not-allowed'
+                          : 'bg-gradient-to-r from-brand-blue to-violet-500 hover:brightness-110 active:scale-[0.98] shadow-brand-blue/20'
+                      }`}
+                    >
+                      {e.isGenerating
+                        ? <><Loader2 className="animate-spin" size={14} /> Đang tạo ảnh...</>
+                        : <><ImageIcon size={14} /> Tạo hình ảnh</>
+                      }
+                    </button>
+                    {e.generateTooltip && !e.isGenerating && (
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover/genbtn:opacity-100 pointer-events-none transition-all z-50">
+                        <div className="bg-slate-900 dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg text-[9px] font-semibold whitespace-nowrap shadow-xl">
+                          {e.generateTooltip}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
