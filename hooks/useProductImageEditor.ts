@@ -491,15 +491,21 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
     });
 
   /**
-   * Poll GET /upload-media/:id until mediaId is populated by the async worker.
+   * Poll until mediaId is populated by the async upload worker.
+   * Uses GET /upload-media/:id (preferred) with fallback to list search.
    * Retries every 2s for up to 60s.
    */
   const pollForMediaId = async (recordId: string, setStatusMsg?: (s: string) => void): Promise<string> => {
     const MAX_ATTEMPTS = 30; // 30 × 2s = 60s
     for (let i = 0; i < MAX_ATTEMPTS; i++) {
       await new Promise(r => setTimeout(r, 2000));
-      const res = await mediaApi.getMediaById(recordId);
-      if (res.mediaId) return res.mediaId;
+      // Try dedicated endpoint first, fallback to list search
+      const single = await mediaApi.getMediaById(recordId);
+      if (single.mediaId) return single.mediaId;
+      // Fallback: search by _id in list
+      const list = await mediaApi.getMediaList({ search: recordId, limit: 1 });
+      const record = list.data?.[0];
+      if (record?.mediaId) return record.mediaId;
       if (setStatusMsg) setStatusMsg(`⏳ Đang xử lý upload... (${i + 1}/${MAX_ATTEMPTS})`);
     }
     throw new Error('Upload timeout — worker chưa trả về mediaId sau 60s');
