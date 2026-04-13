@@ -524,11 +524,11 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         source: 'fxflow',
       });
 
-      if (!uploadRes.success || !uploadRes.mediaId) {
+      if (!uploadRes.success || (!uploadRes.mediaId && !uploadRes.imageId)) {
         throw new Error(uploadRes.message || 'Upload ảnh thất bại');
       }
 
-      const mediaId = uploadRes.mediaId;
+      const mediaId = uploadRes.mediaId || uploadRes.imageId || '';
       const projectId = uploadRes.raw?.projectId || 'default';
 
       // ── Step 3: Convert cropBox (% 0-100) → normalized coordinates (0-1) ─
@@ -644,11 +644,11 @@ export const useProductImageEditor = (initialImage: string | null | undefined, t
         source: 'fxflow',
       });
 
-      if (!uploadRes.success || !uploadRes.mediaId) {
+      if (!uploadRes.success || (!uploadRes.mediaId && !uploadRes.imageId)) {
         throw new Error(uploadRes.message || 'Upload ảnh thất bại');
       }
 
-      const mediaId = uploadRes.mediaId;
+      const mediaId = uploadRes.mediaId || uploadRes.imageId || '';
       const projectId = uploadRes.raw?.projectId || 'default';
       referenceImageUrl = uploadRes.raw?.url || result;
 
