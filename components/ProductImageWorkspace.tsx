@@ -179,13 +179,14 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
             {/* Prompt Bar - Only show when not cropping */}
             {!e.isCropping && (
               <PromptBar
+                isDrawMode={isDrawMode}
                 prompt={e.prompt}
                 onPromptChange={e.setPrompt}
                 onPromptSubmit={handlePromptAction}
                 isGenerating={e.isGenerating}
                 isGenerateDisabled={isGenerateDisabled}
                 onGenerate={handlePromptAction}
-                generateTooltip={isDrawMode ? (!e.result ? 'Cần có ảnh để edit' : !e.prompt.trim() ? 'Vui lòng nhập mô tả chỉnh sửa' : null) : e.generateTooltip}
+                generateTooltip={isDrawMode ? (!e.result ? 'Need an image to edit' : !e.prompt.trim() ? 'Enter an edit description' : null) : e.generateTooltip}
                 credits={e.credits}
                 usagePreference={e.usagePreference}
                 actionCost={ACTION_COST}
