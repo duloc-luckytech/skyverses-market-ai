@@ -1,9 +1,10 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Slide, SlideLayout } from '../../hooks/useSlideStudio';
-import SlideTextBlock from './SlideTextBlock';
+import SlideTextBlock, { SlideTextBlockHandle } from './SlideTextBlock';
+import SlideFormatBar from './SlideFormatBar';
 
 interface Props {
   slide: Slide | null;
@@ -13,12 +14,12 @@ interface Props {
   bottomBar?: React.ReactNode;
 }
 
-// ── Layout definitions for text block positions ───────────────────────────────
+// ── Layout definitions ────────────────────────────────────────────────────────
 
 interface LayoutDef {
-  canvasClass: string;               // outer wrapper class on canvas content
-  title: { class: string; size: number; };
-  body: { class: string; size: number; };
+  canvasClass: string;
+  title: { class: string; size: number };
+  body:  { class: string; size: number };
 }
 
 const LAYOUTS: Record<SlideLayout, LayoutDef> = {
@@ -52,7 +53,7 @@ const LAYOUTS: Record<SlideLayout, LayoutDef> = {
 // ── Google Fonts ──────────────────────────────────────────────────────────────
 
 let fontsInjected = false;
-function injectGoogleFonts() {
+function injectFonts() {
   if (fontsInjected || typeof document === 'undefined') return;
   fontsInjected = true;
   const link = document.createElement('link');
@@ -67,19 +68,44 @@ function injectGoogleFonts() {
 const SlideCanvas: React.FC<Props> = ({
   slide, onUpdateTitle, onUpdateBody, onUpdateSlide, bottomBar,
 }) => {
-  injectGoogleFonts();
+  injectFonts();
 
-  // Track which block is currently active (so others deselect)
+  // Track which block is active (for exclusive activation)
   const [activeBlock, setActiveBlock] = useState<'title' | 'body' | null>(null);
+  // activeEditRef: points to the currently focused contentEditable
+  const activeEditRef = useRef<HTMLDivElement | null>(null);
+  // Forwarded refs to SlideTextBlock
+  const titleBlockRef = useRef<SlideTextBlockHandle>(null);
+  const bodyBlockRef  = useRef<SlideTextBlockHandle>(null);
 
-  const handleTitleActivate = useCallback(() => setActiveBlock('title'), []);
-  const handleTitleDeactivate = useCallback(() => setActiveBlock(prev => prev === 'title' ? null : prev), []);
-  const handleBodyActivate = useCallback(() => setActiveBlock('body'), []);
-  const handleBodyDeactivate = useCallback(() => setActiveBlock(prev => prev === 'body' ? null : prev), []);
+  const handleTitleActivate = useCallback((el: HTMLDivElement) => {
+    setActiveBlock('title');
+    activeEditRef.current = el;
+  }, []);
+  const handleTitleDeactivate = useCallback(() => {
+    setActiveBlock(prev => prev === 'title' ? null : prev);
+    if (activeEditRef.current === titleBlockRef.current?.getEditRef()) {
+      activeEditRef.current = null;
+    }
+  }, []);
 
-  // Click on canvas background → deselect all
-  const handleCanvasClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) setActiveBlock(null);
+  const handleBodyActivate = useCallback((el: HTMLDivElement) => {
+    setActiveBlock('body');
+    activeEditRef.current = el;
+  }, []);
+  const handleBodyDeactivate = useCallback(() => {
+    setActiveBlock(prev => prev === 'body' ? null : prev);
+    if (activeEditRef.current === bodyBlockRef.current?.getEditRef()) {
+      activeEditRef.current = null;
+    }
+  }, []);
+
+  // Click on background → deselect
+  const handleBgClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setActiveBlock(null);
+      activeEditRef.current = null;
+    }
   };
 
   if (!slide) {
@@ -93,44 +119,50 @@ const SlideCanvas: React.FC<Props> = ({
   const ld = LAYOUTS[slide.layout];
   const tc = slide.textColor;
 
-  // ── Two-col and title-image layouts ──────────────────────────────────────
+  const titleBlock = (
+    <SlideTextBlock
+      ref={titleBlockRef}
+      key={`title-${slide.id}`}
+      fieldLabel="Tiêu đề"
+      placeholder="Tiêu đề slide..."
+      htmlValue={slide.titleHtml}
+      plainValue={slide.title}
+      defaultFontSize={ld.title.size}
+      textColor={tc}
+      className={ld.title.class}
+      onChange={(plain, html) => onUpdateTitle(slide.id, plain, html)}
+      onActivate={handleTitleActivate}
+      onDeactivate={handleTitleDeactivate}
+      forceBlur={activeBlock === 'body'}
+    />
+  );
+
+  const bodyBlock = (
+    <SlideTextBlock
+      ref={bodyBlockRef}
+      key={`body-${slide.id}`}
+      fieldLabel="Nội dung"
+      placeholder="Nội dung slide... (Enter để xuống dòng)"
+      htmlValue={slide.bodyHtml}
+      plainValue={slide.body}
+      defaultFontSize={ld.body.size}
+      textColor={tc}
+      className={ld.body.class}
+      onChange={(plain, html) => onUpdateBody(slide.id, plain, html)}
+      onActivate={handleBodyActivate}
+      onDeactivate={handleBodyDeactivate}
+      forceBlur={activeBlock === 'title'}
+    />
+  );
+
   const renderContent = () => {
-    const titleBlock = (
-      <SlideTextBlock
-        key={`title-${slide.id}`}
-        fieldLabel="Tiêu đề"
-        placeholder="Tiêu đề slide..."
-        htmlValue={slide.titleHtml}
-        plainValue={slide.title}
-        defaultFontSize={ld.title.size}
-        textColor={tc}
-        className={ld.title.class}
-        onChange={(plain, html) => onUpdateTitle(slide.id, plain, html)}
-        onActivate={handleTitleActivate}
-        onDeactivate={handleTitleDeactivate}
-        forceBlur={activeBlock === 'body'}
-      />
-    );
-
-    const bodyBlock = (
-      <SlideTextBlock
-        key={`body-${slide.id}`}
-        fieldLabel="Nội dung"
-        placeholder="Nội dung slide... (Enter để xuống dòng)"
-        htmlValue={slide.bodyHtml}
-        plainValue={slide.body}
-        defaultFontSize={ld.body.size}
-        textColor={tc}
-        className={ld.body.class}
-        onChange={(plain, html) => onUpdateBody(slide.id, plain, html)}
-        onActivate={handleBodyActivate}
-        onDeactivate={handleBodyDeactivate}
-        forceBlur={activeBlock === 'title'}
-      />
-    );
-
     if (slide.layout === 'two-col') {
-      return <><div className="flex flex-col justify-center">{titleBlock}</div><div className="flex flex-col justify-center">{bodyBlock}</div></>;
+      return (
+        <>
+          <div className="flex flex-col justify-center">{titleBlock}</div>
+          <div className="flex flex-col justify-center">{bodyBlock}</div>
+        </>
+      );
     }
     if (slide.layout === 'title-image') {
       return (
@@ -150,14 +182,33 @@ const SlideCanvas: React.FC<Props> = ({
   return (
     <div className="flex-1 flex flex-col bg-slate-100 dark:bg-[#0d0d0f] overflow-hidden min-h-0">
       <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="flex flex-col items-center p-4 pb-3 gap-0 w-full">
+        <div className="flex flex-col items-center p-4 pb-3 gap-2 w-full">
+
+          {/* ── Shared Format Bar (sibling of canvas, no portal) ── */}
+          <AnimatePresence>
+            {activeBlock && (
+              <motion.div
+                key="formatbar"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.15 }}
+                className="w-full max-w-4xl shrink-0"
+              >
+                <SlideFormatBar
+                  activeRef={activeEditRef as React.RefObject<HTMLDivElement>}
+                  visible={true}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* ── Canvas frame ── */}
           <div
             className="w-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.04] shrink-0"
-            onClick={handleCanvasClick}
+            onClick={handleBgClick}
           >
-            {/* Background */}
+            {/* Background image / gradient */}
             <AnimatePresence mode="wait">
               {slide.bgImageUrl ? (
                 <motion.img
@@ -196,8 +247,7 @@ const SlideCanvas: React.FC<Props> = ({
               {slide.bgStatus === 'error' && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-red-500/80 text-white text-[10px] font-medium z-20">
-                  <AlertCircle size={10} />
-                  Lỗi gen ảnh
+                  <AlertCircle size={10} /> Lỗi gen ảnh
                 </motion.div>
               )}
             </AnimatePresence>
@@ -207,23 +257,29 @@ const SlideCanvas: React.FC<Props> = ({
               {slide.index + 1}
             </div>
 
-            {/* ── Content layer ── */}
-            <div className={`absolute inset-0 ${ld.canvasClass}`} style={{ paddingTop: '8%', paddingBottom: '8%' }}>
+            {/* Active ring */}
+            {activeBlock && (
+              <div className="absolute inset-0 ring-2 ring-brand-blue/30 rounded-2xl pointer-events-none z-10" />
+            )}
+
+            {/* ── Text content layer ── */}
+            <div
+              className={`absolute inset-0 ${ld.canvasClass}`}
+              style={{ paddingTop: '7%', paddingBottom: '7%' }}
+            >
               {renderContent()}
             </div>
 
-            {/* Helper hint when nothing active */}
+            {/* Idle hint */}
             {!activeBlock && (
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none">
-                <span className="text-[9px] text-white/25 font-medium">click text để chọn · double-click để chỉnh sửa</span>
+              <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none">
+                <span className="text-[9px] text-white/25 font-medium">Click vào text để chỉnh sửa</span>
               </div>
             )}
           </div>
 
-          {/* Bottom bar */}
-          <div className="w-full max-w-4xl">
-            {bottomBar}
-          </div>
+          {/* Bottom bar (prompt/gen controls) */}
+          <div className="w-full max-w-4xl">{bottomBar}</div>
         </div>
       </div>
     </div>
