@@ -180,7 +180,7 @@ export const SlideProjectSwitcher: React.FC<Props> = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.97 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute top-full left-0 mt-1 z-[600] w-[220px] rounded-xl bg-white dark:bg-[#141418] border border-black/[0.08] dark:border-white/[0.08] shadow-2xl shadow-black/20 overflow-hidden"
+            className="absolute top-full left-0 mt-1 z-[9999] w-[220px] rounded-xl bg-white dark:bg-[#141418] border border-black/[0.08] dark:border-white/[0.08] shadow-2xl shadow-black/20 overflow-hidden"
           >
             {/* Header */}
             <div className="px-3 py-2 border-b border-black/[0.05] dark:border-white/[0.06]">
@@ -274,15 +274,14 @@ export const SlideProjectSwitcher: React.FC<Props> = ({
                           >
                             <Copy size={9} />
                           </button>
-                          {projects.length > 1 && (
-                            <button
-                              onClick={(e) => requestDelete(p.id, e)}
-                              title="Xóa project"
-                              className="p-1 rounded text-slate-400 hover:text-red-400 transition-colors hover:bg-red-500/[0.08]"
-                            >
-                              <Trash2 size={9} />
-                            </button>
-                          )}
+                          <button
+                            onClick={(e) => projects.length > 1 ? requestDelete(p.id, e) : e.stopPropagation()}
+                            title={projects.length > 1 ? 'Xóa project' : 'Cần ít nhất 1 project'}
+                            disabled={projects.length <= 1}
+                            className="p-1 rounded text-slate-400 hover:text-red-400 transition-colors hover:bg-red-500/[0.08] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                          >
+                            <Trash2 size={9} />
+                          </button>
                         </>
                       )}
                     </div>

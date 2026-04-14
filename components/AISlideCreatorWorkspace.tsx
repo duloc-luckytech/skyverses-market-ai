@@ -257,7 +257,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 12 }}
       transition={{ duration: 0.25, ease: 'easeOut' }}
-      className="fixed inset-0 z-[500] flex flex-col bg-white dark:bg-[#0d0d0f] overflow-hidden"
+      className="fixed inset-0 z-[500] flex flex-col bg-white dark:bg-[#0d0d0f]"
     >
       {/* ══ Onboarding Wizard ═══════════════════════════════════════════════════ */}
       <AnimatePresence>
@@ -401,7 +401,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
       </div>
 
       {/* ══ Main body — 3 panels ════════════════════════════════════════════════ */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden min-h-0">
         {/* Panel 1: Thumbnail list */}
         {s.slides.length > 0 && (
           <SlideThumbnailList
