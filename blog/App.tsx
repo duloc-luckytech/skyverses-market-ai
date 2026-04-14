@@ -39,7 +39,6 @@ const App: React.FC = () => {
                     <Route path="/search" element={<SearchPage />} />
                     <Route path="/category/:category" element={<BlogHomePage />} />
                     <Route path="/tags/:tag" element={<TagPage />} />
-                    <Route path="/privacy.html" element={<PrivacyPage />} />
                     <Route path="/:slug" element={<BlogPostPage />} />
                   </Routes>
                 </main>

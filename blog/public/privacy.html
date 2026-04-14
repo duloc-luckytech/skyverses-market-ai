@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Skyverses Insights</title>
+  <meta name="description" content="Skyverses AI Privacy Policy. We respect your privacy and are committed to protecting your personal data." />
+  <link rel="icon" href="/favicon.ico" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #0090ff;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: rgba(0,0,0,0.07);
+      --text: #1e293b;
+      --muted: #64748b;
+      --code-bg: rgba(0,144,255,0.07);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #080809;
+        --card: rgba(255,255,255,0.03);
+        --border: rgba(255,255,255,0.07);
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --code-bg: rgba(0,144,255,0.10);
+      }
+      body { background: #080809; }
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      padding: 5rem 1.5rem 3rem;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 800px 400px at 50% -20%, rgba(0,144,255,0.12), transparent),
+                  radial-gradient(ellipse 400px 300px at 75% 30%, rgba(124,58,237,0.06), transparent);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      background: rgba(0,144,255,0.10);
+      border: 1px solid rgba(0,144,255,0.25);
+      border-radius: 999px;
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      margin-bottom: 1rem;
+    }
+    .hero p { color: var(--muted); max-width: 600px; margin: 0 auto 1rem; font-size: 15px; }
+    .updated { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+    /* ── Layout ── */
+    .container { max-width: 860px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .toc-title { font-size: 10px; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+    .toc a {
+      display: block;
+      padding: 5px 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .toc a:hover { color: var(--blue); }
+
+    /* ── Sections ── */
+    .section { padding: 2.5rem 0; border-bottom: 1px solid var(--border); }
+    .section:last-child { border-bottom: none; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; }
+    .section-icon {
+      width: 36px; height: 36px;
+      background: rgba(0,144,255,0.10);
+      border: 1px solid rgba(0,144,255,0.15);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--blue);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .section-num { font-size: 10px; font-weight: 900; color: var(--border); letter-spacing: 0.1em; }
+    h2 { font-size: 1.4rem; font-weight: 900; letter-spacing: -0.01em; }
+
+    .prose p, .prose li {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .prose p { margin-bottom: 0.85rem; }
+    .prose ul { padding-left: 1.5rem; margin: 0.75rem 0; }
+    .prose li { margin-bottom: 6px; }
+    .prose strong { color: var(--text); font-weight: 700; }
+    .prose a { color: var(--blue); text-decoration: none; }
+    .prose a:hover { text-decoration: underline; }
+    .prose code {
+      background: var(--code-bg);
+      color: var(--blue);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    }
+
+    /* ── Back link ── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .back-link:hover { color: var(--blue); border-color: rgba(0,144,255,0.3); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="badge">🔒 Privacy First</div>
+    <h1>Privacy Policy</h1>
+    <p>We respect your privacy and are committed to protecting your personal data. This policy explains the types of information we collect and how we use it.</p>
+    <p class="updated">Last updated: April 12, 2026</p>
+  </div>
+
+  <!-- Main content -->
+  <div class="container">
+    <a href="/" class="back-link">← Back to Skyverses Insights</a>
+
+    <!-- TOC -->
+    <div class="toc">
+      <p class="toc-title">Contents</p>
+      <a href="#information-we-collect">1. Information We Collect</a>
+      <a href="#how-we-use">2. How We Use Your Information</a>
+      <a href="#data-sharing">3. Data Sharing &amp; Third Parties</a>
+      <a href="#data-security">4. Data Security</a>
+      <a href="#data-retention">5. Data Retention</a>
+      <a href="#your-rights">6. Your Rights</a>
+      <a href="#cookies">7. Cookies &amp; Tracking</a>
+      <a href="#contact">8. Contact Us</a>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="section" id="information-we-collect">
+      <div class="section-header">
+        <div class="section-icon">👁</div>
+        <div>
+          <div class="section-num">01</div>
+          <h2>Information We Collect</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>We collect information to provide better services to all our users. The types of information we collect include:</p>
+        <ul>
+          <li><strong>Account information:</strong> When you register for Skyverses AI, we collect your name, email address, and profile picture via Google OAuth.</li>
+          <li><strong>Usage data:</strong> We collect information about how you interact with our services, including AI generation history, feature usage patterns, and session activity.</li>
+          <li><strong>Device &amp; technical data:</strong> Browser type, operating system, IP address, language preference, and time zone.</li>
+          <li><strong>Payment information:</strong> For credit top-ups, bank transfer references are logged. We do not store card numbers or payment credentials directly.</li>
+          <li><strong>User content:</strong> Prompts, uploaded images, and generated media created through the platform.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="section" id="how-we-use">
+      <div class="section-header">
+        <div class="section-icon">✅</div>
+        <div>
+          <div class="section-num">02</div>
+          <h2>How We Use Your Information</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>We use the information we collect to:</p>
+        <ul>
+          <li>Provide, maintain, and improve our AI services</li>
+          <li>Process credit transactions and manage your account balance</li>
+          <li>Send service notifications, updates, and security alerts</li>
+          <li>Personalize your experience and surface relevant AI tools</li>
+          <li>Analyze usage trends to improve platform performance</li>
+          <li>Prevent fraud, abuse, and enforce our Terms of Service</li>
+          <li>Comply with legal obligations and resolve disputes</li>
+        </ul>
+        <p>We do <strong>not</strong> sell your personal data to third parties for advertising purposes.</p>
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="section" id="data-sharing">
+      <div class="section-header">
+        <div class="section-icon">🌐</div>
+        <div>
+          <div class="section-num">03</div>
+          <h2>Data Sharing &amp; Third Parties</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>We may share your information with:</p>
+        <ul>
+          <li><strong>AI service providers:</strong> Google (Gemini), OpenAI, RunningHub, FXFlow, Grok — to fulfill generation requests.</li>
+          <li><strong>Cloud infrastructure:</strong> Google Cloud Storage for media file hosting and CDN delivery.</li>
+          <li><strong>Analytics tools:</strong> Anonymized aggregate data only, for performance monitoring.</li>
+          <li><strong>Legal authorities:</strong> If required by law or to protect the rights and safety of our users.</li>
+        </ul>
+        <p>All third-party integrations are governed by their respective privacy policies. We encourage you to review them.</p>
+      </div>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="section" id="data-security">
+      <div class="section-header">
+        <div class="section-icon">🔒</div>
+        <div>
+          <div class="section-num">04</div>
+          <h2>Data Security</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>We implement industry-standard security measures to protect your data:</p>
+        <ul>
+          <li>All data is transmitted over <strong>HTTPS / TLS 1.3</strong> encrypted connections</li>
+          <li>Passwords are hashed using <strong>scrypt</strong> — never stored in plain text</li>
+          <li>Authentication tokens (JWT) expire after <strong>7 days</strong> and are signed with secret keys</li>
+          <li>Database access is restricted to internal network only (MongoDB Atlas VPC peering)</li>
+          <li>Regular security reviews and dependency audits are performed</li>
+        </ul>
+        <p>While we strive to protect your data, no internet transmission is 100% secure. Please keep your account credentials safe and report any suspicious activity to our team.</p>
+      </div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="section" id="data-retention">
+      <div class="section-header">
+        <div class="section-icon">🗄</div>
+        <div>
+          <div class="section-num">05</div>
+          <h2>Data Retention</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>We retain your data for as long as necessary to provide you with our services or as required by law:</p>
+        <ul>
+          <li><strong>Account data:</strong> Retained while your account is active. Deleted within 30 days of account closure upon request.</li>
+          <li><strong>Generation history:</strong> Job records are retained for 12 months for debugging and quality purposes.</li>
+          <li><strong>Transaction logs:</strong> Credit transactions are retained for 5 years for financial compliance.</li>
+          <li><strong>Generated media:</strong> Stored on GCS for 90 days, then auto-purged unless saved to your library.</li>
+          <li><strong>Log files:</strong> Server logs are retained for 30 days and automatically deleted.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="section" id="your-rights">
+      <div class="section-header">
+        <div class="section-icon">🛡</div>
+        <div>
+          <div class="section-num">06</div>
+          <h2>Your Rights</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+        <ul>
+          <li><strong>Access:</strong> Request a copy of the personal data we hold about you.</li>
+          <li><strong>Rectification:</strong> Correct any inaccurate or incomplete information.</li>
+          <li><strong>Erasure:</strong> Request deletion of your personal data ("right to be forgotten").</li>
+          <li><strong>Portability:</strong> Receive your data in a machine-readable format.</li>
+          <li><strong>Objection:</strong> Object to processing of your data for certain purposes.</li>
+          <li><strong>Restriction:</strong> Request that we restrict processing of your data.</li>
+        </ul>
+        <p>To exercise any of these rights, contact us at <a href="mailto:privacy@skyverses.com">privacy@skyverses.com</a>. We will respond within 30 days.</p>
+      </div>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="section" id="cookies">
+      <div class="section-header">
+        <div class="section-icon">🍪</div>
+        <div>
+          <div class="section-num">07</div>
+          <h2>Cookies &amp; Tracking</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>We use cookies and similar technologies to enhance your experience:</p>
+        <ul>
+          <li><strong>Essential cookies:</strong> Required for authentication, session management, and security.</li>
+          <li><strong>Preference cookies:</strong> Remember your language selection and theme preference (stored in <code>localStorage</code>).</li>
+          <li><strong>Analytics cookies:</strong> Anonymized usage data to understand feature adoption.</li>
+        </ul>
+        <p>You may disable cookies in your browser settings, but this may affect the functionality of our platform. We do not use third-party advertising cookies or cross-site tracking.</p>
+      </div>
+    </div>
+
+    <!-- Section 8 -->
+    <div class="section" id="contact">
+      <div class="section-header">
+        <div class="section-icon">📧</div>
+        <div>
+          <div class="section-num">08</div>
+          <h2>Contact Us</h2>
+        </div>
+      </div>
+      <div class="prose">
+        <p>If you have questions, concerns, or requests regarding this Privacy Policy or your personal data, please reach us through:</p>
+        <ul>
+          <li><strong>Email:</strong> <a href="mailto:privacy@skyverses.com">privacy@skyverses.com</a></li>
+          <li><strong>Booking/Support:</strong> <a href="https://ai.skyverses.com/booking" target="_blank" rel="noopener noreferrer">ai.skyverses.com/booking</a></li>
+          <li><strong>Telegram:</strong> <a href="https://t.me/skyverses" target="_blank" rel="noopener noreferrer">t.me/skyverses</a></li>
+        </ul>
+        <p>We are committed to resolving any privacy concerns promptly and transparently. Changes to this policy will be announced via our blog with at least 7 days notice.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 Skyverses AI · <a href="/">Back to Insights Blog</a> · <a href="https://ai.skyverses.com">Skyverses Platform</a></p>
+  </footer>
+
+</body>
+</html>
