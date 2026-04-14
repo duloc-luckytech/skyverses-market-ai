@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Download, Undo2, Redo2, Sparkles,
-  ChevronDown, Layers, FileText,
+  ChevronDown, Layers, FileText, Play,
 } from 'lucide-react';
 import { downloadDocxTemplate } from '../utils/downloadDocxTemplate';
 import { useDocxImport } from '../hooks/useDocxImport';
@@ -24,6 +24,7 @@ import SlideOnboardingWizard, {
 import SlideHelpBanner, { SLIDE_TIPS_KEY } from './slide-studio/SlideHelpBanner';
 import SlideGeneratingOverlay from './slide-studio/SlideGeneratingOverlay';
 import SlidePromptBar from './slide-studio/SlidePromptBar';
+import SlidePresenter from './slide-studio/SlidePresenter';
 
 interface Props {
   onClose: () => void;
@@ -60,6 +61,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
   // ── Wizard & Help banner ───────────────────────────────────────────────────
   const [showWizard, setShowWizard] = useState(() => shouldShowSlideWizard());
   const [showHelpBanner, setShowHelpBanner] = useState(false);
+  const [isPresentMode, setIsPresentMode] = useState(false);
 
   // Track first time slides appear after wizard/generation
   const prevSlideCountRef = useRef(s.slides.length);
@@ -397,6 +399,18 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
               </AnimatePresence>
             </div>
           )}
+
+          {/* Present button */}
+          {s.slides.length > 0 && (
+            <button
+              onClick={() => setIsPresentMode(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-all"
+              title="Trình chiếu toàn màn hình (Slideshow)"
+            >
+              <Play size={12} />
+              Trình chiếu
+            </button>
+          )}
         </div>
       </div>
 
@@ -515,6 +529,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                 slide={s.activeSlide}
                 onUpdateTitle={handleUpdateTitle}
                 onUpdateBody={handleUpdateBody}
+                onUpdateSlide={s.updateSlide}
                 bottomBar={
                   <SlidePromptBar
                     slide={s.activeSlide}
@@ -587,6 +602,15 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
         slides={s.slides}
         initialFormat={exportFormat}
       />
+
+      {/* ── Slideshow Presenter ── */}
+      {isPresentMode && s.slides.length > 0 && (
+        <SlidePresenter
+          slides={s.slides}
+          initialIndex={s.slides.findIndex(sl => sl.id === s.activeSlideId) ?? 0}
+          onClose={() => setIsPresentMode(false)}
+        />
+      )}
     </motion.div>
   );
 };

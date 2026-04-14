@@ -17,6 +17,15 @@ export interface AISuggestion {
   body: string;
 }
 
+export interface TextStyle {
+  fontFamily?: string;   // e.g. 'Inter', 'Georgia', 'Montserrat'
+  fontSize?: number;     // in px
+  fontWeight?: 'normal' | 'bold' | '900';
+  fontStyle?: 'normal' | 'italic';
+  textAlign?: 'left' | 'center' | 'right';
+  letterSpacing?: number; // in em, e.g. 0.05
+}
+
 export interface Slide {
   id: string;
   index: number;
@@ -31,7 +40,10 @@ export interface Slide {
   isSuggestLoading: boolean;
   bgPrompt?: string;
   slideRefImages?: string[];
+  titleStyle?: TextStyle;
+  bodyStyle?: TextStyle;
 }
+
 
 export interface StylePreset {
   id: string;
