@@ -198,7 +198,7 @@ const BlogFooter: React.FC = () => {
               Contact Us
             </a>
             <span className="text-slate-200 dark:text-gray-800">·</span>
-            <Link to="/privacy"
+            <Link to="/privacy.html"
               className="flex items-center gap-1 text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors">
               <Shield size={9} /> {t('footer.privacy')}
             </Link>
@@ -238,7 +238,7 @@ const BlogFooter: React.FC = () => {
         <div className="flex items-center justify-center gap-3 text-[10px] text-slate-400 dark:text-gray-600 mb-2">
           <span>{t('footer.copyright')}</span>
           <span>·</span>
-          <Link to="/privacy" className="flex items-center gap-1 hover:text-brand-blue transition-colors">
+          <Link to="/privacy.html" className="flex items-center gap-1 hover:text-brand-blue transition-colors">
             <Shield size={9} /> {t('footer.privacy')}
           </Link>
         </div>
