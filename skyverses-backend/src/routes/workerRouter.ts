@@ -922,6 +922,7 @@ export function createWorkerRouter(provider: string) {
   /* ─── POST /image/upload-result ──────────────────── */
   router.post("/image/upload-result", async (req, res) => {
     try {
+      console.log(`📥 [${LABEL}] POST /image/upload-result body:`, JSON.stringify(req.body, null, 2));
       const { id, status, mediaId, projectId, error } = req.body;
 
       if (!id || !status) {

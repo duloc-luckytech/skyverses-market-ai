@@ -100,7 +100,7 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, bott
     <div className="flex-1 flex flex-col bg-slate-100 dark:bg-[#0d0d0f] overflow-hidden min-h-0">
       {/* Scrollable area: canvas frame + bottom bar stacked from top */}
       <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="flex flex-col items-center p-4 pb-3 gap-0">
+        <div className="flex flex-col items-center p-4 pb-3 gap-0 w-full">
         {/* Canvas frame */}
         <div className="w-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.04] shrink-0">
 
@@ -234,8 +234,10 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, bott
           </div>
         </div>
 
-        {/* Bottom bar — sits directly below the canvas frame */}
-        {bottomBar}
+        {/* Bottom bar — full width aligned with canvas card */}
+        <div className="w-full max-w-4xl">
+          {bottomBar}
+        </div>
         </div>
       </div>
     </div>
