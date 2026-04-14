@@ -514,19 +514,56 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
       const count = (Array.isArray(importedOutline) && importedOutline.length > 0)
         ? importedOutline.length
         : slideCount;
-      const newSlides: Slide[] = outline.slice(0, count).map((item, i) => ({
+
+      const isLight = deckStyle !== 'minimal';
+
+      // ── Welcome slide (always first) ───────────────────────────────────────
+      const welcomeSlide: Slide = {
         id: genId(),
-        index: i,
-        title: item.title || `Slide ${i + 1}`,
-        body: item.body || '',
-        layout: i === 0 ? 'title-center' : 'title-left',
+        index: 0,
+        title: deckTopic || 'Chào mừng',
+        body: brandSlogan || 'Trình bày bởi Skyverses AI',
+        layout: 'full-bg',
         bgImageUrl: null,
         bgJobId: null,
         bgStatus: 'idle',
-        textColor: deckStyle === 'minimal' ? 'dark' : 'light',
+        textColor: 'light',
+        aiSuggestions: [],
+        isSuggestLoading: false,
+      };
+
+      // ── Content slides (AI-generated) ──────────────────────────────────────
+      const contentSlides: Slide[] = outline.slice(0, count).map((item, i) => ({
+        id: genId(),
+        index: i + 1,
+        title: item.title || `Slide ${i + 2}`,
+        body: item.body || '',
+        layout: 'title-left' as SlideLayout,
+        bgImageUrl: null,
+        bgJobId: null,
+        bgStatus: 'idle' as const,
+        textColor: isLight ? 'light' : 'dark',
         aiSuggestions: [],
         isSuggestLoading: false,
       }));
+
+      // ── Thank You slide (always last) ─────────────────────────────────────
+      const thankYouSlide: Slide = {
+        id: genId(),
+        index: contentSlides.length + 1,
+        title: 'Cảm ơn bạn đã lắng nghe!',
+        body: 'Q&A · Liên hệ: hello@skyverses.com',
+        layout: 'title-center',
+        bgImageUrl: null,
+        bgJobId: null,
+        bgStatus: 'idle',
+        textColor: 'light',
+        aiSuggestions: [],
+        isSuggestLoading: false,
+      };
+
+      const newSlides: Slide[] = [welcomeSlide, ...contentSlides, thankYouSlide]
+        .map((s, i) => ({ ...s, index: i }));
 
       setSlides(newSlides);
       setActiveSlideId(newSlides[0]?.id ?? '');
