@@ -17,13 +17,25 @@ export interface AISuggestion {
   body: string;
 }
 
+/** A freely-positioned rich text block on a slide (Canva-style) */
+export interface FreeTextBlock {
+  id: string;
+  html: string;      // rich HTML
+  x: number;         // left: % of canvas width  (0–100)
+  y: number;         // top:  % of canvas height (0–100)
+  w: number;         // width: % of canvas width  (5–100)
+  zIndex: number;
+  role?: 'title' | 'body' | 'custom';
+}
+
 export interface Slide {
   id: string;
   index: number;
   title: string;       // plain-text (AI prompts, export, search)
   body: string;        // plain-text
-  titleHtml?: string;  // rich HTML (editor display)
-  bodyHtml?: string;   // rich HTML (editor display)
+  titleHtml?: string;  // legacy rich HTML
+  bodyHtml?: string;   // legacy rich HTML
+  textBlocks?: FreeTextBlock[];  // new free-canvas blocks
   layout: SlideLayout;
   bgImageUrl: string | null;
   bgJobId: string | null;
@@ -232,6 +244,56 @@ export const useSlideStudio = () => {
       return arr.map((s, i) => ({ ...s, index: i }));
     });
   }, [pushUndo]);
+
+  // ─── Free-canvas text block CRUD ─────────────────────────────────────────────
+
+  const addTextBlock = useCallback((slideId: string) => {
+    setSlides(prev => prev.map(s => {
+      if (s.id !== slideId) return s;
+      const maxZ = Math.max(0, ...(s.textBlocks?.map(b => b.zIndex) ?? [0]));
+      const newBlock: FreeTextBlock = {
+        id: genId(),
+        html: '<span style="font-size:24px;font-family:Inter;color:#ffffff">Text mới</span>',
+        x: 15, y: 35, w: 70,
+        zIndex: maxZ + 1,
+        role: 'custom',
+      };
+      return { ...s, textBlocks: [...(s.textBlocks ?? []), newBlock] };
+    }));
+    setIsDirty(true);
+  }, []);
+
+  const updateTextBlock = useCallback((slideId: string, blockId: string, patch: Partial<FreeTextBlock>) => {
+    setSlides(prev => prev.map(s => {
+      if (s.id !== slideId) return s;
+      return { ...s, textBlocks: s.textBlocks?.map(b => b.id === blockId ? { ...b, ...patch } : b) };
+    }));
+    setIsDirty(true);
+  }, []);
+
+  const removeTextBlock = useCallback((slideId: string, blockId: string) => {
+    setSlides(prev => prev.map(s => {
+      if (s.id !== slideId) return s;
+      if ((s.textBlocks?.length ?? 0) <= 1) {
+        showToast('Cần ít nhất 1 text block', 'error');
+        return s;
+      }
+      return { ...s, textBlocks: s.textBlocks?.filter(b => b.id !== blockId) };
+    }));
+    setIsDirty(true);
+  }, [showToast]);
+
+  const bringTextBlockForward = useCallback((slideId: string, blockId: string) => {
+    setSlides(prev => prev.map(s => {
+      if (s.id !== slideId) return s;
+      const blocks = s.textBlocks ?? [];
+      const block = blocks.find(b => b.id === blockId);
+      if (!block) return s;
+      const maxZ = Math.max(...blocks.map(b => b.zIndex));
+      return { ...s, textBlocks: blocks.map(b => b.id === blockId ? { ...b, zIndex: maxZ + 1 } : b) };
+    }));
+  }, []);
+
 
   // ─── Undo / Redo ─────────────────────────────────────────────────────────────
 
@@ -690,5 +752,11 @@ Return ONLY a JSON array, no explanation:
     // Gen-all state
     isGenAlling,
     genAllProgress,
+
+    // Free-canvas text block actions
+    addTextBlock,
+    updateTextBlock,
+    removeTextBlock,
+    bringTextBlockForward,
   };
 };

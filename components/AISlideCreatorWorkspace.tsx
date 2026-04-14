@@ -237,14 +237,6 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
   }, [pm, s]);
 
   // ── Slide update handlers ──────────────────────────────────────────────────
-  const handleUpdateTitle = useCallback((id: string, plain: string, html: string) => {
-    s.updateSlide(id, { title: plain, titleHtml: html });
-  }, [s.updateSlide]);
-
-  const handleUpdateBody = useCallback((id: string, plain: string, html: string) => {
-    s.updateSlide(id, { body: plain, bodyHtml: html });
-  }, [s.updateSlide]);
-
 
   const handleChangeLayout = useCallback((id: string, layout: any) => {
     s.updateSlide(id, { layout });
@@ -528,8 +520,10 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
               {/* Canvas */}
               <SlideCanvas
                 slide={s.activeSlide}
-                onUpdateTitle={handleUpdateTitle}
-                onUpdateBody={handleUpdateBody}
+                onUpdateTextBlock={s.updateTextBlock}
+                onAddTextBlock={s.addTextBlock}
+                onRemoveTextBlock={s.removeTextBlock}
+                onBringTextBlockForward={s.bringTextBlockForward}
                 onUpdateSlide={s.updateSlide}
                 bottomBar={
                   <SlidePromptBar

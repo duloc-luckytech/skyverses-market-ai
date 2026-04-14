@@ -1,109 +1,128 @@
 
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, AlertCircle } from 'lucide-react';
-import { Slide, SlideLayout } from '../../hooks/useSlideStudio';
-import SlideTextBlock, { SlideTextBlockHandle } from './SlideTextBlock';
+import { Loader2, AlertCircle, Plus } from 'lucide-react';
+import { Slide, FreeTextBlock, SlideLayout } from '../../hooks/useSlideStudio';
+import SlideTextObject from './SlideTextObject';
 import SlideFormatBar from './SlideFormatBar';
 
 interface Props {
   slide: Slide | null;
-  onUpdateTitle: (id: string, plain: string, html: string) => void;
-  onUpdateBody: (id: string, plain: string, html: string) => void;
+  /** Called when user edits via free-canvas blocks */
+  onUpdateTextBlock: (slideId: string, blockId: string, patch: Partial<FreeTextBlock>) => void;
+  onAddTextBlock: (slideId: string) => void;
+  onRemoveTextBlock: (slideId: string, blockId: string) => void;
+  onBringTextBlockForward: (slideId: string, blockId: string) => void;
   onUpdateSlide: (id: string, patch: Partial<Slide>) => void;
   bottomBar?: React.ReactNode;
 }
 
-// ── Layout definitions ────────────────────────────────────────────────────────
+// ── Default text block positions per layout ───────────────────────────────────
 
-interface LayoutDef {
-  canvasClass: string;
-  title: { class: string; size: number };
-  body:  { class: string; size: number };
-}
-
-const LAYOUTS: Record<SlideLayout, LayoutDef> = {
-  'title-center': {
-    canvasClass: 'flex flex-col items-center justify-center text-center px-12',
-    title: { class: 'w-full mb-5', size: 40 },
-    body:  { class: 'w-full max-w-2xl', size: 20 },
-  },
-  'title-left': {
-    canvasClass: 'flex flex-col justify-center px-14',
-    title: { class: 'w-full max-w-3xl mb-5', size: 40 },
-    body:  { class: 'w-full max-w-2xl', size: 20 },
-  },
-  'full-bg': {
-    canvasClass: 'flex flex-col items-center justify-end text-center pb-14 px-12',
-    title: { class: 'w-full mb-3', size: 52 },
-    body:  { class: 'w-full max-w-2xl', size: 18 },
-  },
-  'two-col': {
-    canvasClass: 'grid grid-cols-2 gap-8 px-12 items-center h-full',
-    title: { class: 'w-full', size: 36 },
-    body:  { class: 'w-full', size: 18 },
-  },
-  'title-image': {
-    canvasClass: 'grid grid-cols-2 gap-8 px-12 items-center h-full',
-    title: { class: 'w-full mb-4', size: 36 },
-    body:  { class: 'w-full', size: 18 },
-  },
+type Pos = { x: number; y: number; w: number };
+const LAYOUT_POS: Record<SlideLayout, { title: Pos; body: Pos }> = {
+  'title-center': { title: { x: 10, y: 22, w: 80 }, body: { x: 15, y: 57, w: 70 } },
+  'title-left':   { title: { x: 7,  y: 22, w: 58 }, body: { x: 7,  y: 57, w: 58 } },
+  'full-bg':      { title: { x: 10, y: 58, w: 80 }, body: { x: 15, y: 76, w: 70 } },
+  'two-col':      { title: { x: 5,  y: 22, w: 42 }, body: { x: 53, y: 22, w: 42 } },
+  'title-image':  { title: { x: 5,  y: 18, w: 45 }, body: { x: 5,  y: 52, w: 45 } },
 };
 
-// ── Google Fonts ──────────────────────────────────────────────────────────────
+const DEFAULT_TITLE_SIZE: Record<SlideLayout, number> = {
+  'title-center': 40, 'title-left': 40, 'full-bg': 52, 'two-col': 32, 'title-image': 32,
+};
+
+// ── Google Fonts injection ────────────────────────────────────────────────────
 
 let fontsInjected = false;
 function injectFonts() {
   if (fontsInjected || typeof document === 'undefined') return;
   fontsInjected = true;
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href =
-    'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Montserrat:ital,wght@0,400;0,700;0,900;1,400&family=Oswald:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:ital,wght@0,400;0,600;0,700;1,400&family=Roboto:ital,wght@0,400;0,700;1,400&display=swap';
-  document.head.appendChild(link);
+  const l = document.createElement('link');
+  l.rel = 'stylesheet';
+  l.href = 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Montserrat:ital,wght@0,400;0,700;0,900;1,400&family=Oswald:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:ital,wght@0,400;0,600;0,700;1,400&family=Roboto:ital,wght@0,400;0,700;1,400&display=swap';
+  document.head.appendChild(l);
+}
+
+// ── Migration: old title/body → FreeTextBlock[] ───────────────────────────────
+
+let _gid = 0;
+const mkid = () => `m${Date.now()}_${_gid++}`;
+
+function migrateSlide(slide: Slide): FreeTextBlock[] {
+  const pos = LAYOUT_POS[slide.layout];
+  const titleSz = DEFAULT_TITLE_SIZE[slide.layout];
+  const blocks: FreeTextBlock[] = [];
+
+  if (slide.title) {
+    blocks.push({
+      id: mkid(),
+      html: slide.titleHtml ?? `<span style="font-size:${titleSz}px;font-family:Inter;color:#ffffff">${slide.title}</span>`,
+      ...pos.title,
+      zIndex: 1,
+      role: 'title',
+    });
+  }
+  if (slide.body) {
+    blocks.push({
+      id: mkid(),
+      html: slide.bodyHtml ?? `<span style="font-size:20px;font-family:Inter;color:#ffffff">${slide.body}</span>`,
+      ...pos.body,
+      zIndex: 2,
+      role: 'body',
+    });
+  }
+  if (blocks.length === 0) {
+    blocks.push({
+      id: mkid(),
+      html: `<span style="font-size:${titleSz}px;font-family:Inter;color:#ffffff">Tiêu đề</span>`,
+      ...pos.title,
+      zIndex: 1,
+      role: 'title',
+    });
+  }
+  return blocks;
 }
 
 // ── Main Canvas ───────────────────────────────────────────────────────────────
 
 const SlideCanvas: React.FC<Props> = ({
-  slide, onUpdateTitle, onUpdateBody, onUpdateSlide, bottomBar,
+  slide, onUpdateTextBlock, onAddTextBlock, onRemoveTextBlock,
+  onBringTextBlockForward, onUpdateSlide, bottomBar,
 }) => {
   injectFonts();
 
-  // Track which block is active (for exclusive activation)
-  const [activeBlock, setActiveBlock] = useState<'title' | 'body' | null>(null);
-  // activeEditRef: points to the currently focused contentEditable
+  const canvasRef = useRef<HTMLDivElement>(null);
   const activeEditRef = useRef<HTMLDivElement | null>(null);
-  // Forwarded refs to SlideTextBlock
-  const titleBlockRef = useRef<SlideTextBlockHandle>(null);
-  const bodyBlockRef  = useRef<SlideTextBlockHandle>(null);
+  const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
 
-  const handleTitleActivate = useCallback((el: HTMLDivElement) => {
-    setActiveBlock('title');
+  // Get text blocks — migrate old slides on-the-fly
+  const textBlocks = useMemo((): FreeTextBlock[] => {
+    if (!slide) return [];
+    if (slide.textBlocks && slide.textBlocks.length > 0) return slide.textBlocks;
+    return migrateSlide(slide);
+  }, [slide]);
+
+  // Persist migration result back to slide (runs once when textBlocks are migrated)
+  useEffect(() => {
+    if (!slide || (slide.textBlocks && slide.textBlocks.length > 0)) return;
+    onUpdateSlide(slide.id, { textBlocks: migrateSlide(slide) });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slide?.id]);
+
+  const handleActivate = useCallback((id: string, el: HTMLDivElement) => {
+    setActiveBlockId(id);
     activeEditRef.current = el;
   }, []);
-  const handleTitleDeactivate = useCallback(() => {
-    setActiveBlock(prev => prev === 'title' ? null : prev);
-    if (activeEditRef.current === titleBlockRef.current?.getEditRef()) {
-      activeEditRef.current = null;
-    }
+
+  const handleDeactivate = useCallback((id?: string) => {
+    setActiveBlockId(prev => prev === id ? null : prev);
+    activeEditRef.current = null;
   }, []);
 
-  const handleBodyActivate = useCallback((el: HTMLDivElement) => {
-    setActiveBlock('body');
-    activeEditRef.current = el;
-  }, []);
-  const handleBodyDeactivate = useCallback(() => {
-    setActiveBlock(prev => prev === 'body' ? null : prev);
-    if (activeEditRef.current === bodyBlockRef.current?.getEditRef()) {
-      activeEditRef.current = null;
-    }
-  }, []);
-
-  // Click on background → deselect
-  const handleBgClick = (e: React.MouseEvent) => {
+  const handleCanvasClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      setActiveBlock(null);
+      setActiveBlockId(null);
       activeEditRef.current = null;
     }
   };
@@ -116,169 +135,123 @@ const SlideCanvas: React.FC<Props> = ({
     );
   }
 
-  const ld = LAYOUTS[slide.layout];
   const tc = slide.textColor;
-
-  const titleBlock = (
-    <SlideTextBlock
-      ref={titleBlockRef}
-      key={`title-${slide.id}`}
-      fieldLabel="Tiêu đề"
-      placeholder="Tiêu đề slide..."
-      htmlValue={slide.titleHtml}
-      plainValue={slide.title}
-      defaultFontSize={ld.title.size}
-      textColor={tc}
-      className={ld.title.class}
-      onChange={(plain, html) => onUpdateTitle(slide.id, plain, html)}
-      onActivate={handleTitleActivate}
-      onDeactivate={handleTitleDeactivate}
-      forceBlur={activeBlock === 'body'}
-    />
-  );
-
-  const bodyBlock = (
-    <SlideTextBlock
-      ref={bodyBlockRef}
-      key={`body-${slide.id}`}
-      fieldLabel="Nội dung"
-      placeholder="Nội dung slide... (Enter để xuống dòng)"
-      htmlValue={slide.bodyHtml}
-      plainValue={slide.body}
-      defaultFontSize={ld.body.size}
-      textColor={tc}
-      className={ld.body.class}
-      onChange={(plain, html) => onUpdateBody(slide.id, plain, html)}
-      onActivate={handleBodyActivate}
-      onDeactivate={handleBodyDeactivate}
-      forceBlur={activeBlock === 'title'}
-    />
-  );
-
-  const renderContent = () => {
-    if (slide.layout === 'two-col') {
-      return (
-        <>
-          <div className="flex flex-col justify-center">{titleBlock}</div>
-          <div className="flex flex-col justify-center">{bodyBlock}</div>
-        </>
-      );
-    }
-    if (slide.layout === 'title-image') {
-      return (
-        <>
-          <div className="flex flex-col justify-center">{titleBlock}{bodyBlock}</div>
-          <div className="h-full flex items-center justify-center">
-            <div className="w-full aspect-video rounded-xl border-2 border-white/20 bg-white/10 backdrop-blur flex items-center justify-center">
-              <p className="text-white/40 text-xs">Vùng ảnh</p>
-            </div>
-          </div>
-        </>
-      );
-    }
-    return <>{titleBlock}{bodyBlock}</>;
-  };
+  const sorted = [...textBlocks].sort((a, b) => a.zIndex - b.zIndex);
 
   return (
     <div className="flex-1 flex flex-col bg-slate-100 dark:bg-[#0d0d0f] overflow-hidden min-h-0">
       <div className="flex-1 overflow-y-auto min-h-0">
         <div className="flex flex-col items-center p-4 pb-3 gap-2 w-full">
 
-          {/* ── Shared Format Bar (sibling of canvas, no portal) ── */}
-          <AnimatePresence>
-            {activeBlock && (
-              <motion.div
-                key="formatbar"
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.15 }}
-                className="w-full max-w-4xl shrink-0"
-              >
-                <SlideFormatBar
-                  activeRef={activeEditRef as React.RefObject<HTMLDivElement>}
-                  visible={true}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* ── Format + "Add Text" bar ── */}
+          <div className="w-full max-w-4xl flex items-center gap-2 shrink-0">
+            <AnimatePresence>
+              {activeBlockId && (
+                <motion.div
+                  key="fbar"
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex-1 min-w-0"
+                >
+                  <SlideFormatBar
+                    activeRef={activeEditRef as React.RefObject<HTMLDivElement>}
+                    visible={true}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Add Text Button */}
+            <button
+              onClick={() => onAddTextBlock(slide.id)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[11px] font-bold hover:bg-brand-blue/20 transition-colors shrink-0 whitespace-nowrap"
+              title="Thêm text block mới"
+            >
+              <Plus size={11} />
+              Thêm text
+            </button>
+          </div>
 
           {/* ── Canvas frame ── */}
           <div
+            ref={canvasRef}
             className="w-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.04] shrink-0"
-            onClick={handleBgClick}
+            style={{ isolation: 'isolate' }}
+            onClick={handleCanvasClick}
           >
-            {/* Background image / gradient */}
+            {/* Background */}
             <AnimatePresence mode="wait">
               {slide.bgImageUrl ? (
                 <motion.img
                   key={slide.bgImageUrl}
                   src={slide.bgImageUrl}
-                  alt="Slide background"
+                  alt="BG"
                   initial={{ opacity: 0, scale: 1.04 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover pointer-events-none"
                   draggable={false}
                 />
               ) : (
-                <motion.div
-                  key="gradient"
+                <motion.div key="grad"
                   className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 dark:from-[#111] dark:to-[#1a1a22]"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 />
               )}
             </AnimatePresence>
 
             {/* Readability overlay */}
-            <div className={`absolute inset-0 ${tc === 'light' ? 'bg-black/40' : 'bg-white/50'}`} />
+            <div className={`absolute inset-0 pointer-events-none ${tc === 'light' ? 'bg-black/40' : 'bg-white/50'}`} />
 
             {/* Status badges */}
             <AnimatePresence>
               {slide.bgStatus === 'generating' && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-black/60 backdrop-blur text-white text-[10px] font-medium z-20">
-                  <Loader2 size={10} className="animate-spin text-brand-blue" />
-                  Đang gen ảnh...
+                  className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-black/60 backdrop-blur text-white text-[10px] font-medium z-20 pointer-events-none">
+                  <Loader2 size={10} className="animate-spin text-brand-blue" /> Đang gen ảnh...
                 </motion.div>
               )}
               {slide.bgStatus === 'error' && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-red-500/80 text-white text-[10px] font-medium z-20">
+                  className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-red-500/80 text-white text-[10px] font-medium z-20 pointer-events-none">
                   <AlertCircle size={10} /> Lỗi gen ảnh
                 </motion.div>
               )}
             </AnimatePresence>
 
             {/* Slide number */}
-            <div className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-black/40 text-white text-[9px] font-bold backdrop-blur z-10 pointer-events-none">
+            <div className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-black/40 text-white text-[9px] font-bold backdrop-blur z-30 pointer-events-none">
               {slide.index + 1}
             </div>
 
-            {/* Active ring */}
-            {activeBlock && (
-              <div className="absolute inset-0 ring-2 ring-brand-blue/30 rounded-2xl pointer-events-none z-10" />
-            )}
-
-            {/* ── Text content layer ── */}
-            <div
-              className={`absolute inset-0 ${ld.canvasClass}`}
-              style={{ paddingTop: '7%', paddingBottom: '7%' }}
-            >
-              {renderContent()}
-            </div>
+            {/* ── Free text objects ── */}
+            {sorted.map(block => (
+              <SlideTextObject
+                key={block.id}
+                block={block}
+                canvasRef={canvasRef}
+                isOnlyBlock={textBlocks.length === 1}
+                onUpdate={patch => onUpdateTextBlock(slide.id, block.id, patch)}
+                onDelete={() => onRemoveTextBlock(slide.id, block.id)}
+                onBringForward={() => onBringTextBlockForward(slide.id, block.id)}
+                onActivate={el => handleActivate(block.id, el)}
+                onDeactivate={() => handleDeactivate(block.id)}
+                forceIdle={activeBlockId !== null && activeBlockId !== block.id}
+              />
+            ))}
 
             {/* Idle hint */}
-            {!activeBlock && (
-              <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none">
-                <span className="text-[9px] text-white/25 font-medium">Click vào text để chỉnh sửa</span>
+            {!activeBlockId && (
+              <div className="absolute bottom-2 inset-x-0 flex justify-center pointer-events-none">
+                <span className="text-[9px] text-white/20">Click để chọn · Double-click để chỉnh sửa · Kéo để di chuyển</span>
               </div>
             )}
           </div>
 
-          {/* Bottom bar (prompt/gen controls) */}
+          {/* Bottom bar */}
           <div className="w-full max-w-4xl">{bottomBar}</div>
         </div>
       </div>

@@ -26,19 +26,19 @@ const AUTO_INTERVALS = [
 // ── Slide renderer (presenter-quality) ───────────────────────────────────────
 
 const PresenterSlide: React.FC<{ slide: Slide; idx: number; total: number }> = ({ slide, idx, total }) => {
-  const lc = LAYOUT_CLASSES_PRESENTER[slide.layout] ?? LAYOUT_CLASSES_PRESENTER['title-center'];
   const textClass = slide.textColor === 'light' ? 'text-white' : 'text-slate-900';
+
+  // Sort textBlocks by zIndex for correct layering
+  const blocks = slide.textBlocks
+    ? [...slide.textBlocks].sort((a, b) => a.zIndex - b.zIndex)
+    : null;
 
   return (
     <div className="w-full h-full relative overflow-hidden">
       {/* Background */}
       {slide.bgImageUrl ? (
-        <img
-          src={slide.bgImageUrl}
-          alt={slide.title}
-          className="absolute inset-0 w-full h-full object-cover"
-          draggable={false}
-        />
+        <img src={slide.bgImageUrl} alt={slide.title}
+          className="absolute inset-0 w-full h-full object-cover" draggable={false} />
       ) : (
         <div className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900" />
       )}
@@ -46,57 +46,44 @@ const PresenterSlide: React.FC<{ slide: Slide; idx: number; total: number }> = (
       {/* Overlay */}
       <div className={`absolute inset-0 ${slide.textColor === 'light' ? 'bg-black/40' : 'bg-white/50'}`} />
 
-      {/* Content */}
-      <div className={`absolute inset-0 ${lc.wrapper} ${textClass} select-none`}>
-        {slide.layout === 'two-col' ? (
-          <>
-            <div className="flex flex-col justify-center">
-              <div className={`${lc.title} ${textClass} drop-shadow-lg`}
-                dangerouslySetInnerHTML={{ __html: slide.titleHtml || slide.title }} />
-            </div>
-            <div className="flex flex-col justify-center">
-              <div className={`${lc.body} ${textClass} drop-shadow whitespace-pre-line`}
-                dangerouslySetInnerHTML={{ __html: slide.bodyHtml || slide.body }} />
-            </div>
-          </>
-        ) : slide.layout === 'title-image' ? (
-          <>
-            <div className="flex flex-col justify-center">
-              <div className={`${lc.title} ${textClass} drop-shadow-lg`}
-                dangerouslySetInnerHTML={{ __html: slide.titleHtml || slide.title }} />
-              <div className={`${lc.body} ${textClass} drop-shadow mt-3 whitespace-pre-line`}
-                dangerouslySetInnerHTML={{ __html: slide.bodyHtml || slide.body }} />
-            </div>
-            <div className="h-full flex items-center justify-center">
-              <div className="w-full aspect-video rounded-2xl border-2 border-white/20 bg-white/10 backdrop-blur" />
-            </div>
-          </>
-        ) : (
-          <>
-            <div className={`${lc.title} ${textClass} drop-shadow-lg`}
-              dangerouslySetInnerHTML={{ __html: slide.titleHtml || slide.title }} />
-            <div className={`${lc.body} ${textClass} drop-shadow mt-3 whitespace-pre-line`}
-              dangerouslySetInnerHTML={{ __html: slide.bodyHtml || slide.body }} />
-          </>
-        )}
-      </div>
+      {/* ── Free-positioned text blocks ── */}
+      {blocks ? (
+        blocks.map(block => (
+          <div
+            key={block.id}
+            style={{
+              position: 'absolute',
+              left:   `${block.x}%`,
+              top:    `${block.y}%`,
+              width:  `${block.w}%`,
+              zIndex: block.zIndex,
+            }}
+            className={`select-none leading-snug ${textClass} drop-shadow-lg`}
+            dangerouslySetInnerHTML={{ __html: block.html }}
+          />
+        ))
+      ) : (
+        /* Legacy fallback */
+        <div className={`absolute inset-0 flex flex-col items-center justify-center text-center px-12 ${textClass} select-none`}>
+          <div className="text-4xl font-black mb-4 drop-shadow-lg"
+            dangerouslySetInnerHTML={{ __html: slide.titleHtml || slide.title }} />
+          <div className="text-xl drop-shadow whitespace-pre-line"
+            dangerouslySetInnerHTML={{ __html: slide.bodyHtml || slide.body }} />
+        </div>
+      )}
 
-      {/* Slide counter — bottom center */}
+      {/* Slide counter */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
         {Array.from({ length: total }).map((_, i) => (
-          <div
-            key={i}
-            className={`rounded-full transition-all duration-300 ${
-              i === idx
-                ? 'w-5 h-1.5 bg-white'
-                : 'w-1.5 h-1.5 bg-white/40'
-            }`}
-          />
+          <div key={i} className={`rounded-full transition-all duration-300 ${
+            i === idx ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/40'
+          }`} />
         ))}
       </div>
     </div>
   );
 };
+
 
 // ── Main presenter ────────────────────────────────────────────────────────────
 
