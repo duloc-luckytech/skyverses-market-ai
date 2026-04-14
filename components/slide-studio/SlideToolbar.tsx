@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles, RefreshCw, Loader2, LayoutGrid, ChevronDown,
-  Sun, Moon, Bot, CheckCircle2, Trash2, Copy, ImageOff, Layers,
+  Sun, Moon, Bot, CheckCircle2, Trash2, Copy, ImageOff, Layers, Upload,
 } from 'lucide-react';
 import { Slide, SlideLayout, LAYOUT_OPTIONS, AISuggestion } from '../../hooks/useSlideStudio';
 
@@ -14,6 +14,7 @@ interface Props {
   onRegenBg: (id: string) => void;
   onGenAllBg: () => void;
   onClearBg: (id: string) => void;
+  onUploadBg: (id: string, dataUrl: string) => void;
   onDuplicateSlide: (id: string) => void;
   onChangeLayout: (id: string, layout: SlideLayout) => void;
   onChangeTextColor: (id: string, color: 'light' | 'dark') => void;
@@ -25,11 +26,24 @@ interface Props {
 
 const SlideToolbar: React.FC<Props> = ({
   slide, slides,
-  onRegenBg, onGenAllBg, onClearBg, onDuplicateSlide,
+  onRegenBg, onGenAllBg, onClearBg, onUploadBg, onDuplicateSlide,
   onChangeLayout, onChangeTextColor,
   onAISuggest, onApplySuggestion,
   isGenAlling, genAllProgress,
 }) => {
+  const uploadBgRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadBg = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !slide) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      if (dataUrl) onUploadBg(slide.id, dataUrl);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }, [slide, onUploadBg]);
   const [layoutOpen, setLayoutOpen] = useState(false);
   const [layoutPos, setLayoutPos] = useState({ top: 0, left: 0 });
   const layoutTriggerRef = useRef<HTMLButtonElement>(null);
@@ -133,6 +147,22 @@ const SlideToolbar: React.FC<Props> = ({
           }
           {slide.bgStatus === 'generating' ? 'Đang gen...' : 'Tạo lại BG'}
         </button>
+
+        {/* Upload BG */}
+        <label
+          title="Upload hình nền từ máy tính"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] text-[11px] font-medium text-slate-600 dark:text-white/60 hover:border-brand-blue/40 hover:text-brand-blue transition-all cursor-pointer"
+        >
+          <Upload size={12} />
+          Upload BG
+          <input
+            ref={uploadBgRef}
+            type="file"
+            accept="image/*"
+            onChange={handleUploadBg}
+            className="hidden"
+          />
+        </label>
 
         {/* Clear BG */}
         {slide.bgImageUrl && (

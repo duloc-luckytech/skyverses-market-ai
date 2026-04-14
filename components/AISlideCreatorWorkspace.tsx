@@ -492,6 +492,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                   onRegenBg={s.genSlideBg}
                   onGenAllBg={s.genAllSlideBg}
                   onClearBg={s.clearSlideBg}
+                  onUploadBg={(id, dataUrl) => s.updateSlide(id, { bgImageUrl: dataUrl, bgStatus: 'done', bgJobId: null })}
                   onDuplicateSlide={s.duplicateSlide}
                   onChangeLayout={handleChangeLayout}
                   onChangeTextColor={handleChangeTextColor}
