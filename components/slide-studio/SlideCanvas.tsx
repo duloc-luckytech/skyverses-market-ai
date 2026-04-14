@@ -1,9 +1,9 @@
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Slide, SlideLayout } from '../../hooks/useSlideStudio';
-import SlideTextStyleBar from './SlideTextStyleBar';
+import SlideTextBlock, { BlockState } from './SlideTextBlock';
 
 interface Props {
   slide: Slide | null;
@@ -13,36 +13,44 @@ interface Props {
   bottomBar?: React.ReactNode;
 }
 
-// Layout-aware text positioning (removed explicit sizes — let rich HTML carry them)
-const LAYOUT_CLASSES: Record<SlideLayout, { wrapper: string; title: string; body: string }> = {
+// ── Layout definitions for text block positions ───────────────────────────────
+
+interface LayoutDef {
+  canvasClass: string;               // outer wrapper class on canvas content
+  title: { class: string; size: number; };
+  body: { class: string; size: number; };
+}
+
+const LAYOUTS: Record<SlideLayout, LayoutDef> = {
   'title-center': {
-    wrapper: 'flex flex-col items-center justify-center text-center px-10',
-    title: 'font-bold mb-4 w-full',
-    body: 'leading-relaxed w-full max-w-xl',
+    canvasClass: 'flex flex-col items-center justify-center text-center px-12',
+    title: { class: 'w-full mb-5', size: 40 },
+    body:  { class: 'w-full max-w-2xl', size: 20 },
   },
   'title-left': {
-    wrapper: 'flex flex-col justify-center px-12',
-    title: 'font-bold mb-4 max-w-2xl',
-    body: 'leading-relaxed max-w-xl',
+    canvasClass: 'flex flex-col justify-center px-14',
+    title: { class: 'w-full max-w-3xl mb-5', size: 40 },
+    body:  { class: 'w-full max-w-2xl', size: 20 },
   },
   'full-bg': {
-    wrapper: 'flex flex-col items-center justify-end text-center pb-12 px-10',
-    title: 'font-black mb-2 w-full',
-    body: 'leading-relaxed w-full max-w-lg opacity-90',
+    canvasClass: 'flex flex-col items-center justify-end text-center pb-14 px-12',
+    title: { class: 'w-full mb-3', size: 52 },
+    body:  { class: 'w-full max-w-2xl', size: 18 },
   },
   'two-col': {
-    wrapper: 'grid grid-cols-2 gap-6 px-10 items-center',
-    title: 'font-bold',
-    body: 'leading-relaxed',
+    canvasClass: 'grid grid-cols-2 gap-8 px-12 items-center h-full',
+    title: { class: 'w-full', size: 36 },
+    body:  { class: 'w-full', size: 18 },
   },
   'title-image': {
-    wrapper: 'grid grid-cols-2 gap-6 px-10 items-center',
-    title: 'font-bold mb-3',
-    body: 'leading-relaxed',
+    canvasClass: 'grid grid-cols-2 gap-8 px-12 items-center h-full',
+    title: { class: 'w-full mb-4', size: 36 },
+    body:  { class: 'w-full', size: 18 },
   },
 };
 
-// ── Google Fonts injection ────────────────────────────────────────────────────
+// ── Google Fonts ──────────────────────────────────────────────────────────────
+
 let fontsInjected = false;
 function injectGoogleFonts() {
   if (fontsInjected || typeof document === 'undefined') return;
@@ -54,92 +62,30 @@ function injectGoogleFonts() {
   document.head.appendChild(link);
 }
 
-// ── Rich contentEditable text block ──────────────────────────────────────────
-
-interface RichEditableProps {
-  /** Plain text fallback (for initial render & reset) */
-  plainValue: string;
-  /** Rich HTML (if available) */
-  htmlValue?: string;
-  onChange: (plain: string, html: string) => void;
-  className?: string;
-  placeholder?: string;
-  defaultFontSize?: number;
-  onFocus?: () => void;
-}
-
-const RichEditable: React.FC<RichEditableProps> = ({
-  plainValue, htmlValue, onChange, className = '', placeholder = '', defaultFontSize = 28, onFocus,
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const slideId = useRef<string>('');
-
-  // Initialize HTML on mount or when slide changes (not on every keystroke)
-  useEffect(() => {
-    if (!ref.current) return;
-    const html = htmlValue || `<span style="font-size:${defaultFontSize}px">${plainValue}</span>`;
-    if (ref.current.innerHTML !== html) {
-      ref.current.innerHTML = html;
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plainValue.slice(0, 8)]); // Only re-init when first chars change (slide switch)
-
-  return (
-    <div
-      ref={ref}
-      contentEditable
-      suppressContentEditableWarning
-      onFocus={onFocus}
-      onInput={() => {
-        if (!ref.current) return;
-        onChange(ref.current.innerText, ref.current.innerHTML);
-      }}
-      onKeyDown={(e) => {
-        // Allow Enter for new lines (default behavior in contentEditable)
-        // Shift+Enter always = line break
-        if (e.key === 'Enter' && !e.shiftKey) {
-          // Default in block contentEditable = new <div>, which is fine
-        }
-      }}
-      data-placeholder={placeholder}
-      className={`outline-none cursor-text min-h-[1em] w-full
-        empty:before:content-[attr(data-placeholder)] empty:before:opacity-30
-        focus:ring-1 focus:ring-brand-blue/30 focus:ring-inset rounded
-        ${className}`}
-    />
-  );
-};
-
 // ── Main Canvas ───────────────────────────────────────────────────────────────
 
-const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, onUpdateSlide, bottomBar }) => {
+const SlideCanvas: React.FC<Props> = ({
+  slide, onUpdateTitle, onUpdateBody, onUpdateSlide, bottomBar,
+}) => {
   injectGoogleFonts();
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [styleBarVisible, setStyleBarVisible] = useState(false);
+  // Track which block is currently active (so others deselect)
+  const [activeBlock, setActiveBlock] = useState<'title' | 'body' | null>(null);
 
-  // Listen for selection changes to show/hide style bar
-  useEffect(() => {
-    const handleSelection = () => {
-      const sel = window.getSelection();
-      const hasFocus = !!(document.activeElement?.closest('[contenteditable]'));
-      // Always show bar when editing, even without selection (cursor in field)
-      const hasContent = hasFocus;
-      setStyleBarVisible(hasContent);
-    };
-    document.addEventListener('selectionchange', handleSelection);
-    document.addEventListener('focusin', handleSelection);
-    document.addEventListener('focusout', () => {
-      // Small delay to allow clicking style bar buttons
-      setTimeout(() => {
-        const hasFocus = !!(document.activeElement?.closest('[contenteditable]'));
-        if (!hasFocus) setStyleBarVisible(false);
-      }, 200);
-    });
-    return () => {
-      document.removeEventListener('selectionchange', handleSelection);
-    };
+  const handleTitleState = useCallback((state: BlockState) => {
+    if (state !== 'idle') setActiveBlock('title');
+    else setActiveBlock(prev => prev === 'title' ? null : prev);
   }, []);
+
+  const handleBodyState = useCallback((state: BlockState) => {
+    if (state !== 'idle') setActiveBlock('body');
+    else setActiveBlock(prev => prev === 'body' ? null : prev);
+  }, []);
+
+  // Click on canvas background → deselect all
+  const handleCanvasClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) setActiveBlock(null);
+  };
 
   if (!slide) {
     return (
@@ -149,41 +95,50 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, onUp
     );
   }
 
-  const layout = slide.layout;
-  const lc = LAYOUT_CLASSES[layout];
-  const textClass = slide.textColor === 'light' ? 'text-white' : 'text-slate-900';
+  const ld = LAYOUTS[slide.layout];
+  const tc = slide.textColor;
 
-  const renderEditables = () => {
-    const titleEl = (
-      <RichEditable
-        plainValue={slide.title}
-        htmlValue={slide.titleHtml}
-        defaultFontSize={slide.layout === 'full-bg' ? 48 : 36}
-        onChange={(plain, html) => onUpdateTitle(slide.id, plain, html)}
-        className={`${lc.title} ${textClass} drop-shadow-md text-2xl`}
+  // ── Two-col and title-image layouts ──────────────────────────────────────
+  const renderContent = () => {
+    const titleBlock = (
+      <SlideTextBlock
+        key={`title-${slide.id}`}
+        fieldLabel="Tiêu đề"
         placeholder="Tiêu đề slide..."
-        onFocus={() => setIsEditing(true)}
-      />
-    );
-    const bodyEl = (
-      <RichEditable
-        plainValue={slide.body}
-        htmlValue={slide.bodyHtml}
-        defaultFontSize={18}
-        onChange={(plain, html) => onUpdateBody(slide.id, plain, html)}
-        className={`${lc.body} ${textClass} drop-shadow text-base`}
-        placeholder="Nội dung slide... (Enter để xuống dòng)"
-        onFocus={() => setIsEditing(true)}
+        htmlValue={slide.titleHtml}
+        plainValue={slide.title}
+        defaultFontSize={ld.title.size}
+        textColor={tc}
+        className={ld.title.class}
+        onChange={(plain, html) => onUpdateTitle(slide.id, plain, html)}
+        onStateChange={handleTitleState}
+        forceIdle={activeBlock === 'body'}
       />
     );
 
-    if (layout === 'two-col') {
-      return <><div>{titleEl}</div><div>{bodyEl}</div></>;
+    const bodyBlock = (
+      <SlideTextBlock
+        key={`body-${slide.id}`}
+        fieldLabel="Nội dung"
+        placeholder="Nội dung slide... (Enter để xuống dòng)"
+        htmlValue={slide.bodyHtml}
+        plainValue={slide.body}
+        defaultFontSize={ld.body.size}
+        textColor={tc}
+        className={ld.body.class}
+        onChange={(plain, html) => onUpdateBody(slide.id, plain, html)}
+        onStateChange={handleBodyState}
+        forceIdle={activeBlock === 'title'}
+      />
+    );
+
+    if (slide.layout === 'two-col') {
+      return <><div className="flex flex-col justify-center">{titleBlock}</div><div className="flex flex-col justify-center">{bodyBlock}</div></>;
     }
-    if (layout === 'title-image') {
+    if (slide.layout === 'title-image') {
       return (
         <>
-          <div className="flex flex-col justify-center">{titleEl}{bodyEl}</div>
+          <div className="flex flex-col justify-center">{titleBlock}{bodyBlock}</div>
           <div className="h-full flex items-center justify-center">
             <div className="w-full aspect-video rounded-xl border-2 border-white/20 bg-white/10 backdrop-blur flex items-center justify-center">
               <p className="text-white/40 text-xs">Vùng ảnh</p>
@@ -192,7 +147,7 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, onUp
         </>
       );
     }
-    return <>{titleEl}{bodyEl}</>;
+    return <>{titleBlock}{bodyBlock}</>;
   };
 
   return (
@@ -200,30 +155,10 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, onUp
       <div className="flex-1 overflow-y-auto min-h-0">
         <div className="flex flex-col items-center p-4 pb-3 gap-0 w-full">
 
-          {/* ── Floating Rich Text Style Bar (Canva-style) ── */}
-          <AnimatePresence>
-            {styleBarVisible && (
-              <motion.div
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.15 }}
-                className="mb-2 shrink-0 w-full max-w-4xl"
-              >
-                <SlideTextStyleBar visible={styleBarVisible} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {/* ── Canvas frame ── */}
           <div
             className="w-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.04] shrink-0"
-            onClick={() => setIsEditing(true)}
-            onBlur={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                setIsEditing(false);
-              }
-            }}
+            onClick={handleCanvasClick}
           >
             {/* Background */}
             <AnimatePresence mode="wait">
@@ -237,10 +172,11 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, onUp
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4 }}
                   className="absolute inset-0 w-full h-full object-cover"
+                  draggable={false}
                 />
               ) : (
                 <motion.div
-                  key="placeholder"
+                  key="gradient"
                   className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 dark:from-[#111] dark:to-[#1a1a22]"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -248,25 +184,21 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, onUp
               )}
             </AnimatePresence>
 
-            {/* Overlay for readability */}
-            <div className={`absolute inset-0 ${slide.textColor === 'light' ? 'bg-black/40' : 'bg-white/50'}`} />
+            {/* Readability overlay */}
+            <div className={`absolute inset-0 ${tc === 'light' ? 'bg-black/40' : 'bg-white/50'}`} />
 
-            {/* Status overlays */}
+            {/* Status badges */}
             <AnimatePresence>
               {slide.bgStatus === 'generating' && (
-                <motion.div
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-black/60 backdrop-blur text-white text-[10px] font-medium"
-                >
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-black/60 backdrop-blur text-white text-[10px] font-medium z-20">
                   <Loader2 size={10} className="animate-spin text-brand-blue" />
                   Đang gen ảnh...
                 </motion.div>
               )}
               {slide.bgStatus === 'error' && (
-                <motion.div
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-red-500/80 text-white text-[10px] font-medium"
-                >
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-red-500/80 text-white text-[10px] font-medium z-20">
                   <AlertCircle size={10} />
                   Lỗi gen ảnh
                 </motion.div>
@@ -274,19 +206,21 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, onUp
             </AnimatePresence>
 
             {/* Slide number */}
-            <div className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-black/40 text-white text-[9px] font-bold backdrop-blur pointer-events-none">
+            <div className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-black/40 text-white text-[9px] font-bold backdrop-blur z-10 pointer-events-none">
               {slide.index + 1}
             </div>
 
-            {/* Editing focus ring */}
-            {isEditing && (
-              <div className="absolute inset-0 ring-2 ring-brand-blue/40 rounded-2xl pointer-events-none" />
-            )}
-
             {/* ── Content layer ── */}
-            <div className={`absolute inset-0 ${lc.wrapper} ${textClass}`}>
-              {renderEditables()}
+            <div className={`absolute inset-0 ${ld.canvasClass}`} style={{ paddingTop: '8%', paddingBottom: '8%' }}>
+              {renderContent()}
             </div>
+
+            {/* Helper hint when nothing active */}
+            {!activeBlock && (
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none">
+                <span className="text-[9px] text-white/25 font-medium">click text để chọn · double-click để chỉnh sửa</span>
+              </div>
+            )}
           </div>
 
           {/* Bottom bar */}
