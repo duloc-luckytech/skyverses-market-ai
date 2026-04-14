@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, FolderOpen, Plus, Trash2, Check, Pencil, Copy } from 'lucide-react';
 import { SlideProjectMeta } from '../../hooks/useSlideProjectManager';
@@ -44,28 +45,56 @@ export const SlideProjectSwitcher: React.FC<Props> = ({
   const [newName, setNewName] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  // Portal position (fixed, computed from trigger button)
+  const [dropPos, setDropPos] = useState({ top: 0, left: 0 });
+
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
   const newNameInputRef = useRef<HTMLInputElement>(null);
 
   const activeProject = projects.find((p) => p.id === activeProjectId);
 
+  // ── Recompute position from trigger rect ──────────────────────────────────
+  const computePos = useCallback(() => {
+    if (!triggerRef.current) return;
+    const r = triggerRef.current.getBoundingClientRect();
+    setDropPos({ top: r.bottom + 4, left: r.left });
+  }, []);
+
+  // ── Toggle open ───────────────────────────────────────────────────────────
+  const handleToggle = useCallback(() => {
+    computePos();
+    setOpen((v) => !v);
+  }, [computePos]);
+
   // ── Close on outside click ────────────────────────────────────────────────
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-        setCreating(false);
-        setRenamingId(null);
-        setConfirmDeleteId(null);
-      }
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t) || dropdownRef.current?.contains(t)) return;
+      setOpen(false);
+      setCreating(false);
+      setRenamingId(null);
+      setConfirmDeleteId(null);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  // ── Focus rename input ────────────────────────────────────────────────────
+  // ── Reposition on scroll / resize ─────────────────────────────────────────
+  useEffect(() => {
+    if (!open) return;
+    window.addEventListener('scroll', computePos, true);
+    window.addEventListener('resize', computePos);
+    return () => {
+      window.removeEventListener('scroll', computePos, true);
+      window.removeEventListener('resize', computePos);
+    };
+  }, [open, computePos]);
+
+  // ── Focus inputs ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (renamingId && renameInputRef.current) {
       renameInputRef.current.focus();
@@ -73,11 +102,8 @@ export const SlideProjectSwitcher: React.FC<Props> = ({
     }
   }, [renamingId]);
 
-  // ── Focus new-name input ──────────────────────────────────────────────────
   useEffect(() => {
-    if (creating && newNameInputRef.current) {
-      newNameInputRef.current.focus();
-    }
+    if (creating && newNameInputRef.current) newNameInputRef.current.focus();
   }, [creating]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
@@ -89,19 +115,14 @@ export const SlideProjectSwitcher: React.FC<Props> = ({
   }, []);
 
   const commitRename = useCallback(() => {
-    if (renamingId && renameValue.trim()) {
-      onRename(renamingId, renameValue.trim());
-    }
+    if (renamingId && renameValue.trim()) onRename(renamingId, renameValue.trim());
     setRenamingId(null);
   }, [renamingId, renameValue, onRename]);
 
-  const handleRenameKey = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') commitRename();
-      if (e.key === 'Escape') setRenamingId(null);
-    },
-    [commitRename],
-  );
+  const handleRenameKey = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') commitRename();
+    if (e.key === 'Escape') setRenamingId(null);
+  }, [commitRename]);
 
   const startCreate = useCallback(() => {
     setCreating(true);
@@ -111,43 +132,33 @@ export const SlideProjectSwitcher: React.FC<Props> = ({
   }, []);
 
   const commitCreate = useCallback(() => {
-    const name = newName.trim() || 'Slide mới';
-    onCreate(name);
+    onCreate(newName.trim() || 'Slide mới');
     setCreating(false);
     setNewName('');
     setOpen(false);
   }, [newName, onCreate]);
 
-  const handleCreateKey = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') commitCreate();
-      if (e.key === 'Escape') { setCreating(false); setNewName(''); }
-    },
-    [commitCreate],
-  );
+  const handleCreateKey = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') commitCreate();
+    if (e.key === 'Escape') { setCreating(false); setNewName(''); }
+  }, [commitCreate]);
 
-  const handleSwitch = useCallback(
-    (id: string) => {
-      if (id === activeProjectId) { setOpen(false); return; }
-      onSwitch(id);
-      setOpen(false);
-    },
-    [activeProjectId, onSwitch],
-  );
+  const handleSwitch = useCallback((id: string) => {
+    if (id === activeProjectId) { setOpen(false); return; }
+    onSwitch(id);
+    setOpen(false);
+  }, [activeProjectId, onSwitch]);
 
   const requestDelete = useCallback((id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setConfirmDeleteId(id);
   }, []);
 
-  const confirmDelete = useCallback(
-    (id: string, e: React.MouseEvent) => {
-      e.stopPropagation();
-      onDelete(id);
-      setConfirmDeleteId(null);
-    },
-    [onDelete],
-  );
+  const confirmDelete = useCallback((id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete(id);
+    setConfirmDeleteId(null);
+  }, [onDelete]);
 
   const cancelDelete = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -156,10 +167,11 @@ export const SlideProjectSwitcher: React.FC<Props> = ({
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div ref={containerRef} className="relative">
-      {/* ── Trigger button ── */}
+    <div className="relative">
+      {/* Trigger */}
       <button
-        onClick={() => setOpen((v) => !v)}
+        ref={triggerRef}
+        onClick={handleToggle}
         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] hover:bg-black/[0.06] dark:hover:bg-white/[0.07] transition-colors max-w-[160px]"
       >
         <FolderOpen size={11} className="shrink-0 text-brand-blue opacity-80" />
@@ -172,162 +184,158 @@ export const SlideProjectSwitcher: React.FC<Props> = ({
         />
       </button>
 
-      {/* ── Dropdown panel ── */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -4, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.97 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute top-full left-0 mt-1 z-[9999] w-[220px] rounded-xl bg-white dark:bg-[#141418] border border-black/[0.08] dark:border-white/[0.08] shadow-2xl shadow-black/20 overflow-hidden"
-          >
-            {/* Header */}
-            <div className="px-3 py-2 border-b border-black/[0.05] dark:border-white/[0.06]">
-              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-white/30">
-                Projects
-              </span>
-            </div>
+      {/* Portal dropdown — appended to document.body to escape ALL stacking contexts */}
+      {createPortal(
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              ref={dropdownRef}
+              initial={{ opacity: 0, y: -4, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.97 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+              style={{ position: 'fixed', top: dropPos.top, left: dropPos.left, zIndex: 99999 }}
+              className="w-[220px] rounded-xl bg-white dark:bg-[#141418] border border-black/[0.08] dark:border-white/[0.08] shadow-2xl shadow-black/30 overflow-hidden"
+            >
+              {/* Header */}
+              <div className="px-3 py-2 border-b border-black/[0.05] dark:border-white/[0.06]">
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-white/30">
+                  Projects
+                </span>
+              </div>
 
-            {/* Project list */}
-            <div className="max-h-[240px] overflow-y-auto no-scrollbar">
-              {projects.map((p) => (
-                <div
-                  key={p.id}
-                  onClick={() => !renamingId && handleSwitch(p.id)}
-                  className={`group relative flex items-center gap-2 px-3 py-2 cursor-pointer transition-colors ${
-                    p.id === activeProjectId
-                      ? 'bg-brand-blue/[0.08] dark:bg-brand-blue/[0.12]'
-                      : 'hover:bg-black/[0.03] dark:hover:bg-white/[0.04]'
-                  }`}
-                >
-                  {/* Active check */}
-                  <span className="w-3 shrink-0">
-                    {p.id === activeProjectId && (
-                      <Check size={10} className="text-brand-blue" />
+              {/* List */}
+              <div className="max-h-[240px] overflow-y-auto">
+                {projects.map((p) => (
+                  <div
+                    key={p.id}
+                    onClick={() => !renamingId && handleSwitch(p.id)}
+                    className={`group relative flex items-center gap-2 px-3 py-2 cursor-pointer transition-colors ${
+                      p.id === activeProjectId
+                        ? 'bg-brand-blue/[0.08] dark:bg-brand-blue/[0.12]'
+                        : 'hover:bg-black/[0.03] dark:hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    <span className="w-3 shrink-0">
+                      {p.id === activeProjectId && <Check size={10} className="text-brand-blue" />}
+                    </span>
+
+                    {renamingId === p.id ? (
+                      <input
+                        ref={renameInputRef}
+                        value={renameValue}
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        onBlur={commitRename}
+                        onKeyDown={handleRenameKey}
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex-1 text-[11px] font-medium bg-white dark:bg-white/[0.08] border border-brand-blue/50 rounded px-1.5 py-0.5 outline-none text-slate-800 dark:text-white"
+                      />
+                    ) : (
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-semibold text-slate-800 dark:text-white truncate leading-tight">
+                          {p.name}
+                        </p>
+                        <p className="text-[9px] text-slate-400 dark:text-white/30 mt-0.5">
+                          {p.slideCount} slides
+                          {p.deckTopic ? ` · ${p.deckTopic.slice(0, 18)}` : ''}
+                          {' · '}{fmtDate(p.updatedAt)}
+                        </p>
+                      </div>
                     )}
-                  </span>
 
-                  {/* Name / rename input */}
-                  {renamingId === p.id ? (
+                    {renamingId !== p.id && (
+                      <div
+                        className={`flex items-center gap-1 transition-opacity ${
+                          confirmDeleteId === p.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                        }`}
+                      >
+                        {confirmDeleteId === p.id ? (
+                          <>
+                            <button
+                              onClick={(e) => confirmDelete(p.id, e)}
+                              className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                            >
+                              Xóa
+                            </button>
+                            <button
+                              onClick={cancelDelete}
+                              className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-black/[0.04] dark:bg-white/[0.06] text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                            >
+                              Hủy
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={(e) => startRename(p.id, p.name, e)}
+                              title="Đổi tên"
+                              className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
+                            >
+                              <Pencil size={9} />
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); onDuplicate(p.id); setOpen(false); }}
+                              title="Nhân bản project"
+                              className="p-1 rounded text-slate-400 hover:text-sky-400 transition-colors hover:bg-sky-500/[0.08]"
+                            >
+                              <Copy size={9} />
+                            </button>
+                            <button
+                              onClick={(e) => projects.length > 1 ? requestDelete(p.id, e) : e.stopPropagation()}
+                              title={projects.length > 1 ? 'Xóa project' : 'Cần ít nhất 1 project'}
+                              disabled={projects.length <= 1}
+                              className="p-1 rounded text-slate-400 hover:text-red-400 transition-colors hover:bg-red-500/[0.08] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                            >
+                              <Trash2 size={9} />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Create new */}
+              <div className="border-t border-black/[0.05] dark:border-white/[0.06] p-2">
+                {creating ? (
+                  <div className="flex items-center gap-1.5 px-1">
                     <input
-                      ref={renameInputRef}
-                      value={renameValue}
-                      onChange={(e) => setRenameValue(e.target.value)}
-                      onBlur={commitRename}
-                      onKeyDown={handleRenameKey}
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex-1 text-[11px] font-medium bg-white dark:bg-white/[0.08] border border-brand-blue/50 rounded px-1.5 py-0.5 outline-none text-slate-800 dark:text-white"
+                      ref={newNameInputRef}
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      onKeyDown={handleCreateKey}
+                      placeholder="Tên project..."
+                      className="flex-1 text-[11px] font-medium bg-white dark:bg-white/[0.08] border border-brand-blue/50 rounded-lg px-2 py-1 outline-none text-slate-800 dark:text-white placeholder:text-slate-300 dark:placeholder:text-white/20"
                     />
-                  ) : (
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[11px] font-semibold text-slate-800 dark:text-white truncate leading-tight">
-                        {p.name}
-                      </p>
-                      <p className="text-[9px] text-slate-400 dark:text-white/30 mt-0.5">
-                        {p.slideCount} slides
-                        {p.deckTopic ? ` · ${p.deckTopic.slice(0, 18)}` : ''}
-                        {' · '}{fmtDate(p.updatedAt)}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Action buttons */}
-                  {renamingId !== p.id && (
-                    <div
-                      className={`flex items-center gap-1 transition-opacity ${
-                        confirmDeleteId === p.id
-                          ? 'opacity-100'
-                          : 'opacity-0 group-hover:opacity-100'
-                      }`}
+                    <button
+                      onClick={commitCreate}
+                      className="px-2 py-1 rounded-lg text-[10px] font-bold bg-brand-blue text-white hover:bg-brand-blue/90 transition-colors"
                     >
-                      {confirmDeleteId === p.id ? (
-                        <>
-                          <button
-                            onClick={(e) => confirmDelete(p.id, e)}
-                            title="Xác nhận xóa"
-                            className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
-                          >
-                            Xóa
-                          </button>
-                          <button
-                            onClick={cancelDelete}
-                            title="Hủy"
-                            className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-black/[0.04] dark:bg-white/[0.06] text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
-                          >
-                            Hủy
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={(e) => startRename(p.id, p.name, e)}
-                            title="Đổi tên"
-                            className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
-                          >
-                            <Pencil size={9} />
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); onDuplicate(p.id); setOpen(false); }}
-                            title="Nhân bản project"
-                            className="p-1 rounded text-slate-400 hover:text-sky-400 transition-colors hover:bg-sky-500/[0.08]"
-                          >
-                            <Copy size={9} />
-                          </button>
-                          <button
-                            onClick={(e) => projects.length > 1 ? requestDelete(p.id, e) : e.stopPropagation()}
-                            title={projects.length > 1 ? 'Xóa project' : 'Cần ít nhất 1 project'}
-                            disabled={projects.length <= 1}
-                            className="p-1 rounded text-slate-400 hover:text-red-400 transition-colors hover:bg-red-500/[0.08] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
-                          >
-                            <Trash2 size={9} />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Create new */}
-            <div className="border-t border-black/[0.05] dark:border-white/[0.06] p-2">
-              {creating ? (
-                <div className="flex items-center gap-1.5 px-1">
-                  <input
-                    ref={newNameInputRef}
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    onKeyDown={handleCreateKey}
-                    placeholder="Tên project..."
-                    className="flex-1 text-[11px] font-medium bg-white dark:bg-white/[0.08] border border-brand-blue/50 rounded-lg px-2 py-1 outline-none text-slate-800 dark:text-white placeholder:text-slate-300 dark:placeholder:text-white/20"
-                  />
+                      Tạo
+                    </button>
+                    <button
+                      onClick={() => { setCreating(false); setNewName(''); }}
+                      className="px-1.5 py-1 rounded-lg text-[10px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
                   <button
-                    onClick={commitCreate}
-                    className="px-2 py-1 rounded-lg text-[10px] font-bold bg-brand-blue text-white hover:bg-brand-blue/90 transition-colors"
+                    onClick={startCreate}
+                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[10px] font-semibold text-brand-blue hover:bg-brand-blue/[0.06] dark:hover:bg-brand-blue/[0.1] transition-colors"
                   >
-                    Tạo
+                    <Plus size={11} />
+                    Tạo project mới
                   </button>
-                  <button
-                    onClick={() => { setCreating(false); setNewName(''); }}
-                    className="px-1.5 py-1 rounded-lg text-[10px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={startCreate}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[10px] font-semibold text-brand-blue hover:bg-brand-blue/[0.06] dark:hover:bg-brand-blue/[0.1] transition-colors"
-                >
-                  <Plus size={11} />
-                  Tạo project mới
-                </button>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </div>
   );
 };
