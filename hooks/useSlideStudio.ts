@@ -17,20 +17,13 @@ export interface AISuggestion {
   body: string;
 }
 
-export interface TextStyle {
-  fontFamily?: string;   // e.g. 'Inter', 'Georgia', 'Montserrat'
-  fontSize?: number;     // in px
-  fontWeight?: 'normal' | 'bold' | '900';
-  fontStyle?: 'normal' | 'italic';
-  textAlign?: 'left' | 'center' | 'right';
-  letterSpacing?: number; // in em, e.g. 0.05
-}
-
 export interface Slide {
   id: string;
   index: number;
-  title: string;
-  body: string;
+  title: string;       // plain-text (AI prompts, export, search)
+  body: string;        // plain-text
+  titleHtml?: string;  // rich HTML (editor display)
+  bodyHtml?: string;   // rich HTML (editor display)
   layout: SlideLayout;
   bgImageUrl: string | null;
   bgJobId: string | null;
@@ -40,9 +33,8 @@ export interface Slide {
   isSuggestLoading: boolean;
   bgPrompt?: string;
   slideRefImages?: string[];
-  titleStyle?: TextStyle;
-  bodyStyle?: TextStyle;
 }
+
 
 
 export interface StylePreset {

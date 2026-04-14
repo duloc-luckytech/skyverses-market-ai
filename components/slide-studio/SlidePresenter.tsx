@@ -51,17 +51,21 @@ const PresenterSlide: React.FC<{ slide: Slide; idx: number; total: number }> = (
         {slide.layout === 'two-col' ? (
           <>
             <div className="flex flex-col justify-center">
-              <h2 className={`${lc.title} ${textClass} drop-shadow-lg`}>{slide.title}</h2>
+              <div className={`${lc.title} ${textClass} drop-shadow-lg`}
+                dangerouslySetInnerHTML={{ __html: slide.titleHtml || slide.title }} />
             </div>
             <div className="flex flex-col justify-center">
-              <p className={`${lc.body} ${textClass} drop-shadow whitespace-pre-line`}>{slide.body}</p>
+              <div className={`${lc.body} ${textClass} drop-shadow whitespace-pre-line`}
+                dangerouslySetInnerHTML={{ __html: slide.bodyHtml || slide.body }} />
             </div>
           </>
         ) : slide.layout === 'title-image' ? (
           <>
             <div className="flex flex-col justify-center">
-              <h2 className={`${lc.title} ${textClass} drop-shadow-lg`}>{slide.title}</h2>
-              <p className={`${lc.body} ${textClass} drop-shadow mt-3 whitespace-pre-line`}>{slide.body}</p>
+              <div className={`${lc.title} ${textClass} drop-shadow-lg`}
+                dangerouslySetInnerHTML={{ __html: slide.titleHtml || slide.title }} />
+              <div className={`${lc.body} ${textClass} drop-shadow mt-3 whitespace-pre-line`}
+                dangerouslySetInnerHTML={{ __html: slide.bodyHtml || slide.body }} />
             </div>
             <div className="h-full flex items-center justify-center">
               <div className="w-full aspect-video rounded-2xl border-2 border-white/20 bg-white/10 backdrop-blur" />
@@ -69,8 +73,10 @@ const PresenterSlide: React.FC<{ slide: Slide; idx: number; total: number }> = (
           </>
         ) : (
           <>
-            <h2 className={`${lc.title} ${textClass} drop-shadow-lg`}>{slide.title}</h2>
-            <p className={`${lc.body} ${textClass} drop-shadow mt-3 whitespace-pre-line`}>{slide.body}</p>
+            <div className={`${lc.title} ${textClass} drop-shadow-lg`}
+              dangerouslySetInnerHTML={{ __html: slide.titleHtml || slide.title }} />
+            <div className={`${lc.body} ${textClass} drop-shadow mt-3 whitespace-pre-line`}
+              dangerouslySetInnerHTML={{ __html: slide.bodyHtml || slide.body }} />
           </>
         )}
       </div>

@@ -237,13 +237,14 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
   }, [pm, s]);
 
   // ── Slide update handlers ──────────────────────────────────────────────────
-  const handleUpdateTitle = useCallback((id: string, val: string) => {
-    s.updateSlide(id, { title: val });
+  const handleUpdateTitle = useCallback((id: string, plain: string, html: string) => {
+    s.updateSlide(id, { title: plain, titleHtml: html });
   }, [s.updateSlide]);
 
-  const handleUpdateBody = useCallback((id: string, val: string) => {
-    s.updateSlide(id, { body: val });
+  const handleUpdateBody = useCallback((id: string, plain: string, html: string) => {
+    s.updateSlide(id, { body: plain, bodyHtml: html });
   }, [s.updateSlide]);
+
 
   const handleChangeLayout = useCallback((id: string, layout: any) => {
     s.updateSlide(id, { layout });

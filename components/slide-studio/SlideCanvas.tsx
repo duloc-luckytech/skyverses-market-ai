@@ -1,19 +1,19 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, AlertCircle } from 'lucide-react';
-import { Slide, SlideLayout, TextStyle } from '../../hooks/useSlideStudio';
+import { Slide, SlideLayout } from '../../hooks/useSlideStudio';
 import SlideTextStyleBar from './SlideTextStyleBar';
 
 interface Props {
   slide: Slide | null;
-  onUpdateTitle: (id: string, value: string) => void;
-  onUpdateBody: (id: string, value: string) => void;
+  onUpdateTitle: (id: string, plain: string, html: string) => void;
+  onUpdateBody: (id: string, plain: string, html: string) => void;
   onUpdateSlide: (id: string, patch: Partial<Slide>) => void;
   bottomBar?: React.ReactNode;
 }
 
-// Layout-aware text positioning
+// Layout-aware text positioning (removed explicit sizes — let rich HTML carry them)
 const LAYOUT_CLASSES: Record<SlideLayout, { wrapper: string; title: string; body: string }> = {
   'title-center': {
     wrapper: 'flex flex-col items-center justify-center text-center px-10',
@@ -42,73 +42,7 @@ const LAYOUT_CLASSES: Record<SlideLayout, { wrapper: string; title: string; body
   },
 };
 
-// ── Helper: build inline style from TextStyle ──────────────────────────────────
-function toInlineStyle(ts?: TextStyle, defaults?: React.CSSProperties): React.CSSProperties {
-  if (!ts) return defaults ?? {};
-  return {
-    fontFamily: ts.fontFamily,
-    fontSize: ts.fontSize ? `${ts.fontSize}px` : undefined,
-    fontWeight: ts.fontWeight,
-    fontStyle: ts.fontStyle,
-    textAlign: ts.textAlign,
-    letterSpacing: ts.letterSpacing ? `${ts.letterSpacing}em` : undefined,
-    ...defaults,
-  };
-}
-
-// ── Editable text block ────────────────────────────────────────────────────────
-
-const EditableText: React.FC<{
-  value: string;
-  onChange: (v: string) => void;
-  className?: string;
-  placeholder?: string;
-  multiline?: boolean;
-  style?: React.CSSProperties;
-  onFocus?: () => void;
-  onBlur?: () => void;
-}> = ({ value, onChange, className = '', placeholder = '', multiline = false, style, onFocus, onBlur }) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (ref.current && ref.current.innerText !== value) {
-      ref.current.innerText = value;
-    }
-  }, [value]);
-
-  if (multiline) {
-    return (
-      <textarea
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        placeholder={placeholder}
-        rows={4}
-        style={style}
-        className={`bg-transparent border-none outline-none resize-none w-full placeholder-white/30 ${className}`}
-      />
-    );
-  }
-
-  return (
-    <div
-      ref={ref}
-      contentEditable
-      suppressContentEditableWarning
-      onInput={e => onChange((e.target as HTMLDivElement).innerText)}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      data-placeholder={placeholder}
-      style={style}
-      className={`outline-none cursor-text min-h-[1em] w-full
-        empty:before:content-[attr(data-placeholder)] empty:before:opacity-30
-        ${className}`}
-    />
-  );
-};
-
-// ── Google Fonts link (injected once) ─────────────────────────────────────────
+// ── Google Fonts injection ────────────────────────────────────────────────────
 let fontsInjected = false;
 function injectGoogleFonts() {
   if (fontsInjected || typeof document === 'undefined') return;
@@ -120,12 +54,92 @@ function injectGoogleFonts() {
   document.head.appendChild(link);
 }
 
+// ── Rich contentEditable text block ──────────────────────────────────────────
+
+interface RichEditableProps {
+  /** Plain text fallback (for initial render & reset) */
+  plainValue: string;
+  /** Rich HTML (if available) */
+  htmlValue?: string;
+  onChange: (plain: string, html: string) => void;
+  className?: string;
+  placeholder?: string;
+  defaultFontSize?: number;
+  onFocus?: () => void;
+}
+
+const RichEditable: React.FC<RichEditableProps> = ({
+  plainValue, htmlValue, onChange, className = '', placeholder = '', defaultFontSize = 28, onFocus,
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const slideId = useRef<string>('');
+
+  // Initialize HTML on mount or when slide changes (not on every keystroke)
+  useEffect(() => {
+    if (!ref.current) return;
+    const html = htmlValue || `<span style="font-size:${defaultFontSize}px">${plainValue}</span>`;
+    if (ref.current.innerHTML !== html) {
+      ref.current.innerHTML = html;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plainValue.slice(0, 8)]); // Only re-init when first chars change (slide switch)
+
+  return (
+    <div
+      ref={ref}
+      contentEditable
+      suppressContentEditableWarning
+      onFocus={onFocus}
+      onInput={() => {
+        if (!ref.current) return;
+        onChange(ref.current.innerText, ref.current.innerHTML);
+      }}
+      onKeyDown={(e) => {
+        // Allow Enter for new lines (default behavior in contentEditable)
+        // Shift+Enter always = line break
+        if (e.key === 'Enter' && !e.shiftKey) {
+          // Default in block contentEditable = new <div>, which is fine
+        }
+      }}
+      data-placeholder={placeholder}
+      className={`outline-none cursor-text min-h-[1em] w-full
+        empty:before:content-[attr(data-placeholder)] empty:before:opacity-30
+        focus:ring-1 focus:ring-brand-blue/30 focus:ring-inset rounded
+        ${className}`}
+    />
+  );
+};
+
 // ── Main Canvas ───────────────────────────────────────────────────────────────
 
 const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, onUpdateSlide, bottomBar }) => {
   injectGoogleFonts();
 
-  const [focusedBlock, setFocusedBlock] = useState<'title' | 'body' | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [styleBarVisible, setStyleBarVisible] = useState(false);
+
+  // Listen for selection changes to show/hide style bar
+  useEffect(() => {
+    const handleSelection = () => {
+      const sel = window.getSelection();
+      const hasFocus = !!(document.activeElement?.closest('[contenteditable]'));
+      // Always show bar when editing, even without selection (cursor in field)
+      const hasContent = hasFocus;
+      setStyleBarVisible(hasContent);
+    };
+    document.addEventListener('selectionchange', handleSelection);
+    document.addEventListener('focusin', handleSelection);
+    document.addEventListener('focusout', () => {
+      // Small delay to allow clicking style bar buttons
+      setTimeout(() => {
+        const hasFocus = !!(document.activeElement?.closest('[contenteditable]'));
+        if (!hasFocus) setStyleBarVisible(false);
+      }, 200);
+    });
+    return () => {
+      document.removeEventListener('selectionchange', handleSelection);
+    };
+  }, []);
 
   if (!slide) {
     return (
@@ -138,51 +152,80 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, onUp
   const layout = slide.layout;
   const lc = LAYOUT_CLASSES[layout];
   const textClass = slide.textColor === 'light' ? 'text-white' : 'text-slate-900';
-  const placeholderClass = slide.textColor === 'light' ? 'placeholder-white/30' : 'placeholder-slate-400';
 
-  const titleInline = toInlineStyle(slide.titleStyle, { fontSize: '1.875rem' }); // default 30px
-  const bodyInline  = toInlineStyle(slide.bodyStyle,  { fontSize: '1rem' });
+  const renderEditables = () => {
+    const titleEl = (
+      <RichEditable
+        plainValue={slide.title}
+        htmlValue={slide.titleHtml}
+        defaultFontSize={slide.layout === 'full-bg' ? 48 : 36}
+        onChange={(plain, html) => onUpdateTitle(slide.id, plain, html)}
+        className={`${lc.title} ${textClass} drop-shadow-md text-2xl`}
+        placeholder="Tiêu đề slide..."
+        onFocus={() => setIsEditing(true)}
+      />
+    );
+    const bodyEl = (
+      <RichEditable
+        plainValue={slide.body}
+        htmlValue={slide.bodyHtml}
+        defaultFontSize={18}
+        onChange={(plain, html) => onUpdateBody(slide.id, plain, html)}
+        className={`${lc.body} ${textClass} drop-shadow text-base`}
+        placeholder="Nội dung slide... (Enter để xuống dòng)"
+        onFocus={() => setIsEditing(true)}
+      />
+    );
 
-  const sharedEditProps = (target: 'title' | 'body') => ({
-    onFocus: () => setFocusedBlock(target),
-    onBlur:  () => setTimeout(() => setFocusedBlock(prev => prev === target ? null : prev), 150),
-  });
+    if (layout === 'two-col') {
+      return <><div>{titleEl}</div><div>{bodyEl}</div></>;
+    }
+    if (layout === 'title-image') {
+      return (
+        <>
+          <div className="flex flex-col justify-center">{titleEl}{bodyEl}</div>
+          <div className="h-full flex items-center justify-center">
+            <div className="w-full aspect-video rounded-xl border-2 border-white/20 bg-white/10 backdrop-blur flex items-center justify-center">
+              <p className="text-white/40 text-xs">Vùng ảnh</p>
+            </div>
+          </div>
+        </>
+      );
+    }
+    return <>{titleEl}{bodyEl}</>;
+  };
 
   return (
     <div className="flex-1 flex flex-col bg-slate-100 dark:bg-[#0d0d0f] overflow-hidden min-h-0">
-      {/* Scrollable area */}
       <div className="flex-1 overflow-y-auto min-h-0">
         <div className="flex flex-col items-center p-4 pb-3 gap-0 w-full">
 
-          {/* ── Text Style Bar (Canva-style, floats above canvas) ── */}
+          {/* ── Floating Rich Text Style Bar (Canva-style) ── */}
           <AnimatePresence>
-            {focusedBlock && (
+            {styleBarVisible && (
               <motion.div
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.15 }}
-                className="w-full max-w-4xl mb-2 shrink-0"
+                className="mb-2 shrink-0 w-full max-w-4xl"
               >
-                <SlideTextStyleBar
-                  target={focusedBlock}
-                  style={focusedBlock === 'title' ? (slide.titleStyle ?? {}) : (slide.bodyStyle ?? {})}
-                  onChange={(patch) => {
-                    if (focusedBlock === 'title') {
-                      onUpdateSlide(slide.id, { titleStyle: { ...slide.titleStyle, ...patch } });
-                    } else {
-                      onUpdateSlide(slide.id, { bodyStyle: { ...slide.bodyStyle, ...patch } });
-                    }
-                  }}
-                />
+                <SlideTextStyleBar visible={styleBarVisible} />
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Canvas frame */}
-          <div className="w-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.04] shrink-0">
-
-            {/* Background image */}
+          {/* ── Canvas frame ── */}
+          <div
+            className="w-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.04] shrink-0"
+            onClick={() => setIsEditing(true)}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                setIsEditing(false);
+              }
+            }}
+          >
+            {/* Background */}
             <AnimatePresence mode="wait">
               {slide.bgImageUrl ? (
                 <motion.img
@@ -205,10 +248,8 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, onUp
               )}
             </AnimatePresence>
 
-            {/* Overlay gradient for readability */}
-            <div className={`absolute inset-0 ${
-              slide.textColor === 'light' ? 'bg-black/40' : 'bg-white/50'
-            }`} />
+            {/* Overlay for readability */}
+            <div className={`absolute inset-0 ${slide.textColor === 'light' ? 'bg-black/40' : 'bg-white/50'}`} />
 
             {/* Status overlays */}
             <AnimatePresence>
@@ -232,94 +273,23 @@ const SlideCanvas: React.FC<Props> = ({ slide, onUpdateTitle, onUpdateBody, onUp
               )}
             </AnimatePresence>
 
-            {/* Slide number badge */}
-            <div className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-black/40 text-white text-[9px] font-bold backdrop-blur">
+            {/* Slide number */}
+            <div className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-black/40 text-white text-[9px] font-bold backdrop-blur pointer-events-none">
               {slide.index + 1}
             </div>
 
-            {/* Focus ring indicator */}
-            {focusedBlock && (
-              <div className="absolute inset-0 ring-2 ring-brand-blue/50 rounded-2xl pointer-events-none" />
+            {/* Editing focus ring */}
+            {isEditing && (
+              <div className="absolute inset-0 ring-2 ring-brand-blue/40 rounded-2xl pointer-events-none" />
             )}
 
-            {/* Content layer */}
+            {/* ── Content layer ── */}
             <div className={`absolute inset-0 ${lc.wrapper} ${textClass}`}>
-              {layout === 'two-col' ? (
-                <>
-                  <div>
-                    <EditableText
-                      value={slide.title}
-                      onChange={v => onUpdateTitle(slide.id, v)}
-                      className={`${lc.title} ${textClass} drop-shadow-md`}
-                      placeholder="Tiêu đề slide..."
-                      style={titleInline}
-                      {...sharedEditProps('title')}
-                    />
-                  </div>
-                  <div>
-                    <EditableText
-                      value={slide.body}
-                      onChange={v => onUpdateBody(slide.id, v)}
-                      className={`${lc.body} ${textClass} ${placeholderClass} drop-shadow`}
-                      placeholder="Nội dung slide..."
-                      multiline
-                      style={bodyInline}
-                      {...sharedEditProps('body')}
-                    />
-                  </div>
-                </>
-              ) : layout === 'title-image' ? (
-                <>
-                  <div className="flex flex-col justify-center">
-                    <EditableText
-                      value={slide.title}
-                      onChange={v => onUpdateTitle(slide.id, v)}
-                      className={`${lc.title} ${textClass} drop-shadow-md`}
-                      placeholder="Tiêu đề..."
-                      style={titleInline}
-                      {...sharedEditProps('title')}
-                    />
-                    <EditableText
-                      value={slide.body}
-                      onChange={v => onUpdateBody(slide.id, v)}
-                      className={`${lc.body} ${textClass} ${placeholderClass} drop-shadow`}
-                      placeholder="Nội dung..."
-                      multiline
-                      style={bodyInline}
-                      {...sharedEditProps('body')}
-                    />
-                  </div>
-                  <div className="h-full flex items-center justify-center">
-                    <div className="w-full aspect-video rounded-xl border-2 border-white/20 bg-white/10 backdrop-blur flex items-center justify-center">
-                      <p className="text-white/40 text-xs">Vùng ảnh</p>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <EditableText
-                    value={slide.title}
-                    onChange={v => onUpdateTitle(slide.id, v)}
-                    className={`${lc.title} ${textClass} drop-shadow-md`}
-                    placeholder="Tiêu đề slide..."
-                    style={titleInline}
-                    {...sharedEditProps('title')}
-                  />
-                  <EditableText
-                    value={slide.body}
-                    onChange={v => onUpdateBody(slide.id, v)}
-                    className={`${lc.body} ${textClass} ${placeholderClass} drop-shadow`}
-                    placeholder="Nội dung slide..."
-                    multiline
-                    style={bodyInline}
-                    {...sharedEditProps('body')}
-                  />
-                </>
-              )}
+              {renderEditables()}
             </div>
           </div>
 
-          {/* Bottom bar — full width aligned with canvas card */}
+          {/* Bottom bar */}
           <div className="w-full max-w-4xl">
             {bottomBar}
           </div>
