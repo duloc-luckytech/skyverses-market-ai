@@ -410,9 +410,11 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
             onSelectSlide={s.setActiveSlideId}
             onAddSlide={s.addSlide}
             onRemoveSlide={s.removeSlide}
+            onDuplicateSlide={s.duplicateSlide}
             onMoveSlide={s.moveSlide}
           />
         )}
+
 
         {/* Panel 2: Canvas + Toolbar */}
         <div className="flex-1 flex flex-col overflow-hidden relative">
@@ -486,13 +488,20 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
               <div className="px-4 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.04] bg-white/50 dark:bg-[#0d0d0f]/50 shrink-0">
                 <SlideToolbar
                   slide={s.activeSlide}
+                  slides={s.slides}
                   onRegenBg={s.genSlideBg}
+                  onGenAllBg={s.genAllSlideBg}
+                  onClearBg={s.clearSlideBg}
+                  onDuplicateSlide={s.duplicateSlide}
                   onChangeLayout={handleChangeLayout}
                   onChangeTextColor={handleChangeTextColor}
                   onAISuggest={s.fetchAISuggestions}
                   onApplySuggestion={s.applySuggestion}
+                  isGenAlling={s.isGenAlling}
+                  genAllProgress={s.genAllProgress ?? undefined}
                 />
               </div>
+
 
               {/* Help Banner */}
               <SlideHelpBanner

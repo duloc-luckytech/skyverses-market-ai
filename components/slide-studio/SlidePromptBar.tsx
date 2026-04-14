@@ -90,6 +90,14 @@ const SlidePromptBar: React.FC<Props> = ({
           className="flex-1 min-w-0 text-[12px] bg-transparent text-slate-700 dark:text-white/80 placeholder-slate-400 dark:placeholder-white/30 outline-none font-medium"
         />
 
+        {/* Custom prompt indicator */}
+        {slide.bgPrompt?.trim() && (
+          <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-brand-blue/10 text-brand-blue text-[9px] font-bold border border-brand-blue/20 whitespace-nowrap">
+            Custom ✓
+          </span>
+        )}
+
+
         {/* Divider */}
         <div className="w-px h-5 bg-black/[0.08] dark:bg-white/[0.08] shrink-0" />
 

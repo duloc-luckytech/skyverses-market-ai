@@ -162,6 +162,11 @@ export const useSlideStudio = () => {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
+  // ── Gen-all BG queue state ───────────────────────────────────────────────────
+  const [isGenAlling, setIsGenAlling] = useState(false);
+  const [genAllProgress, setGenAllProgress] = useState<{ done: number; total: number } | null>(null);
+  const genAllCancelRef = useRef(false);
+
   // ── Undo / Redo ───────────────────────────────────────────────────────────────
   const [undoStack, setUndoStack] = useState<Slide[][]>([]);
   const [redoStack, setRedoStack] = useState<Slide[][]>([]);
@@ -294,6 +299,98 @@ export const useSlideStudio = () => {
       updateSlide(slideId, { bgStatus: 'error', bgJobId: null });
     }
   }, [slides, deckStyle, refImages, brandSlogan, brandDescription, updateSlide, showToast]);
+
+  // ─── Gen ALL slide backgrounds sequentially ───────────────────────────────────
+
+  const genAllSlideBg = useCallback(async () => {
+    if (isGenAlling) return;
+    const targets = slides.filter(s => s.bgStatus !== 'generating');
+    if (targets.length === 0) return;
+    setIsGenAlling(true);
+    genAllCancelRef.current = false;
+    setGenAllProgress({ done: 0, total: targets.length });
+
+    for (let i = 0; i < targets.length; i++) {
+      if (genAllCancelRef.current) break;
+      await genSlideBg(targets[i].id);
+      setGenAllProgress({ done: i + 1, total: targets.length });
+      // small pause between jobs to avoid hammering the API
+      if (i < targets.length - 1 && !genAllCancelRef.current) {
+        await new Promise(r => setTimeout(r, 400));
+      }
+    }
+
+    setIsGenAlling(false);
+    setGenAllProgress(null);
+  }, [slides, isGenAlling, genSlideBg]);
+
+  const cancelGenAll = useCallback(() => {
+    genAllCancelRef.current = true;
+    setIsGenAlling(false);
+    setGenAllProgress(null);
+  }, []);
+
+  // ─── Clear BG for a slide ─────────────────────────────────────────────────────
+
+  const clearSlideBg = useCallback((slideId: string) => {
+    updateSlide(slideId, { bgImageUrl: null, bgStatus: 'idle', bgJobId: null });
+  }, [updateSlide]);
+
+  // ─── Duplicate a slide ────────────────────────────────────────────────────────
+
+  const duplicateSlide = useCallback((slideId: string) => {
+    setSlides(prev => {
+      const idx = prev.findIndex(s => s.id === slideId);
+      if (idx === -1) return prev;
+      pushUndo(prev);
+      const original = prev[idx];
+      const clone: Slide = {
+        ...original,
+        id: genId(),
+        index: idx + 1,
+      };
+      const next = [
+        ...prev.slice(0, idx + 1),
+        clone,
+        ...prev.slice(idx + 1),
+      ].map((s, i) => ({ ...s, index: i }));
+      setTimeout(() => setActiveSlideId(clone.id), 0);
+      return next;
+    });
+    setIsDirty(true);
+  }, [pushUndo]);
+
+  // ─── Keyboard shortcuts ───────────────────────────────────────────────────────
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const isMac = navigator.platform.toUpperCase().includes('MAC');
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+      if (!ctrlOrCmd) return;
+      if (e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        setUndoStack(u => {
+          if (u.length === 0) return u;
+          const prev = u[u.length - 1];
+          setRedoStack(r => [...r, slides]);
+          setSlides(prev);
+          return u.slice(0, -1);
+        });
+      }
+      if ((e.key === 'z' && e.shiftKey) || e.key === 'y') {
+        e.preventDefault();
+        setRedoStack(r => {
+          if (r.length === 0) return r;
+          const next = r[r.length - 1];
+          setUndoStack(u => [...u, slides]);
+          setSlides(next);
+          return r.slice(0, -1);
+        });
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [slides]);
 
   // ─── Gen full deck ────────────────────────────────────────────────────────────
 
@@ -525,8 +622,16 @@ Return ONLY a JSON array, no explanation:
     updateSlide,
     generateDeck,
     genSlideBg,
+    genAllSlideBg,
+    cancelGenAll,
+    clearSlideBg,
+    duplicateSlide,
     fetchAISuggestions,
     applySuggestion,
     cancelGeneration,
+
+    // Gen-all state
+    isGenAlling,
+    genAllProgress,
   };
 };

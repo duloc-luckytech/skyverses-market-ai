@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Loader2, Trash2, AlertCircle } from 'lucide-react';
+import { Plus, Loader2, Trash2, AlertCircle, Copy } from 'lucide-react';
 import { Slide } from '../../hooks/useSlideStudio';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -12,6 +12,7 @@ interface Props {
   onSelectSlide: (id: string) => void;
   onAddSlide: () => void;
   onRemoveSlide: (id: string) => void;
+  onDuplicateSlide: (id: string) => void;
   onMoveSlide: (from: number, to: number) => void;
 }
 
@@ -37,6 +38,7 @@ const SlideThumbnailList: React.FC<Props> = ({
   onSelectSlide,
   onAddSlide,
   onRemoveSlide,
+  onDuplicateSlide,
 }) => {
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-black/[0.02] dark:bg-white/[0.02] border-r border-black/[0.06] dark:border-white/[0.05] w-[120px] shrink-0">
@@ -101,15 +103,28 @@ const SlideThumbnailList: React.FC<Props> = ({
                   {/* Status dot */}
                   <StatusDot status={slide.bgStatus} />
 
-                  {/* Delete btn */}
-                  {slides.length > 1 && (
+                  {/* Action buttons row — appear on hover */}
+                  <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-0.5 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+                    {/* Duplicate */}
                     <button
-                      onClick={(e) => { e.stopPropagation(); onRemoveSlide(slide.id); }}
-                      className="absolute top-0.5 left-0.5 w-4 h-4 rounded bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80"
+                      onClick={(e) => { e.stopPropagation(); onDuplicateSlide(slide.id); }}
+                      title="Nhân bản slide"
+                      className="w-5 h-5 rounded bg-black/50 text-white flex items-center justify-center hover:bg-sky-500/80 transition-colors"
                     >
-                      <Trash2 size={9} />
+                      <Copy size={8} />
                     </button>
-                  )}
+
+                    {/* Delete */}
+                    {slides.length > 1 && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onRemoveSlide(slide.id); }}
+                        title="Xoá slide"
+                        className="w-5 h-5 rounded bg-black/50 text-white flex items-center justify-center hover:bg-red-500/80 transition-colors"
+                      >
+                        <Trash2 size={8} />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Slide number */}
