@@ -260,6 +260,12 @@ export const useSlideStudio = () => {
 
     updateSlide(slideId, { bgStatus: 'generating', bgJobId: null });
 
+    // 90-second timeout — auto-fail so gen-all queue never hangs
+    const TIMEOUT_MS = 90_000;
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('TIMEOUT')), TIMEOUT_MS),
+    );
+
     try {
       const prompt = slide.bgPrompt?.trim()
         ? slide.bgPrompt.trim()
@@ -269,36 +275,46 @@ export const useSlideStudio = () => {
             [...(refImages ?? []), ...(slide.slideRefImages ?? [])],
             { slogan: brandSlogan, description: brandDescription },
           );
-      const res = await imagesApi.createJob({
-        type: 'text_to_image',
-        input: { prompt },
-        config: { width: 1280, height: 720, aspectRatio: '16:9', seed: 0, style: '' },
-        engine: { provider: 'gommo', model: 'google_image_gen_4_5' },
-        enginePayload: { prompt, privacy: 'PRIVATE', projectId: 'default' },
-      });
 
-      if (!res?.data?.jobId) throw new Error('No jobId returned');
+      const genPromise = (async () => {
+        const res = await imagesApi.createJob({
+          type: 'text_to_image',
+          input: { prompt },
+          config: { width: 1280, height: 720, aspectRatio: '16:9', seed: 0, style: '' },
+          engine: { provider: 'gommo', model: 'google_image_gen_4_5' },
+          enginePayload: { prompt, privacy: 'PRIVATE', projectId: 'default' },
+        });
 
-      const jobId = res.data.jobId;
-      updateSlide(slideId, { bgJobId: jobId });
+        if (!res?.data?.jobId) throw new Error('No jobId returned');
 
-      await pollJobOnce({
-        jobId,
-        isCancelledRef,
-        apiType: 'image',
-        onDone: (result) => {
-          const url = result.images?.[0] ?? null;
-          updateSlide(slideId, { bgImageUrl: url, bgStatus: url ? 'done' : 'error', bgJobId: null });
-        },
-        onError: (msg) => {
-          updateSlide(slideId, { bgStatus: 'error', bgJobId: null });
-          showToast(`Lỗi gen ảnh slide: ${msg}`, 'error');
-        },
-      });
+        const jobId = res.data.jobId;
+        updateSlide(slideId, { bgJobId: jobId });
+
+        await pollJobOnce({
+          jobId,
+          isCancelledRef,
+          apiType: 'image',
+          onDone: (result) => {
+            const url = result.images?.[0] ?? null;
+            updateSlide(slideId, { bgImageUrl: url, bgStatus: url ? 'done' : 'error', bgJobId: null });
+          },
+          onError: (msg) => {
+            updateSlide(slideId, { bgStatus: 'error', bgJobId: null });
+            showToast(`Lỗi gen ảnh slide: ${msg}`, 'error');
+          },
+        });
+      })();
+
+      await Promise.race([genPromise, timeoutPromise]);
     } catch (err) {
+      const isTimeout = err instanceof Error && err.message === 'TIMEOUT';
       updateSlide(slideId, { bgStatus: 'error', bgJobId: null });
+      if (isTimeout) {
+        showToast(`Slide "${slide.title.slice(0, 20)}" gen hình quá 90s — đã bỏ qua`, 'error');
+      }
     }
   }, [slides, deckStyle, refImages, brandSlogan, brandDescription, updateSlide, showToast]);
+
 
   // ─── Gen ALL slide backgrounds sequentially ───────────────────────────────────
 
