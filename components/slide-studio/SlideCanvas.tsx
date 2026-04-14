@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Slide, SlideLayout } from '../../hooks/useSlideStudio';
-import SlideTextBlock, { BlockState } from './SlideTextBlock';
+import SlideTextBlock from './SlideTextBlock';
 
 interface Props {
   slide: Slide | null;
@@ -72,15 +72,10 @@ const SlideCanvas: React.FC<Props> = ({
   // Track which block is currently active (so others deselect)
   const [activeBlock, setActiveBlock] = useState<'title' | 'body' | null>(null);
 
-  const handleTitleState = useCallback((state: BlockState) => {
-    if (state !== 'idle') setActiveBlock('title');
-    else setActiveBlock(prev => prev === 'title' ? null : prev);
-  }, []);
-
-  const handleBodyState = useCallback((state: BlockState) => {
-    if (state !== 'idle') setActiveBlock('body');
-    else setActiveBlock(prev => prev === 'body' ? null : prev);
-  }, []);
+  const handleTitleActivate = useCallback(() => setActiveBlock('title'), []);
+  const handleTitleDeactivate = useCallback(() => setActiveBlock(prev => prev === 'title' ? null : prev), []);
+  const handleBodyActivate = useCallback(() => setActiveBlock('body'), []);
+  const handleBodyDeactivate = useCallback(() => setActiveBlock(prev => prev === 'body' ? null : prev), []);
 
   // Click on canvas background → deselect all
   const handleCanvasClick = (e: React.MouseEvent) => {
@@ -111,8 +106,9 @@ const SlideCanvas: React.FC<Props> = ({
         textColor={tc}
         className={ld.title.class}
         onChange={(plain, html) => onUpdateTitle(slide.id, plain, html)}
-        onStateChange={handleTitleState}
-        forceIdle={activeBlock === 'body'}
+        onActivate={handleTitleActivate}
+        onDeactivate={handleTitleDeactivate}
+        forceBlur={activeBlock === 'body'}
       />
     );
 
@@ -127,8 +123,9 @@ const SlideCanvas: React.FC<Props> = ({
         textColor={tc}
         className={ld.body.class}
         onChange={(plain, html) => onUpdateBody(slide.id, plain, html)}
-        onStateChange={handleBodyState}
-        forceIdle={activeBlock === 'title'}
+        onActivate={handleBodyActivate}
+        onDeactivate={handleBodyDeactivate}
+        forceBlur={activeBlock === 'title'}
       />
     );
 

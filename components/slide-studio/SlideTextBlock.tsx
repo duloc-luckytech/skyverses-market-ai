@@ -6,215 +6,238 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight,
-  Minus, Plus, Palette, GripHorizontal, Type,
+  Minus, Plus, Palette, Type, ChevronDown,
 } from 'lucide-react';
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-export type BlockState = 'idle' | 'selected' | 'editing';
-
-export interface TextBlockConfig {
-  x: number;   // left offset in % of canvas width
-  y: number;   // top offset in % of canvas height
-  w: number;   // width in % of canvas width
-}
-
-// ── Constants ─────────────────────────────────────────────────────────────────
+// ── Fonts & Constants ─────────────────────────────────────────────────────────
 
 export const SLIDE_FONTS = [
-  { label: 'Inter', value: 'Inter' },
-  { label: 'Montserrat', value: 'Montserrat' },
-  { label: 'Poppins', value: 'Poppins' },
-  { label: 'Roboto', value: 'Roboto' },
-  { label: 'Playfair Display', value: 'Playfair Display' },
-  { label: 'Merriweather', value: 'Merriweather' },
-  { label: 'Georgia', value: 'Georgia' },
-  { label: 'Bebas Neue', value: 'Bebas Neue' },
-  { label: 'Oswald', value: 'Oswald' },
+  { label: 'Inter',       value: 'Inter' },
+  { label: 'Montserrat',  value: 'Montserrat' },
+  { label: 'Poppins',     value: 'Poppins' },
+  { label: 'Roboto',      value: 'Roboto' },
+  { label: 'Playfair',    value: 'Playfair Display' },
+  { label: 'Merriweather',value: 'Merriweather' },
+  { label: 'Georgia',     value: 'Georgia' },
+  { label: 'Bebas Neue',  value: 'Bebas Neue' },
+  { label: 'Oswald',      value: 'Oswald' },
 ];
 
 const FONT_SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 80, 96];
 
 const PALETTE_COLORS = [
-  '#ffffff', '#f8fafc', '#e2e8f0', '#94a3b8', '#475569', '#1e293b', '#000000',
-  '#0090ff', '#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f97316', '#eab308', '#22c55e', '#10b981',
+  '#ffffff', '#f1f5f9', '#94a3b8', '#475569', '#1e293b', '#000000',
+  '#0090ff', '#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f97316',
+  '#eab308', '#22c55e', '#10b981', '#06b6d4',
 ];
 
-// ── execCommand helpers (preserve text selection) ────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
 
-function execCmd(cmd: string, val?: string) {
-  document.execCommand('styleWithCSS', false, 'true');
-  document.execCommand(cmd, false, val ?? '');
+export interface Props {
+  fieldLabel: string;
+  placeholder: string;
+  htmlValue?: string;
+  plainValue: string;
+  defaultFontSize?: number;
+  textColor: 'light' | 'dark';
+  className?: string;
+  onChange: (plain: string, html: string) => void;
+  onActivate?: () => void;
+  onDeactivate?: () => void;
+  forceBlur?: boolean;       // when another block is active
 }
 
-function setFontSizePx(px: number) {
-  execCmd('fontSize', '7');
-  const sel = window.getSelection();
-  if (!sel) return;
-  const root = sel.focusNode?.parentElement?.closest('[contenteditable]');
-  if (!root) return;
-  root.querySelectorAll('font[size="7"]').forEach(el => {
-    const span = document.createElement('span');
-    span.style.fontSize = `${px}px`;
-    span.innerHTML = (el as HTMLElement).innerHTML;
-    el.replaceWith(span);
-  });
-}
-
-function getFmtState() {
-  return {
-    bold:      document.queryCommandState('bold'),
-    italic:    document.queryCommandState('italic'),
-    underline: document.queryCommandState('underline'),
-    left:      document.queryCommandState('justifyLeft'),
-    center:    document.queryCommandState('justifyCenter'),
-    right:     document.queryCommandState('justifyRight'),
-  };
-}
-
-// ── Floating Format Toolbar (renders via Portal) ──────────────────────────────
+// ── Floating Format Bar (Portal) ──────────────────────────────────────────────
 
 interface FormatBarProps {
-  anchorRef: React.RefObject<HTMLElement>;
-  onMouseDown: (e: React.MouseEvent) => void;
+  editRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLElement>;
+  savedRange: React.MutableRefObject<Range | null>;
 }
 
-const FormatBar: React.FC<FormatBarProps> = ({ anchorRef, onMouseDown }) => {
-  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
-  const [fmt, setFmt] = useState(getFmtState());
+const FormatBar: React.FC<FormatBarProps> = ({ editRef, containerRef, savedRange }) => {
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [fmt, setFmt] = useState({ bold: false, italic: false, underline: false, left: true, center: false, right: false });
   const [showColors, setShowColors] = useState(false);
-  const [currentSize, setCurrentSize] = useState(24);
+  const [fontSize, setFontSize] = useState(28);
 
-  // Position above the anchor element
-  useEffect(() => {
-    const compute = () => {
-      if (!anchorRef.current) return;
-      const r = anchorRef.current.getBoundingClientRect();
-      setPos({
-        top: r.top + window.scrollY - 46,
-        left: r.left + window.scrollX,
-        width: r.width,
-      });
-    };
-    compute();
-    const io = new ResizeObserver(compute);
-    if (anchorRef.current) io.observe(anchorRef.current);
-    window.addEventListener('scroll', compute, true);
-    return () => { io.disconnect(); window.removeEventListener('scroll', compute, true); };
-  }, [anchorRef]);
-
-  // Track selection → refresh bold/italic state
+  // Position above block
   useEffect(() => {
     const update = () => {
-      setFmt(getFmtState());
+      const el = containerRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setPos({ top: r.top + window.scrollY - 50, left: r.left + window.scrollX });
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    if (containerRef.current) ro.observe(containerRef.current);
+    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', update);
+    return () => { ro.disconnect(); window.removeEventListener('scroll', update, true); window.removeEventListener('resize', update); };
+  }, [containerRef]);
+
+  // Sync format state when selection changes
+  useEffect(() => {
+    const sync = () => {
+      // Only update if selection is inside our editRef
       const sel = window.getSelection();
-      if (sel?.focusNode) {
-        const el = (sel.focusNode.nodeType === 3 ? sel.focusNode.parentElement : sel.focusNode) as HTMLElement;
-        if (el) {
-          const sz = parseInt(window.getComputedStyle(el).fontSize);
-          if (!isNaN(sz)) setCurrentSize(sz);
+      if (!sel || !editRef.current?.contains(sel.anchorNode)) return;
+      setFmt({
+        bold:      document.queryCommandState('bold'),
+        italic:    document.queryCommandState('italic'),
+        underline: document.queryCommandState('underline'),
+        left:      document.queryCommandState('justifyLeft'),
+        center:    document.queryCommandState('justifyCenter'),
+        right:     document.queryCommandState('justifyRight'),
+      });
+      // Read font size
+      if (sel.focusNode) {
+        const node = sel.focusNode.nodeType === 3 ? sel.focusNode.parentElement : sel.focusNode as HTMLElement;
+        if (node) {
+          const sz = parseInt(getComputedStyle(node as Element).fontSize);
+          if (!isNaN(sz) && sz > 0) setFontSize(sz);
         }
       }
     };
-    document.addEventListener('selectionchange', update);
-    return () => document.removeEventListener('selectionchange', update);
-  }, []);
+    document.addEventListener('selectionchange', sync);
+    return () => document.removeEventListener('selectionchange', sync);
+  }, [editRef]);
 
-  const noSteal = (e: React.MouseEvent) => e.preventDefault();
-  const btn = (active: boolean) =>
-    `w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-100 ${
+  // ── Core: restore selection then exec command ─────────────────────────────
+  const run = useCallback((fn: () => void) => {
+    // 1. Refocus the contentEditable
+    editRef.current?.focus({ preventScroll: true });
+    // 2. Restore saved selection range
+    if (savedRange.current) {
+      const sel = window.getSelection();
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(savedRange.current);
+      }
+    }
+    // 3. Enable CSS-based styling
+    document.execCommand('styleWithCSS', false, 'true');
+    // 4. Run the command
+    fn();
+    // 5. Re-save the (now modified) range
+    const sel2 = window.getSelection();
+    if (sel2 && sel2.rangeCount > 0) {
+      savedRange.current = sel2.getRangeAt(0).cloneRange();
+    }
+    setFmt({
+      bold:      document.queryCommandState('bold'),
+      italic:    document.queryCommandState('italic'),
+      underline: document.queryCommandState('underline'),
+      left:      document.queryCommandState('justifyLeft'),
+      center:    document.queryCommandState('justifyCenter'),
+      right:     document.queryCommandState('justifyRight'),
+    });
+  }, [editRef, savedRange]);
+
+  const applySize = (px: number) => {
+    run(() => {
+      document.execCommand('fontSize', false, '7');
+      const root = editRef.current;
+      if (root) {
+        root.querySelectorAll('font[size="7"]').forEach(el => {
+          const span = document.createElement('span');
+          span.style.fontSize = `${px}px`;
+          span.innerHTML = (el as HTMLElement).innerHTML;
+          el.replaceWith(span);
+        });
+      }
+    });
+    setFontSize(px);
+  };
+
+  const sizeIdx = FONT_SIZES.reduce((bestIdx, val, idx) =>
+    Math.abs(val - fontSize) < Math.abs(FONT_SIZES[bestIdx] - fontSize) ? idx : bestIdx, 0);
+
+  // Never steal focus from the contentEditable
+  const np = (e: React.MouseEvent) => e.preventDefault();
+
+  const btnCls = (active: boolean) =>
+    `w-7 h-7 flex items-center justify-center rounded-lg transition-all ${
       active
-        ? 'bg-brand-blue/20 text-brand-blue shadow-sm shadow-brand-blue/20'
-        : 'text-slate-400 hover:text-white hover:bg-white/[0.08]'
+        ? 'bg-brand-blue/25 text-brand-blue'
+        : 'text-white/50 hover:text-white hover:bg-white/[0.1]'
     }`;
-
-  const sizeIdx = FONT_SIZES.indexOf(FONT_SIZES.reduce((a, b) =>
-    Math.abs(b - currentSize) < Math.abs(a - currentSize) ? b : a));
 
   return createPortal(
     <motion.div
-      initial={{ opacity: 0, y: 4, scale: 0.97 }}
+      initial={{ opacity: 0, y: 6, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 4, scale: 0.97 }}
-      transition={{ duration: 0.12 }}
-      style={{ position: 'absolute', top: pos.top, left: pos.left, zIndex: 99998 }}
-      className="flex items-center gap-0.5 px-2 py-1 rounded-2xl shadow-2xl shadow-black/40 border border-white/[0.08] bg-[#1a1b1f]/95 backdrop-blur-xl"
-      onMouseDown={noSteal}
+      exit={{ opacity: 0, y: 6, scale: 0.96 }}
+      transition={{ duration: 0.15, ease: 'easeOut' }}
+      style={{ position: 'absolute', top: pos.top, left: pos.left, zIndex: 99999 }}
+      onMouseDown={np}
+      className="flex items-center gap-0.5 px-2 py-1.5 rounded-2xl bg-[#16171c]/98 backdrop-blur-xl border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
     >
       {/* Font family */}
-      <select
-        onChange={e => execCmd('fontName', e.target.value)}
-        onMouseDown={noSteal}
-        className="text-[10px] font-medium bg-transparent text-white/70 outline-none border-none cursor-pointer max-w-[80px] truncate h-7"
-        defaultValue="Inter"
-      >
-        {SLIDE_FONTS.map(f => (
-          <option key={f.value} value={f.value} className="bg-[#1a1b1f]">{f.label}</option>
-        ))}
-      </select>
+      <div className="relative flex items-center">
+        <select
+          onChange={e => run(() => document.execCommand('fontName', false, e.target.value))}
+          onMouseDown={np}
+          className="appearance-none text-[10px] font-medium bg-transparent text-white/70 outline-none border-none cursor-pointer pr-4 pl-1 h-7 max-w-[80px]"
+          defaultValue="Inter"
+        >
+          {SLIDE_FONTS.map(f => (
+            <option key={f.value} value={f.value} className="bg-[#16171c]">{f.label}</option>
+          ))}
+        </select>
+        <ChevronDown size={8} className="absolute right-0 text-white/30 pointer-events-none" />
+      </div>
 
-      <div className="w-px h-4 bg-white/[0.08] mx-0.5 shrink-0" />
+      <div className="w-px h-5 bg-white/[0.08] mx-1 shrink-0" />
 
-      {/* Font size */}
-      <button onMouseDown={noSteal} onClick={() => {
-        const next = FONT_SIZES[Math.max(0, sizeIdx - 1)];
-        setFontSizePx(next); setCurrentSize(next);
-      }} className={btn(false)}><Minus size={10} /></button>
-      
+      {/* Font size stepper */}
+      <button onMouseDown={np} onClick={() => applySize(FONT_SIZES[Math.max(0, sizeIdx - 1)])}
+        className={btnCls(false)}><Minus size={9} /></button>
       <select
         value={FONT_SIZES[sizeIdx]}
-        onChange={e => { const v = Number(e.target.value); setFontSizePx(v); setCurrentSize(v); }}
-        onMouseDown={noSteal}
-        className="text-[10px] font-bold text-white/80 bg-transparent outline-none border-none tabular-nums text-center w-9 cursor-pointer"
+        onChange={e => applySize(Number(e.target.value))}
+        onMouseDown={np}
+        className="text-[10px] font-bold text-white/80 bg-transparent outline-none border-none text-center w-9 cursor-pointer tabular-nums"
       >
-        {FONT_SIZES.map(s => <option key={s} value={s} className="bg-[#1a1b1f]">{s}</option>)}
+        {FONT_SIZES.map(s => <option key={s} value={s} className="bg-[#16171c]">{s}</option>)}
       </select>
+      <button onMouseDown={np} onClick={() => applySize(FONT_SIZES[Math.min(FONT_SIZES.length - 1, sizeIdx + 1)])}
+        className={btnCls(false)}><Plus size={9} /></button>
 
-      <button onMouseDown={noSteal} onClick={() => {
-        const next = FONT_SIZES[Math.min(FONT_SIZES.length - 1, sizeIdx + 1)];
-        setFontSizePx(next); setCurrentSize(next);
-      }} className={btn(false)}><Plus size={10} /></button>
-
-      <div className="w-px h-4 bg-white/[0.08] mx-0.5 shrink-0" />
+      <div className="w-px h-5 bg-white/[0.08] mx-1 shrink-0" />
 
       {/* Bold / Italic / Underline */}
-      <button onMouseDown={noSteal} onClick={() => { execCmd('bold'); setFmt(getFmtState()); }}
-        className={btn(fmt.bold)}><Bold size={11} /></button>
-      <button onMouseDown={noSteal} onClick={() => { execCmd('italic'); setFmt(getFmtState()); }}
-        className={btn(fmt.italic)}><Italic size={11} /></button>
-      <button onMouseDown={noSteal} onClick={() => { execCmd('underline'); setFmt(getFmtState()); }}
-        className={btn(fmt.underline)}><Underline size={11} /></button>
+      <button onMouseDown={np} onClick={() => run(() => document.execCommand('bold'))} className={btnCls(fmt.bold)} title="Bold (Ctrl+B)"><Bold size={11} /></button>
+      <button onMouseDown={np} onClick={() => run(() => document.execCommand('italic'))} className={btnCls(fmt.italic)} title="Italic (Ctrl+I)"><Italic size={11} /></button>
+      <button onMouseDown={np} onClick={() => run(() => document.execCommand('underline'))} className={btnCls(fmt.underline)} title="Underline (Ctrl+U)"><Underline size={11} /></button>
 
-      <div className="w-px h-4 bg-white/[0.08] mx-0.5 shrink-0" />
+      <div className="w-px h-5 bg-white/[0.08] mx-1 shrink-0" />
 
       {/* Alignment */}
-      <button onMouseDown={noSteal} onClick={() => { execCmd('justifyLeft'); setFmt(getFmtState()); }}
-        className={btn(fmt.left)}><AlignLeft size={11} /></button>
-      <button onMouseDown={noSteal} onClick={() => { execCmd('justifyCenter'); setFmt(getFmtState()); }}
-        className={btn(fmt.center)}><AlignCenter size={11} /></button>
-      <button onMouseDown={noSteal} onClick={() => { execCmd('justifyRight'); setFmt(getFmtState()); }}
-        className={btn(fmt.right)}><AlignRight size={11} /></button>
+      <button onMouseDown={np} onClick={() => run(() => document.execCommand('justifyLeft'))} className={btnCls(fmt.left)} title="Align Left"><AlignLeft size={11} /></button>
+      <button onMouseDown={np} onClick={() => run(() => document.execCommand('justifyCenter'))} className={btnCls(fmt.center)} title="Align Center"><AlignCenter size={11} /></button>
+      <button onMouseDown={np} onClick={() => run(() => document.execCommand('justifyRight'))} className={btnCls(fmt.right)} title="Align Right"><AlignRight size={11} /></button>
 
-      <div className="w-px h-4 bg-white/[0.08] mx-0.5 shrink-0" />
+      <div className="w-px h-5 bg-white/[0.08] mx-1 shrink-0" />
 
-      {/* Color picker */}
+      {/* Text color */}
       <div className="relative">
-        <button onMouseDown={noSteal} onClick={() => setShowColors(v => !v)}
-          className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors">
+        <button onMouseDown={np} onClick={() => setShowColors(v => !v)}
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-white/50 hover:text-white hover:bg-white/[0.1] transition-colors"
+          title="Màu chữ">
           <Palette size={11} />
         </button>
         {showColors && (
           <div
-            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 rounded-xl bg-[#1a1b1f]/95 backdrop-blur-xl border border-white/[0.08] shadow-2xl grid grid-cols-8 gap-1"
-            onMouseDown={noSteal}
+            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 rounded-xl bg-[#16171c]/98 backdrop-blur-xl border border-white/[0.08] shadow-2xl grid grid-cols-8 gap-1"
+            onMouseDown={np}
           >
             {PALETTE_COLORS.map(c => (
-              <button key={c}
-                style={{ backgroundColor: c }}
-                onMouseDown={noSteal}
-                onClick={() => { execCmd('foreColor', c); setShowColors(false); }}
-                className="w-5 h-5 rounded-md border border-white/10 hover:scale-125 transition-transform shadow-sm"
-              />
+              <button key={c} style={{ backgroundColor: c }}
+                onMouseDown={np}
+                onClick={() => { run(() => document.execCommand('foreColor', false, c)); setShowColors(false); }}
+                className="w-5 h-5 rounded-md border border-white/10 hover:scale-125 transition-transform" />
             ))}
           </div>
         )}
@@ -224,175 +247,178 @@ const FormatBar: React.FC<FormatBarProps> = ({ anchorRef, onMouseDown }) => {
   );
 };
 
-// ── Main TextBlock Component ──────────────────────────────────────────────────
-
-interface Props {
-  fieldLabel: string;          // 'Title' or 'Body'
-  placeholder: string;
-  htmlValue?: string;
-  plainValue: string;
-  defaultFontSize?: number;
-  textColor: 'light' | 'dark';
-  className?: string;
-  /** Callback with both plain text and html */
-  onChange: (plain: string, html: string) => void;
-  /** Notifies parent which block is active so others can deselect */
-  onStateChange?: (state: BlockState) => void;
-  /** If another block is active, we deselect */
-  forceIdle?: boolean;
-}
+// ── SlideTextBlock ─────────────────────────────────────────────────────────────
 
 const SlideTextBlock: React.FC<Props> = ({
   fieldLabel, placeholder, htmlValue, plainValue,
   defaultFontSize = 28, textColor, className = '',
-  onChange, onStateChange, forceIdle,
+  onChange, onActivate, onDeactivate, forceBlur,
 }) => {
-  const [state, setState] = useState<BlockState>('idle');
+  const [isActive, setIsActive] = useState(false);
   const editRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  // ← KEY: persist selection range across mousedown events on the toolbar
+  const savedRange = useRef<Range | null>(null);
+  const initDone = useRef(false);
 
-  const setBlockState = useCallback((s: BlockState) => {
-    setState(s);
-    onStateChange?.(s);
-  }, [onStateChange]);
-
-  // Force idle from parent (another block selected)
-  useEffect(() => {
-    if (forceIdle && state !== 'idle') {
-      setBlockState('idle');
-      editRef.current?.blur();
-    }
-  }, [forceIdle]);
-
-  // Initialize HTML into contentEditable
+  // Initialize HTML once per slide (sentinel = first 12 chars of plainValue)
+  const initKey = plainValue.slice(0, 12) + String(defaultFontSize);
   useEffect(() => {
     if (!editRef.current) return;
-    const html = htmlValue || `<span style="font-size:${defaultFontSize}px">${plainValue || ''}</span>`;
-    if (editRef.current.innerHTML !== html) {
-      editRef.current.innerHTML = html;
-    }
-  // Re-initialize only on slide switch (use first 10 chars as sentinel)
+    const html = htmlValue ?? `<span style="font-size:${defaultFontSize}px">${plainValue}</span>`;
+    editRef.current.innerHTML = html;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plainValue.slice(0, 10), defaultFontSize]);
+  }, [initKey]);
 
-  // Click outside → go to idle
+  // Save selection range on every selection change (only when this block has focus)
   useEffect(() => {
-    if (state === 'idle') return;
+    const handler = () => {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0 && editRef.current?.contains(sel.anchorNode)) {
+        savedRange.current = sel.getRangeAt(0).cloneRange();
+      }
+    };
+    document.addEventListener('selectionchange', handler);
+    return () => document.removeEventListener('selectionchange', handler);
+  }, []);
+
+  // Force blur when another block is activated
+  useEffect(() => {
+    if (forceBlur && isActive) {
+      setIsActive(false);
+      editRef.current?.blur();
+      onDeactivate?.();
+    }
+  }, [forceBlur]);
+
+  // Click outside → deactivate
+  useEffect(() => {
+    if (!isActive) return;
     const handler = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) {
-        setBlockState('idle');
+      const clickedFormatBar = (e.target as HTMLElement)?.closest('[data-formatbar]');
+      if (!clickedFormatBar && !containerRef.current?.contains(e.target as Node)) {
+        setIsActive(false);
+        onDeactivate?.();
       }
     };
     document.addEventListener('mousedown', handler, true);
     return () => document.removeEventListener('mousedown', handler, true);
-  }, [state, setBlockState]);
+  }, [isActive, onDeactivate]);
 
-  // Keyboard: Escape → selected; Delete on selected → clear (optional)
+  // Keyboard: Escape → deactivate
   useEffect(() => {
-    if (state !== 'editing' && state !== 'selected') return;
+    if (!isActive) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (state === 'editing') { setBlockState('selected'); editRef.current?.blur(); }
-        else setBlockState('idle');
+        setIsActive(false);
+        editRef.current?.blur();
+        onDeactivate?.();
         e.stopPropagation();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [state, setBlockState]);
+  }, [isActive, onDeactivate]);
 
-  const handleClick = (e: React.MouseEvent) => {
+  const activate = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    if (state === 'idle') setBlockState('selected');
-  };
-
-  const handleDoubleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setBlockState('editing');
-    // Move cursor to end
-    setTimeout(() => {
-      editRef.current?.focus();
-      const range = document.createRange();
-      range.selectNodeContents(editRef.current!);
-      range.collapse(false);
-      window.getSelection()?.removeAllRanges();
-      window.getSelection()?.addRange(range);
-    }, 10);
-  };
-
-  const handleInput = () => {
-    if (!editRef.current) return;
-    onChange(editRef.current.innerText, editRef.current.innerHTML);
-  };
+    if (!isActive) {
+      setIsActive(true);
+      onActivate?.();
+      setTimeout(() => editRef.current?.focus(), 10);
+    }
+  }, [isActive, onActivate]);
 
   const tc = textColor === 'light' ? 'text-white' : 'text-slate-900';
-  const isActive = state !== 'idle';
-  const isEditing = state === 'editing';
 
   return (
     <div
       ref={containerRef}
-      onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
-      className={`relative group ${isActive ? 'z-10' : ''}`}
+      onClick={activate}
+      className={`relative group/block ${isActive ? 'z-20' : 'z-0'}`}
+      style={{ paddingTop: '4px', paddingBottom: '4px' }}
     >
-      {/* ── Selection / hover border ── */}
-      <div className={`absolute inset-[-4px] rounded-lg pointer-events-none transition-all duration-150 ${
-        isEditing
-          ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(0,144,255,0.12)]'
-          : isActive
-            ? 'ring-2 ring-brand-blue/70 ring-dashed'
-            : 'ring-1 ring-transparent group-hover:ring-white/20 group-hover:ring-dashed'
+      {/* Selection border */}
+      <div className={`absolute inset-0 rounded-lg pointer-events-none transition-all duration-150 ${
+        isActive
+          ? 'ring-2 ring-brand-blue shadow-[0_0_0_3px_rgba(0,144,255,0.15)]'
+          : 'ring-1 ring-transparent group-hover/block:ring-white/20'
       }`} />
 
-      {/* ── Floating format bar ── */}
+      {/* Floating format bar */}
       <AnimatePresence>
         {isActive && (
-          <FormatBar
-            anchorRef={containerRef as React.RefObject<HTMLElement>}
-            onMouseDown={(e) => e.preventDefault()}
-          />
+          <div data-formatbar="true">
+            <FormatBar
+              editRef={editRef}
+              containerRef={containerRef as React.RefObject<HTMLElement>}
+              savedRange={savedRange}
+            />
+          </div>
         )}
       </AnimatePresence>
 
-      {/* ── Block label (shows on hover/select) ── */}
-      <div className={`absolute -top-5 left-0 flex items-center gap-1 transition-opacity duration-100 ${
-        isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-60'
+      {/* Field label */}
+      <div className={`absolute -top-5 left-0 flex items-center gap-1 transition-opacity select-none pointer-events-none ${
+        isActive ? 'opacity-100' : 'opacity-0 group-hover/block:opacity-50'
       }`}>
-        <Type size={8} className="text-brand-blue/80" />
-        <span className="text-[8px] font-bold text-brand-blue/80 uppercase tracking-wider select-none">
-          {fieldLabel}
-        </span>
+        <Type size={8} className="text-brand-blue" />
+        <span className="text-[8px] font-bold text-brand-blue uppercase tracking-wider">{fieldLabel}</span>
       </div>
 
-      {/* ── The actual contentEditable ── */}
+      {/* The actual rich text editing area */}
       <div
         ref={editRef}
-        contentEditable={isEditing}
+        contentEditable
         suppressContentEditableWarning
-        onInput={handleInput}
-        onKeyDown={e => {
-          if (e.key === 'Enter' && !e.shiftKey && isEditing) {
-            // Allow multiline (do not prevent default — block naturally wraps)
+        onFocus={() => { if (!isActive) { setIsActive(true); onActivate?.(); } }}
+        onBlur={() => {
+          // Delay so format bar clicks don't trigger blur before execCommand
+          setTimeout(() => {
+            const focused = document.activeElement;
+            const inContainer = containerRef.current?.contains(focused);
+            const inFormatBar = focused?.closest('[data-formatbar]');
+            if (!inContainer && !inFormatBar) {
+              setIsActive(false);
+              onDeactivate?.();
+            }
+          }, 150);
+        }}
+        onInput={() => {
+          if (!editRef.current) return;
+          onChange(editRef.current.innerText, editRef.current.innerHTML);
+        }}
+        onKeyDown={(e) => {
+          // Ctrl/Cmd + B/I/U — native browser shortcuts work by default
+          // Enter → new line (browser default for contentEditable = new <div>)
+          // Shift+Enter → <br> (also default)
+          // Allow all naturally
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            setIsActive(false);
+            editRef.current?.blur();
+            onDeactivate?.();
           }
         }}
         data-placeholder={placeholder}
+        spellCheck={false}
         className={`
-          min-h-[1em] w-full outline-none transition-all duration-100
-          ${isEditing ? 'cursor-text' : isActive ? 'cursor-move' : 'cursor-default'}
-          ${tc} drop-shadow-md
+          outline-none w-full min-h-[1.2em] cursor-text
+          ${tc}
           ${!htmlValue && !plainValue
-              ? 'empty:before:content-[attr(data-placeholder)] empty:before:opacity-30'
-              : ''}
+            ? 'empty:before:content-[attr(data-placeholder)] empty:before:opacity-30'
+            : ''}
+          leading-snug
           ${className}
         `}
+        style={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}
       />
 
-      {/* ── Hint text: double-click to edit (shows on selected, not editing) ── */}
-      {state === 'selected' && (
-        <div className="absolute -bottom-5 left-0 right-0 text-center pointer-events-none">
-          <span className="text-[8px] text-white/40 font-medium">double-click to edit · Esc to exit</span>
-        </div>
+      {/* Hint */}
+      {isActive && (
+        <p className="absolute -bottom-4 left-0 text-[8px] text-white/25 pointer-events-none select-none">
+          Ctrl+B Bold · Ctrl+I Italic · Enter xuống dòng · Esc thoát
+        </p>
       )}
     </div>
   );
