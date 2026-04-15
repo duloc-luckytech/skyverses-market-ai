@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Gift, ArrowRight, Zap, Shield, ChevronRight, Flame, Clock, Image as ImageIcon } from 'lucide-react';
+import { X, Sparkles, Gift, ArrowRight, Zap, Shield, ChevronRight, Flame, Clock, Image as ImageIcon, Video, Mic, Music } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const STORAGE_KEY = 'skyverses_welcome_promo_seen';
@@ -18,7 +18,7 @@ const GRID_IMAGES = [SLIDE_1, SLIDE_2, SLIDE_3];
 
 const GlobalEventBonusModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState(0); // 0 = intro, 1 = offer
+  const [step, setStep] = useState(0); // 0 = discovery, 1 = claim
   const navigate = useNavigate();
   const { isAuthenticated, freeImageRemaining } = useAuth();
 
@@ -51,7 +51,7 @@ const GlobalEventBonusModal: React.FC = () => {
         @keyframes ev-float { 0%,100%{transform:translateY(0) scale(1);opacity:.45} 50%{transform:translateY(-10px) scale(1.3);opacity:.9} }
         @keyframes ev-shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
         @keyframes ev-pulse { 0%{box-shadow:0 0 0 0 rgba(139,92,246,.45)} 70%{box-shadow:0 0 0 14px rgba(139,92,246,0)} 100%{box-shadow:0 0 0 0 rgba(139,92,246,0)} }
-        @keyframes ev-glow { 0%,100%{opacity:.5} 50%{opacity:1} }
+        @keyframes ev-spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
       `}</style>
 
       <AnimatePresence>
@@ -95,30 +95,33 @@ const GlobalEventBonusModal: React.FC = () => {
 
               <AnimatePresence mode="wait">
 
-                {/* ═══ SLIDE 0 — INTRO ═══ */}
+                {/* ═══ SLIDE 0 — DISCOVERY ═══ */}
                 {step === 0 && (
                   <motion.div key="slide0"
                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
                     transition={{ duration: 0.32 }}
                   >
-                    {/* Image grid — 3 ảnh Avatar/comic CDN */}
-                    <div className="relative w-full overflow-hidden" style={{ height: 200 }}>
+                    {/* Image grid — layout 1 lớn + 2 nhỏ */}
+                    <div className="relative w-full overflow-hidden" style={{ height: 196 }}>
                       <div className="flex gap-0.5 h-full">
-                        {/* Ảnh lớn bên trái — chiếm 60% */}
                         <div className="relative overflow-hidden bg-white/5" style={{flex:'0 0 60%'}}>
-                          <img src={GRID_IMAGES[0]} alt="" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                          <img src={GRID_IMAGES[0]} alt="" className="w-full h-full object-cover" />
                         </div>
-                        {/* 2 ảnh nhỏ bên phải — stack dọc */}
                         <div className="flex flex-col gap-0.5" style={{flex:'0 0 40%'}}>
                           <div className="relative overflow-hidden bg-white/5 flex-1">
-                            <img src={GRID_IMAGES[1]} alt="" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                            <img src={GRID_IMAGES[1]} alt="" className="w-full h-full object-cover" />
                           </div>
                           <div className="relative overflow-hidden bg-white/5 flex-1">
-                            <img src={GRID_IMAGES[2]} alt="" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                            <img src={GRID_IMAGES[2]} alt="" className="w-full h-full object-cover" />
                           </div>
                         </div>
                       </div>
-                      {/* Skyverses badge — góc trên phải */}
+                      {/* Step dots */}
+                      <div className="absolute top-3 left-3 flex gap-1.5 z-10">
+                        <div className="rounded-full bg-violet-400" style={{width:18,height:6}} />
+                        <div className="rounded-full bg-white/20" style={{width:6,height:6}} />
+                      </div>
+                      {/* Badge */}
                       <div className="absolute top-3 right-3 z-10">
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[8.5px] font-black uppercase tracking-[.18em]"
                           style={{background:'rgba(7,5,15,.7)',border:'1px solid rgba(139,92,246,.4)',color:'#c4b5fd',backdropFilter:'blur(8px)'}}>
@@ -128,18 +131,13 @@ const GlobalEventBonusModal: React.FC = () => {
                       {/* Bottom fade */}
                       <div className="absolute inset-x-0 bottom-0 h-20 pointer-events-none"
                         style={{background:'linear-gradient(to bottom,transparent,#07050f)'}} />
-                      {/* Step dots */}
-                      <div className="absolute top-3 left-3 flex gap-1.5 z-10">
-                        <div className="rounded-full bg-violet-400 transition-all" style={{width:18,height:6}} />
-                        <div className="rounded-full bg-white/20 transition-all" style={{width:6,height:6}} />
-                      </div>
                     </div>
 
                     {/* Content */}
                     <div className="px-6 pt-3 pb-2">
-                      <h2 className="text-[22px] font-black text-white leading-tight mb-2" style={{letterSpacing:'-0.02em'}}>
+                      <h2 className="text-[22px] font-black text-white leading-tight mb-1.5" style={{letterSpacing:'-0.02em'}}>
                         Tạo ảnh AI đẹp
-                        <br/>
+                        <br />
                         <span style={{
                           background:'linear-gradient(90deg,#a78bfa,#c4b5fd,#a78bfa)',
                           backgroundSize:'200% auto',
@@ -147,34 +145,22 @@ const GlobalEventBonusModal: React.FC = () => {
                           backgroundClip:'text', animation:'ev-shimmer 3s linear infinite',
                         }}>chỉ trong 10 giây</span>
                       </h2>
-
-                      {/* Offer teaser — hiện ngay ở slide 1 */}
-                      <div className="flex items-center gap-2 mb-4 px-3 py-2.5 rounded-xl"
-                        style={{background:'linear-gradient(135deg,rgba(139,92,246,.14),rgba(251,191,36,.08))',border:'1px solid rgba(139,92,246,.2)'}}>
-                        <Gift size={13} className="text-violet-400 shrink-0" />
-                        <span className="text-[11.5px] font-bold text-white/80">
-                          Đăng ký hôm nay nhận
-                          <span className="text-violet-300 mx-1">50 Ảnh</span>+
-                          <span className="text-amber-300 mx-1">1,000 Credits</span>
-                          miễn phí
-                        </span>
-                      </div>
-
                       <p className="text-[11px] text-white/35 leading-relaxed mb-4">
-                        30+ công cụ AI — Video · Voice · Music · Upscale. Dùng chung 1 loại Credits, không đăng ký riêng.
+                        Một nền tảng — toàn bộ sức mạnh AI sáng tạo. Không cần cài thêm app, không cần đăng ký từng tool.
                       </p>
 
-                      {/* 3 quick stats */}
-                      <div className="grid grid-cols-3 gap-2 mb-4">
+                      {/* 4 AI categories */}
+                      <div className="grid grid-cols-4 gap-2 mb-5">
                         {[
-                          {val:'30+', label:'Công cụ AI', color:'#a78bfa'},
-                          {val:'4K',  label:'Upscale',    color:'#fbbf24'},
-                          {val:'10s', label:'Mỗi ảnh',    color:'#34d399'},
-                        ].map((s,i)=>(
-                          <div key={i} className="text-center p-2.5 rounded-xl"
-                            style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.06)'}}>
-                            <div className="text-[18px] font-black leading-none mb-0.5" style={{color:s.color}}>{s.val}</div>
-                            <div className="text-[9px] text-white/30 font-medium uppercase tracking-wide">{s.label}</div>
+                          {icon:<ImageIcon size={15}/>, label:'Ảnh AI',  color:'#a78bfa', bg:'rgba(139,92,246,.12)', border:'rgba(139,92,246,.22)'},
+                          {icon:<Video size={15}/>,     label:'Video',   color:'#f472b6', bg:'rgba(244,114,182,.1)', border:'rgba(244,114,182,.2)'},
+                          {icon:<Mic size={15}/>,       label:'Voice',   color:'#34d399', bg:'rgba(52,211,153,.1)', border:'rgba(52,211,153,.2)'},
+                          {icon:<Music size={15}/>,     label:'Music',   color:'#fbbf24', bg:'rgba(251,191,36,.1)', border:'rgba(251,191,36,.2)'},
+                        ].map((c,i)=>(
+                          <div key={i} className="flex flex-col items-center gap-1.5 py-2.5 rounded-xl"
+                            style={{background:c.bg, border:`1px solid ${c.border}`}}>
+                            <span style={{color:c.color}}>{c.icon}</span>
+                            <span className="text-[9px] font-bold text-white/55">{c.label}</span>
                           </div>
                         ))}
                       </div>
@@ -190,7 +176,7 @@ const GlobalEventBonusModal: React.FC = () => {
                           style={{background:'linear-gradient(135deg,#8b5cf6,#a78bfa,#c4b5fd)'}} />
                         <span className="relative z-10 flex items-center gap-2">
                           <Gift size={14} />
-                          Nhận 50 Ảnh + 1,000 Credits
+                          Xem ưu đãi dành riêng cho bạn
                           <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                         </span>
                       </motion.button>
@@ -202,13 +188,13 @@ const GlobalEventBonusModal: React.FC = () => {
                   </motion.div>
                 )}
 
-                {/* ═══ SLIDE 1 — OFFER ═══ */}
+                {/* ═══ SLIDE 1 — CLAIM OFFER ═══ */}
                 {step === 1 && (
                   <motion.div key="slide1"
                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
                     transition={{ duration: 0.32 }}
                   >
-                    {/* Top gradient hero */}
+                    {/* Hero */}
                     <div className="relative px-6 pt-7 pb-5 text-center overflow-hidden"
                       style={{background:`radial-gradient(ellipse 130% 120% at 50% -10%,rgba(139,92,246,.22) 0%,transparent 60%),radial-gradient(ellipse 80% 70% at 85% 95%,rgba(251,191,36,.1) 0%,transparent 55%),linear-gradient(180deg,#0e0820 0%,#07050f 100%)`}}>
 
@@ -231,58 +217,49 @@ const GlobalEventBonusModal: React.FC = () => {
                       </div>
 
                       {/* Big numbers */}
-                      <div className="flex items-center justify-center gap-5 mb-4">
+                      <div className="flex items-center justify-center gap-5 mb-3">
                         <div className="text-center">
                           <div className="text-[58px] font-black leading-none" style={{
                             background:'linear-gradient(135deg,#a78bfa,#c4b5fd)',
                             WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',
                             letterSpacing:'-0.05em',
                           }}>{FREE_IMAGES}</div>
-                          <div className="text-[10px] font-bold uppercase tracking-widest mt-0.5"
-                            style={{color:'#a78bfa'}}>Ảnh AI Free</div>
+                          <div className="text-[10px] font-bold uppercase tracking-widest mt-0.5" style={{color:'#a78bfa'}}>Ảnh AI Free</div>
                         </div>
-                        <div className="flex flex-col items-center gap-1 pb-4">
-                          <div className="text-white/15 text-2xl font-thin">+</div>
-                        </div>
+                        <div className="text-white/15 text-2xl font-thin pb-5">+</div>
                         <div className="text-center">
                           <div className="text-[58px] font-black leading-none" style={{
                             background:'linear-gradient(135deg,#fbbf24,#fb923c)',
                             WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',
                             letterSpacing:'-0.05em',
                           }}>1K</div>
-                          <div className="text-[10px] font-bold uppercase tracking-widest mt-0.5"
-                            style={{color:'#fbbf24'}}>Credits</div>
+                          <div className="text-[10px] font-bold uppercase tracking-widest mt-0.5" style={{color:'#fbbf24'}}>Credits</div>
                         </div>
                       </div>
 
-                      <p className="text-[12px] font-bold text-white/65 mb-1">Tặng miễn phí khi đăng ký hôm nay</p>
-                      <p className="text-[10.5px] text-white/28 max-w-[230px] mx-auto leading-relaxed">
-                        Không cần thẻ tín dụng — nhận ngay, dùng ngay
+                      <p className="text-[11px] text-white/30 max-w-[220px] mx-auto leading-relaxed">
+                        Không cần thẻ tín dụng · Nhận ngay · Dùng ngay
                       </p>
                     </div>
 
-                    {/* Benefits */}
-                    <div className="px-6 py-4 space-y-2.5"
+                    {/* Benefits — mỗi item KHÁC nhau hoàn toàn */}
+                    <div className="px-6 py-4 space-y-2"
                       style={{borderTop:'1px solid rgba(255,255,255,.04)'}}>
                       {[
-                        {icon:<ImageIcon size={14}/>, label:'MIỄN PHÍ', title:`${FREE_IMAGES} Ảnh AI`, sub:'Tạo ngay với mọi model — không giới hạn style', ic:'#a78bfa', ib:'rgba(139,92,246,.15)', border:'rgba(139,92,246,.25)'},
-                        {icon:<Zap size={14}/>,      label:'TẶNG KÈM', title:`${WELCOME_CREDITS.toLocaleString()} Credits`, sub:'Video · Voice · Music · Upscale · 30+ tool', ic:'#fbbf24', ib:'rgba(251,191,36,.12)', border:'rgba(251,191,36,.25)'},
-                        {icon:<Shield size={14}/>,   label:'ĐẢM BẢO',  title:'Không mất phí',  sub:'Đăng ký miễn phí · Hủy bất kỳ lúc nào', ic:'#34d399', ib:'rgba(52,211,153,.12)', border:'rgba(52,211,153,.25)'},
+                        {icon:<ImageIcon size={14}/>, title:'50 Ảnh miễn phí',       sub:'Dùng với Flux, Imagen, SDXL — mọi style',         ic:'#a78bfa', ib:'rgba(139,92,246,.12)', border:'rgba(139,92,246,.22)'},
+                        {icon:<Zap size={14}/>,       title:'1,000 Credits đa năng', sub:'Xài cho Video · Voice · Music · Upscale · 30+ tool', ic:'#fbbf24', ib:'rgba(251,191,36,.1)',  border:'rgba(251,191,36,.2)'},
+                        {icon:<Shield size={14}/>,    title:'Không ràng buộc',       sub:'Miễn phí mãi mãi · Nâng cấp khi muốn',            ic:'#34d399', ib:'rgba(52,211,153,.1)',  border:'rgba(52,211,153,.2)'},
                       ].map((b,i)=>(
-                        <motion.div key={i} initial={{opacity:0,x:-14}} animate={{opacity:1,x:0}} transition={{delay:.05+i*.07}}
+                        <motion.div key={i} initial={{opacity:0,x:-14}} animate={{opacity:1,x:0}} transition={{delay:.05+i*.08}}
                           className="flex items-center gap-3 p-3 rounded-xl"
-                          style={{background:`linear-gradient(135deg, ${b.ib}, transparent)`, border:`1px solid ${b.border}`}}>
-                          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                            style={{background:b.ib, border:`1px solid ${b.border}`, color:b.ic}}>
+                          style={{background:b.ib, border:`1px solid ${b.border}`}}>
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                            style={{background:`rgba(255,255,255,.06)`, color:b.ic}}>
                             {b.icon}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[8px] font-black uppercase tracking-[.18em] px-1.5 py-0.5 rounded"
-                                style={{background:b.border, color:b.ic}}>{b.label}</span>
-                              <span className="text-[12px] font-bold text-white/90">{b.title}</span>
-                            </div>
-                            <p className="text-[10px] text-white/28 mt-0.5">{b.sub}</p>
+                            <p className="text-[12px] font-bold leading-tight" style={{color:b.ic}}>{b.title}</p>
+                            <p className="text-[10px] text-white/30 mt-0.5 leading-snug">{b.sub}</p>
                           </div>
                         </motion.div>
                       ))}
@@ -313,12 +290,12 @@ const GlobalEventBonusModal: React.FC = () => {
                           style={{background:'linear-gradient(135deg,#8b5cf6,#fbbf24,#fb923c)'}} />
                         <span className="relative z-10 flex items-center gap-2">
                           <Gift size={14} />
-                          {isAuthenticated ? 'Bắt đầu tạo ảnh miễn phí' : `Nhận ngay ${FREE_IMAGES} Ảnh + ${WELCOME_CREDITS.toLocaleString()} CR`}
+                          {isAuthenticated ? 'Bắt đầu tạo ảnh miễn phí' : `Đăng ký & nhận ngay miễn phí`}
                           <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                         </span>
                       </motion.button>
 
-                      <div className="flex items-center justify-center gap-1.5 mt-2.5">
+                      <div className="flex items-center justify-center gap-1.5 mt-2">
                         <Clock size={9} className="text-white/18" />
                         <span className="text-[9.5px] text-white/18">Ưu đãi có thể kết thúc bất cứ lúc nào</span>
                       </div>
