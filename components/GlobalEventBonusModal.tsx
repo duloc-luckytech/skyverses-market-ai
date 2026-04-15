@@ -145,9 +145,27 @@ const GlobalEventBonusModal: React.FC = () => {
                           backgroundClip:'text', animation:'ev-shimmer 3s linear infinite',
                         }}>chỉ trong 10 giây</span>
                       </h2>
-                      <p className="text-[11px] text-white/35 leading-relaxed mb-4">
+                      <p className="text-[11px] text-white/35 leading-relaxed mb-3">
                         Một nền tảng — toàn bộ sức mạnh AI sáng tạo. Không cần cài thêm app, không cần đăng ký từng tool.
                       </p>
+
+                      {/* Hot new models strip */}
+                      <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-0.5" style={{scrollbarWidth:'none'}}>
+                        <span className="shrink-0 text-[8px] font-black uppercase tracking-widest text-white/25 pr-1">Mới nhất</span>
+                        {[
+                          {name:'Seedance',  color:'#f472b6', bg:'rgba(244,114,182,.12)', border:'rgba(244,114,182,.3)',  dot:'bg-pink-400'},
+                          {name:'Veo 3',     color:'#60a5fa', bg:'rgba(96,165,250,.12)',  border:'rgba(96,165,250,.3)',   dot:'bg-blue-400'},
+                          {name:'Grok',      color:'#34d399', bg:'rgba(52,211,153,.12)',  border:'rgba(52,211,153,.3)',   dot:'bg-emerald-400'},
+                          {name:'Flux',      color:'#a78bfa', bg:'rgba(139,92,246,.12)', border:'rgba(139,92,246,.3)',  dot:'bg-violet-400'},
+                          {name:'Kling 2.0', color:'#fbbf24', bg:'rgba(251,191,36,.12)', border:'rgba(251,191,36,.3)',  dot:'bg-amber-400'},
+                        ].map((m,i)=>(
+                          <span key={i} className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9.5px] font-bold"
+                            style={{background:m.bg, border:`1px solid ${m.border}`, color:m.color}}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${m.dot}`} style={{animation:`ev-float ${1.8+i*.2}s ease-in-out infinite`}} />
+                            {m.name}
+                          </span>
+                        ))}
+                      </div>
 
                       {/* 4 AI categories */}
                       <div className="grid grid-cols-4 gap-2 mb-5">
@@ -246,8 +264,8 @@ const GlobalEventBonusModal: React.FC = () => {
                     <div className="px-6 py-4 space-y-2"
                       style={{borderTop:'1px solid rgba(255,255,255,.04)'}}>
                       {[
-                        {icon:<ImageIcon size={14}/>, title:'50 Ảnh miễn phí',       sub:'Dùng với Flux, Imagen, SDXL — mọi style',         ic:'#a78bfa', ib:'rgba(139,92,246,.12)', border:'rgba(139,92,246,.22)'},
-                        {icon:<Zap size={14}/>,       title:'1,000 Credits đa năng', sub:'Xài cho Video · Voice · Music · Upscale · 30+ tool', ic:'#fbbf24', ib:'rgba(251,191,36,.1)',  border:'rgba(251,191,36,.2)'},
+                        {icon:<ImageIcon size={14}/>, title:'50 Ảnh miễn phí',       sub:'Flux · Imagen · SDXL · Seedance · mọi style',     ic:'#a78bfa', ib:'rgba(139,92,246,.12)', border:'rgba(139,92,246,.22)'},
+                        {icon:<Zap size={14}/>,       title:'1,000 Credits đa năng', sub:'Veo 3 · Grok · Kling · Voice · Music · 30+ tool',   ic:'#fbbf24', ib:'rgba(251,191,36,.1)',  border:'rgba(251,191,36,.2)'},
                         {icon:<Shield size={14}/>,    title:'Không ràng buộc',       sub:'Miễn phí mãi mãi · Nâng cấp khi muốn',            ic:'#34d399', ib:'rgba(52,211,153,.1)',  border:'rgba(52,211,153,.2)'},
                       ].map((b,i)=>(
                         <motion.div key={i} initial={{opacity:0,x:-14}} animate={{opacity:1,x:0}} transition={{delay:.05+i*.08}}
