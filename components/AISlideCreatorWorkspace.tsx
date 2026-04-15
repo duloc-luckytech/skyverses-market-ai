@@ -426,67 +426,136 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
         {/* Panel 2: Canvas + Toolbar */}
         <div className="flex-1 flex flex-col overflow-hidden relative">
           {s.slides.length === 0 ? (
-            /* Empty state */
-            <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 dark:bg-[#0d0d0f] p-8">
-              <div className="w-16 h-16 rounded-2xl bg-brand-blue/10 flex items-center justify-center mb-4">
-                <Layers size={28} className="text-brand-blue" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">Bắt đầu tạo Slide</h3>
-              <p className="text-sm text-slate-500 dark:text-white/40 text-center max-w-sm mb-6">
-                Nhập chủ đề ở sidebar bên phải, chọn phong cách và số slides, rồi nhấn <strong>Tạo toàn bộ Deck</strong>.
-              </p>
+            /* ── Rich empty state / onboarding ── */
+            <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 dark:bg-[#0a0a0c] p-6 overflow-y-auto">
+              <div className="w-full max-w-lg flex flex-col items-center gap-6">
 
-              {/* Primary CTA */}
-              <motion.button
-                onClick={() => s.setIsGenerateModalOpen(true)}
-                disabled={!s.deckTopic.trim()}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-blue text-white font-bold text-sm shadow-lg shadow-brand-blue/20 hover:bg-brand-blue/90 transition-all disabled:opacity-40"
-              >
-                <Sparkles size={16} />
-                Tạo Deck ngay
-              </motion.button>
-
-              {/* Divider */}
-              <div className="flex items-center gap-3 my-5 w-full max-w-xs">
-                <div className="flex-1 h-px bg-black/[0.06] dark:bg-white/[0.06]" />
-                <span className="text-[11px] text-slate-400 dark:text-white/20 font-medium">hoặc</span>
-                <div className="flex-1 h-px bg-black/[0.06] dark:bg-white/[0.06]" />
-              </div>
-
-              {/* Secondary actions: DOCX import + template download */}
-              <div className="flex flex-col gap-2.5 w-full max-w-xs">
-                {/* Import DOCX */}
-                <label
-                  className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border-2 border-dashed border-brand-blue/40 text-brand-blue text-[12px] font-semibold hover:bg-brand-blue/[0.05] transition-all cursor-pointer ${
-                    (isDocxLoading || s.isGeneratingDeck) ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
-                  }`}
-                >
-                  {isDocxLoading ? (
-                    <><span className="w-3.5 h-3.5 border-2 border-brand-blue/40 border-t-brand-blue rounded-full animate-spin" />Đang xử lý...</>
-                  ) : (
-                    <><FileText size={14} />Import từ file .docx</>
-                  )}
-                  <input
-                    ref={docxFileRef}
-                    type="file"
-                    accept=".docx"
-                    onChange={handleDocxImport}
-                    disabled={isDocxLoading || s.isGeneratingDeck}
-                    className="hidden"
+                {/* Hero icon with glow */}
+                <div className="relative flex items-center justify-center">
+                  <motion.div
+                    className="absolute w-28 h-28 rounded-full bg-brand-blue/10"
+                    animate={{ scale: [1, 1.18, 1], opacity: [0.5, 0.2, 0.5] }}
+                    transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
                   />
-                </label>
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-blue to-violet-500 flex items-center justify-center shadow-xl shadow-brand-blue/20 z-10">
+                    <Layers size={28} className="text-white" />
+                  </div>
+                </div>
 
-                {/* Download template */}
-                <button
-                  type="button"
-                  onClick={() => downloadDocxTemplate()}
-                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] text-[12px] font-medium text-slate-500 dark:text-white/40 hover:text-brand-blue hover:border-brand-blue/30 transition-all"
-                >
-                  <Download size={13} />
-                  Tải template mẫu (.docx)
-                </button>
+                {/* Headline */}
+                <div className="text-center">
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Tạo bản trình chiếu chuyên nghiệp</h3>
+                  <p className="text-sm text-slate-500 dark:text-white/40 leading-relaxed">
+                    AI tự động tạo nội dung &amp; hình ảnh đẹp cho từng slide
+                  </p>
+                </div>
+
+                {/* 3-step guide */}
+                <div className="w-full grid grid-cols-3 gap-3">
+                  {[
+                    { step: '1', emoji: '✍️', label: 'Nhập chủ đề', desc: 'Sidebar bên phải' },
+                    { step: '2', emoji: '🎨', label: 'Chọn style', desc: 'Phong cách bài trình' },
+                    { step: '3', emoji: '🚀', label: 'Nhấn Tạo Deck', desc: 'AI lo phần còn lại' },
+                  ].map((item, i) => (
+                    <motion.div
+                      key={item.step}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.12, duration: 0.4 }}
+                      className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] shadow-sm"
+                    >
+                      <div className="w-8 h-8 rounded-xl bg-brand-blue/10 flex items-center justify-center text-base">{item.emoji}</div>
+                      <p className="text-[11px] font-bold text-slate-700 dark:text-white/80">{item.label}</p>
+                      <p className="text-[9px] text-slate-400 dark:text-white/25 text-center">{item.desc}</p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Primary CTA — pulsing */}
+                <div className="relative">
+                  <motion.div
+                    className="absolute inset-0 rounded-xl bg-brand-blue/30"
+                    animate={{ scale: [1, 1.14, 1], opacity: [0.5, 0, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
+                  />
+                  <motion.button
+                    onClick={() => s.setIsGenerateModalOpen(true)}
+                    disabled={!s.deckTopic.trim()}
+                    whileHover={{ scale: 1.04, boxShadow: '0 12px 32px rgba(0,144,255,0.35)' }}
+                    whileTap={{ scale: 0.97 }}
+                    className="relative flex items-center gap-2 px-7 py-3 rounded-xl bg-brand-blue text-white font-bold text-sm shadow-lg shadow-brand-blue/20 hover:bg-brand-blue/90 transition-all disabled:opacity-40 disabled:shadow-none"
+                  >
+                    <Sparkles size={16} />
+                    Tạo Deck ngay
+                  </motion.button>
+                </div>
+
+                {/* Mode showcase cards */}
+                <div className="w-full grid grid-cols-2 gap-3">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                    className="p-3 rounded-xl bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06]"
+                  >
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-base">📝</span>
+                      <span className="text-[11px] font-bold text-slate-700 dark:text-white/80">Text Deck</span>
+                    </div>
+                    <p className="text-[9px] text-slate-400 dark:text-white/30 leading-snug">
+                      Slides có nội dung text + hình nền. Chỉnh sửa trực tiếp như Canva.
+                    </p>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+                    className="p-3 rounded-xl bg-violet-500/[0.06] border border-violet-500/20"
+                  >
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-base">🎨</span>
+                      <span className="text-[11px] font-bold text-violet-700 dark:text-violet-300">Image Deck</span>
+                      <span className="ml-auto px-1.5 py-0.5 rounded-full bg-violet-500 text-white text-[7px] font-bold">NEW</span>
+                    </div>
+                    <p className="text-[9px] text-violet-600 dark:text-violet-300/60 leading-snug">
+                      Toàn ảnh AI fullscreen. Bật toggle &ldquo;Image Deck Mode&rdquo; ở sidebar.
+                    </p>
+                  </motion.div>
+                </div>
+
+                {/* Divider */}
+                <div className="flex items-center gap-3 w-full">
+                  <div className="flex-1 h-px bg-black/[0.06] dark:bg-white/[0.06]" />
+                  <span className="text-[11px] text-slate-400 dark:text-white/20 font-medium">hoặc</span>
+                  <div className="flex-1 h-px bg-black/[0.06] dark:bg-white/[0.06]" />
+                </div>
+
+                {/* Secondary actions */}
+                <div className="flex flex-col gap-2.5 w-full">
+                  <label
+                    className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border-2 border-dashed border-brand-blue/40 text-brand-blue text-[12px] font-semibold hover:bg-brand-blue/[0.05] transition-all cursor-pointer ${
+                      (isDocxLoading || s.isGeneratingDeck) ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
+                    }`}
+                  >
+                    {isDocxLoading ? (
+                      <><span className="w-3.5 h-3.5 border-2 border-brand-blue/40 border-t-brand-blue rounded-full animate-spin" />Đang xử lý...</>
+                    ) : (
+                      <><FileText size={14} />Import từ file .docx</>
+                    )}
+                    <input
+                      ref={docxFileRef}
+                      type="file"
+                      accept=".docx"
+                      onChange={handleDocxImport}
+                      disabled={isDocxLoading || s.isGeneratingDeck}
+                      className="hidden"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => downloadDocxTemplate()}
+                    className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] text-[12px] font-medium text-slate-500 dark:text-white/40 hover:text-brand-blue hover:border-brand-blue/30 transition-all"
+                  >
+                    <Download size={13} />
+                    Tải template mẫu (.docx)
+                  </button>
+                </div>
               </div>
             </div>
           ) : (

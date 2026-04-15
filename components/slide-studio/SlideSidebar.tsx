@@ -139,6 +139,8 @@ const SlideSidebar: React.FC<Props> = ({
   const [activeTab, setActiveTab] = React.useState<SidebarTab>('create');
   const [langOpen, setLangOpen] = React.useState(false);
   const [isDocxLoading, setIsDocxLoading] = React.useState(false);
+  // First-visit pulse on CTA: disappears once user clicks generate the first time
+  const [isFirstVisit] = React.useState(() => !localStorage.getItem('slide_has_generated'));
 
   const fileRef      = React.useRef<HTMLInputElement>(null);
   const logoFileRef  = React.useRef<HTMLInputElement>(null);
@@ -490,14 +492,26 @@ const SlideSidebar: React.FC<Props> = ({
       <div className="shrink-0 p-4 border-t border-black/[0.05] dark:border-white/[0.04] space-y-3">
 
         {/* Image Deck Mode toggle */}
-        <button
-          onClick={() => setImageDeckMode(!imageDeckMode)}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all ${
-            imageDeckMode
-              ? 'bg-violet-500/10 border-violet-500/40 text-violet-600 dark:text-violet-400'
-              : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.06] dark:border-white/[0.06] text-slate-500 dark:text-white/40 hover:border-violet-400/40 hover:text-violet-500'
-          }`}
-        >
+        <div className="relative">
+          {/* NEW badge */}
+          {!imageDeckMode && (
+            <motion.span
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.6, type: 'spring', stiffness: 400 }}
+              className="absolute -top-1.5 -right-1 z-10 px-1.5 py-0.5 rounded-full bg-violet-500 text-white text-[7px] font-bold shadow-sm"
+            >
+              NEW
+            </motion.span>
+          )}
+          <button
+            onClick={() => setImageDeckMode(!imageDeckMode)}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all ${
+              imageDeckMode
+                ? 'bg-violet-500/10 border-violet-500/40 text-violet-600 dark:text-violet-400'
+                : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.06] dark:border-white/[0.06] text-slate-500 dark:text-white/40 hover:border-violet-400/40 hover:text-violet-500'
+            }`}
+          >
           <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
             imageDeckMode ? 'bg-violet-500/20' : 'bg-black/[0.04] dark:bg-white/[0.04]'
           }`}>
@@ -523,6 +537,7 @@ const SlideSidebar: React.FC<Props> = ({
             }`} />
           </div>
         </button>
+        </div>
 
         {isGeneratingDeck ? (
           <motion.button
@@ -535,18 +550,31 @@ const SlideSidebar: React.FC<Props> = ({
           </motion.button>
         ) : (
           <motion.button
-            onClick={onOpenGenerateModal}
+            onClick={() => {
+              localStorage.setItem('slide_has_generated', '1');
+              onOpenGenerateModal();
+            }}
             whileHover={{ scale: 1.02, boxShadow: imageDeckMode ? '0 8px 24px rgba(139,92,246,0.3)' : '0 8px 24px rgba(0,144,255,0.25)' }}
             whileTap={{ scale: 0.97 }}
             disabled={!deckTopic.trim()}
-            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white text-[12px] font-bold shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none ${
+            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white text-[12px] font-bold shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none relative overflow-hidden ${
               imageDeckMode
                 ? 'bg-violet-600 shadow-violet-500/20 hover:bg-violet-600/90'
                 : 'bg-brand-blue shadow-brand-blue/20 hover:bg-brand-blue/90'
             }`}
           >
-            {imageDeckMode ? <ImagePlay size={14} /> : <Sparkles size={14} />}
-            {imageDeckMode ? 'Tạo Image Deck' : 'Tạo toàn bộ Deck'}
+            {/* First-visit pulse ring */}
+            {isFirstVisit && deckTopic.trim() && (
+              <motion.span
+                className={`absolute inset-0 rounded-xl ${imageDeckMode ? 'bg-violet-400' : 'bg-brand-blue'}`}
+                animate={{ opacity: [0.3, 0, 0.3], scale: [1, 1.07, 1] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
+              />
+            )}
+            <span className="relative flex items-center gap-2">
+              {imageDeckMode ? <ImagePlay size={14} /> : <Sparkles size={14} />}
+              {imageDeckMode ? 'Tạo Image Deck' : 'Tạo toàn bộ Deck'}
+            </span>
           </motion.button>
         )}
       </div>
