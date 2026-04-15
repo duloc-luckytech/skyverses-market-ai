@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Gift, ArrowRight, Zap, Shield, ChevronRight, Flame, Clock, Image as ImageIcon, Video, Mic, Music, Wand2 } from 'lucide-react';
+import { X, Sparkles, Gift, ArrowRight, Zap, Shield, ChevronRight, Flame, Clock, Image as ImageIcon, Video, Mic, Music, Maximize2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const STORAGE_KEY = 'skyverses_welcome_promo_seen';
 const FREE_IMAGES = 50;
 const WELCOME_CREDITS = 1000;
+const AUTO_NEXT_MS = 5000;
+const MEDIA_INTERVAL_MS = 3500;
 
 // Demo videos — Seedance AI generated
 const DEMO_VIDEOS = [
@@ -21,6 +23,14 @@ const DEMO_IMAGES = [
   'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a19a66d7-8b96-4c4f-73fe-1ca080b96500/public',
 ];
 
+// All hero media (videos first, then images) for auto-carousel on main slot
+const HERO_MEDIA = [
+  { type: 'video' as const, src: DEMO_VIDEOS[0] },
+  { type: 'video' as const, src: DEMO_VIDEOS[1] },
+  { type: 'image' as const, src: DEMO_IMAGES[0] },
+  { type: 'image' as const, src: DEMO_IMAGES[1] },
+];
+
 // AI Model logos — official assets mirrored to Cloudflare CDN
 const MODEL_LOGOS: Record<string, string> = {
   seedance: 'https://seedance2.ai/logo.png',
@@ -30,21 +40,15 @@ const MODEL_LOGOS: Record<string, string> = {
   kling:    'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/750c5b7e-4ddb-4a36-16ff-08f9272ea200/public',
 };
 
-const AUTO_NEXT_MS = 5000;
-
 const GlobalEventBonusModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0); // 0 = discovery, 1 = claim
+  const [mediaIndex, setMediaIndex] = useState(0); // auto-carousel index for hero main slot
+  const [lightbox, setLightbox] = useState<{ type: 'video' | 'image'; src: string } | null>(null);
   const navigate = useNavigate();
   const { isAuthenticated, freeImageRemaining } = useAuth();
 
-  // Auto-advance Slide 0 → Slide 1 after AUTO_NEXT_MS
-  useEffect(() => {
-    if (!isOpen || step !== 0) return;
-    const t = setTimeout(() => setStep(1), AUTO_NEXT_MS);
-    return () => clearTimeout(t);
-  }, [isOpen, step]);
-
+  // Show modal after 3s (once)
   useEffect(() => {
     const seen = localStorage.getItem(STORAGE_KEY);
     if (!seen) {
@@ -53,17 +57,24 @@ const GlobalEventBonusModal: React.FC = () => {
     }
   }, []);
 
+  // Auto-advance Slide 0 → Slide 1
+  useEffect(() => {
+    if (!isOpen || step !== 0) return;
+    const t = setTimeout(() => setStep(1), AUTO_NEXT_MS);
+    return () => clearTimeout(t);
+  }, [isOpen, step]);
+
+  // Auto-carousel hero media
+  useEffect(() => {
+    if (!isOpen || step !== 0) return;
+    const t = setInterval(() => setMediaIndex(i => (i + 1) % HERO_MEDIA.length), MEDIA_INTERVAL_MS);
+    return () => clearInterval(t);
+  }, [isOpen, step]);
+
   const handleClose = () => {
     setIsOpen(false);
     setStep(0);
     localStorage.setItem(STORAGE_KEY, 'true');
-  };
-
-  const handleQuickGen = () => {
-    handleClose();
-    window.dispatchEvent(new CustomEvent('openQuickImageGen', {
-      detail: { freeOnce: !isAuthenticated }
-    }));
   };
 
   const handleCTA = () => {
@@ -75,6 +86,17 @@ const GlobalEventBonusModal: React.FC = () => {
     }
   };
 
+  const handleCardClick = (type: string) => {
+    handleClose();
+    if (type === 'image') {
+      window.dispatchEvent(new CustomEvent('openQuickImageGen'));
+    } else {
+      navigate(isAuthenticated ? '/markets' : '/login');
+    }
+  };
+
+  const currentMedia = HERO_MEDIA[mediaIndex];
+
   return (
     <>
       <style>{`
@@ -84,6 +106,38 @@ const GlobalEventBonusModal: React.FC = () => {
         @keyframes ev-spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
         @keyframes ev-progress { from{width:0%} to{width:100%} }
       `}</style>
+
+      {/* ═══ LIGHTBOX ═══ */}
+      <AnimatePresence>
+        {lightbox && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[10000] flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(16px)' }}
+            onClick={() => setLightbox(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+              className="relative max-w-3xl w-full rounded-2xl overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              {lightbox.type === 'video' ? (
+                <video src={lightbox.src} autoPlay muted loop playsInline controls className="w-full rounded-2xl" />
+              ) : (
+                <img src={lightbox.src} alt="" className="w-full rounded-2xl object-contain" />
+              )}
+              <button
+                onClick={() => setLightbox(null)}
+                className="absolute top-3 right-3 p-2 rounded-full text-white/70 hover:text-white transition-all"
+                style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}
+              >
+                <X size={16} />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {isOpen && (
@@ -132,59 +186,85 @@ const GlobalEventBonusModal: React.FC = () => {
                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
                     transition={{ duration: 0.32 }}
                   >
-                    {/* Hero — video 1 lớn trái + cột phải: video 2 + 2 ảnh */}
+                    {/* Hero — auto-carousel main + 3 thumbnails */}
                     <div className="relative w-full overflow-hidden" style={{ height: 260 }}>
                       <div className="flex gap-0.5 h-full">
-                        {/* Trái — video 1 lớn */}
+
+                        {/* Main slot — auto-carousel */}
                         <div
                           className="relative overflow-hidden group cursor-pointer"
                           style={{ flex: '0 0 60%' }}
-                          onClick={handleQuickGen}
+                          onClick={() => setLightbox(currentMedia)}
                         >
-                          <video
-                            src={DEMO_VIDEOS[0]}
-                            autoPlay muted loop playsInline
-                            className="h-full w-full object-cover"
-                          />
+                          <AnimatePresence mode="wait">
+                            <motion.div
+                              key={mediaIndex}
+                              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                              transition={{ duration: 0.5 }}
+                              className="absolute inset-0"
+                            >
+                              {currentMedia.type === 'video' ? (
+                                <video src={currentMedia.src} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                              ) : (
+                                <img src={currentMedia.src} alt="" className="w-full h-full object-cover" />
+                              )}
+                            </motion.div>
+                          </AnimatePresence>
+                          {/* Hover — xem full */}
                           <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                            style={{ background: 'rgba(0,0,0,0.55)' }}>
-                            <Wand2 size={20} className="text-white" />
-                            <span className="text-[10px] font-bold text-white">Tạo ngay</span>
+                            style={{ background: 'rgba(0,0,0,0.45)' }}>
+                            <Maximize2 size={20} className="text-white" />
+                            <span className="text-[10px] font-bold text-white">Xem full</span>
+                          </div>
+                          {/* Media type badge */}
+                          <div className="absolute bottom-2 left-2 z-10">
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase"
+                              style={{ background: 'rgba(0,0,0,0.6)', color: 'rgba(255,255,255,0.6)' }}>
+                              {currentMedia.type === 'video' ? <Video size={8} /> : <ImageIcon size={8} />}
+                              {currentMedia.type === 'video' ? 'Video' : 'Ảnh'}
+                            </span>
                           </div>
                         </div>
-                        {/* Phải — video 2 + 2 ảnh xếp dọc */}
+
+                        {/* Right col — 3 thumbnails (other media) */}
                         <div className="flex flex-col gap-0.5" style={{ flex: '0 0 40%' }}>
-                          <div
-                            className="relative overflow-hidden group cursor-pointer flex-1"
-                            onClick={handleQuickGen}
-                          >
-                            <video
-                              src={DEMO_VIDEOS[1]}
-                              autoPlay muted loop playsInline
-                              className="w-full h-full object-cover"
-                            />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                              style={{ background: 'rgba(0,0,0,0.55)' }}>
-                              <Wand2 size={16} className="text-white" />
-                              <span className="text-[10px] font-bold text-white">Tạo ngay</span>
-                            </div>
-                          </div>
-                          {DEMO_IMAGES.map((src, i) => (
+                          {HERO_MEDIA.filter((_, i) => i !== mediaIndex).slice(0, 3).map((m, i) => (
                             <div
                               key={i}
                               className="relative overflow-hidden group cursor-pointer flex-1"
-                              onClick={handleQuickGen}
+                              onClick={() => setLightbox(m)}
                             >
-                              <img src={src} alt="" className="w-full h-full object-cover" />
-                              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                                style={{ background: 'rgba(0,0,0,0.55)' }}>
-                                <Wand2 size={16} className="text-white" />
-                                <span className="text-[10px] font-bold text-white">Tạo ngay</span>
+                              {m.type === 'video' ? (
+                                <video src={m.src} muted loop playsInline className="w-full h-full object-cover" />
+                              ) : (
+                                <img src={m.src} alt="" className="w-full h-full object-cover" />
+                              )}
+                              {/* Hover */}
+                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                style={{ background: 'rgba(0,0,0,0.45)' }}>
+                                <Maximize2 size={14} className="text-white" />
                               </div>
                             </div>
                           ))}
                         </div>
                       </div>
+
+                      {/* Carousel dots */}
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+                        {HERO_MEDIA.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setMediaIndex(i)}
+                            className="rounded-full transition-all duration-300"
+                            style={{
+                              width: i === mediaIndex ? 14 : 5,
+                              height: 5,
+                              background: i === mediaIndex ? '#a78bfa' : 'rgba(255,255,255,0.25)',
+                            }}
+                          />
+                        ))}
+                      </div>
+
                       {/* Step dots */}
                       <div className="absolute top-3 left-3 flex gap-1.5 z-10">
                         <div className="rounded-full bg-violet-400" style={{width:18,height:6}} />
@@ -215,48 +295,49 @@ const GlobalEventBonusModal: React.FC = () => {
                         }}>chỉ trong 10 giây</span>
                       </h2>
                       <p className="text-[11px] text-white/35 leading-relaxed mb-3">
-                        Veo 3, Seedance, Grok, Claude… tất cả ở đây — đăng ký một lần, dùng hết.
+                        Veo 3, Seedance, Grok, Claude, Kling và 25+ model khác.
                       </p>
 
-                      {/* Hot new models strip — logo thật */}
+                      {/* Hot new models strip */}
                       <div className="flex items-center gap-2 mb-3">
                         <span className="shrink-0 text-[8px] font-black uppercase tracking-widest text-white/25">Mới nhất</span>
                         <div className="flex items-center gap-1.5">
                           {[
-                            {key:'seedance', name:'Seedance', invert: false},
-                            {key:'veo3',     name:'Veo 3',    invert: false},
-                            {key:'grok',     name:'Grok',     invert: false},
-                            {key:'claude',   name:'Claude',   invert: false},
-                            {key:'kling',    name:'Kling',    invert: false},
+                            {key:'seedance', name:'Seedance'},
+                            {key:'veo3',     name:'Veo 3'},
+                            {key:'grok',     name:'Grok'},
+                            {key:'claude',   name:'Claude'},
+                            {key:'kling',    name:'Kling'},
                           ].map((m) => (
                             <div key={m.key}
                               className="flex items-center gap-1 px-2 py-1 rounded-full"
                               style={{background:'rgba(255,255,255,.06)', border:'1px solid rgba(255,255,255,.1)'}}>
-                              <img
-                                src={MODEL_LOGOS[m.key]}
-                                alt={m.name}
-                                className="w-3.5 h-3.5 rounded-sm object-contain"
-                                style={m.invert ? {filter:'invert(1) brightness(1.2)'} : {}}
-                              />
+                              <img src={MODEL_LOGOS[m.key]} alt={m.name} className="w-3.5 h-3.5 rounded-sm object-contain" />
                               <span className="text-[9px] font-semibold text-white/60">{m.name}</span>
                             </div>
                           ))}
                         </div>
                       </div>
 
-                      {/* 4 AI categories */}
+                      {/* 4 AI category cards — clickable */}
                       <div className="grid grid-cols-4 gap-2 mb-5">
                         {[
-                          {icon:<ImageIcon size={15}/>, label:'Ảnh AI',  color:'#a78bfa', bg:'rgba(139,92,246,.12)', border:'rgba(139,92,246,.22)'},
-                          {icon:<Video size={15}/>,     label:'Video',   color:'#f472b6', bg:'rgba(244,114,182,.1)', border:'rgba(244,114,182,.2)'},
-                          {icon:<Mic size={15}/>,       label:'Voice',   color:'#34d399', bg:'rgba(52,211,153,.1)', border:'rgba(52,211,153,.2)'},
-                          {icon:<Music size={15}/>,     label:'Music',   color:'#fbbf24', bg:'rgba(251,191,36,.1)', border:'rgba(251,191,36,.2)'},
-                        ].map((c,i)=>(
-                          <div key={i} className="flex flex-col items-center gap-1.5 py-2.5 rounded-xl"
-                            style={{background:c.bg, border:`1px solid ${c.border}`}}>
+                          { type:'image', icon:<ImageIcon size={15}/>, label:'Ảnh AI',  color:'#a78bfa', bg:'rgba(139,92,246,.12)', border:'rgba(139,92,246,.22)', hoverBg:'rgba(139,92,246,.22)' },
+                          { type:'video', icon:<Video size={15}/>,     label:'Video',   color:'#f472b6', bg:'rgba(244,114,182,.1)', border:'rgba(244,114,182,.2)',  hoverBg:'rgba(244,114,182,.2)' },
+                          { type:'voice', icon:<Mic size={15}/>,       label:'Voice',   color:'#34d399', bg:'rgba(52,211,153,.1)',  border:'rgba(52,211,153,.2)',   hoverBg:'rgba(52,211,153,.2)' },
+                          { type:'music', icon:<Music size={15}/>,     label:'Music',   color:'#fbbf24', bg:'rgba(251,191,36,.1)',  border:'rgba(251,191,36,.2)',   hoverBg:'rgba(251,191,36,.2)' },
+                        ].map((c, i) => (
+                          <motion.button
+                            key={i}
+                            whileHover={{ scale: 1.06, y: -2 }}
+                            whileTap={{ scale: 0.96 }}
+                            onClick={() => handleCardClick(c.type)}
+                            className="flex flex-col items-center gap-1.5 py-2.5 rounded-xl cursor-pointer transition-all"
+                            style={{ background: c.bg, border: `1px solid ${c.border}` }}
+                          >
                             <span style={{color:c.color}}>{c.icon}</span>
                             <span className="text-[9px] font-bold text-white/55">{c.label}</span>
-                          </div>
+                          </motion.button>
                         ))}
                       </div>
                     </div>
@@ -346,7 +427,7 @@ const GlobalEventBonusModal: React.FC = () => {
                       </p>
                     </div>
 
-                    {/* Benefits — mỗi item KHÁC nhau hoàn toàn */}
+                    {/* Benefits */}
                     <div className="px-6 py-4 space-y-2"
                       style={{borderTop:'1px solid rgba(255,255,255,.04)'}}>
                       {[
