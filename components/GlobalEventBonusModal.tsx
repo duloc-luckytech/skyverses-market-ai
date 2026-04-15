@@ -19,7 +19,7 @@ const MODEL_LOGOS: Record<string, string> = {
   seedance: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/e1a580fc-b5e5-4da9-1881-e4515f62f100/public',
   veo3:     'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/93c7e777-c777-4392-6eab-bb56a0d4ee00/public',
   grok:     'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/8f1f9f36-428b-4f54-df75-ca90fb541c00/public',
-  flux:     'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/cf57135c-f124-46d1-bd01-bb1609b78200/public',
+  claude:   'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/5bbdc89c-d79b-4488-d8bf-d8748bea2100/public',
   kling:    'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/750c5b7e-4ddb-4a36-16ff-08f9272ea200/public',
 };
 
@@ -153,7 +153,7 @@ const GlobalEventBonusModal: React.FC = () => {
                         }}>chỉ trong 10 giây</span>
                       </h2>
                       <p className="text-[11px] text-white/35 leading-relaxed mb-3">
-                        Veo 3, Seedance, Grok, Flux… tất cả ở đây — 1 tài khoản, 1 loại credits, xài liền.
+                        Veo 3, Seedance, Grok, Claude… tất cả ở đây — đăng ký một lần, dùng hết.
                       </p>
 
                       {/* Hot new models strip — logo thật */}
@@ -164,7 +164,7 @@ const GlobalEventBonusModal: React.FC = () => {
                             {key:'seedance', name:'Seedance', invert: false},
                             {key:'veo3',     name:'Veo 3',    invert: false},
                             {key:'grok',     name:'Grok',     invert: false},
-                            {key:'flux',     name:'Flux',     invert: true },
+                            {key:'claude',   name:'Claude',   invert: false},
                             {key:'kling',    name:'Kling',    invert: false},
                           ].map((m) => (
                             <div key={m.key}
