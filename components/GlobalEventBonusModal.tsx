@@ -86,7 +86,7 @@ const GlobalEventBonusModal: React.FC = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.88, y: 32 }}
               transition={{ duration: 0.42, type: 'spring', stiffness: 220, damping: 24 }}
-              className="relative w-full max-w-[390px] overflow-hidden"
+              className="relative w-full max-w-[600px] overflow-hidden"
               style={{
                 borderRadius: '2rem',
                 border: '1px solid rgba(255,255,255,0.07)',
@@ -116,7 +116,7 @@ const GlobalEventBonusModal: React.FC = () => {
                     transition={{ duration: 0.32 }}
                   >
                     {/* Hero — video 1 lớn trái + cột phải: video 2 + 2 ảnh */}
-                    <div className="relative w-full overflow-hidden" style={{ height: 196 }}>
+                    <div className="relative w-full overflow-hidden" style={{ height: 260 }}>
                       <div className="flex gap-0.5 h-full">
                         {/* Trái — video 1 lớn */}
                         <video
