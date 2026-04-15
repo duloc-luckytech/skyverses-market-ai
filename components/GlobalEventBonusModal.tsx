@@ -23,7 +23,7 @@ const DEMO_IMAGES = [
 
 // AI Model logos — official assets mirrored to Cloudflare CDN
 const MODEL_LOGOS: Record<string, string> = {
-  seedance: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/e1a580fc-b5e5-4da9-1881-e4515f62f100/public',
+  seedance: 'https://seedance2.ai/logo.png',
   veo3:     'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/93c7e777-c777-4392-6eab-bb56a0d4ee00/public',
   grok:     'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/8f1f9f36-428b-4f54-df75-ca90fb541c00/public',
   claude:   'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/5bbdc89c-d79b-4488-d8bf-d8748bea2100/public',
