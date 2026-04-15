@@ -9,12 +9,8 @@ const STORAGE_KEY = 'skyverses_welcome_promo_seen';
 const FREE_IMAGES = 50;
 const WELCOME_CREDITS = 1000;
 
-// Ảnh Avatar/comic style — gen bởi scripts/gen_onboarding_slides.sh → Cloudflare CDN
-const SLIDE_1 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/10c49b25-2bbb-40cc-2493-b81e1b59cc00/public';
-const SLIDE_2 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a19a66d7-8b96-4c4f-73fe-1ca080b96500/public';
-const SLIDE_3 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/7f72214a-7f6c-4f2d-da7a-d0387f18bd00/public';
-
-const GRID_IMAGES = [SLIDE_1, SLIDE_2, SLIDE_3];
+// Demo video — Seedance AI generated
+const DEMO_VIDEO = 'https://cdn.seedance2.ai/examples/seedance2/18.mp4';
 
 // AI Model logos — official assets mirrored to Cloudflare CDN
 const MODEL_LOGOS: Record<string, string> = {
@@ -110,21 +106,16 @@ const GlobalEventBonusModal: React.FC = () => {
                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
                     transition={{ duration: 0.32 }}
                   >
-                    {/* Image grid — layout 1 lớn + 2 nhỏ */}
+                    {/* Demo video — autoplay / muted / loop */}
                     <div className="relative w-full overflow-hidden" style={{ height: 196 }}>
-                      <div className="flex gap-0.5 h-full">
-                        <div className="relative overflow-hidden bg-white/5" style={{flex:'0 0 60%'}}>
-                          <img src={GRID_IMAGES[0]} alt="" className="w-full h-full object-cover" />
-                        </div>
-                        <div className="flex flex-col gap-0.5" style={{flex:'0 0 40%'}}>
-                          <div className="relative overflow-hidden bg-white/5 flex-1">
-                            <img src={GRID_IMAGES[1]} alt="" className="w-full h-full object-cover" />
-                          </div>
-                          <div className="relative overflow-hidden bg-white/5 flex-1">
-                            <img src={GRID_IMAGES[2]} alt="" className="w-full h-full object-cover" />
-                          </div>
-                        </div>
-                      </div>
+                      <video
+                        src={DEMO_VIDEO}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
                       {/* Step dots */}
                       <div className="absolute top-3 left-3 flex gap-1.5 z-10">
                         <div className="rounded-full bg-violet-400" style={{width:18,height:6}} />
