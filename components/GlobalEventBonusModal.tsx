@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Gift, ArrowRight, Zap, Shield, ChevronRight, Flame, Clock, Image as ImageIcon, Video, Mic, Music } from 'lucide-react';
+import { X, Sparkles, Gift, ArrowRight, Zap, Shield, ChevronRight, Flame, Clock, Image as ImageIcon, Video, Mic, Music, Wand2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const STORAGE_KEY = 'skyverses_welcome_promo_seen';
@@ -57,6 +57,13 @@ const GlobalEventBonusModal: React.FC = () => {
     setIsOpen(false);
     setStep(0);
     localStorage.setItem(STORAGE_KEY, 'true');
+  };
+
+  const handleQuickGen = () => {
+    handleClose();
+    window.dispatchEvent(new CustomEvent('openQuickImageGen', {
+      detail: { freeOnce: !isAuthenticated }
+    }));
   };
 
   const handleCTA = () => {
@@ -129,21 +136,52 @@ const GlobalEventBonusModal: React.FC = () => {
                     <div className="relative w-full overflow-hidden" style={{ height: 260 }}>
                       <div className="flex gap-0.5 h-full">
                         {/* Trái — video 1 lớn */}
-                        <video
-                          src={DEMO_VIDEOS[0]}
-                          autoPlay muted loop playsInline
-                          className="h-full object-cover"
+                        <div
+                          className="relative overflow-hidden group cursor-pointer"
                           style={{ flex: '0 0 60%' }}
-                        />
+                          onClick={handleQuickGen}
+                        >
+                          <video
+                            src={DEMO_VIDEOS[0]}
+                            autoPlay muted loop playsInline
+                            className="h-full w-full object-cover"
+                          />
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                            style={{ background: 'rgba(0,0,0,0.55)' }}>
+                            <Wand2 size={20} className="text-white" />
+                            <span className="text-[10px] font-bold text-white">Tạo ngay</span>
+                          </div>
+                        </div>
                         {/* Phải — video 2 + 2 ảnh xếp dọc */}
                         <div className="flex flex-col gap-0.5" style={{ flex: '0 0 40%' }}>
-                          <video
-                            src={DEMO_VIDEOS[1]}
-                            autoPlay muted loop playsInline
-                            className="w-full object-cover flex-1"
-                          />
+                          <div
+                            className="relative overflow-hidden group cursor-pointer flex-1"
+                            onClick={handleQuickGen}
+                          >
+                            <video
+                              src={DEMO_VIDEOS[1]}
+                              autoPlay muted loop playsInline
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                              style={{ background: 'rgba(0,0,0,0.55)' }}>
+                              <Wand2 size={16} className="text-white" />
+                              <span className="text-[10px] font-bold text-white">Tạo ngay</span>
+                            </div>
+                          </div>
                           {DEMO_IMAGES.map((src, i) => (
-                            <img key={i} src={src} alt="" className="w-full object-cover flex-1" />
+                            <div
+                              key={i}
+                              className="relative overflow-hidden group cursor-pointer flex-1"
+                              onClick={handleQuickGen}
+                            >
+                              <img src={src} alt="" className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                style={{ background: 'rgba(0,0,0,0.55)' }}>
+                                <Wand2 size={16} className="text-white" />
+                                <span className="text-[10px] font-bold text-white">Tạo ngay</span>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       </div>
