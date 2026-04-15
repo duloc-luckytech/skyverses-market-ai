@@ -699,7 +699,7 @@ const LoginPage = () => {
             >
               {[
                 { icon: <ImageIcon size={12} />, text: '30+ AI Tools' },
-                { icon: <Zap size={12} />, text: '100 Free Images' },
+                { icon: <Zap size={12} />, text: '99 Free Images' },
                 { icon: <Shield size={12} />, text: 'Enterprise Grade' },
               ].map((pill, i) => (
                 <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-semibold text-white/40"

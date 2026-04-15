@@ -341,12 +341,12 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
 
 ## 🖼 AI IMAGE GENERATION
 - **Supported Models**: Gemini, Midjourney, Flux, Stable Diffusion, DALL-E, Leonardo, Grok
-- **Special**: Users get **100 FREE images** on registration
+- **Special**: Users get **99 FREE images** on registration
 - **Route**: /product/ai-image-generator → AI Image Studio
 
 ## 💰 CREDIT SYSTEM
 - Skyverses sử dụng hệ thống **Credits** để thanh toán.
-- **Free perks**: 100 ảnh miễn phí khi đăng ký mới, daily claim.
+- **Free perks**: 99 ảnh miễn phí khi đăng ký mới, daily claim.
 - Route: /credits, /usage
 
 ## 📞 SUPPORT CHANNELS

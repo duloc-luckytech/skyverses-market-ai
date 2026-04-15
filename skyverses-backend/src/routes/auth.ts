@@ -123,10 +123,10 @@ router.post("/google-register", async (req, res) => {
         console.error("⚠️ [AUTH] Failed to log welcome credit transaction:", txErr);
       }
 
-      // 🌍 Global Event April 2026 — 50 free images bonus
+      // 🌍 Global Event April 2026 — 99 free images bonus
       const EVENT_END = new Date("2026-04-30T23:59:59+07:00");
       if (new Date() <= EVENT_END) {
-        const EVENT_BONUS_FREE_IMAGES = 50;
+        const EVENT_BONUS_FREE_IMAGES = 99;
         try {
           const CreditTransaction = (await import("../models/CreditTransaction.model")).default;
           user.freeImageRemaining = (user.freeImageRemaining || 0) + EVENT_BONUS_FREE_IMAGES;

@@ -6,7 +6,7 @@ import { X, Sparkles, Gift, ArrowRight, Zap, Shield, ChevronRight, Flame, Clock,
 import { useAuth } from '../context/AuthContext';
 
 const STORAGE_KEY = 'skyverses_welcome_promo_seen';
-const FREE_IMAGES = 50;
+const FREE_IMAGES = 99;
 const WELCOME_CREDITS = 1000;
 const IMAGE_DISPLAY_MS = 3500; // ảnh hiện bao lâu trước khi chuyển
 
@@ -429,7 +429,7 @@ const GlobalEventBonusModal: React.FC = () => {
                     <div className="px-6 py-4 space-y-2"
                       style={{ borderTop: '1px solid rgba(255,255,255,.04)' }}>
                       {[
-                        { icon: <ImageIcon size={14} />, title: '50 Ảnh miễn phí', sub: 'Flux · Imagen · SDXL · Seedance · mọi style', ic: '#a78bfa', ib: 'rgba(139,92,246,.12)', border: 'rgba(139,92,246,.22)' },
+                        { icon: <ImageIcon size={14} />, title: '99 Ảnh miễn phí', sub: 'Flux · Imagen · SDXL · Seedance · mọi style', ic: '#a78bfa', ib: 'rgba(139,92,246,.12)', border: 'rgba(139,92,246,.22)' },
                         { icon: <Zap size={14} />, title: '1,000 Credits đa năng', sub: 'Veo 3 · Grok · Kling · Voice · Music · 30+ tool', ic: '#fbbf24', ib: 'rgba(251,191,36,.1)', border: 'rgba(251,191,36,.2)' },
                         { icon: <Shield size={14} />, title: 'Không ràng buộc', sub: 'Miễn phí mãi mãi · Nâng cấp khi muốn', ic: '#34d399', ib: 'rgba(52,211,153,.1)', border: 'rgba(52,211,153,.2)' },
                       ].map((b, i) => (

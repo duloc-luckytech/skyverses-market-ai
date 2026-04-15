@@ -365,7 +365,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                       }}
                     >
                       <Gift size={12} className="text-emerald-400" />
-                      <span className="text-[12px] font-bold text-emerald-400">50 ảnh miễn phí + 1,000 credits</span>
+                      <span className="text-[12px] font-bold text-emerald-400">99 ảnh miễn phí + 1,000 credits</span>
                     </div>
 
                     <motion.button
