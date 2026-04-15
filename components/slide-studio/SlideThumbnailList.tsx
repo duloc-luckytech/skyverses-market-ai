@@ -22,17 +22,21 @@ const StatusBadge: React.FC<{ status: Slide['bgStatus']; hasBg: boolean }> = ({ 
   if (status === 'idle' && !hasBg) return null;
   if (status === 'done' || (status === 'idle' && hasBg)) {
     return (
-      <span className="absolute top-1 right-1 flex items-center gap-0.5 px-1 py-0.5 rounded-full bg-emerald-500/80 backdrop-blur-sm">
+      <motion.span
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="absolute top-1 right-1 flex items-center gap-0.5 px-1 py-0.5 rounded-full bg-emerald-500/80 backdrop-blur-sm"
+      >
         <CheckCircle2 size={7} className="text-white" />
         <span className="text-[6px] font-bold text-white leading-none">BG</span>
-      </span>
+      </motion.span>
     );
   }
   if (status === 'generating') {
     return (
-      <span className="absolute top-1 right-1 flex items-center gap-0.5 px-1 py-0.5 rounded-full bg-amber-500/80 backdrop-blur-sm animate-pulse">
+      <span className="absolute top-1 right-1 flex items-center gap-0.5 px-1 py-0.5 rounded-full bg-violet-500/80 backdrop-blur-sm">
         <Loader2 size={7} className="text-white animate-spin" />
-        <span className="text-[6px] font-bold text-white leading-none">Gen</span>
+        <span className="text-[6px] font-bold text-white leading-none">AI</span>
       </span>
     );
   }
@@ -137,9 +141,9 @@ const SlideThumbnailList: React.FC<Props> = ({
 
                 {/* Thumbnail frame */}
                 <div
-                  className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all duration-150
+                  className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all duration-200
                     ${isActive
-                      ? 'border-brand-blue shadow-md shadow-brand-blue/20'
+                      ? 'border-brand-blue shadow-[0_0_0_2px_rgba(0,144,255,0.25)] shadow-brand-blue/20'
                       : 'border-black/[0.08] dark:border-white/[0.06] hover:border-brand-blue/40'
                     }`}
                 >
@@ -150,18 +154,35 @@ const SlideThumbnailList: React.FC<Props> = ({
                     </div>
                   </div>
 
-                  {/* BG image or placeholder */}
+                  {/* BG image or shimmer skeleton */}
                   {slide.bgImageUrl ? (
-                    <img
+                    <motion.img
+                      key={slide.bgImageUrl}
                       src={slide.bgImageUrl}
                       alt={slide.title}
+                      initial={{ opacity: 0, scale: 1.06 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.45, ease: 'easeOut' }}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-white/[0.03] dark:to-white/[0.06] flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center relative overflow-hidden">
+                      {/* Base */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-white/[0.03] dark:to-white/[0.06]" />
                       {slide.bgStatus === 'generating' ? (
-                        <Loader2 size={12} className="animate-spin text-brand-blue" />
+                        /* Shimmer sweep */
+                        <>
+                          <motion.div
+                            className="absolute inset-0"
+                            style={{
+                              background: 'linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.15) 50%, transparent 100%)',
+                            }}
+                            animate={{ x: ['-100%', '200%'] }}
+                            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.2 }}
+                          />
+                          <Loader2 size={11} className="relative z-10 animate-spin text-violet-400" />
+                        </>
                       ) : slide.bgStatus === 'error' ? (
                         <AlertCircle size={12} className="text-red-400" />
                       ) : (

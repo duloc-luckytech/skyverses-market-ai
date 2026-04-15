@@ -20,6 +20,7 @@ import React, {
   useRef, useState, useEffect, useCallback, useLayoutEffect,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { motion } from 'framer-motion';
 import { Trash2, Layers, Copy } from 'lucide-react';
 import { FreeTextBlock } from '../../hooks/useSlideStudio';
 import SlideFormatBar from './SlideFormatBar';
@@ -319,9 +320,12 @@ const SlideTextObject: React.FC<Props> = ({
   return (
     <>
       {/* ── Block container ── */}
-      <div
+      <motion.div
         ref={containerRef}
         style={containerStyle}
+        initial={{ scale: 0.88, opacity: 0 }}
+        animate={{ scale: 1, opacity: containerStyle.opacity ?? 1 }}
+        transition={{ type: 'spring', stiffness: 380, damping: 26 }}
         onClick={handleClick}
         onDoubleClick={handleDoubleClick}
         onMouseDown={isSelected ? handleDragStart : undefined}
@@ -433,7 +437,7 @@ const SlideTextObject: React.FC<Props> = ({
             </span>
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* ── Floating format bar (portal, anchored above/below block) ── */}
       {isActive && fbarPos && typeof document !== 'undefined' && createPortal(

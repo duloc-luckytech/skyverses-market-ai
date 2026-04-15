@@ -547,6 +547,8 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                 progress={s.generatingProgress}
                 streamText={s.generatingText}
                 onCancel={s.cancelGeneration}
+                isGenAlling={s.isGenAlling}
+                genAllProgress={s.genAllProgress}
               />
             )}
           </AnimatePresence>
