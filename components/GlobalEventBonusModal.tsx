@@ -14,7 +14,14 @@ const SLIDE_1 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/10c49b25-2bbb-
 const SLIDE_2 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a19a66d7-8b96-4c4f-73fe-1ca080b96500/public';
 const SLIDE_3 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/7f72214a-7f6c-4f2d-da7a-d0387f18bd00/public';
 
-const GRID_IMAGES = [SLIDE_1, SLIDE_2, SLIDE_3];
+// AI Model logos — official assets mirrored to Cloudflare CDN
+const MODEL_LOGOS: Record<string, string> = {
+  seedance: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/e1a580fc-b5e5-4da9-1881-e4515f62f100/public',
+  veo3:     'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/93c7e777-c777-4392-6eab-bb56a0d4ee00/public',
+  grok:     'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/8f1f9f36-428b-4f54-df75-ca90fb541c00/public',
+  flux:     'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/cf57135c-f124-46d1-bd01-bb1609b78200/public',
+  kling:    'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/750c5b7e-4ddb-4a36-16ff-08f9272ea200/public',
+};
 
 const GlobalEventBonusModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -149,22 +156,30 @@ const GlobalEventBonusModal: React.FC = () => {
                         Một nền tảng — toàn bộ sức mạnh AI sáng tạo. Không cần cài thêm app, không cần đăng ký từng tool.
                       </p>
 
-                      {/* Hot new models strip */}
-                      <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-0.5" style={{scrollbarWidth:'none'}}>
-                        <span className="shrink-0 text-[8px] font-black uppercase tracking-widest text-white/25 pr-1">Mới nhất</span>
-                        {[
-                          {name:'Seedance',  color:'#f472b6', bg:'rgba(244,114,182,.12)', border:'rgba(244,114,182,.3)',  dot:'bg-pink-400'},
-                          {name:'Veo 3',     color:'#60a5fa', bg:'rgba(96,165,250,.12)',  border:'rgba(96,165,250,.3)',   dot:'bg-blue-400'},
-                          {name:'Grok',      color:'#34d399', bg:'rgba(52,211,153,.12)',  border:'rgba(52,211,153,.3)',   dot:'bg-emerald-400'},
-                          {name:'Flux',      color:'#a78bfa', bg:'rgba(139,92,246,.12)', border:'rgba(139,92,246,.3)',  dot:'bg-violet-400'},
-                          {name:'Kling 2.0', color:'#fbbf24', bg:'rgba(251,191,36,.12)', border:'rgba(251,191,36,.3)',  dot:'bg-amber-400'},
-                        ].map((m,i)=>(
-                          <span key={i} className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9.5px] font-bold"
-                            style={{background:m.bg, border:`1px solid ${m.border}`, color:m.color}}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${m.dot}`} style={{animation:`ev-float ${1.8+i*.2}s ease-in-out infinite`}} />
-                            {m.name}
-                          </span>
-                        ))}
+                      {/* Hot new models strip — logo thật */}
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="shrink-0 text-[8px] font-black uppercase tracking-widest text-white/25">Mới nhất</span>
+                        <div className="flex items-center gap-1.5">
+                          {[
+                            {key:'seedance', name:'Seedance', invert: false},
+                            {key:'veo3',     name:'Veo 3',    invert: false},
+                            {key:'grok',     name:'Grok',     invert: false},
+                            {key:'flux',     name:'Flux',     invert: true },
+                            {key:'kling',    name:'Kling',    invert: false},
+                          ].map((m) => (
+                            <div key={m.key}
+                              className="flex items-center gap-1 px-2 py-1 rounded-full"
+                              style={{background:'rgba(255,255,255,.06)', border:'1px solid rgba(255,255,255,.1)'}}>
+                              <img
+                                src={MODEL_LOGOS[m.key]}
+                                alt={m.name}
+                                className="w-3.5 h-3.5 rounded-sm object-contain"
+                                style={m.invert ? {filter:'invert(1) brightness(1.2)'} : {}}
+                              />
+                              <span className="text-[9px] font-semibold text-white/60">{m.name}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
 
                       {/* 4 AI categories */}
