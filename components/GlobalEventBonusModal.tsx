@@ -15,6 +15,12 @@ const DEMO_VIDEOS = [
   'https://cdn.seedance2.ai/examples/seedance2/13.mp4',
 ];
 
+// Demo images — Cloudflare CDN
+const DEMO_IMAGES = [
+  'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/10c49b25-2bbb-40cc-2493-b81e1b59cc00/public',
+  'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a19a66d7-8b96-4c4f-73fe-1ca080b96500/public',
+];
+
 // AI Model logos — official assets mirrored to Cloudflare CDN
 const MODEL_LOGOS: Record<string, string> = {
   seedance: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/e1a580fc-b5e5-4da9-1881-e4515f62f100/public',
@@ -109,20 +115,27 @@ const GlobalEventBonusModal: React.FC = () => {
                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
                     transition={{ duration: 0.32 }}
                   >
-                    {/* Demo videos — side by side, autoplay / muted / loop */}
+                    {/* Hero — video 1 lớn trái + cột phải: video 2 + 2 ảnh */}
                     <div className="relative w-full overflow-hidden" style={{ height: 196 }}>
                       <div className="flex gap-0.5 h-full">
-                        {DEMO_VIDEOS.map((src, i) => (
+                        {/* Trái — video 1 lớn */}
+                        <video
+                          src={DEMO_VIDEOS[0]}
+                          autoPlay muted loop playsInline
+                          className="h-full object-cover"
+                          style={{ flex: '0 0 60%' }}
+                        />
+                        {/* Phải — video 2 + 2 ảnh xếp dọc */}
+                        <div className="flex flex-col gap-0.5" style={{ flex: '0 0 40%' }}>
                           <video
-                            key={i}
-                            src={src}
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            className="flex-1 h-full object-cover"
+                            src={DEMO_VIDEOS[1]}
+                            autoPlay muted loop playsInline
+                            className="w-full object-cover flex-1"
                           />
-                        ))}
+                          {DEMO_IMAGES.map((src, i) => (
+                            <img key={i} src={src} alt="" className="w-full object-cover flex-1" />
+                          ))}
+                        </div>
                       </div>
                       {/* Step dots */}
                       <div className="absolute top-3 left-3 flex gap-1.5 z-10">
