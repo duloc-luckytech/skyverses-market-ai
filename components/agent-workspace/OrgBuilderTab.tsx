@@ -486,17 +486,18 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
         },
       ];
 
-      const ceoSystemMsg = buildSystemMessage({ systemPrompt: ceoAgent.systemPrompt, brief: ceoAgent.brief, skills: ceoAgent.skills.map(id => SKILL_LIBRARY.find(s => s.id === id)!).filter(Boolean) });
+      const ceoSystemMsg = buildSystemMessage({ role: ceoAgent.systemPrompt || `You are ${ceoAgent.name}, a CEO AI agent. ${ceoAgent.brief || ''}` });
 
       try {
         await aiChatStreamViaProxy(
           [ceoSystemMsg, ...ceoMessages],
-          AI_MODELS.SONNET,
           (token: string) => {
             ceoOutput += token;
             setActivationResults(prev => prev.map(r => r.nodeId === ceoNode!.id ? { ...r, output: ceoOutput } : r));
           },
           ceoAbort.signal,
+          4096,
+          AI_MODELS.SONNET,
         );
       } catch { /* abort */ }
 
@@ -539,12 +540,11 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
         },
       ];
 
-      const deptSystemMsg = buildSystemMessage({ systemPrompt: deptAgent.systemPrompt, brief: deptAgent.brief, skills: deptAgent.skills.map(id => SKILL_LIBRARY.find(s => s.id === id)!).filter(Boolean) });
+      const deptSystemMsg = buildSystemMessage({ role: deptAgent.systemPrompt || `You are ${deptAgent.name}, a department AI agent. ${deptAgent.brief || ''}` });
 
       try {
         await aiChatStreamViaProxy(
           [deptSystemMsg, ...deptMessages],
-          AI_MODELS.SONNET,
           (token: string) => {
             deptOutput += token;
             setActivationResults(prev => prev.map(r =>
@@ -552,6 +552,8 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
             ));
           },
           deptAbort.signal,
+          4096,
+          AI_MODELS.SONNET,
         );
         setActivationResults(prev => prev.map(r =>
           r.nodeId === deptNode.id ? { ...r, status: 'done' } : r
