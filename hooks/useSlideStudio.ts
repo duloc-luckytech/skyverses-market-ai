@@ -132,6 +132,38 @@ function buildBgPrompt(
   return `${prefix}for a presentation slide titled "${slide.title}"${refHint}${brandHint} 16:9 widescreen format, no text, no UI elements, no watermarks, cinematic depth, premium quality, high resolution`;
 }
 
+/**
+ * Image Deck Mode: builds a VISUAL SCENE prompt (not abstract background).
+ * Uses title + body snippet to describe a specific photorealistic / editorial scene.
+ */
+function buildImageDeckPrompt(
+  slide: Slide,
+  stylePreset: StylePreset,
+  brand?: { slogan?: string; description?: string },
+): string {
+  // Strip HTML tags from body if any, take first 120 chars as scene context
+  const bodyText = slide.body
+    ? slide.body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120)
+    : '';
+  const sceneHint = bodyText ? `, scene context: ${bodyText}` : '';
+  const brandHint = brand?.description
+    ? `, brand context: ${brand.description.slice(0, 60)}`
+    : '';
+  // Style-specific mood word
+  const mood: Record<string, string> = {
+    dark:      'moody cinematic noir',
+    light:     'bright airy editorial',
+    corporate: 'clean professional editorial',
+    gradient:  'vibrant gradient cinematic',
+    creative:  'artistic bold editorial',
+    minimal:   'minimalist clean fine-art',
+    nature:    'lush natural landscape',
+    tech:      'futuristic tech cyberpunk',
+  };
+  const moodStr = mood[stylePreset.id] ?? 'cinematic editorial';
+  return `${moodStr} photorealistic scene depicting "${slide.title}"${sceneHint}${brandHint}, full-frame 16:9, no text, no watermarks, no UI, ultra-high quality, award-winning photography style`;
+}
+
 function createBlankSlide(index: number): Slide {
   return {
     id: genId(),
@@ -362,12 +394,20 @@ export const useSlideStudio = () => {
     try {
       const prompt = slide.bgPrompt?.trim()
         ? slide.bgPrompt.trim()
-        : buildBgPrompt(
-            slide,
-            stylePreset,
-            [...(refImages ?? []), ...(slide.slideRefImages ?? [])],
-            { slogan: brandSlogan, description: brandDescription },
-          );
+        : imageDeckMode
+          // Image Deck Mode: cinematic scene prompt
+          ? buildImageDeckPrompt(
+              slide,
+              stylePreset,
+              { slogan: brandSlogan, description: brandDescription },
+            )
+          // Normal mode: abstract background prompt
+          : buildBgPrompt(
+              slide,
+              stylePreset,
+              [...(refImages ?? []), ...(slide.slideRefImages ?? [])],
+              { slogan: brandSlogan, description: brandDescription },
+            );
 
       const genPromise = (async () => {
         const res = await imagesApi.createJob({
@@ -406,7 +446,7 @@ export const useSlideStudio = () => {
         showToast(`Slide "${slide.title.slice(0, 20)}" gen hình quá 90s — đã bỏ qua`, 'error');
       }
     }
-  }, [slides, deckStyle, refImages, brandSlogan, brandDescription, updateSlide, showToast]);
+  }, [slides, deckStyle, refImages, brandSlogan, brandDescription, imageDeckMode, updateSlide, showToast]);
 
 
   // ─── Gen ALL slide backgrounds sequentially ───────────────────────────────────
