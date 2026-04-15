@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Wand2, Zap, Plus, Loader2, Sparkles, ChevronDown, Activity, Gift, Image, Camera } from 'lucide-react';
+import { X, Wand2, Zap, Plus, Loader2, Sparkles, ChevronDown, Activity, Gift, Image, Camera, LogIn } from 'lucide-react';
 import { ImageJobCard } from './shared/ImageJobCard';
 import { uploadToGCS } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
@@ -279,6 +279,70 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
               maxHeight: '92vh',
             }}
           >
+            {/* ═══ LOGIN GATE OVERLAY ═══ */}
+            <AnimatePresence>
+              {!isAuthenticated && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0 z-40 flex flex-col items-center justify-center px-8"
+                  style={{
+                    background: 'linear-gradient(180deg, rgba(8,10,20,0.92) 0%, rgba(6,8,18,0.97) 100%)',
+                    backdropFilter: 'blur(6px)',
+                    borderRadius: '1.5rem',
+                  }}
+                >
+                  {/* Icon */}
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(0,144,255,0.2), rgba(139,92,246,0.1))',
+                      border: '1px solid rgba(0,144,255,0.25)',
+                      boxShadow: '0 8px 32px rgba(0,144,255,0.15)',
+                    }}
+                  >
+                    <Wand2 size={26} className="text-brand-blue" />
+                  </div>
+
+                  {/* Text */}
+                  <h3 className="text-[17px] font-black text-white text-center leading-tight mb-2">
+                    Tạo ảnh AI miễn phí
+                  </h3>
+                  <p className="text-[12px] text-white/35 text-center leading-relaxed mb-1">
+                    Đăng nhập để nhận ngay
+                  </p>
+                  <p className="text-[13px] font-bold text-emerald-400 text-center mb-6">
+                    🎁 50 ảnh miễn phí + 1,000 credits
+                  </p>
+
+                  {/* Google Login Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={login}
+                    className="w-full flex items-center justify-center gap-3 py-3.5 rounded-2xl text-[13px] font-bold text-white transition-all"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))',
+                      border: '1px solid rgba(255,255,255,0.12)',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                    }}
+                  >
+                    <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" className="w-5 h-5" alt="Google" />
+                    Đăng nhập với Google
+                  </motion.button>
+
+                  {/* Dismiss */}
+                  <button
+                    onClick={onClose}
+                    className="mt-3 text-[11px] text-white/15 hover:text-white/35 transition-colors py-1"
+                  >
+                    Để sau
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* ═══ AI LOADING OVERLAY ═══ */}
             <AnimatePresence>
               {isGenerating && (
