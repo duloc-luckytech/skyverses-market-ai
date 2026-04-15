@@ -1,9 +1,10 @@
+
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Plus, Trash2, Edit2, Network, Play, Loader2, CheckCircle2,
-  LayoutGrid, RotateCcw, X, ChevronRight, AlertCircle, Bot,
-  Crown, Users2, Brain, Sparkles, Copy, Send,
+  Plus, Trash2, Network, Play, Loader2, CheckCircle2,
+  LayoutGrid, RotateCcw, X, AlertCircle,
+  Crown, Sparkles, RefreshCw, Copy, ZoomIn, ZoomOut, Maximize2, Clock,
 } from 'lucide-react';
 import type { CustomAgent } from '../../hooks/useAgentRegistry';
 import { SKILL_LIBRARY } from '../../hooks/useAgentRegistry';
@@ -18,8 +19,12 @@ const NODE_W = 154;
 const NODE_H = 92;
 const CANVAS_MIN_W = 900;
 const CANVAS_MIN_H = 520;
+const ZOOM_MIN = 0.4;
+const ZOOM_MAX = 1.8;
+const ZOOM_STEP = 0.1;
+const MEMORY_KEY = (orgName: string) => `skyverses_org_memory_${orgName.replace(/\s+/g, '_')}`;
 
-// ─── Activation result ─────────────────────────────────────────────────────────
+// ─── Types ─────────────────────────────────────────────────────────────────────
 
 interface ActivationResult {
   nodeId: string;
@@ -29,6 +34,12 @@ interface ActivationResult {
   delegatedTask: string;
   output: string;
   status: 'pending' | 'running' | 'done' | 'error';
+}
+
+interface ActivationMemoryEntry {
+  mission: string;
+  timestamp: string;
+  results: { agentName: string; task: string; output: string }[];
 }
 
 // ─── Node card on canvas ────────────────────────────────────────────────────────
@@ -66,7 +77,7 @@ const OrgNodeCard: React.FC<{
         top: node.y,
         width: NODE_W,
         userSelect: 'none',
-        cursor: 'grab',
+        cursor: isActivating ? 'default' : 'grab',
         zIndex: isSelected ? 20 : 10,
       }}
       onMouseDown={onMouseDown}
@@ -167,7 +178,7 @@ const OrgNodeCard: React.FC<{
   );
 };
 
-// ─── SVG connections ───────────────────────────────────────────────────────────
+// ─── SVG connections ────────────────────────────────────────────────────────────
 
 const OrgConnections: React.FC<{
   nodes: OrgNode[];
@@ -228,7 +239,11 @@ const ActivationModal: React.FC<{
   orgName: string;
   mission: string;
   onClose: () => void;
-}> = ({ results, orgName, mission, onClose }) => {
+  onRerunAgent: (nodeId: string) => void;
+  isActivating: boolean;
+  memoryEntries: ActivationMemoryEntry[];
+}> = ({ results, orgName, mission, onClose, onRerunAgent, isActivating, memoryEntries }) => {
+  const [activeTab, setActiveTab] = useState<'current' | 'history'>('current');
   const done   = results.filter(r => r.status === 'done').length;
   const total  = results.length;
   const pct    = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -240,7 +255,7 @@ const ActivationModal: React.FC<{
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[800] bg-black/75 backdrop-blur-md flex items-center justify-center p-4"
-      onClick={e => { if (allDone) onClose(); }}
+      onClick={() => { if (allDone) onClose(); }}
     >
       <motion.div
         initial={{ scale: 0.92, y: 20 }}
@@ -268,78 +283,158 @@ const ActivationModal: React.FC<{
           )}
         </div>
 
-        {/* Progress bar */}
-        <div className="px-6 pt-3 pb-0">
-          <div className="flex items-center justify-between text-[9px] font-bold text-white/40 mb-1.5">
-            <span>Progress</span>
-            <span>{done}/{total} agents</span>
-          </div>
-          <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-brand-blue to-violet-500"
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-            />
-          </div>
+        {/* Tabs */}
+        <div className="flex items-center gap-1 px-6 pt-3 shrink-0">
+          {(['current', 'history'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all ${
+                activeTab === tab
+                  ? 'bg-brand-blue/15 text-brand-blue'
+                  : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+              }`}
+            >
+              {tab === 'current' ? <Network size={10} /> : <Clock size={10} />}
+              {tab === 'current' ? 'Current Run' : `History (${memoryEntries.length})`}
+            </button>
+          ))}
         </div>
 
-        {/* Results list */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          <AnimatePresence>
-            {results.map((result, i) => (
-              <motion.div
-                key={result.nodeId}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className={`rounded-2xl border overflow-hidden ${
-                  result.status === 'running' ? 'border-amber-500/30 bg-amber-500/[0.04]'
-                  : result.status === 'done'  ? 'border-emerald-500/25 bg-emerald-500/[0.03]'
-                  : result.status === 'error' ? 'border-red-500/25 bg-red-500/[0.03]'
-                  : 'border-white/[0.06] bg-white/[0.02]'
-                }`}
-              >
-                {/* Agent header */}
-                <div className="flex items-center gap-2.5 px-4 py-2.5">
-                  <div
-                    className="w-7 h-7 rounded-xl flex items-center justify-center text-sm shrink-0"
-                    style={{ backgroundColor: `${result.agentColor}20` }}
+        {activeTab === 'current' && (
+          <>
+            {/* Progress bar */}
+            <div className="px-6 pt-3 pb-0">
+              <div className="flex items-center justify-between text-[9px] font-bold text-white/40 mb-1.5">
+                <span>Progress</span>
+                <span>{done}/{total} agents</span>
+              </div>
+              <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-brand-blue to-violet-500"
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                />
+              </div>
+            </div>
+
+            {/* Results list */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              <AnimatePresence>
+                {results.map((result, i) => (
+                  <motion.div
+                    key={result.nodeId}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    className={`rounded-2xl border overflow-hidden ${
+                      result.status === 'running' ? 'border-amber-500/30 bg-amber-500/[0.04]'
+                      : result.status === 'done'  ? 'border-emerald-500/25 bg-emerald-500/[0.03]'
+                      : result.status === 'error' ? 'border-red-500/25 bg-red-500/[0.03]'
+                      : 'border-white/[0.06] bg-white/[0.02]'
+                    }`}
                   >
-                    {result.agentEmoji}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[11px] font-bold text-white/80">{result.agentName}</p>
-                    {result.delegatedTask && (
-                      <p className="text-[9px] text-white/30 truncate mt-0.5">{result.delegatedTask}</p>
-                    )}
-                  </div>
-                  {result.status === 'running' && <Loader2 size={12} className="animate-spin text-amber-400 shrink-0" />}
-                  {result.status === 'done'    && <CheckCircle2 size={12} className="text-emerald-400 shrink-0" />}
-                  {result.status === 'error'   && <AlertCircle size={12} className="text-red-400 shrink-0" />}
-                  {result.status === 'pending' && <div className="w-2 h-2 rounded-full bg-white/20 animate-pulse shrink-0" />}
-                </div>
+                    {/* Agent header */}
+                    <div className="flex items-center gap-2.5 px-4 py-2.5">
+                      <div
+                        className="w-7 h-7 rounded-xl flex items-center justify-center text-sm shrink-0"
+                        style={{ backgroundColor: `${result.agentColor}20` }}
+                      >
+                        {result.agentEmoji}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-bold text-white/80">{result.agentName}</p>
+                        {result.delegatedTask && (
+                          <p className="text-[9px] text-white/30 truncate mt-0.5">{result.delegatedTask}</p>
+                        )}
+                      </div>
+                      {result.status === 'running' && <Loader2 size={12} className="animate-spin text-amber-400 shrink-0" />}
+                      {result.status === 'done'    && <CheckCircle2 size={12} className="text-emerald-400 shrink-0" />}
+                      {result.status === 'error'   && <AlertCircle size={12} className="text-red-400 shrink-0" />}
+                      {result.status === 'pending' && <div className="w-2 h-2 rounded-full bg-white/20 animate-pulse shrink-0" />}
 
-                {/* Output */}
-                {result.output && (
-                  <div className="px-4 pb-3 pt-0">
-                    <div className="bg-black/40 rounded-xl p-3 font-mono text-[10px] text-emerald-300/80 leading-relaxed max-h-[180px] overflow-y-auto whitespace-pre-wrap">
-                      {result.output}
-                      {result.status === 'running' && (
-                        <span className="inline-block w-1.5 h-3 bg-emerald-400 ml-0.5 animate-pulse align-middle" />
-                      )}
+                      {/* Action buttons */}
+                      <div className="flex items-center gap-1 shrink-0">
+                        {result.output && (
+                          <button
+                            onClick={() => navigator.clipboard.writeText(result.output)}
+                            className="w-6 h-6 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center transition-colors"
+                            title="Copy output"
+                          >
+                            <Copy size={9} className="text-white/40" />
+                          </button>
+                        )}
+                        {(result.status === 'done' || result.status === 'error') && !isActivating && (
+                          <button
+                            onClick={() => onRerunAgent(result.nodeId)}
+                            className="w-6 h-6 rounded-lg bg-brand-blue/10 hover:bg-brand-blue/20 flex items-center justify-center transition-colors"
+                            title="Re-run this agent"
+                          >
+                            <RefreshCw size={9} className="text-brand-blue" />
+                          </button>
+                        )}
+                      </div>
                     </div>
+
+                    {/* Output */}
+                    {result.output && (
+                      <div className="px-4 pb-3 pt-0">
+                        <div className="bg-black/40 rounded-xl p-3 font-mono text-[10px] text-emerald-300/80 leading-relaxed max-h-[180px] overflow-y-auto whitespace-pre-wrap">
+                          {result.output}
+                          {result.status === 'running' && (
+                            <span className="inline-block w-1.5 h-3 bg-emerald-400 ml-0.5 animate-pulse align-middle" />
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </>
+        )}
+
+        {activeTab === 'history' && (
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {memoryEntries.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-white/20">
+                <Clock size={28} className="mb-2" />
+                <p className="text-[11px]">No activation history yet</p>
+              </div>
+            ) : (
+              [...memoryEntries].reverse().map((entry, i) => (
+                <div key={i} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+                  <div className="px-4 py-2.5 border-b border-white/[0.04]">
+                    <p className="text-[11px] font-bold text-white/70 truncate">{entry.mission}</p>
+                    <p className="text-[9px] text-white/25 mt-0.5">
+                      {new Date(entry.timestamp).toLocaleString('vi-VN')} · {entry.results.length} agents
+                    </p>
                   </div>
-                )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+                  <div className="px-4 py-2 space-y-1.5">
+                    {entry.results.map((r, j) => (
+                      <div key={j} className="flex items-start gap-2">
+                        <span className="text-[9px] font-bold text-white/40 shrink-0 w-20 truncate">{r.agentName}</span>
+                        <p className="text-[9px] text-white/25 truncate flex-1">{r.output.slice(0, 80)}…</p>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(r.output)}
+                          className="shrink-0 text-white/20 hover:text-white/50 transition-colors"
+                        >
+                          <Copy size={8} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
 
         {/* Footer */}
         {allDone && (
           <div className="px-6 py-4 border-t border-white/[0.06] flex items-center justify-between">
             <p className="text-[10px] text-white/30">
-              {results.filter(r => r.status === 'done').length} agents completed
+              {results.filter(r => r.status === 'done').length} agents completed · saved to history
             </p>
             <button
               onClick={onClose}
@@ -364,24 +459,53 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
   const org = useOrgBuilder();
   const { config, updateMeta, addNode, removeNode, updateNode, moveNode, commitMove, applyAutoLayout, resetOrg } = org;
 
-  // Canvas drag state
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  // Canvas drag + zoom state
+  const [selectedNodeId, setSelectedNodeId]   = useState<string | null>(null);
+  const [zoom, setZoom]                       = useState(1);
   const draggingRef = useRef<{ nodeId: string; offX: number; offY: number } | null>(null);
-  const canvasRef   = useRef<HTMLDivElement>(null);
+  const canvasWrapRef = useRef<HTMLDivElement>(null);
+  const canvasRef     = useRef<HTMLDivElement>(null);
 
   // Right panel
   const [editingLabel, setEditingLabel] = useState<string>('');
 
   // Activate org
-  const [showMissionInput, setShowMissionInput] = useState(false);
-  const [missionText, setMissionText]           = useState('');
-  const [isActivating, setIsActivating]         = useState(false);
-  const [activationResults, setActivationResults] = useState<ActivationResult[]>([]);
-  const [showActivation, setShowActivation]     = useState(false);
+  const [showMissionInput, setShowMissionInput]     = useState(false);
+  const [missionText, setMissionText]               = useState('');
+  const [isActivating, setIsActivating]             = useState(false);
+  const [activationResults, setActivationResults]   = useState<ActivationResult[]>([]);
+  const [showActivation, setShowActivation]         = useState(false);
+  const [memoryEntries, setMemoryEntries]           = useState<ActivationMemoryEntry[]>([]);
   const abortRefs = useRef<AbortController[]>([]);
 
   const selectedNode  = config.nodes.find(n => n.id === selectedNodeId) ?? null;
-  const selectedAgent = selectedNode ? (agents.find(a => a.id === selectedNode.agentId) ?? null) : null;
+
+  // ── Load memory on mount ────────────────────────────────────────────────────
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(MEMORY_KEY(config.orgName));
+      if (raw) setMemoryEntries(JSON.parse(raw));
+    } catch { /* ignore */ }
+  }, [config.orgName]);
+
+  const saveMemory = useCallback((entries: ActivationMemoryEntry[]) => {
+    try {
+      localStorage.setItem(MEMORY_KEY(config.orgName), JSON.stringify(entries.slice(-20)));
+    } catch { /* ignore */ }
+  }, [config.orgName]);
+
+  // ── Canvas zoom (mouse wheel) ───────────────────────────────────────────────
+  useEffect(() => {
+    const el = canvasWrapRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return; // Ctrl/Cmd + scroll to zoom
+      e.preventDefault();
+      setZoom(z => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z - e.deltaY * 0.001)));
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
 
   // ── Canvas drag handlers ────────────────────────────────────────────────────
 
@@ -393,24 +517,24 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
     if (!node) return;
     draggingRef.current = {
       nodeId,
-      offX: e.clientX - rect.left - node.x,
-      offY: e.clientY - rect.top  - node.y,
+      offX: (e.clientX - rect.left) / zoom - node.x,
+      offY: (e.clientY - rect.top)  / zoom - node.y,
     };
-  }, [config.nodes]);
+  }, [config.nodes, zoom]);
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       if (!draggingRef.current || !canvasRef.current) return;
       const rect = canvasRef.current.getBoundingClientRect();
-      const x = Math.max(0, e.clientX - rect.left - draggingRef.current.offX);
-      const y = Math.max(0, e.clientY - rect.top  - draggingRef.current.offY);
+      const x = Math.max(0, (e.clientX - rect.left) / zoom - draggingRef.current.offX);
+      const y = Math.max(0, (e.clientY - rect.top)  / zoom - draggingRef.current.offY);
       moveNode(draggingRef.current.nodeId, x, y);
     };
     const onUp = (e: MouseEvent) => {
       if (!draggingRef.current || !canvasRef.current) return;
       const rect = canvasRef.current.getBoundingClientRect();
-      const x = Math.max(0, e.clientX - rect.left - draggingRef.current.offX);
-      const y = Math.max(0, e.clientY - rect.top  - draggingRef.current.offY);
+      const x = Math.max(0, (e.clientX - rect.left) / zoom - draggingRef.current.offX);
+      const y = Math.max(0, (e.clientY - rect.top)  / zoom - draggingRef.current.offY);
       commitMove(draggingRef.current.nodeId, x, y);
       draggingRef.current = null;
     };
@@ -420,7 +544,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
     };
-  }, [moveNode, commitMove]);
+  }, [moveNode, commitMove, zoom]);
 
   // ── Selected node sync ─────────────────────────────────────────────────────
 
@@ -428,9 +552,9 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
     if (selectedNode) setEditingLabel(selectedNode.label);
   }, [selectedNode?.id]);
 
-  // ── Activate Organization ──────────────────────────────────────────────────
+  // ── Org Summary ────────────────────────────────────────────────────────────
 
-  const buildOrgSummary = () => {
+  const buildOrgSummary = useCallback(() => {
     const lines: string[] = [`Organization: ${config.orgName}`];
     if (config.orgDescription) lines.push(`Description: ${config.orgDescription}`);
     lines.push('\nStructure:');
@@ -440,7 +564,82 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
       lines.push(`  - ${n.label} (${agent?.name ?? 'Unassigned'})${parent ? ` → reports to ${parent.label}` : ' [CEO]'}`);
     });
     return lines.join('\n');
-  };
+  }, [config, agents]);
+
+  // ── Helper: run a single dept agent ────────────────────────────────────────
+
+  const runDeptAgent = useCallback(async (
+    deptNode: OrgNode,
+    deptAgent: CustomAgent,
+    delegatedTask: string,
+    orgSummary: string,
+    abortSignal: AbortSignal,
+  ) => {
+    let deptOutput = '';
+
+    setActivationResults(prev => prev.map(r =>
+      r.nodeId === deptNode.id ? { ...r, status: 'running', delegatedTask } : r
+    ));
+
+    const deptMessages: ChatMessage[] = [
+      {
+        role: 'user',
+        content: `${delegatedTask}\n\nContext:\n${orgSummary}`,
+      },
+    ];
+
+    const deptSystemMsg = buildSystemMessage({
+      role: deptAgent.systemPrompt || `You are ${deptAgent.name}, a department AI agent. ${deptAgent.brief || ''}`,
+    });
+
+    try {
+      await aiChatStreamViaProxy(
+        [deptSystemMsg, ...deptMessages],
+        (token: string) => {
+          deptOutput += token;
+          setActivationResults(prev => prev.map(r =>
+            r.nodeId === deptNode.id ? { ...r, output: deptOutput } : r
+          ));
+        },
+        abortSignal,
+        4096,
+        AI_MODELS.SONNET,
+      );
+      setActivationResults(prev => prev.map(r =>
+        r.nodeId === deptNode.id ? { ...r, status: 'done' } : r
+      ));
+    } catch {
+      setActivationResults(prev => prev.map(r =>
+        r.nodeId === deptNode.id ? { ...r, status: 'error' } : r
+      ));
+    }
+
+    return deptOutput;
+  }, []);
+
+  // ── Re-run single agent ────────────────────────────────────────────────────
+
+  const handleRerunAgent = useCallback(async (nodeId: string) => {
+    const targetNode  = config.nodes.find(n => n.id === nodeId);
+    const targetAgent = targetNode ? agents.find(a => a.id === targetNode.agentId) : null;
+    if (!targetNode || !targetAgent) return;
+
+    const orgSummary = buildOrgSummary();
+    const currentResult = activationResults.find(r => r.nodeId === nodeId);
+    const delegatedTask = currentResult?.delegatedTask || missionText;
+
+    const abortCtrl = new AbortController();
+    abortRefs.current.push(abortCtrl);
+
+    // Reset this agent's output
+    setActivationResults(prev => prev.map(r =>
+      r.nodeId === nodeId ? { ...r, output: '', status: 'running' } : r
+    ));
+
+    await runDeptAgent(targetNode, targetAgent, delegatedTask, orgSummary, abortCtrl.signal);
+  }, [config.nodes, agents, buildOrgSummary, activationResults, missionText, runDeptAgent]);
+
+  // ── Activate Organization (full run) ───────────────────────────────────────
 
   const handleActivate = async () => {
     if (!missionText.trim()) return;
@@ -448,12 +647,13 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
     setIsActivating(true);
     setShowActivation(true);
 
-    // Build initial results
+    // Abort any in-progress
+    abortRefs.current.forEach(a => a.abort());
+    abortRefs.current = [];
+
     const deptNodes = config.nodes.filter(n => n.parentId !== null && n.agentId);
     const ceoNode   = config.nodes.find(n => !n.parentId);
-    const allNodes  = ceoNode
-      ? [ceoNode, ...deptNodes]
-      : deptNodes;
+    const allNodes  = ceoNode ? [ceoNode, ...deptNodes] : deptNodes;
 
     const initResults: ActivationResult[] = allNodes.map((n, i) => {
       const agent = agents.find(a => a.id === n.agentId);
@@ -471,11 +671,11 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
 
     const orgSummary = buildOrgSummary();
 
-    // 1. Run CEO agent
+    // ── 1. CEO agent ───────────────────────────────────────────────────────
     const ceoAgent = ceoNode ? agents.find(a => a.id === ceoNode.agentId) : null;
     let ceoOutput = '';
 
-    if (ceoAgent) {
+    if (ceoAgent && ceoNode) {
       const ceoAbort = new AbortController();
       abortRefs.current.push(ceoAbort);
 
@@ -486,27 +686,29 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
         },
       ];
 
-      const ceoSystemMsg = buildSystemMessage({ role: ceoAgent.systemPrompt || `You are ${ceoAgent.name}, a CEO AI agent. ${ceoAgent.brief || ''}` });
+      const ceoSystemMsg = buildSystemMessage({
+        role: ceoAgent.systemPrompt || `You are ${ceoAgent.name}, a CEO AI agent. ${ceoAgent.brief || ''}`,
+      });
 
       try {
         await aiChatStreamViaProxy(
           [ceoSystemMsg, ...ceoMessages],
           (token: string) => {
             ceoOutput += token;
-            setActivationResults(prev => prev.map(r => r.nodeId === ceoNode!.id ? { ...r, output: ceoOutput } : r));
+            setActivationResults(prev => prev.map(r => r.nodeId === ceoNode.id ? { ...r, output: ceoOutput } : r));
           },
           ceoAbort.signal,
           4096,
-          AI_MODELS.SONNET,
+          AI_MODELS.OPUS,
         );
       } catch { /* abort */ }
 
       setActivationResults(prev => prev.map(r =>
-        r.nodeId === ceoNode!.id ? { ...r, status: 'done' } : r
+        r.nodeId === ceoNode.id ? { ...r, status: 'done' } : r
       ));
     }
 
-    // 2. Parse CEO output for per-dept tasks
+    // ── 2. Parse CEO output → per-dept tasks ──────────────────────────────
     const parseTask = (agentLabel: string): string => {
       if (!ceoOutput) return missionText;
       const lines = ceoOutput.split('\n');
@@ -519,56 +721,48 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
       return `As part of the mission "${missionText}", apply your expertise and produce a detailed action plan`;
     };
 
-    // 3. Run dept agents
-    for (const deptNode of deptNodes) {
-      const deptAgent = agents.find(a => a.id === deptNode.agentId);
-      if (!deptAgent) continue;
+    // Mark all dept nodes as pending → running will be set by runDeptAgent
+    setActivationResults(prev => prev.map(r =>
+      r.nodeId !== ceoNode?.id ? { ...r, status: 'pending' } : r
+    ));
 
-      const delegatedTask = parseTask(deptNode.label);
-      setActivationResults(prev => prev.map(r =>
-        r.nodeId === deptNode.id ? { ...r, status: 'running', delegatedTask } : r
-      ));
+    // ── 3. Parallel dept agents ────────────────────────────────────────────
+    const deptOutputs = await Promise.all(
+      deptNodes.map(async deptNode => {
+        const deptAgent = agents.find(a => a.id === deptNode.agentId);
+        if (!deptAgent) return { nodeId: deptNode.id, agentName: 'Unknown', task: '', output: '' };
 
-      const deptAbort = new AbortController();
-      abortRefs.current.push(deptAbort);
-      let deptOutput = '';
+        const delegatedTask = parseTask(deptNode.label);
+        const abortCtrl = new AbortController();
+        abortRefs.current.push(abortCtrl);
 
-      const deptMessages: ChatMessage[] = [
-        {
-          role: 'user',
-          content: `${delegatedTask}\n\nContext:\n${orgSummary}`,
-        },
-      ];
+        const output = await runDeptAgent(deptNode, deptAgent, delegatedTask, orgSummary, abortCtrl.signal);
+        return { nodeId: deptNode.id, agentName: deptAgent.name, task: delegatedTask, output };
+      })
+    );
 
-      const deptSystemMsg = buildSystemMessage({ role: deptAgent.systemPrompt || `You are ${deptAgent.name}, a department AI agent. ${deptAgent.brief || ''}` });
+    // ── 4. Save to activation memory ──────────────────────────────────────
+    const newEntry: ActivationMemoryEntry = {
+      mission: missionText,
+      timestamp: new Date().toISOString(),
+      results: [
+        ...(ceoAgent && ceoOutput
+          ? [{ agentName: ceoAgent.name, task: `Mission: ${missionText}`, output: ceoOutput }]
+          : []),
+        ...deptOutputs.filter(d => d.output),
+      ],
+    };
 
-      try {
-        await aiChatStreamViaProxy(
-          [deptSystemMsg, ...deptMessages],
-          (token: string) => {
-            deptOutput += token;
-            setActivationResults(prev => prev.map(r =>
-              r.nodeId === deptNode.id ? { ...r, output: deptOutput } : r
-            ));
-          },
-          deptAbort.signal,
-          4096,
-          AI_MODELS.SONNET,
-        );
-        setActivationResults(prev => prev.map(r =>
-          r.nodeId === deptNode.id ? { ...r, status: 'done' } : r
-        ));
-      } catch {
-        setActivationResults(prev => prev.map(r =>
-          r.nodeId === deptNode.id ? { ...r, status: 'error' } : r
-        ));
-      }
-    }
+    setMemoryEntries(prev => {
+      const updated = [...prev, newEntry];
+      saveMemory(updated);
+      return updated;
+    });
 
     setIsActivating(false);
   };
 
-  // Canvas min dimensions
+  // Canvas min dimensions (accounting for zoom)
   const canvasMinW = Math.max(CANVAS_MIN_W, ...config.nodes.map(n => n.x + NODE_W + 40));
   const canvasMinH = Math.max(CANVAS_MIN_H, ...config.nodes.map(n => n.y + NODE_H + 40));
 
@@ -612,7 +806,37 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
           <RotateCcw size={13} />
         </button>
 
-        <div className="flex-1" />
+        {/* Zoom controls */}
+        <div className="flex items-center gap-1 ml-auto">
+          <button
+            onClick={() => setZoom(z => Math.max(ZOOM_MIN, z - ZOOM_STEP))}
+            className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-brand-blue transition-colors"
+          >
+            <ZoomOut size={11} />
+          </button>
+          <button
+            onClick={() => setZoom(1)}
+            className="text-[9px] font-bold text-slate-400 dark:text-white/30 hover:text-brand-blue w-10 text-center transition-colors"
+            title="Reset zoom"
+          >
+            {Math.round(zoom * 100)}%
+          </button>
+          <button
+            onClick={() => setZoom(z => Math.min(ZOOM_MAX, z + ZOOM_STEP))}
+            className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-brand-blue transition-colors"
+          >
+            <ZoomIn size={11} />
+          </button>
+          <button
+            onClick={() => setZoom(1)}
+            className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-brand-blue transition-colors"
+            title="Fit to screen"
+          >
+            <Maximize2 size={11} />
+          </button>
+        </div>
+
+        <div className="w-px h-4 bg-black/[0.08] dark:bg-white/[0.08]" />
 
         {/* Stats */}
         <div className="hidden lg:flex items-center gap-3 text-[9px] font-semibold text-slate-400 dark:text-white/25">
@@ -645,43 +869,58 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
       <div className="flex flex-1 overflow-hidden min-h-0">
 
         {/* ── Canvas ── */}
-        <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[#080809]">
-          {/* Dot grid background */}
+        <div ref={canvasWrapRef} className="flex-1 overflow-auto bg-slate-50 dark:bg-[#080809]">
+          {/* Zoom hint */}
+          {zoom !== 1 && (
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 px-2.5 py-1 rounded-full bg-black/60 text-white/60 text-[9px] font-bold pointer-events-none">
+              {Math.round(zoom * 100)}% · Ctrl+scroll to zoom
+            </div>
+          )}
           <div
-            ref={canvasRef}
-            className="relative"
             style={{
-              minWidth: canvasMinW,
-              minHeight: canvasMinH,
-              backgroundImage: 'radial-gradient(circle, rgba(100,116,139,0.15) 1px, transparent 1px)',
-              backgroundSize: '24px 24px',
+              transform: `scale(${zoom})`,
+              transformOrigin: 'top left',
+              width: canvasMinW,
+              height: canvasMinH,
             }}
-            onClick={() => setSelectedNodeId(null)}
           >
-            {/* SVG connections */}
-            <OrgConnections nodes={config.nodes} activationResults={activationResults} />
+            {/* Dot grid background */}
+            <div
+              ref={canvasRef}
+              className="relative"
+              style={{
+                minWidth: canvasMinW,
+                minHeight: canvasMinH,
+                backgroundImage: 'radial-gradient(circle, rgba(100,116,139,0.15) 1px, transparent 1px)',
+                backgroundSize: '24px 24px',
+              }}
+              onClick={() => setSelectedNodeId(null)}
+            >
+              {/* SVG connections */}
+              <OrgConnections nodes={config.nodes} activationResults={activationResults} />
 
-            {/* Nodes */}
-            <AnimatePresence>
-              {config.nodes.map(node => {
-                const agent = agents.find(a => a.id === node.agentId) ?? null;
-                const actResult = activationResults.find(r => r.nodeId === node.id);
-                return (
-                  <OrgNodeCard
-                    key={node.id}
-                    node={node}
-                    agent={agent}
-                    isSelected={selectedNodeId === node.id}
-                    isActivating={isActivating}
-                    activationStatus={actResult?.status}
-                    onMouseDown={e => { handleNodeMouseDown(e, node.id); setSelectedNodeId(node.id); }}
-                    onClick={() => setSelectedNodeId(node.id)}
-                    onAddChild={() => { const id = addNode(node.id); setSelectedNodeId(id); }}
-                    onDelete={() => { removeNode(node.id); setSelectedNodeId(null); }}
-                  />
-                );
-              })}
-            </AnimatePresence>
+              {/* Nodes */}
+              <AnimatePresence>
+                {config.nodes.map(node => {
+                  const agent = agents.find(a => a.id === node.agentId) ?? null;
+                  const actResult = activationResults.find(r => r.nodeId === node.id);
+                  return (
+                    <OrgNodeCard
+                      key={node.id}
+                      node={node}
+                      agent={agent}
+                      isSelected={selectedNodeId === node.id}
+                      isActivating={isActivating}
+                      activationStatus={actResult?.status}
+                      onMouseDown={e => { handleNodeMouseDown(e, node.id); setSelectedNodeId(node.id); }}
+                      onClick={() => setSelectedNodeId(node.id)}
+                      onAddChild={() => { const id = addNode(node.id); setSelectedNodeId(id); }}
+                      onDelete={() => { removeNode(node.id); setSelectedNodeId(null); }}
+                    />
+                  );
+                })}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
@@ -821,7 +1060,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
                 </div>
                 <div>
                   <p className="text-[14px] font-black text-slate-800 dark:text-white">Activate Organization</p>
-                  <p className="text-[10px] text-slate-400">{config.orgName} · {config.nodes.filter(n => n.agentId).length} agents ready</p>
+                  <p className="text-[10px] text-slate-400">{config.orgName} · {config.nodes.filter(n => n.agentId).length} agents ready · parallel execution</p>
                 </div>
               </div>
 
@@ -835,7 +1074,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
                 className="w-full px-3.5 py-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[12px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 resize-none"
               />
               <p className="text-[9px] text-slate-400 mt-1.5">
-                CEO agent will delegate sub-tasks to each department automatically.
+                CEO Agent (Opus) will delegate → all departments run in parallel ⚡
               </p>
             </div>
             <div className="flex items-center justify-between px-6 pb-6 pt-0 gap-3">
@@ -868,6 +1107,9 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
           orgName={config.orgName}
           mission={missionText}
           onClose={() => { setShowActivation(false); if (!isActivating) setActivationResults([]); }}
+          onRerunAgent={handleRerunAgent}
+          isActivating={isActivating}
+          memoryEntries={memoryEntries}
         />
       )}
     </AnimatePresence>
