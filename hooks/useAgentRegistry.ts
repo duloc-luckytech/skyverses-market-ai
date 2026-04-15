@@ -23,6 +23,9 @@ export interface CustomAgent {
   tier: AgentTier;
   isDefault: boolean;
   createdAt: string;
+  language?: 'vi' | 'en' | 'ko' | 'ja';  // response language override
+  temperature?: number;       // 0.0–1.0, creativity level
+  maxTokens?: number;         // 512–8192, response length cap
 }
 
 // ─── Skill library ──────────────────────────────────────────────────────────────
