@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Gift, ArrowRight, Zap, Shield, ChevronRight, Flame, Clock, Image as ImageIcon, Video, Mic, Music, Maximize2 } from 'lucide-react';
@@ -8,8 +8,7 @@ import { useAuth } from '../context/AuthContext';
 const STORAGE_KEY = 'skyverses_welcome_promo_seen';
 const FREE_IMAGES = 50;
 const WELCOME_CREDITS = 1000;
-const AUTO_NEXT_MS = 5000;
-const MEDIA_INTERVAL_MS = 3500;
+const IMAGE_DISPLAY_MS = 3500; // ảnh hiện bao lâu trước khi chuyển
 
 // Demo videos — Seedance AI generated
 const DEMO_VIDEOS = [
@@ -42,11 +41,16 @@ const MODEL_LOGOS: Record<string, string> = {
 
 const GlobalEventBonusModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState(0); // 0 = discovery, 1 = claim
-  const [mediaIndex, setMediaIndex] = useState(0); // auto-carousel index for hero main slot
+  const [step, setStep] = useState(0);
+  const [mediaIndex, setMediaIndex] = useState(0);
   const [lightbox, setLightbox] = useState<{ type: 'video' | 'image'; src: string } | null>(null);
+  const imageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
   const { isAuthenticated, freeImageRemaining } = useAuth();
+
+  const goNextMedia = useCallback(() => {
+    setMediaIndex(i => (i + 1) % HERO_MEDIA.length);
+  }, []);
 
   // Show modal after 3s (once)
   useEffect(() => {
@@ -57,19 +61,17 @@ const GlobalEventBonusModal: React.FC = () => {
     }
   }, []);
 
-  // Auto-advance Slide 0 → Slide 1
+  // Khi mediaIndex đổi: nếu là ảnh → dùng timer, nếu là video → chờ onEnded
   useEffect(() => {
     if (!isOpen || step !== 0) return;
-    const t = setTimeout(() => setStep(1), AUTO_NEXT_MS);
-    return () => clearTimeout(t);
-  }, [isOpen, step]);
-
-  // Auto-carousel hero media
-  useEffect(() => {
-    if (!isOpen || step !== 0) return;
-    const t = setInterval(() => setMediaIndex(i => (i + 1) % HERO_MEDIA.length), MEDIA_INTERVAL_MS);
-    return () => clearInterval(t);
-  }, [isOpen, step]);
+    if (imageTimerRef.current) clearTimeout(imageTimerRef.current);
+    if (HERO_MEDIA[mediaIndex].type === 'image') {
+      imageTimerRef.current = setTimeout(goNextMedia, IMAGE_DISPLAY_MS);
+    }
+    return () => {
+      if (imageTimerRef.current) clearTimeout(imageTimerRef.current);
+    };
+  }, [mediaIndex, isOpen, step, goNextMedia]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -104,7 +106,6 @@ const GlobalEventBonusModal: React.FC = () => {
         @keyframes ev-shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
         @keyframes ev-pulse { 0%{box-shadow:0 0 0 0 rgba(139,92,246,.45)} 70%{box-shadow:0 0 0 14px rgba(139,92,246,0)} 100%{box-shadow:0 0 0 0 rgba(139,92,246,0)} }
         @keyframes ev-spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        @keyframes ev-progress { from{width:0%} to{width:100%} }
       `}</style>
 
       {/* ═══ LIGHTBOX ═══ */}
@@ -204,7 +205,12 @@ const GlobalEventBonusModal: React.FC = () => {
                               className="absolute inset-0"
                             >
                               {currentMedia.type === 'video' ? (
-                                <video src={currentMedia.src} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                                <video
+                                  src={currentMedia.src}
+                                  autoPlay muted playsInline
+                                  className="w-full h-full object-cover"
+                                  onEnded={goNextMedia}
+                                />
                               ) : (
                                 <img src={currentMedia.src} alt="" className="w-full h-full object-cover" />
                               )}
@@ -356,14 +362,6 @@ const GlobalEventBonusModal: React.FC = () => {
                           <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                         </span>
                       </motion.button>
-
-                      {/* Auto-next progress bar */}
-                      <div className="w-full h-[3px] rounded-full mt-2 overflow-hidden" style={{background:'rgba(255,255,255,.07)'}}>
-                        <div className="h-full rounded-full" style={{
-                          background:'linear-gradient(90deg,#7c3aed,#a78bfa)',
-                          animation:`ev-progress ${AUTO_NEXT_MS}ms linear forwards`,
-                        }} />
-                      </div>
 
                       <button onClick={handleClose}
                         className="w-full text-center text-[10.5px] text-white/15 hover:text-white/35 transition-colors py-2 mt-1">
