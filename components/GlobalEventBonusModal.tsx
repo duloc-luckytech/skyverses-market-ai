@@ -14,8 +14,7 @@ const SLIDE_1 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/10c49b25-2bbb-
 const SLIDE_2 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a19a66d7-8b96-4c4f-73fe-1ca080b96500/public';
 const SLIDE_3 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/7f72214a-7f6c-4f2d-da7a-d0387f18bd00/public';
 
-// Grid: lặp 3 ảnh để fill 6 ô (2 lần mỗi ảnh)
-const GRID_IMAGES = [SLIDE_1, SLIDE_2, SLIDE_3, SLIDE_1, SLIDE_2, SLIDE_3];
+const GRID_IMAGES = [SLIDE_1, SLIDE_2, SLIDE_3];
 
 const GlobalEventBonusModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -102,14 +101,22 @@ const GlobalEventBonusModal: React.FC = () => {
                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
                     transition={{ duration: 0.32 }}
                   >
-                    {/* Image grid — ảnh output thật */}
+                    {/* Image grid — 3 ảnh Avatar/comic CDN */}
                     <div className="relative w-full overflow-hidden" style={{ height: 200 }}>
-                      <div className="grid grid-cols-3 gap-0.5 h-full">
-                        {GRID_IMAGES.map((url, i) => (
-                          <div key={i} className="relative overflow-hidden bg-white/5">
-                            <img src={url} alt="" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                      <div className="flex gap-0.5 h-full">
+                        {/* Ảnh lớn bên trái — chiếm 60% */}
+                        <div className="relative overflow-hidden bg-white/5" style={{flex:'0 0 60%'}}>
+                          <img src={GRID_IMAGES[0]} alt="" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                        </div>
+                        {/* 2 ảnh nhỏ bên phải — stack dọc */}
+                        <div className="flex flex-col gap-0.5" style={{flex:'0 0 40%'}}>
+                          <div className="relative overflow-hidden bg-white/5 flex-1">
+                            <img src={GRID_IMAGES[1]} alt="" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
                           </div>
-                        ))}
+                          <div className="relative overflow-hidden bg-white/5 flex-1">
+                            <img src={GRID_IMAGES[2]} alt="" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                          </div>
+                        </div>
                       </div>
                       {/* Skyverses badge — góc trên phải */}
                       <div className="absolute top-3 right-3 z-10">
