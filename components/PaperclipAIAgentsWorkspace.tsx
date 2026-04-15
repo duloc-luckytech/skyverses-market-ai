@@ -20,6 +20,8 @@ import OnboardingWizard from './PaperclipAIAgentsWizard';
 import type { WizardResult } from './PaperclipAIAgentsWizard';
 import * as projectsApi from '../apis/paperclipProjects';
 import type { PaperclipProjectSummary, PaperclipProject } from '../apis/paperclipProjects';
+import { useAgentRegistry } from '../hooks/useAgentRegistry';
+import MyAgentsTab from './agent-workspace/MyAgentsTab';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -674,8 +676,13 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   const { credits, isAuthenticated, login } = useAuth();
   const { showToast } = useToast();
 
+  // Agent registry
+  const agentRegistry = useAgentRegistry();
+  const [selectedAgentId, setSelectedAgentId] = useState<string>(() => agentRegistry.agents[0]?.id ?? '');
+  const selectedAgent = agentRegistry.agents.find(a => a.id === selectedAgentId);
+
   // UI state
-  const [viewMode, setViewMode]             = useState<'studio' | 'history' | 'analytics' | 'canvas'>('studio');
+  const [viewMode, setViewMode]             = useState<'my-agents' | 'studio' | 'history' | 'analytics' | 'canvas'>('studio');
   const [showAISuggest, setShowAISuggest]   = useState(false);
   const [showMobileSheet, setShowMobileSheet] = useState(false);
   const [showBudgetPanel, setShowBudgetPanel] = useState(true);
@@ -2517,7 +2524,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           {/* View mode tabs */}
           <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-white/5 p-0.5 rounded-full border border-slate-200 dark:border-white/10">
             {([
-              { id: 'studio',  label: 'Run',                                 icon: Play      },
+              { id: 'my-agents', label: 'My Agents', icon: Bot      },
+              { id: 'studio',    label: 'Run',         icon: Play     },
               { id: 'history', label: `Lịch sử (${taskHistory.length})`,     icon: History   },
               ...(advancedMode ? [
                 { id: 'analytics', label: 'Analytics', icon: TrendingUp },
@@ -2526,7 +2534,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             ] as { id: string; label: string; icon: React.ElementType }[]).map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setViewMode(tab.id as 'studio' | 'history' | 'analytics' | 'canvas')}
+                onClick={() => setViewMode(tab.id as 'my-agents' | 'studio' | 'history' | 'analytics' | 'canvas')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-full transition-all ${
                   viewMode === tab.id
                     ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
@@ -4520,6 +4528,21 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
       {/* Agent Setup Modal */}
       <AgentSetupModal />
+
+      {/* ── My Agents tab ── */}
+      {viewMode === 'my-agents' && (
+        <div className="flex flex-col flex-1 overflow-hidden min-h-0">
+          <MyAgentsTab
+            agents={agentRegistry.agents}
+            selectedAgentId={selectedAgentId}
+            onSelectAgent={setSelectedAgentId}
+            onAddAgent={agentRegistry.addAgent}
+            onUpdateAgent={agentRegistry.updateAgent}
+            onDeleteAgent={agentRegistry.deleteAgent}
+            onDuplicateAgent={agentRegistry.duplicateAgent}
+          />
+        </div>
+      )}
 
     </div>
   );
