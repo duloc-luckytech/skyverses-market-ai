@@ -35,7 +35,7 @@ export interface ImageResult {
 }
 
 export const useImageGenerator = () => {
-  const { credits, addCredits, useCredits, isAuthenticated, login, refreshUserInfo } = useAuth();
+  const { credits, addCredits, useCredits, isAuthenticated, login, refreshUserInfo, freeImageRemaining } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -229,11 +229,11 @@ export const useImageGenerator = () => {
   const generateTooltip = useMemo(() => {
     if (!isAuthenticated) return "Vui lòng đăng nhập";
     if (!usagePreference) return "Chọn nguồn tài nguyên";
-    if (usagePreference === 'credits' && credits < totalCost) return `Số dư không đủ (Cần ${totalCost} CR)`;
+    if (usagePreference === 'credits' && freeImageRemaining <= 0 && credits < totalCost) return `Số dư không đủ (Cần ${totalCost} CR)`;
     if (activeMode === 'SINGLE' && !prompt.trim()) return "Vui lòng nhập kịch bản";
     if (activeMode === 'BATCH' && batchPrompts.filter(p => p.trim()).length === 0) return "Vui lòng nhập ít nhất một kịch bản";
     return null;
-  }, [isAuthenticated, usagePreference, credits, totalCost, activeMode, prompt, batchPrompts]);
+  }, [isAuthenticated, usagePreference, credits, freeImageRemaining, totalCost, activeMode, prompt, batchPrompts]);
 
   const isGenerateDisabled = isGenerating || !!generateTooltip || !selectedModel;
 
@@ -460,6 +460,7 @@ export const useImageGenerator = () => {
     handleEditorApply, selectedMode, setSelectedMode,
     selectedEngine, setSelectedEngine,
     zoomLevel, setZoomLevel, showLowCreditAlert, setShowLowCreditAlert,
-    serverResults, isFetchingHistory, hasMoreHistory, historyPage, fetchServerResults
+    serverResults, isFetchingHistory, hasMoreHistory, historyPage, fetchServerResults,
+    freeImageRemaining,
   };
 };

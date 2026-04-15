@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Image as ImageIcon, Layers, Settings, Zap, Loader2,
-  ChevronLeft, Menu, Plus
+  ChevronLeft, Menu, Plus, Gift,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -60,10 +60,12 @@ interface GeneratorSidebarProps {
   familyModes?: string[];
   familyRatios?: string[];
   familyResolutions?: string[];
+  freeImageRemaining?: number;
 }
 
 export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
   const { credits } = useAuth();
+  const freeLeft = props.freeImageRemaining ?? 0;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const onGenerateClick = () => {
@@ -178,15 +180,24 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
 
         {/* ─── FOOTER ─── */}
         <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.04] bg-white/80 dark:bg-[#0c0c10]/80 backdrop-blur-lg">
-          {/* Credits bar */}
+          {/* Credits / Free badge */}
           <div className="px-4 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <button onClick={() => props.setShowResourceModal(true)} className="p-1 text-slate-400 dark:text-slate-500 hover:text-rose-400 transition-colors rounded-md hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
                 <Settings size={12} />
               </button>
-              <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-fuchsia-500' : 'text-slate-600 dark:text-slate-400'}`}>
-                {props.usagePreference === 'credits' ? `${credits.toLocaleString()} CR` : props.usagePreference === 'key' ? 'API Key' : '—'}
-              </span>
+              {freeLeft > 0 ? (
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 6px rgba(52,211,153,0.8)' }} />
+                  <span className="text-[11px] font-bold text-emerald-500">{freeLeft} ảnh free</span>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-500">·</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">{credits.toLocaleString()} CR</span>
+                </div>
+              ) : (
+                <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-fuchsia-500' : 'text-slate-600 dark:text-slate-400'}`}>
+                  {props.usagePreference === 'credits' ? `${credits.toLocaleString()} CR` : props.usagePreference === 'key' ? 'API Key' : '—'}
+                </span>
+              )}
               <Link
                 to="/credits"
                 className="flex items-center gap-0.5 px-2 py-0.5 bg-gradient-to-r from-rose-500 to-fuchsia-500 text-white rounded-full text-[9px] font-semibold uppercase tracking-wider hover:brightness-110 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-rose-500/20"
@@ -195,9 +206,18 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
                 Nạp
               </Link>
             </div>
-            <div className="flex items-center gap-1 text-amber-500/80">
-              <Zap size={10} fill="currentColor" />
-              <span className="text-[11px] font-semibold">{props.usagePreference === 'key' ? '0' : props.totalCost}</span>
+            <div className="flex items-center gap-1">
+              {freeLeft > 0 ? (
+                <>
+                  <Gift size={10} className="text-emerald-400" />
+                  <span className="text-[11px] font-bold text-emerald-400">MIỄN PHÍ</span>
+                </>
+              ) : (
+                <>
+                  <Zap size={10} fill="currentColor" className="text-amber-500/80" />
+                  <span className="text-[11px] font-semibold text-amber-500/80">{props.usagePreference === 'key' ? '0' : props.totalCost}</span>
+                </>
+              )}
             </div>
           </div>
 

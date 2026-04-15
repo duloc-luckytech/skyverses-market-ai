@@ -232,6 +232,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         selectedEngine={g.selectedEngine} setSelectedEngine={g.setSelectedEngine}
         familyList={familyList} selectedFamily={selectedFamily} setSelectedFamily={setSelectedFamily}
         familyModels={familyModels} familyModes={familyModes} familyRatios={familyRatios} familyResolutions={familyResolutions}
+        freeImageRemaining={g.freeImageRemaining}
       />
 
       {/* ─── RIGHT VIEWPORT ─── */}
