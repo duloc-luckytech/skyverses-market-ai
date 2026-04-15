@@ -9,15 +9,13 @@ const STORAGE_KEY = 'skyverses_welcome_promo_seen';
 const FREE_IMAGES = 50;
 const WELCOME_CREDITS = 1000;
 
-// Ảnh output thật của Skyverses — thay bằng CDN sau khi chạy gen_onboarding_slides.sh
-const GRID_IMAGES = [
-  'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/020090da-8567-4d53-0530-d602bf3e4800/public',
-  'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/e56f8ec9-a6b0-4833-c469-2b666794da00/public',
-  'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/64e717f9-284f-46fc-dc7f-42dcfdaba600/public',
-  'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/ce9652e2-6846-48a0-5c58-3dc4aa970900/public',
-  'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/7f0ac8f1-aedc-4abb-3b52-e272be253300/public',
-  'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/f455b340-e5a3-42b2-c5cc-f6bd33286e00/public',
-];
+// Ảnh Avatar/comic style — gen bởi scripts/gen_onboarding_slides.sh → Cloudflare CDN
+const SLIDE_1 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/10c49b25-2bbb-40cc-2493-b81e1b59cc00/public';
+const SLIDE_2 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a19a66d7-8b96-4c4f-73fe-1ca080b96500/public';
+const SLIDE_3 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/7f72214a-7f6c-4f2d-da7a-d0387f18bd00/public';
+
+// Grid: lặp 3 ảnh để fill 6 ô (2 lần mỗi ảnh)
+const GRID_IMAGES = [SLIDE_1, SLIDE_2, SLIDE_3, SLIDE_1, SLIDE_2, SLIDE_3];
 
 const GlobalEventBonusModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -105,27 +103,23 @@ const GlobalEventBonusModal: React.FC = () => {
                     transition={{ duration: 0.32 }}
                   >
                     {/* Image grid — ảnh output thật */}
-                    <div className="relative w-full overflow-hidden" style={{ height: 192 }}>
+                    <div className="relative w-full overflow-hidden" style={{ height: 200 }}>
                       <div className="grid grid-cols-3 gap-0.5 h-full">
                         {GRID_IMAGES.map((url, i) => (
                           <div key={i} className="relative overflow-hidden bg-white/5">
-                            <img src={url} alt="" className="w-full h-full object-cover" />
-                            {/* Subtle overlay */}
-                            <div className="absolute inset-0" style={{background:'rgba(7,5,15,.25)'}} />
+                            <img src={url} alt="" className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
                           </div>
                         ))}
                       </div>
-                      {/* Label overlay center */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center"
-                        style={{background:'linear-gradient(to bottom, rgba(7,5,15,.1) 0%, rgba(7,5,15,.7) 100%)'}}>
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[.22em] mb-2"
-                          style={{background:'rgba(139,92,246,.18)',border:'1px solid rgba(139,92,246,.35)',color:'#c4b5fd'}}>
-                          <Sparkles size={9} fill="currentColor" /> Skyverses AI
+                      {/* Skyverses badge — góc trên phải */}
+                      <div className="absolute top-3 right-3 z-10">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[8.5px] font-black uppercase tracking-[.18em]"
+                          style={{background:'rgba(7,5,15,.7)',border:'1px solid rgba(139,92,246,.4)',color:'#c4b5fd',backdropFilter:'blur(8px)'}}>
+                          <Sparkles size={8} fill="currentColor" /> AI Generated
                         </span>
-                        <p className="text-[11px] text-white/50 font-medium">Ảnh được tạo bởi AI</p>
                       </div>
                       {/* Bottom fade */}
-                      <div className="absolute inset-x-0 bottom-0 h-16 pointer-events-none"
+                      <div className="absolute inset-x-0 bottom-0 h-20 pointer-events-none"
                         style={{background:'linear-gradient(to bottom,transparent,#07050f)'}} />
                       {/* Step dots */}
                       <div className="absolute top-3 left-3 flex gap-1.5 z-10">
@@ -135,27 +129,40 @@ const GlobalEventBonusModal: React.FC = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="px-6 pt-4 pb-2">
+                    <div className="px-6 pt-3 pb-2">
                       <h2 className="text-[22px] font-black text-white leading-tight mb-2" style={{letterSpacing:'-0.02em'}}>
-                        Nền tảng AI sáng tạo
+                        Tạo ảnh AI đẹp
                         <br/>
                         <span style={{
                           background:'linear-gradient(90deg,#a78bfa,#c4b5fd,#a78bfa)',
                           backgroundSize:'200% auto',
                           WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
                           backgroundClip:'text', animation:'ev-shimmer 3s linear infinite',
-                        }}>hàng đầu Việt Nam</span>
+                        }}>chỉ trong 10 giây</span>
                       </h2>
-                      <p className="text-[11.5px] text-white/38 leading-relaxed mb-5">
-                        30+ công cụ AI trong 1 nền tảng — Video, Ảnh, Voice, Music, Workflow. Dùng chung 1 loại Credits. Không cần đăng ký riêng từng tool.
+
+                      {/* Offer teaser — hiện ngay ở slide 1 */}
+                      <div className="flex items-center gap-2 mb-4 px-3 py-2.5 rounded-xl"
+                        style={{background:'linear-gradient(135deg,rgba(139,92,246,.14),rgba(251,191,36,.08))',border:'1px solid rgba(139,92,246,.2)'}}>
+                        <Gift size={13} className="text-violet-400 shrink-0" />
+                        <span className="text-[11.5px] font-bold text-white/80">
+                          Đăng ký hôm nay nhận
+                          <span className="text-violet-300 mx-1">50 Ảnh</span>+
+                          <span className="text-amber-300 mx-1">1,000 Credits</span>
+                          miễn phí
+                        </span>
+                      </div>
+
+                      <p className="text-[11px] text-white/35 leading-relaxed mb-4">
+                        30+ công cụ AI — Video · Voice · Music · Upscale. Dùng chung 1 loại Credits, không đăng ký riêng.
                       </p>
 
                       {/* 3 quick stats */}
-                      <div className="grid grid-cols-3 gap-2 mb-5">
+                      <div className="grid grid-cols-3 gap-2 mb-4">
                         {[
                           {val:'30+', label:'Công cụ AI', color:'#a78bfa'},
                           {val:'4K',  label:'Upscale',    color:'#fbbf24'},
-                          {val:'50+', label:'Ngôn ngữ',   color:'#34d399'},
+                          {val:'10s', label:'Mỗi ảnh',    color:'#34d399'},
                         ].map((s,i)=>(
                           <div key={i} className="text-center p-2.5 rounded-xl"
                             style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.06)'}}>
@@ -170,16 +177,19 @@ const GlobalEventBonusModal: React.FC = () => {
                     <div className="px-6 pb-6">
                       <motion.button whileHover={{scale:1.025,y:-1}} whileTap={{scale:.97}}
                         onClick={() => setStep(1)}
-                        className="group w-full relative inline-flex items-center justify-center gap-2 py-[13px] rounded-2xl text-[13px] font-black text-white overflow-hidden"
-                        style={{background:'linear-gradient(135deg,#7c3aed,#9333ea,#a78bfa)',boxShadow:'0 8px 28px rgba(139,92,246,.4),0 0 0 1px rgba(255,255,255,.1)'}}>
+                        className="group w-full relative inline-flex items-center justify-center gap-2 py-[14px] rounded-2xl text-[13px] font-black text-white overflow-hidden"
+                        style={{background:'linear-gradient(135deg,#7c3aed,#9333ea,#a78bfa)',boxShadow:'0 8px 30px rgba(139,92,246,.5),0 0 0 1px rgba(255,255,255,.1)',animation:'ev-pulse 2.5s ease-in-out infinite'}}>
+                        <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                          style={{background:'linear-gradient(135deg,#8b5cf6,#a78bfa,#c4b5fd)'}} />
                         <span className="relative z-10 flex items-center gap-2">
-                          Xem ưu đãi cho bạn
+                          <Gift size={14} />
+                          Nhận 50 Ảnh + 1,000 Credits
                           <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                         </span>
                       </motion.button>
                       <button onClick={handleClose}
-                        className="w-full text-center text-[11px] text-white/18 hover:text-white/40 transition-colors py-2 mt-1">
-                        Bỏ qua
+                        className="w-full text-center text-[10.5px] text-white/15 hover:text-white/35 transition-colors py-2 mt-1">
+                        Không, cảm ơn
                       </button>
                     </div>
                   </motion.div>
@@ -214,23 +224,27 @@ const GlobalEventBonusModal: React.FC = () => {
                       </div>
 
                       {/* Big numbers */}
-                      <div className="flex items-center justify-center gap-4 mb-3">
+                      <div className="flex items-center justify-center gap-5 mb-4">
                         <div className="text-center">
-                          <div className="text-[52px] font-black leading-none" style={{
+                          <div className="text-[58px] font-black leading-none" style={{
                             background:'linear-gradient(135deg,#a78bfa,#c4b5fd)',
                             WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',
-                            letterSpacing:'-0.04em',animation:'ev-pulse 2.5s ease-in-out infinite',
+                            letterSpacing:'-0.05em',
                           }}>{FREE_IMAGES}</div>
-                          <div className="text-[10px] font-bold text-white/45 uppercase tracking-widest mt-0.5">Ảnh AI</div>
+                          <div className="text-[10px] font-bold uppercase tracking-widest mt-0.5"
+                            style={{color:'#a78bfa'}}>Ảnh AI Free</div>
                         </div>
-                        <div className="text-white/20 text-3xl font-thin pb-4">+</div>
+                        <div className="flex flex-col items-center gap-1 pb-4">
+                          <div className="text-white/15 text-2xl font-thin">+</div>
+                        </div>
                         <div className="text-center">
-                          <div className="text-[52px] font-black leading-none" style={{
+                          <div className="text-[58px] font-black leading-none" style={{
                             background:'linear-gradient(135deg,#fbbf24,#fb923c)',
                             WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',
-                            letterSpacing:'-0.04em',
+                            letterSpacing:'-0.05em',
                           }}>1K</div>
-                          <div className="text-[10px] font-bold text-white/45 uppercase tracking-widest mt-0.5">Credits</div>
+                          <div className="text-[10px] font-bold uppercase tracking-widest mt-0.5"
+                            style={{color:'#fbbf24'}}>Credits</div>
                         </div>
                       </div>
 
