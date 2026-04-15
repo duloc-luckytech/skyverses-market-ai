@@ -191,6 +191,9 @@ export const useSlideStudio = () => {
   const [genAllProgress, setGenAllProgress] = useState<{ done: number; total: number } | null>(null);
   const genAllCancelRef = useRef(false);
 
+  // ── Image-Deck Mode ───────────────────────────────────────────────────────────
+  const [imageDeckMode, setImageDeckMode] = useState(false);
+
   // ── Undo / Redo ───────────────────────────────────────────────────────────────
   const [undoStack, setUndoStack] = useState<Slide[][]>([]);
   const [redoStack, setRedoStack] = useState<Slide[][]>([]);
@@ -616,6 +619,8 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
         textColor: 'light',
         aiSuggestions: [],
         isSuggestLoading: false,
+        // Image deck mode: no text blocks
+        textBlocks: imageDeckMode ? [] : undefined,
       };
 
       // ── Content slides (AI-generated) ──────────────────────────────────────
@@ -624,13 +629,15 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
         index: i + 1,
         title: item.title || `Slide ${i + 2}`,
         body: item.body || '',
-        layout: 'title-left' as SlideLayout,
+        layout: imageDeckMode ? 'full-bg' as SlideLayout : 'title-left' as SlideLayout,
         bgImageUrl: null,
         bgJobId: null,
         bgStatus: 'idle' as const,
         textColor: isLight ? 'light' : 'dark',
         aiSuggestions: [],
         isSuggestLoading: false,
+        // Image deck mode: no text blocks
+        textBlocks: imageDeckMode ? [] : undefined,
       }));
 
       // ── Thank You slide (always last) ─────────────────────────────────────
@@ -639,13 +646,14 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
         index: contentSlides.length + 1,
         title: 'Cảm ơn bạn đã lắng nghe!',
         body: 'Q&A · Liên hệ: hello@skyverses.com',
-        layout: 'title-center',
+        layout: 'full-bg',
         bgImageUrl: null,
         bgJobId: null,
         bgStatus: 'idle',
         textColor: 'light',
         aiSuggestions: [],
         isSuggestLoading: false,
+        textBlocks: imageDeckMode ? [] : undefined,
       };
 
       const newSlides: Slide[] = [welcomeSlide, ...contentSlides, thankYouSlide]
@@ -658,6 +666,25 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
 
       // Background images are generated manually per-slide via the toolbar
       setGeneratingProgress(100);
+
+      // Image-deck mode: auto kick off genAllSlideBg immediately
+      if (imageDeckMode) {
+        setTimeout(() => {
+          genAllCancelRef.current = false;
+          setIsGenAlling(true);
+          setGenAllProgress({ done: 0, total: newSlides.length });
+          (async () => {
+            for (let i = 0; i < newSlides.length; i++) {
+              if (genAllCancelRef.current) break;
+              await genSlideBg(newSlides[i].id);
+              setGenAllProgress({ done: i + 1, total: newSlides.length });
+              if (i < newSlides.length - 1) await new Promise(r => setTimeout(r, 400));
+            }
+            setIsGenAlling(false);
+            setGenAllProgress(null);
+          })();
+        }, 300);
+      }
     } catch (err) {
       console.error('[generateDeck] error:', err);
       const msg = err instanceof Error ? err.message : String(err);
@@ -676,7 +703,7 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
       setGeneratingProgress(0);
       setGeneratingText('');
     }
-  }, [isAuthenticated, deckTopic, deckLanguage, deckStyle, slideCount, refImages, brandSlogan, brandDescription, showToast]);
+  }, [isAuthenticated, deckTopic, deckLanguage, deckStyle, slideCount, refImages, brandSlogan, brandDescription, imageDeckMode, genSlideBg, showToast]);
 
   // ─── AI Suggest for 1 slide ───────────────────────────────────────────────────
 
@@ -776,6 +803,9 @@ Return ONLY a JSON array, no explanation:
     // Gen-all state
     isGenAlling,
     genAllProgress,
+
+    // Image-deck mode
+    imageDeckMode, setImageDeckMode,
 
     // Free-canvas text block actions
     addTextBlock,

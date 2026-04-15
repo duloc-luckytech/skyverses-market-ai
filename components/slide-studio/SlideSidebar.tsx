@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles, Loader2, Image as ImageIcon,
   Globe, ChevronDown, X, FileText,
-  LayoutTemplate, Tag, Upload,
+  LayoutTemplate, Tag, Upload, ImagePlay,
 } from 'lucide-react';
 import {
   SLIDE_STYLES, SLIDE_COUNT_OPTIONS,
@@ -103,6 +103,9 @@ interface Props {
   setBrandSlogan: (v: string) => void;
   brandDescription: string;
   setBrandDescription: (v: string) => void;
+  /** Image-only deck mode: skips text blocks, auto gens all BGs */
+  imageDeckMode: boolean;
+  setImageDeckMode: (v: boolean) => void;
 }
 
 // ── Tab definitions ────────────────────────────────────────────────────────────
@@ -128,6 +131,7 @@ const SlideSidebar: React.FC<Props> = ({
   brandLogo, setBrandLogo,
   brandSlogan, setBrandSlogan,
   brandDescription, setBrandDescription,
+  imageDeckMode, setImageDeckMode,
 }) => {
   const { showToast } = useToast();
   const { parseDocx } = useDocxImport();
@@ -483,7 +487,43 @@ const SlideSidebar: React.FC<Props> = ({
       </div>
 
       {/* ── Sticky CTA at bottom ─────────────────────────────────────────── */}
-      <div className="shrink-0 p-4 border-t border-black/[0.05] dark:border-white/[0.04]">
+      <div className="shrink-0 p-4 border-t border-black/[0.05] dark:border-white/[0.04] space-y-3">
+
+        {/* Image Deck Mode toggle */}
+        <button
+          onClick={() => setImageDeckMode(!imageDeckMode)}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all ${
+            imageDeckMode
+              ? 'bg-violet-500/10 border-violet-500/40 text-violet-600 dark:text-violet-400'
+              : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.06] dark:border-white/[0.06] text-slate-500 dark:text-white/40 hover:border-violet-400/40 hover:text-violet-500'
+          }`}
+        >
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+            imageDeckMode ? 'bg-violet-500/20' : 'bg-black/[0.04] dark:bg-white/[0.04]'
+          }`}>
+            <ImagePlay size={15} className={imageDeckMode ? 'text-violet-500' : 'text-slate-400 dark:text-white/30'} />
+          </div>
+          <div className="flex-1 text-left min-w-0">
+            <p className="text-[11px] font-bold leading-tight">
+              {imageDeckMode ? '🎨 Image Deck Mode: BẬT' : 'Image Deck Mode'}
+            </p>
+            <p className="text-[9px] leading-tight opacity-70 mt-0.5">
+              {imageDeckMode
+                ? 'Chỉ ảnh AI · Auto gen hình sau khi tạo'
+                : 'Bật để tạo deck toàn ảnh AI, không text'
+              }
+            </p>
+          </div>
+          {/* Toggle switch */}
+          <div className={`w-9 h-5 rounded-full transition-colors shrink-0 relative ${
+            imageDeckMode ? 'bg-violet-500' : 'bg-slate-200 dark:bg-white/10'
+          }`}>
+            <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-all ${
+              imageDeckMode ? 'left-[18px]' : 'left-0.5'
+            }`} />
+          </div>
+        </button>
+
         {isGeneratingDeck ? (
           <motion.button
             onClick={onCancelGeneration}
@@ -496,13 +536,17 @@ const SlideSidebar: React.FC<Props> = ({
         ) : (
           <motion.button
             onClick={onOpenGenerateModal}
-            whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(0,144,255,0.25)' }}
+            whileHover={{ scale: 1.02, boxShadow: imageDeckMode ? '0 8px 24px rgba(139,92,246,0.3)' : '0 8px 24px rgba(0,144,255,0.25)' }}
             whileTap={{ scale: 0.97 }}
             disabled={!deckTopic.trim()}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-brand-blue text-white text-[12px] font-bold shadow-lg shadow-brand-blue/20 hover:bg-brand-blue/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white text-[12px] font-bold shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none ${
+              imageDeckMode
+                ? 'bg-violet-600 shadow-violet-500/20 hover:bg-violet-600/90'
+                : 'bg-brand-blue shadow-brand-blue/20 hover:bg-brand-blue/90'
+            }`}
           >
-            <Sparkles size={14} />
-            Tạo toàn bộ Deck
+            {imageDeckMode ? <ImagePlay size={14} /> : <Sparkles size={14} />}
+            {imageDeckMode ? 'Tạo Image Deck' : 'Tạo toàn bộ Deck'}
           </motion.button>
         )}
       </div>

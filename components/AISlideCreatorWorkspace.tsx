@@ -577,6 +577,8 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
           setBrandSlogan={s.setBrandSlogan}
           brandDescription={s.brandDescription}
           setBrandDescription={s.setBrandDescription}
+          imageDeckMode={s.imageDeckMode}
+          setImageDeckMode={s.setImageDeckMode}
         />
       </div>
 
@@ -590,6 +592,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
         deckLanguage={s.deckLanguage}
         slideCount={s.slideCount}
         isGenerating={s.isGeneratingDeck}
+        imageDeckMode={s.imageDeckMode}
       />
 
       <SlideExportModal
