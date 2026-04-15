@@ -93,7 +93,7 @@ router.post("/google-register", async (req, res) => {
         if (!existing) break;
       }
 
-      // ✅ Tạo user mới — tự động tặng 1000 welcome credit + 100 free images
+      // ✅ Tạo user mới — tự động tặng 1000 welcome credit + 99 free images
       user = await UserModel.create({
         email,
         name,
@@ -104,7 +104,7 @@ router.post("/google-register", async (req, res) => {
         role: "user",
         creditBalance: 1000, // ⭐ Welcome credit tự động
         claimWelcomeCredit: true, // ⭐ Đánh dấu đã nhận
-        freeImageRemaining: 100, // ⭐ Fix cứng 100 hình miễn phí
+        freeImageRemaining: 99, // ⭐ Mặc định 99 ảnh miễn phí
       });
 
       // 📝 Ghi log transaction welcome credit
@@ -123,30 +123,6 @@ router.post("/google-register", async (req, res) => {
         console.error("⚠️ [AUTH] Failed to log welcome credit transaction:", txErr);
       }
 
-      // 🌍 Global Event April 2026 — 99 free images bonus
-      const EVENT_END = new Date("2026-04-30T23:59:59+07:00");
-      if (new Date() <= EVENT_END) {
-        const EVENT_BONUS_FREE_IMAGES = 99;
-        try {
-          const CreditTransaction = (await import("../models/CreditTransaction.model")).default;
-          user.freeImageRemaining = (user.freeImageRemaining || 0) + EVENT_BONUS_FREE_IMAGES;
-          user.globalEventBonus2026 = true;
-          await user.save();
-
-          await CreditTransaction.create({
-            userId: user._id,
-            type: "EVENT_BONUS",
-            amount: 0,
-            balanceAfter: user.creditBalance,
-            source: "system",
-            note: `🌍 Global Event April 2026 — +${EVENT_BONUS_FREE_IMAGES} ảnh miễn phí`,
-            meta: { event: "global_2026_april", freeImages: EVENT_BONUS_FREE_IMAGES },
-          });
-          console.log(`🌍 [AUTH] Global Event 2026: ${email} → +${EVENT_BONUS_FREE_IMAGES} free images (freeImageRemaining: ${user.freeImageRemaining})`);
-        } catch (evtErr) {
-          console.error("⚠️ [AUTH] Failed to grant event bonus:", evtErr);
-        }
-      }
     }
 
     // 🔐 Tạo JWT token có role

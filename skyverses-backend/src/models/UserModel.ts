@@ -61,7 +61,7 @@ export interface IUser extends Document {
   claimWelcomeCredit: boolean;
   lastDailyClaimAt?: Date | null;
   globalEventBonus2026?: boolean; // ⭐ Global Event April 2026 — 100 free images
-  freeImageRemaining: number; // ⭐ Hard counter: 100 free images on registration
+  freeImageRemaining: number; // ⭐ Mặc định 99 ảnh miễn phí khi đăng ký
   fxflowOwner?: string; // sticky owner cho FXFlow jobs
   grokOwner?: string; // sticky owner cho Grok jobs
 
