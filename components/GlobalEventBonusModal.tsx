@@ -9,8 +9,11 @@ const STORAGE_KEY = 'skyverses_welcome_promo_seen';
 const FREE_IMAGES = 50;
 const WELCOME_CREDITS = 1000;
 
-// Demo video — Seedance AI generated
-const DEMO_VIDEO = 'https://cdn.seedance2.ai/examples/seedance2/18.mp4';
+// Demo videos — Seedance AI generated
+const DEMO_VIDEOS = [
+  'https://cdn.seedance2.ai/examples/seedance2/18.mp4',
+  'https://cdn.seedance2.ai/examples/seedance2/13.mp4',
+];
 
 // AI Model logos — official assets mirrored to Cloudflare CDN
 const MODEL_LOGOS: Record<string, string> = {
@@ -106,16 +109,21 @@ const GlobalEventBonusModal: React.FC = () => {
                     initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
                     transition={{ duration: 0.32 }}
                   >
-                    {/* Demo video — autoplay / muted / loop */}
+                    {/* Demo videos — side by side, autoplay / muted / loop */}
                     <div className="relative w-full overflow-hidden" style={{ height: 196 }}>
-                      <video
-                        src={DEMO_VIDEO}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        className="w-full h-full object-cover"
-                      />
+                      <div className="flex gap-0.5 h-full">
+                        {DEMO_VIDEOS.map((src, i) => (
+                          <video
+                            key={i}
+                            src={src}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className="flex-1 h-full object-cover"
+                          />
+                        ))}
+                      </div>
                       {/* Step dots */}
                       <div className="absolute top-3 left-3 flex gap-1.5 z-10">
                         <div className="rounded-full bg-violet-400" style={{width:18,height:6}} />
