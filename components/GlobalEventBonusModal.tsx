@@ -30,11 +30,20 @@ const MODEL_LOGOS: Record<string, string> = {
   kling:    'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/750c5b7e-4ddb-4a36-16ff-08f9272ea200/public',
 };
 
+const AUTO_NEXT_MS = 5000;
+
 const GlobalEventBonusModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0); // 0 = discovery, 1 = claim
   const navigate = useNavigate();
   const { isAuthenticated, freeImageRemaining } = useAuth();
+
+  // Auto-advance Slide 0 → Slide 1 after AUTO_NEXT_MS
+  useEffect(() => {
+    if (!isOpen || step !== 0) return;
+    const t = setTimeout(() => setStep(1), AUTO_NEXT_MS);
+    return () => clearTimeout(t);
+  }, [isOpen, step]);
 
   useEffect(() => {
     const seen = localStorage.getItem(STORAGE_KEY);
@@ -66,6 +75,7 @@ const GlobalEventBonusModal: React.FC = () => {
         @keyframes ev-shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
         @keyframes ev-pulse { 0%{box-shadow:0 0 0 0 rgba(139,92,246,.45)} 70%{box-shadow:0 0 0 14px rgba(139,92,246,0)} 100%{box-shadow:0 0 0 0 rgba(139,92,246,0)} }
         @keyframes ev-spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes ev-progress { from{width:0%} to{width:100%} }
       `}</style>
 
       <AnimatePresence>
@@ -227,6 +237,15 @@ const GlobalEventBonusModal: React.FC = () => {
                           <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                         </span>
                       </motion.button>
+
+                      {/* Auto-next progress bar */}
+                      <div className="w-full h-[3px] rounded-full mt-2 overflow-hidden" style={{background:'rgba(255,255,255,.07)'}}>
+                        <div className="h-full rounded-full" style={{
+                          background:'linear-gradient(90deg,#7c3aed,#a78bfa)',
+                          animation:`ev-progress ${AUTO_NEXT_MS}ms linear forwards`,
+                        }} />
+                      </div>
+
                       <button onClick={handleClose}
                         className="w-full text-center text-[10.5px] text-white/15 hover:text-white/35 transition-colors py-2 mt-1">
                         Không, cảm ơn
