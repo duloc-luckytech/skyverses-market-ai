@@ -153,7 +153,7 @@ const GlobalEventBonusModal: React.FC = () => {
                         }}>chỉ trong 10 giây</span>
                       </h2>
                       <p className="text-[11px] text-white/35 leading-relaxed mb-3">
-                        Một nền tảng — toàn bộ sức mạnh AI sáng tạo. Không cần cài thêm app, không cần đăng ký từng tool.
+                        Veo 3, Seedance, Grok, Flux… tất cả ở đây — 1 tài khoản, 1 loại credits, xài liền.
                       </p>
 
                       {/* Hot new models strip — logo thật */}
