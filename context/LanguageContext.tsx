@@ -1508,7 +1508,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [lang, setLang] = useState<Language>(() => {
     const saved = localStorage.getItem('skyversis_lang');
-    return (saved as Language) || 'en';
+    return (saved as Language) || 'vi';
   });
 
   useEffect(() => {

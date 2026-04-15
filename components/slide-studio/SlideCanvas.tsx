@@ -1,10 +1,9 @@
 
 import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, AlertCircle, Plus } from 'lucide-react';
+import { Loader2, AlertCircle, Plus, Copy } from 'lucide-react';
 import { Slide, FreeTextBlock, SlideLayout } from '../../hooks/useSlideStudio';
 import SlideTextObject from './SlideTextObject';
-import SlideFormatBar from './SlideFormatBar';
 
 interface Props {
   slide: Slide | null;
@@ -14,6 +13,8 @@ interface Props {
   onRemoveTextBlock: (slideId: string, blockId: string) => void;
   onBringTextBlockForward: (slideId: string, blockId: string) => void;
   onUpdateSlide: (id: string, patch: Partial<Slide>) => void;
+  /** Paste a copied block into the active slide */
+  onPasteTextBlock?: (slideId: string, block: FreeTextBlock) => void;
   bottomBar?: React.ReactNode;
 }
 
@@ -88,13 +89,14 @@ function migrateSlide(slide: Slide): FreeTextBlock[] {
 
 const SlideCanvas: React.FC<Props> = ({
   slide, onUpdateTextBlock, onAddTextBlock, onRemoveTextBlock,
-  onBringTextBlockForward, onUpdateSlide, bottomBar,
+  onBringTextBlockForward, onUpdateSlide, onPasteTextBlock, bottomBar,
 }) => {
   injectFonts();
 
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const activeEditRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef     = useRef<HTMLDivElement>(null);
   const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
+  // Clipboard for copy/paste within this canvas session
+  const [copiedBlock, setCopiedBlock]     = useState<FreeTextBlock | null>(null);
 
   // Get text blocks — migrate old slides on-the-fly
   const textBlocks = useMemo((): FreeTextBlock[] => {
@@ -110,20 +112,33 @@ const SlideCanvas: React.FC<Props> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slide?.id]);
 
-  const handleActivate = useCallback((id: string, el: HTMLDivElement) => {
+  // ── Ctrl+V paste handler ──────────────────────────────────────────────────
+  useEffect(() => {
+    if (!slide || !copiedBlock || !onPasteTextBlock) return;
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+        // Don't interfere if user is typing in a contentEditable
+        const active = document.activeElement as HTMLElement | null;
+        if (active?.contentEditable === 'true') return;
+        e.preventDefault();
+        onPasteTextBlock(slide.id, copiedBlock);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [slide, copiedBlock, onPasteTextBlock]);
+
+  const handleActivate = useCallback((id: string) => {
     setActiveBlockId(id);
-    activeEditRef.current = el;
   }, []);
 
-  const handleDeactivate = useCallback((id?: string) => {
-    setActiveBlockId(prev => prev === id ? null : prev);
-    activeEditRef.current = null;
+  const handleDeactivate = useCallback(() => {
+    setActiveBlockId(null);
   }, []);
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       setActiveBlockId(null);
-      activeEditRef.current = null;
     }
   };
 
@@ -143,27 +158,8 @@ const SlideCanvas: React.FC<Props> = ({
       <div className="flex-1 overflow-y-auto min-h-0">
         <div className="flex flex-col items-center p-4 pb-3 gap-2 w-full">
 
-          {/* ── Format + "Add Text" bar ── */}
+          {/* ── Actions bar: Add Text + Paste ── */}
           <div className="w-full max-w-4xl flex items-center gap-2 shrink-0">
-            <AnimatePresence>
-              {activeBlockId && (
-                <motion.div
-                  key="fbar"
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.15 }}
-                  className="flex-1 min-w-0"
-                >
-                  <SlideFormatBar
-                    activeRef={activeEditRef as React.RefObject<HTMLDivElement>}
-                    visible={true}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Add Text Button */}
             <button
               onClick={() => onAddTextBlock(slide.id)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[11px] font-bold hover:bg-brand-blue/20 transition-colors shrink-0 whitespace-nowrap"
@@ -172,6 +168,25 @@ const SlideCanvas: React.FC<Props> = ({
               <Plus size={11} />
               Thêm text
             </button>
+
+            {copiedBlock && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onClick={() => onPasteTextBlock?.(slide.id, copiedBlock)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/[0.04] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] text-[11px] font-medium text-slate-600 dark:text-white/60 hover:border-brand-blue/40 hover:text-brand-blue transition-all whitespace-nowrap"
+                title="Dán block (Ctrl+V)"
+              >
+                <Copy size={11} />
+                Dán block (Ctrl+V)
+              </motion.button>
+            )}
+
+            {activeBlockId && (
+              <span className="ml-auto text-[9px] text-slate-400 dark:text-white/20 hidden sm:block select-none">
+                Double-click chỉnh text · Kéo để di chuyển · 8 handles resize
+              </span>
+            )}
           </div>
 
           {/* ── Canvas frame ── */}
@@ -237,8 +252,9 @@ const SlideCanvas: React.FC<Props> = ({
                 onUpdate={patch => onUpdateTextBlock(slide.id, block.id, patch)}
                 onDelete={() => onRemoveTextBlock(slide.id, block.id)}
                 onBringForward={() => onBringTextBlockForward(slide.id, block.id)}
-                onActivate={el => handleActivate(block.id, el)}
-                onDeactivate={() => handleDeactivate(block.id)}
+                onActivate={handleActivate}
+                onDeactivate={handleDeactivate}
+                onCopy={setCopiedBlock}
                 forceIdle={activeBlockId !== null && activeBlockId !== block.id}
               />
             ))}
@@ -246,7 +262,9 @@ const SlideCanvas: React.FC<Props> = ({
             {/* Idle hint */}
             {!activeBlockId && (
               <div className="absolute bottom-2 inset-x-0 flex justify-center pointer-events-none">
-                <span className="text-[9px] text-white/20">Click để chọn · Double-click để chỉnh sửa · Kéo để di chuyển</span>
+                <span className="text-[9px] text-white/20">
+                  Click để chọn · Double-click để chỉnh sửa · Kéo để di chuyển
+                </span>
               </div>
             )}
           </div>

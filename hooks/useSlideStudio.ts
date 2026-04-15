@@ -20,12 +20,20 @@ export interface AISuggestion {
 /** A freely-positioned rich text block on a slide (Canva-style) */
 export interface FreeTextBlock {
   id: string;
-  html: string;      // rich HTML
-  x: number;         // left: % of canvas width  (0–100)
-  y: number;         // top:  % of canvas height (0–100)
-  w: number;         // width: % of canvas width  (5–100)
+  html: string;           // rich HTML
+  x: number;              // left: % of canvas width  (0–100)
+  y: number;              // top:  % of canvas height (0–100)
+  w: number;              // width: % of canvas width  (5–100)
+  h?: number;             // height: % of canvas height (undefined = auto)
   zIndex: number;
   role?: 'title' | 'body' | 'custom';
+  // Block-level visual style
+  bgColor?: string;       // e.g. 'rgba(0,0,0,0.4)' — undefined = transparent
+  opacity?: number;       // 0–1, default 1
+  borderRadius?: number;  // px
+  padding?: number;       // px
+  letterSpacing?: number; // px
+  lineHeight?: number;    // unitless, e.g. 1.4
 }
 
 export interface Slide {
@@ -292,6 +300,22 @@ export const useSlideStudio = () => {
       const maxZ = Math.max(...blocks.map(b => b.zIndex));
       return { ...s, textBlocks: blocks.map(b => b.id === blockId ? { ...b, zIndex: maxZ + 1 } : b) };
     }));
+  }, []);
+
+  const pasteTextBlock = useCallback((slideId: string, template: FreeTextBlock) => {
+    setSlides(prev => prev.map(s => {
+      if (s.id !== slideId) return s;
+      const maxZ = Math.max(0, ...(s.textBlocks?.map(b => b.zIndex) ?? [0]));
+      const newBlock: FreeTextBlock = {
+        ...template,
+        id: genId(),
+        x: Math.min(97 - template.w, template.x + 3),
+        y: Math.min(90, template.y + 3),
+        zIndex: maxZ + 1,
+      };
+      return { ...s, textBlocks: [...(s.textBlocks ?? []), newBlock] };
+    }));
+    setIsDirty(true);
   }, []);
 
 
@@ -758,5 +782,6 @@ Return ONLY a JSON array, no explanation:
     updateTextBlock,
     removeTextBlock,
     bringTextBlockForward,
+    pasteTextBlock,
   };
 };
