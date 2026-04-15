@@ -611,6 +611,27 @@ const LoginPage = () => {
       {/* ═══════════ RIGHT PANEL — Cinematic Showcase ═══════════ */}
       <div className="hidden lg:block w-[56%] relative overflow-hidden">
 
+        {/* Top edge gradient — blends panel into background */}
+        <div className="absolute top-0 left-0 right-0 h-8 z-20 pointer-events-none" style={{ background: 'linear-gradient(to bottom, #08080c, transparent)' }} />
+
+        {/* Video Demo Strip — 2 videos side-by-side at top of right panel */}
+        <div className="absolute top-0 left-0 right-0 z-10 flex gap-0.5" style={{ height: '35%' }}>
+          {['https://cdn.seedance2.ai/examples/seedance2/18.mp4', 'https://cdn.seedance2.ai/examples/seedance2/13.mp4'].map((src, i) => (
+            <video
+              key={i}
+              src={src}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="flex-1 h-full object-cover"
+            />
+          ))}
+          {/* Bottom fade — blends video strip into image slider below */}
+          <div className="absolute inset-x-0 bottom-0 h-16 pointer-events-none z-10"
+            style={{ background: 'linear-gradient(to bottom, transparent, #08080c)' }} />
+        </div>
+
         {/* Image Slider with Ken Burns */}
         <AnimatePresence mode="wait">
           <motion.div
