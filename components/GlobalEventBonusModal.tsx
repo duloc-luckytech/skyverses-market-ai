@@ -14,6 +14,8 @@ const SLIDE_1 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/10c49b25-2bbb-
 const SLIDE_2 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a19a66d7-8b96-4c4f-73fe-1ca080b96500/public';
 const SLIDE_3 = 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/7f72214a-7f6c-4f2d-da7a-d0387f18bd00/public';
 
+const GRID_IMAGES = [SLIDE_1, SLIDE_2, SLIDE_3];
+
 // AI Model logos — official assets mirrored to Cloudflare CDN
 const MODEL_LOGOS: Record<string, string> = {
   seedance: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/e1a580fc-b5e5-4da9-1881-e4515f62f100/public',
