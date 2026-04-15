@@ -647,120 +647,236 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
     setIsActivating(true);
     setShowActivation(true);
 
-    // Abort any in-progress
     abortRefs.current.forEach(a => a.abort());
     abortRefs.current = [];
 
-    const deptNodes = config.nodes.filter(n => n.parentId !== null && n.agentId);
-    const ceoNode   = config.nodes.find(n => !n.parentId);
-    const allNodes  = ceoNode ? [ceoNode, ...deptNodes] : deptNodes;
+    const orgSummary = buildOrgSummary();
 
-    const initResults: ActivationResult[] = allNodes.map((n, i) => {
+    // ── Detect structure ──────────────────────────────────────────────────────
+    const assignedNodes = config.nodes.filter(n => n.agentId);
+    const ceoNode       = config.nodes.find(n => !n.parentId);
+    const ceoAgent      = ceoNode ? agents.find(a => a.id === ceoNode.agentId) : null;
+    const deptNodes     = config.nodes.filter(n => n.parentId !== null && n.agentId);
+
+    // Infer mode
+    const MODE =
+      assignedNodes.length === 0   ? 'EMPTY'
+      : assignedNodes.length === 1 ? 'SOLO'
+      : !ceoAgent                  ? 'FLAT'       // no root agent → all peers
+      : deptNodes.length === 0     ? 'SOLO'       // CEO only
+      :                             'HIERARCHICAL';
+
+    if (MODE === 'EMPTY') { setIsActivating(false); return; }
+
+    // Build initial UI results for assigned nodes only
+    const activeNodes = MODE === 'FLAT' ? assignedNodes : (ceoNode ? [ceoNode, ...deptNodes] : deptNodes);
+    const initResults: ActivationResult[] = activeNodes.map((n, i) => {
       const agent = agents.find(a => a.id === n.agentId);
       return {
         nodeId: n.id,
         agentName: agent?.name ?? 'Agent',
         agentEmoji: agent?.emoji ?? '🤖',
         agentColor: agent?.color ?? '#0090ff',
-        delegatedTask: i === 0 ? `Mission: ${missionText}` : '',
+        delegatedTask: '',
         output: '',
-        status: i === 0 ? 'running' : 'pending',
+        status: 'pending',
       };
     });
     setActivationResults(initResults);
 
-    const orgSummary = buildOrgSummary();
-
-    // ── 1. CEO agent ───────────────────────────────────────────────────────
-    const ceoAgent = ceoNode ? agents.find(a => a.id === ceoNode.agentId) : null;
     let ceoOutput = '';
+    const deptOutputs: { nodeId: string; agentName: string; task: string; output: string }[] = [];
 
-    if (ceoAgent && ceoNode) {
-      const ceoAbort = new AbortController();
-      abortRefs.current.push(ceoAbort);
+    // ══════════════════════════════════════════════════════════════════
+    // MODE: SOLO — 1 agent làm tất cả
+    // ══════════════════════════════════════════════════════════════════
+    if (MODE === 'SOLO') {
+      const soloNode  = ceoNode ?? assignedNodes[0];
+      const soloAgent = agents.find(a => a.id === soloNode.agentId)!;
+      const abortCtrl = new AbortController();
+      abortRefs.current.push(abortCtrl);
+      let soloOutput = '';
 
-      const ceoMessages: ChatMessage[] = [
-        {
-          role: 'user',
-          content: `You are orchestrating the following organization:\n\n${orgSummary}\n\nMission: ${missionText}\n\nBreak this mission into ${deptNodes.length} specific sub-tasks — one for each direct report. For each sub-task, start a new line with the format:\n[ROLE]: task description\n\nKeep each sub-task clear, actionable, and scoped to that department's expertise.`,
-        },
-      ];
+      setActivationResults(prev => prev.map(r =>
+        r.nodeId === soloNode.id
+          ? { ...r, status: 'running', delegatedTask: missionText }
+          : r
+      ));
 
-      const ceoSystemMsg = buildSystemMessage({
-        role: ceoAgent.systemPrompt || `You are ${ceoAgent.name}, a CEO AI agent. ${ceoAgent.brief || ''}`,
+      const systemMsg = buildSystemMessage({
+        role: soloAgent.systemPrompt || `You are ${soloAgent.name}. ${soloAgent.brief || ''}`,
       });
 
       try {
         await aiChatStreamViaProxy(
-          [ceoSystemMsg, ...ceoMessages],
-          (token: string) => {
-            ceoOutput += token;
-            setActivationResults(prev => prev.map(r => r.nodeId === ceoNode.id ? { ...r, output: ceoOutput } : r));
+          [systemMsg, { role: 'user', content: missionText }],
+          (token) => {
+            soloOutput += token;
+            setActivationResults(prev => prev.map(r =>
+              r.nodeId === soloNode.id ? { ...r, output: soloOutput } : r
+            ));
           },
-          ceoAbort.signal,
-          4096,
-          AI_MODELS.OPUS,
+          abortCtrl.signal, 4096, AI_MODELS.OPUS,
         );
       } catch { /* abort */ }
 
       setActivationResults(prev => prev.map(r =>
-        r.nodeId === ceoNode.id ? { ...r, status: 'done' } : r
+        r.nodeId === soloNode.id ? { ...r, status: 'done' } : r
       ));
+      deptOutputs.push({ nodeId: soloNode.id, agentName: soloAgent.name, task: missionText, output: soloOutput });
     }
 
-    // ── 2. Parse CEO output → per-dept tasks ──────────────────────────────
-    const parseTask = (agentLabel: string): string => {
-      if (!ceoOutput) return missionText;
-      const lines = ceoOutput.split('\n');
-      for (const line of lines) {
-        const match = line.match(/^\[([^\]]+)\]:\s*(.+)/);
-        if (match && match[1].toLowerCase().includes(agentLabel.toLowerCase())) {
-          return match[2].trim();
+    // ══════════════════════════════════════════════════════════════════
+    // MODE: FLAT — tất cả agents là peer, không có hierarchy
+    //              mỗi người nhận mission gốc + context về team
+    // ══════════════════════════════════════════════════════════════════
+    else if (MODE === 'FLAT') {
+      const teamContext = assignedNodes.map(n => {
+        const a = agents.find(ag => ag.id === n.agentId);
+        return `- ${a?.name ?? n.label} (${n.label})`;
+      }).join('\n');
+
+      const results = await Promise.all(
+        assignedNodes.map(async node => {
+          const agent = agents.find(a => a.id === node.agentId)!;
+          const abortCtrl = new AbortController();
+          abortRefs.current.push(abortCtrl);
+          let output = '';
+
+          setActivationResults(prev => prev.map(r =>
+            r.nodeId === node.id
+              ? { ...r, status: 'running', delegatedTask: missionText }
+              : r
+          ));
+
+          const task = `Mission: ${missionText}\n\nYour team:\n${teamContext}\n\nFocus on your area of expertise. You are working in parallel with the team listed above.`;
+          const systemMsg = buildSystemMessage({
+            role: agent.systemPrompt || `You are ${agent.name}. ${agent.brief || ''}`,
+          });
+
+          try {
+            await aiChatStreamViaProxy(
+              [systemMsg, { role: 'user', content: task }],
+              (token) => {
+                output += token;
+                setActivationResults(prev => prev.map(r =>
+                  r.nodeId === node.id ? { ...r, output } : r
+                ));
+              },
+              abortCtrl.signal, 4096, AI_MODELS.SONNET,
+            );
+            setActivationResults(prev => prev.map(r =>
+              r.nodeId === node.id ? { ...r, status: 'done' } : r
+            ));
+          } catch {
+            setActivationResults(prev => prev.map(r =>
+              r.nodeId === node.id ? { ...r, status: 'error' } : r
+            ));
+          }
+          return { nodeId: node.id, agentName: agent.name, task: missionText, output };
+        })
+      );
+      deptOutputs.push(...results);
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // MODE: HIERARCHICAL — CEO delegate → depts parallel
+    // ══════════════════════════════════════════════════════════════════
+    else {
+      // 1. CEO delegates
+      const ceoAbort = new AbortController();
+      abortRefs.current.push(ceoAbort);
+
+      setActivationResults(prev => prev.map(r =>
+        r.nodeId === ceoNode!.id
+          ? { ...r, status: 'running', delegatedTask: `Mission: ${missionText}` }
+          : r
+      ));
+
+      const deptList = deptNodes.map(n => {
+        const a = agents.find(ag => ag.id === n.agentId);
+        return `[${n.label}]: ${a?.name ?? 'Agent'}`;
+      }).join('\n');
+
+      const ceoDelegatePrompt = deptNodes.length > 0
+        ? `You are orchestrating the following organization:\n\n${orgSummary}\n\nMission: ${missionText}\n\nYour direct reports are:\n${deptList}\n\nDelegate a specific sub-task to each report. Format each delegation on its own line as:\n[ROLE]: task description`
+        : `Mission: ${missionText}\n\nYou are the sole leader. Produce a full executive plan.`;
+
+      const ceoSystemMsg = buildSystemMessage({
+        role: ceoAgent!.systemPrompt || `You are ${ceoAgent!.name}, a strategic leader. ${ceoAgent!.brief || ''}`,
+      });
+
+      try {
+        await aiChatStreamViaProxy(
+          [ceoSystemMsg, { role: 'user', content: ceoDelegatePrompt }],
+          (token) => {
+            ceoOutput += token;
+            setActivationResults(prev => prev.map(r =>
+              r.nodeId === ceoNode!.id ? { ...r, output: ceoOutput } : r
+            ));
+          },
+          ceoAbort.signal, 4096, AI_MODELS.OPUS,
+        );
+      } catch { /* abort */ }
+
+      setActivationResults(prev => prev.map(r =>
+        r.nodeId === ceoNode!.id ? { ...r, status: 'done' } : r
+      ));
+
+      // 2. Parse tasks from CEO output
+      const parseTask = (label: string): string => {
+        const lines = ceoOutput.split('\n');
+        for (const line of lines) {
+          const match = line.match(/^\[([^\]]+)\]:\s*(.+)/);
+          if (match && match[1].toLowerCase().includes(label.toLowerCase())) return match[2].trim();
         }
+        return `As part of "${missionText}", apply your expertise to produce a detailed action plan.`;
+      };
+
+      // 3. All depts in parallel
+      if (deptNodes.length > 0) {
+        setActivationResults(prev => prev.map(r =>
+          r.nodeId !== ceoNode!.id ? { ...r, status: 'pending' } : r
+        ));
+
+        const results = await Promise.all(
+          deptNodes.map(async deptNode => {
+            const deptAgent = agents.find(a => a.id === deptNode.agentId)!;
+            const delegatedTask = parseTask(deptNode.label);
+            const abortCtrl = new AbortController();
+            abortRefs.current.push(abortCtrl);
+            const output = await runDeptAgent(deptNode, deptAgent, delegatedTask, orgSummary, abortCtrl.signal);
+            return { nodeId: deptNode.id, agentName: deptAgent.name, task: delegatedTask, output };
+          })
+        );
+        deptOutputs.push(...results);
       }
-      return `As part of the mission "${missionText}", apply your expertise and produce a detailed action plan`;
-    };
+    }
 
-    // Mark all dept nodes as pending → running will be set by runDeptAgent
-    setActivationResults(prev => prev.map(r =>
-      r.nodeId !== ceoNode?.id ? { ...r, status: 'pending' } : r
-    ));
+    // ── Save memory ────────────────────────────────────────────────────────
+    const memResults = [
+      ...(ceoAgent && ceoOutput
+        ? [{ agentName: ceoAgent.name, task: missionText, output: ceoOutput }]
+        : []),
+      ...deptOutputs.filter(d => d.output),
+    ];
 
-    // ── 3. Parallel dept agents ────────────────────────────────────────────
-    const deptOutputs = await Promise.all(
-      deptNodes.map(async deptNode => {
-        const deptAgent = agents.find(a => a.id === deptNode.agentId);
-        if (!deptAgent) return { nodeId: deptNode.id, agentName: 'Unknown', task: '', output: '' };
-
-        const delegatedTask = parseTask(deptNode.label);
-        const abortCtrl = new AbortController();
-        abortRefs.current.push(abortCtrl);
-
-        const output = await runDeptAgent(deptNode, deptAgent, delegatedTask, orgSummary, abortCtrl.signal);
-        return { nodeId: deptNode.id, agentName: deptAgent.name, task: delegatedTask, output };
-      })
-    );
-
-    // ── 4. Save to activation memory ──────────────────────────────────────
-    const newEntry: ActivationMemoryEntry = {
-      mission: missionText,
-      timestamp: new Date().toISOString(),
-      results: [
-        ...(ceoAgent && ceoOutput
-          ? [{ agentName: ceoAgent.name, task: `Mission: ${missionText}`, output: ceoOutput }]
-          : []),
-        ...deptOutputs.filter(d => d.output),
-      ],
-    };
-
-    setMemoryEntries(prev => {
-      const updated = [...prev, newEntry];
-      saveMemory(updated);
-      return updated;
-    });
+    if (memResults.length > 0) {
+      const newEntry: ActivationMemoryEntry = {
+        mission: missionText,
+        timestamp: new Date().toISOString(),
+        results: memResults,
+      };
+      setMemoryEntries(prev => {
+        const updated = [...prev, newEntry];
+        saveMemory(updated);
+        return updated;
+      });
+    }
 
     setIsActivating(false);
   };
+
 
   // Canvas min dimensions (accounting for zoom)
   const canvasMinW = Math.max(CANVAS_MIN_W, ...config.nodes.map(n => n.x + NODE_W + 40));
