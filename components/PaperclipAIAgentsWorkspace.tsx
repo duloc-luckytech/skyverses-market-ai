@@ -144,6 +144,29 @@ const LLM_MODELS = [
   { id: 'claude-opus',   label: 'Claude Opus 4',   provider: 'Anthropic', badge: 'Most Powerful',   color: '#8b5cf6', apiModel: AI_MODELS.OPUS   },
 ];
 
+// ─── Single Agent constants ───────────────────────────────────────────────────
+const SINGLE_AGENT_ID = 'single-agent';
+const AGENT_MODE_KEY  = STORAGE_KEY + '_agent_mode';
+const PINNED_MEM_KEY  = STORAGE_KEY + '_pinned_memory';
+const SINGLE_IDENTITY_KEY = STORAGE_KEY + '_single_identity';
+
+const SINGLE_SKILLS = [
+  { id: 'web-search',     label: '🔍 Web Search',     rule: 'When the user asks for current information, simulate web search results based on known data and clearly state you are recalling training knowledge.' },
+  { id: 'code-exec',      label: '⚡ Code Execution',  rule: 'Write executable code with detailed comments. Always include how to run it and expected output.' },
+  { id: 'file-reader',    label: '📄 File Reader',     rule: 'When analyzing text or data the user pastes, treat it as file content and provide structured analysis.' },
+  { id: 'math-calc',      label: '🧮 Math / Calc',     rule: 'Show step-by-step calculations. Verify arithmetic. Present results in a clear table when applicable.' },
+  { id: 'memory-recall',  label: '🧠 Memory Recall',   rule: 'Reference past conversation context explicitly when relevant. Start with "Based on what we discussed..."' },
+  { id: 'summarizer',     label: '📝 Summarizer',      rule: 'Produce concise TL;DR summaries. Use bullet points, highlight key decisions, and note action items.' },
+];
+
+const PERSONALITY_PRESETS = [
+  { id: 'analytical',  label: '📊 Analytical',  rule: 'Be precise, data-driven, and structured. Use numbers and frameworks. Avoid vague language.' },
+  { id: 'creative',    label: '🎨 Creative',     rule: 'Think outside the box. Offer unexpected angles. Use vivid language and novel metaphors.' },
+  { id: 'assertive',   label: '⚡ Assertive',    rule: 'Be direct and confident. Give clear recommendations. Avoid hedging language.' },
+  { id: 'empathetic',  label: '💙 Empathetic',   rule: 'Acknowledge emotions and context. Use warm, supportive language. Validate before advising.' },
+  { id: 'tactical',    label: '🎯 Tactical',     rule: 'Focus on execution. Break everything into concrete next steps. Think about risks and mitigations.' },
+];
+
 const TASK_TEMPLATES: StylePreset[] = [
   { id: 'blog-seo',     label: 'Blog SEO',      emoji: '✍️', description: 'Viết 3 blog posts SEO',     promptPrefix: 'Viết 3 blog posts SEO tối ưu về chủ đề: ' },
   { id: 'social-batch', label: 'Social Batch',  emoji: '📱', description: '30 posts LinkedIn + X',      promptPrefix: 'Tạo 30 social media posts cho LinkedIn và X về: ' },
@@ -768,6 +791,41 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     try { return localStorage.getItem(ADVANCED_KEY) === 'true'; } catch { return false; }
   });
 
+  // ── Single Agent Mode ──
+  const [agentMode, setAgentMode] = useState<'single' | 'multi'>(() => {
+    try { return (localStorage.getItem(AGENT_MODE_KEY) as 'single' | 'multi') ?? 'single'; } catch { return 'single'; }
+  });
+
+  // Single agent identity
+  const [singleAgentName, setSingleAgentName] = useState<string>(() => {
+    try { return JSON.parse(localStorage.getItem(SINGLE_IDENTITY_KEY) ?? '{}').name ?? 'Aria'; } catch { return 'Aria'; }
+  });
+  const [singleAgentEmoji, setSingleAgentEmoji] = useState<string>(() => {
+    try { return JSON.parse(localStorage.getItem(SINGLE_IDENTITY_KEY) ?? '{}').emoji ?? '🤖'; } catch { return '🤖'; }
+  });
+  const [singlePersonality, setSinglePersonality] = useState<string>(() => {
+    try { return JSON.parse(localStorage.getItem(SINGLE_IDENTITY_KEY) ?? '{}').personality ?? 'analytical'; } catch { return 'analytical'; }
+  });
+  const [singleAgentModel, setSingleAgentModel] = useState<string>(() => {
+    try { return JSON.parse(localStorage.getItem(SINGLE_IDENTITY_KEY) ?? '{}').model ?? 'claude-sonnet'; } catch { return 'claude-sonnet'; }
+  });
+
+  // Single agent skills
+  const [singleEnabledSkills, setSingleEnabledSkills] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem(SKILLS_KEY(SINGLE_AGENT_ID)) ?? '[]'); } catch { return []; }
+  });
+
+  // Pinned memory
+  const [pinnedMemory, setPinnedMemory] = useState<string>(() => {
+    try { return localStorage.getItem(PINNED_MEM_KEY) ?? ''; } catch { return ''; }
+  });
+  const [isEditingPinnedMemory, setIsEditingPinnedMemory] = useState(false);
+  const [pinnedMemoryDraft, setPinnedMemoryDraft] = useState('');
+
+  // CoT reasoning trace for single agent mode
+  const [cotSteps, setCotSteps] = useState<Array<{ step: string; done: boolean; timestamp: string }>>([]);
+  const [showCotTrace, setShowCotTrace] = useState(true);
+
   // Prompt Inspector: edit system prompt + re-run
   const [editedSystemPrompt, setEditedSystemPrompt] = useState<string>('');
   const [isEditingPrompt, setIsEditingPrompt]       = useState(false);
@@ -790,7 +848,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   // Conversation memory per agent — persisted to localStorage
   const [conversationThreads, setConversationThreads] = useState<Record<string, ChatMessage[]>>(() => {
     const result: Record<string, ChatMessage[]> = {};
-    DEPARTMENTS.forEach(d => {
+    [...DEPARTMENTS, { id: SINGLE_AGENT_ID }].forEach(d => {
       try {
         const saved = localStorage.getItem(THREAD_KEY(d.id));
         result[d.id] = saved ? JSON.parse(saved) : [];
@@ -941,6 +999,31 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   useEffect(() => {
     try { localStorage.setItem(ADVANCED_KEY, String(advancedMode)); } catch { /* ignore */ }
   }, [advancedMode]);
+
+  // Persist agentMode
+  useEffect(() => {
+    try { localStorage.setItem(AGENT_MODE_KEY, agentMode); } catch { /* ignore */ }
+  }, [agentMode]);
+
+  // Persist single agent identity
+  useEffect(() => {
+    try {
+      localStorage.setItem(SINGLE_IDENTITY_KEY, JSON.stringify({
+        name: singleAgentName, emoji: singleAgentEmoji,
+        personality: singlePersonality, model: singleAgentModel,
+      }));
+    } catch { /* ignore */ }
+  }, [singleAgentName, singleAgentEmoji, singlePersonality, singleAgentModel]);
+
+  // Persist single agent skills
+  useEffect(() => {
+    try { localStorage.setItem(SKILLS_KEY(SINGLE_AGENT_ID), JSON.stringify(singleEnabledSkills)); } catch { /* ignore */ }
+  }, [singleEnabledSkills]);
+
+  // Persist pinned memory
+  useEffect(() => {
+    try { localStorage.setItem(PINNED_MEM_KEY, pinnedMemory); } catch { /* ignore */ }
+  }, [pinnedMemory]);
 
   // Reset viewMode when advanced mode is turned off
   useEffect(() => {
@@ -1179,26 +1262,64 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     let taskCost = 0;
     let taskTokens = 0;
 
-    // Build system prompt via buildSystemMessage() — or use override from Prompt Inspector
-    const brief = agentBriefs[activeDept]?.trim();
-    const activeSkillRules = (enabledSkills[activeDept] ?? [])
-      .map(sid => DEPT_SKILLS[activeDept]?.find(s => s.id === sid)?.rule)
-      .filter(Boolean) as string[];
+    // ── Single Agent Mode: different system prompt + model + thread ──
+    const isSingleMode = agentMode === 'single';
 
-    const builtSystemPrompt: string = overrideSystemPrompt ?? (buildSystemMessage({
-      role: `Bạn là ${dept.agent} trong hệ thống Paperclip AI Org Orchestrator. Department: ${dept.label}. Model: ${model.label} (${model.provider}).${brief ? `\n\nCOMPANY CONTEXT:\n${brief}` : ''}`,
-      rules: [
-        'Thực hiện task được giao, trả về kết quả chi tiết, professional và actionable.',
-        'Dùng markdown formatting: headers (##), bullet points (-), numbered lists khi phù hợp.',
-        'Viết bằng tiếng Việt hoặc tiếng Anh tùy context của task.',
-        ...activeSkillRules,
-      ],
-      outputFormat: 'Kết quả phải cụ thể, có thể action được ngay.',
-    }).content as string);
+    // Determine effective model for this run
+    const effectiveModelId = isSingleMode ? singleAgentModel : activeModel;
+    const effectiveModel = LLM_MODELS.find(m => m.id === effectiveModelId) ?? model;
+
+    // Determine effective dept/thread key
+    const effectiveDeptId = isSingleMode ? SINGLE_AGENT_ID : activeDept;
+
+    // Build system prompt via buildSystemMessage() — or use override from Prompt Inspector
+    let builtSystemPrompt: string;
+    if (overrideSystemPrompt) {
+      builtSystemPrompt = overrideSystemPrompt;
+    } else if (isSingleMode) {
+      const personalityRule = PERSONALITY_PRESETS.find(p => p.id === singlePersonality)?.rule ?? '';
+      const singleSkillRules = singleEnabledSkills
+        .map(sid => SINGLE_SKILLS.find(s => s.id === sid)?.rule)
+        .filter(Boolean) as string[];
+      builtSystemPrompt = buildSystemMessage({
+        role: `Bạn là ${singleAgentEmoji} ${singleAgentName}, một AI assistant mạnh mẽ và thông minh.${pinnedMemory ? `\n\n## Pinned Context (Long-term Memory)\n${pinnedMemory}` : ''}`,
+        rules: [
+          personalityRule,
+          'Thực hiện task được giao, trả về kết quả chi tiết, professional và actionable.',
+          'Dùng markdown formatting: headers (##), bullet points (-), numbered lists khi phù hợp.',
+          'Viết bằng tiếng Việt hoặc tiếng Anh tùy context của task.',
+          ...singleSkillRules,
+        ].filter(Boolean),
+        outputFormat: 'Kết quả phải cụ thể, có thể action được ngay.',
+      }).content as string;
+    } else {
+      const brief = agentBriefs[activeDept]?.trim();
+      const activeSkillRules = (enabledSkills[activeDept] ?? [])
+        .map(sid => DEPT_SKILLS[activeDept]?.find(s => s.id === sid)?.rule)
+        .filter(Boolean) as string[];
+      builtSystemPrompt = buildSystemMessage({
+        role: `Bạn là ${dept.agent} trong hệ thống Paperclip AI Org Orchestrator. Department: ${dept.label}. Model: ${model.label} (${model.provider}).${brief ? `\n\nCOMPANY CONTEXT:\n${brief}` : ''}`,
+        rules: [
+          'Thực hiện task được giao, trả về kết quả chi tiết, professional và actionable.',
+          'Dùng markdown formatting: headers (##), bullet points (-), numbered lists khi phù hợp.',
+          'Viết bằng tiếng Việt hoặc tiếng Anh tùy context của task.',
+          ...activeSkillRules,
+        ],
+        outputFormat: 'Kết quả phải cụ thể, có thể action được ngay.',
+      }).content as string;
+    }
+
+    // CoT steps reset for single agent mode
+    if (isSingleMode) {
+      setCotSteps([]);
+      setShowCotTrace(true);
+    }
 
     // Simulate multi-step activity
-    addLog('CEO Agent', `Nhận task từ user → giao cho ${dept.agent}`, 'running', '#0090ff');
-    setTimeout(() => addLog(dept.agent, `Bắt đầu xử lý với ${model.label}`, 'running', dept.color), 600);
+    const agentLabel = isSingleMode ? `${singleAgentEmoji} ${singleAgentName}` : dept.agent;
+    const agentColor = isSingleMode ? '#8b5cf6' : dept.color;
+    if (!isSingleMode) addLog('CEO Agent', `Nhận task từ user → giao cho ${dept.agent}`, 'running', '#0090ff');
+    setTimeout(() => addLog(agentLabel, `Bắt đầu xử lý với ${effectiveModel.label}`, 'running', agentColor), 600);
     setTimeout(() => addLog('Budget Guard', `Theo dõi cost — limit $${budgetLimit.toFixed(2)}`, 'info', '#10b981'), 1200);
     if (overrideSystemPrompt) {
       setTimeout(() => addLog('Prompt Inspector', 'Dùng system prompt đã chỉnh sửa', 'info', '#8b5cf6'), 900);
@@ -1206,8 +1327,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
     const pendingResult: TaskResult = {
       id: taskId,
-      dept: dept.label,
-      model: model.label,
+      dept: isSingleMode ? `${singleAgentEmoji} ${singleAgentName}` : dept.label,
+      model: effectiveModel.label,
       taskDesc: taskPrompt,
       output: '',
       status: 'running',
@@ -1218,6 +1339,27 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     };
     setCurrentResult(pendingResult);
 
+    // CoT: animate steps for single agent mode
+    if (isSingleMode) {
+      THINKING_STEPS.forEach((step, i) => {
+        setTimeout(() => {
+          setCotSteps(prev => {
+            const now = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const updated = [...prev];
+            updated[i] = { step, done: false, timestamp: now };
+            return updated;
+          });
+        }, i * 820);
+        setTimeout(() => {
+          setCotSteps(prev => {
+            const updated = [...prev];
+            if (updated[i]) updated[i] = { ...updated[i], done: true };
+            return updated;
+          });
+        }, i * 820 + 700);
+      });
+    }
+
     // Save prompt history
     const newHistory = [taskPrompt, ...promptHistory.filter(p => p !== taskPrompt)].slice(0, 10);
     setPromptHistory(newHistory);
@@ -1227,7 +1369,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       let streamedOutput = '';
       setIsStreaming(true);
 
-      const currentThread = conversationThreads[activeDept] ?? [];
+      const currentThread = conversationThreads[effectiveDeptId] ?? [];
 
       await aiChatStreamViaProxy(
         [
@@ -1241,7 +1383,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         },
         abortRef.current?.signal,
         4096,
-        model.apiModel,
+        effectiveModel.apiModel,
       );
 
       const output = streamedOutput;
@@ -1254,7 +1396,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         // Estimate tokens from output length (~4 chars/token) + system prompt
         taskTokens = Math.ceil((output.length + builtSystemPrompt.length + taskPrompt.length) / 4);
         // Estimate cost: Sonnet ≈ $3/$15 per M tokens input/output, Opus ≈ $15/$75
-        const isOpus = model.apiModel === AI_MODELS.OPUS;
+        const isOpus = effectiveModel.apiModel === AI_MODELS.OPUS;
         const outTokens = Math.ceil(output.length / 4);
         const inTokens = taskTokens - outTokens;
         const inRate  = isOpus ? 0.000015 : 0.000003;
@@ -1295,11 +1437,11 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           { role: 'user', content: taskPrompt },
           { role: 'assistant', content: output },
         ];
-        saveThread(activeDept, updatedThread);
+        saveThread(effectiveDeptId, updatedThread);
 
-        addLog(dept.agent, `✓ Task hoàn thành trong ${duration} — ~$${taskCost.toFixed(3)} est.`, 'success', dept.color);
-        addLog('CEO Agent', `Report nhận được từ ${dept.agent}`, 'success', '#0090ff');
-        showToast(`${dept.agent} hoàn thành task!`, 'success');
+        addLog(agentLabel, `✓ Task hoàn thành trong ${duration} — ~$${taskCost.toFixed(3)} est.`, 'success', agentColor);
+        if (!isSingleMode) addLog('CEO Agent', `Report nhận được từ ${dept.agent}`, 'success', '#0090ff');
+        showToast(`${agentLabel} hoàn thành task!`, 'success');
 
         // Budget warning
         if (newSpent / budgetLimit > 0.8) {
@@ -1308,7 +1450,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       } else {
         const errResult: TaskResult = { ...pendingResult, output: 'Không thể kết nối tới AI service. Vui lòng thử lại.', status: 'error' };
         setCurrentResult(errResult);
-        addLog(dept.agent, 'Lỗi kết nối AI service', 'warning', '#ef4444');
+        addLog(agentLabel, 'Lỗi kết nối AI service', 'warning', '#ef4444');
         showToast('Lỗi kết nối AI', 'error');
       }
     } catch (err) {
@@ -1318,16 +1460,16 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         if (partialOutput.trim()) {
           const abortedResult: TaskResult = { ...pendingResult, output: partialOutput, status: 'done', duration: ((Date.now() - startTime) / 1000).toFixed(1) + 's', cost: '~est.' };
           setCurrentResult(abortedResult);
-          addLog(dept.agent, '⏹ Task dừng bởi user — kết quả một phần đã lưu', 'warning', '#f59e0b');
+          addLog(agentLabel, '⏹ Task dừng bởi user — kết quả một phần đã lưu', 'warning', '#f59e0b');
           showToast('Đã dừng — kết quả một phần đã lưu', 'success');
         } else {
           setCurrentResult(prev => prev ? { ...prev, status: 'error', output: '⏹ Task bị dừng bởi user.' } : prev);
-          addLog(dept.agent, '⏹ Task bị dừng bởi user', 'warning', '#f59e0b');
+          addLog(agentLabel, '⏹ Task bị dừng bởi user', 'warning', '#f59e0b');
         }
       } else {
         const errResult: TaskResult = { ...pendingResult, output: 'Đã xảy ra lỗi khi chạy agent. Vui lòng thử lại.', status: 'error' };
         setCurrentResult(errResult);
-        addLog(dept.agent, 'Lỗi không xác định', 'warning', '#ef4444');
+        addLog(agentLabel, 'Lỗi không xác định', 'warning', '#ef4444');
         showToast('Lỗi khi chạy agent', 'error');
       }
     } finally {
@@ -1348,7 +1490,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         return rest;
       });
     }
-  }, [taskPrompt, isRunning, isAuthenticated, login, dept, model, budgetLimit, spentBudget, totalTokens, promptHistory, taskHistory, addLog, showToast, activeDept, conversationThreads, saveThread, agentBriefs, enabledSkills]);
+  }, [taskPrompt, isRunning, isAuthenticated, login, dept, model, budgetLimit, spentBudget, totalTokens, promptHistory, taskHistory, addLog, showToast, activeDept, conversationThreads, saveThread, agentBriefs, enabledSkills, agentMode, singleAgentName, singleAgentEmoji, singlePersonality, singleAgentModel, singleEnabledSkills, pinnedMemory]);
 
   const handleRun = useCallback(async () => {
     if (!taskPrompt.trim() || isRunning) return;
@@ -2045,6 +2187,178 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   const SidebarContent = () => (
     <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
 
+      {/* ──────────────── SINGLE AGENT MODE ──────────────── */}
+      {agentMode === 'single' ? (
+        <>
+          {/* 🎭 Identity Panel */}
+          <div className="rounded-xl border border-purple-500/20 bg-purple-500/[0.03] dark:bg-purple-500/[0.05] overflow-hidden">
+            <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-purple-500/10">
+              <p className="text-[8px] font-bold uppercase tracking-widest text-purple-500/70">🎭 Identity</p>
+            </div>
+            <div className="p-3 space-y-2.5">
+              {/* Emoji + Name row */}
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1">
+                  {['🤖','🧠','⚡','🎯','🦊'].map(e => (
+                    <button key={e} onClick={() => setSingleAgentEmoji(e)}
+                      className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center transition-all border ${singleAgentEmoji === e ? 'border-purple-500/50 bg-purple-500/15' : 'border-transparent bg-black/[0.03] dark:bg-white/[0.03] hover:border-purple-500/30'}`}>
+                      {e}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1">Agent Name</p>
+                <input
+                  value={singleAgentName}
+                  onChange={e => setSingleAgentName(e.target.value)}
+                  className="w-full text-[11px] font-semibold bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-slate-800 dark:text-white focus:outline-none focus:border-purple-500/50 transition-colors"
+                  placeholder="Aria"
+                />
+              </div>
+              {/* Personality presets */}
+              <div>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1.5">Personality</p>
+                <div className="flex flex-wrap gap-1">
+                  {PERSONALITY_PRESETS.map(p => (
+                    <button key={p.id} onClick={() => setSinglePersonality(p.id)}
+                      className={`text-[9px] font-semibold px-2 py-0.5 rounded-full border transition-all ${singlePersonality === p.id ? 'bg-purple-500/15 border-purple-500/40 text-purple-600 dark:text-purple-400' : 'bg-transparent border-slate-200 dark:border-white/10 text-slate-500 dark:text-[#555] hover:border-purple-500/30'}`}>
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Model pills */}
+              <div>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1.5">Model</p>
+                <div className="flex gap-1">
+                  {LLM_MODELS.map(m => {
+                    const isActive = singleAgentModel === m.id;
+                    return (
+                      <button key={m.id} onClick={() => setSingleAgentModel(m.id)}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-bold transition-all"
+                        style={isActive ? { backgroundColor: `${m.color}20`, borderColor: `${m.color}50`, color: m.color } : { backgroundColor: 'transparent', borderColor: 'rgba(0,0,0,0.07)' }}>
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isActive ? m.color : '#94a3b8' }} />
+                        <span className={isActive ? '' : 'text-slate-500 dark:text-[#555]'}>{m.id === 'claude-sonnet' ? 'Sonnet 4' : 'Opus 4'}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              {/* Budget inline (single mode) */}
+              <div>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1.5">Budget</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] text-slate-400">Limit $</span>
+                  <input value={budgetLimit} onChange={e => setBudgetLimit(parseFloat(e.target.value) || 1)}
+                    className="w-14 text-[11px] bg-white dark:bg-white/[0.04] border border-purple-500/20 rounded-lg px-2 py-0.5 text-slate-700 dark:text-white focus:outline-none focus:border-purple-500/50"
+                    type="number" min="0.5" step="0.5" />
+                  <div className="flex-1">
+                    <div className="h-1.5 rounded-full bg-purple-500/10 overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.min((spentBudget / budgetLimit) * 100, 100)}%`, backgroundColor: budgetPct > 80 ? '#ef4444' : '#a855f7' }} />
+                    </div>
+                  </div>
+                  <span className={`text-[9px] font-bold ${budgetPct > 80 ? 'text-red-500' : 'text-purple-500'}`}>${spentBudget.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 🧠 Memory Panel */}
+          <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] overflow-hidden">
+            <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.04]">
+              <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444]">🧠 Memory</p>
+              <button
+                onClick={() => {
+                  setConversationThreads(prev => {
+                    const next = { ...prev, [SINGLE_AGENT_ID]: [] };
+                    try { localStorage.removeItem(THREAD_KEY(SINGLE_AGENT_ID)); } catch { /* ignore */ }
+                    return next;
+                  });
+                }}
+                className="flex items-center gap-1 text-[8px] text-slate-400 hover:text-red-500 transition-colors"
+              >
+                <Trash2 size={9} /> Clear
+              </button>
+            </div>
+            <div className="p-3 space-y-2.5">
+              {/* Turn count */}
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-slate-500 dark:text-[#666]">Turns nhớ trong session</span>
+                <span className="text-[11px] font-bold text-slate-700 dark:text-white/80">
+                  {Math.ceil((conversationThreads[SINGLE_AGENT_ID]?.length ?? 0) / 2)} / {MAX_THREAD_TURNS}
+                </span>
+              </div>
+              {/* Memory bar */}
+              <div className="h-1 rounded-full bg-slate-200 dark:bg-white/10 overflow-hidden">
+                <div className="h-full rounded-full bg-brand-blue transition-all duration-500"
+                  style={{ width: `${Math.min(((conversationThreads[SINGLE_AGENT_ID]?.length ?? 0) / 2 / MAX_THREAD_TURNS) * 100, 100)}%` }} />
+              </div>
+              {/* Pinned memory */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444]">📌 Pinned Context</span>
+                  <button onClick={() => { setIsEditingPinnedMemory(true); setPinnedMemoryDraft(pinnedMemory); }}
+                    className="text-[8px] text-brand-blue hover:opacity-80 transition-opacity">
+                    {pinnedMemory ? 'Edit' : '+ Add'}
+                  </button>
+                </div>
+                {isEditingPinnedMemory ? (
+                  <div className="space-y-1.5">
+                    <textarea
+                      value={pinnedMemoryDraft}
+                      onChange={e => setPinnedMemoryDraft(e.target.value)}
+                      className="w-full text-[10px] bg-white dark:bg-white/[0.04] border border-brand-blue/30 rounded-lg px-2.5 py-2 text-slate-700 dark:text-white/80 focus:outline-none resize-none"
+                      rows={3}
+                      placeholder="Pinned context sẽ luôn được inject vào system prompt..."
+                    />
+                    <div className="flex gap-1.5">
+                      <button onClick={() => { setPinnedMemory(pinnedMemoryDraft); setIsEditingPinnedMemory(false); }}
+                        className="flex-1 py-1.5 rounded-lg bg-brand-blue text-white text-[9px] font-bold hover:bg-brand-blue/90 transition-colors">
+                        Save
+                      </button>
+                      <button onClick={() => setIsEditingPinnedMemory(false)}
+                        className="flex-1 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 text-[9px] font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : pinnedMemory ? (
+                  <div className="rounded-lg bg-brand-blue/[0.06] border border-brand-blue/20 px-2.5 py-2">
+                    <p className="text-[10px] text-slate-600 dark:text-white/60 leading-relaxed line-clamp-3">{pinnedMemory}</p>
+                  </div>
+                ) : (
+                  <p className="text-[9px] text-slate-300 dark:text-[#444] italic">Chưa có pinned context</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* 🛠️ Skills Panel */}
+          <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] overflow-hidden">
+            <div className="px-3 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.04]">
+              <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444]">🛠️ Skills</p>
+            </div>
+            <div className="p-3 space-y-1.5">
+              {SINGLE_SKILLS.map(skill => {
+                const isOn = singleEnabledSkills.includes(skill.id);
+                return (
+                  <button key={skill.id} onClick={() => setSingleEnabledSkills(prev => isOn ? prev.filter(s => s !== skill.id) : [...prev, skill.id])}
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg border text-[10px] font-semibold transition-all ${isOn ? 'bg-brand-blue/[0.07] border-brand-blue/30 text-brand-blue' : 'bg-transparent border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-[#555] hover:border-brand-blue/20'}`}>
+                    <span>{skill.label}</span>
+                    <div className={`w-7 h-3.5 rounded-full transition-all relative ${isOn ? 'bg-brand-blue' : 'bg-slate-200 dark:bg-white/10'}`}>
+                      <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white shadow-sm transition-all ${isOn ? 'left-3.5' : 'left-0.5'}`} />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+      {/* ──────────────── MULTI AGENT MODE (original) ──────────────── */}
+
       {/* ── Compact Config Card (always visible) ── */}
       <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] p-3 space-y-2.5">
         {/* Agent pills */}
@@ -2469,7 +2783,10 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         </div>
       )}
 
-      {/* ── Activity Feed ── */}
+      </>
+      )}
+
+      {/* ── Activity Feed (both modes) ── */}
       <div>
         <button
           onClick={() => setShowActivity(v => !v)}
@@ -2566,14 +2883,23 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
         {/* Right: Dept badge + Budget pill + Credits + Close */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Dept pill */}
-          <div
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border shrink-0"
-            style={{ backgroundColor: `${dept.color}15`, borderColor: `${dept.color}35`, color: dept.color }}
-          >
-            <dept.icon size={11} />
-            <span className="hidden md:inline">{dept.label}</span>
-          </div>
+          {/* Dept / Agent pill */}
+          {agentMode === 'single' ? (
+            <div
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border shrink-0 bg-purple-500/10 border-purple-500/30 text-purple-600 dark:text-purple-400"
+            >
+              <span>{singleAgentEmoji}</span>
+              <span className="hidden md:inline">{singleAgentName}</span>
+            </div>
+          ) : (
+            <div
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border shrink-0"
+              style={{ backgroundColor: `${dept.color}15`, borderColor: `${dept.color}35`, color: dept.color }}
+            >
+              <dept.icon size={11} />
+              <span className="hidden md:inline">{dept.label}</span>
+            </div>
+          )}
 
           {/* Budget status */}
           {spentBudget > 0 && (
@@ -2605,6 +2931,20 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           >
             <Zap size={11} className={advancedMode ? 'text-amber-500' : ''} />
             Advanced
+          </button>
+
+          {/* Single / Multi agent toggle */}
+          <button
+            onClick={() => setAgentMode(v => v === 'single' ? 'multi' : 'single')}
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-bold transition-all ${
+              agentMode === 'single'
+                ? 'bg-purple-500/15 border-purple-500/40 text-purple-600 dark:text-purple-400 shadow-sm shadow-purple-500/10'
+                : 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-400 dark:text-[#555] hover:border-slate-300 dark:hover:border-white/20'
+            }`}
+            title={agentMode === 'single' ? 'Đang ở Single Agent Mode — bấm để Multi-Agent' : 'Đang ở Multi-Agent Mode — bấm để Single Agent'}
+          >
+            <Bot size={11} className={agentMode === 'single' ? 'text-purple-500' : ''} />
+            {agentMode === 'single' ? 'Single Agent' : 'Multi-Agent'}
           </button>
 
           {/* Keyboard shortcuts help */}
@@ -2669,7 +3009,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               ) : (
                 <>
                   <Play size={14} />
-                  Chạy Agent
+                  {agentMode === 'single' ? `Chạy ${singleAgentName}` : 'Chạy Agent'}
                   <kbd className="ml-1 text-[9px] font-mono bg-white/20 px-1.5 py-0.5 rounded opacity-70 normal-case tracking-normal">⌘↵</kbd>
                   {taskQueue.length > 0 && (
                     <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 text-[8px] font-black text-slate-900 flex items-center justify-center shadow-sm">
@@ -2927,10 +3267,10 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                 </div>
                                 <div>
                                   <p className="text-[13px] font-semibold text-slate-700 dark:text-white/70">
-                                    {dept.agent} đang xử lý...
+                                    {agentMode === 'single' ? `${singleAgentEmoji} ${singleAgentName} đang xử lý...` : `${dept.agent} đang xử lý...`}
                                   </p>
                                   <p className="text-[11px] text-slate-400 dark:text-[#555] mt-1">
-                                    {model.label} · {elapsedSeconds}s · Budget Guard active
+                                    {agentMode === 'single' ? `${LLM_MODELS.find(m => m.id === singleAgentModel)?.label ?? 'Claude'}` : model.label} · {elapsedSeconds}s · Budget Guard active
                                   </p>
                                 </div>
                                 <div className="space-y-1.5 text-left">
@@ -2957,8 +3297,46 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                 </div>
                               </div>
                             ) : currentResult?.status === 'done' ? (
-                              <div className="prose prose-sm max-w-none">
-                                <StreamingMarkdownOutput content={currentResult.output} streaming={isStreaming} />
+                              <div className="space-y-3">
+                                {/* CoT Reasoning Trace — single agent mode only */}
+                                {agentMode === 'single' && cotSteps.length > 0 && (
+                                  <div className="border border-purple-500/20 rounded-xl overflow-hidden">
+                                    <button
+                                      onClick={() => setShowCotTrace(v => !v)}
+                                      className="w-full flex items-center justify-between px-3 py-2 bg-purple-500/5 hover:bg-purple-500/10 transition-colors"
+                                    >
+                                      <span className="flex items-center gap-2 text-[11px] font-semibold text-purple-500">
+                                        <span>🧠</span> Reasoning Trace
+                                        <span className="text-[10px] font-normal text-purple-400/70">({cotSteps.length} steps)</span>
+                                      </span>
+                                      {showCotTrace ? <ChevronUp size={12} className="text-purple-400" /> : <ChevronDown size={12} className="text-purple-400" />}
+                                    </button>
+                                    <AnimatePresence initial={false}>
+                                      {showCotTrace && (
+                                        <motion.div
+                                          initial={{ height: 0, opacity: 0 }}
+                                          animate={{ height: 'auto', opacity: 1 }}
+                                          exit={{ height: 0, opacity: 0 }}
+                                          transition={{ duration: 0.25 }}
+                                          className="overflow-hidden"
+                                        >
+                                          <div className="px-3 py-2 space-y-1.5">
+                                            {cotSteps.map((s, i) => (
+                                              <div key={i} className="flex items-center gap-2 text-[11px]">
+                                                <CheckCircle2 size={10} className="text-emerald-500 shrink-0" />
+                                                <span className="text-slate-600 dark:text-[#aaa]">{s.step}</span>
+                                                <span className="ml-auto text-[10px] text-slate-400 dark:text-[#555] tabular-nums">{s.timestamp}</span>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  </div>
+                                )}
+                                <div className="prose prose-sm max-w-none">
+                                  <StreamingMarkdownOutput content={currentResult.output} streaming={isStreaming} />
+                                </div>
                               </div>
                             ) : currentResult?.status === 'error' ? (
                               <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
