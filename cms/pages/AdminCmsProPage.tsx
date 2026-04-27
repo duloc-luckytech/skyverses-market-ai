@@ -7,7 +7,7 @@ import {
   Package, Users, Banknote, Globe,
   Compass, Bot, Key, Zap, Inbox, Sparkles,
   ShieldCheck, ChevronLeft, ChevronRight,
-  Sun, Moon, LogOut, Plus, CreditCard, FileText, Webhook
+  Sun, Moon, LogOut, Plus, CreditCard, FileText, Webhook, Cpu
 } from 'lucide-react';
 
 import { marketApi } from '../apis/market';
@@ -40,8 +40,9 @@ import { SolutionDrawer } from '../components/admin-pro/solution-drawer/Solution
 import { SubmissionsTab } from '../components/admin-pro/SubmissionsTab';
 import { AdminDepositTab } from '../components/admin-pro/AdminDepositTab';
 import { BlogTab } from '../components/admin-pro/BlogTab';
+import { TasksPendingTab } from '../components/admin-pro/TasksPendingTab';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG' | 'TASKS_PENDING';
 
 const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
   // ── MAIN ──
@@ -61,6 +62,7 @@ const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; gro
 
   // ── SYSTEM ──
   { id: 'USERS',           label: 'Khách hàng',     icon: <Users size={16} />,      group: 'SYSTEM' },
+  { id: 'TASKS_PENDING',   label: 'Task Pending',   icon: <Cpu size={16} />,        group: 'SYSTEM' },
   { id: 'WEBHOOK_LOGS',    label: 'Webhook Logs',   icon: <Webhook size={16} />,    group: 'SYSTEM' },
 
   // ── TOOLS ──
@@ -341,6 +343,7 @@ const AdminCmsProPage = () => {
             {activeTab === 'SUBMISSIONS' && <SubmissionsTab key="submissions" />}
             {activeTab === 'ADMIN_DEPOSIT' && <AdminDepositTab key="admin_deposit" />}
             {activeTab === 'BLOG' && <BlogTab key="blog" />}
+            {activeTab === 'TASKS_PENDING' && <TasksPendingTab key="tasks_pending" />}
             {activeTab === 'CLOUD' && (
               <NodeRegistryTab
                 key={activeTab}

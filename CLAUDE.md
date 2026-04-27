@@ -1,5 +1,7 @@
 # Skyverses Market AI — Project Context
 
+> **📍 Full source map:** [`docs/SOURCE_MAP.md`](./docs/SOURCE_MAP.md) — complete file-by-file index of every component, page, hook, api, route, model, and engine. Load that file first when you need to know where something lives. Regenerate it after structural changes by asking Claude: *"regenerate docs/SOURCE_MAP.md"*.
+
 ## Project Overview
 - **Name:** Skyverses Market AI (`skyverses-market`)
 - **Framework:** React + TypeScript + Vite

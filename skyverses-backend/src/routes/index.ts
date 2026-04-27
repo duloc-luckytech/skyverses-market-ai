@@ -30,6 +30,7 @@ import deploybRoutes from "./deployLogs";
 import apiClientRoutes from "./apiClient";
 import productSubmissionRoutes from "./productSubmission";
 import blogRoutes from "./blog";
+import adminTaskRoutes from "./adminTasks";
 
 const router = Router();
 
@@ -69,5 +70,6 @@ router.use("/deploy", deploybRoutes);
 router.use("/customer", customerRoutes);
 router.use("/api-client", apiClientRoutes);
 router.use("/product-submission", productSubmissionRoutes);
+router.use("/admin-tasks", adminTaskRoutes);
 
 export default router;
