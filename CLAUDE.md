@@ -1,95 +1,46 @@
-# Skyverses Market AI — Project Context
+# Skyverses Market AI
 
-> **📍 Full source map:** [`docs/SOURCE_MAP.md`](./docs/SOURCE_MAP.md) — complete file-by-file index of every component, page, hook, api, route, model, and engine. Load that file first when you need to know where something lives. Regenerate it after structural changes by asking Claude: *"regenerate docs/SOURCE_MAP.md"*.
+> **📍 Source map:** [`docs/source-map/INDEX.md`](./docs/source-map/INDEX.md) — load đúng file cần (routes / components / pages / apis / hooks / backend / cms-blog / conventions / lookup). Đừng load full source map cho query đơn giản.
 
-## Project Overview
-- **Name:** Skyverses Market AI (`skyverses-market`)
-- **Framework:** React + TypeScript + Vite
-- **Styling:** Tailwind CSS (`brand-blue` as primary color)
-- **Routing:** React Router DOM
-- **Animation:** Framer Motion
-- **Icons:** Lucide React
+**Stack:** React 19 + TS + Vite 5 · Tailwind 3 (`brand-blue`=#0090ff) · react-router-dom 7 (lazy) · framer-motion · lucide-react · three 0.173 · @xyflow/react · @google/genai
 
-## Key Directories
-```
-components/        — All UI components (Header.tsx, Footer.tsx, etc.)
-pages/             — Route-level page components
-context/           — React Contexts (Auth, Theme, Language, Search, Toast)
-apis/              — API call modules (credits, market, etc.)
-hooks/             — Custom React hooks
-constants/         — Config & market-config.tsx
-types.ts           — Global TypeScript types
-App.tsx            — Route definitions
-```
+**Layout:** `App.tsx` (routes) · `pages/` (62) · `components/` (324, 25 sub-folder) · `context/` (5: Auth/Theme/Lang/Search/Toast) · `apis/` (19) · `hooks/` (30) · `constants/` · `utils/` · `services/` · `src/constants/` (CDN lists) · `cms/` `blog/` `skyverses-backend/` (sub-projects)
 
-## Core Components
-| File | Description |
-|------|-------------|
-| `components/Header.tsx` | Main nav: Logo, Home, Marketplace, Explore dropdown, Insights, Create, Search, User menu |
-| `components/Footer.tsx` | Site footer |
-| `components/Layout.tsx` | Page wrapper with Header + Footer |
-| `components/UniversalSearch.tsx` | Global search modal (⌘K) |
-| `components/market/` | Market-related UI components |
-| `components/landing/` | Landing page sections |
+**Core conventions:**
+- TypeScript only, no `any`. Tailwind only, no inline styles.
+- i18n: `t('key')` từ `useLanguage()`, langs `en|vi|ko|ja`.
+- Routing: `<Link>` internal, `<a target="_blank" rel="noopener">` external.
+- Mobile: `hidden md:flex` desktop-only. Drawer slides từ phải.
+- Auth-gated: `{isAuthenticated && (...)}`, tier check qua `useFeatureAccess`.
+- Job lifecycle: `<api>.create()` → `useJobPoller(jobId)` → `refreshCredits()`.
+- Backend folder typo: `src/constanst/` (intentional, đừng rename).
 
-## Header Navigation Structure
-```
-Logo → Home → Marketplace → Explore (dropdown) → Insights → Create (auth only)
-                              ├── Discover group
-                              │     ├── Explorer Gallery → /explorer
-                              │     └── AI Models → /models
-                              └── My Workspace → /apps (auth only)
-Right: Search | Credits | Theme | Language | User Menu | Deploy CTA
-```
+**Skills (`.agents/skills/`):** `skyverses_ui_pages`, `skyverses_architecture`, `skyverses_business_flows`, `skyverses_cms`.
 
-## Contexts
-| Context | Hook | Purpose |
-|---------|------|---------|
-| AuthContext | `useAuth()` | user, isAuthenticated, credits, logout, claimWelcomeCredits |
-| ThemeContext | `useTheme()` | theme, toggleTheme |
-| LanguageContext | `useLanguage()` | lang, setLang, t() |
-| SearchContext | `useSearch()` | query, open(), toggle() |
-| ToastContext | `useToast()` | show toast notifications |
+---
 
-## i18n
-- Use `t('key')` from `useLanguage()` for all user-facing text
-- Languages: `en`, `vi`, `ko`, `ja`
+## 🔄 Auto-update docs/source-map (BẮT BUỘC)
 
-## Coding Conventions
-- Always TypeScript (no `any` unless unavoidable)
-- Tailwind for all styling — no inline styles
-- Use `framer-motion` `<motion.div>` + `<AnimatePresence>` for show/hide animations
-- `<Link>` for internal routes, `<a target="_blank">` for external
-- Mobile-first: `hidden md:flex` pattern for desktop-only elements
-- Auth-gated UI: wrap with `{isAuthenticated && (...)}`
+Sau **mỗi task** có structural change dưới đây, BẮT BUỘC update file md tương ứng trong `docs/source-map/` ở step cuối (trước khi báo "done"). Không cần update nếu chỉ sửa logic / Tailwind / fix bug nội bộ.
 
-## Available Skills (`.agents/skills/`)
-| Skill | Trigger topics |
-|-------|---------------|
-| `skyverses_ui_pages` | Homepage, MarketPage, product grid, filters, CMS blocks |
-| `skyverses_architecture` | System architecture, API structure, backend |
-| `skyverses_business_flows` | Auth flows, credits, payments, referral |
-| `skyverses_cms` | CMS system, homeBlocks, content management |
+| Thay đổi | Update file |
+|----------|-------------|
+| Thêm/xoá/rename route trong `App.tsx` | `01-routes.md` |
+| Thêm/sửa context (`context/*.tsx`) hoặc đổi hook expose | `02-contexts.md` |
+| Thêm/xoá/rename file trong `apis/` | `03-apis.md` |
+| Thêm/xoá/rename file trong `hooks/` | `04-hooks.md` |
+| Thêm/xoá/rename file trong `components/` (cả sub-folder) | `05-components.md` |
+| Thêm/xoá/rename file trong `pages/` | `06-pages.md` |
+| Thêm/sửa route/model/engine ở `skyverses-backend/src/` | `07-backend.md` |
+| Thêm/sửa file ở `cms/` hoặc `blog/` | `08-cms-blog.md` |
+| Đổi convention (Tailwind base, i18n pattern, mobile pattern) | `09-conventions.md` |
+| Có pattern mới đáng ghi vào "Where is X?" | `10-lookup.md` |
+| Đổi tech stack (thêm lib lớn, đổi version Vite/React) | `CLAUDE.md` (file này) |
 
-## Common Routes
-| Route | Component | Notes |
-|-------|-----------|-------|
-| `/` | MarketPage | Homepage + product grid |
-| `/markets` | MarketsPage | Browse all AI tools |
-| `/apps` | AppsPage | User workspace (auth required) |
-| `/explorer` | ExplorerPage | Gallery view |
-| `/models` | ModelsPage | AI Models list |
-| `/credits` | CreditsPage | Credit management |
-| `/login` | LoginPage | Auth |
-| `/booking` | BookingPage | Deploy/contact CTA |
+**Quy tắc update:**
+1. Edit chính xác dòng/bảng liên quan (không rewrite cả file).
+2. Chỉ thêm 1-2 dòng mô tả ngắn (path + role).
+3. Báo trong response: *"Đã update `docs/source-map/<file>.md`"*.
+4. Nếu không chắc thay đổi có structural không → hỏi user.
 
-## Environment / API
-- API Key: via `ANTHROPIC_API_KEY` env
-- Base URL: `ANTHROPIC_BASE_URL`
-- Credits API: `apis/credits.ts` → `creditsApi.claimDaily()`
-
-## Notes
-- `brand-blue` = primary brand color (defined in tailwind.config.ts)
-- `DEFAULT_AVATAR` fallback: framerusercontent CDN image
-- Scroll behavior: header shrinks from `h-16` → `h-14` after 20px scroll
-- Mobile drawer: slides from right, 85% width, max-w-sm
+**Regen toàn bộ source map:** bảo Claude *"regenerate docs/source-map"* (chỉ chạy khi refactor lớn).
