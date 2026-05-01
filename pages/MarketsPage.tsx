@@ -7,7 +7,7 @@ import {
   Video, ImageIcon, Mic, Music, LayoutGrid, Zap,
   TrendingUp, Heart, BookmarkPlus, Bookmark,
   X, Layers, Box, Cpu, SlidersHorizontal,
-  Check, Grid3X3, List, ArrowUp, Clock, Tag, ChevronUp, ChevronDown,
+  Check, ArrowUp, Clock, Tag, ChevronUp, ChevronDown,
   Eye, GitCompare, Command,
   Globe, Smartphone, Tablet, Film, Lightbulb
 } from 'lucide-react';
@@ -25,23 +25,6 @@ interface RecentlyViewedItem {
   imageUrl: string;
   category: { en: string; vi: string; ko: string; ja: string };
 }
-
-// ═══════ ANIMATED COUNTER HOOK ═══════
-const useAnimatedCounter = (end: number, duration = 800) => {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (end === 0) { setCount(0); return; }
-    let startTime: number;
-    const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      setCount(Math.floor(progress * end));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [end, duration]);
-  return count;
-};
 
 // ═══════ CONSTANTS ═══════
 // Sky Partners đã được rút khỏi danh mục chính (khái niệm mơ hồ với user mới).
@@ -84,14 +67,18 @@ const QUICK_PATHS: { key: string; category: string; label: string; desc: string;
   { key: 'script',     category: 'Script',     label: 'Viết blog & nội dung', desc: 'Kịch bản, bài viết AI',  icon: Film,      iconColor: 'text-blue-500',    gradient: 'from-blue-500/[0.07] to-cyan-500/[0.05]' },
   { key: 'automation', category: 'Automation', label: 'Tự động hoá quy trình', desc: 'Workflow, n8n, agents',  icon: Zap,       iconColor: 'text-yellow-500',  gradient: 'from-yellow-500/[0.07] to-amber-500/[0.05]' },
 ];
+// Phân nhóm Categories theo persona user mới VN:
+// "Tạo nội dung" = các category sáng tạo (expand mặc định), "Khác" = automation + extras (collapse mặc định).
+const CONTENT_CATEGORY_KEYS = new Set(['Video', 'Image', 'Music', 'Audio', 'Script', '3D']);
 const ITEMS_PER_PAGE = 12;
 const RECENTLY_VIEWED_KEY = 'skyverses_recently_viewed';
 const QUICKPATH_DISMISSED_KEY = 'skyverses_quickpath_dismissed';
 const ADVANCED_FILTERS_OPEN_KEY = 'skyverses_advanced_filters_open';
+const CAT_CONTENT_OPEN_KEY = 'skyverses_cat_content_open';
+const CAT_OTHER_OPEN_KEY = 'skyverses_cat_other_open';
 const GRID_ANCHOR_ID = 'markets-grid-anchor';
 const MAX_RECENT = 8;
 const TRENDING_LIMIT = 12;
-const CTA_FEATURED_SLUG = 'ai-video-generator';
 const SCROLL_POS_KEY = 'skyverses_markets_scroll';
 
 // ═══════ HELPERS ═══════
@@ -285,23 +272,6 @@ const SuggestedSection: React.FC<{ solutions: Solution[]; lang: Language; onNavi
     </div>
   );
 });
-
-// ═══════ CTA BANNER ═══════
-const CTABanner: React.FC<{ onNavigate: (slug: string) => void }> = React.memo(({ onNavigate }) => (
-  <div className="col-span-full my-2">
-    <div className="relative bg-gradient-to-r from-brand-blue/[0.06] to-purple-500/[0.06] border border-brand-blue/10 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 overflow-hidden">
-      <div className="absolute -right-8 -top-8 w-32 h-32 bg-brand-blue/[0.08] rounded-full blur-2xl" />
-      <div className="relative z-10">
-        <h4 className="text-[15px] font-bold text-slate-700 dark:text-white">Chưa biết chọn tool nào?</h4>
-        <p className="text-[12px] text-slate-400 dark:text-gray-500 mt-0.5">Thử AI Video Generator — công cụ phổ biến nhất của Skyverses</p>
-      </div>
-      <button onClick={() => onNavigate(CTA_FEATURED_SLUG)}
-        className="relative z-10 shrink-0 flex items-center gap-2 px-5 py-2.5 bg-brand-blue text-white text-[13px] font-semibold rounded-xl hover:brightness-110 active:scale-[0.98] transition-all">
-        Thử ngay <ArrowRight size={14} />
-      </button>
-    </div>
-  </div>
-));
 
 // ═══════ PRODUCT CARD (GRID) ═══════
 const ProductCardGrid: React.FC<{
@@ -594,7 +564,22 @@ const MarketsPage: React.FC = () => {
   // PREVIEW & COMPARE states
   const [previewSol, setPreviewSol] = useState<Solution | null>(null);
   const [compareIds, setCompareIds] = useState<string[]>([]);
-  const [showMoreCats, setShowMoreCats] = useState(false);
+  // Categories chia 2 group: "Tạo nội dung" expand mặc định, "Khác" collapse mặc định.
+  // Persist state vào localStorage để user mở app lần sau giữ thói quen.
+  const [contentGroupOpen, setContentGroupOpen] = useState<boolean>(() => {
+    try { const v = localStorage.getItem(CAT_CONTENT_OPEN_KEY); return v === null ? true : v === '1'; } catch { return true; }
+  });
+  const [otherGroupOpen, setOtherGroupOpen] = useState<boolean>(() => {
+    try { return localStorage.getItem(CAT_OTHER_OPEN_KEY) === '1'; } catch { return false; }
+  });
+  useEffect(() => { try { localStorage.setItem(CAT_CONTENT_OPEN_KEY, contentGroupOpen ? '1' : '0'); } catch {} }, [contentGroupOpen]);
+  useEffect(() => { try { localStorage.setItem(CAT_OTHER_OPEN_KEY, otherGroupOpen ? '1' : '0'); } catch {} }, [otherGroupOpen]);
+  // Auto-open nhóm chứa active category (cho UX khi user vào deep-link URL hoặc click extra cat)
+  useEffect(() => {
+    if (activeCategory === 'ALL') return;
+    if (CONTENT_CATEGORY_KEYS.has(activeCategory)) setContentGroupOpen(true);
+    else setOtherGroupOpen(true);
+  }, [activeCategory]);
 
   // Quick path hero — show for new users who haven't searched/filtered
   const [quickPathDismissed, setQuickPathDismissed] = useState<boolean>(() => {
@@ -865,11 +850,6 @@ const MarketsPage: React.FC = () => {
   }, []);
   const compareSolutions = useMemo(() => compareIds.map(id => solutions.find(s => s.id === id)).filter(Boolean) as Solution[], [compareIds, solutions]);
 
-  // ANIMATED COUNTERS
-  const animatedTotal = useAnimatedCounter(solutions.length);
-  const animatedFree = useAnimatedCounter(solutions.filter(s => s.isFree).length);
-  const animatedFeatured = useAnimatedCounter(solutions.filter(s => s.featured).length);
-
   // ═══════ SIDEBAR ═══════
   const SidebarContent = () => (
     <div className="space-y-5">
@@ -881,7 +861,7 @@ const MarketsPage: React.FC = () => {
         {inputValue && <button onClick={() => setInputValue('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"><X size={13} /></button>}
       </div>
 
-      {/* Categories Card */}
+      {/* Categories Card — chia 2 group: "Tạo nội dung" (expand default) + "Khác" (collapse default) */}
       <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
         <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center gap-2">
           <LayoutGrid size={13} className="text-brand-blue" />
@@ -889,9 +869,12 @@ const MarketsPage: React.FC = () => {
         </div>
         <div className="p-2 space-y-0.5">
           {(() => {
-            const staticKeys = new Set(STATIC_CATEGORIES.map(c => c.key));
-            const mainCats = CATEGORIES.filter(c => staticKeys.has(c.key));
-            const extraCats = CATEGORIES.filter(c => !staticKeys.has(c.key));
+            const allCat = CATEGORIES.find(c => c.key === 'ALL');
+            const contentCats = CATEGORIES.filter(c => CONTENT_CATEGORY_KEYS.has(c.key));
+            const otherCats = CATEGORIES.filter(c => c.key !== 'ALL' && !CONTENT_CATEGORY_KEYS.has(c.key));
+            const contentActiveCount = contentCats.filter(c => activeCategory === c.key).length;
+            const otherActiveCount = otherCats.filter(c => activeCategory === c.key).length;
+
             const renderCatBtn = (cat: typeof CATEGORIES[0]) => {
               const Icon = cat.icon;
               const isActive = activeCategory === cat.key;
@@ -913,35 +896,65 @@ const MarketsPage: React.FC = () => {
                 </button>
               );
             };
+
+            const renderGroupHeader = (
+              icon: React.ReactNode, label: string, isOpen: boolean, onToggle: () => void, badgeDot: boolean
+            ) => (
+              <button onClick={onToggle}
+                className="w-full flex items-center gap-2 px-3 py-1.5 mt-1 rounded-lg text-[10px] font-bold text-slate-400 dark:text-gray-500 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/[0.02] uppercase tracking-wider transition-colors">
+                {icon}
+                <span className="flex-1 text-left">{label}</span>
+                {badgeDot && <span className="w-1.5 h-1.5 rounded-full bg-brand-blue" />}
+                {isOpen ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+              </button>
+            );
+
             return (
               <>
-                {mainCats.map(renderCatBtn)}
-                {extraCats.length > 0 && (
+                {/* "Tất cả" — đứng riêng top */}
+                {allCat && renderCatBtn(allCat)}
+
+                {/* Group: Tạo nội dung */}
+                {contentCats.length > 0 && (
                   <>
+                    {renderGroupHeader(
+                      <Sparkles size={11} className="text-brand-blue" />,
+                      'Tạo nội dung',
+                      contentGroupOpen,
+                      () => setContentGroupOpen(v => !v),
+                      contentActiveCount > 0
+                    )}
                     <AnimatePresence initial={false}>
-                      {showMoreCats && (
-                        <motion.div
-                          key="extra-cats"
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden space-y-0.5"
-                        >
-                          {extraCats.map(renderCatBtn)}
+                      {contentGroupOpen && (
+                        <motion.div key="content-cats"
+                          initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }} className="overflow-hidden space-y-0.5">
+                          {contentCats.map(renderCatBtn)}
                         </motion.div>
                       )}
                     </AnimatePresence>
-                    <button
-                      onClick={() => setShowMoreCats(v => !v)}
-                      className="w-full flex items-center justify-center gap-1.5 px-3 py-2 mt-0.5 rounded-lg text-[11px] font-semibold text-slate-400 dark:text-gray-500 hover:text-brand-blue hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all border border-dashed border-black/[0.06] dark:border-white/[0.06]"
-                    >
-                      {showMoreCats ? (
-                        <><ChevronUp size={12} /> Thu gọn</>
-                      ) : (
-                        <><ChevronDown size={12} /> Xem thêm {extraCats.length} danh mục</>
+                  </>
+                )}
+
+                {/* Group: Khác */}
+                {otherCats.length > 0 && (
+                  <>
+                    {renderGroupHeader(
+                      <Layers size={11} className="text-slate-400" />,
+                      `Khác (${otherCats.length})`,
+                      otherGroupOpen,
+                      () => setOtherGroupOpen(v => !v),
+                      otherActiveCount > 0
+                    )}
+                    <AnimatePresence initial={false}>
+                      {otherGroupOpen && (
+                        <motion.div key="other-cats"
+                          initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }} className="overflow-hidden space-y-0.5">
+                          {otherCats.map(renderCatBtn)}
+                        </motion.div>
                       )}
-                    </button>
+                    </AnimatePresence>
                   </>
                 )}
               </>
@@ -1096,31 +1109,9 @@ const MarketsPage: React.FC = () => {
         </button>
       )}
 
-      {/* Stats Footer */}
-      <div className="p-4 bg-gradient-to-br from-brand-blue/[0.04] to-purple-500/[0.03] border border-brand-blue/10 rounded-xl space-y-3">
-        <h4 className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">Thống kê Marketplace</h4>
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] text-slate-500 dark:text-gray-400">Tổng công cụ</span>
-          <span className="text-[13px] font-bold text-brand-blue">{animatedTotal}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] text-slate-500 dark:text-gray-400">Danh mục</span>
-          <span className="text-[13px] font-bold text-purple-500">{CATEGORIES.length - 1}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] text-slate-500 dark:text-gray-400">Miễn phí</span>
-          <span className="text-[13px] font-bold text-emerald-500">{animatedFree || '0'}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] text-slate-500 dark:text-gray-400">Nổi bật</span>
-          <span className="text-[13px] font-bold text-amber-500">{animatedFeatured || '0'}</span>
-        </div>
-      </div>
-
-      {/* Keyboard Shortcuts Hint */}
+      {/* Keyboard Shortcut Hint — chỉ giữ ⌘K (View toggle G ẩn ngầm cho power user) */}
       <div className="flex flex-wrap gap-2 text-[9px] text-slate-400 dark:text-gray-600">
         <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-slate-100 dark:bg-white/5 rounded text-[8px] font-mono">⌘K</kbd> Tìm</span>
-        <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-slate-100 dark:bg-white/5 rounded text-[8px] font-mono">G</kbd> Grid/List</span>
       </div>
     </div>
   );
@@ -1132,13 +1123,10 @@ const MarketsPage: React.FC = () => {
         {/* ═══════ HEADER ═══════ */}
         <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-blue/[0.06] border border-brand-blue/10 rounded-full mb-2">
-              <Layers size={12} className="text-brand-blue" />
-              <span className="text-[10px] font-semibold text-brand-blue">AI Marketplace</span>
-            </div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
               Kho công cụ{' '}<span className="bg-gradient-to-r from-brand-blue to-blue-400 bg-clip-text text-transparent">AI sáng tạo</span>
             </h1>
+            <p className="text-[12px] text-slate-400 dark:text-gray-500 mt-1">30+ ứng dụng &middot; 50+ model &middot; tiết kiệm ~70%</p>
           </div>
           <button onClick={() => setMobileSidebar(true)}
             className="lg:hidden flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-[13px] font-medium text-slate-600 dark:text-gray-300 w-fit">
@@ -1178,8 +1166,8 @@ const MarketsPage: React.FC = () => {
               />
             )}
 
-            {/* Trending */}
-            {!inputValue && featuredSolutions.length > 0 && (
+            {/* Trending — ẩn khi QuickPathHero đang hiển thị (tránh chồng chéo chức năng giới thiệu tools) */}
+            {!inputValue && featuredSolutions.length > 0 && (quickPathDismissed || activeCategory !== 'ALL') && (
               <TrendingSlider items={featuredSolutions} lang={currentLang} onNavigate={handleNavigate} />
             )}
 
@@ -1191,17 +1179,7 @@ const MarketsPage: React.FC = () => {
                 {hasMore && <span className="text-slate-300 ml-1">· hiện {visibleCount}</span>}
               </p>
               <div className="flex items-center gap-2">
-                {/* View mode toggle */}
-                <div className="flex bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-lg p-0.5">
-                  <button onClick={() => setViewMode('grid')}
-                    className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-white/[0.06] text-brand-blue shadow-sm' : 'text-slate-400'}`}>
-                    <Grid3X3 size={14} />
-                  </button>
-                  <button onClick={() => setViewMode('list')}
-                    className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-white/[0.06] text-brand-blue shadow-sm' : 'text-slate-400'}`}>
-                    <List size={14} />
-                  </button>
-                </div>
+                {/* View mode toggle đã được rút khỏi UI để giảm noise — phím G và URL ?view=list vẫn hoạt động */}
                 {deferredSearch ? (
                   <span className="text-[11px] px-2.5 py-1.5 bg-brand-blue/[0.06] text-brand-blue border border-brand-blue/15 rounded-lg flex items-center gap-1 font-medium">
                     <Sparkles size={11} /> Theo độ liên quan
@@ -1254,13 +1232,8 @@ const MarketsPage: React.FC = () => {
             ) : paginatedSolutions.length > 0 ? (
               <>
                 <div className={viewMode === 'grid' ? 'grid grid-cols-2 xl:grid-cols-3 gap-4' : 'space-y-3'}>
-                  {paginatedSolutions.map((sol, idx) => (
+                  {paginatedSolutions.map((sol) => (
                     <React.Fragment key={sol.id}>
-                      {/* CTA Banner after 6th item */}
-                      {idx === 6 && viewMode === 'grid' && <CTABanner onNavigate={handleNavigate} />}
-                      {idx === 6 && viewMode === 'list' && (
-                        <CTABanner onNavigate={handleNavigate} />
-                      )}
                       {viewMode === 'grid' ? (
                         <ProductCardGrid sol={sol} lang={currentLang} onNavigate={handleNavigate}
                           isFav={favorites.includes(sol.id)} onToggleFav={(e) => toggleFavorite(e, sol.id)}
