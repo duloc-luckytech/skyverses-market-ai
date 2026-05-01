@@ -41,7 +41,7 @@ const SettingsPage = () => {
   const activeItem = navItems.find(item => item.id === logic.activeTab);
 
   return (
-    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-[#fafafa] dark:bg-[#050507] text-black dark:text-white transition-colors duration-500">
+    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-[#fafafa] dark:bg-[#0a0d14] text-black dark:text-white transition-colors duration-500">
       
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -126,7 +126,7 @@ const SettingsPage = () => {
           </aside>
 
           {/* RIGHT CONTENT */}
-          <main className="flex-grow bg-white dark:bg-[#0a0a0e] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl overflow-hidden min-h-[600px] shadow-sm">
+          <main className="flex-grow bg-white dark:bg-[#0a0d14] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl overflow-hidden min-h-[600px] shadow-sm">
             {/* Tab Header Bar */}
             {activeItem && (
               <div className="px-6 md:px-8 py-5 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center gap-3">

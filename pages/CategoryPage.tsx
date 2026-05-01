@@ -143,7 +143,7 @@ const CategoryPage = () => {
   const currentLang = lang as Language;
 
   return (
-    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#030304] font-sans transition-colors duration-500 pt-24 md:pt-32 pb-40 relative">
+    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#0a0d14] font-sans transition-colors duration-500 pt-24 md:pt-32 pb-40 relative">
       {/* Dynamic Ambient Background */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className={`absolute top-[-5%] right-[-5%] w-[1000px] h-[1000px] rounded-full blur-[250px] opacity-10 dark:opacity-20 animate-pulse ${uiInfo.glow}`}></div>
@@ -182,7 +182,7 @@ const CategoryPage = () => {
                    value={searchQuery}
                    onChange={(e) => setSearchQuery(e.target.value)}
                    placeholder="Tìm kiếm trong danh mục..."
-                   className="w-full bg-white dark:bg-[#0a0a0c] border border-black/5 dark:border-white/10 rounded-full pl-12 pr-6 py-3.5 text-xs md:text-sm font-bold focus:border-brand-blue outline-none transition-all shadow-lg dark:shadow-none"
+                   className="w-full bg-white dark:bg-[#0a0d14] border border-black/5 dark:border-white/10 rounded-full pl-12 pr-6 py-3.5 text-xs md:text-sm font-bold focus:border-brand-blue outline-none transition-all shadow-lg dark:shadow-none"
                  />
               </div>
            </div>

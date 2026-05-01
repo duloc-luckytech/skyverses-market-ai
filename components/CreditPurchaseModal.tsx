@@ -344,10 +344,10 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
       
       <motion.div initial={{ scale: 0.96, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative w-full max-w-2xl bg-white dark:bg-[#0c0c10] border border-black/[0.06] dark:border-white/[0.06] rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-full md:h-auto md:max-h-[90vh]">
+        className="relative w-full max-w-2xl bg-white dark:bg-[#13171f] border border-black/[0.06] dark:border-white/[0.06] rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-full md:h-auto md:max-h-[90vh]">
         
         {/* Header */}
-        <div className="px-5 md:px-6 py-4 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between shrink-0">
+        <div className="px-5 md:px-6 py-4 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             {step === 2 && !initialPack && status !== 'POLLING' && status !== 'SUCCESS' && status !== 'CRYPTO_SENDING' && (
               <button onClick={() => { setStep(1); setStatus('IDLE'); setPendingTx(null); clearInterval(pollRef.current); }} className="w-8 h-8 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.04] flex items-center justify-center text-slate-400 transition-all">
@@ -367,7 +367,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-lg">
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-lg">
               <Sparkles size={12} className="text-brand-blue" fill="currentColor" />
               <span className="text-xs font-bold text-slate-600 dark:text-gray-300">{(credits || 0).toLocaleString()}</span>
             </div>
@@ -378,7 +378,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
         </div>
 
         {/* Steps */}
-        <div className="px-5 md:px-6 py-3 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center gap-3 shrink-0">
+        <div className="px-5 md:px-6 py-3 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center gap-3 shrink-0">
           {[{ s: 1, label: 'Chọn gói' }, { s: 2, label: 'Thanh toán' }].map((item, idx) => (
             <React.Fragment key={item.s}>
               <div className={`flex items-center gap-2 ${step >= item.s ? 'opacity-100' : 'opacity-30'}`}>
@@ -498,7 +498,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
                 {(status === 'WAITING' || status === 'POLLING' || status === 'CRYPTO_SENDING') && pendingTx && (
                   <div className="space-y-5">
                     {/* Payment Method Tabs */}
-                    <div className="flex bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl p-1 gap-1">
+                    <div className="flex bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-xl p-1 gap-1">
                       <button onClick={() => setPaymentMethod('bank')}
                         className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${
                           paymentMethod === 'bank' ? 'bg-white dark:bg-white/10 text-brand-blue shadow-sm' : 'text-slate-400 hover:text-slate-600'
@@ -515,7 +515,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
                     </div>
 
                     {/* Order Summary */}
-                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
+                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-xl">
                       <div>
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                           {paymentMethod === 'bank' ? 'Số tiền VND' : 'Số tiền USDT'}
@@ -536,7 +536,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-3">
                             {bankingConfig && (
-                              <div className="p-4 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl space-y-3">
+                              <div className="p-4 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-xl space-y-3">
                                 <div className="flex items-center gap-2">
                                   <Landmark size={14} className="text-brand-blue" />
                                   <span className="text-[10px] font-bold text-slate-400">{bankingConfig.bankName}</span>
@@ -632,21 +632,21 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
 
                         {/* Payment Info - Always visible */}
                         {cryptoConfig.walletAddress && (
-                          <div className="p-4 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl space-y-4">
+                          <div className="p-4 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-xl space-y-4">
                             {/* Address + QR grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4">
                               {/* Left: Address & info */}
                               <div className="space-y-3">
                                 <div className="space-y-2">
                                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Địa chỉ ví nhận USDT</span>
-                                  <div className="flex items-center justify-between bg-slate-50 dark:bg-white/[0.03] px-3 py-2.5 rounded-lg border border-black/[0.04] dark:border-white/[0.04]">
+                                  <div className="flex items-center justify-between bg-slate-50 dark:bg-white/[0.03] px-3 py-2.5 rounded-lg border border-black/[0.04] dark:border-white/[0.08]">
                                     <span className="text-[11px] font-mono font-bold text-slate-700 dark:text-gray-200 break-all">{cryptoConfig.walletAddress}</span>
                                     <button onClick={() => copyText(cryptoConfig.walletAddress, 'wallet')} className="p-1.5 ml-2 shrink-0 rounded-md hover:bg-black/[0.04] dark:hover:bg-white/[0.04] text-slate-400">
                                       {copied === 'wallet' ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
                                     </button>
                                   </div>
                                 </div>
-                                <div className="flex items-center justify-between pt-2 border-t border-black/[0.04] dark:border-white/[0.04]">
+                                <div className="flex items-center justify-between pt-2 border-t border-black/[0.04] dark:border-white/[0.08]">
                                   <span className="text-[10px] font-bold text-slate-400">Số USDT</span>
                                   <span className="text-lg font-black text-amber-600 dark:text-amber-400">{selectedPack?.price || 0} USDT</span>
                                 </div>
@@ -728,12 +728,12 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
                         )}
 
                         {/* ═══ Manual TxHash for QR scan payments ═══ */}
-                        <div className="pt-3 border-t border-black/[0.04] dark:border-white/[0.04]">
+                        <div className="pt-3 border-t border-black/[0.04] dark:border-white/[0.08]">
                           <p className="text-[10px] font-bold text-slate-400 mb-2">Đã quét QR và gửi từ ví di động?</p>
                           <div className="flex gap-2">
                             <input type="text" value={manualTxHash} onChange={e => setManualTxHash(e.target.value.trim())}
                               placeholder="Dán Transaction Hash (0x...) tại đây"
-                              className="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-lg text-[11px] font-mono text-slate-700 dark:text-gray-300 placeholder:text-slate-300 dark:placeholder:text-gray-700 focus:outline-none focus:border-amber-500/30" />
+                              className="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-lg text-[11px] font-mono text-slate-700 dark:text-gray-300 placeholder:text-slate-300 dark:placeholder:text-gray-700 focus:outline-none focus:border-amber-500/30" />
                             <button onClick={async () => {
                               if (!manualTxHash || !pendingTx || manualTxHash.length < 60) {
                                 setCryptoError('Vui lòng nhập đúng transaction hash (bắt đầu bằng 0x...)');

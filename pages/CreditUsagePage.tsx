@@ -156,7 +156,7 @@ const CreditUsagePage: React.FC = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fafafa] dark:bg-[#030305] px-6">
+      <div className="min-h-screen flex items-center justify-center bg-[#fafafa] dark:bg-[#0a0d14] px-6">
         <div className="text-center space-y-8 max-w-md">
           <div className="w-20 h-20 bg-brand-blue/10 rounded-2xl flex items-center justify-center mx-auto text-brand-blue">
             <Lock size={36} />
@@ -176,7 +176,7 @@ const CreditUsagePage: React.FC = () => {
   const totalPages = Math.ceil(total / LIMIT);
 
   return (
-    <div className="pt-28 pb-32 bg-[#fafafa] dark:bg-[#030305] min-h-screen transition-colors duration-500 selection:bg-brand-blue/30 overflow-x-hidden">
+    <div className="pt-28 pb-32 bg-[#fafafa] dark:bg-[#0a0d14] min-h-screen transition-colors duration-500 selection:bg-brand-blue/30 overflow-x-hidden">
       
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">

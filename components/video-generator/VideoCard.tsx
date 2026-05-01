@@ -90,7 +90,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
   const cardClass = `group relative p-3 rounded-2xl border transition-all flex flex-col gap-3 ${isSelected
     ? 'border-indigo-500/40 bg-indigo-500/5'
-    : 'border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-[#111114] hover:border-black/[0.1] dark:hover:border-white/[0.08] shadow-sm dark:shadow-none'
+    : 'border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#1a1f2b] hover:border-black/[0.1] dark:hover:border-white/[0.08] shadow-sm dark:shadow-none'
     }`;
 
   return (
@@ -101,7 +101,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       className={cardClass}
       onClick={() => onToggleSelect()}
     >
-      <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-100 dark:bg-black border border-black/[0.06] dark:border-white/[0.04] flex items-center justify-center">
+      <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-100 dark:bg-black border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-center">
         {res.status === 'processing' ? (
           <div className="w-full h-full flex flex-col items-center justify-center relative bg-slate-200 dark:bg-black/60">
             <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -229,18 +229,18 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         <div className="space-y-1">
           <h4 className="text-[11px] font-semibold text-slate-700 dark:text-white/80 truncate leading-tight">{res.prompt}</h4>
           <div className="flex justify-between items-center">
-            <p className="text-[8px] font-medium text-slate-400 dark:text-[#444] flex items-center gap-1.5">
+            <p className="text-[8px] font-medium text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
               <Clock size={9} className="text-[#333]" /> {res.fullTimestamp}
             </p>
             <div className="flex items-center gap-1.5">
-              <span className="text-[7px] font-mono text-slate-400 dark:text-[#444] bg-black/[0.03] dark:bg-white/[0.03] px-1.5 py-0.5 rounded">
+              <span className="text-[7px] font-mono text-slate-400 dark:text-gray-500 bg-black/[0.03] dark:bg-white/[0.03] px-1.5 py-0.5 rounded">
                 {res.id.length > 12 ? res.id.slice(0, 6) + '…' + res.id.slice(-3) : res.id}
               </span>
               <button onClick={handleCopyId} className="p-0.5 text-[#444] hover:text-indigo-400 transition-colors"><Copy size={9} /></button>
             </div>
           </div>
         </div>
-        <div className="flex justify-between items-center pt-1.5 border-t border-black/[0.06] dark:border-white/[0.04]">
+        <div className="flex justify-between items-center pt-1.5 border-t border-black/[0.06] dark:border-white/[0.08]">
           <div className="flex flex-col gap-0.5">
             <div className="flex flex-wrap items-center gap-1">
               <span className="text-[8px] font-medium text-indigo-400/80">{res.duration}</span>

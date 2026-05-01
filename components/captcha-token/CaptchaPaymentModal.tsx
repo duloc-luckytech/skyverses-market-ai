@@ -111,7 +111,7 @@ export const CaptchaPaymentModal: React.FC<CaptchaPaymentModalProps> = ({
       <motion.div 
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        className="relative w-full max-w-4xl bg-white dark:bg-[#0c0c0e] rounded-[2.5rem] border border-black/10 dark:border-white/10 shadow-3xl overflow-hidden flex flex-col md:flex-row transition-all duration-500"
+        className="relative w-full max-w-4xl bg-white dark:bg-[#0a0d14] rounded-[2.5rem] border border-black/10 dark:border-white/10 shadow-3xl overflow-hidden flex flex-col md:flex-row transition-all duration-500"
       >
         {/* Left Column: Summary */}
         <div className="w-full md:w-[320px] bg-slate-50 dark:bg-black/40 p-10 border-b md:border-b-0 md:border-r border-black/5 dark:border-white/5 flex flex-col shrink-0">
@@ -154,7 +154,7 @@ export const CaptchaPaymentModal: React.FC<CaptchaPaymentModalProps> = ({
         </div>
 
         {/* Right Column: QR & Transfer Info */}
-        <div className="flex-grow p-8 lg:p-12 space-y-8 relative overflow-hidden bg-white dark:bg-[#0c0c0e]">
+        <div className="flex-grow p-8 lg:p-12 space-y-8 relative overflow-hidden bg-white dark:bg-[#0a0d14]">
            <button 
              onClick={() => { 
                if (status !== 'VERIFYING') {

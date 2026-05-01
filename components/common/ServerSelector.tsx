@@ -103,7 +103,7 @@ export const ServerSelector: React.FC<ServerSelectorProps> = ({
           value={selected}
           onChange={e => onChange(e.target.value)}
           disabled={disabled}
-          className="w-full bg-white dark:bg-[#1c1c1e] border border-slate-200 dark:border-white/10 p-3 rounded-lg text-[11px] font-black uppercase outline-none appearance-none focus:border-purple-500 text-slate-800 dark:text-white transition-colors cursor-pointer disabled:opacity-50"
+          className="w-full bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 p-3 rounded-lg text-[11px] font-black uppercase outline-none appearance-none focus:border-purple-500 text-slate-800 dark:text-white transition-colors cursor-pointer disabled:opacity-50"
         >
           {SERVER_OPTIONS.map(s => {
             const isLive = statusMap[s.key] !== false;

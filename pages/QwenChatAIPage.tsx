@@ -129,7 +129,7 @@ const QwenChatAIPage: React.FC = () => {
   });
 
   return (
-    <div className="bg-white dark:bg-[#0a0a0c] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 overflow-x-hidden pt-16 transition-colors duration-300">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 overflow-x-hidden pt-16 transition-colors duration-300">
 
       {/* ═══════════ HERO SECTION ═══════════ */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-16 relative overflow-hidden">
@@ -141,7 +141,7 @@ const QwenChatAIPage: React.FC = () => {
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center relative z-10">
           {/* LEFT */}
           <div className="lg:col-span-6 space-y-7">
-            <Link to="/markets" className="inline-flex items-center gap-1.5 text-[10px] font-medium uppercase text-slate-400 dark:text-[#555] hover:text-purple-500 dark:hover:text-purple-400 transition-colors tracking-wider">
+            <Link to="/markets" className="inline-flex items-center gap-1.5 text-[10px] font-medium uppercase text-slate-400 dark:text-gray-400 hover:text-purple-500 dark:hover:text-purple-400 transition-colors tracking-wider">
               <ChevronLeft size={14} /> Trở lại
             </Link>
 
@@ -157,7 +157,7 @@ const QwenChatAIPage: React.FC = () => {
               <h1 className="text-5xl lg:text-7xl font-bold leading-[0.9] tracking-tight">
                 Qwen <br /><span className="text-purple-500 dark:text-purple-400">Chat AI</span>
               </h1>
-              <p className="text-sm text-slate-500 dark:text-[#666] font-medium leading-relaxed max-w-md">
+              <p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed max-w-md">
                 Chat với AI chạy 100% local — nhanh, riêng tư, không gửi dữ liệu ra ngoài.
                 Hỗ trợ Vision, Deep Reasoning, và OpenAI-compatible REST API.
               </p>
@@ -165,11 +165,11 @@ const QwenChatAIPage: React.FC = () => {
 
             {/* Model family pills */}
             <div className="space-y-2">
-              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#444] tracking-wider">Available Models</p>
+              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-500 tracking-wider">Available Models</p>
               <div className="flex flex-wrap gap-1.5">
                 {MODEL_FAMILIES.map(m => (
-                  <div key={m.name} className={`px-2.5 py-1 rounded-lg text-[9px] font-medium border transition-all ${m.hot ? 'bg-purple-500/10 border-purple-500/25 text-purple-500 dark:text-purple-400' : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.06] dark:border-white/[0.04] text-slate-500 dark:text-[#666]'}`}>
-                    {m.name} <span className="text-slate-400 dark:text-[#444] ml-1">· {m.tag}</span>
+                  <div key={m.name} className={`px-2.5 py-1 rounded-lg text-[9px] font-medium border transition-all ${m.hot ? 'bg-purple-500/10 border-purple-500/25 text-purple-500 dark:text-purple-400' : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.06] dark:border-white/[0.04] text-slate-500 dark:text-gray-400'}`}>
+                    {m.name} <span className="text-slate-400 dark:text-gray-500 ml-1">· {m.tag}</span>
                   </div>
                 ))}
               </div>
@@ -182,7 +182,7 @@ const QwenChatAIPage: React.FC = () => {
                   <div className="shrink-0 w-6 h-6 rounded-md bg-purple-500/10 flex items-center justify-center text-purple-500 dark:text-purple-400">{s.icon}</div>
                   <div>
                     <p className="text-[10px] font-semibold text-slate-700 dark:text-white/80">{s.label}</p>
-                    <p className="text-[8px] font-medium text-slate-400 dark:text-[#444]">{s.sub}</p>
+                    <p className="text-[8px] font-medium text-slate-400 dark:text-gray-500">{s.sub}</p>
                   </div>
                 </div>
               ))}
@@ -292,7 +292,7 @@ const QwenChatAIPage: React.FC = () => {
               {/* Floating badge left */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }}
-                className="absolute -left-3 top-[28%] px-3 py-2 bg-white dark:bg-[#0e0e12] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
+                className="absolute -left-3 top-[28%] px-3 py-2 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
               >
                 <div className="w-6 h-6 rounded-md bg-emerald-500/10 text-emerald-500 flex items-center justify-center"><Shield size={12} /></div>
                 <div>
@@ -304,7 +304,7 @@ const QwenChatAIPage: React.FC = () => {
               {/* Floating badge right */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1 }}
-                className="absolute -right-3 bottom-[22%] px-3 py-2 bg-white dark:bg-[#0e0e12] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
+                className="absolute -right-3 bottom-[22%] px-3 py-2 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
               >
                 <div className="w-6 h-6 rounded-md bg-purple-500/10 text-purple-500 flex items-center justify-center"><Zap size={12} /></div>
                 <div>
@@ -323,7 +323,7 @@ const QwenChatAIPage: React.FC = () => {
           <div className="text-center space-y-3 mb-16">
             <span className="text-purple-500/60 dark:text-purple-400 font-semibold uppercase tracking-wider text-[9px]">How It Works</span>
             <h2 className="text-3xl lg:text-5xl font-bold tracking-tight">4 bước <span className="text-purple-500 dark:text-purple-400">sử dụng AI</span></h2>
-            <p className="text-slate-500 dark:text-[#555] font-medium text-sm max-w-lg mx-auto">Từ mở trình duyệt đến tích hợp API — mọi thứ đều miễn phí.</p>
+            <p className="text-slate-500 dark:text-gray-400 font-medium text-sm max-w-lg mx-auto">Từ mở trình duyệt đến tích hợp API — mọi thứ đều miễn phí.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -341,10 +341,10 @@ const QwenChatAIPage: React.FC = () => {
                 </div>
                 <div className="space-y-2 min-w-0">
                   <h3 className="text-sm font-semibold">{s.title}</h3>
-                  <p className="text-[10px] text-slate-500 dark:text-[#555] font-medium leading-relaxed">{s.desc}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-gray-400 font-medium leading-relaxed">{s.desc}</p>
                   <div className="flex flex-wrap gap-1">
                     {s.tags.map(t => (
-                      <span key={t} className="px-1.5 py-0.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.04] rounded text-[7px] font-medium text-slate-400 dark:text-[#444]">{t}</span>
+                      <span key={t} className="px-1.5 py-0.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.04] rounded text-[7px] font-medium text-slate-400 dark:text-gray-500">{t}</span>
                     ))}
                   </div>
                 </div>
@@ -360,7 +360,7 @@ const QwenChatAIPage: React.FC = () => {
           <div className="text-center space-y-3 mb-14">
             <span className="text-purple-500/60 dark:text-purple-400 font-semibold uppercase tracking-wider text-[9px]">3 AI Models</span>
             <h2 className="text-3xl lg:text-5xl font-bold tracking-tight">Powered by <span className="text-purple-500 dark:text-purple-400">Qwen 3.5</span></h2>
-            <p className="text-slate-500 dark:text-[#555] font-medium text-sm max-w-xl mx-auto">Chọn model phù hợp: chat nhanh, suy luận chuyên sâu, hoặc phân tích hình ảnh.</p>
+            <p className="text-slate-500 dark:text-gray-400 font-medium text-sm max-w-xl mx-auto">Chọn model phù hợp: chat nhanh, suy luận chuyên sâu, hoặc phân tích hình ảnh.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -368,15 +368,15 @@ const QwenChatAIPage: React.FC = () => {
               <div key={m.sub} className={`p-5 bg-black/[0.01] dark:bg-white/[0.015] border rounded-2xl space-y-4 transition-all ${accentBorder[m.accent]}`}>
                 <div className="flex justify-between items-start">
                   <div className={`w-9 h-9 rounded-xl ${iconBg[m.accent]} flex items-center justify-center`}>{m.icon}</div>
-                  <span className="text-[7px] font-medium uppercase tracking-wider text-slate-400 dark:text-[#444]">{m.sub}</span>
+                  <span className="text-[7px] font-medium uppercase tracking-wider text-slate-400 dark:text-gray-500">{m.sub}</span>
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold">{m.label}</h3>
-                  <p className="text-[10px] text-slate-500 dark:text-[#555] font-medium leading-relaxed">{m.desc}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-gray-400 font-medium leading-relaxed">{m.desc}</p>
                 </div>
                 <ul className="space-y-1.5 pt-1">
                   {m.features.map(f => (
-                    <li key={f} className="flex items-start gap-2 text-[9px] font-medium text-slate-500 dark:text-[#555]">
+                    <li key={f} className="flex items-start gap-2 text-[9px] font-medium text-slate-500 dark:text-gray-400">
                       <CheckCircle2 size={10} className={`${checkColor[m.accent]} shrink-0 mt-0.5`} /> {f}
                     </li>
                   ))}
@@ -394,7 +394,7 @@ const QwenChatAIPage: React.FC = () => {
             {/* Left: Code block */}
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               <div className="rounded-2xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] shadow-xl">
-                <div className="bg-slate-100 dark:bg-[#1a1a1e] px-4 py-2.5 flex items-center gap-2 border-b border-black/[0.04] dark:border-white/[0.04]">
+                <div className="bg-slate-100 dark:bg-[#13171f] px-4 py-2.5 flex items-center gap-2 border-b border-black/[0.04] dark:border-white/[0.04]">
                   <div className="flex gap-1.5">
                     <div className="w-2 h-2 rounded-full bg-red-400" />
                     <div className="w-2 h-2 rounded-full bg-amber-400" />
@@ -424,7 +424,7 @@ const QwenChatAIPage: React.FC = () => {
                 <h2 className="text-3xl font-bold tracking-tight">
                   OpenAI-Compatible <span className="text-purple-500 dark:text-purple-400">REST API</span>
                 </h2>
-                <p className="text-sm text-slate-500 dark:text-[#555] font-medium leading-relaxed">
+                <p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed">
                   Tích hợp AI vào ứng dụng của bạn với API chuẩn OpenAI format. Không cần API key — server chạy local,
                   mọi endpoint đều public.
                 </p>
@@ -441,7 +441,7 @@ const QwenChatAIPage: React.FC = () => {
                   <div key={stat.l} className="flex justify-between items-center border-b border-black/5 dark:border-white/[0.06] pb-3 group">
                     <div className="flex items-center gap-2.5">
                       <span className="text-purple-500 group-hover:scale-110 transition-transform">{stat.icon}</span>
-                      <span className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">{stat.l}</span>
+                      <span className="text-[10px] font-semibold uppercase text-slate-400 dark:text-gray-400 tracking-wider">{stat.l}</span>
                     </div>
                     <span className="text-[10px] font-bold text-slate-700 dark:text-white/80">{stat.v}</span>
                   </div>
@@ -450,7 +450,7 @@ const QwenChatAIPage: React.FC = () => {
 
               {/* Integration badges */}
               <div className="space-y-2">
-                <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#444] tracking-wider">Tích hợp dễ dàng</p>
+                <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-500 tracking-wider">Tích hợp dễ dàng</p>
                 <div className="flex flex-wrap gap-2">
                   {INTEGRATIONS.map(i => (
                     <span key={i.name} className="px-3 py-1.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05] rounded-xl text-[9px] font-bold text-slate-600 dark:text-gray-400 hover:border-purple-500/20 transition-colors">
@@ -487,7 +487,7 @@ const QwenChatAIPage: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-[11px] font-semibold mb-0.5">{uc.title}</h4>
-                  <p className="text-[9px] text-slate-500 dark:text-[#555] font-medium leading-relaxed">{uc.desc}</p>
+                  <p className="text-[9px] text-slate-500 dark:text-gray-400 font-medium leading-relaxed">{uc.desc}</p>
                 </div>
               </motion.div>
             ))}

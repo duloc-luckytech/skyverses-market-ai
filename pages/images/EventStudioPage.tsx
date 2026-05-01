@@ -151,7 +151,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
   const EvIcon = config.icon;
 
   return (
-    <div className="bg-[#fdfdfe] dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden transition-colors duration-500">
+    <div className="bg-[#fdfdfe] dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden transition-colors duration-500">
       
       {/* ═══════════════════════════════════════════════════
           SECTION 1: HERO
@@ -225,7 +225,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
               ) : images.length > 0 ? (
                 <div className="grid grid-cols-2 gap-4 animate-marquee-vertical">
                   {[...images, ...images].map((img, idx) => (
-                    <div key={`${img._id}-${idx}`} className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-[#0a0a0d] border border-black/[0.04] dark:border-white/[0.04] group shadow-lg">
+                    <div key={`${img._id}-${idx}`} className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-[#0a0d14] border border-black/[0.04] dark:border-white/[0.04] group shadow-lg">
                       <img src={img.thumbnailUrl} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" alt={img.title} loading="lazy" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                       <div className="absolute bottom-4 left-4 right-4">
@@ -248,7 +248,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       {/* ═══════════════════════════════════════════════════
           SECTION 2: HOW IT WORKS
       ═══════════════════════════════════════════════════ */}
-      <section className="py-28 lg:py-36 bg-white dark:bg-[#060608] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
+      <section className="py-28 lg:py-36 bg-white dark:bg-[#0a0d14] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
         <div className="max-w-5xl mx-auto px-6 space-y-20">
           <motion.div {...fadeUp} className="text-center space-y-4">
             <span className={`inline-flex items-center gap-2 px-3 py-1.5 bg-${ac}-500/8 border border-${ac}-500/15 rounded-lg text-${ac}-500 text-[9px] font-bold uppercase tracking-[0.2em]`}>
@@ -326,7 +326,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       {/* ═══════════════════════════════════════════════════
           SECTION 4: STYLE PRESETS
       ═══════════════════════════════════════════════════ */}
-      <section className="py-20 lg:py-28 bg-white dark:bg-[#060608] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
+      <section className="py-20 lg:py-28 bg-white dark:bg-[#0a0d14] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
         <div className="max-w-5xl mx-auto px-6 space-y-12">
           <motion.div {...fadeUp} className="text-center space-y-3">
             <h2 className="text-2xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
@@ -387,7 +387,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       {/* ═══════════════════════════════════════════════════
           SECTION 6: FEATURES GRID
       ═══════════════════════════════════════════════════ */}
-      <section className="py-24 bg-white dark:bg-[#060608] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
+      <section className="py-24 bg-white dark:bg-[#0a0d14] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
         <div className="max-w-5xl mx-auto px-6 space-y-16">
           <motion.div {...fadeUp} className="text-center space-y-3">
             <h2 className="text-2xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
@@ -429,7 +429,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.slice(0, 8).map((img, i) => (
-                <motion.div key={img._id} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.05 }} className="aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-[#0a0a0d] border border-black/[0.04] dark:border-white/[0.04] group relative shadow-sm hover:shadow-xl transition-all">
+                <motion.div key={img._id} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.05 }} className="aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-[#0a0d14] border border-black/[0.04] dark:border-white/[0.04] group relative shadow-sm hover:shadow-xl transition-all">
                   <img src={img.thumbnailUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={img.title} loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
@@ -445,7 +445,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       {/* ═══════════════════════════════════════════════════
           SECTION 8: PRICING COMPARISON
       ═══════════════════════════════════════════════════ */}
-      <section className="py-24 lg:py-32 bg-white dark:bg-[#060608] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
+      <section className="py-24 lg:py-32 bg-white dark:bg-[#0a0d14] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
         <div className="max-w-4xl mx-auto px-6 space-y-16">
           <motion.div {...fadeUp} className="text-center space-y-4">
             <span className={`inline-flex items-center gap-2 px-3 py-1.5 bg-${ac}-500/8 border border-${ac}-500/15 rounded-lg text-${ac}-500 text-[9px] font-bold uppercase tracking-[0.2em]`}>
@@ -527,7 +527,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       {/* ═══════════════════════════════════════════════════
           SECTION 10: CROSS-SELL
       ═══════════════════════════════════════════════════ */}
-      <section className="py-20 lg:py-28 bg-white dark:bg-[#060608] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
+      <section className="py-20 lg:py-28 bg-white dark:bg-[#0a0d14] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
         <div className="max-w-5xl mx-auto px-6 space-y-12">
           <motion.div {...fadeUp} className="text-center space-y-3">
             <h2 className="text-2xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">

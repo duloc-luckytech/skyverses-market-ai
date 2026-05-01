@@ -51,9 +51,9 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[#030304] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
+    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[#0a0d14] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white dark:bg-[#08080a] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
+      <div className="bg-white dark:bg-[#0a0d14] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-brand-blue/10 dark:bg-brand-blue/20 rounded-xl flex items-center justify-center text-brand-blue">
             <MusicIcon size={24} />
@@ -71,7 +71,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       <div className="flex-grow overflow-y-auto no-scrollbar pb-32">
         <div className="max-w-[1200px] mx-auto p-12">
           
-          <div className="bg-white dark:bg-[#0a0a0c] border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row h-full min-h-[600px]">
+          <div className="bg-white dark:bg-[#0a0d14] border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row h-full min-h-[600px]">
              
              {/* LEFT PANEL: CONFIG */}
              <div className="w-full lg:w-1/2 p-10 border-r border-gray-50 dark:border-white/5 flex flex-col justify-between">

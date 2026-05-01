@@ -238,9 +238,9 @@ const AUPX1Studio = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#050507] overflow-hidden text-black dark:text-white font-mono selection:bg-brand-blue/30">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white font-mono selection:bg-brand-blue/30">
 
-      <div className="w-full lg:w-[340px] shrink-0 flex flex-col bg-[#f9f9fb] dark:bg-[#0a0a0c] border-r border-black/5 dark:border-white/5 overflow-y-auto no-scrollbar relative z-20">
+      <div className="w-full lg:w-[340px] shrink-0 flex flex-col bg-[#f9f9fb] dark:bg-[#0a0d14] border-r border-black/5 dark:border-white/5 overflow-y-auto no-scrollbar relative z-20">
          <div className="p-8 border-b border-black/5 dark:border-white/5 space-y-2 bg-gradient-to-b from-brand-blue/10 to-transparent">
             <h3 className="text-[11px] font-black uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
                <Workflow className="w-4 h-4" /> AUP-X1_Studio
@@ -308,7 +308,7 @@ const AUPX1Studio = () => {
          </div>
       </div>
 
-      <div className="flex-grow flex flex-col relative bg-white dark:bg-[#020202] overflow-hidden">
+      <div className="flex-grow flex flex-col relative bg-white dark:bg-[#0a0d14] overflow-hidden">
         <div className="flex-grow overflow-y-auto p-12 no-scrollbar flex flex-col items-center justify-center">
            <AnimatePresence mode="wait">
               {activeStage === 'ADAPTER_RENDER' ? (
@@ -361,7 +361,7 @@ const AUPX1Studio = () => {
         </div>
       </div>
 
-      <aside className="hidden xl:flex w-[320px] shrink-0 flex-col bg-[#fdfdfd] dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-hidden">
+      <aside className="hidden xl:flex w-[320px] shrink-0 flex-col bg-[#fdfdfd] dark:bg-[#0a0d14] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Activity className="w-4 h-4 text-brand-blue" /> Studio_Logs

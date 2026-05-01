@@ -24,7 +24,7 @@ const ProductUniversalProducer = () => {
   if (!solution) return null;
 
   return (
-    <div className="pt-24 bg-white dark:bg-[#050507] min-h-screen text-black dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden transition-colors duration-500">
+    <div className="pt-24 bg-white dark:bg-[#0a0d14] min-h-screen text-black dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden transition-colors duration-500">
       
       {/* 1. STUDIO MODAL (OVERLAY) */}
       {isStudioOpen && (
@@ -85,7 +85,7 @@ const ProductUniversalProducer = () => {
 
         {/* HERO WORKFLOW PREVIEW */}
         <section className="mb-32 relative group">
-           <div className="aspect-[21/9] w-full bg-gray-100 dark:bg-[#0a0a0c] border border-black/5 dark:border-white/5 overflow-hidden relative shadow-2xl rounded-sm">
+           <div className="aspect-[21/9] w-full bg-gray-100 dark:bg-[#0a0d14] border border-black/5 dark:border-white/5 overflow-hidden relative shadow-2xl rounded-sm">
               <img src={solution.imageUrl} className="w-full h-full object-cover grayscale opacity-30 group-hover:opacity-50 transition-all duration-1000 group-hover:scale-105" alt="AUP-X1 Mainframe" />
               <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent opacity-90"></div>
               

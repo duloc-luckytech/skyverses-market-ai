@@ -44,7 +44,7 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({ isOpen, onClose })
         animate={{ scale: 1, opacity: 1, y: 0 }} 
         exit={{ scale: 0.96, opacity: 0, y: 10 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative w-full max-w-lg bg-white dark:bg-[#0c0c10] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-lg bg-white dark:bg-[#13171f] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl"
       >
         {/* Success State */}
         <AnimatePresence>
@@ -53,7 +53,7 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({ isOpen, onClose })
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 z-50 bg-white dark:bg-[#0c0c10] flex flex-col items-center justify-center gap-4"
+              className="absolute inset-0 z-50 bg-white dark:bg-[#13171f] flex flex-col items-center justify-center gap-4"
             >
               <motion.div
                 initial={{ scale: 0 }}
@@ -73,7 +73,7 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({ isOpen, onClose })
         </AnimatePresence>
 
         {/* Header */}
-        <div className="px-6 py-5 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
+        <div className="px-6 py-5 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-brand-blue/10 text-brand-blue flex items-center justify-center">
               <Sparkles size={18} />

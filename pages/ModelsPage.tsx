@@ -50,10 +50,10 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
       />
       <motion.div 
         initial={{ scale: 0.97, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.97, opacity: 0, y: 10 }}
-        className="relative w-full max-w-4xl bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-4xl bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
       >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between shrink-0">
+        <div className="px-6 py-5 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue">
               <Cpu size={20} />
@@ -91,7 +91,7 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
                     { label: 'Extend', val: model.extendVideo },
                     { label: 'Remix', val: model.withRemix }
                   ].map(f => (
-                    <div key={f.label} className={`px-3 py-2 border rounded-lg flex items-center gap-2 text-[12px] font-medium transition-all ${f.val ? 'border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/[0.06] text-emerald-600 dark:text-emerald-400' : 'border-black/[0.04] dark:border-white/[0.04] text-slate-300 dark:text-gray-600'}`}>
+                    <div key={f.label} className={`px-3 py-2 border rounded-lg flex items-center gap-2 text-[12px] font-medium transition-all ${f.val ? 'border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/[0.06] text-emerald-600 dark:text-emerald-400' : 'border-black/[0.04] dark:border-white/[0.08] text-slate-300 dark:text-gray-600'}`}>
                       {f.val ? <CheckCircle2 size={14}/> : <X size={14}/>}
                       {f.label}
                     </div>
@@ -105,7 +105,7 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
                   <p className="text-[12px] font-medium text-slate-400 dark:text-gray-500 mb-2">Tỷ lệ</p>
                   <div className="flex flex-wrap gap-1.5">
                     {model.ratios.map(r => (
-                      <span key={r.type} className="px-2.5 py-1 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-lg text-[11px] font-medium text-slate-600 dark:text-gray-300">{r.name}</span>
+                      <span key={r.type} className="px-2.5 py-1 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-lg text-[11px] font-medium text-slate-600 dark:text-gray-300">{r.name}</span>
                     ))}
                   </div>
                 </div>
@@ -113,7 +113,7 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
                   <p className="text-[12px] font-medium text-slate-400 dark:text-gray-500 mb-2">Thời lượng</p>
                   <div className="flex flex-wrap gap-1.5">
                     {model.durations.map(d => (
-                      <span key={d.type} className="px-2.5 py-1 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-lg text-[11px] font-medium text-slate-600 dark:text-gray-300">{d.name}</span>
+                      <span key={d.type} className="px-2.5 py-1 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-lg text-[11px] font-medium text-slate-600 dark:text-gray-300">{d.name}</span>
                     ))}
                   </div>
                 </div>
@@ -122,7 +122,7 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
 
             {/* Right: Pricing */}
             <div className="lg:col-span-2 space-y-4">
-              <div className="p-6 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl text-center space-y-4">
+              <div className="p-6 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-xl text-center space-y-4">
                 <div className="w-10 h-10 bg-slate-100 dark:bg-white/[0.04] rounded-full flex items-center justify-center text-slate-400 mx-auto">
                   <Clock size={20} />
                 </div>
@@ -143,7 +143,7 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-black/[0.04] dark:border-white/[0.04] flex justify-between items-center shrink-0">
+        <div className="px-6 py-4 border-t border-black/[0.04] dark:border-white/[0.08] flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${model.status === 'ON' ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse`} />
             <span className="text-[12px] font-medium text-slate-400">{model.status === 'ON' ? 'Hoạt động' : 'Tạm dừng'}</span>
@@ -208,7 +208,7 @@ const ModelsPage: React.FC = () => {
   }, [models, search, activeCat, activeServer]);
 
   return (
-    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-white dark:bg-[#0a0a0c] text-black dark:text-white transition-colors duration-300">
+    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-white dark:bg-[#0a0d14] text-black dark:text-white transition-colors duration-300">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12">
         
         {/* ═══════ HERO ═══════ */}
@@ -241,7 +241,7 @@ const ModelsPage: React.FC = () => {
             {CATEGORIES.map(cat => (
               <button 
                 key={cat} onClick={() => setActiveCat(cat)}
-                className={`px-4 py-2 rounded-lg text-[13px] font-medium transition-all ${activeCat === cat ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20' : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/30'}`}
+                className={`px-4 py-2 rounded-lg text-[13px] font-medium transition-all ${activeCat === cat ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20' : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 border border-black/[0.04] dark:border-white/[0.08] hover:border-brand-blue/30'}`}
               >
                 {cat}
               </button>
@@ -268,7 +268,7 @@ const ModelsPage: React.FC = () => {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1,2,3,4,5,6].map(i => (
-              <div key={i} className="h-[280px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl animate-pulse" />
+              <div key={i} className="h-[280px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-2xl animate-pulse" />
             ))}
           </div>
         ) : (
@@ -281,7 +281,7 @@ const ModelsPage: React.FC = () => {
                 <motion.div 
                   key={model.id_base}
                   whileHover={{ y: -4 }}
-                  className="group relative bg-white dark:bg-[#111114] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl p-5 space-y-4 cursor-pointer hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg transition-all flex flex-col"
+                  className="group relative bg-white dark:bg-[#1a1f2b] border border-black/[0.04] dark:border-white/[0.08] rounded-2xl p-5 space-y-4 cursor-pointer hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg transition-all flex flex-col"
                   onClick={() => setSelectedModel(model)}
                 >
                   {/* NEW Badge */}
@@ -296,7 +296,7 @@ const ModelsPage: React.FC = () => {
 
                   {/* Top Row: Icon + Name */}
                   <div className="flex gap-3.5 items-start">
-                    <div className="w-11 h-11 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl flex items-center justify-center text-slate-400 group-hover:text-brand-blue transition-colors shrink-0">
+                    <div className="w-11 h-11 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-xl flex items-center justify-center text-slate-400 group-hover:text-brand-blue transition-colors shrink-0">
                       {isVideo ? <Video size={20} /> : <ImageIcon size={20} />}
                     </div>
                     <div className="min-w-0 flex-1 pr-12">
@@ -330,7 +330,7 @@ const ModelsPage: React.FC = () => {
                   </div>
 
                   {/* Footer */}
-                  <div className="pt-3 border-t border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between mt-auto">
+                  <div className="pt-3 border-t border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between mt-auto">
                     <div className="flex items-center gap-1.5">
                       <div className={`w-1.5 h-1.5 rounded-full ${model.status === 'ON' ? 'bg-emerald-500' : 'bg-red-500'}`} />
                       <span className="text-[11px] font-medium text-slate-400">{model.status === 'ON' ? 'Active' : 'Offline'}</span>

@@ -38,7 +38,7 @@ const VideoResultCard: React.FC<{
 
   return (
     <motion.div layout initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-      className="group relative bg-white dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:border-indigo-500/20 transition-all"
+      className="group relative bg-white dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:border-indigo-500/20 transition-all"
     >
       <div className="aspect-video bg-black relative overflow-hidden cursor-pointer" onClick={togglePlay}>
         {task.status === 'processing' ? (
@@ -117,8 +117,8 @@ const LinkExtractorModal: React.FC<{
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
           <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-            className="relative w-full max-w-lg bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
-            <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between">
+            className="relative w-full max-w-lg bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
+            <div className="p-6 border-b border-slate-100 dark:border-white/[0.08] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
                   <LinkIcon size={18} />
@@ -144,7 +144,7 @@ const LinkExtractorModal: React.FC<{
                 </button>
               </div>
             </div>
-            <div className="p-6 border-t border-slate-100 dark:border-white/[0.04]">
+            <div className="p-6 border-t border-slate-100 dark:border-white/[0.08]">
               <button onClick={handleSubmit} disabled={!url.trim() || isExtracting}
                 className="w-full py-3.5 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-xl text-xs font-bold shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2 disabled:opacity-40">
                 {isExtracting ? <><Loader2 className="animate-spin" size={16} /> Đang phân tích...</> : <><LinkIcon size={16} /> Trích xuất</>}
@@ -162,7 +162,7 @@ const Pill = ({ label, active, onClick, disabled }: { label: string; active: boo
   <button onClick={onClick} disabled={disabled}
     className={`px-2.5 py-1 rounded-md text-[10px] font-semibold transition-all border ${active
       ? 'bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border-indigo-500/25'
-      : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-600 dark:text-[#888] hover:text-slate-800 dark:hover:text-white/70'
+      : 'bg-transparent border-black/[0.06] dark:border-white/[0.08] text-slate-600 dark:text-gray-300 hover:text-slate-800 dark:hover:text-white/70'
       }`}
   >{label}</button>
 );
@@ -305,10 +305,10 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300">
+    <div className="h-full w-full flex flex-col bg-slate-50 dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300">
 
       {/* ─── HEADER ─── */}
-      <header className="h-14 border-b border-slate-200/80 dark:border-white/[0.04] flex items-center justify-between px-4 lg:px-6 shrink-0 z-50 bg-white/90 dark:bg-[#0c0c10]/90 backdrop-blur-lg">
+      <header className="h-14 border-b border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between px-4 lg:px-6 shrink-0 z-50 bg-white/90 dark:bg-[#13171f]/90 backdrop-blur-lg">
         <div className="flex items-center gap-3">
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
             <ChevronLeft size={18} />
@@ -322,7 +322,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </div>
 
         {/* Mode Toggle */}
-        <div className="flex bg-slate-100 dark:bg-white/[0.03] p-1 rounded-xl border border-slate-200/80 dark:border-white/[0.04]">
+        <div className="flex bg-slate-100 dark:bg-white/[0.03] p-1 rounded-xl border border-slate-200/80 dark:border-white/[0.08]">
           <button onClick={() => v.setMode('MOTION')}
             className={`px-5 py-1.5 rounded-lg text-[10px] font-bold uppercase flex items-center gap-2 transition-all ${v.mode === 'MOTION'
               ? 'bg-indigo-500 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'}`}>
@@ -336,7 +336,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden lg:flex items-center gap-2 bg-slate-100 dark:bg-white/[0.03] px-3 py-1.5 rounded-lg border border-slate-200/80 dark:border-white/[0.04]">
+          <div className="hidden lg:flex items-center gap-2 bg-slate-100 dark:bg-white/[0.03] px-3 py-1.5 rounded-lg border border-slate-200/80 dark:border-white/[0.08]">
             <span className="text-[9px] font-semibold text-slate-500 dark:text-slate-400">Auto tải</span>
             <button onClick={() => setAutoDownload(!autoDownload)}
               className={`w-7 h-3.5 rounded-full relative transition-colors ${autoDownload ? 'bg-indigo-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
@@ -363,11 +363,11 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           ${isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
           w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
-          bg-white dark:bg-[#0c0c10] border-r border-slate-200/80 dark:border-white/[0.04]
+          bg-white dark:bg-[#13171f] border-r border-slate-200/80 dark:border-white/[0.08]
           flex flex-col transition-transform duration-300
         `}>
           {/* Close mobile */}
-          <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/[0.04]">
+          <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/[0.08]">
             <span className="text-xs font-bold text-slate-700 dark:text-white">Cấu hình</span>
             <button onClick={() => setIsMobileExpanded(false)} className="p-1 text-slate-400 hover:text-slate-700">✕</button>
           </div>
@@ -379,7 +379,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 <PenLine size={11} className="text-indigo-400" /> Kịch bản
               </p>
               <textarea value={v.prompt} onChange={e => v.setPrompt(e.target.value)}
-                className="w-full min-h-[80px] bg-slate-50 dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/[0.04] rounded-lg p-3 text-xs font-medium focus:border-indigo-500/30 outline-none transition-all resize-y text-slate-800 dark:text-white/80 placeholder:text-slate-300 dark:placeholder:text-[#333] leading-relaxed"
+                className="w-full min-h-[80px] bg-slate-50 dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/[0.08] rounded-lg p-3 text-xs font-medium focus:border-indigo-500/30 outline-none transition-all resize-y text-slate-800 dark:text-white/80 placeholder:text-slate-300 dark:placeholder:text-[#333] leading-relaxed"
                 placeholder="Mô tả bối cảnh, cảm xúc, hành động..." />
             </div>
 
@@ -424,7 +424,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
             <input type="file" ref={vidInputRef} className="hidden" accept="video/*" onChange={e => v.handleFileUpload(e, 'VID')} />
 
             {/* ─── CONFIG SECTION (Collapsible) ─── */}
-            <div className="border-t border-slate-100 dark:border-white/[0.04] pt-3">
+            <div className="border-t border-slate-100 dark:border-white/[0.08] pt-3">
               <button onClick={() => setConfigExpanded(!configExpanded)} className="w-full flex items-center justify-between group py-1">
                 <span className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5">
                   <Settings2 size={12} className="text-indigo-400" /> Cấu hình AI
@@ -448,7 +448,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                         <option value="fxlab">FxLab Node</option>
                         <option value="gommo">Gommo Cluster</option>
                       </select>
-                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#555] pointer-events-none" size={11} />
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 pointer-events-none" size={11} />
                     </div>
                   </div>
 
@@ -468,7 +468,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                       <AnimatePresence>
                         {showModelMenu && (
                           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
-                            className="absolute bottom-full mb-1 w-full bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/[0.06] rounded-xl shadow-xl p-1.5 z-[110] max-h-48 overflow-y-auto no-scrollbar">
+                            className="absolute bottom-full mb-1 w-full bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/[0.06] rounded-xl shadow-xl p-1.5 z-[110] max-h-48 overflow-y-auto no-scrollbar">
                             {v.availableModels.map(m => (
                               <button key={m._id} onClick={() => { v.setSelectedModel(m); setShowModelMenu(false); }}
                                 className={`w-full p-2.5 flex flex-col items-start rounded-lg transition-all text-left ${v.selectedModel?._id === m._id
@@ -505,7 +505,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
                   {/* Model info */}
                   {v.selectedModel && (
-                    <p className="text-[9px] text-slate-400 dark:text-[#444] truncate px-0.5">
+                    <p className="text-[9px] text-slate-400 dark:text-gray-500 truncate px-0.5">
                       → {v.selectedModel.name}
                     </p>
                   )}
@@ -515,7 +515,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           </div>
 
           {/* ─── FOOTER: Cost + Generate ─── */}
-          <div className="shrink-0 border-t border-slate-200/80 dark:border-white/[0.04] bg-white/80 dark:bg-[#0c0c10]/80 backdrop-blur-lg px-4 py-3 space-y-2.5">
+          <div className="shrink-0 border-t border-slate-200/80 dark:border-white/[0.08] bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg px-4 py-3 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <button onClick={() => setShowQualityModal(true)} className="p-1 text-slate-400 dark:text-slate-500 hover:text-indigo-400 transition-colors rounded-md hover:bg-black/5 dark:hover:bg-white/5">
@@ -542,7 +542,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </aside>
 
         {/* ─── VIEWPORT (Right) ─── */}
-        <div className="flex-grow flex flex-col bg-slate-50 dark:bg-[#050508] overflow-hidden">
+        <div className="flex-grow flex flex-col bg-slate-50 dark:bg-[#0a0d14] overflow-hidden">
           <AnimatePresence mode="wait">
             {hasJobs ? (
               <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -559,7 +559,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                         <Sparkles size={12} /> Template
                       </button>
                       <button onClick={() => v.setTasks([])}
-                        className="px-4 py-1.5 border border-slate-200 dark:border-white/[0.04] rounded-lg text-[10px] font-bold text-slate-400 hover:text-red-500 transition-all">
+                        className="px-4 py-1.5 border border-slate-200 dark:border-white/[0.08] rounded-lg text-[10px] font-bold text-slate-400 hover:text-red-500 transition-all">
                         Dọn dẹp
                       </button>
                     </div>
@@ -601,8 +601,8 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
-              className="bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/[0.06] rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl">
-              <div className="p-6 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between">
+              className="bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/[0.06] rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl">
+              <div className="p-6 border-b border-slate-100 dark:border-white/[0.08] flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-500"><Info size={18} /></div>
                   <h3 className="text-sm font-bold text-slate-800 dark:text-white">Hướng dẫn chất lượng</h3>
@@ -623,7 +623,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                   </div>
                 ))}
               </div>
-              <div className="p-6 border-t border-slate-100 dark:border-white/[0.04] text-center">
+              <div className="p-6 border-t border-slate-100 dark:border-white/[0.08] text-center">
                 <button onClick={() => setShowQualityModal(false)}
                   className="px-10 py-3 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-xl text-xs font-bold shadow-lg hover:brightness-110 transition-all">
                   Đã hiểu

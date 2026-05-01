@@ -16,7 +16,7 @@ const Pill = ({ label, active, onClick, disabled }: { label: string; active: boo
   <button onClick={onClick} disabled={disabled}
     className={`px-2.5 py-1 rounded-md text-[10px] font-semibold transition-all border ${active
       ? 'bg-purple-500/10 text-purple-500 dark:text-purple-400 border-purple-500/25'
-      : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-600 dark:text-[#888] hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
+      : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-600 dark:text-gray-300 hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
       }`}
   >{label}</button>
 );
@@ -165,7 +165,7 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
                         className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] px-2 py-1.5 rounded-lg text-[11px] font-medium outline-none appearance-none focus:border-purple-500/40 transition-all cursor-pointer text-slate-700 dark:text-white/80">
                         {familyList.map(f => <option key={f} value={f}>{f}</option>)}
                       </select>
-                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#555] pointer-events-none" size={10} />
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 pointer-events-none" size={10} />
                     </div>
                     <button onClick={() => setIsDetailModalOpen(true)} disabled={isGenerating}
                       className="shrink-0 px-2 py-1 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-[9px] font-medium text-slate-500 dark:text-slate-400 hover:text-purple-500 dark:hover:text-purple-400 hover:border-purple-500/30 transition-all flex items-center gap-1" title="Chi tiết">
@@ -187,7 +187,7 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
                     ))}
                     {extraSelected && <Pill key={extraSelected._id} label={stripFamily(extraSelected.name)} active={true} onClick={() => setSelectedModel(extraSelected)} />}
                     {hasMoreVariants && (
-                      <button onClick={() => setShowAllVariants(!showAllVariants)} className="px-1.5 py-1 text-[8px] font-medium text-slate-500 dark:text-[#888] hover:text-purple-400 transition-colors">
+                      <button onClick={() => setShowAllVariants(!showAllVariants)} className="px-1.5 py-1 text-[8px] font-medium text-slate-500 dark:text-gray-300 hover:text-purple-400 transition-colors">
                         {showAllVariants ? '↑ Thu gọn' : `+${familyModels.length - MAX_VARIANTS}`}
                       </button>
                     )}
@@ -245,7 +245,7 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
 
               {/* MODEL INFO */}
               {selectedModel && (
-                <p className="text-[8px] text-slate-400 dark:text-[#444] truncate px-0.5">
+                <p className="text-[8px] text-slate-400 dark:text-gray-500 truncate px-0.5">
                   → {selectedModel.name} <span className="text-slate-400 dark:text-[#333]">({selectedModel.modelKey})</span>
                 </p>
               )}

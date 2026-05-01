@@ -26,7 +26,7 @@ export const AccountTab: React.FC<AccountTabProps> = ({
   return (
     <motion.div key="account" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
       {!accountData ? (
-        <div className="p-20 text-center bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/10 rounded-[3rem] shadow-2xl flex flex-col items-center gap-8">
+        <div className="p-20 text-center bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 rounded-[3rem] shadow-2xl flex flex-col items-center gap-8">
            <div className="w-24 h-24 bg-slate-50 dark:bg-black/40 rounded-full flex items-center justify-center text-slate-300 dark:text-gray-700">
               <User size={48} />
            </div>
@@ -41,7 +41,7 @@ export const AccountTab: React.FC<AccountTabProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-8 animate-in fade-in duration-700">
-           <div className="p-10 bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/5 rounded-[3rem] shadow-2xl space-y-10 relative overflow-hidden">
+           <div className="p-10 bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/5 rounded-[3rem] shadow-2xl space-y-10 relative overflow-hidden">
               <div className="absolute top-0 right-0 p-10 opacity-5">
                  <ShieldCheck size={160} />
               </div>

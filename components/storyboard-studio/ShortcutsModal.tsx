@@ -52,7 +52,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
             exit={{ scale: 0.94, opacity: 0, y: 8 }}
             transition={{ type: 'spring', stiffness: 380, damping: 28 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#131318] border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+            className="bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-4">

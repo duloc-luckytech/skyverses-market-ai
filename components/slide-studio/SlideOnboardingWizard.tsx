@@ -161,7 +161,7 @@ export const SlideOnboardingWizard: React.FC<Props> = ({ onComplete, onSkip }) =
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 50, scale: 0.96 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="w-full sm:max-w-lg bg-white dark:bg-[#0e0e12] rounded-t-3xl sm:rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl flex flex-col overflow-hidden max-h-[92dvh]"
+        className="w-full sm:max-w-lg bg-white dark:bg-[#1a1f2b] rounded-t-3xl sm:rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl flex flex-col overflow-hidden max-h-[92dvh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Header ─────────────────────────────────────────────────────── */}
@@ -224,7 +224,7 @@ export const SlideOnboardingWizard: React.FC<Props> = ({ onComplete, onSkip }) =
                   <button
                     key={type.id}
                     onClick={() => handleSelectType(type)}
-                    className="flex flex-col items-start gap-2 p-4 rounded-xl border border-black/[0.07] dark:border-white/[0.07] bg-black/[0.01] dark:bg-white/[0.02] hover:border-brand-blue/40 hover:bg-brand-blue/[0.05] dark:hover:bg-brand-blue/[0.08] transition-all text-left group"
+                    className="flex flex-col items-start gap-2 p-4 rounded-xl border border-black/[0.07] dark:border-white/[0.1] bg-black/[0.01] dark:bg-white/[0.02] hover:border-brand-blue/40 hover:bg-brand-blue/[0.05] dark:hover:bg-brand-blue/[0.08] transition-all text-left group"
                   >
                     <span className="text-2xl leading-none">{type.emoji}</span>
                     <div>
@@ -324,7 +324,7 @@ export const SlideOnboardingWizard: React.FC<Props> = ({ onComplete, onSkip }) =
                     <div className="relative">
                       <button
                         onClick={() => setLangOpen((v) => !v)}
-                        className="w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-white/[0.05] border border-black/[0.07] dark:border-white/[0.07] text-[12px] font-medium text-slate-700 dark:text-white/80 flex items-center justify-between hover:border-brand-blue/30 transition-all"
+                        className="w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-white/[0.05] border border-black/[0.07] dark:border-white/[0.1] text-[12px] font-medium text-slate-700 dark:text-white/80 flex items-center justify-between hover:border-brand-blue/30 transition-all"
                       >
                         <span>{currentLang.flag} {currentLang.label}</span>
                         <ChevronDown size={11} className={`transition-transform ${langOpen ? 'rotate-180' : ''}`} />
@@ -336,7 +336,7 @@ export const SlideOnboardingWizard: React.FC<Props> = ({ onComplete, onSkip }) =
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -4 }}
                             transition={{ duration: 0.12 }}
-                            className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[#1a1a22] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-xl z-20 overflow-hidden"
+                            className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-xl z-20 overflow-hidden"
                           >
                             {LANGUAGES.map((lang) => (
                               <button
@@ -380,9 +380,9 @@ export const SlideOnboardingWizard: React.FC<Props> = ({ onComplete, onSkip }) =
                   ].map((item) => (
                     <div
                       key={item.label}
-                      className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05]"
+                      className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.08]"
                     >
-                      <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1">
+                      <p className="text-[10px] text-slate-400 dark:text-gray-400 mb-1">
                         {item.icon} {item.label}
                       </p>
                       <p className="text-[12px] font-semibold text-slate-800 dark:text-white/90 leading-snug line-clamp-2">
@@ -415,7 +415,7 @@ export const SlideOnboardingWizard: React.FC<Props> = ({ onComplete, onSkip }) =
         </div>
 
         {/* ── Footer ─────────────────────────────────────────────────────── */}
-        <div className="px-6 pb-6 pt-4 shrink-0 border-t border-black/[0.05] dark:border-white/[0.05] flex items-center justify-between gap-3">
+        <div className="px-6 pb-6 pt-4 shrink-0 border-t border-black/[0.05] dark:border-white/[0.08] flex items-center justify-between gap-3">
           {/* Left: back or skip */}
           <button
             onClick={step > 1 ? () => setStep((s) => (s - 1) as 1 | 2 | 3) : handleSkip}

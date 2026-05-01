@@ -22,7 +22,7 @@ export const SidebarBatch: React.FC<SidebarBatchProps> = ({
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2.5">
       <div className="flex justify-between items-center">
-        <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">Batch Prompts</p>
+        <p className="text-[10px] font-semibold uppercase text-slate-400 dark:text-gray-400 tracking-wider">Batch Prompts</p>
         <button
           onClick={() => setIsBulk(!isBulk)}
           className="text-rose-500 dark:text-rose-400 text-[10px] font-semibold flex items-center gap-1 hover:brightness-125"
@@ -63,7 +63,7 @@ export const SidebarBatch: React.FC<SidebarBatchProps> = ({
           </div>
         ))}
         {batchPrompts.length < 10 && (
-          <button onClick={addPrompt} className="w-full py-2.5 border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded-lg flex items-center justify-center gap-1.5 text-slate-400 dark:text-[#555] hover:text-rose-500 dark:hover:text-rose-400 hover:border-rose-500/20 transition-all">
+          <button onClick={addPrompt} className="w-full py-2.5 border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded-lg flex items-center justify-center gap-1.5 text-slate-400 dark:text-gray-400 hover:text-rose-500 dark:hover:text-rose-400 hover:border-rose-500/20 transition-all">
             <Plus size={12} /> <span className="text-[10px] font-semibold">Thêm</span>
           </button>
         )}

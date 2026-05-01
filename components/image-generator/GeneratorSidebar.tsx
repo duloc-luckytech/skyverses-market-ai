@@ -87,12 +87,12 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         ${props.isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
         w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
-        bg-white dark:bg-[#0c0c10] border-r border-black/[0.06] dark:border-white/[0.04]
+        bg-white dark:bg-[#13171f] border-r border-black/[0.06] dark:border-white/[0.08]
         flex flex-col transition-transform duration-300
       `}>
 
         {/* ─── HEADER ─── */}
-        <div className="px-4 pt-3 pb-2.5 border-b border-black/[0.06] dark:border-white/[0.04] shrink-0">
+        <div className="px-4 pt-3 pb-2.5 border-b border-black/[0.06] dark:border-white/[0.08] shrink-0">
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2.5">
               <button onClick={props.onClose} className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
@@ -112,7 +112,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           </div>
 
           {/* Mode tabs */}
-          <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+          <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.08] overflow-hidden">
             <button
               onClick={() => props.setActiveMode('SINGLE')}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === 'SINGLE'
@@ -179,7 +179,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         </div>
 
         {/* ─── FOOTER ─── */}
-        <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.04] bg-white/80 dark:bg-[#0c0c10]/80 backdrop-blur-lg">
+        <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg">
           {/* Credits / Free badge */}
           <div className="px-4 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-2">

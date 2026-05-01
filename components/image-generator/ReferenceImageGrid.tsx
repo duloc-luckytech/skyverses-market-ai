@@ -84,7 +84,7 @@ export const ReferenceImageGrid: React.FC<ReferenceImageGridProps> = ({
 
             {currentCount < maxRefs && (
               <div className="relative aspect-square group">
-                <div className="absolute inset-0 border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded-lg flex flex-col items-center justify-center text-slate-400 dark:text-[#444] hover:border-rose-500/30 transition-all cursor-pointer gap-1">
+                <div className="absolute inset-0 border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded-lg flex flex-col items-center justify-center text-slate-400 dark:text-gray-500 hover:border-rose-500/30 transition-all cursor-pointer gap-1">
                   <Plus size={14} />
                   <span className="text-[7px] font-medium">Drag & Drop</span>
                 </div>

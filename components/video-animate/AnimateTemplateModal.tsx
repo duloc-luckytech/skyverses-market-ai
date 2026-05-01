@@ -71,7 +71,7 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
     >
       <motion.div 
         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-        className="bg-white dark:bg-[#0d0d0f] border border-white/10 rounded-[2.5rem] w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden shadow-3xl"
+        className="bg-white dark:bg-[#13171f] border border-white/10 rounded-[2.5rem] w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden shadow-3xl"
       >
         {/* Header */}
         <div className="p-8 border-b border-black/5 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-slate-50 dark:bg-black/40 shrink-0">
@@ -89,13 +89,13 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
           <div className="flex bg-slate-200 dark:bg-white/5 p-1 rounded-xl border border-black/5 dark:border-white/10 shadow-inner">
              <button 
                onClick={() => setFilterMode('MOTION')}
-               className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 transition-all ${filterMode === 'MOTION' ? 'bg-white dark:bg-[#1a1a1e] text-cyan-500 shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
+               className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 transition-all ${filterMode === 'MOTION' ? 'bg-white dark:bg-[#13171f] text-cyan-500 shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
              >
                 <Move size={12} /> Motion
              </button>
              <button 
                onClick={() => setFilterMode('SWAP')}
-               className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 transition-all ${filterMode === 'SWAP' ? 'bg-white dark:bg-[#1a1a1e] text-purple-500 shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
+               className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 transition-all ${filterMode === 'SWAP' ? 'bg-white dark:bg-[#13171f] text-purple-500 shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
              >
                 <User size={12} /> Swap
              </button>

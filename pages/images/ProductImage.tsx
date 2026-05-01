@@ -21,13 +21,13 @@ const ProductImage: React.FC = () => {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   if (isStudioOpen) return (
-    <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0a0c] animate-in fade-in duration-500">
+    <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0d14] animate-in fade-in duration-500">
       <ProductImageWorkspace isOpen={isStudioOpen} onClose={() => setIsStudioOpen(false)} />
     </div>
   );
 
   return (
-    <div className="bg-white dark:bg-[#0a0a0c] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
       {/* ── HERO ── */}
       <HeroSection onStartStudio={() => setIsStudioOpen(true)} />
 

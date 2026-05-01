@@ -72,7 +72,7 @@ const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({ isOpen, onClo
           initial={{ scale: 0.95, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 20 }}
-          className="relative w-full max-w-lg bg-white dark:bg-[#0d0d0f] rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col border border-black/5 dark:border-white/10 max-h-[90vh] md:max-h-[85vh]"
+          className="relative w-full max-w-lg bg-white dark:bg-[#13171f] rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col border border-black/5 dark:border-white/10 max-h-[90vh] md:max-h-[85vh]"
         >
           {/* Header - Compact for Mobile */}
           <div className="p-5 md:p-8 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/20 shrink-0">

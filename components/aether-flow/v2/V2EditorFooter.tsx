@@ -7,7 +7,7 @@ interface V2EditorFooterProps {
 }
 
 export const V2EditorFooter: React.FC<V2EditorFooterProps> = ({ onClose }) => (
-  <div className="h-16 md:h-20 border-t border-black/10 dark:border-white/10 bg-slate-50 dark:bg-[#0c0c0e] shrink-0 flex items-center justify-between px-10 z-50 transition-colors">
+  <div className="h-16 md:h-20 border-t border-black/10 dark:border-white/10 bg-slate-50 dark:bg-[#0a0d14] shrink-0 flex items-center justify-between px-10 z-50 transition-colors">
     <div className="flex items-center gap-10">
       <div className="flex items-center gap-3 opacity-60">
          <Database size={16} className="text-indigo-600" />
@@ -22,7 +22,7 @@ export const V2EditorFooter: React.FC<V2EditorFooterProps> = ({ onClose }) => (
     <div className="flex gap-4">
       <button 
         onClick={onClose}
-        className="px-8 py-3 bg-white dark:bg-[#1a1b23] border border-black/10 dark:border-white/10 text-slate-700 dark:text-zinc-300 rounded-none text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-white dark:hover:text-black transition-all shadow-sm"
+        className="px-8 py-3 bg-white dark:bg-[#1a1f2b] border border-black/10 dark:border-white/10 text-slate-700 dark:text-zinc-300 rounded-none text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-white dark:hover:text-black transition-all shadow-sm"
       >
          HỦY BỎ
       </button>

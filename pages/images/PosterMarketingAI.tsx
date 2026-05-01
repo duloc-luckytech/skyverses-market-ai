@@ -38,7 +38,7 @@ const PosterMarketingAI = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-[#020203] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* 1. HERO SECTION (EDITOR-STYLE) */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-20 relative">
@@ -75,7 +75,7 @@ const PosterMarketingAI = () => {
           </div>
 
           <div className="lg:col-span-7 relative">
-             <div className="aspect-[16/10] bg-white dark:bg-[#0a0a0c] border border-slate-200 dark:border-white/5 rounded-sm p-4 shadow-3xl overflow-hidden group transition-colors">
+             <div className="aspect-[16/10] bg-white dark:bg-[#0a0d14] border border-slate-200 dark:border-white/5 rounded-sm p-4 shadow-3xl overflow-hidden group transition-colors">
                 <div className="flex h-full gap-4">
                    <div className="w-1/4 h-full border-r border-slate-100 dark:border-white/5 pr-4 space-y-4 opacity-40 group-hover:opacity-100 transition-opacity hidden md:block">
                       <div className="h-4 w-full bg-slate-100 dark:bg-white/10 rounded-sm"></div>
@@ -98,7 +98,7 @@ const PosterMarketingAI = () => {
                 </div>
              </div>
              {/* Floating UI */}
-             <div className="absolute -bottom-10 -left-10 bg-white dark:bg-[#0c0c0e] p-6 rounded-sm shadow-3xl border border-slate-100 dark:border-white/10 animate-bounce transition-colors">
+             <div className="absolute -bottom-10 -left-10 bg-white dark:bg-[#0a0d14] p-6 rounded-sm shadow-3xl border border-slate-100 dark:border-white/10 animate-bounce transition-colors">
                 <div className="flex items-center gap-4">
                    <div className="p-3 bg-brand-blue/10 rounded-full text-brand-blue"><Maximize2 size={20}/></div>
                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-white">Enhanced to 8K Quality</span>
@@ -109,7 +109,7 @@ const PosterMarketingAI = () => {
       </section>
 
       {/* 2. HOW IT WORKS */}
-      <section className="py-40 bg-slate-50 dark:bg-[#070708] border-y border-slate-200 dark:border-white/5 transition-colors">
+      <section className="py-40 bg-slate-50 dark:bg-[#0a0d14] border-y border-slate-200 dark:border-white/5 transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Instant Production Path</h2>
@@ -136,7 +136,7 @@ const PosterMarketingAI = () => {
       </section>
 
       {/* 3. KEY FEATURES */}
-      <section className="py-40 bg-white dark:bg-[#020203] transition-colors">
+      <section className="py-40 bg-white dark:bg-[#0a0d14] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-3xl transition-colors">
               {[
@@ -149,7 +149,7 @@ const PosterMarketingAI = () => {
                 { t: 'Fast Iteration', i: <Activity />, d: 'Generate 4 variations in parallel to find the perfect look.' },
                 { t: 'VPC Isolation', i: <ShieldCheck />, d: 'Enterprise security for proprietary marketing assets.' }
               ].map((f, i) => (
-                <div key={i} className="p-12 bg-white dark:bg-[#0a0a0c] space-y-6 hover:bg-brand-blue/[0.02] dark:hover:bg-brand-blue/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
+                <div key={i} className="p-12 bg-white dark:bg-[#0a0d14] space-y-6 hover:bg-brand-blue/[0.02] dark:hover:bg-brand-blue/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
                    <div className="w-12 h-12 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:text-brand-blue transition-colors rounded-sm shadow-sm dark:shadow-none">
                       {React.cloneElement(f.i as React.ReactElement<any>, { size: 20 })}
                    </div>
@@ -196,7 +196,7 @@ const PosterMarketingAI = () => {
       </section>
 
       {/* 5. COMPARISON */}
-      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#020203] transition-colors">
+      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#0a0d14] transition-colors">
         <div className="max-w-4xl mx-auto px-6 lg:px-12 space-y-24">
            <h2 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter italic text-center text-slate-900 dark:text-white">Why Poster AI?</h2>
            <div className="grid gap-12">
@@ -238,7 +238,7 @@ const PosterMarketingAI = () => {
       </section>
 
       {/* 7. FOOTER */}
-      <footer className="py-20 border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#030304] transition-colors">
+      <footer className="py-20 border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#0a0d14] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">
            <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-4">

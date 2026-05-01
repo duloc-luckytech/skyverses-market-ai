@@ -89,8 +89,8 @@ const MotionCraftInterface = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#080808] overflow-hidden text-black dark:text-white">
-      <div className="w-full lg:w-[350px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-gray-50 dark:bg-[#050506] overflow-y-auto no-scrollbar p-6 space-y-8">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white">
+      <div className="w-full lg:w-[350px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-gray-50 dark:bg-[#0a0d14] overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
             <Sliders size={12} className="text-brand-blue" /> Engine_Presets
@@ -132,7 +132,7 @@ const MotionCraftInterface = () => {
         </div>
       </div>
 
-      <div className="flex-grow flex flex-col bg-gray-100 dark:bg-[#020203] relative overflow-hidden">
+      <div className="flex-grow flex flex-col bg-gray-100 dark:bg-[#0a0d14] relative overflow-hidden">
         <div className="flex-grow flex flex-col items-center justify-center p-6 relative">
           <div className={`w-full relative z-10 transition-all duration-700 ${aspectRatio === '9:16' ? 'max-w-xs aspect-[9/16]' : 'max-w-4xl aspect-video'}`}>
             <div className="w-full h-full bg-black border border-black/10 dark:border-white/10 relative overflow-hidden flex items-center justify-center group/view shadow-2xl">
@@ -176,7 +176,7 @@ const MotionCraftInterface = () => {
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[320px] shrink-0 flex flex-col bg-gray-50 dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-6 space-y-8">
+      <div className="hidden xl:flex w-[320px] shrink-0 flex flex-col bg-gray-50 dark:bg-[#0a0d14] border-l border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
             <HistoryIcon size={14} className="text-brand-blue" /> Velocity_Archives

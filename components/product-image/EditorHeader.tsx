@@ -48,7 +48,7 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
   return (
     <div className="flex flex-col shrink-0 z-[120] transition-colors">
       {/* Top Navigation Bar */}
-      <div className="h-14 md:h-16 bg-white dark:bg-[#0b0c10] border-b border-slate-100 dark:border-white/5 flex items-center justify-between px-4 md:px-6">
+      <div className="h-14 md:h-16 bg-white dark:bg-[#0a0d14] border-b border-slate-100 dark:border-white/5 flex items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-3">
           <button 
             onClick={onClose}
@@ -94,7 +94,7 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
       </div>
 
       {/* Tool Bar */}
-      <div className="h-11 bg-slate-50/80 dark:bg-[#0e0f14] border-b border-slate-100 dark:border-white/[0.04] flex items-center px-2 md:px-6 overflow-x-auto no-scrollbar">
+      <div className="h-11 bg-slate-50/80 dark:bg-[#13171f] border-b border-slate-100 dark:border-white/[0.04] flex items-center px-2 md:px-6 overflow-x-auto no-scrollbar">
         <div className="flex items-center gap-0.5 shrink-0">
           <ToolIcon onClick={onUndo} icon={<Undo2 size={15} />} tooltip="Hoàn tác" disabled={!canUndo} />
           <ToolIcon onClick={onRedo} icon={<Redo2 size={15} />} tooltip="Làm lại" disabled={!canRedo} />

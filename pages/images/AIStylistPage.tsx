@@ -34,7 +34,7 @@ const AIStylistPage = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* 1. HERO SECTION */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-20 relative overflow-hidden">
@@ -72,7 +72,7 @@ const AIStylistPage = () => {
           </div>
 
           <div className="lg:col-span-6 relative order-1 lg:order-2">
-             <div className="aspect-[3/4] bg-slate-100 dark:bg-[#0a0a0c] border border-slate-200 dark:border-white/5 rounded-[3rem] p-12 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center">
+             <div className="aspect-[3/4] bg-slate-100 dark:bg-[#0a0d14] border border-slate-200 dark:border-white/5 rounded-[3rem] p-12 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center">
                 <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue/10 to-transparent"></div>
                 <div className="relative z-10 w-full max-w-sm aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-white/10 rotate-3">
                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover" alt="Stylist Mockup" />
@@ -90,7 +90,7 @@ const AIStylistPage = () => {
       </section>
 
       {/* 2. CAPABILITIES GRID */}
-      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#08080a] transition-colors">
+      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#0a0d14] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter">Bespoke Fashion Logic</h2>

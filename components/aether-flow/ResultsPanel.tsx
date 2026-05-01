@@ -68,9 +68,9 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   }, [isGenerating]);
 
   return (
-    <div className="w-full bg-slate-50 dark:bg-[#0c0c0e] rounded-none p-0 flex flex-col h-full overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
+    <div className="w-full bg-slate-50 dark:bg-[#0a0d14] rounded-none p-0 flex flex-col h-full overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
       
-      <div className="bg-slate-200 dark:bg-[#141418] shrink-0 border-b border-black/5 dark:border-none">
+      <div className="bg-slate-200 dark:bg-[#13171f] shrink-0 border-b border-black/5 dark:border-none">
         <div className="flex h-16">
           <button 
             onClick={() => setActiveTab('RESULTS')}
@@ -87,7 +87,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         </div>
       </div>
 
-      <div className="flex-grow overflow-y-auto p-10 no-scrollbar relative bg-slate-50 dark:bg-[#0c0c0e]">
+      <div className="flex-grow overflow-y-auto p-10 no-scrollbar relative bg-slate-50 dark:bg-[#0a0d14]">
         <AnimatePresence mode="wait">
           {activeTab === 'RESULTS' ? (
             <motion.div 
@@ -115,7 +115,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                 <div className="space-y-12 pb-20">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     {results.map((res) => (
-                      <div key={res.id} className="group relative bg-white dark:bg-[#14141a] rounded-none overflow-hidden transition-all border border-black/5 dark:border-none hover:ring-1 hover:ring-indigo-600 dark:hover:ring-indigo-500/50 shadow-sm">
+                      <div key={res.id} className="group relative bg-white dark:bg-[#13171f] rounded-none overflow-hidden transition-all border border-black/5 dark:border-none hover:ring-1 hover:ring-indigo-600 dark:hover:ring-indigo-500/50 shadow-sm">
                         <img src={res.url} className="w-full aspect-square object-cover transition-all duration-1000 group-hover:scale-105" alt="Output" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">

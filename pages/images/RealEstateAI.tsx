@@ -33,7 +33,7 @@ const RealEstateAI: React.FC = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* 1. HERO SECTION */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-20 relative overflow-hidden">
@@ -71,7 +71,7 @@ const RealEstateAI: React.FC = () => {
           </div>
 
           <div className="lg:col-span-6 relative order-1 lg:order-2">
-             <div className="aspect-[4/3] bg-slate-50 dark:bg-[#0a0a0c] border border-slate-200 dark:border-white/5 rounded-[2rem] p-4 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center group">
+             <div className="aspect-[4/3] bg-slate-50 dark:bg-[#0a0d14] border border-slate-200 dark:border-white/5 rounded-[2rem] p-4 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent"></div>
                 <div className="relative z-10 w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-white dark:border-white/10">
                    <div className="absolute inset-0 grid grid-cols-2">
@@ -90,7 +90,7 @@ const RealEstateAI: React.FC = () => {
       </section>
 
       {/* 2. CAPABILITIES GRID */}
-      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#08080a] transition-colors">
+      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#0a0d14] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white transition-colors">Giải pháp cho Realtors & Designers</h2>

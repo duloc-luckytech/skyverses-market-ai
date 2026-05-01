@@ -217,12 +217,12 @@ const ImageLibraryPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#030304] text-black dark:text-white pt-24 pb-48 transition-colors duration-500">
+    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#0a0d14] text-black dark:text-white pt-24 pb-48 transition-colors duration-500">
 
       <div className="max-w-[1800px] mx-auto px-6 lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-[#0d0d0f] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm p-6 lg:p-8 space-y-8"
+          className="bg-white dark:bg-[#13171f] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm p-6 lg:p-8 space-y-8"
         >
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-4">
@@ -293,7 +293,7 @@ const ImageLibraryPage: React.FC = () => {
                       key={item.id}
                       layout
                       initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                      className="break-inside-avoid relative rounded-[2.5rem] overflow-hidden border-2 border-transparent bg-white dark:bg-[#0d0d0f] shadow-sm hover:shadow-2xl transition-all duration-500 group cursor-pointer"
+                      className="break-inside-avoid relative rounded-[2.5rem] overflow-hidden border-2 border-transparent bg-white dark:bg-[#13171f] shadow-sm hover:shadow-2xl transition-all duration-500 group cursor-pointer"
                     >
                        <img src={item.url} className="w-full h-auto object-cover transition-all duration-[3s] group-hover:scale-110" alt="" />
 
@@ -357,7 +357,7 @@ const ImageLibraryPage: React.FC = () => {
       <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-4xl px-6 z-[200]">
         <motion.div
           initial={{ y: 100 }} animate={{ y: 0 }}
-          className="bg-white dark:bg-[#1a1a1e] border border-black/5 dark:border-white/10 rounded-[3rem] shadow-[0_40px_120px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] p-3 flex items-center gap-4 transition-all hover:scale-[1.01]"
+          className="bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 rounded-[3rem] shadow-[0_40px_120px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] p-3 flex items-center gap-4 transition-all hover:scale-[1.01]"
         >
           <div className="flex-grow relative flex items-center">
             <input

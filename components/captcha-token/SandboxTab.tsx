@@ -19,7 +19,7 @@ export const SandboxTab: React.FC<SandboxTabProps> = ({
 }) => {
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
-      <div className="p-10 bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/10 rounded-[2.5rem] shadow-2xl space-y-10">
+      <div className="p-10 bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 rounded-[2.5rem] shadow-2xl space-y-10">
          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="space-y-1">
                <h3 className="text-2xl font-black uppercase italic tracking-tighter">Thử nghiệm API.</h3>
@@ -29,7 +29,7 @@ export const SandboxTab: React.FC<SandboxTabProps> = ({
                {(['IMAGE', 'VIDEO', 'CUSTOM'] as const).map(m => (
                  <button 
                    key={m} onClick={() => setRequestMode(m)}
-                   className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase transition-all ${requestMode === m ? 'bg-white dark:bg-[#1a1a1e] text-indigo-600 shadow-lg' : 'text-gray-400'}`}
+                   className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase transition-all ${requestMode === m ? 'bg-white dark:bg-[#13171f] text-indigo-600 shadow-lg' : 'text-gray-400'}`}
                  >
                    {m}
                  </button>

@@ -79,7 +79,7 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = (props) => {
 
   return (
     <aside 
-      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-80 bg-white dark:bg-[#0e0f14] border-t lg:border-t-0 lg:border-r border-slate-100 dark:border-white/[0.04] flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.06)] lg:shadow-none transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[80dvh] rounded-t-[2rem]' : 'h-14 lg:h-full lg:rounded-none'}`}
+      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-80 bg-white dark:bg-[#13171f] border-t lg:border-t-0 lg:border-r border-slate-100 dark:border-white/[0.04] flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.06)] lg:shadow-none transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[80dvh] rounded-t-[2rem]' : 'h-14 lg:h-full lg:rounded-none'}`}
     >
       {/* Mobile Toggle Header */}
       <div 
@@ -98,7 +98,7 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = (props) => {
       </div>
 
       {/* Tabs */}
-      <div className={`flex border-b border-slate-100 dark:border-white/[0.04] bg-white dark:bg-[#0e0f14] shrink-0 ${!props.isMobileExpanded ? 'hidden lg:flex' : 'flex'}`}>
+      <div className={`flex border-b border-slate-100 dark:border-white/[0.04] bg-white dark:bg-[#13171f] shrink-0 ${!props.isMobileExpanded ? 'hidden lg:flex' : 'flex'}`}>
         <button onClick={() => props.setActiveTab('layers')} className={`flex-grow py-3.5 text-[11px] font-bold uppercase tracking-wider relative transition-colors ${props.activeTab === 'layers' ? 'text-brand-blue' : 'text-slate-400 dark:text-white/30'}`}>{props.activeTab === 'layers' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-blue rounded-full" />}Công cụ</button>
         <button onClick={() => props.setActiveTab('history')} className={`flex-grow py-3.5 text-[11px] font-bold uppercase tracking-wider relative transition-colors ${props.activeTab === 'history' ? 'text-brand-blue' : 'text-slate-400 dark:text-white/30'}`}>{props.activeTab === 'history' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-blue rounded-full" />}Lịch sử</button>
       </div>

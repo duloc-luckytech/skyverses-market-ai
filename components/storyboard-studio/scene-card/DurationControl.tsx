@@ -45,12 +45,12 @@ export const DurationControl: React.FC<DurationControlProps> = ({ duration, onCh
             {/* Tooltip */}
             {!disabled && (
               <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover/preset:opacity-100 transition-opacity z-50 whitespace-nowrap">
-                <div className="bg-slate-900 dark:bg-[#0a0a0d] border border-white/10 rounded-lg px-2 py-1.5 text-[9px] font-medium text-white/70 shadow-xl">
+                <div className="bg-slate-900 dark:bg-[#0a0d14] border border-white/10 rounded-lg px-2 py-1.5 text-[9px] font-medium text-white/70 shadow-xl">
                   {DURATION_HINTS[preset] ?? `${preset}s`}
                 </div>
                 {/* Arrow */}
                 <div className="mx-auto w-2 h-1 overflow-hidden -mt-px">
-                  <div className="w-2 h-2 bg-slate-900 dark:bg-[#0a0a0d] border-r border-b border-white/10 rotate-45 origin-top-left translate-y-0.5 translate-x-0.5" />
+                  <div className="w-2 h-2 bg-slate-900 dark:bg-[#0a0d14] border-r border-b border-white/10 rotate-45 origin-top-left translate-y-0.5 translate-x-0.5" />
                 </div>
               </div>
             )}

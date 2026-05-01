@@ -4,7 +4,7 @@ import React from 'react';
 const shimmer = `relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/5 before:to-transparent`;
 
 const HomepageSkeleton: React.FC = () => (
-  <div className="relative min-h-screen bg-[#fcfcfd] dark:bg-[#030304] font-sans transition-colors duration-500">
+  <div className="relative min-h-screen bg-[#fcfcfd] dark:bg-[#0a0d14] font-sans transition-colors duration-500">
     {/* Background */}
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
       <div className="absolute top-[-10%] left-[40%] w-[600px] h-[400px] bg-brand-blue/[0.04] dark:bg-brand-blue/[0.06] rounded-full blur-[80px]" />
@@ -92,7 +92,7 @@ const HomepageSkeleton: React.FC = () => (
           ))}
         </div>
         {/* Desktop */}
-        <div className={`hidden md:block rounded-[2.5rem] bg-slate-50 dark:bg-[#0a0c12] border border-black/[0.04] dark:border-white/[0.04] p-12 lg:p-14 ${shimmer}`}>
+        <div className={`hidden md:block rounded-[2.5rem] bg-slate-50 dark:bg-[#13171f] border border-black/[0.04] dark:border-white/[0.04] p-12 lg:p-14 ${shimmer}`}>
           <div className="grid grid-cols-5 gap-0">
             {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="px-6 space-y-4">
@@ -148,7 +148,7 @@ const HomepageSkeleton: React.FC = () => (
             </div>
             <div className="flex gap-4 md:gap-8 overflow-hidden">
               {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className={`flex-shrink-0 w-[280px] md:w-[320px] xl:w-[360px] flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden ${shimmer}`}>
+                <div key={i} className={`flex-shrink-0 w-[280px] md:w-[320px] xl:w-[360px] flex flex-col bg-white dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden ${shimmer}`}>
                   <div className="aspect-[16/10] bg-slate-200/60 dark:bg-white/[0.03]" />
                   <div className="p-4 md:p-6 space-y-4">
                     <div className="h-6 bg-slate-200/60 dark:bg-white/[0.04] rounded w-3/4" />

@@ -25,7 +25,7 @@ const DEMOS = [
 export const AnimateViewport: React.FC<Props> = ({ mode }) => {
   return (
     <div className="w-full max-w-[480px] flex flex-col h-full gap-8 overflow-y-auto no-scrollbar pb-32">
-      <div className="bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-10 space-y-10 shadow-2xl transition-all">
+      <div className="bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-10 space-y-10 shadow-2xl transition-all">
         <div className="flex items-center gap-6">
           <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center shadow-xl transition-colors duration-500 ${mode === 'MOTION' ? 'bg-cyan-500 shadow-cyan-500/20' : 'bg-purple-600 shadow-purple-500/20'}`}>
             <Sparkles size={32} className="text-white dark:text-black" />

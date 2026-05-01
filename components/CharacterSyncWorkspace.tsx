@@ -291,7 +291,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   const setPrimaryPrompt = (val: string) => api.setSequences(prev => prev.map((s, i) => i === 0 ? { ...s, text: val } : s));
 
   return (
-    <div className="h-full w-full flex flex-col bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300 relative">
+    <div className="h-full w-full flex flex-col bg-slate-50 dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300 relative">
 
       <div className="flex-grow flex flex-col-reverse lg:flex-row overflow-hidden relative">
         {/* Mobile overlay */}
@@ -306,7 +306,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
         {/* ─── LEFT SIDEBAR ─── */}
         <section className={`
           fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[340px] xl:w-[360px]
-          bg-white dark:bg-[#0c0c10] border-t lg:border-t-0 lg:border-r border-slate-200/80 dark:border-white/[0.04]
+          bg-white dark:bg-[#13171f] border-t lg:border-t-0 lg:border-r border-slate-200/80 dark:border-white/[0.08]
           flex flex-col z-[150] lg:z-50 transition-all duration-300
           ${isMobileExpanded ? 'h-[92dvh] rounded-t-2xl shadow-2xl' : 'h-32 lg:h-full lg:rounded-none'}
         `}>
@@ -337,7 +337,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           />
 
           {/* Desktop Header */}
-          <header className="hidden lg:flex h-14 border-b border-slate-200/80 dark:border-white/[0.04] bg-white/90 dark:bg-[#0c0c10]/90 backdrop-blur-lg items-center justify-between px-4 shrink-0">
+          <header className="hidden lg:flex h-14 border-b border-slate-200/80 dark:border-white/[0.08] bg-white/90 dark:bg-[#13171f]/90 backdrop-blur-lg items-center justify-between px-4 shrink-0">
             <div className="flex items-center gap-2.5">
               <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
                 <ChevronLeft size={18} />
@@ -388,7 +388,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           </div>
 
           {/* Footer */}
-          <div className={`shrink-0 border-t border-slate-200/80 dark:border-white/[0.04] bg-white/80 dark:bg-[#0c0c10]/80 backdrop-blur-lg px-4 py-3 space-y-2.5 ${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+          <div className={`shrink-0 border-t border-slate-200/80 dark:border-white/[0.08] bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg px-4 py-3 space-y-2.5 ${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <Coins size={9} className="text-purple-500" />
@@ -422,12 +422,12 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
         </section>
 
         {/* ─── RIGHT VIEWPORT ─── */}
-        <aside className="flex-grow h-full flex flex-col bg-slate-50 dark:bg-[#050508] transition-colors relative">
+        <aside className="flex-grow h-full flex flex-col bg-slate-50 dark:bg-[#0a0d14] transition-colors relative">
           {/* ─── TOOLBAR ─── */}
-          <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.04] bg-white/95 dark:bg-[#111114]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
+          <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/95 dark:bg-[#1a1f2b]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
             <div className="flex items-center gap-3">
               <button onClick={onClose} className="lg:hidden p-1.5 -ml-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><ChevronLeft size={18} /></button>
-              <div className="flex bg-black/[0.03] dark:bg-white/[0.03] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+              <div className="flex bg-black/[0.03] dark:bg-white/[0.03] rounded-lg border border-black/[0.06] dark:border-white/[0.08] overflow-hidden">
                 <button onClick={() => api.setActiveResultTab('CURRENT')} className={`px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all ${api.activeResultTab === 'CURRENT' ? 'bg-black/[0.05] dark:bg-white/[0.06] text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
                   <span className="flex items-center gap-1.5"><Film size={12} /> Lab</span>
                 </button>
@@ -459,7 +459,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-black/[0.03] dark:bg-white/[0.03] px-2.5 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.04]">
+              <div className="flex items-center gap-1.5 bg-black/[0.03] dark:bg-white/[0.03] px-2.5 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.08]">
                 <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400">Auto DL</span>
                 <button onClick={() => setAutoDownload(!autoDownload)} className={`w-7 h-3.5 rounded-full relative transition-colors ${autoDownload ? 'bg-purple-500' : 'bg-slate-300 dark:bg-white/[0.1]'}`}>
                   <motion.div animate={{ left: autoDownload ? 14 : 2 }} className="absolute top-0.5 w-2.5 h-2.5 bg-white rounded-full shadow-sm" />
@@ -504,7 +504,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-purple-400 transition-colors" size={14} />
                       <input type="text" value={historySearch} onChange={e => setHistorySearch(e.target.value)}
                         placeholder="Tìm theo prompt..."
-                        className="w-full bg-white dark:bg-white/[0.03] border border-black/[0.08] dark:border-white/[0.04] rounded-lg pl-9 pr-3 py-2 text-xs font-medium outline-none focus:border-purple-500/30 text-slate-700 dark:text-white/70 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+                        className="w-full bg-white dark:bg-white/[0.03] border border-black/[0.08] dark:border-white/[0.08] rounded-lg pl-9 pr-3 py-2 text-xs font-medium outline-none focus:border-purple-500/30 text-slate-700 dark:text-white/70 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
                     </div>
                   </div>
 
@@ -606,9 +606,9 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[1100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
-              className="relative w-full max-w-sm bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
+              className="relative w-full max-w-sm bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
               {/* Header */}
-              <div className="p-5 border-b border-slate-100 dark:border-white/[0.04] flex items-center justify-between">
+              <div className="p-5 border-b border-slate-100 dark:border-white/[0.08] flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
                     <User size={18} />
@@ -650,7 +650,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               </div>
 
               {/* Actions */}
-              <div className="p-5 border-t border-slate-100 dark:border-white/[0.04] flex gap-3">
+              <div className="p-5 border-t border-slate-100 dark:border-white/[0.08] flex gap-3">
                 <button onClick={handleCancelAddCharacter}
                   className="flex-1 py-3 border border-slate-200 dark:border-white/[0.06] rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
                   Hủy

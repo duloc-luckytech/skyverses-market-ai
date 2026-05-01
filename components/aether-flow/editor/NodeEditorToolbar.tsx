@@ -15,7 +15,7 @@ import {
 
 export const NodeEditorToolbar: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   return (
-    <div className="flex items-center gap-1.5 bg-white/95 dark:bg-[#1a1b1e]/95 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-none px-2.5 py-1.5 shadow-2xl pointer-events-auto">
+    <div className="flex items-center gap-1.5 bg-white/95 dark:bg-[#1a1f2b]/95 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-none px-2.5 py-1.5 shadow-2xl pointer-events-auto">
       <div className="flex items-center gap-2 pr-3 border-r border-black/5 dark:border-white/10 mr-1 group/viewport">
         <div className="w-8 h-8 rounded-none bg-slate-100 dark:bg-black border border-black/5 dark:border-white/10 flex items-center justify-center overflow-hidden relative shadow-inner">
            <Eye size={12} className="text-indigo-600 opacity-60 group-hover/viewport:opacity-100 transition-opacity" />

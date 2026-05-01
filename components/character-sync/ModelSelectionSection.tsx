@@ -29,7 +29,7 @@ export const ModelSelectionSection: React.FC<ModelSelectionSectionProps> = ({
               <option value="gommo">Gommo</option>
               <option value="fxlab">FxLab</option>
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#555] pointer-events-none" size={10} />
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 pointer-events-none" size={10} />
           </div>
         </div>
 
@@ -45,7 +45,7 @@ export const ModelSelectionSection: React.FC<ModelSelectionSectionProps> = ({
                 ? availableModels.map(m => <option key={m._id} value={m._id}>{m.name}</option>)
                 : <option disabled>Đang tải...</option>}
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#555] pointer-events-none" size={10} />
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 pointer-events-none" size={10} />
           </div>
         </div>
       </div>

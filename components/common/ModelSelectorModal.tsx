@@ -171,7 +171,7 @@ export const ModelSelectorModal: React.FC<ModelSelectorModalProps> = ({
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.96, opacity: 0, y: 20 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative w-full max-w-4xl max-h-[82vh] bg-white dark:bg-[#0e0e11] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row"
+        className="relative w-full max-w-4xl max-h-[82vh] bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row"
       >
         {/* ======= LEFT: ENGINE TABS ======= */}
         <aside className="w-full md:w-48 shrink-0 border-b md:border-b-0 md:border-r border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-black/30 flex md:flex-col">

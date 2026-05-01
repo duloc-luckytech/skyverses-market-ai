@@ -26,7 +26,7 @@ const DeleteConfirm: React.FC<{ onConfirm: () => void; onCancel: () => void }> =
     animate={{ opacity: 1, scale: 1, y: 0 }}
     exit={{ opacity: 0, scale: 0.9, y: 4 }}
     transition={{ duration: 0.12 }}
-    className="absolute bottom-full right-0 mb-1.5 w-52 bg-white dark:bg-[#111116] border border-rose-200 dark:border-rose-500/20 rounded-2xl shadow-2xl z-50 p-3 space-y-2.5"
+    className="absolute bottom-full right-0 mb-1.5 w-52 bg-white dark:bg-[#13171f] border border-rose-200 dark:border-rose-500/20 rounded-2xl shadow-2xl z-50 p-3 space-y-2.5"
     onClick={e => e.stopPropagation()}
   >
     <div className="flex items-start gap-2">
@@ -121,7 +121,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
 
   return (
     <div
-      className={`flex items-center border-t border-slate-100 dark:border-white/8 bg-white dark:bg-[#0d0d10] gap-1 ${isListView ? 'px-3 py-2' : 'px-2 py-1.5 gap-0.5'}`}
+      className={`flex items-center border-t border-slate-100 dark:border-white/8 bg-white dark:bg-[#0a0d14] gap-1 ${isListView ? 'px-3 py-2' : 'px-2 py-1.5 gap-0.5'}`}
       onClick={e => e.stopPropagation()}
     >
       {/* Primary action buttons */}
@@ -202,7 +202,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.92, y: 4 }}
               transition={{ duration: 0.13 }}
-              className="absolute bottom-full right-0 mb-1.5 w-40 bg-white dark:bg-[#111116] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-50 py-1 overflow-hidden"
+              className="absolute bottom-full right-0 mb-1.5 w-40 bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-50 py-1 overflow-hidden"
             >
               {/* Duplicate */}
               <button

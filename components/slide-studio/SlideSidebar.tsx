@@ -29,22 +29,24 @@ interface Template {
   prompt: string;
 }
 
+// Templates đã Việt hoá toàn bộ — focus marketer/educator/sales VN.
+// Default language='vi' để AI sinh content tiếng Việt; user có thể đổi sau.
 const FEATURED_TEMPLATES: Template[] = [
   {
-    label: 'Startup Pitch',
+    label: 'Pitch Startup',
     emoji: '🚀',
     style: 'dark',
     slideCount: 8,
-    language: 'en',
-    prompt: 'Startup pitch deck for a tech company seeking Series A funding — problem, solution, market, team, traction',
+    language: 'vi',
+    prompt: 'Pitch deck cho startup công nghệ gọi vốn Series A — vấn đề, giải pháp, thị trường, đội ngũ, traction, KPI, kế hoạch tài chính',
   },
   {
-    label: 'Báo cáo DN',
+    label: 'Báo cáo Doanh nghiệp',
     emoji: '📊',
     style: 'corporate',
     slideCount: 6,
     language: 'vi',
-    prompt: 'Báo cáo tổng kết kinh doanh quý 3 năm 2025 — kết quả, phân tích, kế hoạch',
+    prompt: 'Báo cáo tổng kết kinh doanh quý 3 năm 2026 — kết quả, phân tích, kế hoạch tăng trưởng',
   },
   {
     label: 'Bài giảng',
@@ -52,31 +54,79 @@ const FEATURED_TEMPLATES: Template[] = [
     style: 'gradient',
     slideCount: 10,
     language: 'vi',
-    prompt: 'Bài giảng Machine Learning cơ bản cho sinh viên đại học — khái niệm, thuật toán, ứng dụng',
+    prompt: 'Bài giảng Machine Learning cơ bản cho sinh viên đại học — khái niệm, thuật toán, ứng dụng thực tế',
   },
   {
-    label: 'Marketing',
+    label: 'Chiến dịch Marketing',
     emoji: '📣',
     style: 'creative',
     slideCount: 8,
     language: 'vi',
-    prompt: 'Chiến dịch marketing Q4 cho sản phẩm mới — thị trường, chiến lược, KPIs, timeline',
+    prompt: 'Chiến dịch marketing Q4 cho sản phẩm mới — thị trường mục tiêu, chiến lược, KPIs, timeline triển khai',
   },
   {
-    label: 'Product Launch',
+    label: 'Ra mắt sản phẩm',
     emoji: '✨',
     style: 'dark',
     slideCount: 8,
-    language: 'en',
-    prompt: 'Product launch presentation for a new mobile application — features, demo, roadmap, go-to-market',
+    language: 'vi',
+    prompt: 'Slide ra mắt sản phẩm/ứng dụng mới — tính năng, demo, roadmap, chiến lược go-to-market',
   },
   {
-    label: 'Portfolio',
+    label: 'Hồ sơ năng lực',
     emoji: '🎨',
     style: 'minimal',
     slideCount: 6,
-    language: 'en',
-    prompt: 'Creative portfolio showcase for a design agency — about us, work samples, process, contact',
+    language: 'vi',
+    prompt: 'Profile năng lực agency thiết kế — giới thiệu công ty, dự án tiêu biểu, quy trình làm việc, thông tin liên hệ',
+  },
+  {
+    label: 'Onboarding nhân viên',
+    emoji: '🤝',
+    style: 'corporate',
+    slideCount: 8,
+    language: 'vi',
+    prompt: 'Slide onboarding cho nhân viên mới — chào mừng, giá trị cốt lõi công ty, cơ cấu tổ chức, quy trình làm việc, văn hoá công ty, lộ trình 30/60/90 ngày',
+  },
+  {
+    label: 'Sales Pitch B2B',
+    emoji: '💼',
+    style: 'dark',
+    slideCount: 7,
+    language: 'vi',
+    prompt: 'Slide sales pitch B2B — vấn đề khách hàng đang gặp, giải pháp của chúng tôi, ROI/case study, demo sản phẩm, gói giá, next steps',
+  },
+  {
+    label: 'Họp Q&A nội bộ',
+    emoji: '🗣️',
+    style: 'minimal',
+    slideCount: 5,
+    language: 'vi',
+    prompt: 'Slide họp Q&A nội bộ team — agenda, cập nhật trạng thái dự án, vấn đề cần thảo luận, action items, lịch tiếp theo',
+  },
+  {
+    label: 'Webinar Online',
+    emoji: '🎙️',
+    style: 'gradient',
+    slideCount: 9,
+    language: 'vi',
+    prompt: 'Slide webinar online — chào mừng người tham dự, giới thiệu diễn giả, agenda, nội dung chính chia 3 phần, Q&A, lời cảm ơn',
+  },
+  {
+    label: 'Roadmap sản phẩm',
+    emoji: '🗺️',
+    style: 'corporate',
+    slideCount: 6,
+    language: 'vi',
+    prompt: 'Slide roadmap sản phẩm 12 tháng — vision, milestone Q1/Q2/Q3/Q4, KPI mục tiêu, dependencies, rủi ro & kế hoạch giảm thiểu',
+  },
+  {
+    label: 'Đào tạo nội bộ',
+    emoji: '📚',
+    style: 'gradient',
+    slideCount: 10,
+    language: 'vi',
+    prompt: 'Slide đào tạo nội bộ — mục tiêu khoá học, lý thuyết cơ bản, ví dụ thực tế, bài tập, đánh giá, tài liệu tham khảo',
   },
 ];
 
@@ -103,6 +153,12 @@ interface Props {
   setBrandSlogan: (v: string) => void;
   brandDescription: string;
   setBrandDescription: (v: string) => void;
+  brandColors: string[];
+  setBrandColors: (v: string[]) => void;
+  carouselMode: boolean;
+  setCarouselMode: (v: boolean) => void;
+  aspectRatio: '16:9' | '9:16' | '1:1' | '4:5';
+  setAspectRatio: (v: '16:9' | '9:16' | '1:1' | '4:5') => void;
   /** Image-only deck mode: skips text blocks, auto gens all BGs */
   imageDeckMode: boolean;
   setImageDeckMode: (v: boolean) => void;
@@ -111,9 +167,9 @@ interface Props {
 // ── Tab definitions ────────────────────────────────────────────────────────────
 
 const TABS: { id: SidebarTab; label: string; emoji: string }[] = [
-  { id: 'create',   label: 'Tạo Deck',  emoji: '✨' },
-  { id: 'settings', label: 'Cài đặt',   emoji: '⚙️' },
-  { id: 'brand',    label: 'Brand',      emoji: '🏷️' },
+  { id: 'create',   label: 'Tạo Slide',       emoji: '✨' },
+  { id: 'settings', label: 'Cài đặt',          emoji: '⚙️' },
+  { id: 'brand',    label: 'Bộ thương hiệu',  emoji: '🏷️' },
 ];
 
 // ── Main Sidebar ──────────────────────────────────────────────────────────────
@@ -131,6 +187,9 @@ const SlideSidebar: React.FC<Props> = ({
   brandLogo, setBrandLogo,
   brandSlogan, setBrandSlogan,
   brandDescription, setBrandDescription,
+  brandColors, setBrandColors,
+  carouselMode, setCarouselMode,
+  aspectRatio, setAspectRatio,
   imageDeckMode, setImageDeckMode,
 }) => {
   const { showToast } = useToast();
@@ -195,10 +254,10 @@ const SlideSidebar: React.FC<Props> = ({
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="w-72 h-full flex flex-col bg-white dark:bg-[#1a1a1e] border-l border-black/[0.05] dark:border-white/[0.05]">
+    <div className="w-72 h-full flex flex-col bg-white dark:bg-[#13171f] border-l border-black/[0.05] dark:border-white/[0.08]">
 
       {/* ── Tab bar ─────────────────────────────────────────────────────────── */}
-      <div className="flex gap-1 px-3 pt-3 pb-2 shrink-0 border-b border-black/[0.05] dark:border-white/[0.04]">
+      <div className="flex gap-1 px-3 pt-3 pb-2 shrink-0 border-b border-black/[0.05] dark:border-white/[0.08]">
         {TABS.map(tab => (
           <button
             key={tab.id}
@@ -225,7 +284,7 @@ const SlideSidebar: React.FC<Props> = ({
           <>
             {/* Topic */}
             <div>
-              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-white/30 block mb-1.5">
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-1.5">
                 📝 Chủ đề Deck
               </label>
               <textarea
@@ -239,7 +298,7 @@ const SlideSidebar: React.FC<Props> = ({
 
             {/* Style */}
             <div>
-              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-white/30 block mb-1.5">
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-1.5">
                 🎨 Style
               </label>
               <div className="grid grid-cols-3 gap-1.5">
@@ -261,9 +320,9 @@ const SlideSidebar: React.FC<Props> = ({
 
             {/* Quick Templates */}
             <div>
-              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-white/30 block mb-1.5">
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-1.5">
                 <LayoutTemplate size={9} className="inline mr-1" />
-                Quick Templates
+                Mẫu nhanh
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {FEATURED_TEMPLATES.map(t => (
@@ -277,7 +336,7 @@ const SlideSidebar: React.FC<Props> = ({
                       <p className="text-[10px] font-bold text-slate-700 dark:text-white/80 leading-tight truncate">
                         {t.label}
                       </p>
-                      <p className="text-[8px] text-slate-400 dark:text-white/30 truncate">
+                      <p className="text-[8px] text-slate-400 dark:text-gray-400 truncate">
                         {t.slideCount} slides · {t.style}
                       </p>
                     </div>
@@ -293,21 +352,68 @@ const SlideSidebar: React.FC<Props> = ({
         ════════════════════════════════════════════════════════════════════ */}
         {activeTab === 'settings' && (
           <>
-            {/* Slide count */}
+            {/* Aspect Ratio — chọn tỷ lệ slide cho từng kênh phân phối */}
             <div>
-              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-white/30 block mb-1.5">
-                📊 Số lượng Slide
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-1.5">
+                📐 Tỷ lệ slide
+              </label>
+              <p className="text-[10px] text-slate-400 dark:text-gray-500 mb-2 leading-relaxed">Chọn theo kênh: 16:9 thuyết trình, 9:16 reels mobile, 1:1 IG, 4:5 FB feed.</p>
+              <div className="grid grid-cols-4 gap-1.5">
+                {(['16:9', '9:16', '1:1', '4:5'] as const).map(r => (
+                  <button
+                    key={r}
+                    onClick={() => setAspectRatio(r)}
+                    className={`py-2 rounded-lg text-[11px] font-bold transition-all ${
+                      aspectRatio === r
+                        ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30'
+                        : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
+                    }`}
+                    title={r === '16:9' ? 'Thuyết trình tiêu chuẩn' : r === '9:16' ? 'Mobile reels / TikTok' : r === '1:1' ? 'Instagram square post' : 'Facebook feed portrait'}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Carousel mode — gen 5 slide đồng theme cho social post */}
+            <div className="rounded-xl border border-purple-500/20 bg-purple-500/[0.04] p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-purple-500">🎠</span>
+                  <span className="text-[11px] font-bold text-slate-700 dark:text-white">Tạo Carousel social</span>
+                </div>
+                <button
+                  onClick={() => setCarouselMode(!carouselMode)}
+                  className={`w-8 h-4 rounded-full transition-colors ${carouselMode ? 'bg-purple-500' : 'bg-slate-300 dark:bg-white/10'}`}
+                  title="Tạo 5 slide đồng theme cho carousel post FB/IG/LinkedIn"
+                >
+                  <div className={`w-3 h-3 bg-white rounded-full mx-0.5 transition-transform ${carouselMode ? 'translate-x-4' : ''}`} />
+                </button>
+              </div>
+              <p className="text-[10px] text-slate-400 dark:text-gray-500 mt-1.5 leading-relaxed">
+                {carouselMode
+                  ? '✨ Sẽ tạo 5 slide narrative: Hook → Problem → Solution → Proof → CTA.'
+                  : 'Bật để tạo 5 slide carousel cho social.'}
+              </p>
+            </div>
+
+            {/* Slide count — disabled khi carousel mode (force 5 slides) */}
+            <div>
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-1.5">
+                📊 Số lượng Slide {carouselMode && <span className="text-purple-500 normal-case">(carousel: 5 cố định)</span>}
               </label>
               <div className="grid grid-cols-5 gap-1.5">
                 {SLIDE_COUNT_OPTIONS.map(count => (
                   <button
                     key={count}
-                    onClick={() => setSlideCount(count)}
+                    onClick={() => !carouselMode && setSlideCount(count)}
+                    disabled={carouselMode}
                     className={`py-2 rounded-lg text-[11px] font-bold transition-all ${
                       slideCount === count
                         ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30'
                         : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
-                    }`}
+                    } ${carouselMode ? 'opacity-40 cursor-not-allowed' : ''}`}
                   >
                     {count}
                   </button>
@@ -317,7 +423,7 @@ const SlideSidebar: React.FC<Props> = ({
 
             {/* Language */}
             <div>
-              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-white/30 block mb-1.5">
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-1.5">
                 <Globe size={9} className="inline mr-1" />
                 Ngôn ngữ
               </label>
@@ -335,7 +441,7 @@ const SlideSidebar: React.FC<Props> = ({
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
-                      className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[#252530] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-lg z-10 overflow-hidden"
+                      className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-lg z-10 overflow-hidden"
                     >
                       {LANGUAGES.map(lang => (
                         <button
@@ -358,7 +464,7 @@ const SlideSidebar: React.FC<Props> = ({
 
             {/* Ref Images */}
             <div>
-              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-white/30 block mb-1.5">
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-1.5">
                 🖼️ Ảnh tham chiếu (tuỳ chọn)
               </label>
               <div className="flex gap-2 flex-wrap">
@@ -378,12 +484,12 @@ const SlideSidebar: React.FC<Props> = ({
                     onClick={() => fileRef.current?.click()}
                     className="w-14 h-14 rounded-lg border-2 border-dashed border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center hover:border-brand-blue/40 transition-colors"
                   >
-                    <ImageIcon size={14} className="text-slate-400 dark:text-white/30" />
+                    <ImageIcon size={14} className="text-slate-400 dark:text-gray-400" />
                   </button>
                 )}
               </div>
               <input ref={fileRef} type="file" accept="image/*" onChange={handleRefImageUpload} className="hidden" />
-              <p className="text-[9px] text-slate-400 dark:text-white/20 mt-1">
+              <p className="text-[9px] text-slate-400 dark:text-white/45 mt-1">
                 Tối đa 3 ảnh — AI dùng làm tham chiếu style/brand
               </p>
             </div>
@@ -397,7 +503,7 @@ const SlideSidebar: React.FC<Props> = ({
           <>
             {/* Logo */}
             <div>
-              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-white/30 block mb-1.5">
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-1.5">
                 <Tag size={9} className="inline mr-1" />
                 Logo thương hiệu
               </label>
@@ -417,11 +523,11 @@ const SlideSidebar: React.FC<Props> = ({
                     onClick={() => logoFileRef.current?.click()}
                     className="w-14 h-14 rounded-xl border-2 border-dashed border-black/[0.08] dark:border-white/[0.08] flex flex-col items-center justify-center gap-0.5 hover:border-brand-blue/40 transition-colors shrink-0"
                   >
-                    <Upload size={13} className="text-slate-400 dark:text-white/30" />
-                    <span className="text-[8px] text-slate-400 dark:text-white/30">Logo</span>
+                    <Upload size={13} className="text-slate-400 dark:text-gray-400" />
+                    <span className="text-[8px] text-slate-400 dark:text-gray-400">Logo</span>
                   </button>
                 )}
-                <p className="text-[10px] text-slate-400 dark:text-white/30 leading-snug">
+                <p className="text-[10px] text-slate-400 dark:text-gray-400 leading-snug">
                   AI sẽ dùng logo làm tham chiếu thương hiệu khi tạo slide
                 </p>
               </div>
@@ -430,7 +536,7 @@ const SlideSidebar: React.FC<Props> = ({
 
             {/* Slogan */}
             <div>
-              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-white/30 block mb-1.5">
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-1.5">
                 Slogan / Tagline
               </label>
               <input
@@ -444,7 +550,7 @@ const SlideSidebar: React.FC<Props> = ({
 
             {/* Description */}
             <div>
-              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-white/30 block mb-1.5">
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-1.5">
                 Mô tả dự án / thương hiệu
               </label>
               <textarea
@@ -454,14 +560,49 @@ const SlideSidebar: React.FC<Props> = ({
                 rows={4}
                 className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[12px] placeholder-slate-300 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 resize-none text-slate-900 dark:text-white"
               />
-              <p className="text-right text-[9px] text-slate-300 dark:text-white/20 mt-0.5">
+              <p className="text-right text-[9px] text-slate-300 dark:text-white/45 mt-0.5">
                 {brandDescription.length}/200
               </p>
             </div>
 
+            {/* Brand Colors — primary/secondary/accent/text. AI dùng tông màu này khi gen visual */}
+            <div>
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-1.5">
+                Tông màu thương hiệu
+              </label>
+              <p className="text-[10px] text-slate-400 dark:text-gray-500 mb-2 leading-relaxed">AI sẽ dùng các màu này khi sinh nền slide và gợi ý màu chữ.</p>
+              <div className="grid grid-cols-4 gap-2">
+                {(['Chính', 'Phụ', 'Nhấn', 'Chữ'] as const).map((label, i) => (
+                  <div key={i} className="flex flex-col items-center gap-1">
+                    <div className="relative w-full h-10 rounded-lg border border-black/[0.08] dark:border-white/[0.08] overflow-hidden">
+                      <div className="absolute inset-0" style={{ backgroundColor: brandColors[i] || '#000' }} />
+                      <input
+                        type="color"
+                        value={brandColors[i] || '#000000'}
+                        onChange={e => {
+                          const next = [...brandColors];
+                          next[i] = e.target.value;
+                          setBrandColors(next);
+                        }}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        title={`Đổi màu ${label}`}
+                      />
+                    </div>
+                    <span className="text-[9px] font-semibold text-slate-500 dark:text-gray-400">{label}</span>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => setBrandColors(['#0090FF', '#6366F1', '#F59E0B', '#0F172A'])}
+                className="mt-2 text-[10px] font-semibold text-brand-blue hover:underline"
+              >
+                ↻ Reset về mặc định
+              </button>
+            </div>
+
             {/* DOCX Import (in brand for power users who need it from sidebar) */}
-            <div className="pt-1 border-t border-black/[0.05] dark:border-white/[0.04]">
-              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-white/30 block mb-2">
+            <div className="pt-1 border-t border-black/[0.05] dark:border-white/[0.08]">
+              <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 block mb-2">
                 <FileText size={9} className="inline mr-1" />
                 Import từ DOCX
               </label>
@@ -489,7 +630,7 @@ const SlideSidebar: React.FC<Props> = ({
       </div>
 
       {/* ── Sticky CTA at bottom ─────────────────────────────────────────── */}
-      <div className="shrink-0 p-4 border-t border-black/[0.05] dark:border-white/[0.04] space-y-3">
+      <div className="shrink-0 p-4 border-t border-black/[0.05] dark:border-white/[0.08] space-y-3">
 
         {/* Image Deck Mode toggle */}
         <div className="relative">
@@ -515,7 +656,7 @@ const SlideSidebar: React.FC<Props> = ({
           <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
             imageDeckMode ? 'bg-violet-500/20' : 'bg-black/[0.04] dark:bg-white/[0.04]'
           }`}>
-            <ImagePlay size={15} className={imageDeckMode ? 'text-violet-500' : 'text-slate-400 dark:text-white/30'} />
+            <ImagePlay size={15} className={imageDeckMode ? 'text-violet-500' : 'text-slate-400 dark:text-gray-400'} />
           </div>
           <div className="flex-1 text-left min-w-0">
             <p className="text-[11px] font-bold leading-tight">

@@ -12,7 +12,7 @@ interface PaymentHistoryTabProps {
 export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({ logs, loading }) => {
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
-      <div className="bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all">
+      <div className="bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all">
          <div className="p-8 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50/50 dark:bg-black/20">
             <div className="flex items-center gap-3">
                <CreditCard size={20} className="text-indigo-600" />

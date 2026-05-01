@@ -66,7 +66,7 @@ export const TaskListSidebar: React.FC<{ isOpen: boolean; onClose: () => void }>
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
-      className="w-[400px] h-full bg-white dark:bg-[#111114] border-l border-black/5 dark:border-white/5 flex flex-col shrink-0 z-[150] shadow-2xl transition-colors"
+      className="w-[400px] h-full bg-white dark:bg-[#1a1f2b] border-l border-black/5 dark:border-white/5 flex flex-col shrink-0 z-[150] shadow-2xl transition-colors"
     >
       <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-black/20">
         <div className="flex items-center gap-3">
@@ -88,7 +88,7 @@ export const TaskListSidebar: React.FC<{ isOpen: boolean; onClose: () => void }>
 
       <div className="flex-grow overflow-y-auto no-scrollbar p-5 space-y-6">
         {MOCK_TASKS.map((task) => (
-          <div key={task.id} className="p-5 bg-white dark:bg-[#0a0a0c] border border-black/5 dark:border-white/10 rounded-2xl space-y-4 hover:border-indigo-500/30 transition-all shadow-sm">
+          <div key={task.id} className="p-5 bg-white dark:bg-[#0a0d14] border border-black/5 dark:border-white/10 rounded-2xl space-y-4 hover:border-indigo-500/30 transition-all shadow-sm">
             <div className="flex justify-between items-start">
                <div className="flex flex-wrap items-center gap-2">
                   <span className="px-2 py-0.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 text-[8px] font-black uppercase rounded-sm flex items-center gap-1">

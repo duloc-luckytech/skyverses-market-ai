@@ -70,7 +70,7 @@ const NoCodeExportPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="pt-20 bg-[#fcfcfd] dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden transition-colors duration-500">
+    <div className="pt-20 bg-[#fcfcfd] dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden transition-colors duration-500">
 
       {/* ═══════════ HERO SECTION ═══════════ */}
       <section className="relative overflow-hidden">
@@ -167,7 +167,7 @@ const NoCodeExportPage: React.FC = () => {
             >
               <div className="relative rounded-2xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] shadow-2xl shadow-black/10 dark:shadow-black/40">
                 {/* Browser chrome */}
-                <div className="bg-slate-100 dark:bg-[#1a1a1e] px-4 py-3 flex items-center gap-2 border-b border-black/[0.04] dark:border-white/[0.04]">
+                <div className="bg-slate-100 dark:bg-[#13171f] px-4 py-3 flex items-center gap-2 border-b border-black/[0.04] dark:border-white/[0.04]">
                   <div className="flex gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
@@ -191,7 +191,7 @@ const NoCodeExportPage: React.FC = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.8 }}
-                className="absolute -left-4 top-[30%] px-3 py-2 bg-white dark:bg-[#0e0e12] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
+                className="absolute -left-4 top-[30%] px-3 py-2 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
               >
                 <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
                   <CheckCircle size={14} />
@@ -206,7 +206,7 @@ const NoCodeExportPage: React.FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1 }}
-                className="absolute -right-4 bottom-[20%] px-3 py-2 bg-white dark:bg-[#0e0e12] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
+                className="absolute -right-4 bottom-[20%] px-3 py-2 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
               >
                 <div className="w-7 h-7 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center">
                   <GitBranch size={14} />

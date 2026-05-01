@@ -151,7 +151,7 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
         <div className={`absolute -inset-3 bg-brand-blue/8 dark:bg-brand-blue/12 blur-2xl rounded-full transition-opacity duration-500 pointer-events-none ${isFocused || isModalOpen ? 'opacity-100' : 'opacity-0'}`} />
         
         <div 
-          className={`relative flex items-center gap-3 bg-white dark:bg-[#0a0a0c] rounded-2xl md:rounded-full h-14 md:h-[60px] px-5 md:px-6 border transition-all duration-300 ${
+          className={`relative flex items-center gap-3 bg-white dark:bg-[#0a0d14] rounded-2xl md:rounded-full h-14 md:h-[60px] px-5 md:px-6 border transition-all duration-300 ${
             isFocused || isModalOpen
               ? 'border-brand-blue/50 shadow-lg shadow-brand-blue/10' 
               : 'border-black/[0.06] dark:border-white/[0.06] shadow-sm hover:shadow-md hover:border-black/10 dark:hover:border-white/10'
@@ -245,7 +245,7 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
               animate={{ opacity: 1, y: 0, scale: 1 }} 
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ type: 'spring', damping: 25, stiffness: 400 }}
-              className="absolute top-full left-0 right-0 mt-3 z-[200] bg-white dark:bg-[#0c0c0e] border border-black/[0.06] dark:border-white/[0.06] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[70vh]"
+              className="absolute top-full left-0 right-0 mt-3 z-[200] bg-white dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[70vh]"
             >
               {/* Header */}
               <div className="px-6 md:px-8 py-5 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">

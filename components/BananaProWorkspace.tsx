@@ -220,7 +220,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const currentChapter = chapters.find(c => c.id === activeChapterId);
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-[#f8f8f8] dark:bg-[#030304] text-black dark:text-white font-sans overflow-hidden relative">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-[#f8f8f8] dark:bg-[#0a0d14] text-black dark:text-white font-sans overflow-hidden relative">
 
       <AnimatePresence initial={false}>
         {sidebarOpen && (
@@ -228,7 +228,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             initial={{ x: -450, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -450, opacity: 0 }}
-            className="absolute lg:relative w-[320px] lg:w-[420px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-white dark:bg-[#080808] z-[100] overflow-y-auto no-scrollbar p-0 shadow-2xl"
+            className="absolute lg:relative w-[320px] lg:w-[420px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-white dark:bg-[#0a0d14] z-[100] overflow-y-auto no-scrollbar p-0 shadow-2xl"
           >
             <div className="p-8 lg:p-10 space-y-12 pb-40">
               <header className="flex justify-between items-center">
@@ -336,7 +336,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         )}
       </AnimatePresence>
 
-      <main className="flex-grow flex flex-col bg-[#f0f0f2] dark:bg-[#010101] relative overflow-hidden">
+      <main className="flex-grow flex flex-col bg-[#f0f0f2] dark:bg-[#0a0d14] relative overflow-hidden">
 
         <div className="h-16 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-[70] shadow-sm">
           <div className="flex items-center gap-6">
@@ -362,7 +362,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         </div>
 
         <div className="flex-grow overflow-y-auto custom-scrollbar p-6 lg:p-16 flex items-center justify-center">
-           <div className="w-full max-w-5xl aspect-[1/1.41] bg-white dark:bg-[#0a0a0c] shadow-[0_0_100px_rgba(0,0,0,0.1)] border-[12px] border-white dark:border-[#111] p-6 lg:p-10 grid grid-cols-2 grid-rows-2 gap-4 lg:gap-8 relative overflow-hidden">
+           <div className="w-full max-w-5xl aspect-[1/1.41] bg-white dark:bg-[#0a0d14] shadow-[0_0_100px_rgba(0,0,0,0.1)] border-[12px] border-white dark:border-[#111] p-6 lg:p-10 grid grid-cols-2 grid-rows-2 gap-4 lg:gap-8 relative overflow-hidden">
 
               {currentChapter?.panels.map((p, idx) => (
                  <div
@@ -416,7 +416,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
            </div>
         </div>
 
-        <div className="h-32 border-t border-black/5 dark:border-white/10 bg-white dark:bg-[#080808] p-8 lg:px-12 flex items-center justify-between z-40 shadow-2xl shrink-0">
+        <div className="h-32 border-t border-black/5 dark:border-white/10 bg-white dark:bg-[#0a0d14] p-8 lg:px-12 flex items-center justify-between z-40 shadow-2xl shrink-0">
            <div className="flex items-center gap-12 lg:gap-16">
               <div className="hidden md:flex flex-col gap-3">
                  <div className="flex items-center gap-3">
@@ -453,7 +453,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           >
              <motion.div
                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-               className="max-w-md w-full bg-white dark:bg-[#0c0c0e] p-10 border border-black/10 dark:border-white/10 rounded-sm space-y-8 text-center shadow-3xl"
+               className="max-w-md w-full bg-white dark:bg-[#0a0d14] p-10 border border-black/10 dark:border-white/10 rounded-sm space-y-8 text-center shadow-3xl"
              >
                 <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500">
                    <AlertTriangle size={40} />

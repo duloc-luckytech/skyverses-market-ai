@@ -353,7 +353,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
             ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(0,144,255,0.12)]'
             : 'ring-1 ring-slate-200 dark:ring-white/8 hover:ring-brand-blue/30 hover:shadow-xl dark:hover:shadow-brand-blue/5'
           }
-          bg-white dark:bg-[#0d0d10]`}
+          bg-white dark:bg-[#0a0d14]`}
       >
         {visualArea}
         {infoPane}
@@ -489,7 +489,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-      className="flex-1 min-h-0 flex flex-col bg-[#fafafa] dark:bg-[#050506] transition-colors duration-500 relative"
+      className="flex-1 min-h-0 flex flex-col bg-[#fafafa] dark:bg-[#0a0d14] transition-colors duration-500 relative"
     >
       {/* ── Scrollable content area ──────────────────────────────── */}
       <div className="flex-1 overflow-y-auto no-scrollbar p-5 lg:p-8 pb-24">
@@ -920,7 +920,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.92, opacity: 0, y: 8 }}
               transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-              className="bg-white dark:bg-[#131318] border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+              className="bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
               <p className="text-[11px] font-black uppercase tracking-widest text-rose-500 mb-1">Xác nhận xoá</p>

@@ -23,7 +23,7 @@ const ImageUpscaleAI = () => {
 
   if (isStudioOpen) {
     return (
-      <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0a0c]">
+      <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0d14]">
         <UpscaleWorkspace onClose={() => setIsStudioOpen(false)} />
       </div>
     );
@@ -117,7 +117,7 @@ const ImageUpscaleAI = () => {
   ];
 
   return (
-    <div className="bg-white dark:bg-[#0a0a0c] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
 
       {/* ═══ HERO ═══ */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-16 relative overflow-hidden">
@@ -129,7 +129,7 @@ const ImageUpscaleAI = () => {
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center relative z-10">
           {/* LEFT */}
           <div className="lg:col-span-6 space-y-7">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-[10px] font-medium uppercase text-slate-400 dark:text-[#555] hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors tracking-wider">
+            <Link to="/" className="inline-flex items-center gap-1.5 text-[10px] font-medium uppercase text-slate-400 dark:text-gray-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors tracking-wider">
               <ChevronLeft size={14} /> Trở lại
             </Link>
 
@@ -140,7 +140,7 @@ const ImageUpscaleAI = () => {
               <h1 className="text-5xl lg:text-7xl font-bold leading-[0.9] tracking-tight">
                 Image <br /><span className="text-emerald-500 dark:text-emerald-400">Upscale</span>
               </h1>
-              <p className="text-sm text-slate-500 dark:text-[#666] font-medium leading-relaxed max-w-md">
+              <p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed max-w-md">
                 Nâng cấp ảnh lên 4K-8K-12K với công nghệ AI Generative. Không chỉ phóng to — AI tái tạo từng pixel, giữ nguyên nét đẹp tự nhiên và chi tiết sắc nét nhất.
               </p>
             </motion.div>
@@ -152,7 +152,7 @@ const ImageUpscaleAI = () => {
                   <div className="shrink-0 w-6 h-6 rounded-md bg-emerald-500/10 flex items-center justify-center text-emerald-500 dark:text-emerald-400">{s.icon}</div>
                   <div>
                     <p className="text-[10px] font-semibold text-slate-700 dark:text-white/80">{s.label}</p>
-                    <p className="text-[8px] font-medium text-slate-400 dark:text-[#444]">{s.sub}</p>
+                    <p className="text-[8px] font-medium text-slate-400 dark:text-gray-500">{s.sub}</p>
                   </div>
                 </div>
               ))}
@@ -173,7 +173,7 @@ const ImageUpscaleAI = () => {
             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }}
             className="lg:col-span-6"
           >
-            <div className="aspect-[16/10] bg-slate-50 dark:bg-[#0c0c0e] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-3 overflow-hidden relative">
+            <div className="aspect-[16/10] bg-slate-50 dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-3 overflow-hidden relative">
               <div className="relative w-full h-full rounded-xl overflow-hidden bg-white dark:bg-black">
                 <div className="absolute inset-0 grid grid-cols-2">
                   <img
@@ -218,7 +218,7 @@ const ImageUpscaleAI = () => {
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight leading-[1.1] mb-4">
               Tái tạo chi tiết bằng <span className="text-emerald-500 dark:text-emerald-400">Generative AI</span>
             </h2>
-            <p className="text-sm text-slate-500 dark:text-[#666] leading-relaxed max-w-2xl mx-auto">
+            <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto">
               Generative Upscale không chỉ phóng to — AI hiểu cấu trúc hình ảnh và tái tạo các pixel mới hoàn toàn.
               Kết quả sắc nét hơn, tự nhiên hơn, giữ nguyên bố cục gốc kể cả ở độ phân giải rất cao.
             </p>
@@ -257,11 +257,11 @@ const ImageUpscaleAI = () => {
                   <div>
                     <h3 className="text-lg font-bold mb-1">{mode.title}</h3>
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-500 dark:text-emerald-400 mb-3">{mode.subtitle}</p>
-                    <p className="text-xs text-slate-500 dark:text-[#666] leading-relaxed">{mode.desc}</p>
+                    <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">{mode.desc}</p>
                   </div>
                   <ul className="space-y-2.5 pt-4 border-t border-black/[0.04] dark:border-white/[0.04]">
                     {mode.features.map(f => (
-                      <li key={f} className="flex items-center gap-2.5 text-[11px] font-medium text-slate-600 dark:text-[#888]">
+                      <li key={f} className="flex items-center gap-2.5 text-[11px] font-medium text-slate-600 dark:text-gray-300">
                         <Check size={14} className="text-emerald-500 shrink-0" strokeWidth={3} />
                         {f}
                       </li>
@@ -287,7 +287,7 @@ const ImageUpscaleAI = () => {
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight leading-[1.1] mb-4">
                 Hỗ trợ từ 2K đến <span className="text-brand-blue">12K</span>
               </h2>
-              <p className="text-sm text-slate-500 dark:text-[#666] leading-relaxed">
+              <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed">
                 Chọn mức phân giải phù hợp — từ 2K cho web & social đến 12K cho in ấn billboard và LED display.
               </p>
             </div>
@@ -303,7 +303,7 @@ const ImageUpscaleAI = () => {
                   <div className="w-5 h-5 rounded-full bg-brand-blue/10 border border-brand-blue/20 flex items-center justify-center text-brand-blue shrink-0 mt-0.5">
                     <Check size={12} strokeWidth={3} />
                   </div>
-                  <p className="text-sm text-slate-600 dark:text-[#888] font-medium leading-relaxed group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{item}</p>
+                  <p className="text-sm text-slate-600 dark:text-gray-300 font-medium leading-relaxed group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{item}</p>
                 </div>
               ))}
             </div>
@@ -313,7 +313,7 @@ const ImageUpscaleAI = () => {
           <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
             <div className="bg-white dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] p-8 rounded-2xl space-y-8">
               <div className="flex justify-between items-center border-b border-black/[0.04] dark:border-white/[0.04] pb-5">
-                <span className="text-[10px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-wider">Quality Inspector</span>
+                <span className="text-[10px] font-semibold uppercase text-slate-400 dark:text-gray-400 tracking-wider">Quality Inspector</span>
                 <ScanLine size={16} className="text-emerald-500" />
               </div>
               <div className="space-y-6">
@@ -323,7 +323,7 @@ const ImageUpscaleAI = () => {
                   { label: 'Color Accuracy', value: 98 }
                 ].map(item => (
                   <div key={item.label} className="space-y-2.5">
-                    <div className="flex justify-between text-[10px] font-semibold text-slate-500 dark:text-[#666]">
+                    <div className="flex justify-between text-[10px] font-semibold text-slate-500 dark:text-gray-400">
                       <span>{item.label}</span>
                       <span className="text-emerald-500">{item.value}%</span>
                     </div>
@@ -343,7 +343,7 @@ const ImageUpscaleAI = () => {
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                   <MonitorUp size={20} />
                 </div>
-                <p className="text-[10px] font-semibold text-slate-400 dark:text-[#555] uppercase tracking-wider">Ready for mastering</p>
+                <p className="text-[10px] font-semibold text-slate-400 dark:text-gray-400 uppercase tracking-wider">Ready for mastering</p>
               </div>
             </div>
           </motion.div>
@@ -379,7 +379,7 @@ const ImageUpscaleAI = () => {
                     {item.icon}
                   </div>
                   <h4 className="text-sm font-bold">{item.title}</h4>
-                  <p className="text-xs text-slate-500 dark:text-[#666] leading-relaxed">{item.desc}</p>
+                  <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -411,7 +411,7 @@ const ImageUpscaleAI = () => {
                 </div>
                 <div className="space-y-1.5">
                   <h4 className="text-sm font-bold">{item.title}</h4>
-                  <p className="text-xs text-slate-500 dark:text-[#666] leading-relaxed">{item.desc}</p>
+                  <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -426,7 +426,7 @@ const ImageUpscaleAI = () => {
             <h2 className="text-3xl lg:text-5xl font-bold tracking-tight leading-[1.1]">
               Sẵn sàng nâng cấp <span className="text-emerald-500 dark:text-emerald-400">hình ảnh?</span>
             </h2>
-            <p className="text-sm text-slate-500 dark:text-[#555] max-w-lg mx-auto leading-relaxed">
+            <p className="text-sm text-slate-500 dark:text-gray-400 max-w-lg mx-auto leading-relaxed">
               3 chế độ · Lên đến 12K · Generative AI · Auto Refund · Cloud History
             </p>
             <button

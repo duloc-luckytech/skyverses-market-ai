@@ -57,7 +57,7 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed inset-0 z-[700] flex flex-col bg-white dark:bg-[#0b0c10] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500"
+        className="fixed inset-0 z-[700] flex flex-col bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500"
       >
 
         {/* Mobile Sidebar Backdrop */}
@@ -215,7 +215,7 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
             )}
 
             {/* Asset Rail - Right side */}
-            <div className="absolute right-0 top-0 bottom-0 w-16 md:w-20 lg:w-24 bg-white/60 dark:bg-[#0b0c10]/60 backdrop-blur-xl border-l border-slate-100 dark:border-white/5 z-50 flex flex-col items-center py-4 gap-2 md:gap-3 overflow-y-auto no-scrollbar">
+            <div className="absolute right-0 top-0 bottom-0 w-16 md:w-20 lg:w-24 bg-white/60 dark:bg-[#0a0d14]/60 backdrop-blur-xl border-l border-slate-100 dark:border-white/5 z-50 flex flex-col items-center py-4 gap-2 md:gap-3 overflow-y-auto no-scrollbar">
               <div className="text-[7px] md:text-[8px] font-black uppercase text-slate-400 dark:text-white/30 tracking-widest flex flex-col items-center gap-1 mb-1 text-center shrink-0">
                 <Layers size={12} /> Versions
               </div>
@@ -279,7 +279,7 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
-                className="max-w-sm w-full bg-white dark:bg-[#14151a] p-8 md:p-10 border border-slate-200 dark:border-white/[0.06] rounded-2xl text-center space-y-6 shadow-2xl transition-colors"
+                className="max-w-sm w-full bg-white dark:bg-[#13171f] p-8 md:p-10 border border-slate-200 dark:border-white/[0.06] rounded-2xl text-center space-y-6 shadow-2xl transition-colors"
               >
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mx-auto text-amber-500">
                   <Coins size={32} className="md:w-10 md:h-10" />

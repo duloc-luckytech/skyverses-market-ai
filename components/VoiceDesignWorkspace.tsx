@@ -228,13 +228,13 @@ const VoiceDesignWorkspace: React.FC = () => {
   [generatedVoices, searchSaved]);
 
   return (
-    <div className="bg-white dark:bg-[#0c0c0e] min-h-[700px] w-full flex flex-col p-6 text-slate-800 dark:text-white font-sans selection:bg-brand-blue/30 transition-colors duration-500">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-[700px] w-full flex flex-col p-6 text-slate-800 dark:text-white font-sans selection:bg-brand-blue/30 transition-colors duration-500">
       
       <div className="flex-grow flex flex-col lg:flex-row gap-6 overflow-hidden">
         {/* LEFT COLUMN: CONFIG (1/3) */}
         <div className="w-full lg:w-1/3 flex flex-col gap-6 overflow-y-auto no-scrollbar pr-1">
           <div className="space-y-6">
-            <div className="bg-slate-50 dark:bg-[#141417] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-6 shadow-sm dark:shadow-2xl transition-colors">
+            <div className="bg-slate-50 dark:bg-[#13171f] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-6 shadow-sm dark:shadow-2xl transition-colors">
               <div className="space-y-3 relative">
                 <div className="flex justify-between items-center">
                   <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-[0.2em]">Mô tả giọng nói</label>
@@ -252,7 +252,7 @@ const VoiceDesignWorkspace: React.FC = () => {
                           initial={{ opacity: 0, y: 5, scale: 0.95 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                          className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-[#1c1c1f] border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden p-2"
+                          className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden p-2"
                         >
                           {EXAMPLES.map((ex, i) => (
                             <button
@@ -352,7 +352,7 @@ const VoiceDesignWorkspace: React.FC = () => {
           >
             <motion.div 
               initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }}
-              className="bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/10 rounded-[2rem] w-full max-w-4xl flex flex-col overflow-hidden shadow-3xl"
+              className="bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 rounded-[2rem] w-full max-w-4xl flex flex-col overflow-hidden shadow-3xl"
             >
               <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-black/20">
                  <div className="flex items-center gap-4">
@@ -392,7 +392,7 @@ const VoiceDesignWorkspace: React.FC = () => {
           >
              <motion.div 
                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-               className="max-w-md w-full bg-white dark:bg-[#111114] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-2xl transition-colors"
+               className="max-w-md w-full bg-white dark:bg-[#1a1f2b] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-2xl transition-colors"
              >
                 <div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]">
                    <AlertTriangle size={48} />

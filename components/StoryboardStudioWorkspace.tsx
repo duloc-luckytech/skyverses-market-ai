@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Zap, Loader2, Layers, Camera, MonitorPlay,
@@ -55,6 +55,23 @@ const CollapsibleSection: React.FC<{
   );
 };
 
+// Autosave indicator badge — same pattern Slide Creator
+const StoryboardSaveBadge: React.FC<{ lastSavedAt: number | null }> = React.memo(({ lastSavedAt }) => {
+  const [, force] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => force(n => n + 1), 5000);
+    return () => clearInterval(t);
+  }, []);
+  if (!lastSavedAt) return null;
+  const sec = Math.floor((Date.now() - lastSavedAt) / 1000);
+  const label = sec < 5 ? '✓ Đã lưu' : sec < 60 ? `✓ Đã lưu ${sec}s trước` : `✓ Đã lưu ${Math.floor(sec / 60)}p trước`;
+  return (
+    <span className="hidden md:flex items-center gap-1 text-[10px] font-semibold text-emerald-500 dark:text-emerald-400 ml-2" title="Tự động lưu vào localStorage">
+      {label}
+    </span>
+  );
+});
+
 const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { credits } = useAuth();
   const s = useStoryboardStudio();
@@ -62,6 +79,26 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   const [isAestheticModalOpen, setIsAestheticModalOpen] = useState(false);
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [showWizard, setShowWizard] = useState(() => shouldShowWizard());
+
+  // Keyboard shortcuts: ⌘Z undo, ⌘⇧Z redo
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target.isContentEditable) return;
+      const meta = e.metaKey || e.ctrlKey;
+      if (!meta) return;
+      if (e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        if (s.canUndo) s.undo();
+      } else if ((e.key.toLowerCase() === 'z' && e.shiftKey) || e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        if (s.canRedo) s.redo();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [s.canUndo, s.canRedo]);
 
   // Refs for attachment inputs inside sidebar
   const sidebarImageRef = useRef<HTMLInputElement>(null);
@@ -136,6 +173,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 </div>
                 <span className="text-xs font-bold text-slate-800 dark:text-white">Storyboard Studio</span>
               </div>
+              <StoryboardSaveBadge lastSavedAt={s.lastSavedAt} />
             </div>
             <button
               onClick={() => setIsMobileExpanded(false)}

@@ -145,7 +145,7 @@ const WelcomeBonusModal: React.FC = () => {
             </div>
 
             {/* Bottom section */}
-            <div className="bg-white dark:bg-[#0c0e16] px-8 py-7 space-y-5">
+            <div className="bg-white dark:bg-[#13171f] px-8 py-7 space-y-5">
               {/* Benefits */}
               <div className="space-y-3">
                 {[

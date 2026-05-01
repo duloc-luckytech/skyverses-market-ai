@@ -64,7 +64,7 @@ const GenyuProduct = () => {
   const getTranslation = (obj: any) => obj[lang] || obj['en'];
 
   return (
-    <div className="pt-24 bg-white dark:bg-[#020203] min-h-screen text-black dark:text-white font-sans overflow-x-hidden selection:bg-brand-blue/30 transition-colors duration-500 pb-32">
+    <div className="pt-24 bg-white dark:bg-[#0a0d14] min-h-screen text-black dark:text-white font-sans overflow-x-hidden selection:bg-brand-blue/30 transition-colors duration-500 pb-32">
       
       {/* --- BACKGROUND AMBIENCE --- */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -113,7 +113,7 @@ const GenyuProduct = () => {
             </div>
 
             <div className="lg:col-span-5 w-full">
-               <div className="aspect-[4/5] bg-gray-100 dark:bg-[#0a0a0c] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group">
+               <div className="aspect-[4/5] bg-gray-100 dark:bg-[#0a0d14] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group">
                   <img src={solution.imageUrl} className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-60 transition-all duration-1000 group-hover:scale-105" alt="Architect Hub" />
                   <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent"></div>
                   <div className="absolute bottom-10 left-10 space-y-2">
@@ -162,7 +162,7 @@ const GenyuProduct = () => {
                 const text = typeof f === 'string' ? f : (f[lang] || f.en || '');
                 const [title, desc] = text.split(':');
                 return (
-                  <div key={i} className="p-16 bg-white dark:bg-[#08080a] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-500 border-r border-black/5 dark:border-white/5 last:border-r-0">
+                  <div key={i} className="p-16 bg-white dark:bg-[#0a0d14] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-500 border-r border-black/5 dark:border-white/5 last:border-r-0">
                     <div className="w-14 h-14 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-400 group-hover:text-brand-blue group-hover:border-brand-blue transition-all rounded-sm shadow-xl">
                         <Zap size={24} />
                     </div>

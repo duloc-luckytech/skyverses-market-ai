@@ -15,7 +15,7 @@ export const ActionFooter: React.FC<ActionFooterProps> = ({
   credits, cost, isGenerating, hasSource, hasEnoughCredits, onGenerate 
 }) => {
   return (
-    <div className="p-6 border-t border-slate-100 dark:border-white/10 bg-white/80 dark:bg-[#0d0e12]/80 backdrop-blur-md space-y-4 shrink-0 transition-colors">
+    <div className="p-6 border-t border-slate-100 dark:border-white/10 bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-md space-y-4 shrink-0 transition-colors">
       <div className="flex items-center justify-between px-1">
         <div className="flex flex-col">
           <span className="text-[8px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest mb-1 italic">Số dư Credits</span>

@@ -468,7 +468,7 @@ const AgentSandbox: React.FC<{ agent: CustomAgent }> = ({ agent }) => {
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                className="absolute top-full left-0 right-0 mt-1 z-50 bg-white dark:bg-[#1a1a1e] rounded-xl shadow-xl border border-black/[0.08] dark:border-white/[0.08] overflow-hidden max-h-[200px] overflow-y-auto"
+                className="absolute top-full left-0 right-0 mt-1 z-50 bg-white dark:bg-[#13171f] rounded-xl shadow-xl border border-black/[0.08] dark:border-white/[0.08] overflow-hidden max-h-[200px] overflow-y-auto"
               >
                 {threads.length === 0 ? (
                   <p className="text-[10px] text-slate-400 p-3 text-center">No conversations yet</p>

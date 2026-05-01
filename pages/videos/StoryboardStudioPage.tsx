@@ -143,7 +143,7 @@ const StoryboardStudioPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-[#fafafa] dark:bg-[#030304] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-[#fafafa] dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-20 transition-colors duration-500">
 
       {/* ══════════════════════════════════════════════════════
           §1 HERO — split layout, CDN hero image
@@ -249,7 +249,7 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §2 FEATURES GRID — 6 CDN image cards
       ══════════════════════════════════════════════════════ */}
-      <section aria-label="Tính năng" className="py-32 lg:py-40 bg-slate-50 dark:bg-[#06060a] border-y border-slate-100 dark:border-white/5 transition-colors">
+      <section aria-label="Tính năng" className="py-32 lg:py-40 bg-slate-50 dark:bg-[#0a0d14] border-y border-slate-100 dark:border-white/5 transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-20">
             <p className="text-brand-blue text-[10px] font-black uppercase tracking-[0.5em]">Kiến trúc sản xuất AI</p>
@@ -269,7 +269,7 @@ const StoryboardStudioPage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
-                className="group bg-white dark:bg-[#0c0c10] rounded-2xl overflow-hidden border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 hover:shadow-xl dark:hover:shadow-brand-blue/5 transition-all duration-500 flex flex-col"
+                className="group bg-white dark:bg-[#13171f] rounded-2xl overflow-hidden border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 hover:shadow-xl dark:hover:shadow-brand-blue/5 transition-all duration-500 flex flex-col"
               >
                 {/* CDN Image */}
                 <div className="aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-black relative">
@@ -300,7 +300,7 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §3 HOW IT WORKS — 4-step workflow
       ══════════════════════════════════════════════════════ */}
-      <section id="how-it-works" aria-label="Quy trình 4 bước" className="py-32 lg:py-40 bg-white dark:bg-[#030304] transition-colors">
+      <section id="how-it-works" aria-label="Quy trình 4 bước" className="py-32 lg:py-40 bg-white dark:bg-[#0a0d14] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
             <p className="text-brand-blue text-[10px] font-black uppercase tracking-[0.5em]">Quy trình sản xuất</p>
@@ -354,7 +354,7 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §4 SCENE SHOWCASE — demo scene cards với CDN images
       ══════════════════════════════════════════════════════ */}
-      <section aria-label="Scene showcase" className="py-32 lg:py-40 bg-slate-50 dark:bg-[#06060a] border-y border-slate-100 dark:border-white/5 transition-colors">
+      <section aria-label="Scene showcase" className="py-32 lg:py-40 bg-slate-50 dark:bg-[#0a0d14] border-y border-slate-100 dark:border-white/5 transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row justify-between items-end gap-8 mb-16">
             <div className="space-y-4">
@@ -380,7 +380,7 @@ const StoryboardStudioPage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="group bg-white dark:bg-[#0c0c10] rounded-2xl overflow-hidden border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 shadow-sm hover:shadow-xl transition-all duration-500"
+                className="group bg-white dark:bg-[#13171f] rounded-2xl overflow-hidden border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 shadow-sm hover:shadow-xl transition-all duration-500"
               >
                 {/* Scene image */}
                 <div className="relative aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-black">
@@ -421,7 +421,7 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §5 USE CASES
       ══════════════════════════════════════════════════════ */}
-      <section aria-label="Use cases" className="py-32 lg:py-40 bg-white dark:bg-[#030304] transition-colors">
+      <section aria-label="Use cases" className="py-32 lg:py-40 bg-white dark:bg-[#0a0d14] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-16">
             <p className="text-brand-blue text-[10px] font-black uppercase tracking-[0.5em]">Ứng dụng thực tế</p>
@@ -465,7 +465,7 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §6 FINAL CTA
       ══════════════════════════════════════════════════════ */}
-      <section aria-label="Call to action" className="py-48 text-center relative overflow-hidden bg-slate-50 dark:bg-[#03030a] border-t border-slate-100 dark:border-white/5 transition-colors">
+      <section aria-label="Call to action" className="py-48 text-center relative overflow-hidden bg-slate-50 dark:bg-[#0a0d14] border-t border-slate-100 dark:border-white/5 transition-colors">
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none flex items-center justify-center">
           <span className="text-[320px] font-black text-slate-100 dark:text-white/[0.02] leading-none tracking-tighter italic opacity-60">
             STORY

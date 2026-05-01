@@ -132,10 +132,10 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   const doneCount = jobs.filter(j => j.status === 'DONE').length;
 
   return (
-    <div className="h-full w-full flex flex-col bg-[#fcfcfd] dark:bg-[#0c0c0e] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
+    <div className="h-full w-full flex flex-col bg-[#fcfcfd] dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
       
       {/* HEADER */}
-      <header className="h-16 md:h-20 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-8 bg-white/80 dark:bg-[#0d0d10]/80 backdrop-blur-xl z-[100] shrink-0">
+      <header className="h-16 md:h-20 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-8 bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-xl z-[100] shrink-0">
         <div className="flex items-center gap-4">
            {/* Fixed: ChevronLeft icon used from missing import */}
            <button onClick={onClose} className="p-2 -ml-2 text-slate-400 hover:text-brand-blue transition-colors">
@@ -166,13 +166,13 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       </header>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-grow overflow-y-auto no-scrollbar bg-slate-50/50 dark:bg-[#050507] p-8 lg:p-12 relative transition-colors duration-500">
+      <main className="flex-grow overflow-y-auto no-scrollbar bg-slate-50/50 dark:bg-[#0a0d14] p-8 lg:p-12 relative transition-colors duration-500">
          <div className="max-w-[1400px] mx-auto space-y-12">
             
             {/* 1. UPLOAD ZONE */}
             <div 
               onClick={() => fileInputRef.current?.click()}
-              className="relative w-full aspect-[21/9] border-4 border-dashed border-slate-200 dark:border-white/5 rounded-[3rem] flex flex-col items-center justify-center gap-8 cursor-pointer hover:border-brand-blue/40 hover:bg-brand-blue/[0.02] transition-all group overflow-hidden bg-white dark:bg-[#0d0d0f] shadow-2xl"
+              className="relative w-full aspect-[21/9] border-4 border-dashed border-slate-200 dark:border-white/5 rounded-[3rem] flex flex-col items-center justify-center gap-8 cursor-pointer hover:border-brand-blue/40 hover:bg-brand-blue/[0.02] transition-all group overflow-hidden bg-white dark:bg-[#13171f] shadow-2xl"
             >
                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
                
@@ -236,7 +236,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="group relative bg-white dark:bg-[#111114] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-2xl hover:border-brand-blue/30 transition-all"
+                        className="group relative bg-white dark:bg-[#1a1f2b] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-2xl hover:border-brand-blue/30 transition-all"
                       >
                          <div className="aspect-video relative overflow-hidden flex bg-slate-100 dark:bg-black">
                             {/* Compare view */}
@@ -313,7 +313,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       </main>
 
       {/* STATUS FOOTER */}
-      <footer className="h-14 border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#0a0a0c] px-10 flex items-center justify-between shrink-0 z-[100] transition-colors">
+      <footer className="h-14 border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#0a0d14] px-10 flex items-center justify-between shrink-0 z-[100] transition-colors">
          <div className="flex items-center gap-10">
             <div className="flex items-center gap-3">
                <ShieldCheck size={16} className="text-emerald-500" />
@@ -336,7 +336,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         {/* Fixed: Added missing showLowCreditAlert state usage */}
         {showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[#111114] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl">
+             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[#1a1f2b] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl">
                 {/* Fixed: Added missing AlertTriangle icon */}
                 <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500"><AlertTriangle size={40} /></div>
                 <div className="space-y-4">

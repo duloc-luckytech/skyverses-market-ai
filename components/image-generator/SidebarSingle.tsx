@@ -40,7 +40,7 @@ export const SidebarSingle: React.FC<SidebarSingleProps> = ({ prompt, setPrompt 
               className="p-2 rounded-lg border border-black/[0.06] dark:border-white/[0.04] bg-slate-50 dark:bg-white/[0.015] hover:border-rose-500/20 text-left transition-all"
             >
               <span className="text-sm">{q.emoji}</span>
-              <p className="text-[8px] text-slate-500 dark:text-[#666] mt-1 line-clamp-2 leading-relaxed">{q.text}</p>
+              <p className="text-[8px] text-slate-500 dark:text-gray-400 mt-1 line-clamp-2 leading-relaxed">{q.text}</p>
             </button>
           ))}
         </div>

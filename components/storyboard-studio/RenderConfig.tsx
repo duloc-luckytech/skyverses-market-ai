@@ -86,7 +86,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                 onChange={(e) => setSettings({ ...settings, imageModel: e.target.value })}
               >
                 {imageModels.map(m => (
-                  <option key={m._id} value={m.modelKey} className="dark:bg-[#111]">{m.name}</option>
+                  <option key={m._id} value={m.modelKey} className="dark:bg-[#13171f]">{m.name}</option>
                 ))}
               </select>
               <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
@@ -98,9 +98,9 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                <label className={sectionLabel}>TỈ LỆ (RATIO)</label>
                <div className="relative">
                   <select className={selectClass}>
-                    <option className="dark:bg-[#111]">1:1</option>
-                    <option className="dark:bg-[#111]">16:9</option>
-                    <option className="dark:bg-[#111]">9:16</option>
+                    <option className="dark:bg-[#13171f]">1:1</option>
+                    <option className="dark:bg-[#13171f]">16:9</option>
+                    <option className="dark:bg-[#13171f]">9:16</option>
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
                </div>
@@ -109,9 +109,9 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                <label className={sectionLabel}>CHẤT LƯỢNG</label>
                <div className="relative">
                   <select className={selectClass}>
-                    <option className="dark:bg-[#111]">1K</option>
-                    <option className="dark:bg-[#111]">2K</option>
-                    <option className="dark:bg-[#111]">4K</option>
+                    <option className="dark:bg-[#13171f]">1K</option>
+                    <option className="dark:bg-[#13171f]">2K</option>
+                    <option className="dark:bg-[#13171f]">4K</option>
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
                </div>
@@ -139,7 +139,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                 onChange={(e) => setSettings({ ...settings, model: e.target.value })}
               >
                 {videoModels.map(m => (
-                  <option key={m._id} value={m.modelKey} className="dark:bg-[#111]">{m.name}</option>
+                  <option key={m._id} value={m.modelKey} className="dark:bg-[#13171f]">{m.name}</option>
                 ))}
               </select>
               <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
@@ -152,7 +152,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                <div className="relative">
                   <select className={selectClass}>
                     {availableVideoResolutions.map(res => (
-                      <option key={res} value={res} className="dark:bg-[#111]">{res.toUpperCase()}</option>
+                      <option key={res} value={res} className="dark:bg-[#13171f]">{res.toUpperCase()}</option>
                     ))}
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
@@ -163,7 +163,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                <div className="relative">
                   <select className={selectClass}>
                     {availableVideoDurations.map(dur => (
-                      <option key={dur} value={dur} className="dark:bg-[#111]">{dur}s</option>
+                      <option key={dur} value={dur} className="dark:bg-[#13171f]">{dur}s</option>
                     ))}
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />

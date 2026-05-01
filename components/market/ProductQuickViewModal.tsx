@@ -68,7 +68,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
             className="fixed inset-0 z-[901] flex items-center justify-center px-4 pointer-events-none"
           >
             <div
-              className="relative w-full max-w-[780px] bg-white dark:bg-[#0d0d0f] rounded-3xl overflow-hidden shadow-2xl shadow-black/30 border border-black/[0.06] dark:border-white/[0.06] pointer-events-auto"
+              className="relative w-full max-w-[780px] bg-white dark:bg-[#13171f] rounded-3xl overflow-hidden shadow-2xl shadow-black/30 border border-black/[0.06] dark:border-white/[0.06] pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}

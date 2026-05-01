@@ -360,7 +360,7 @@ const MarkdownOutput: React.FC<{ content: string }> = ({ content }) => {
           return (
             <div key={segIdx} className="rounded-xl overflow-hidden border border-black/[0.08] dark:border-white/[0.08] my-3">
               {/* Code block header */}
-              <div className="flex items-center justify-between px-3 py-1.5 bg-slate-800 dark:bg-[#1a1a1e]">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-slate-800 dark:bg-[#13171f]">
                 <div className="flex items-center gap-2">
                   <div className="flex gap-1">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
@@ -381,7 +381,7 @@ const MarkdownOutput: React.FC<{ content: string }> = ({ content }) => {
                 </button>
               </div>
               {/* Code content */}
-              <pre className="p-4 text-[11px] leading-relaxed font-mono text-emerald-300 dark:text-emerald-200 bg-slate-900 dark:bg-[#0d0d0f] overflow-x-auto whitespace-pre">
+              <pre className="p-4 text-[11px] leading-relaxed font-mono text-emerald-300 dark:text-emerald-200 bg-slate-900 dark:bg-[#13171f] overflow-x-auto whitespace-pre">
                 {seg.code}
               </pre>
             </div>
@@ -442,7 +442,7 @@ const OrgChartMini: React.FC<{ activeDeptId: string; runningDepts: string[] }> =
                 className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-[9px] font-semibold transition-all ${
                   activeDeptId === d.id
                     ? 'border-current shadow-sm'
-                    : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-500 dark:text-[#555]'
+                    : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-500 dark:text-gray-400'
                 }`}
                 style={activeDeptId === d.id ? {
                   backgroundColor: `${d.color}15`,
@@ -477,7 +477,7 @@ const BudgetMeter: React.FC<{ limit: number; spent: number }> = ({ limit, spent 
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-[9px] font-semibold">
-        <span className="flex items-center gap-1 text-slate-500 dark:text-[#555]">
+        <span className="flex items-center gap-1 text-slate-500 dark:text-gray-400">
           <ShieldCheck size={9} className="text-emerald-500" />
           Budget Guard
         </span>
@@ -519,15 +519,15 @@ const ActivityFeed: React.FC<{ logs: ActivityLog[] }> = ({ logs }) => (
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-1.5">
               <span className="text-[9px] font-bold shrink-0" style={{ color: log.color }}>{log.agent}</span>
-              <span className="text-[9px] text-slate-500 dark:text-[#555] truncate">{log.action}</span>
+              <span className="text-[9px] text-slate-500 dark:text-gray-400 truncate">{log.action}</span>
             </div>
           </div>
-          <span className="text-[8px] text-slate-300 dark:text-[#444] shrink-0">{log.time}</span>
+          <span className="text-[8px] text-slate-300 dark:text-gray-500 shrink-0">{log.time}</span>
         </motion.div>
       ))}
     </AnimatePresence>
     {logs.length === 0 && (
-      <p className="text-[9px] text-slate-400 dark:text-[#555] py-2 text-center">Chưa có activity</p>
+      <p className="text-[9px] text-slate-400 dark:text-gray-400 py-2 text-center">Chưa có activity</p>
     )}
   </div>
 );
@@ -554,7 +554,7 @@ const MetricCard: React.FC<{
       )}
     </div>
     <p className="text-[13px] font-black text-slate-800 dark:text-white truncate">{value}</p>
-    <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5 truncate">{label}</p>
+    <p className="text-[9px] text-slate-400 dark:text-gray-400 mt-0.5 truncate">{label}</p>
     {sub && <p className="text-[8px] text-slate-300 dark:text-[#333] truncate">{sub}</p>}
   </div>
 );
@@ -618,7 +618,7 @@ const ProjectSelector: React.FC<ProjectSelectorProps> = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 top-full mt-1.5 z-[200] w-64 bg-white dark:bg-[#111113] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden"
+            className="absolute left-0 top-full mt-1.5 z-[200] w-64 bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden"
           >
             {/* Header */}
             <div className="px-3 py-2.5 border-b border-black/[0.05] dark:border-white/[0.05]">
@@ -675,7 +675,7 @@ const ProjectSelector: React.FC<ProjectSelectorProps> = ({
                   onChange={e => onNewNameChange(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') { onCreate(); setOpen(false); } }}
                   placeholder="Tên project..."
-                  className="flex-1 text-[11px] bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-lg px-2.5 py-1.5 text-slate-700 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
+                  className="flex-1 text-[11px] bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-lg px-2.5 py-1.5 text-slate-700 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 transition-colors"
                 />
                 <button
                   onClick={() => { onCreate(); setOpen(false); }}
@@ -1866,7 +1866,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 12 }}
               transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              className="max-w-lg w-full rounded-2xl bg-white dark:bg-[#111] border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden"
+              className="max-w-lg w-full rounded-2xl bg-white dark:bg-[#13171f] border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden"
             >
               {/* ── Header ── */}
               <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-black/[0.06] dark:border-white/[0.05]">
@@ -1888,7 +1888,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     ))}
                   </div>
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#555]">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">
                       Bước {setupStep}/4
                     </p>
                     <p className="text-sm font-bold text-slate-800 dark:text-white leading-tight">
@@ -1919,7 +1919,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     {/* ── Step 1: Choose Agent ── */}
                     {setupStep === 1 && (
                       <div className="space-y-3">
-                        <p className="text-[11px] text-slate-500 dark:text-[#666]">
+                        <p className="text-[11px] text-slate-500 dark:text-gray-400">
                           Chọn AI agent phù hợp với task bạn muốn thực hiện
                         </p>
                         <div className="grid grid-cols-2 gap-2">
@@ -1949,7 +1949,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                 </div>
                                 <div>
                                   <p className="text-[11px] font-bold text-slate-700 dark:text-white/80">{d.label}</p>
-                                  <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5">
+                                  <p className="text-[9px] text-slate-400 dark:text-gray-400 mt-0.5">
                                     {d.tier === 'orchestrator' ? 'Điều phối toàn bộ team' : `${(DEPT_SKILLS[d.id] ?? []).length} kỹ năng`}
                                   </p>
                                 </div>
@@ -1966,7 +1966,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     {/* ── Step 2: Role & Context ── */}
                     {setupStep === 2 && (
                       <div className="space-y-3">
-                        <p className="text-[11px] text-slate-500 dark:text-[#666]">
+                        <p className="text-[11px] text-slate-500 dark:text-gray-400">
                           Mô tả vai trò và context để <span className="font-semibold" style={{ color: modalDeptObj.color }}>{modalDeptObj.agent}</span> hiểu đúng yêu cầu
                         </p>
                         {/* Role template chips */}
@@ -1975,7 +1975,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                             <button
                               key={tpl}
                               onClick={() => setModalBrief(prev => prev ? `${prev}\nVai trò: ${tpl}` : `Vai trò: ${tpl}`)}
-                              className="px-2.5 py-1 rounded-full text-[9px] font-semibold border border-black/[0.07] dark:border-white/[0.07] text-slate-500 dark:text-[#888] hover:border-brand-blue/40 hover:text-brand-blue transition-all bg-slate-50 dark:bg-white/[0.03]"
+                              className="px-2.5 py-1 rounded-full text-[9px] font-semibold border border-black/[0.07] dark:border-white/[0.07] text-slate-500 dark:text-gray-300 hover:border-brand-blue/40 hover:text-brand-blue transition-all bg-slate-50 dark:bg-white/[0.03]"
                             >
                               + {tpl}
                             </button>
@@ -1987,9 +1987,9 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                           onChange={e => setModalBrief(e.target.value)}
                           placeholder={`Ví dụ: Bạn là ${modalDeptObj.agent} của Skyverses, một startup SaaS B2B. Tập trung vào thị trường SEA, target SME 50-200 nhân viên. Tone: professional nhưng thân thiện.`}
                           rows={5}
-                          className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.04] border border-black/[0.07] dark:border-white/[0.07] rounded-xl px-3 py-2.5 text-slate-700 dark:text-white/80 placeholder-slate-300 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 resize-none leading-relaxed"
+                          className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.04] border border-black/[0.07] dark:border-white/[0.07] rounded-xl px-3 py-2.5 text-slate-700 dark:text-white/80 placeholder-slate-300 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 resize-none leading-relaxed"
                         />
-                        <p className="text-[9px] text-slate-400 dark:text-[#555]">
+                        <p className="text-[9px] text-slate-400 dark:text-gray-400">
                           Context này sẽ được gắn vào system prompt khi agent chạy
                         </p>
                       </div>
@@ -1999,7 +1999,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     {setupStep === 3 && (
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <p className="text-[11px] text-slate-500 dark:text-[#666]">
+                          <p className="text-[11px] text-slate-500 dark:text-gray-400">
                             Chọn kỹ năng cho <span className="font-semibold" style={{ color: modalDeptObj.color }}>{modalDeptObj.agent}</span>
                           </p>
                           <div className="flex gap-1.5">
@@ -2045,7 +2045,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                   </div>
                                   <div className="flex-1">
                                     <p className="text-[11px] font-semibold text-slate-700 dark:text-white/80">{skill.label}</p>
-                                    <p className="text-[9px] text-slate-400 dark:text-[#555] mt-0.5 leading-relaxed">{skill.rule}</p>
+                                    <p className="text-[9px] text-slate-400 dark:text-gray-400 mt-0.5 leading-relaxed">{skill.rule}</p>
                                   </div>
                                 </button>
                               );
@@ -2055,7 +2055,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                           <p className="text-[11px] text-slate-400 py-4 text-center">Agent này không có skill riêng</p>
                         )}
 
-                        <p className="text-[9px] text-slate-400 dark:text-[#555]">
+                        <p className="text-[9px] text-slate-400 dark:text-gray-400">
                           {modalSkills.length}/{deptSkills.length} kỹ năng được bật
                         </p>
                       </div>
@@ -2066,7 +2066,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       <div className="space-y-3">
                         {/* Model selector */}
                         <div className="flex items-center gap-2">
-                          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#555] mr-1">Model</p>
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mr-1">Model</p>
                           {LLM_MODELS.map(m => {
                             const isActive = modalModel === m.id;
                             return (
@@ -2080,7 +2080,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                 }
                               >
                                 <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isActive ? m.color : '#94a3b8' }} />
-                                <span className={isActive ? '' : 'text-slate-500 dark:text-[#555]'}>
+                                <span className={isActive ? '' : 'text-slate-500 dark:text-gray-400'}>
                                   {m.id === 'claude-sonnet' ? 'Sonnet' : 'Opus'}
                                 </span>
                               </button>
@@ -2100,12 +2100,12 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                           }}
                           placeholder={`Mô tả task cho ${modalDeptObj.agent}...\n\nVí dụ: ${modalDeptObj.tasks[0]}`}
                           rows={4}
-                          className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.04] border border-black/[0.07] dark:border-white/[0.07] rounded-xl px-3 py-2.5 text-slate-700 dark:text-white/80 placeholder-slate-300 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 resize-none leading-relaxed"
+                          className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.04] border border-black/[0.07] dark:border-white/[0.07] rounded-xl px-3 py-2.5 text-slate-700 dark:text-white/80 placeholder-slate-300 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 resize-none leading-relaxed"
                         />
 
                         {/* Quick task chips */}
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#555] mb-1.5">Quick tasks</p>
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mb-1.5">Quick tasks</p>
                           <div className="flex flex-wrap gap-1.5">
                             {modalDeptObj.tasks.map(t => (
                               <button
@@ -2118,7 +2118,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                             ))}
                           </div>
                         </div>
-                        <p className="text-[9px] text-slate-400 dark:text-[#555]">
+                        <p className="text-[9px] text-slate-400 dark:text-gray-400">
                           <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/[0.08] font-mono text-[9px]">⌘↵</kbd> để chạy ngay
                         </p>
                       </div>
@@ -2133,7 +2133,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                 <button
                   onClick={goBack}
                   disabled={setupStep === 1}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-semibold text-slate-500 dark:text-[#666] border border-black/[0.07] dark:border-white/[0.07] disabled:opacity-30 hover:border-slate-300 dark:hover:border-white/10 transition-all"
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-semibold text-slate-500 dark:text-gray-400 border border-black/[0.07] dark:border-white/[0.07] disabled:opacity-30 hover:border-slate-300 dark:hover:border-white/10 transition-all"
                 >
                   <ChevronDown size={12} className="rotate-90" />
                   Quay lại
@@ -2208,7 +2208,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                 </div>
               </div>
               <div>
-                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1">Agent Name</p>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1">Agent Name</p>
                 <input
                   value={singleAgentName}
                   onChange={e => setSingleAgentName(e.target.value)}
@@ -2218,11 +2218,11 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               </div>
               {/* Personality presets */}
               <div>
-                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1.5">Personality</p>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1.5">Personality</p>
                 <div className="flex flex-wrap gap-1">
                   {PERSONALITY_PRESETS.map(p => (
                     <button key={p.id} onClick={() => setSinglePersonality(p.id)}
-                      className={`text-[9px] font-semibold px-2 py-0.5 rounded-full border transition-all ${singlePersonality === p.id ? 'bg-purple-500/15 border-purple-500/40 text-purple-600 dark:text-purple-400' : 'bg-transparent border-slate-200 dark:border-white/10 text-slate-500 dark:text-[#555] hover:border-purple-500/30'}`}>
+                      className={`text-[9px] font-semibold px-2 py-0.5 rounded-full border transition-all ${singlePersonality === p.id ? 'bg-purple-500/15 border-purple-500/40 text-purple-600 dark:text-purple-400' : 'bg-transparent border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400 hover:border-purple-500/30'}`}>
                       {p.label}
                     </button>
                   ))}
@@ -2230,7 +2230,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               </div>
               {/* Model pills */}
               <div>
-                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1.5">Model</p>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1.5">Model</p>
                 <div className="flex gap-1">
                   {LLM_MODELS.map(m => {
                     const isActive = singleAgentModel === m.id;
@@ -2239,7 +2239,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                         className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-bold transition-all"
                         style={isActive ? { backgroundColor: `${m.color}20`, borderColor: `${m.color}50`, color: m.color } : { backgroundColor: 'transparent', borderColor: 'rgba(0,0,0,0.07)' }}>
                         <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isActive ? m.color : '#94a3b8' }} />
-                        <span className={isActive ? '' : 'text-slate-500 dark:text-[#555]'}>{m.id === 'claude-sonnet' ? 'Sonnet 4' : 'Opus 4'}</span>
+                        <span className={isActive ? '' : 'text-slate-500 dark:text-gray-400'}>{m.id === 'claude-sonnet' ? 'Sonnet 4' : 'Opus 4'}</span>
                       </button>
                     );
                   })}
@@ -2247,7 +2247,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               </div>
               {/* Budget inline (single mode) */}
               <div>
-                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1.5">Budget</p>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1.5">Budget</p>
                 <div className="flex items-center gap-2">
                   <span className="text-[9px] text-slate-400">Limit $</span>
                   <input value={budgetLimit} onChange={e => setBudgetLimit(parseFloat(e.target.value) || 1)}
@@ -2266,8 +2266,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
           {/* 🧠 Memory Panel */}
           <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] overflow-hidden">
-            <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.04]">
-              <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444]">🧠 Memory</p>
+            <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.08]">
+              <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">🧠 Memory</p>
               <button
                 onClick={() => {
                   setConversationThreads(prev => {
@@ -2284,7 +2284,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             <div className="p-3 space-y-2.5">
               {/* Turn count */}
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-slate-500 dark:text-[#666]">Turns nhớ trong session</span>
+                <span className="text-[10px] text-slate-500 dark:text-gray-400">Turns nhớ trong session</span>
                 <span className="text-[11px] font-bold text-slate-700 dark:text-white/80">
                   {Math.ceil((conversationThreads[SINGLE_AGENT_ID]?.length ?? 0) / 2)} / {MAX_THREAD_TURNS}
                 </span>
@@ -2297,7 +2297,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               {/* Pinned memory */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444]">📌 Pinned Context</span>
+                  <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">📌 Pinned Context</span>
                   <button onClick={() => { setIsEditingPinnedMemory(true); setPinnedMemoryDraft(pinnedMemory); }}
                     className="text-[8px] text-brand-blue hover:opacity-80 transition-opacity">
                     {pinnedMemory ? 'Edit' : '+ Add'}
@@ -2328,7 +2328,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     <p className="text-[10px] text-slate-600 dark:text-white/60 leading-relaxed line-clamp-3">{pinnedMemory}</p>
                   </div>
                 ) : (
-                  <p className="text-[9px] text-slate-300 dark:text-[#444] italic">Chưa có pinned context</p>
+                  <p className="text-[9px] text-slate-300 dark:text-gray-500 italic">Chưa có pinned context</p>
                 )}
               </div>
             </div>
@@ -2336,15 +2336,15 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
           {/* 🛠️ Skills Panel */}
           <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] overflow-hidden">
-            <div className="px-3 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.04]">
-              <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444]">🛠️ Skills</p>
+            <div className="px-3 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.08]">
+              <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">🛠️ Skills</p>
             </div>
             <div className="p-3 space-y-1.5">
               {SINGLE_SKILLS.map(skill => {
                 const isOn = singleEnabledSkills.includes(skill.id);
                 return (
                   <button key={skill.id} onClick={() => setSingleEnabledSkills(prev => isOn ? prev.filter(s => s !== skill.id) : [...prev, skill.id])}
-                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg border text-[10px] font-semibold transition-all ${isOn ? 'bg-brand-blue/[0.07] border-brand-blue/30 text-brand-blue' : 'bg-transparent border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-[#555] hover:border-brand-blue/20'}`}>
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg border text-[10px] font-semibold transition-all ${isOn ? 'bg-brand-blue/[0.07] border-brand-blue/30 text-brand-blue' : 'bg-transparent border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-gray-400 hover:border-brand-blue/20'}`}>
                     <span>{skill.label}</span>
                     <div className={`w-7 h-3.5 rounded-full transition-all relative ${isOn ? 'bg-brand-blue' : 'bg-slate-200 dark:bg-white/10'}`}>
                       <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white shadow-sm transition-all ${isOn ? 'left-3.5' : 'left-0.5'}`} />
@@ -2363,7 +2363,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] p-3 space-y-2.5">
         {/* Agent pills */}
         <div>
-          <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-[#444] tracking-widest mb-1.5">Agent</p>
+          <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-1.5">Agent</p>
           <div className="flex gap-1 flex-wrap">
             {DEPARTMENTS.map(d => {
               const Icon = d.icon;
@@ -2379,7 +2379,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   }
                 >
                   <Icon size={9} style={isActive ? { color: d.color } : {}} />
-                  <span className={isActive ? '' : 'text-slate-500 dark:text-[#555]'}>{d.id === 'ceo' ? 'CEO' : d.label.replace(' AI', '').replace(' Agent', '')}</span>
+                  <span className={isActive ? '' : 'text-slate-500 dark:text-gray-400'}>{d.id === 'ceo' ? 'CEO' : d.label.replace(' AI', '').replace(' Agent', '')}</span>
                 </button>
               );
             })}
@@ -2387,7 +2387,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         </div>
         {/* Model pills */}
         <div>
-          <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-[#444] tracking-widest mb-1.5">Model</p>
+          <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-1.5">Model</p>
           <div className="flex gap-1">
             {LLM_MODELS.map(m => {
               const isActive = activeModel === m.id;
@@ -2402,7 +2402,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   }
                 >
                   <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isActive ? m.color : '#94a3b8' }} />
-                  <span className={isActive ? '' : 'text-slate-500 dark:text-[#555]'}>{m.id === 'claude-sonnet' ? 'Sonnet' : 'Opus'}</span>
+                  <span className={isActive ? '' : 'text-slate-500 dark:text-gray-400'}>{m.id === 'claude-sonnet' ? 'Sonnet' : 'Opus'}</span>
                 </button>
               );
             })}
@@ -2410,7 +2410,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         </div>
         {/* Budget inline */}
         <div>
-          <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-[#444] tracking-widest mb-1.5">Budget</p>
+          <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-1.5">Budget</p>
           <div className="flex items-center gap-2">
             <span className="text-[9px] text-slate-400">Limit $</span>
             <input
@@ -2441,7 +2441,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       <div>
         <button
           onClick={() => setShowOrgChart(v => !v)}
-          className="flex items-center justify-between w-full text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] hover:text-brand-blue transition-colors tracking-widest mb-2"
+          className="flex items-center justify-between w-full text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-colors tracking-widest mb-2"
         >
           <span className="flex items-center gap-1.5"><Network size={10} /> Org Structure</span>
           {showOrgChart ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
@@ -2469,8 +2469,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       {/* ── Context & Skills Summary (always visible) ── */}
       <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.04]">
-          <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444]">
+        <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.08]">
+          <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">
             Context &amp; Kỹ năng
           </p>
           <button
@@ -2483,7 +2483,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
         {/* Brief preview */}
         <div className="px-3 pt-2.5 pb-2">
-          <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1">① Vai trò</p>
+          <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1">① Vai trò</p>
           {agentBriefs[activeDept]?.trim() ? (
             <p className="text-[10px] text-slate-600 dark:text-white/60 leading-relaxed line-clamp-2">
               {agentBriefs[activeDept]}
@@ -2491,7 +2491,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           ) : (
             <button
               onClick={openSetupModal}
-              className="text-[10px] text-slate-300 dark:text-[#444] italic hover:text-brand-blue transition-colors"
+              className="text-[10px] text-slate-300 dark:text-gray-500 italic hover:text-brand-blue transition-colors"
             >
               Chưa có vai trò — Thêm context +
             </button>
@@ -2500,7 +2500,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
         {/* Skills preview */}
         <div className="px-3 pb-3">
-          <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#444] mb-1.5">② Kỹ năng bật</p>
+          <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1.5">② Kỹ năng bật</p>
           {(enabledSkills[activeDept] ?? []).length > 0 ? (
             <div className="flex flex-wrap gap-1">
               {(enabledSkills[activeDept] ?? []).slice(0, 4).map(skillId => {
@@ -2520,7 +2520,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                 ) : null;
               })}
               {(enabledSkills[activeDept] ?? []).length > 4 && (
-                <span className="text-[9px] text-slate-400 dark:text-[#555] px-1">
+                <span className="text-[9px] text-slate-400 dark:text-gray-400 px-1">
                   +{(enabledSkills[activeDept] ?? []).length - 4} nữa
                 </span>
               )}
@@ -2528,7 +2528,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           ) : (
             <button
               onClick={openSetupModal}
-              className="text-[10px] text-slate-300 dark:text-[#444] italic hover:text-brand-blue transition-colors"
+              className="text-[10px] text-slate-300 dark:text-gray-500 italic hover:text-brand-blue transition-colors"
             >
               Chưa chọn kỹ năng — Bật ngay +
             </button>
@@ -2539,7 +2539,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       {/* ── Department picker (Advanced only) ── */}
       {advancedMode && (
         <div>
-          <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Phòng ban / Agent</p>
+          <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 mb-2 tracking-widest">Phòng ban / Agent</p>
           <div className="space-y-1">
             {DEPARTMENTS.map(d => {
               const Icon = d.icon;
@@ -2561,7 +2561,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     <p className={`text-[11px] font-semibold truncate ${isActive ? 'text-brand-blue' : 'text-slate-700 dark:text-white/80'}`}>
                       {d.label}
                     </p>
-                    <p className="text-[9px] text-slate-400 dark:text-[#555] truncate">
+                    <p className="text-[9px] text-slate-400 dark:text-gray-400 truncate">
                       {d.tier === 'orchestrator' ? '⭐ Orchestrator' : d.agent}
                     </p>
                   </div>
@@ -2585,7 +2585,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
       {/* ── Quick tasks (horizontal scroll chips) ── */}
       <div>
-        <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Task nhanh — {dept.label}</p>
+        <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 mb-2 tracking-widest">Task nhanh — {dept.label}</p>
         <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
           {dept.tasks.map(t => (
             <button
@@ -2607,7 +2607,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       {/* ── LLM Model picker (Advanced only) ── */}
       {advancedMode && (
         <div>
-          <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">LLM Model</p>
+          <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 mb-2 tracking-widest">LLM Model</p>
           <div className="space-y-1">
             {LLM_MODELS.map(m => {
               const isActive = activeModel === m.id;
@@ -2626,7 +2626,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     style={{ backgroundColor: isActive ? 'rgba(255,255,255,0.6)' : m.color }}
                   />
                   <span className="text-[11px] font-semibold flex-1 text-left">{m.label}</span>
-                  <span className={`text-[8px] font-medium ${isActive ? 'text-white/70' : 'text-slate-400 dark:text-[#555]'}`}>{m.badge}</span>
+                  <span className={`text-[8px] font-medium ${isActive ? 'text-white/70' : 'text-slate-400 dark:text-gray-400'}`}>{m.badge}</span>
                 </button>
               );
             })}
@@ -2638,7 +2638,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       <div>
         <button
           onClick={() => setShowAISuggest(v => !v)}
-          className="flex items-center justify-between w-full text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] hover:text-brand-blue transition-colors tracking-widest mb-1"
+          className="flex items-center justify-between w-full text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-colors tracking-widest mb-1"
         >
           <span className="flex items-center gap-1.5"><Sparkles size={10} /> AI Gợi ý & Templates</span>
           {showAISuggest ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
@@ -2670,12 +2670,12 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       {/* ── Task prompt ── */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] tracking-widest">Mô tả Task</p>
+          <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 tracking-widest">Mô tả Task</p>
           {promptHistory.length > 0 && (
             <div className="relative">
               <button
                 onClick={() => setShowPromptHistory(v => !v)}
-                className="flex items-center gap-1 text-[9px] font-semibold text-slate-400 dark:text-[#555] hover:text-brand-blue transition-colors"
+                className="flex items-center gap-1 text-[9px] font-semibold text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-colors"
               >
                 <History size={10} /> {promptHistory.length} lịch sử
               </button>
@@ -2686,7 +2686,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -4, scale: 0.97 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-5 z-50 w-72 bg-white dark:bg-[#111113] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-2xl overflow-hidden"
+                    className="absolute right-0 top-5 z-50 w-72 bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-2xl overflow-hidden"
                   >
                     <div className="p-2 border-b border-black/[0.05] dark:border-white/[0.05] flex items-center justify-between">
                       <p className="text-[9px] font-bold uppercase text-slate-400 tracking-widest px-1">10 tasks gần nhất</p>
@@ -2717,7 +2717,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
           }}
           placeholder={`Mô tả task cho ${dept.agent}...\nVD: Viết 3 blog posts SEO về AI automation`}
           rows={4}
-          className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
+          className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 transition-colors"
         />
         {suggestedDept && suggestedDept !== activeDept && (
           <motion.button
@@ -2730,7 +2730,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             Gợi ý: {DEPARTMENTS.find(d => d.id === suggestedDept)?.label} ↗
           </motion.button>
         )}
-        <p className="text-[8px] text-slate-300 dark:text-[#444] mt-1 text-right">{taskPrompt.length} ký tự · ~{estimatedTokens} tokens · ⌘↵ để chạy</p>
+        <p className="text-[8px] text-slate-300 dark:text-gray-500 mt-1 text-right">{taskPrompt.length} ký tự · ~{estimatedTokens} tokens · ⌘↵ để chạy</p>
       </div>
 
       {/* ── Budget Guard (Advanced only) ── */}
@@ -2738,7 +2738,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         <div>
           <button
             onClick={() => setShowBudgetPanel(v => !v)}
-            className="flex items-center justify-between w-full text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] hover:text-brand-blue transition-colors tracking-widest mb-2"
+            className="flex items-center justify-between w-full text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-colors tracking-widest mb-2"
           >
             <span className="flex items-center gap-1.5">
               <ShieldCheck size={10} className="text-emerald-500" /> Budget Guard
@@ -2773,7 +2773,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       Reset
                     </button>
                   </div>
-                  <p className="text-[9px] text-slate-400 dark:text-[#555]">
+                  <p className="text-[9px] text-slate-400 dark:text-gray-400">
                     Agent tự động pause khi sắp vượt limit. Mọi action đều có audit log.
                   </p>
                 </div>
@@ -2790,7 +2790,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       <div>
         <button
           onClick={() => setShowActivity(v => !v)}
-          className="flex items-center justify-between w-full text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] hover:text-brand-blue transition-colors tracking-widest mb-2"
+          className="flex items-center justify-between w-full text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-colors tracking-widest mb-2"
         >
           <span className="flex items-center gap-1.5">
             <Activity size={10} className="text-brand-blue" /> Activity Log
@@ -2825,10 +2825,10 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[#050505] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
+    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
 
       {/* ── TOP NAV ── */}
-      <div className="h-14 bg-white dark:bg-[#0a0a0a] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-4 lg:px-6 shrink-0 z-[100] transition-colors gap-3">
+      <div className="h-14 bg-white dark:bg-[#0a0d14] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-4 lg:px-6 shrink-0 z-[100] transition-colors gap-3">
 
         {/* Left: Logo + view toggle */}
         <div className="flex items-center gap-3 min-w-0">
@@ -2925,7 +2925,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-bold transition-all ${
               advancedMode
                 ? 'bg-amber-400/15 border-amber-400/40 text-amber-600 dark:text-amber-400 shadow-sm shadow-amber-400/10'
-                : 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-400 dark:text-[#555] hover:border-slate-300 dark:hover:border-white/20'
+                : 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:border-slate-300 dark:hover:border-white/20'
             }`}
             title={advancedMode ? 'Tắt Advanced Mode' : 'Bật Advanced Mode'}
           >
@@ -2939,7 +2939,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-bold transition-all ${
               agentMode === 'single'
                 ? 'bg-purple-500/15 border-purple-500/40 text-purple-600 dark:text-purple-400 shadow-sm shadow-purple-500/10'
-                : 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-400 dark:text-[#555] hover:border-slate-300 dark:hover:border-white/20'
+                : 'bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:border-slate-300 dark:hover:border-white/20'
             }`}
             title={agentMode === 'single' ? 'Đang ở Single Agent Mode — bấm để Multi-Agent' : 'Đang ở Multi-Agent Mode — bấm để Single Agent'}
           >
@@ -2970,14 +2970,14 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       <div className="flex-grow flex overflow-hidden">
 
         {/* ── SIDEBAR ── */}
-        <div className="hidden md:flex w-[320px] lg:w-[360px] shrink-0 bg-white dark:bg-[#0d0d0f] border-r border-slate-200 dark:border-white/5 flex-col h-full transition-colors">
+        <div className="hidden md:flex w-[320px] lg:w-[360px] shrink-0 bg-white dark:bg-[#13171f] border-r border-slate-200 dark:border-white/5 flex-col h-full transition-colors">
           {SidebarContent()}
 
           {/* Sticky run button */}
-          <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#0d0d0f] space-y-2.5">
+          <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#13171f] space-y-2.5">
             {/* Status row */}
             <div className="flex items-center justify-between text-[10px]">
-              <div className="flex items-center gap-1.5 text-slate-400 dark:text-[#555]">
+              <div className="flex items-center gap-1.5 text-slate-400 dark:text-gray-400">
                 <motion.div
                   animate={isRunning ? { scale: [1, 1.3, 1] } : {}}
                   transition={{ duration: 1, repeat: Infinity }}
@@ -3023,7 +3023,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             {/* Setup Wizard shortcut */}
             <button
               onClick={openSetupModal}
-              className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-slate-500 dark:text-[#666] text-[10px] font-semibold hover:border-brand-blue/40 hover:text-brand-blue hover:bg-brand-blue/[0.03] transition-all"
+              className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400 text-[10px] font-semibold hover:border-brand-blue/40 hover:text-brand-blue hover:bg-brand-blue/[0.03] transition-all"
             >
               <Settings size={11} /> Cấu hình vai trò &amp; kỹ năng
             </button>
@@ -3035,7 +3035,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   <button
                     onClick={addToQueue}
                     disabled={!taskPrompt.trim() || isRunning}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-slate-500 dark:text-[#666] text-[10px] font-semibold hover:border-brand-blue/40 hover:text-brand-blue hover:bg-brand-blue/[0.03] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400 text-[10px] font-semibold hover:border-brand-blue/40 hover:text-brand-blue hover:bg-brand-blue/[0.03] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                   >
                     <Plus size={11} /> Add to Queue
                   </button>
@@ -3062,7 +3062,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.04] p-2 space-y-1">
                         <p className="text-[8px] font-bold uppercase text-amber-500/70 tracking-widest px-1 mb-1.5">Task Queue ({taskQueue.length})</p>
                         {taskQueue.map((qt, qi) => (
-                          <div key={qt.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04]">
+                          <div key={qt.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08]">
                             <span className="text-[8px] font-black text-amber-500 w-3 shrink-0">{qi + 1}</span>
                             <span className="flex-1 text-[10px] text-slate-600 dark:text-white/60 truncate">{qt.prompt}</span>
                             <button
@@ -3099,7 +3099,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   <motion.div
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="rounded-xl border border-black/[0.06] dark:border-white/[0.05] bg-white dark:bg-[#0d0d0f] overflow-hidden"
+                    className="rounded-xl border border-black/[0.06] dark:border-white/[0.05] bg-white dark:bg-[#13171f] overflow-hidden"
                   >
                     <div className="h-0.5 w-full" style={{ backgroundColor: dept.color, opacity: 0.5 }} />
                     <div className="p-4">
@@ -3111,7 +3111,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                               <Building2 size={9} className="text-brand-blue" />
                               <span className="text-[9px] font-bold text-brand-blue">CEO Agent</span>
                             </div>
-                            <ArrowRight size={9} className="text-slate-300 dark:text-[#444] shrink-0" />
+                            <ArrowRight size={9} className="text-slate-300 dark:text-gray-500 shrink-0" />
                             <div
                               className="flex items-center gap-1 px-2 py-0.5 rounded-full border"
                               style={{ backgroundColor: `${dept.color}15`, borderColor: `${dept.color}40` }}
@@ -3119,7 +3119,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                               <dept.icon size={9} style={{ color: dept.color }} />
                               <span className="text-[9px] font-bold" style={{ color: dept.color }}>{dept.label}</span>
                             </div>
-                            <ArrowRight size={9} className="text-slate-300 dark:text-[#444] shrink-0" />
+                            <ArrowRight size={9} className="text-slate-300 dark:text-gray-500 shrink-0" />
                             <div
                               className="flex items-center gap-1 px-2 py-0.5 rounded-full border"
                               style={{ backgroundColor: `${model.color}10`, borderColor: `${model.color}35` }}
@@ -3145,7 +3145,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                               <CheckCircle2 size={11} className="text-emerald-500" />
                               <span className="text-[10px] font-bold text-emerald-500">Done</span>
                             </div>
-                            <div className="flex items-center gap-1 text-[9px] text-slate-400 dark:text-[#555] justify-end">
+                            <div className="flex items-center gap-1 text-[9px] text-slate-400 dark:text-gray-400 justify-end">
                               <Clock size={9} /> {currentResult.duration ?? '—'}
                               <span className="mx-0.5">·</span>
                               <span className="font-bold text-emerald-600 dark:text-emerald-400">{currentResult.cost}</span>
@@ -3162,9 +3162,9 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   </motion.div>
 
                   {/* Output / Log tabs */}
-                  <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.05] bg-white dark:bg-[#0d0d0f] overflow-hidden">
+                  <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.05] bg-white dark:bg-[#13171f] overflow-hidden">
                     {/* Tab bar */}
-                    <div className="flex items-center border-b border-black/[0.04] dark:border-white/[0.04] px-4 pt-1">
+                    <div className="flex items-center border-b border-black/[0.04] dark:border-white/[0.08] px-4 pt-1">
                       {([
                         { id: 'output', label: 'Output', icon: Eye },
                         { id: 'log',    label: 'Activity Log', icon: Terminal },
@@ -3184,7 +3184,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                           className={`flex items-center gap-1.5 px-3 py-2.5 text-[10px] font-bold border-b-2 transition-all -mb-px ${
                             activeRightTab === tab.id
                               ? 'border-brand-blue text-brand-blue'
-                              : 'border-transparent text-slate-400 dark:text-[#555] hover:text-slate-600 dark:hover:text-white/60'
+                              : 'border-transparent text-slate-400 dark:text-gray-400 hover:text-slate-600 dark:hover:text-white/60'
                           }`}
                         >
                           {React.createElement(tab.icon as React.ComponentType<{ size: number }>, { size: 10 })}
@@ -3196,11 +3196,11 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       {activeRightTab === 'output' && currentResult?.status === 'done' && (
                         <div className="ml-auto flex items-center gap-1 py-1.5">
                           {currentResult.tokens && (
-                            <span className="text-[9px] text-slate-300 dark:text-[#444] mr-1 flex items-center gap-1">
+                            <span className="text-[9px] text-slate-300 dark:text-gray-500 mr-1 flex items-center gap-1">
                               <Cpu size={8} /> {currentResult.tokens.toLocaleString()} tokens
                             </span>
                           )}
-                          <span className="text-[9px] text-slate-300 dark:text-[#444] flex items-center gap-1">
+                          <span className="text-[9px] text-slate-300 dark:text-gray-500 flex items-center gap-1">
                             {outputWordCount} từ · ~{readingTime} phút
                           </span>
                           {currentResult.confidence !== undefined && (
@@ -3269,7 +3269,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                   <p className="text-[13px] font-semibold text-slate-700 dark:text-white/70">
                                     {agentMode === 'single' ? `${singleAgentEmoji} ${singleAgentName} đang xử lý...` : `${dept.agent} đang xử lý...`}
                                   </p>
-                                  <p className="text-[11px] text-slate-400 dark:text-[#555] mt-1">
+                                  <p className="text-[11px] text-slate-400 dark:text-gray-400 mt-1">
                                     {agentMode === 'single' ? `${LLM_MODELS.find(m => m.id === singleAgentModel)?.label ?? 'Claude'}` : model.label} · {elapsedSeconds}s · Budget Guard active
                                   </p>
                                 </div>
@@ -3288,7 +3288,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                         ) : (
                                           <CheckCircle2 size={10} className="text-emerald-500 shrink-0" />
                                         )}
-                                        <span className={i === thinkingStep ? 'text-slate-700 dark:text-white/80 font-medium' : 'text-slate-400 dark:text-[#555]'}>
+                                        <span className={i === thinkingStep ? 'text-slate-700 dark:text-white/80 font-medium' : 'text-slate-400 dark:text-gray-400'}>
                                           {step}
                                         </span>
                                       </motion.div>
@@ -3324,8 +3324,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                             {cotSteps.map((s, i) => (
                                               <div key={i} className="flex items-center gap-2 text-[11px]">
                                                 <CheckCircle2 size={10} className="text-emerald-500 shrink-0" />
-                                                <span className="text-slate-600 dark:text-[#aaa]">{s.step}</span>
-                                                <span className="ml-auto text-[10px] text-slate-400 dark:text-[#555] tabular-nums">{s.timestamp}</span>
+                                                <span className="text-slate-600 dark:text-gray-300">{s.step}</span>
+                                                <span className="ml-auto text-[10px] text-slate-400 dark:text-gray-400 tabular-nums">{s.timestamp}</span>
                                               </div>
                                             ))}
                                           </div>
@@ -3341,7 +3341,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                             ) : currentResult?.status === 'error' ? (
                               <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
                                 <AlertCircle size={28} className="text-red-400" />
-                                <p className="text-[12px] text-slate-500 dark:text-[#666]">{currentResult.output}</p>
+                                <p className="text-[12px] text-slate-500 dark:text-gray-400">{currentResult.output}</p>
                                 <button
                                   onClick={handleRun}
                                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-blue/10 text-brand-blue text-[11px] font-semibold hover:bg-brand-blue/20 transition-all"
@@ -3363,7 +3363,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                             className="space-y-2"
                           >
                             {activityLogs.length === 0 ? (
-                              <p className="text-[11px] text-slate-400 dark:text-[#555] text-center py-8">Chưa có activity — chạy agent để bắt đầu</p>
+                              <p className="text-[11px] text-slate-400 dark:text-gray-400 text-center py-8">Chưa có activity — chạy agent để bắt đầu</p>
                             ) : (
                               activityLogs.map(log => (
                                 <div key={log.id} className="flex items-start gap-3 py-1.5 border-b border-black/[0.03] dark:border-white/[0.03] last:border-0">
@@ -3372,7 +3372,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                     <p className="text-[10px] font-bold" style={{ color: log.color }}>{log.agent}</p>
                                     <p className="text-[11px] text-slate-600 dark:text-white/60">{log.action}</p>
                                   </div>
-                                  <span className="text-[9px] text-slate-300 dark:text-[#444] shrink-0 font-mono">{log.time}</span>
+                                  <span className="text-[9px] text-slate-300 dark:text-gray-500 shrink-0 font-mono">{log.time}</span>
                                 </div>
                               ))
                             )}
@@ -3403,7 +3403,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                     <dept.icon size={22} style={{ color: dept.color }} />
                                   </div>
                                   <div>
-                                    <p className="text-[12px] font-semibold text-slate-500 dark:text-[#555]">
+                                    <p className="text-[12px] font-semibold text-slate-500 dark:text-gray-400">
                                       Chat với {dept.agent}
                                     </p>
                                     <p className="text-[10px] text-slate-300 dark:text-[#333] mt-1">
@@ -3506,7 +3506,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                     <button
                                       onClick={() => clearThread(activeDept)}
                                       title="Xoá lịch sử chat"
-                                      className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-300 dark:text-[#444] hover:text-red-400 hover:bg-red-500/[0.08] transition-all border border-black/[0.06] dark:border-white/[0.06]"
+                                      className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-300 dark:text-gray-500 hover:text-red-400 hover:bg-red-500/[0.08] transition-all border border-black/[0.06] dark:border-white/[0.06]"
                                     >
                                       <Trash2 size={12} />
                                     </button>
@@ -3613,7 +3613,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                   </pre>
                                 </div>
                                 {/* Meta */}
-                                <div className="flex items-center gap-3 text-[9px] text-slate-400 dark:text-[#555] flex-wrap">
+                                <div className="flex items-center gap-3 text-[9px] text-slate-400 dark:text-gray-400 flex-wrap">
                                   <span className="flex items-center gap-1"><Cpu size={9} /> {currentResult.model}</span>
                                   <span className="flex items-center gap-1"><dept.icon size={9} /> {currentResult.dept}</span>
                                   {currentResult.tokens && <span className="flex items-center gap-1"><Zap size={9} /> ~{currentResult.tokens?.toLocaleString()} tokens</span>}
@@ -3621,8 +3621,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                 </div>
                                 {/* Agent Memory */}
                                 <div className="rounded-xl border border-black/[0.05] dark:border-white/[0.05] overflow-hidden">
-                                  <div className="flex items-center justify-between px-3 py-2 border-b border-black/[0.04] dark:border-white/[0.04] bg-black/[0.02] dark:bg-white/[0.02]">
-                                    <span className="text-[9px] font-bold text-slate-500 dark:text-[#888] uppercase tracking-widest flex items-center gap-1.5">
+                                  <div className="flex items-center justify-between px-3 py-2 border-b border-black/[0.04] dark:border-white/[0.08] bg-black/[0.02] dark:bg-white/[0.02]">
+                                    <span className="text-[9px] font-bold text-slate-500 dark:text-gray-300 uppercase tracking-widest flex items-center gap-1.5">
                                       <Activity size={9} /> Agent Memory
                                     </span>
                                     {(conversationThreads[activeDept]?.length ?? 0) > 0 && (
@@ -3636,12 +3636,12 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                   </div>
                                   <div className="p-3">
                                     {(conversationThreads[activeDept]?.length ?? 0) === 0 ? (
-                                      <p className="text-[9px] text-slate-400 dark:text-[#555] italic">
+                                      <p className="text-[9px] text-slate-400 dark:text-gray-400 italic">
                                         Chưa có memory — agent sẽ nhớ sau lần run đầu tiên.
                                       </p>
                                     ) : (
                                       <div className="space-y-1.5">
-                                        <p className="text-[9px] text-slate-400 dark:text-[#555]">
+                                        <p className="text-[9px] text-slate-400 dark:text-gray-400">
                                           <span className="font-semibold text-brand-blue">{Math.floor((conversationThreads[activeDept]?.length ?? 0) / 2)}</span> turns · tối đa {MAX_THREAD_TURNS}
                                         </p>
                                         {(conversationThreads[activeDept] ?? []).slice(-4).map((msg, i) => (
@@ -3661,8 +3661,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                               </div>
                             ) : (
                               <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
-                                <Terminal size={24} className="text-slate-300 dark:text-[#444]" />
-                                <p className="text-[11px] text-slate-400 dark:text-[#555]">Chạy agent để xem system prompt được gửi tới LLM</p>
+                                <Terminal size={24} className="text-slate-300 dark:text-gray-500" />
+                                <p className="text-[11px] text-slate-400 dark:text-gray-400">Chạy agent để xem system prompt được gửi tới LLM</p>
                               </div>
                             )}
                           </motion.div>
@@ -3679,7 +3679,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                             <div className="space-y-4">
                               {/* Brief textarea */}
                               <div>
-                                <label className="block text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] tracking-widest mb-1.5">
+                                <label className="block text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 tracking-widest mb-1.5">
                                   Agent Brief — {dept.label}
                                 </label>
                                 <textarea
@@ -3687,15 +3687,15 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                   onChange={e => saveBrief(activeDept, e.target.value)}
                                   placeholder={`Mô tả context công ty, tone, sản phẩm cho ${dept.agent}...\nVD: Chúng tôi là startup B2B SaaS, target SMB Việt Nam, tone friendly-professional, product: AI workflow automation platform.`}
                                   rows={5}
-                                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
+                                  className="w-full text-[11px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 transition-colors"
                                 />
-                                <p className="text-[8px] text-slate-300 dark:text-[#444] mt-1">Brief này sẽ được inject vào system prompt của {dept.agent}.</p>
+                                <p className="text-[8px] text-slate-300 dark:text-gray-500 mt-1">Brief này sẽ được inject vào system prompt của {dept.agent}.</p>
                               </div>
 
                               {/* Skills toggles — Advanced only */}
                               {advancedMode && (DEPT_SKILLS[activeDept]?.length ?? 0) > 0 && (
                                 <div>
-                                  <label className="block text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] tracking-widest mb-1.5">
+                                  <label className="block text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 tracking-widest mb-1.5">
                                     Skills — Bật kỹ năng cho {dept.agent}
                                   </label>
                                   <div className="grid grid-cols-2 gap-1.5">
@@ -3708,7 +3708,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                           className={`text-left px-2.5 py-2 rounded-xl border text-[10px] font-semibold transition-all flex items-center gap-2 ${
                                             isOn
                                               ? 'bg-brand-blue/10 border-brand-blue/40 text-brand-blue'
-                                              : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-500 dark:text-[#666] hover:border-brand-blue/30 hover:text-brand-blue'
+                                              : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-500 dark:text-gray-400 hover:border-brand-blue/30 hover:text-brand-blue'
                                           }`}
                                         >
                                           <div className={`w-2.5 h-2.5 rounded-sm border flex items-center justify-center shrink-0 ${isOn ? 'bg-brand-blue border-brand-blue' : 'border-current opacity-40'}`}>
@@ -3732,10 +3732,10 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                 <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.04] p-3">
                                   <p className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1.5">Setup active</p>
                                   {agentBriefs[activeDept]?.trim() && (
-                                    <p className="text-[9px] text-slate-500 dark:text-[#888]">📋 Brief: {agentBriefs[activeDept].slice(0, 80)}{agentBriefs[activeDept].length > 80 ? '…' : ''}</p>
+                                    <p className="text-[9px] text-slate-500 dark:text-gray-300">📋 Brief: {agentBriefs[activeDept].slice(0, 80)}{agentBriefs[activeDept].length > 80 ? '…' : ''}</p>
                                   )}
                                   {(enabledSkills[activeDept]?.length ?? 0) > 0 && (
-                                    <p className="text-[9px] text-slate-500 dark:text-[#888] mt-0.5">
+                                    <p className="text-[9px] text-slate-500 dark:text-gray-300 mt-0.5">
                                       ⚡ Skills: {(enabledSkills[activeDept] ?? []).map(sid => DEPT_SKILLS[activeDept]?.find(s => s.id === sid)?.label).filter(Boolean).join(', ')}
                                     </p>
                                   )}
@@ -3783,7 +3783,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       >
                         <ExternalLink size={12} /> Self-host
                       </a>
-                      <div className="ml-auto flex items-center gap-1.5 text-[9px] text-slate-400 dark:text-[#555]">
+                      <div className="ml-auto flex items-center gap-1.5 text-[9px] text-slate-400 dark:text-gray-400">
                         <Bot size={10} />
                         {model.label} · {currentResult.cost} · {currentResult.tokens?.toLocaleString() ?? '—'} tokens
                       </div>
@@ -3793,7 +3793,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   {/* Follow-up suggestions */}
                   {currentResult?.status === 'done' && followUpSuggestions.length > 0 && (
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[9px] font-bold text-slate-400 dark:text-[#555] uppercase tracking-widest">Tiếp theo:</span>
+                      <span className="text-[9px] font-bold text-slate-400 dark:text-gray-400 uppercase tracking-widest">Tiếp theo:</span>
                       {followUpSuggestions.map(s => (
                         <motion.button
                           key={s}
@@ -3817,7 +3817,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   {/* Animated org chart preview */}
                   <div className="w-full rounded-2xl border border-black/[0.06] dark:border-white/[0.06] bg-white dark:bg-white/[0.02] overflow-hidden">
                     <div className="px-4 pt-4 pb-2">
-                      <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-[#555] tracking-widest mb-3">
+                      <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 tracking-widest mb-3">
                         AI Org Structure — Sẵn sàng
                       </p>
                       <OrgChartMini activeDeptId={activeDept} runningDepts={[]} />
@@ -3854,7 +3854,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     <p className="text-sm font-bold text-slate-700 dark:text-white/80">
                       {dept.agent} sẵn sàng
                     </p>
-                    <p className="text-[11px] text-slate-400 dark:text-[#555] mt-1 max-w-xs mx-auto leading-relaxed">
+                    <p className="text-[11px] text-slate-400 dark:text-gray-400 mt-1 max-w-xs mx-auto leading-relaxed">
                       Cấu hình vai trò, context và kỹ năng trước khi chạy
                     </p>
                   </div>
@@ -3873,7 +3873,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
                   {/* Quick task chips */}
                   <div className="w-full">
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-[#444] mb-2">Quick start</p>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-gray-500 mb-2">Quick start</p>
                     <div className="flex flex-wrap gap-2 justify-center">
                       {dept.tasks.slice(0, 3).map((t, i) => (
                         <motion.button
@@ -3882,7 +3882,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.05 }}
                           onClick={() => { setTaskPrompt(t); handleRun(); }}
-                          className="flex items-center gap-1.5 text-[10px] font-semibold px-3 py-1.5 rounded-full border border-black/[0.07] dark:border-white/[0.07] text-slate-500 dark:text-[#888] hover:border-brand-blue/40 hover:text-brand-blue hover:bg-brand-blue/[0.04] transition-all"
+                          className="flex items-center gap-1.5 text-[10px] font-semibold px-3 py-1.5 rounded-full border border-black/[0.07] dark:border-white/[0.07] text-slate-500 dark:text-gray-300 hover:border-brand-blue/40 hover:text-brand-blue hover:bg-brand-blue/[0.04] transition-all"
                         >
                           <Zap size={9} style={{ color: dept.color }} /> {t}
                         </motion.button>
@@ -3890,7 +3890,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     </div>
                   </div>
 
-                  <p className="text-[10px] text-slate-300 dark:text-[#444]">
+                  <p className="text-[10px] text-slate-300 dark:text-gray-500">
                     Hoặc nhập task ở sidebar <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 font-mono text-[9px]">⌘↵</kbd>
                   </p>
                 </div>
@@ -3904,10 +3904,10 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               {taskHistory.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
                   <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
-                    <History size={24} className="text-slate-300 dark:text-[#444]" />
+                    <History size={24} className="text-slate-300 dark:text-gray-500" />
                   </div>
-                  <p className="text-sm font-semibold text-slate-400 dark:text-[#555]">Chưa có task nào</p>
-                  <p className="text-[12px] text-slate-400 dark:text-[#555]">Chạy agent đầu tiên trong tab Studio!</p>
+                  <p className="text-sm font-semibold text-slate-400 dark:text-gray-400">Chưa có task nào</p>
+                  <p className="text-[12px] text-slate-400 dark:text-gray-400">Chạy agent đầu tiên trong tab Studio!</p>
                   <button
                     onClick={() => setViewMode('studio')}
                     className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[11px] font-semibold hover:bg-brand-blue/15 transition-all"
@@ -3964,7 +3964,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                         value={historySearch}
                         onChange={e => setHistorySearch(e.target.value)}
                         placeholder="Tìm kiếm task..."
-                        className="w-full text-[11px] bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl pl-8 pr-3 py-2 text-slate-700 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
+                        className="w-full text-[11px] bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl pl-8 pr-3 py-2 text-slate-700 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 transition-colors"
                       />
                       <History size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
                       {historySearch && (
@@ -3981,7 +3981,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                           className={`text-[9px] font-bold px-2.5 py-1 rounded-full border transition-all ${
                             historyFilter === f.id
                               ? 'bg-brand-blue text-white border-brand-blue'
-                              : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.08] text-slate-500 dark:text-[#666] hover:border-brand-blue/40'
+                              : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.08] text-slate-500 dark:text-gray-400 hover:border-brand-blue/40'
                           }`}
                         >
                           {f.label}
@@ -3993,7 +3993,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                         className={`flex items-center gap-1 text-[9px] font-bold px-2.5 py-1 rounded-full border transition-all ${
                           historyStarFilter
                             ? 'bg-amber-400 text-slate-900 border-amber-400'
-                            : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.08] text-slate-500 dark:text-[#666] hover:border-amber-400/40 hover:text-amber-500'
+                            : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.08] text-slate-500 dark:text-gray-400 hover:border-amber-400/40 hover:text-amber-500'
                         }`}
                       >
                         <Star size={9} className={historyStarFilter ? 'fill-slate-900' : ''} />
@@ -4009,7 +4009,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   {!historyLoaded ? (
                     <div className="space-y-3">
                       {[1, 2, 3].map(i => (
-                        <div key={i} className="rounded-xl border border-black/[0.06] dark:border-white/[0.05] bg-white dark:bg-[#0d0d0f] overflow-hidden animate-pulse">
+                        <div key={i} className="rounded-xl border border-black/[0.06] dark:border-white/[0.05] bg-white dark:bg-[#13171f] overflow-hidden animate-pulse">
                           <div className="h-0.5 w-full bg-slate-200 dark:bg-white/10" />
                           <div className="p-4 space-y-2.5">
                             <div className="flex items-center gap-2">
@@ -4032,7 +4032,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                           key={item.id}
                           initial={{ opacity: 0, y: 6 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className={`group rounded-xl border bg-white dark:bg-[#0d0d0f] overflow-hidden hover:border-brand-blue/30 transition-colors ${
+                          className={`group rounded-xl border bg-white dark:bg-[#13171f] overflow-hidden hover:border-brand-blue/30 transition-colors ${
                             item.starred ? 'border-amber-400/40 dark:border-amber-400/30' : 'border-black/[0.06] dark:border-white/[0.05]'
                           }`}
                         >
@@ -4048,22 +4048,22 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                     <itemDept.icon size={8} />
                                     {item.dept}
                                   </span>
-                                  <span className="text-[9px] text-slate-300 dark:text-[#444]">·</span>
-                                  <span className="text-[10px] text-slate-400 dark:text-[#555] flex items-center gap-1">
+                                  <span className="text-[9px] text-slate-300 dark:text-gray-500">·</span>
+                                  <span className="text-[10px] text-slate-400 dark:text-gray-400 flex items-center gap-1">
                                     <Cpu size={9} /> {item.model}
                                   </span>
                                   {item.duration && (
                                     <>
-                                      <span className="text-[9px] text-slate-300 dark:text-[#444]">·</span>
+                                      <span className="text-[9px] text-slate-300 dark:text-gray-500">·</span>
                                       <span className="text-[9px] text-slate-400 flex items-center gap-0.5">
                                         <Clock size={8} /> {item.duration}
                                       </span>
                                     </>
                                   )}
-                                  <span className="text-[9px] text-slate-300 dark:text-[#444] ml-auto">{item.timestamp}</span>
+                                  <span className="text-[9px] text-slate-300 dark:text-gray-500 ml-auto">{item.timestamp}</span>
                                 </div>
                                 <p className="text-[12px] font-semibold text-slate-700 dark:text-white/80 line-clamp-1">{item.taskDesc}</p>
-                                <p className="text-[11px] text-slate-500 dark:text-[#666] mt-1.5 line-clamp-2 leading-relaxed">{item.output?.slice(0, 180)}...</p>
+                                <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-1.5 line-clamp-2 leading-relaxed">{item.output?.slice(0, 180)}...</p>
                               </div>
                               <div className="flex flex-col items-end gap-2 shrink-0">
                                 <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
@@ -4076,20 +4076,20 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                                     className={`p-1.5 rounded-lg transition-all ${
                                       item.starred
                                         ? 'text-amber-400 bg-amber-400/10'
-                                        : 'text-slate-300 dark:text-[#444] hover:text-amber-400 hover:bg-amber-400/10'
+                                        : 'text-slate-300 dark:text-gray-500 hover:text-amber-400 hover:bg-amber-400/10'
                                     }`}
                                   >
                                     <Star size={11} className={item.starred ? 'fill-amber-400' : ''} />
                                   </button>
                                   <button
                                     onClick={() => { setCurrentResult(item); setViewMode('studio'); }}
-                                    className="p-1.5 rounded-lg text-slate-300 dark:text-[#444] hover:text-brand-blue hover:bg-brand-blue/10 transition-all"
+                                    className="p-1.5 rounded-lg text-slate-300 dark:text-gray-500 hover:text-brand-blue hover:bg-brand-blue/10 transition-all"
                                   >
                                     <Eye size={11} />
                                   </button>
                                   <button
                                     onClick={(e) => deleteHistoryItem(e, item.id)}
-                                    className="p-1.5 rounded-lg text-slate-300 dark:text-[#444] hover:text-red-500 hover:bg-red-500/10 transition-all"
+                                    className="p-1.5 rounded-lg text-slate-300 dark:text-gray-500 hover:text-red-500 hover:bg-red-500/10 transition-all"
                                   >
                                     <Trash2 size={11} />
                                   </button>
@@ -4114,7 +4114,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                 {/* Header */}
                 <div>
                   <h3 className="text-[15px] font-bold text-slate-800 dark:text-white/90">Analytics & Overview</h3>
-                  <p className="text-[11px] text-slate-400 dark:text-[#555] mt-0.5">Tổng hợp hoạt động của AI org</p>
+                  <p className="text-[11px] text-slate-400 dark:text-gray-400 mt-0.5">Tổng hợp hoạt động của AI org</p>
                 </div>
 
                 {/* Metrics row */}
@@ -4168,7 +4168,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     </button>
                   </div>
                   <BudgetMeter limit={budgetLimit} spent={spentBudget} />
-                  <p className="text-[9px] text-slate-400 dark:text-[#555]">
+                  <p className="text-[9px] text-slate-400 dark:text-gray-400">
                     Đã sử dụng {budgetPct.toFixed(1)}% ngân sách. {budgetPct > 80 ? '⚠️ Gần hết — cân nhắc tăng limit.' : '✓ Trong giới hạn an toàn.'}
                   </p>
                 </div>
@@ -4208,7 +4208,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     );
                   })}
                   {taskHistory.length === 0 && (
-                    <p className="text-[11px] text-slate-400 dark:text-[#555] text-center py-4">Chưa có data — chạy agent để xem analytics</p>
+                    <p className="text-[11px] text-slate-400 dark:text-gray-400 text-center py-4">Chưa có data — chạy agent để xem analytics</p>
                   )}
                 </div>
 
@@ -4236,7 +4236,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     );
                   })}
                   {taskHistory.length === 0 && (
-                    <p className="text-[11px] text-slate-400 dark:text-[#555] text-center py-4">Chưa có data</p>
+                    <p className="text-[11px] text-slate-400 dark:text-gray-400 text-center py-4">Chưa có data</p>
                   )}
                 </div>
 
@@ -4254,11 +4254,11 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       { icon: RefreshCw, label: 'Auto Failover', desc: 'Zero downtime', color: '#06b6d4' },
                       { icon: Terminal, label: 'Prompt Inspector', desc: 'Debug any node', color: '#ec4899' },
                     ].map(f => (
-                      <div key={f.label} className="flex items-start gap-2 p-2 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04]">
+                      <div key={f.label} className="flex items-start gap-2 p-2 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08]">
                         <f.icon size={11} style={{ color: f.color }} className="mt-0.5 shrink-0" />
                         <div>
                           <p className="text-[10px] font-semibold text-slate-700 dark:text-white/80">{f.label}</p>
-                          <p className="text-[9px] text-slate-400 dark:text-[#555]">{f.desc}</p>
+                          <p className="text-[9px] text-slate-400 dark:text-gray-400">{f.desc}</p>
                         </div>
                       </div>
                     ))}
@@ -4302,7 +4302,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       <h3 className="text-[15px] font-bold text-slate-800 dark:text-white/90 flex items-center gap-2">
                         <Workflow size={15} className="text-brand-blue" /> Multi-Agent Canvas
                       </h3>
-                      <p className="text-[11px] text-slate-400 dark:text-[#555] mt-0.5">Run tất cả agents song song — CEO tổng hợp executive summary</p>
+                      <p className="text-[11px] text-slate-400 dark:text-gray-400 mt-0.5">Run tất cả agents song song — CEO tổng hợp executive summary</p>
                     </div>
                     {isCanvasRunning && (
                       <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[10px] font-bold">
@@ -4325,7 +4325,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       placeholder="Mô tả brief / mục tiêu cho toàn bộ org… VD: Lên kế hoạch ra mắt sản phẩm mới trong Q2, target SMB Việt Nam"
                       rows={2}
                       disabled={isCanvasRunning}
-                      className="flex-1 text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors disabled:opacity-50"
+                      className="flex-1 text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 transition-colors disabled:opacity-50"
                     />
                     <motion.button
                       onClick={runCanvasFlow}
@@ -4352,21 +4352,21 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   {isMobile ? (
                     /* ── Mobile list view ── */
                     <div className="space-y-2">
-                      <p className="text-[9px] text-slate-400 dark:text-[#555] uppercase tracking-widest font-bold">Agents</p>
+                      <p className="text-[9px] text-slate-400 dark:text-gray-400 uppercase tracking-widest font-bold">Agents</p>
                       {/* CEO */}
                       {(() => {
                         const ceoDept = DEPARTMENTS.find(d => d.id === 'ceo')!;
                         const ceoNodeM = canvasNodes.find(n => n.id === 'ceo');
                         const CIcon = ceoDept.icon;
                         return (
-                          <div className="rounded-xl border-2 border-brand-blue/30 bg-white dark:bg-[#0d0d0f] shadow-sm overflow-hidden">
+                          <div className="rounded-xl border-2 border-brand-blue/30 bg-white dark:bg-[#13171f] shadow-sm overflow-hidden">
                             <div className="flex items-center gap-2 px-3 py-2 bg-brand-blue/[0.06]">
                               <CIcon size={11} className="text-brand-blue shrink-0" />
                               <span className="text-[10px] font-bold text-brand-blue">{ceoDept.label}</span>
                               <span className="ml-auto text-[8px] text-slate-400">Orchestrator</span>
                             </div>
                             {ceoNodeM?.output && (
-                              <div className="px-3 py-2 text-[9px] text-slate-500 dark:text-[#888]">
+                              <div className="px-3 py-2 text-[9px] text-slate-500 dark:text-gray-300">
                                 {ceoNodeM.output.slice(0, 120)}…
                               </div>
                             )}
@@ -4380,7 +4380,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                         return (
                           <div
                             key={d.id}
-                            className="rounded-xl border bg-white dark:bg-[#0d0d0f] shadow-sm overflow-hidden transition-all"
+                            className="rounded-xl border bg-white dark:bg-[#13171f] shadow-sm overflow-hidden transition-all"
                             style={{ borderColor: n?.status === 'running' ? d.color : n?.status === 'done' ? '#10b981' : n?.status === 'error' ? '#ef4444' : 'rgba(0,0,0,0.06)' }}
                           >
                             <div className="flex items-center gap-2 px-3 py-2" style={{ backgroundColor: `${d.color}0d` }}>
@@ -4394,19 +4394,19 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                               </div>
                             </div>
                             {n?.output && (
-                              <div className="px-3 py-2 text-[9px] text-slate-500 dark:text-[#888] line-clamp-3">
+                              <div className="px-3 py-2 text-[9px] text-slate-500 dark:text-gray-300 line-clamp-3">
                                 {n.output.slice(0, 120)}{n.output.length > 120 ? '…' : ''}
                               </div>
                             )}
                             {!n?.output && (
-                              <div className="px-3 py-1.5 text-[9px] text-slate-300 dark:text-[#555] italic">{d.tasks[0]}</div>
+                              <div className="px-3 py-1.5 text-[9px] text-slate-300 dark:text-gray-400 italic">{d.tasks[0]}</div>
                             )}
                           </div>
                         );
                       })}
                       {/* Report summary */}
                       <div
-                        className="rounded-xl border bg-white dark:bg-[#0d0d0f] shadow-sm overflow-hidden transition-all"
+                        className="rounded-xl border bg-white dark:bg-[#13171f] shadow-sm overflow-hidden transition-all"
                         style={{ borderColor: canvasReport.status === 'running' ? '#8b5cf6' : canvasReport.status === 'done' ? '#10b981' : 'rgba(0,0,0,0.06)' }}
                       >
                         <div className="flex items-center gap-2 px-3 py-2 bg-purple-500/[0.06]">
@@ -4416,8 +4416,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                           {canvasReport.status === 'done'    && <CheckCircle2 size={9} className="text-emerald-500 ml-auto" />}
                           {canvasReport.status === 'idle'    && <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-[#444] ml-auto" />}
                         </div>
-                        <div className="px-3 py-2 text-[9px] text-slate-500 dark:text-[#888]">
-                          {canvasReport.output ? canvasReport.output.slice(0, 140) + (canvasReport.output.length > 140 ? '…' : '') : <span className="italic text-slate-300 dark:text-[#555]">Chờ tất cả departments…</span>}
+                        <div className="px-3 py-2 text-[9px] text-slate-500 dark:text-gray-300">
+                          {canvasReport.output ? canvasReport.output.slice(0, 140) + (canvasReport.output.length > 140 ? '…' : '') : <span className="italic text-slate-300 dark:text-gray-400">Chờ tất cả departments…</span>}
                         </div>
                       </div>
                     </div>
@@ -4516,14 +4516,14 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                             setDragNode('ceo');
                           }}
                         >
-                          <div className="rounded-2xl border-2 border-brand-blue/40 bg-white dark:bg-[#0d0d0f] shadow-lg shadow-brand-blue/10 overflow-hidden" style={{ height: NODE_H }}>
+                          <div className="rounded-2xl border-2 border-brand-blue/40 bg-white dark:bg-[#13171f] shadow-lg shadow-brand-blue/10 overflow-hidden" style={{ height: NODE_H }}>
                             <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5 border-b border-black/[0.05] dark:border-white/[0.05]" style={{ backgroundColor: `${ceoDept.color}15` }}>
                               <ceoDept.icon size={11} style={{ color: ceoDept.color }} className="shrink-0" />
                               <span className="text-[10px] font-bold truncate" style={{ color: ceoDept.color }}>{ceoDept.label}</span>
                               <div className="ml-auto w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: statusColor(ceoNode.status) }} />
                             </div>
                             <div className="px-3 py-1.5">
-                              <p className="text-[8px] text-slate-400 dark:text-[#555] line-clamp-2 leading-relaxed">
+                              <p className="text-[8px] text-slate-400 dark:text-gray-400 line-clamp-2 leading-relaxed">
                                 {ceoNode.status === 'idle' ? 'Tổng hợp executive summary từ tất cả departments' : ceoNode.output.slice(0, 80) || '…'}
                               </p>
                             </div>
@@ -4549,14 +4549,14 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                           }}
                         >
                           <div
-                            className="rounded-2xl border bg-white dark:bg-[#0d0d0f] shadow-md overflow-hidden transition-shadow"
+                            className="rounded-2xl border bg-white dark:bg-[#13171f] shadow-md overflow-hidden transition-shadow"
                             style={{
                               height: NODE_H,
                               borderColor: n.status === 'running' ? d.color : n.status === 'done' ? '#10b981' : n.status === 'error' ? '#ef4444' : 'rgba(0,0,0,0.06)',
                               boxShadow: n.status === 'running' ? `0 0 0 2px ${d.color}30` : undefined,
                             }}
                           >
-                            <div className="flex items-center gap-2 px-2.5 pt-2 pb-1.5 border-b border-black/[0.04] dark:border-white/[0.04]" style={{ backgroundColor: `${d.color}10` }}>
+                            <div className="flex items-center gap-2 px-2.5 pt-2 pb-1.5 border-b border-black/[0.04] dark:border-white/[0.08]" style={{ backgroundColor: `${d.color}10` }}>
                               <DIcon size={10} style={{ color: d.color }} className="shrink-0" />
                               <span className="text-[9px] font-bold truncate" style={{ color: d.color }}>{d.label.replace(' Agent', '').replace(' AI', '')}</span>
                               <div className="ml-auto shrink-0">
@@ -4567,7 +4567,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                               </div>
                             </div>
                             <div className="px-2.5 py-1.5">
-                              <p className="text-[8px] text-slate-400 dark:text-[#666] line-clamp-3 leading-relaxed">
+                              <p className="text-[8px] text-slate-400 dark:text-gray-400 line-clamp-3 leading-relaxed">
                                 {n.status === 'idle' ? d.tasks[0] : (n.output.slice(0, 100) || '…')}
                               </p>
                             </div>
@@ -4586,13 +4586,13 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       }}
                     >
                       <div
-                        className="rounded-2xl border bg-white dark:bg-[#0d0d0f] shadow-lg overflow-hidden transition-all"
+                        className="rounded-2xl border bg-white dark:bg-[#13171f] shadow-lg overflow-hidden transition-all"
                         style={{
                           borderColor: canvasReport.status === 'running' ? '#8b5cf6' : canvasReport.status === 'done' ? '#10b981' : 'rgba(0,0,0,0.06)',
                           boxShadow: canvasReport.status === 'running' ? '0 0 0 2px #8b5cf630' : undefined,
                         }}
                       >
-                        <div className="flex items-center gap-2 px-3 py-2 border-b border-black/[0.04] dark:border-white/[0.04] bg-purple-500/[0.06]">
+                        <div className="flex items-center gap-2 px-3 py-2 border-b border-black/[0.04] dark:border-white/[0.08] bg-purple-500/[0.06]">
                           <Network size={10} className="text-purple-500 shrink-0" />
                           <span className="text-[9px] font-bold text-purple-500">CEO Executive Summary</span>
                           <div className="ml-auto shrink-0">
@@ -4603,9 +4603,9 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                         </div>
                         <div className="px-3 py-2">
                           {canvasReport.output ? (
-                            <p className="text-[8px] text-slate-500 dark:text-[#888] line-clamp-3 leading-relaxed">{canvasReport.output.slice(0, 160)}{canvasReport.output.length > 160 ? '…' : ''}</p>
+                            <p className="text-[8px] text-slate-500 dark:text-gray-300 line-clamp-3 leading-relaxed">{canvasReport.output.slice(0, 160)}{canvasReport.output.length > 160 ? '…' : ''}</p>
                           ) : (
-                            <p className="text-[8px] text-slate-300 dark:text-[#555] italic">Chờ tất cả departments hoàn thành…</p>
+                            <p className="text-[8px] text-slate-300 dark:text-gray-400 italic">Chờ tất cả departments hoàn thành…</p>
                           )}
                         </div>
                       </div>
@@ -4618,7 +4618,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     <motion.div
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="rounded-2xl border border-purple-500/20 bg-white dark:bg-[#0d0d0f] shadow-md overflow-hidden"
+                      className="rounded-2xl border border-purple-500/20 bg-white dark:bg-[#13171f] shadow-md overflow-hidden"
                     >
                       <div className="flex items-center justify-between px-4 py-3 border-b border-purple-500/10 bg-purple-500/[0.04]">
                         <div className="flex items-center gap-2">
@@ -4662,10 +4662,10 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                             key={d.id}
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="rounded-2xl border bg-white dark:bg-[#0d0d0f] overflow-hidden shadow-sm"
+                            className="rounded-2xl border bg-white dark:bg-[#13171f] overflow-hidden shadow-sm"
                             style={{ borderColor: n.status === 'done' ? '#10b98130' : `${d.color}25` }}
                           >
-                            <div className="flex items-center gap-2 px-3 py-2 border-b border-black/[0.04] dark:border-white/[0.04]" style={{ backgroundColor: `${d.color}08` }}>
+                            <div className="flex items-center gap-2 px-3 py-2 border-b border-black/[0.04] dark:border-white/[0.08]" style={{ backgroundColor: `${d.color}08` }}>
                               <DIcon size={10} style={{ color: d.color }} />
                               <span className="text-[10px] font-bold" style={{ color: d.color }}>{d.label}</span>
                               {n.status === 'running' && <Loader2 size={9} className="animate-spin ml-auto" style={{ color: d.color }} />}
@@ -4705,7 +4705,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 26, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
-              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#0d0d0f] rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#13171f] rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
             >
               <div className="relative flex items-center justify-between px-5 pt-5 pb-3 shrink-0 border-b border-slate-100 dark:border-white/5">
                 <div className="absolute left-1/2 -translate-x-1/2 top-2.5 w-10 h-1 rounded-full bg-slate-300 dark:bg-white/20" />
@@ -4778,7 +4778,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               exit={{ opacity: 0, scale: 0.93, y: 12 }}
               transition={{ type: 'spring', damping: 24, stiffness: 320 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-xs bg-white dark:bg-[#111113] rounded-2xl shadow-2xl border border-black/[0.08] dark:border-white/[0.08] overflow-hidden"
+              className="w-full max-w-xs bg-white dark:bg-[#1a1f2b] rounded-2xl shadow-2xl border border-black/[0.08] dark:border-white/[0.08] overflow-hidden"
             >
               <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-black/[0.06] dark:border-white/[0.06]">
                 <div className="flex items-center gap-2">
@@ -4800,7 +4800,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   { key: 'Esc', desc: 'Close dialogs' },
                 ].map(s => (
                   <div key={s.key} className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-500 dark:text-[#666]">{s.desc}</span>
+                    <span className="text-[11px] text-slate-500 dark:text-gray-400">{s.desc}</span>
                     <kbd className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white/80 text-[10px] font-mono font-bold">{s.key}</kbd>
                   </div>
                 ))}
@@ -4826,7 +4826,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
               exit={{ opacity: 0, scale: 0.93, y: 12 }}
               transition={{ type: 'spring', damping: 24, stiffness: 320 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-sm bg-white dark:bg-[#111113] rounded-2xl shadow-2xl border border-black/[0.08] dark:border-white/[0.08] overflow-hidden"
+              className="w-full max-w-sm bg-white dark:bg-[#1a1f2b] rounded-2xl shadow-2xl border border-black/[0.08] dark:border-white/[0.08] overflow-hidden"
             >
               {/* Header */}
               <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-black/[0.06] dark:border-white/[0.06]">
@@ -4835,11 +4835,11 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-bold text-slate-800 dark:text-white">Human Approval Required</p>
-                  <p className="text-[10px] text-slate-400 dark:text-[#555] mt-0.5">Task này yêu cầu phê duyệt của bạn</p>
+                  <p className="text-[10px] text-slate-400 dark:text-gray-400 mt-0.5">Task này yêu cầu phê duyệt của bạn</p>
                 </div>
                 <button
                   onClick={() => setShowApprovalDialog(false)}
-                  className="p-1.5 text-slate-300 dark:text-[#444] hover:text-red-400 transition-colors shrink-0"
+                  className="p-1.5 text-slate-300 dark:text-gray-500 hover:text-red-400 transition-colors shrink-0"
                 >
                   <X size={14} />
                 </button>
@@ -4851,7 +4851,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   <p className="text-[9px] font-bold uppercase text-amber-500/70 tracking-widest mb-1.5">Task sẽ thực hiện</p>
                   <p className="text-[12px] text-slate-700 dark:text-white/80 leading-relaxed line-clamp-4">{taskPrompt}</p>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-[#555]">
+                <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-gray-400">
                   <dept.icon size={10} style={{ color: dept.color }} />
                   <span style={{ color: dept.color }} className="font-semibold">{dept.label}</span>
                   <span>·</span>
@@ -4861,7 +4861,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   <ShieldCheck size={9} className="text-emerald-500" />
                   <span>Budget: ${budgetLimit.toFixed(2)}</span>
                 </div>
-                <p className="text-[10px] text-slate-400 dark:text-[#555] flex items-start gap-1.5">
+                <p className="text-[10px] text-slate-400 dark:text-gray-400 flex items-start gap-1.5">
                   <AlertCircle size={11} className="text-amber-400 mt-0.5 shrink-0" />
                   Task chứa từ khóa nhạy cảm (deploy / delete / send / email…). Xem xét kỹ trước khi phê duyệt.
                 </p>
@@ -4876,7 +4876,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     addLog('Human-in-Loop', 'Task bị từ chối bởi user', 'warning', '#ef4444');
                     showToast('Đã hủy task', 'error');
                   }}
-                  className="flex-1 py-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] text-slate-500 dark:text-[#666] text-[11px] font-semibold hover:border-red-400/40 hover:text-red-400 hover:bg-red-500/[0.05] transition-all"
+                  className="flex-1 py-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] text-slate-500 dark:text-gray-400 text-[11px] font-semibold hover:border-red-400/40 hover:text-red-400 hover:bg-red-500/[0.05] transition-all"
                 >
                   Từ chối
                 </button>

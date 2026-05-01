@@ -27,7 +27,7 @@ export const FeaturedSkeleton = () => (
 );
 
 export const CardSkeleton = () => (
-  <div className="flex-shrink-0 w-[280px] md:w-[320px] xl:w-[360px] flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden animate-pulse">
+  <div className="flex-shrink-0 w-[280px] md:w-[320px] xl:w-[360px] flex flex-col bg-white dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden animate-pulse">
     <div className="aspect-[16/10] bg-slate-200 dark:bg-white/5 relative">
        <div className="absolute top-4 left-4 w-16 h-4 bg-black/10 dark:bg-white/5 rounded"></div>
     </div>

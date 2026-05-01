@@ -32,7 +32,7 @@ export const ParameterSettings: React.FC<ParameterSettingsProps> = ({
               <option value="16:9">16:9</option>
               <option value="9:16">9:16</option>
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#555] pointer-events-none" size={9} />
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 pointer-events-none" size={9} />
           </div>
         </div>
 
@@ -44,7 +44,7 @@ export const ParameterSettings: React.FC<ParameterSettingsProps> = ({
             <select value={resolution} onChange={e => setResolution(e.target.value)} className={selectClass}>
               {availableResolutions.map(res => <option key={res} value={res}>{res.toUpperCase()}</option>)}
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#555] pointer-events-none" size={9} />
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 pointer-events-none" size={9} />
           </div>
         </div>
 
@@ -56,7 +56,7 @@ export const ParameterSettings: React.FC<ParameterSettingsProps> = ({
             <select value={duration} onChange={e => setDuration(e.target.value)} className={selectClass}>
               {availableDurations.map(dur => <option key={dur} value={dur}>{dur.toUpperCase()}</option>)}
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#555] pointer-events-none" size={9} />
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 pointer-events-none" size={9} />
           </div>
         </div>
       </div>

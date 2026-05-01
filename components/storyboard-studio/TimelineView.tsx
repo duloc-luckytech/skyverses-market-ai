@@ -430,7 +430,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[#0a0a0e] overflow-hidden shadow-sm"
+      className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[#0a0d14] overflow-hidden shadow-sm"
     >
       {/* ── Transport controls ─────────────────────────────────── */}
       <div className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">

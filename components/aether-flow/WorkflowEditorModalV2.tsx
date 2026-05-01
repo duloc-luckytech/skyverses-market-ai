@@ -68,7 +68,7 @@ const V2EditorContent: React.FC<{
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: 20, opacity: 0 }}
                 onClick={() => setIsTaskListOpen(true)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-[100] h-32 w-10 bg-white dark:bg-[#1a1b23] border border-r-0 border-black/5 dark:border-white/10 rounded-l-2xl shadow-2xl flex flex-col items-center justify-center gap-2 group transition-all hover:w-12"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-[100] h-32 w-10 bg-white dark:bg-[#1a1f2b] border border-r-0 border-black/5 dark:border-white/10 rounded-l-2xl shadow-2xl flex flex-col items-center justify-center gap-2 group transition-all hover:w-12"
               >
                 <div className="flex flex-col items-center gap-1.5">
                    <ChevronLeft size={16} className="text-brand-blue group-hover:-translate-x-0.5 transition-transform" />
@@ -110,7 +110,7 @@ export const WorkflowEditorModalV2: React.FC<WorkflowEditorModalV2Props> = ({ is
         initial={{ scale: 1.02, opacity: 0 }} 
         animate={{ scale: 1, opacity: 1 }} 
         exit={{ scale: 1.02, opacity: 0 }} 
-        className="relative w-full h-full bg-white dark:bg-[#050507] shadow-none flex flex-col transition-colors duration-500 overflow-hidden"
+        className="relative w-full h-full bg-white dark:bg-[#0a0d14] shadow-none flex flex-col transition-colors duration-500 overflow-hidden"
       >
         <ReactFlowProvider>
           <V2EditorContent template={template} onClose={onClose} />

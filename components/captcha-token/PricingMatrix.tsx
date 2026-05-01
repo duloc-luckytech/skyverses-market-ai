@@ -32,7 +32,7 @@ export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading, on
               const isPopular = plan.code.includes('pro') || idx === 2;
 
               return (
-                <div key={plan.code} className={`p-10 lg:p-14 bg-white dark:bg-[#0d0d0f] border-2 rounded-[2.5rem] flex flex-col justify-between transition-all duration-500 group relative overflow-hidden shadow-sm ${isPopular ? 'border-indigo-600 shadow-2xl scale-105 z-10' : 'border-black/5 dark:border-white/5 opacity-80 hover:opacity-100 hover:border-black/10'}`}>
+                <div key={plan.code} className={`p-10 lg:p-14 bg-white dark:bg-[#13171f] border-2 rounded-[2.5rem] flex flex-col justify-between transition-all duration-500 group relative overflow-hidden shadow-sm ${isPopular ? 'border-indigo-600 shadow-2xl scale-105 z-10' : 'border-black/5 dark:border-white/5 opacity-80 hover:opacity-100 hover:border-black/10'}`}>
                    
                    {isPopular && (
                       <div className="absolute top-0 right-0 bg-indigo-600 text-white px-8 py-2 text-[8px] font-black uppercase tracking-widest rounded-bl-2xl shadow-xl italic z-20">ĐƯỢC ĐỀ XUẤT</div>

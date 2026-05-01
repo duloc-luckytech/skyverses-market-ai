@@ -33,7 +33,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
   const selectedModel = availableModels.find(m => m._id === selectedModelId);
 
   const labelClass = "text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-[0.2em] mb-2 flex items-center gap-2 px-1 italic";
-  const triggerClass = "w-full bg-slate-50 dark:bg-[#16161a] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none flex items-center justify-between transition-all cursor-pointer text-slate-800 dark:text-white shadow-sm disabled:opacity-50 hover:border-brand-blue/50";
+  const triggerClass = "w-full bg-slate-50 dark:bg-[#13171f] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none flex items-center justify-between transition-all cursor-pointer text-slate-800 dark:text-white shadow-sm disabled:opacity-50 hover:border-brand-blue/50";
 
   return (
     <>

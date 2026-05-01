@@ -118,7 +118,7 @@ const UniversalSearch = () => {
 
       {/* Results Dropdown */}
       {isOpen && (
-        <div className="absolute top-full mt-4 w-full bg-white/95 dark:bg-[#080808]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="absolute top-full mt-4 w-full bg-white/95 dark:bg-[#0a0d14]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
           {results.length > 0 ? (
             <div className="py-2">
               <div className="px-6 py-3 border-b border-black/5 dark:border-white/5 flex justify-between items-center">

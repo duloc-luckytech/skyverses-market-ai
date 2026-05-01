@@ -131,7 +131,7 @@ export const PromptBar: React.FC<PromptBarProps> = ({
                 <button
                   key={i}
                   onClick={() => handleQuickPrompt(p)}
-                  className="px-3 py-1.5 rounded-full text-[10px] font-semibold bg-white/90 dark:bg-[#1a1b21]/90 backdrop-blur border border-slate-200 dark:border-white/[0.07] text-slate-600 dark:text-slate-300 hover:border-brand-blue hover:text-brand-blue transition-all shadow-sm whitespace-nowrap"
+                  className="px-3 py-1.5 rounded-full text-[10px] font-semibold bg-white/90 dark:bg-[#1a1f2b]/90 backdrop-blur border border-slate-200 dark:border-white/[0.07] text-slate-600 dark:text-slate-300 hover:border-brand-blue hover:text-brand-blue transition-all shadow-sm whitespace-nowrap"
                 >
                   {p}
                 </button>
@@ -150,7 +150,7 @@ export const PromptBar: React.FC<PromptBarProps> = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-white/97 dark:bg-[#14151a]/97 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.14)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)] overflow-hidden"
+              className="bg-white/97 dark:bg-[#13171f]/97 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.14)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)] overflow-hidden"
             >
               {/* Panel Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/[0.04]">
@@ -201,7 +201,7 @@ export const PromptBar: React.FC<PromptBarProps> = ({
         {/* ══════════════════════════════════════════════════════════
             MAIN BOTTOM BAR CARD
         ═══════════════════════════════════════════════════════════ */}
-        <div className="bg-white/95 dark:bg-[#14151a]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.07] rounded-2xl shadow-[0_4px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_4px_32px_rgba(0,0,0,0.35)] overflow-hidden">
+        <div className="bg-white/95 dark:bg-[#13171f]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.07] rounded-2xl shadow-[0_4px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_4px_32px_rgba(0,0,0,0.35)] overflow-hidden">
 
           {/* ── Top row: mode badge + references + input ── */}
           <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">

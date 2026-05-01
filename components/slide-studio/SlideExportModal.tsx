@@ -17,6 +17,9 @@ const SlideExportModal: React.FC<Props> = ({ isOpen, onClose, slides, initialFor
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(initialFormat ?? 'pptx');
   const [isExporting, setIsExporting] = useState(false);
   const [done, setDone] = useState(false);
+  // Tuỳ chọn export PDF: bao gồm speaker notes (handout style với notes ở footer mỗi trang)
+  const [includeNotes, setIncludeNotes] = useState(false);
+  const slidesWithNotes = slides.filter(s => s.notes && s.notes.trim()).length;
 
   // Sync initialFormat when it changes (e.g. user clicks different option in dropdown)
   React.useEffect(() => {
@@ -56,7 +59,7 @@ const SlideExportModal: React.FC<Props> = ({ isOpen, onClose, slides, initialFor
       if (selectedFormat === 'pptx') {
         await exportPPTX(slides);
       } else if (selectedFormat === 'pdf') {
-        await exportPDF(slides);
+        await exportPDF(slides, { includeNotes });
       } else {
         await exportPNG(slides);
       }
@@ -85,10 +88,10 @@ const SlideExportModal: React.FC<Props> = ({ isOpen, onClose, slides, initialFor
             exit={{ opacity: 0, y: 20, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             onClick={e => e.stopPropagation()}
-            className="w-full max-w-sm bg-white dark:bg-[#18181b] rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
+            className="w-full max-w-sm bg-white dark:bg-[#1a1f2b] rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.05] dark:border-white/[0.05]">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.05] dark:border-white/[0.08]">
               <div className="flex items-center gap-2">
                 <Download size={16} className="text-brand-blue" />
                 <h3 className="text-sm font-bold text-slate-800 dark:text-white">Xuất Slide</h3>
@@ -100,7 +103,7 @@ const SlideExportModal: React.FC<Props> = ({ isOpen, onClose, slides, initialFor
 
             {/* Format picker */}
             <div className="px-5 py-4 space-y-2">
-              <p className="text-[10px] uppercase tracking-wider font-bold text-slate-400 dark:text-white/30 mb-3">Chọn định dạng</p>
+              <p className="text-[10px] uppercase tracking-wider font-bold text-slate-400 dark:text-gray-400 mb-3">Chọn định dạng</p>
               {formats.map(fmt => {
                 const Icon = fmt.icon;
                 return (
@@ -116,13 +119,33 @@ const SlideExportModal: React.FC<Props> = ({ isOpen, onClose, slides, initialFor
                     <Icon size={20} className={fmt.color} />
                     <div className="flex-1">
                       <p className="text-[12px] font-semibold text-slate-700 dark:text-white/80">{fmt.label} <span className="text-slate-400 font-normal">{fmt.ext}</span></p>
-                      <p className="text-[10px] text-slate-400 dark:text-white/30">{fmt.desc}</p>
+                      <p className="text-[10px] text-slate-400 dark:text-gray-400">{fmt.desc}</p>
                     </div>
                     {selectedFormat === fmt.id && <CheckCircle2 size={14} className="text-brand-blue shrink-0" />}
                   </button>
                 );
               })}
             </div>
+
+            {/* Speaker notes option — chỉ hiện khi chọn PDF và có ít nhất 1 slide có notes */}
+            {selectedFormat === 'pdf' && slidesWithNotes > 0 && (
+              <div className="px-5 pb-3">
+                <label className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-500/[0.06] border border-amber-500/20 cursor-pointer hover:bg-amber-500/[0.1] transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={includeNotes}
+                    onChange={e => setIncludeNotes(e.target.checked)}
+                    className="mt-0.5 accent-amber-500 cursor-pointer"
+                  />
+                  <div className="flex-1">
+                    <p className="text-[11px] font-bold text-amber-700 dark:text-amber-400">📝 Bao gồm Ghi chú diễn giả</p>
+                    <p className="text-[10px] text-slate-500 dark:text-gray-400 mt-0.5 leading-relaxed">
+                      Layout handout: slide chiếm 70% trang, ghi chú ở 30% phía dưới. ({slidesWithNotes}/{slides.length} slide có notes)
+                    </p>
+                  </div>
+                </label>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="px-5 pb-5 flex gap-3">
@@ -206,11 +229,14 @@ async function exportPPTX(slides: Slide[]) {
   await pptx.writeFile({ fileName: 'skyverses-presentation.pptx' });
 }
 
-async function exportPDF(slides: Slide[]) {
+async function exportPDF(slides: Slide[], options?: { includeNotes?: boolean }) {
   const { default: jsPDF } = await import('jspdf');
+  const includeNotes = options?.includeNotes ?? false;
 
   const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
   const W = 297, H = 210;
+  // Khi includeNotes: slide chiếm 70% trang, notes 30% phía dưới (handout layout)
+  const SLIDE_H = includeNotes ? H * 0.7 : H;
 
   for (let i = 0; i < slides.length; i++) {
     const slide = slides[i];
@@ -218,14 +244,14 @@ async function exportPDF(slides: Slide[]) {
 
     if (slide.bgImageUrl) {
       try {
-        pdf.addImage(slide.bgImageUrl, 'JPEG', 0, 0, W, H);
+        pdf.addImage(slide.bgImageUrl, 'JPEG', 0, 0, W, SLIDE_H);
       } catch {
         pdf.setFillColor(30, 30, 46);
-        pdf.rect(0, 0, W, H, 'F');
+        pdf.rect(0, 0, W, SLIDE_H, 'F');
       }
     } else {
       pdf.setFillColor(30, 30, 46);
-      pdf.rect(0, 0, W, H, 'F');
+      pdf.rect(0, 0, W, SLIDE_H, 'F');
     }
 
     // Semi-transparent overlay using a filled rect with alpha via canvas compositing
@@ -242,7 +268,7 @@ async function exportPDF(slides: Slide[]) {
     try {
       const gs = pdf.GState({ opacity: 0.4 });
       pdf.setGState(gs);
-      pdf.rect(0, 0, W, H, 'F');
+      pdf.rect(0, 0, W, SLIDE_H, 'F');
       pdf.setGState(pdf.GState({ opacity: 1 }));
     } catch {
       // Fallback: skip overlay if GState throws
@@ -254,17 +280,46 @@ async function exportPDF(slides: Slide[]) {
     pdf.setFontSize(24);
     pdf.setFont('helvetica', 'bold');
     const titleLines = pdf.splitTextToSize(slide.title || '', W * 0.84);
-    pdf.text(titleLines, W / 2, H * 0.38, { align: 'center' });
+    pdf.text(titleLines, W / 2, SLIDE_H * 0.38, { align: 'center' });
 
     if (slide.body) {
       pdf.setFontSize(11);
       pdf.setFont('helvetica', 'normal');
       const bodyLines = pdf.splitTextToSize(slide.body.replace(/•\s*/g, '• '), W * 0.76);
-      pdf.text(bodyLines, W / 2, H * 0.55, { align: 'center' });
+      pdf.text(bodyLines, W / 2, SLIDE_H * 0.55, { align: 'center' });
+    }
+
+    // ── Footer: speaker notes (handout layout) ──
+    if (includeNotes) {
+      // Phân vùng notes: dưới slide, nền trắng nhạt, viền top
+      const NOTES_Y = SLIDE_H + 4;
+      pdf.setFillColor(248, 250, 252); // slate-50
+      pdf.rect(0, SLIDE_H, W, H - SLIDE_H, 'F');
+      pdf.setDrawColor(15, 23, 42); // slate-900 line
+      pdf.setLineWidth(0.2);
+      pdf.line(0, SLIDE_H, W, SLIDE_H);
+
+      // Slide number badge
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 116, 139); // slate-500
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`Slide ${i + 1}/${slides.length} · GHI CHÚ DIỄN GIẢ`, 8, NOTES_Y);
+
+      // Notes content
+      pdf.setFontSize(9);
+      pdf.setTextColor(30, 41, 59); // slate-800
+      pdf.setFont('helvetica', 'normal');
+      const notesText = (slide.notes && slide.notes.trim()) || '(không có ghi chú)';
+      const notesLines = pdf.splitTextToSize(notesText, W - 16);
+      // Limit to ~12 dòng để không tràn trang (khoảng 12 lines × 4.5mm = 54mm)
+      const maxLines = Math.floor((H - SLIDE_H - 8) / 4.5);
+      const visibleLines = notesLines.slice(0, maxLines);
+      pdf.text(visibleLines, 8, NOTES_Y + 5);
     }
   }
 
-  pdf.save('skyverses-presentation.pdf');
+  const filename = includeNotes ? 'skyverses-presentation-with-notes.pdf' : 'skyverses-presentation.pdf';
+  pdf.save(filename);
 }
 
 async function exportPNG(slides: Slide[]) {

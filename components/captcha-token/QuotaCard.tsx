@@ -35,7 +35,7 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
   return (
     <div className="lg:col-span-4 space-y-8">
       {/* MAIN QUOTA CARD */}
-      <div className="p-8 bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/10 rounded-[2.5rem] space-y-8 shadow-2xl relative overflow-hidden group transition-all duration-500">
+      <div className="p-8 bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 rounded-[2.5rem] space-y-8 shadow-2xl relative overflow-hidden group transition-all duration-500">
          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
             <Database size={160} />
          </div>

@@ -162,9 +162,9 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   const errorCount = useMemo(() => results.filter(r => r.status === 'error').length, [results]);
 
   return (
-    <main className="flex-grow min-w-0 flex flex-col relative bg-slate-50 dark:bg-[#0a0a0c] overflow-hidden">
+    <main className="flex-grow min-w-0 flex flex-col relative bg-slate-50 dark:bg-[#0a0d14] overflow-hidden">
       {/* ─── TOOLBAR ─── */}
-      <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.04] bg-white/95 dark:bg-[#111114]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
+      <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/95 dark:bg-[#1a1f2b]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
         <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
           <div className="flex items-center gap-1">
             {onClose && (
@@ -177,7 +177,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               </button>
             )}
 
-            <div className="flex bg-black/[0.03] dark:bg-white/[0.03] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+            <div className="flex bg-black/[0.03] dark:bg-white/[0.03] rounded-lg border border-black/[0.06] dark:border-white/[0.08] overflow-hidden">
               <button
                 onClick={() => setActiveTab('RESULTS')}
                 className={`px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all ${activeTab === 'RESULTS' ? 'bg-black/[0.05] dark:bg-white/[0.06] text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}
@@ -228,7 +228,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
             </button>
           ) : (
             <div className="flex items-center gap-2 md:gap-3">
-              <div className="flex items-center gap-1.5 bg-black/[0.03] dark:bg-white/[0.03] px-2.5 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.04]">
+              <div className="flex items-center gap-1.5 bg-black/[0.03] dark:bg-white/[0.03] px-2.5 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.08]">
                 <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400 hidden xs:inline">Auto DL</span>
                 <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400 xs:hidden">Auto</span>
                 <button
@@ -410,7 +410,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                     { icon: '🖼️', title: 'Tải ảnh tham chiếu', desc: 'Upload ảnh mẫu để AI tham chiếu phong cách, bố cục hoặc chủ thể của bạn.' },
                     { icon: '⚙️', title: 'Chọn cấu hình', desc: 'Chọn model, tỷ lệ, độ phân giải, chế độ phù hợp với nhu cầu tạo ảnh.' },
                   ].map((tip, i) => (
-                    <div key={i} className="p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-white/[0.015]">
+                    <div key={i} className="p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-white/[0.015]">
                       <span className="text-lg">{tip.icon}</span>
                       <p className="text-[11px] font-semibold text-slate-700 dark:text-white/80 mt-2">{tip.title}</p>
                       <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{tip.desc}</p>
@@ -426,7 +426,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                       <button
                         key={s.label}
                         onClick={() => onApplyExample({ prompt: s.prompt })}
-                        className="p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-white/[0.015] hover:border-rose-500/20 hover:bg-rose-500/[0.03] transition-all text-left group shadow-sm dark:shadow-none"
+                        className="p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-white/[0.015] hover:border-rose-500/20 hover:bg-rose-500/[0.03] transition-all text-left group shadow-sm dark:shadow-none"
                       >
                         <span className="text-lg">{s.emoji}</span>
                         <p className="text-[11px] font-semibold text-slate-700 dark:text-white/70 mt-2">{s.label}</p>
@@ -450,7 +450,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                             key={item._id || item.id}
                             ref={isLast ? lastItemRef : null}
                             onClick={() => onApplyExample(item)}
-                            className="break-inside-avoid relative overflow-hidden bg-white dark:bg-[#111114] group cursor-pointer border border-black/[0.06] dark:border-white/[0.04] transition-all duration-500 rounded-2xl hover:border-rose-500/20 shadow-sm dark:shadow-none"
+                            className="break-inside-avoid relative overflow-hidden bg-white dark:bg-[#1a1f2b] group cursor-pointer border border-black/[0.06] dark:border-white/[0.08] transition-all duration-500 rounded-2xl hover:border-rose-500/20 shadow-sm dark:shadow-none"
                           >
                             <img
                               src={item.thumbnailUrl}

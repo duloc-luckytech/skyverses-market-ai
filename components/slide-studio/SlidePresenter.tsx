@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, X, Maximize2, Minimize2,
-  Play, Pause, LayoutGrid,
+  Play, Pause, LayoutGrid, FileText,
 } from 'lucide-react';
 import { Slide } from '../../hooks/useSlideStudio';
 import { LAYOUT_CLASSES_PRESENTER } from './SlidePresenterLayouts';
@@ -94,6 +94,13 @@ const SlidePresenter: React.FC<Props> = ({ slides, initialIndex = 0, onClose }) 
   const [isPlaying, setIsPlaying] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [showOverview, setShowOverview] = useState(false);
+  // Speaker notes panel — N để toggle, persist localStorage
+  const [showNotes, setShowNotes] = useState<boolean>(() => {
+    try { return localStorage.getItem('skyverses_presenter_notes_open') === '1'; } catch { return false; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem('skyverses_presenter_notes_open', showNotes ? '1' : '0'); } catch {}
+  }, [showNotes]);
   let controlsTimer: ReturnType<typeof setTimeout>;
 
   const goNext = useCallback(() => setIdx(i => Math.min(i + 1, slides.length - 1)), [slides.length]);
@@ -116,6 +123,9 @@ const SlidePresenter: React.FC<Props> = ({ slides, initialIndex = 0, onClose }) 
         toggleFullscreen();
       } else if (e.key === 'g' || e.key === 'G') {
         setShowOverview(v => !v);
+      } else if (e.key === 'n' || e.key === 'N') {
+        // N — toggle speaker notes overlay (cho diễn giả)
+        setShowNotes(v => !v);
       }
     };
     window.addEventListener('keydown', handler);
@@ -180,6 +190,29 @@ const SlidePresenter: React.FC<Props> = ({ slides, initialIndex = 0, onClose }) 
           >
             <PresenterSlide slide={slide} idx={idx} total={slides.length} />
           </motion.div>
+        </AnimatePresence>
+
+        {/* ── Speaker notes overlay — hiển thị notes của slide hiện tại cho diễn giả đọc ── */}
+        <AnimatePresence>
+          {showNotes && slide.notes && slide.notes.trim() && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 30 }}
+              transition={{ duration: 0.25 }}
+              className="absolute bottom-20 left-6 right-6 md:left-auto md:right-6 md:max-w-md z-20 pointer-events-none"
+            >
+              <div className="rounded-2xl bg-amber-500/15 backdrop-blur-xl border border-amber-500/30 p-4 shadow-2xl">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText size={11} className="text-amber-400" />
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-amber-300">Ghi chú diễn giả</span>
+                </div>
+                <p className="text-[13px] leading-relaxed text-white/90 whitespace-pre-wrap line-clamp-6">
+                  {slide.notes}
+                </p>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* ── Overview grid ── */}
@@ -283,8 +316,17 @@ const SlidePresenter: React.FC<Props> = ({ slides, initialIndex = 0, onClose }) 
               </button>
             </div>
 
-            {/* Right: fullscreen + overview + close */}
+            {/* Right: fullscreen + overview + notes + close */}
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowNotes(v => !v)}
+                title="Ghi chú diễn giả (N)"
+                className={`w-8 h-8 rounded-lg flex items-center justify-center text-white transition-colors ${
+                  showNotes ? 'bg-amber-500/60' : 'bg-white/[0.08] hover:bg-white/[0.15]'
+                }`}
+              >
+                <FileText size={14} />
+              </button>
               <button
                 onClick={() => setShowOverview(v => !v)}
                 title="Tổng quan slides (G)"

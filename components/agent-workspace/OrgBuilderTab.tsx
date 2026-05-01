@@ -102,7 +102,7 @@ const OrgNodeCard: React.FC<{
         />
 
         {/* Body */}
-        <div className="px-3 py-2.5 bg-white dark:bg-[#111113] border-t-0">
+        <div className="px-3 py-2.5 bg-white dark:bg-[#1a1f2b] border-t-0">
           {/* Header row */}
           <div className="flex items-center gap-2 mb-2">
             <div
@@ -985,7 +985,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
       <div className="flex flex-1 overflow-hidden min-h-0">
 
         {/* ── Canvas ── */}
-        <div ref={canvasWrapRef} className="flex-1 overflow-auto bg-slate-50 dark:bg-[#080809]">
+        <div ref={canvasWrapRef} className="flex-1 overflow-auto bg-slate-50 dark:bg-[#0a0d14]">
           {/* Zoom hint */}
           {zoom !== 1 && (
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 px-2.5 py-1 rounded-full bg-black/60 text-white/60 text-[9px] font-bold pointer-events-none">
@@ -1049,7 +1049,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 280, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-              className="w-[260px] shrink-0 border-l border-black/[0.05] dark:border-white/[0.04] bg-white dark:bg-[#0d0d0f] flex flex-col overflow-hidden"
+              className="w-[260px] shrink-0 border-l border-black/[0.05] dark:border-white/[0.04] bg-white dark:bg-[#13171f] flex flex-col overflow-hidden"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.05] dark:border-white/[0.04]">
@@ -1167,7 +1167,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
             exit={{ scale: 0.93, y: 16 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             onClick={e => e.stopPropagation()}
-            className="w-full max-w-[480px] bg-white dark:bg-[#111113] rounded-3xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
+            className="w-full max-w-[480px] bg-white dark:bg-[#1a1f2b] rounded-3xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
           >
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">

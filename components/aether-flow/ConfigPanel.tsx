@@ -188,9 +188,9 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   const isMissingRequirements = !apiKey.trim() || !workflowId.trim();
 
   return (
-    <div className="flex-1 bg-white dark:bg-[#111114] rounded-none p-0 flex flex-col relative h-full overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
+    <div className="flex-1 bg-white dark:bg-[#1a1f2b] rounded-none p-0 flex flex-col relative h-full overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
       
-      <div className="p-8 bg-slate-50 dark:bg-[#18181c] shrink-0 border-b border-black/5 dark:border-none">
+      <div className="p-8 bg-slate-50 dark:bg-[#1a1f2b] shrink-0 border-b border-black/5 dark:border-none">
         <div className="flex justify-between items-center mb-6">
            <div className="flex items-center gap-3">
               <div className="w-1.5 h-6 bg-indigo-600"></div>
@@ -224,7 +224,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         </div>
       </div>
 
-      <div className="flex-grow overflow-y-auto no-scrollbar p-0 bg-white dark:bg-[#111114]">
+      <div className="flex-grow overflow-y-auto no-scrollbar p-0 bg-white dark:bg-[#1a1f2b]">
         {workflowConfig.length > 0 ? (
           <div className="divide-y divide-black/5 dark:divide-white/[0.03]">
              {workflowConfig.map((node) => {
@@ -279,7 +279,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
       </div>
 
       {/* STICKY BOTTOM BUTTON */}
-      <div className="mt-auto bg-slate-50 dark:bg-[#18181c] p-0 z-30 border-t border-black/5 dark:border-white/5 sticky bottom-0">
+      <div className="mt-auto bg-slate-50 dark:bg-[#1a1f2b] p-0 z-30 border-t border-black/5 dark:border-white/5 sticky bottom-0">
         <button 
           onClick={onGenerate}
           disabled={isGenerating || isUploadingJson || isMissingRequirements}

@@ -309,7 +309,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
   const canInteract = !!script.trim() && !isProcessing;
 
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[#0a0a0e] overflow-hidden shadow-sm">
+    <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[#0a0d14] overflow-hidden shadow-sm">
 
       {/* ── Header toggle ──────────────────────────────────────── */}
       <button

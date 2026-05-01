@@ -83,7 +83,7 @@ const ProductAIAgent = () => {
 
         {/* HERO TRIGGER */}
         <section className="mb-24 relative group">
-           <div className="aspect-[21/9] w-full bg-gray-100 dark:bg-[#080808] border border-black/5 dark:border-white/5 overflow-hidden relative shadow-2xl rounded-sm">
+           <div className="aspect-[21/9] w-full bg-gray-100 dark:bg-[#0a0d14] border border-black/5 dark:border-white/5 overflow-hidden relative shadow-2xl rounded-sm">
               <img src={solution.imageUrl} className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-60 transition-all duration-1000 group-hover:scale-105" alt="Flow Hub" />
               <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent opacity-80"></div>
               

@@ -233,7 +233,7 @@ Return ONLY the system prompt text. No labels, no quotes, no preamble.`;
         exit={{ scale: 0.93, opacity: 0, y: 20 }}
         transition={{ type: 'spring', stiffness: 360, damping: 28 }}
         onClick={e => e.stopPropagation()}
-        className="w-full max-w-[580px] bg-white dark:bg-[#111113] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-black/[0.06] dark:border-white/[0.06]"
+        className="w-full max-w-[580px] bg-white dark:bg-[#1a1f2b] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-black/[0.06] dark:border-white/[0.06]"
       >
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-black/[0.05] dark:border-white/[0.05]">

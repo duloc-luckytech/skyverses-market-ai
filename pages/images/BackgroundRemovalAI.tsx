@@ -33,7 +33,7 @@ const BackgroundRemovalAI = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-[#020203] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* 1. HERO SECTION */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-20 relative overflow-hidden">
@@ -74,7 +74,7 @@ const BackgroundRemovalAI = () => {
           </div>
 
           <div className="lg:col-span-7 relative order-1 lg:order-2">
-             <div className="aspect-[16/10] bg-slate-50 dark:bg-[#0a0a0c] border border-slate-200 dark:border-white/5 rounded-sm p-4 shadow-3xl overflow-hidden group transition-colors">
+             <div className="aspect-[16/10] bg-slate-50 dark:bg-[#0a0d14] border border-slate-200 dark:border-white/5 rounded-sm p-4 shadow-3xl overflow-hidden group transition-colors">
                 <div className="relative w-full h-full bg-white dark:bg-black rounded-sm border border-brand-blue/10 overflow-hidden flex items-center justify-center transition-colors">
                    <div className="absolute inset-0 grid grid-cols-2">
                       <img 
@@ -102,7 +102,7 @@ const BackgroundRemovalAI = () => {
       </section>
 
       {/* 2. SPEC SECTION */}
-      <section className="py-40 bg-slate-50 dark:bg-[#070708] border-y border-slate-200 dark:border-white/5 transition-colors">
+      <section className="py-40 bg-slate-50 dark:bg-[#0a0d14] border-y border-slate-200 dark:border-white/5 transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-3xl">
              {[

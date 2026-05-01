@@ -62,7 +62,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
       <motion.div 
         initial={{ scale: 0.9, y: 20, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
-        className="relative w-full max-w-5xl bg-white dark:bg-[#0c0c0e] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col md:flex-row h-auto max-h-[90vh]"
+        className="relative w-full max-w-5xl bg-white dark:bg-[#0a0d14] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col md:flex-row h-auto max-h-[90vh]"
       >
         {/* Visual Panel */}
         <div className="w-full md:w-1/2 relative bg-slate-100 dark:bg-black overflow-hidden aspect-video md:aspect-auto">

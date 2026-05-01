@@ -202,10 +202,10 @@ const WalletConnectModal: React.FC<WalletConnectModalProps> = ({ isOpen, onClose
 
       <motion.div initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative w-full max-w-sm bg-white dark:bg-[#0c0c10] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl shadow-2xl overflow-hidden">
+        className="relative w-full max-w-sm bg-white dark:bg-[#13171f] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl shadow-2xl overflow-hidden">
 
         {/* Header */}
-        <div className="px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
+        <div className="px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
               <Wallet size={16} />
@@ -226,7 +226,7 @@ const WalletConnectModal: React.FC<WalletConnectModalProps> = ({ isOpen, onClose
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 dark:text-gray-600" />
             <input type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Tìm ví..."
-              className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-gray-700 focus:outline-none focus:border-amber-500/30" />
+              className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-gray-700 focus:outline-none focus:border-amber-500/30" />
           </div>
         </div>
 
@@ -241,7 +241,7 @@ const WalletConnectModal: React.FC<WalletConnectModalProps> = ({ isOpen, onClose
               {installedWallets.map(wallet => (
                 <button key={wallet.id} onClick={() => handleConnect(wallet)}
                   disabled={connecting === wallet.id}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl border border-black/[0.04] dark:border-white/[0.04] bg-white dark:bg-white/[0.02] hover:border-amber-500/30 hover:bg-amber-500/[0.02] transition-all active:scale-[0.98] disabled:opacity-50">
+                  className="w-full flex items-center gap-3 p-3 rounded-xl border border-black/[0.04] dark:border-white/[0.08] bg-white dark:bg-white/[0.02] hover:border-amber-500/30 hover:bg-amber-500/[0.02] transition-all active:scale-[0.98] disabled:opacity-50">
                   <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/[0.05] flex items-center justify-center overflow-hidden shrink-0">
                     {wallet.icon ? (
                       <img src={wallet.icon} alt={wallet.name} className="w-7 h-7 rounded-lg" />
@@ -275,7 +275,7 @@ const WalletConnectModal: React.FC<WalletConnectModalProps> = ({ isOpen, onClose
                     wallet.name.toLowerCase().includes(Object.keys(WALLET_INSTALL_URLS)[i]?.split('.')[1] || '___')
                   ) || `https://www.google.com/search?q=${encodeURIComponent(wallet.name + ' wallet download')}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="w-full flex items-center gap-3 p-3 rounded-xl border border-black/[0.04] dark:border-white/[0.04] bg-slate-50/50 dark:bg-white/[0.01] hover:border-amber-500/20 transition-all opacity-60 hover:opacity-80">
+                  className="w-full flex items-center gap-3 p-3 rounded-xl border border-black/[0.04] dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.01] hover:border-amber-500/20 transition-all opacity-60 hover:opacity-80">
                   <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center overflow-hidden shrink-0">
                     {wallet.icon ? (
                       <img src={wallet.icon} alt={wallet.name} className="w-7 h-7 rounded-lg" />
@@ -316,7 +316,7 @@ const WalletConnectModal: React.FC<WalletConnectModalProps> = ({ isOpen, onClose
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3 border-t border-black/[0.04] dark:border-white/[0.04] bg-slate-50/50 dark:bg-white/[0.01]">
+        <div className="px-5 py-3 border-t border-black/[0.04] dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.01]">
           <p className="text-[9px] text-center text-slate-400 leading-relaxed">
             Kết nối ví không chia sẻ private key. Chỉ cho phép xem địa chỉ và yêu cầu xác nhận giao dịch.
           </p>

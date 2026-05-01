@@ -184,9 +184,9 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#050505] text-black dark:text-white font-sans overflow-hidden relative">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] text-black dark:text-white font-sans overflow-hidden relative">
 
-      <aside className="w-full lg:w-[400px] shrink-0 h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[#fafafa] dark:bg-[#080808] z-[60] overflow-y-auto no-scrollbar shadow-2xl">
+      <aside className="w-full lg:w-[400px] shrink-0 h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[#fafafa] dark:bg-[#0a0d14] z-[60] overflow-y-auto no-scrollbar shadow-2xl">
         <div className="p-8 lg:p-10 space-y-12 pb-40">
 
           <section className="space-y-6">
@@ -235,7 +235,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
         </div>
       </aside>
 
-      <main className="flex-grow flex flex-col bg-gray-50 dark:bg-[#020202] relative overflow-hidden">
+      <main className="flex-grow flex flex-col bg-gray-50 dark:bg-[#0a0d14] relative overflow-hidden">
         <div className="h-16 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-30">
           <div className="flex items-center gap-6">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-blue mono italic">CAST BUILDER STUDIO</span>
@@ -272,7 +272,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           </AnimatePresence>
         </div>
 
-        <div className="h-36 border-t border-black/5 dark:border-white/10 bg-white dark:bg-[#080808] p-8 lg:px-12 flex items-center justify-between z-40">
+        <div className="h-36 border-t border-black/5 dark:border-white/10 bg-white dark:bg-[#0a0d14] p-8 lg:px-12 flex items-center justify-between z-40">
            <div className="flex items-center gap-12">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-gray-400">

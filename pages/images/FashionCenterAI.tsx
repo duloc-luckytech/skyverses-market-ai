@@ -39,7 +39,7 @@ const FashionCenterAI = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-[#050505] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-pink-500/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-pink-500/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* 1. HERO SECTION */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-20 relative">
@@ -81,7 +81,7 @@ const FashionCenterAI = () => {
           </div>
 
           <div className="lg:col-span-6 relative">
-             <div className="aspect-[3/4] bg-white dark:bg-[#0a0a0c] border border-slate-200 dark:border-white/5 rounded-sm p-6 shadow-3xl overflow-hidden group transition-colors">
+             <div className="aspect-[3/4] bg-white dark:bg-[#0a0d14] border border-slate-200 dark:border-white/5 rounded-sm p-6 shadow-3xl overflow-hidden group transition-colors">
                 <div className="flex h-full gap-6">
                    {/* Left Panel Simulator */}
                    <div className="w-1/3 h-full border-r border-slate-100 dark:border-white/5 pr-6 space-y-6 opacity-40 group-hover:opacity-100 transition-opacity">
@@ -124,7 +124,7 @@ const FashionCenterAI = () => {
       </section>
 
       {/* 2. HOW IT WORKS */}
-      <section className="py-40 border-y border-slate-100 dark:border-white/5 relative bg-slate-50 dark:bg-[#080808] transition-colors">
+      <section className="py-40 border-y border-slate-100 dark:border-white/5 relative bg-slate-50 dark:bg-[#0a0d14] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Automated Fashion Flow</h2>
@@ -151,7 +151,7 @@ const FashionCenterAI = () => {
       </section>
 
       {/* 3. CORE FEATURES */}
-      <section className="py-40 bg-white dark:bg-[#050505] transition-colors">
+      <section className="py-40 bg-white dark:bg-[#0a0d14] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-100 dark:bg-white/5 border border-slate-100 dark:border-white/5 shadow-3xl">
               {[
@@ -164,7 +164,7 @@ const FashionCenterAI = () => {
                 { t: 'Batch Processing', i: <Layers />, d: 'Generate entire catalog variants in a single workflow.' },
                 { t: 'IP Protection', i: <ShieldCheck />, d: 'Your proprietary designs are secure and never used for training.' }
               ].map((f, i) => (
-                <div key={i} className="p-12 bg-white dark:bg-[#0a0a0c] space-y-6 hover:bg-pink-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
+                <div key={i} className="p-12 bg-white dark:bg-[#0a0d14] space-y-6 hover:bg-pink-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
                    <div className="w-12 h-12 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:text-pink-500 transition-colors rounded-sm shadow-sm dark:shadow-none">
                       {React.cloneElement(f.i as React.ReactElement<any>, { size: 20 })}
                    </div>
@@ -206,7 +206,7 @@ const FashionCenterAI = () => {
              
              <div className="relative">
                 <div className="absolute inset-0 bg-pink-500/5 blur-[120px] rounded-full animate-pulse"></div>
-                <div className="relative bg-white dark:bg-[#0a0a0c] border border-slate-200 dark:border-white/10 p-12 rounded-sm shadow-3xl space-y-10 group overflow-hidden">
+                <div className="relative bg-white dark:bg-[#0a0d14] border border-slate-200 dark:border-white/10 p-12 rounded-sm shadow-3xl space-y-10 group overflow-hidden">
                    <div className="flex justify-between items-center border-b border-slate-100 dark:border-white/5 pb-6">
                       <span className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-[0.4em]">Engine_Inspector</span>
                       <Settings2 size={16} className="text-pink-600 dark:text-pink-500" />
@@ -232,7 +232,7 @@ const FashionCenterAI = () => {
       </section>
 
       {/* 5. USE CASES */}
-      <section className="py-40 bg-slate-50 dark:bg-[#080808] transition-colors">
+      <section className="py-40 bg-slate-50 dark:bg-[#0a0d14] transition-colors">
          <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-24">
            <div className="flex flex-col md:flex-row justify-between items-end gap-8">
               <div className="space-y-4">
@@ -284,7 +284,7 @@ const FashionCenterAI = () => {
       </section>
 
       {/* 7. FOOTER */}
-      <footer className="py-20 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#030304] transition-colors">
+      <footer className="py-20 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#0a0d14] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">
            <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-4">

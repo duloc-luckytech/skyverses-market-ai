@@ -95,7 +95,7 @@ const StyleCard: React.FC<{
   >
     {/* Gradient preview swatch */}
     <div className={`h-12 w-full bg-gradient-to-br ${opt.gradient} dark:${opt.dark}`} />
-    <div className="bg-white dark:bg-[#0f0f14] px-3 py-2.5 flex items-center justify-between">
+    <div className="bg-white dark:bg-[#13171f] px-3 py-2.5 flex items-center justify-between">
       <span className={`text-[10px] font-black truncate ${isSelected ? 'text-brand-blue' : 'text-slate-700 dark:text-white'}`}>
         {opt.label}
       </span>

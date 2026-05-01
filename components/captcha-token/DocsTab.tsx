@@ -241,7 +241,7 @@ console.log(data);`;
       exit={{ opacity: 0, x: -20 }} 
       className="space-y-10 pb-32"
     >
-      <div className="p-8 lg:p-12 bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-16 relative overflow-hidden transition-colors">
+      <div className="p-8 lg:p-12 bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-16 relative overflow-hidden transition-colors">
          <div className="absolute top-0 right-0 p-12 opacity-[0.02] dark:opacity-[0.05] pointer-events-none">
             <Terminal size={320} />
          </div>
@@ -260,13 +260,13 @@ console.log(data);`;
             <div className="flex bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/10 shrink-0">
                <button 
                  onClick={() => { setDocEndpoint('REQUEST'); setLiveResponse(null); pollingRef.current = false; setIsRunning(false); }}
-                 className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docEndpoint === 'REQUEST' ? 'bg-white dark:bg-[#1a1a1e] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
+                 className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docEndpoint === 'REQUEST' ? 'bg-white dark:bg-[#13171f] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
                >
                  1. REQUEST TOKEN
                </button>
                <button 
                  onClick={() => { setDocEndpoint('POLL'); setLiveResponse(null); pollingRef.current = false; setIsRunning(false); }}
-                 className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docEndpoint === 'POLL' ? 'bg-white dark:bg-[#1a1a1e] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
+                 className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docEndpoint === 'POLL' ? 'bg-white dark:bg-[#13171f] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
                >
                  2. POLL RESULT
                </button>
@@ -365,7 +365,7 @@ console.log(data);`;
                        <button 
                          key={lang}
                          onClick={() => setActiveLang(lang)}
-                         className={`px-5 py-2.5 text-[9px] font-black uppercase tracking-widest transition-all rounded-lg ${activeLang === lang ? 'bg-white dark:bg-[#1a1a1e] text-indigo-600 shadow-xl' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
+                         className={`px-5 py-2.5 text-[9px] font-black uppercase tracking-widest transition-all rounded-lg ${activeLang === lang ? 'bg-white dark:bg-[#13171f] text-indigo-600 shadow-xl' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
                        >
                          {lang}
                        </button>

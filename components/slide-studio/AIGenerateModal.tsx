@@ -40,17 +40,17 @@ const AIGenerateModal: React.FC<Props> = ({
             exit={{ opacity: 0, y: 20, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             onClick={e => e.stopPropagation()}
-            className="w-full max-w-md bg-white dark:bg-[#18181b] rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
+            className="w-full max-w-md bg-white dark:bg-[#1a1f2b] rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-black/[0.05] dark:border-white/[0.05]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-black/[0.05] dark:border-white/[0.08]">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-brand-blue/10 flex items-center justify-center">
                   <Sparkles size={15} className="text-brand-blue" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-800 dark:text-white">Tạo toàn bộ Deck</h3>
-                  <p className="text-[10px] text-slate-400 dark:text-white/30">
+                  <p className="text-[10px] text-slate-400 dark:text-gray-400">
                     {imageDeckMode
                       ? 'Chỉ tạo ảnh AI fullscreen · Không có text'
                       : 'AI sẽ tạo nội dung + ảnh nền cho mỗi slide'
@@ -72,8 +72,8 @@ const AIGenerateModal: React.FC<Props> = ({
                   { label: 'Phong cách', value: styleLabel },
                   { label: 'Ngôn ngữ', value: langLabel },
                 ].map(item => (
-                  <div key={item.label} className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04]">
-                    <p className="text-[9px] uppercase tracking-wider text-slate-400 dark:text-white/30 mb-1">{item.label}</p>
+                  <div key={item.label} className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08]">
+                    <p className="text-[9px] uppercase tracking-wider text-slate-400 dark:text-gray-400 mb-1">{item.label}</p>
                     <p className="text-[12px] font-semibold text-slate-700 dark:text-white/80">{item.value}</p>
                   </div>
                 ))}

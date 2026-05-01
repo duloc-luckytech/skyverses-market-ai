@@ -59,7 +59,7 @@ const AvatarLibraryModal: React.FC<{
     >
       <motion.div
         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-        className="bg-white dark:bg-[#0d0d10] border border-slate-200 dark:border-white/5 rounded-2xl w-full max-w-6xl h-[85vh] flex flex-col overflow-hidden shadow-3xl transition-colors duration-500"
+        className="bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/5 rounded-2xl w-full max-w-6xl h-[85vh] flex flex-col overflow-hidden shadow-3xl transition-colors duration-500"
       >
         <div className="h-20 border-b border-slate-100 dark:border-white/5 flex items-center justify-between px-8 shrink-0">
           <div className="flex items-center gap-4">
@@ -206,7 +206,7 @@ const AvatarGeneratorModal: React.FC<{
     >
       <motion.div
         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-        className="bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/10 rounded-2xl w-full max-w-5xl h-[80vh] flex flex-col overflow-hidden shadow-2xl transition-colors duration-500"
+        className="bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 rounded-2xl w-full max-w-5xl h-[80vh] flex flex-col overflow-hidden shadow-2xl transition-colors duration-500"
       >
         <div className="h-16 border-b border-slate-100 dark:border-white/10 flex items-center justify-between px-6 shrink-0">
           <div className="flex items-center gap-3">
@@ -221,7 +221,7 @@ const AvatarGeneratorModal: React.FC<{
         </div>
 
         <div className="flex-grow flex flex-col md:flex-row overflow-hidden">
-          <div className="w-full md:w-80 border-r border-slate-100 dark:border-white/10 p-6 space-y-6 overflow-y-auto no-scrollbar shrink-0 bg-slate-50 dark:bg-[#111114] transition-colors">
+          <div className="w-full md:w-80 border-r border-slate-100 dark:border-white/10 p-6 space-y-6 overflow-y-auto no-scrollbar shrink-0 bg-slate-50 dark:bg-[#1a1f2b] transition-colors">
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">MODEL</label>
               <div className="relative">
@@ -438,9 +438,9 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-slate-50 dark:bg-[#08080a] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
+    <div className="h-full w-full flex flex-col bg-slate-50 dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
 
-      <header className="h-16 border-b border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d0d10] flex items-center justify-between px-8 shrink-0 z-[100] transition-colors">
+      <header className="h-16 border-b border-slate-200 dark:border-white/5 bg-white dark:bg-[#13171f] flex items-center justify-between px-8 shrink-0 z-[100] transition-colors">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400">
             <User size={18} />
@@ -463,7 +463,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       <div className="flex-grow flex flex-col md:flex-row overflow-hidden p-4 md:p-8 gap-4 md:gap-8 no-scrollbar">
 
         <div className="w-full md:w-[450px] flex flex-col gap-6 overflow-y-auto no-scrollbar shrink-0">
-          <div className="bg-white dark:bg-[#0f0f13] rounded-2xl border border-slate-200 dark:border-white/5 p-6 lg:p-8 space-y-8 shadow-xl transition-colors">
+          <div className="bg-white dark:bg-[#13171f] rounded-2xl border border-slate-200 dark:border-white/5 p-6 lg:p-8 space-y-8 shadow-xl transition-colors">
             <div className="space-y-1">
               <div className="flex items-center gap-3">
                 <User size={18} className="text-purple-600 dark:text-purple-500" />
@@ -495,7 +495,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 <Upload size={18} /> Upload
                 <input type="file" ref={avatarUploadRef} className="hidden" accept="image/*" onChange={handleAvatarUpload} />
               </button>
-              <button className="flex flex-col items-center justify-center gap-2 py-4 bg-slate-100 dark:bg-[#1e1e24] rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-[#25252b] transition-all border border-slate-200 dark:border-white/5">
+              <button className="flex flex-col items-center justify-center gap-2 py-4 bg-slate-100 dark:bg-[#1a1f2b] rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-[#25252b] transition-all border border-slate-200 dark:border-white/5">
                 <ImageIcon size={18} /> Album
               </button>
               <button
@@ -559,7 +559,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
         </div>
 
         <div className="flex-grow flex flex-col gap-6 overflow-y-auto no-scrollbar">
-          <div className="bg-white dark:bg-[#0f0f13] rounded-2xl border border-slate-200 dark:border-white/5 p-6 lg:p-8 flex flex-col h-full shadow-xl transition-colors">
+          <div className="bg-white dark:bg-[#13171f] rounded-2xl border border-slate-200 dark:border-white/5 p-6 lg:p-8 flex flex-col h-full shadow-xl transition-colors">
             <div className="space-y-1 mb-8">
               <div className="flex items-center gap-3">
                 <Volume2 size={18} className="text-cyan-600 dark:text-cyan-400" />
@@ -730,7 +730,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
              className="fixed inset-0 z-[600] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-6 lg:p-20"
            >
-              <div className="max-w-5xl w-full bg-white dark:bg-[#141417] rounded-[2rem] border border-slate-200 dark:border-white/10 overflow-hidden relative shadow-3xl dark:shadow-[0_0_150px_rgba(168,85,247,0.3)] transition-colors duration-500">
+              <div className="max-w-5xl w-full bg-white dark:bg-[#13171f] rounded-[2rem] border border-slate-200 dark:border-white/10 overflow-hidden relative shadow-3xl dark:shadow-[0_0_150px_rgba(168,85,247,0.3)] transition-colors duration-500">
                  <button
                    onClick={() => setResultVideo(null)}
                    className="absolute top-6 right-6 p-3 bg-black/60 rounded-full hover:bg-red-500 hover:text-white transition-all z-50 border border-white/10 text-white"
@@ -751,7 +751,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                     </div>
                  </div>
 
-                 <div className="p-8 lg:p-10 flex flex-col md:flex-row justify-between items-center bg-slate-50 dark:bg-[#0d0d0f] border-t border-slate-100 dark:border-white/5 gap-8 transition-colors">
+                 <div className="p-8 lg:p-10 flex flex-col md:flex-row justify-between items-center bg-slate-50 dark:bg-[#13171f] border-t border-slate-100 dark:border-white/5 gap-8 transition-colors">
                     <div className="space-y-2 text-center md:text-left">
                        <h3 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 dark:text-white">RENDER_MANIFEST_01</h3>
                        <div className="flex flex-wrap justify-center md:justify-start gap-4">
@@ -804,7 +804,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
              <motion.div
                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-               className="max-w-md w-full bg-white dark:bg-[#111114] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors"
+               className="max-w-md w-full bg-white dark:bg-[#1a1f2b] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors"
              >
                 <div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]">
                    <AlertTriangle size={48} />

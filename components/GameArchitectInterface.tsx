@@ -101,9 +101,9 @@ const GameArchitectInterface = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#030304] overflow-hidden text-black dark:text-white font-mono relative">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white font-mono relative">
 
-      <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-gray-50 dark:bg-[#050506] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-8 space-y-10">
+      <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-gray-50 dark:bg-[#0a0d14] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-8 space-y-10">
         <div className="space-y-8">
            <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
               <Settings2 className="w-4 h-4 text-emerald-500" /> Geometry_Matrix
@@ -159,7 +159,7 @@ const GameArchitectInterface = () => {
         </div>
       </div>
 
-      <div className="flex-grow flex flex-col bg-white dark:bg-[#020202] relative overflow-hidden">
+      <div className="flex-grow flex flex-col bg-white dark:bg-[#0a0d14] relative overflow-hidden">
         <div className="flex-grow flex flex-col items-center justify-center p-8 lg:p-12 relative overflow-y-auto no-scrollbar">
            <div className="w-full max-w-5xl h-full flex flex-col gap-10">
 

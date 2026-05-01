@@ -52,6 +52,7 @@ export interface Slide {
   aiSuggestions: AISuggestion[];
   isSuggestLoading: boolean;
   bgPrompt?: string;
+  notes?: string;       // Speaker notes — không xuất hiện trên slide, chỉ presenter view + PDF tuỳ chọn
   slideRefImages?: string[];
 }
 
@@ -76,12 +77,13 @@ export const SLIDE_STYLES: StylePreset[] = [
 
 export const SLIDE_COUNT_OPTIONS = [4, 6, 8, 10, 12];
 
+// Layout options Việt hoá đầy đủ — user mới nhìn ngay biết bố cục slide
 export const LAYOUT_OPTIONS: { id: SlideLayout; label: string }[] = [
-  { id: 'title-center', label: 'Giữa' },
-  { id: 'title-left',   label: 'Trái' },
-  { id: 'two-col',      label: '2 cột' },
-  { id: 'full-bg',      label: 'Full BG' },
-  { id: 'title-image',  label: 'Ảnh phải' },
+  { id: 'title-center', label: 'Tiêu đề giữa' },
+  { id: 'title-left',   label: 'Tiêu đề trái' },
+  { id: 'two-col',      label: '2 cột nội dung' },
+  { id: 'full-bg',      label: 'Ảnh nền toàn slide' },
+  { id: 'title-image',  label: 'Tiêu đề + ảnh phải' },
 ];
 
 const STORAGE_KEY = 'skyverses_AI-SLIDE-CREATOR_vault';
@@ -201,6 +203,19 @@ export const useSlideStudio = () => {
   const [brandLogo, setBrandLogo] = useState<string | null>(null);
   const [brandSlogan, setBrandSlogan] = useState('');
   const [brandDescription, setBrandDescription] = useState('');
+  // Brand colors — primary/secondary/accent/text. Inject vào AI prompt khi gen deck/BG.
+  const [brandColors, setBrandColors] = useState<string[]>(['#0090FF', '#6366F1', '#F59E0B', '#0F172A']);
+
+  // Carousel mode — gen 5 slide đồng theme cho social post (Hook → Problem → Solution → Proof → CTA)
+  const [carouselMode, setCarouselMode] = useState<boolean>(false);
+
+  // Aspect ratio — 16:9 (default), 9:16 (mobile reels), 1:1 (square IG), 4:5 (FB feed)
+  const [aspectRatio, setAspectRatio] = useState<'16:9' | '9:16' | '1:1' | '4:5'>('16:9');
+
+  // Khi bật carousel mode → tự set slideCount=5 (force narrative arc 5 bước)
+  useEffect(() => {
+    if (carouselMode) setSlideCount(5);
+  }, [carouselMode]);
 
   // ── DOCX import outline ───────────────────────────────────────────────────────
   const [docxOutline, setDocxOutline] = useState<DocxOutline[] | null>(null);
@@ -240,8 +255,12 @@ export const useSlideStudio = () => {
   // project manager migrates the data on first load, this effect is effectively
   // a no-op because migrateLegacy() removes LEGACY_KEY on first read.
   // We intentionally leave it as a low-cost fallback write.
+  // Autosave indicator timestamp — UI hiển thị "Đã lưu Xs trước"
+  const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
+
   useEffect(() => {
     saveVault({ slides, deckTopic, deckStyle, deckLanguage: deckLanguage as Language, slideCount });
+    setLastSavedAt(Date.now());
   }, [slides, deckTopic, deckStyle, deckLanguage, slideCount]);
 
   // ─── Slide updater ──────────────────────────────────────────────────────────
@@ -565,13 +584,25 @@ export const useSlideStudio = () => {
         const sloganHint = brandSlogan
           ? `\n- Brand slogan: "${brandSlogan}"`
           : '';
+        // Brand colors hint — AI dùng tông màu này khi mô tả slide visual / suggest color cho text/BG
+        const colorsHint = brandColors.length > 0
+          ? `\n- Brand color palette: ${brandColors.join(', ')} (primary, secondary, accent, text). Use these tones for any color decisions in slide visuals.`
+          : '';
+        // Carousel mode hint — buộc structure 5-slide narrative consistent
+        const carouselHint = carouselMode
+          ? `\n- CAROUSEL MODE: Đây là social media carousel (FB/IG/LinkedIn). Bố cục 5 slide PHẢI theo narrative arc: 1) Hook attention với headline gây tò mò. 2) Problem statement — vấn đề user gặp. 3) Solution — giải pháp của chúng ta. 4) Proof/Stats — số liệu, testimonial, case study. 5) CTA mạnh kết thúc. Mỗi slide ngắn gọn (max 1-2 câu body).`
+          : '';
+        // Aspect ratio hint — AI điều chỉnh layout suggestion
+        const ratioHint = aspectRatio !== '16:9'
+          ? `\n- Layout aspect ratio: ${aspectRatio} (${aspectRatio === '9:16' ? 'mobile vertical / reels' : aspectRatio === '1:1' ? 'square Instagram post' : 'Facebook feed portrait'}). Adapt content density accordingly.`
+          : '';
         const outlinePrompt = `You are a professional presentation designer.
 Generate a slide deck outline for the topic: "${deckTopic}".
 Requirements:
 - Exactly ${slideCount} slides
 - Language: ${langLabel}
 - Style: ${deckStyle}
-- Each slide needs a concise title (max 8 words) and 2-4 bullet points as body text${refHint}${brandHint}${sloganHint}
+- Each slide needs a concise title (max 8 words) and 2-4 bullet points as body text${refHint}${brandHint}${sloganHint}${colorsHint}${carouselHint}${ratioHint}
 - Return ONLY a JSON array, no markdown, no explanation
 Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ...]`;
 
@@ -743,7 +774,7 @@ Format: [{"title": "...", "body": "• point 1\\n• point 2\\n• point 3"}, ..
       setGeneratingProgress(0);
       setGeneratingText('');
     }
-  }, [isAuthenticated, deckTopic, deckLanguage, deckStyle, slideCount, refImages, brandSlogan, brandDescription, imageDeckMode, genSlideBg, showToast]);
+  }, [isAuthenticated, deckTopic, deckLanguage, deckStyle, slideCount, refImages, brandSlogan, brandDescription, brandColors, carouselMode, aspectRatio, imageDeckMode, genSlideBg, showToast]);
 
   // ─── AI Suggest for 1 slide ───────────────────────────────────────────────────
 
@@ -801,6 +832,9 @@ Return ONLY a JSON array, no explanation:
     brandLogo, setBrandLogo,
     brandSlogan, setBrandSlogan,
     brandDescription, setBrandDescription,
+    brandColors, setBrandColors,
+    carouselMode, setCarouselMode,
+    aspectRatio, setAspectRatio,
 
     // DOCX outline
     docxOutline, setDocxOutline,
@@ -818,6 +852,7 @@ Return ONLY a JSON array, no explanation:
     isGenerateModalOpen, setIsGenerateModalOpen,
     isExportModalOpen, setIsExportModalOpen,
     isDirty,
+    lastSavedAt,
 
     // Undo/redo
     undoStack, redoStack,

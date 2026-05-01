@@ -102,7 +102,7 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="relative w-full max-w-2xl bg-white dark:bg-[#0d0d0f] border border-black/10 dark:border-white/5 rounded-[2rem] overflow-hidden shadow-3xl flex flex-col transition-colors duration-500 max-h-[90vh]"
+        className="relative w-full max-w-2xl bg-white dark:bg-[#13171f] border border-black/10 dark:border-white/5 rounded-[2rem] overflow-hidden shadow-3xl flex flex-col transition-colors duration-500 max-h-[90vh]"
       >
         {/* Header */}
         <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/20">
@@ -162,7 +162,7 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
                   ) : (
                     <div className="space-y-4">
                        {detectedNodes.map((node) => (
-                         <div key={node.id} className="bg-slate-50 dark:bg-[#16161d] border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden shadow-sm">
+                         <div key={node.id} className="bg-slate-50 dark:bg-[#13171f] border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden shadow-sm">
                             <div className="px-5 py-3 bg-black/5 dark:bg-black/20 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
                                <div className="flex items-center gap-3">
                                   <span className="text-[11px] font-black text-indigo-500 dark:text-indigo-400 italic">Node {node.id}: {node.title}</span>

@@ -121,8 +121,8 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
         const code = match?.[2] || '';
         
         return (
-          <div key={idx} className="my-4 rounded-xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] bg-[#f8f9fa] dark:bg-[#0e0e12]">
-            <div className="flex items-center justify-between px-4 py-2 bg-black/[0.02] dark:bg-white/[0.03] border-b border-black/[0.04] dark:border-white/[0.04]">
+          <div key={idx} className="my-4 rounded-xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] bg-[#f8f9fa] dark:bg-[#1a1f2b]">
+            <div className="flex items-center justify-between px-4 py-2 bg-black/[0.02] dark:bg-white/[0.03] border-b border-black/[0.04] dark:border-white/[0.08]">
               <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-500 flex items-center gap-2">
                 <Terminal size={10} /> {lang}
               </span>
@@ -159,7 +159,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
   return (
     <div className="fixed inset-0 z-[1000] flex overflow-hidden font-sans">
       {/* Glass background */}
-      <div className="absolute inset-0 bg-white/98 dark:bg-[#0d0d10]/98 backdrop-blur-2xl" />
+      <div className="absolute inset-0 bg-white/98 dark:bg-[#13171f]/98 backdrop-blur-2xl" />
       
       {/* SIDEBAR OVERLAY FOR MOBILE */}
       <AnimatePresence>
@@ -179,12 +179,12 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
         transition={{ type: 'spring', damping: 26, stiffness: 250 }}
         className="fixed lg:relative top-0 left-0 h-full flex flex-col shrink-0 z-[150] lg:z-10 overflow-hidden"
       >
-        <div className="w-[280px] h-full flex flex-col bg-white/80 dark:bg-[#111114]/80 backdrop-blur-xl border-r border-black/[0.04] dark:border-white/[0.04]">
+        <div className="w-[280px] h-full flex flex-col bg-white/80 dark:bg-[#1a1f2b]/80 backdrop-blur-xl border-r border-black/[0.04] dark:border-white/[0.08]">
           {/* New Chat */}
           <div className="p-4">
             <button 
               onClick={() => { onClearChat(); if(window.innerWidth < 1024) setIsSidebarOpen(false); }}
-              className="w-full flex items-center justify-between px-4 py-3 bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.04] dark:hover:bg-white/[0.05] rounded-xl transition-all border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/20"
+              className="w-full flex items-center justify-between px-4 py-3 bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.04] dark:hover:bg-white/[0.05] rounded-xl transition-all border border-black/[0.04] dark:border-white/[0.08] hover:border-brand-blue/20"
             >
               <div className="flex items-center gap-3">
                 <Plus size={16} className="text-brand-blue" />
@@ -214,7 +214,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
           </div>
 
           {/* User card */}
-          <div className="p-3 border-t border-black/[0.04] dark:border-white/[0.04] mt-auto">
+          <div className="p-3 border-t border-black/[0.04] dark:border-white/[0.08] mt-auto">
              <div className="flex items-center gap-3 p-3 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-xl transition-all cursor-pointer">
                 <img src={user?.picture || "https://i.pravatar.cc/100"} className="w-8 h-8 rounded-lg border border-black/[0.06] dark:border-white/[0.06]" alt="" />
                 <div className="flex-grow overflow-hidden">
@@ -231,7 +231,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
       {/* MAIN CONTENT */}
       <main className="relative z-10 flex-grow flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="h-14 flex items-center justify-between px-4 md:px-6 shrink-0 z-40 border-b border-black/[0.04] dark:border-white/[0.04] bg-white/60 dark:bg-[#0d0d10]/60 backdrop-blur-xl">
+        <header className="h-14 flex items-center justify-between px-4 md:px-6 shrink-0 z-40 border-b border-black/[0.04] dark:border-white/[0.08] bg-white/60 dark:bg-[#13171f]/60 backdrop-blur-xl">
            <div className="flex items-center gap-2">
               <button 
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
@@ -305,7 +305,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                       whileHover={{ scale: 1.02, x: 4 }} whileTap={{ scale: 0.98 }}
                       key={i}
                       onClick={() => onSendMessage(s.text)}
-                      className="p-4 border border-black/[0.04] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.02] hover:border-brand-blue/20 hover:bg-brand-blue/[0.03] rounded-2xl text-left transition-all group flex items-center gap-3"
+                      className="p-4 border border-black/[0.04] dark:border-white/[0.08] bg-black/[0.01] dark:bg-white/[0.02] hover:border-brand-blue/20 hover:bg-brand-blue/[0.03] rounded-2xl text-left transition-all group flex items-center gap-3"
                     >
                       <span className="text-lg shrink-0">{s.emoji}</span>
                       <p className="text-[12px] font-semibold text-slate-500 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white leading-relaxed flex-1">{s.text}</p>
@@ -369,7 +369,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                         className={`px-5 py-4 rounded-2xl ${
                         msg.role === 'user'
                           ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black rounded-tr-lg'
-                          : 'bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] text-slate-700 dark:text-gray-200 rounded-tl-lg'
+                          : 'bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] text-slate-700 dark:text-gray-200 rounded-tl-lg'
                       }`}>
                         {msg.parts.map((part, pIdx) => (
                           <div key={pIdx}>
@@ -422,7 +422,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                     </motion.div>
                     <div>
                       <p className="text-[10px] font-semibold text-brand-blue/60 mb-1.5 ml-1">Skyverses AI</p>
-                      <div className="px-5 py-4 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl rounded-tl-lg">
+                      <div className="px-5 py-4 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-2xl rounded-tl-lg">
                         <div className="flex items-center gap-2.5">
                           <div className="flex gap-1">
                             <div className="w-2 h-2 bg-brand-blue/40 rounded-full animate-bounce" />
@@ -442,14 +442,14 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
         </div>
 
         {/* ═══ INPUT BAR ═══ */}
-        <div className="px-4 py-5 md:px-8 md:py-6 shrink-0 bg-gradient-to-t from-white dark:from-[#0d0d10] via-white/95 dark:via-[#0d0d10]/95 to-transparent z-50">
+        <div className="px-4 py-5 md:px-8 md:py-6 shrink-0 bg-gradient-to-t from-white dark:from-[#13171f] via-white/95 dark:via-[#13171f]/95 to-transparent z-50">
           <div className="max-w-3xl mx-auto space-y-3">
              {/* File Preview */}
              <AnimatePresence>
                 {selectedFile && (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                    className="flex items-center gap-3 px-4 py-2.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl w-fit"
+                    className="flex items-center gap-3 px-4 py-2.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-xl w-fit"
                   >
                     <img src={selectedFile.preview} className="w-10 h-10 rounded-lg object-cover border border-black/[0.06] dark:border-white/[0.06]" alt="" />
                     <p className="text-[10px] font-medium text-slate-400">Ảnh đính kèm</p>
@@ -465,7 +465,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                className="flex items-center gap-2.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-2 pl-3 focus-within:border-brand-blue/30 transition-all shadow-lg">
                 <button type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-10 h-10 rounded-xl bg-white dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all shrink-0 hover:scale-105 active:scale-95"
+                  className="w-10 h-10 rounded-xl bg-white dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all shrink-0 hover:scale-105 active:scale-95"
                 >
                    <Paperclip size={17} />
                 </button>

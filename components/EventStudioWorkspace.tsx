@@ -40,7 +40,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
   const activeResult = s.activeResultId ? s.results.find(r => r.id === s.activeResultId) || null : null;
 
   return (
-    <div className="h-full w-full flex bg-[#fcfcfd] dark:bg-[#050507] text-slate-900 dark:text-white font-sans overflow-hidden transition-all duration-500 relative">
+    <div className="h-full w-full flex bg-[#fcfcfd] dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-all duration-500 relative">
       <div className="flex-grow flex flex-col-reverse lg:flex-row overflow-hidden relative h-full">
         
         {/* Mobile Backdrop */}
@@ -55,7 +55,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
         </AnimatePresence>
 
         {/* ═══ SIDEBAR ═══ */}
-        <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[370px] shrink-0 bg-white dark:bg-[#0c0c0f] border-t lg:border-t-0 lg:border-r border-black/[0.06] dark:border-white/[0.04] flex flex-col z-[150] lg:z-50 shadow-2xl lg:shadow-none transition-all duration-500 ease-in-out ${s.isMobileExpanded ? 'h-[92dvh] rounded-t-[2rem]' : 'h-[150px] lg:h-full lg:rounded-none'}`}>
+        <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[370px] shrink-0 bg-white dark:bg-[#0a0d14] border-t lg:border-t-0 lg:border-r border-black/[0.06] dark:border-white/[0.08] flex flex-col z-[150] lg:z-50 shadow-2xl lg:shadow-none transition-all duration-500 ease-in-out ${s.isMobileExpanded ? 'h-[92dvh] rounded-t-[2rem]' : 'h-[150px] lg:h-full lg:rounded-none'}`}>
           <MobileGeneratorBar 
             isExpanded={s.isMobileExpanded} 
             setIsExpanded={s.setIsMobileExpanded}
@@ -129,14 +129,14 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
           </div>
 
           {/* ── Generate Buttons ── */}
-          <div className={`p-5 border-t border-black/[0.04] dark:border-white/[0.04] bg-slate-50/50 dark:bg-black/20 shrink-0 space-y-3 ${!s.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+          <div className={`p-5 border-t border-black/[0.04] dark:border-white/[0.08] bg-slate-50/50 dark:bg-black/20 shrink-0 space-y-3 ${!s.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
             {/* Main generate */}
             <button 
               onClick={s.handleGenerate} 
               disabled={s.isGenerateDisabled}
               className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] shadow-lg transition-all active:scale-[0.98] group relative overflow-hidden ${
                 s.isGenerateDisabled 
-                  ? 'bg-slate-200 dark:bg-white/[0.03] text-slate-400 dark:text-slate-600 border border-black/[0.04] dark:border-white/[0.04]' 
+                  ? 'bg-slate-200 dark:bg-white/[0.03] text-slate-400 dark:text-slate-600 border border-black/[0.04] dark:border-white/[0.08]' 
                   : `bg-${config.accentColor}-500 text-white shadow-${config.accentColor}-500/20 hover:brightness-110`
               }`}
             >
@@ -153,7 +153,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
               disabled={s.isGenerateDisabled}
               className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 text-[9px] font-bold uppercase tracking-wider transition-all ${
                 s.isGenerateDisabled
-                  ? 'bg-slate-100 dark:bg-white/[0.02] text-slate-400 dark:text-slate-600 border border-black/[0.04] dark:border-white/[0.04]'
+                  ? 'bg-slate-100 dark:bg-white/[0.02] text-slate-400 dark:text-slate-600 border border-black/[0.04] dark:border-white/[0.08]'
                   : 'bg-white dark:bg-white/[0.03] text-slate-600 dark:text-slate-300 border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 hover:text-brand-blue'
               }`}
             >
@@ -174,19 +174,19 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
         </aside>
 
         {/* ═══ VIEWPORT ═══ */}
-        <main className="flex-grow flex flex-col relative bg-[#f8f9fb] dark:bg-[#030305] transition-colors duration-500 overflow-hidden h-full">
+        <main className="flex-grow flex flex-col relative bg-[#f8f9fb] dark:bg-[#0a0d14] transition-colors duration-500 overflow-hidden h-full">
           {/* Header */}
-          <div className="h-14 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between px-6 bg-white/80 dark:bg-black/40 backdrop-blur-xl z-40 shrink-0">
+          <div className="h-14 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between px-6 bg-white/80 dark:bg-black/40 backdrop-blur-xl z-40 shrink-0">
             <div className="flex items-center gap-3">
               <div className={`w-1 h-5 rounded-full bg-${config.accentColor}-500`}></div>
               <h2 className="text-xs font-bold text-slate-900 dark:text-white leading-none tracking-tight">{config.name}</h2>
-              <span className="text-[8px] font-semibold text-slate-400 bg-slate-100 dark:bg-white/[0.03] px-2 py-0.5 rounded-md border border-black/[0.04] dark:border-white/[0.04] hidden sm:inline">
+              <span className="text-[8px] font-semibold text-slate-400 bg-slate-100 dark:bg-white/[0.03] px-2 py-0.5 rounded-md border border-black/[0.04] dark:border-white/[0.08] hidden sm:inline">
                 Image Task API
               </span>
             </div>
 
             {/* Tabs */}
-            <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex bg-slate-100 dark:bg-white/[0.03] p-0.5 rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
+            <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex bg-slate-100 dark:bg-white/[0.03] p-0.5 rounded-xl border border-black/[0.04] dark:border-white/[0.08]">
               <button 
                 onClick={() => s.setActiveTab('CURRENT')}
                 className={`px-5 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all ${s.activeTab === 'CURRENT' ? 'bg-white dark:bg-white/[0.08] text-brand-blue shadow-sm' : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-white'}`}
@@ -202,7 +202,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
             </div>
 
             {/* Mobile tabs */}
-            <div className="md:hidden flex bg-slate-100 dark:bg-white/[0.03] p-0.5 rounded-lg border border-black/[0.04] dark:border-white/[0.04] mr-3">
+            <div className="md:hidden flex bg-slate-100 dark:bg-white/[0.03] p-0.5 rounded-lg border border-black/[0.04] dark:border-white/[0.08] mr-3">
               <button onClick={() => s.setActiveTab('CURRENT')} className={`px-3 py-1 rounded-md text-[8px] font-bold uppercase transition-all ${s.activeTab === 'CURRENT' ? 'bg-white dark:bg-white/[0.08] text-brand-blue shadow-sm' : 'text-slate-400'}`}>Lab</button>
               <button onClick={() => s.setActiveTab('HISTORY')} className={`px-3 py-1 rounded-md text-[8px] font-bold uppercase transition-all ${s.activeTab === 'HISTORY' ? 'bg-white dark:bg-white/[0.08] text-brand-blue shadow-sm' : 'text-slate-400'}`}>History</button>
             </div>
@@ -402,7 +402,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
       <AnimatePresence>
         {s.showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-            <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} className="max-w-sm w-full bg-white dark:bg-[#111114] p-10 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl text-center space-y-6 shadow-2xl">
+            <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} className="max-w-sm w-full bg-white dark:bg-[#1a1f2b] p-10 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl text-center space-y-6 shadow-2xl">
               <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mx-auto text-amber-500">
                 <AlertTriangle size={36} />
               </div>
@@ -478,7 +478,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
           >
             <motion.div 
               initial={{ scale: 0.9 }} animate={{ scale: 1 }}
-              className="bg-white dark:bg-[#111114] p-8 rounded-2xl border border-black/[0.06] dark:border-white/[0.06] text-center space-y-4 max-w-xs w-full shadow-2xl"
+              className="bg-white dark:bg-[#1a1f2b] p-8 rounded-2xl border border-black/[0.06] dark:border-white/[0.06] text-center space-y-4 max-w-xs w-full shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
               <QrCode size={28} className="mx-auto text-brand-blue" />

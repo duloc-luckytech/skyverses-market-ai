@@ -121,7 +121,7 @@ const SlideTextStyleBar: React.FC<Props> = ({ visible }) => {
 
   return (
     <div
-      className="flex items-center gap-0.5 bg-white dark:bg-[#1c1c20] border border-black/[0.08] dark:border-white/[0.08] rounded-xl px-2 py-1 shadow-lg shadow-black/10 flex-wrap w-full max-w-4xl"
+      className="flex items-center gap-0.5 bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.08] rounded-xl px-2 py-1 shadow-lg shadow-black/10 flex-wrap w-full max-w-4xl"
       onMouseDown={noFocusSteal}
     >
       {/* ── Font family ── */}
@@ -212,7 +212,7 @@ const SlideTextStyleBar: React.FC<Props> = ({ visible }) => {
         </button>
         {showColors && (
           <div
-            className="absolute left-0 top-full mt-1 z-50 p-2 bg-white dark:bg-[#1c1c20] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-xl grid grid-cols-6 gap-1"
+            className="absolute left-0 top-full mt-1 z-50 p-2 bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-xl grid grid-cols-6 gap-1"
             onMouseDown={noFocusSteal}
           >
             {TEXT_COLORS.map(color => (

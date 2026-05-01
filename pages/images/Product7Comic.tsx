@@ -44,7 +44,7 @@ const Product7Comic = () => {
   }
 
   return (
-    <div className="bg-[#fafafc] dark:bg-[#080808] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-[#FFE135]/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-[#fafafc] dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-[#FFE135]/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* 1. HERO SECTION */}
       <section className="relative px-6 lg:px-12 py-20 lg:py-32 overflow-hidden">
@@ -118,7 +118,7 @@ const Product7Comic = () => {
       </section>
 
       {/* 2. WHO IT'S FOR */}
-      <section className="px-6 lg:px-12 py-32 bg-white dark:bg-[#0c0c0e]">
+      <section className="px-6 lg:px-12 py-32 bg-white dark:bg-[#0a0d14]">
         <div className="max-w-7xl mx-auto space-y-20">
           <div className="text-center space-y-4">
             <h2 className="text-4xl lg:text-5xl font-black tracking-tight">Built for Visual Storytellers</h2>
@@ -159,7 +159,7 @@ const Product7Comic = () => {
               { title: 'Dialogue & Text Bubbles', icon: <MessageSquare />, desc: 'Automatically generate and place dialogue bubbles.' },
               { title: 'Production Export', icon: <Download />, desc: 'Export print-ready pages, layered assets, or digital formats.' }
             ].map((feature, i) => (
-              <div key={i} className="p-12 bg-[#fafafc] dark:bg-[#080808] space-y-6 hover:bg-[#FFE135]/5 transition-all">
+              <div key={i} className="p-12 bg-[#fafafc] dark:bg-[#0a0d14] space-y-6 hover:bg-[#FFE135]/5 transition-all">
                 <div className="w-12 h-12 rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 flex items-center justify-center text-brand-blue dark:text-[#FFE135]">
                   {feature.icon}
                 </div>

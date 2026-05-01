@@ -123,14 +123,14 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
   const errorCount = useMemo(() => results.filter(r => r.status === 'error').length, [results]);
 
   return (
-    <main className="flex-grow flex flex-col bg-slate-50 dark:bg-[#0a0a0c] relative overflow-hidden">
+    <main className="flex-grow flex flex-col bg-slate-50 dark:bg-[#0a0d14] relative overflow-hidden">
       {/* ─── TOOLBAR ─── */}
-      <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.04] bg-white/95 dark:bg-[#111114]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
+      <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/95 dark:bg-[#1a1f2b]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
         <div className="flex items-center gap-3">
           {onClose && (
             <button onClick={onClose} className="lg:hidden p-1.5 -ml-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><ChevronLeft size={18} /></button>
           )}
-          <div className="flex bg-black/[0.03] dark:bg-white/[0.03] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+          <div className="flex bg-black/[0.03] dark:bg-white/[0.03] rounded-lg border border-black/[0.06] dark:border-white/[0.08] overflow-hidden">
             <button onClick={() => setActiveTab('SESSION')} className={`px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all ${activeTab === 'SESSION' ? 'bg-black/[0.05] dark:bg-white/[0.06] text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
               <span className="flex items-center gap-1.5"><Film size={12} /> Lab</span>
             </button>
@@ -162,7 +162,7 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 bg-black/[0.03] dark:bg-white/[0.03] px-2.5 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.04]">
+          <div className="flex items-center gap-1.5 bg-black/[0.03] dark:bg-white/[0.03] px-2.5 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.08]">
             <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400">Auto DL</span>
             <button onClick={() => setAutoDownload(!autoDownload)} className={`w-7 h-3.5 rounded-full relative transition-colors ${autoDownload ? 'bg-indigo-500' : 'bg-slate-300 dark:bg-white/[0.1]'}`}>
               <motion.div animate={{ left: autoDownload ? 14 : 2 }} className="absolute top-0.5 w-2.5 h-2.5 bg-white rounded-full shadow-sm" />
@@ -196,7 +196,7 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
                   { icon: '🖼️', title: 'Tải ảnh Start/End', desc: 'Upload ảnh đầu & cuối để AI tạo chuyển động tự nhiên giữa 2 khung hình.' },
                   { icon: '⚙️', title: 'Chọn cấu hình', desc: 'Chọn model, tỷ lệ, độ phân giải, chế độ phù hợp với nhu cầu của bạn.' },
                 ].map((tip, i) => (
-                  <div key={i} className="p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-white/[0.015]">
+                  <div key={i} className="p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-white/[0.015]">
                     <span className="text-lg">{tip.icon}</span>
                     <p className="text-[11px] font-semibold text-slate-700 dark:text-white/80 mt-2">{tip.title}</p>
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{tip.desc}</p>
@@ -217,7 +217,7 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
                   const stats = getFakeStats(item._id || item.id || idx.toString());
                   return (
                     <motion.div layout key={item._id || item.id} ref={isLast ? lastItemRef : null}
-                      className="relative overflow-hidden bg-white dark:bg-[#111114] group border border-black/[0.06] dark:border-white/[0.04] rounded-2xl transition-all hover:border-indigo-500/20 shadow-sm dark:shadow-none">
+                      className="relative overflow-hidden bg-white dark:bg-[#1a1f2b] group border border-black/[0.06] dark:border-white/[0.08] rounded-2xl transition-all hover:border-indigo-500/20 shadow-sm dark:shadow-none">
                       <div className="aspect-video relative overflow-hidden bg-black cursor-pointer" onClick={() => setSelectedDetailItem(item)}>
                         <img src={item.thumbnailUrl} className="w-full h-full object-cover opacity-60 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700" alt={item.title} />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
@@ -235,11 +235,11 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
                             <span className="flex items-center gap-1"><Heart size={10} className="text-indigo-400" /> {stats.likes}</span>
                           </div>
                         </div>
-                        <div className="flex gap-2 pt-2 border-t border-black/[0.06] dark:border-white/[0.04]">
+                        <div className="flex gap-2 pt-2 border-t border-black/[0.06] dark:border-white/[0.08]">
                           <button onClick={e => { e.stopPropagation(); onApplyExample(item); }} className="flex-grow bg-indigo-600 text-white px-3 py-2.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 hover:brightness-110 transition-all">
                             <Zap size={11} fill="currentColor" /> Sử dụng
                           </button>
-                          <button onClick={e => { e.stopPropagation(); setSelectedDetailItem(item); }} className="p-2.5 bg-black/[0.03] dark:bg-white/[0.04] text-slate-500 dark:text-white/50 rounded-lg border border-black/[0.06] dark:border-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] transition-all"><Maximize2 size={14} /></button>
+                          <button onClick={e => { e.stopPropagation(); setSelectedDetailItem(item); }} className="p-2.5 bg-black/[0.03] dark:bg-white/[0.04] text-slate-500 dark:text-white/50 rounded-lg border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] transition-all"><Maximize2 size={14} /></button>
                         </div>
                       </div>
                     </motion.div>
@@ -261,7 +261,7 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
                 </div>
                 <div className="relative group w-full md:w-72">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-400 transition-colors" size={14} />
-                  <input type="text" value={historySearch} onChange={e => setHistorySearch(e.target.value)} placeholder="Tìm theo prompt..." className="w-full bg-white dark:bg-white/[0.03] border border-black/[0.08] dark:border-white/[0.04] rounded-lg pl-9 pr-3 py-2 text-xs font-medium outline-none focus:border-indigo-500/30 text-slate-700 dark:text-white/70 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
+                  <input type="text" value={historySearch} onChange={e => setHistorySearch(e.target.value)} placeholder="Tìm theo prompt..." className="w-full bg-white dark:bg-white/[0.03] border border-black/[0.08] dark:border-white/[0.08] rounded-lg pl-9 pr-3 py-2 text-xs font-medium outline-none focus:border-indigo-500/30 text-slate-700 dark:text-white/70 placeholder:text-slate-400 dark:placeholder:text-slate-500" />
                 </div>
               </div>
               {loadingHistory && historyItems.length === 0 ? (

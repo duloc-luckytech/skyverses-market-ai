@@ -37,7 +37,7 @@ const ProductGame1 = () => {
   }
 
   return (
-    <div className="pt-24 bg-white dark:bg-[#020203] min-h-screen text-black dark:text-white font-sans overflow-x-hidden selection:bg-emerald-500/30 transition-colors duration-500 pb-32">
+    <div className="pt-24 bg-white dark:bg-[#0a0d14] min-h-screen text-black dark:text-white font-sans overflow-x-hidden selection:bg-emerald-500/30 transition-colors duration-500 pb-32">
       
       <div className="fixed inset-0 pointer-events-none z-0">
          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,_#10b98108_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_80%_20%,_#10b98115_0%,_transparent_50%)]"></div>
@@ -82,7 +82,7 @@ const ProductGame1 = () => {
             </div>
 
             <div className="lg:col-span-5 w-full">
-               <div className="aspect-[4/5] bg-gray-100 dark:bg-[#0a0a0c] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group">
+               <div className="aspect-[4/5] bg-gray-100 dark:bg-[#0a0d14] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group">
                   <img src={solution.imageUrl} className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-60 transition-all duration-1000 group-hover:scale-105" alt="Game Architect Hub" />
                   <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent"></div>
                   <div className="absolute bottom-10 left-10 space-y-2">

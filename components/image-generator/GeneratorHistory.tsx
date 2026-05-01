@@ -68,18 +68,18 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
   }, [isFetchingServer, hasMoreServer, onLoadMoreServer]);
 
   return (
-    <aside className="hidden xl:flex w-[340px] shrink-0 border-l border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d0d0f] flex flex-col overflow-hidden z-50 transition-all duration-500 shadow-2xl">
+    <aside className="hidden xl:flex w-[340px] shrink-0 border-l border-slate-200 dark:border-white/5 bg-white dark:bg-[#13171f] flex flex-col overflow-hidden z-50 transition-all duration-500 shadow-2xl">
       {/* Tab Selector Header */}
       <div className="h-14 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20 p-1 flex">
         <button
           onClick={() => setActiveTab('MY_HISTORY')}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'MY_HISTORY' ? 'bg-white dark:bg-[#1a1a1e] text-rose-500 shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
+          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'MY_HISTORY' ? 'bg-white dark:bg-[#13171f] text-rose-500 shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
         >
           <HistoryIcon size={14} /> Lịch sử
         </button>
         <button
           onClick={() => setActiveTab('COMMUNITY')}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'COMMUNITY' ? 'bg-white dark:bg-[#1a1a1e] text-rose-500 shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
+          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'COMMUNITY' ? 'bg-white dark:bg-[#13171f] text-rose-500 shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
         >
           <Sparkles size={14} /> Cộng đồng
         </button>

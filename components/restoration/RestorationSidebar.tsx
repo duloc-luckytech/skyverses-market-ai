@@ -21,7 +21,7 @@ export const RestorationSidebar: React.FC<Props> = ({ jobs, activeJobId, onSelec
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <aside className="w-20 md:w-72 border-r border-slate-100 dark:border-white/[0.04] flex flex-col shrink-0 bg-white dark:bg-[#0a0b0f] transition-colors duration-500 overflow-y-auto no-scrollbar relative z-10">
+    <aside className="w-20 md:w-72 border-r border-slate-100 dark:border-white/[0.04] flex flex-col shrink-0 bg-white dark:bg-[#0a0d14] transition-colors duration-500 overflow-y-auto no-scrollbar relative z-10">
       
       {/* Upload Section */}
       <div className="p-4 md:p-5 border-b border-slate-100 dark:border-white/[0.04]">

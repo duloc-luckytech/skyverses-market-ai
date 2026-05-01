@@ -12,6 +12,7 @@ import {
   Upload, Hash, Copy, Check, Layers as LayersIcon,
 } from 'lucide-react';
 import { aiTextViaProxy } from '../apis/aiCommon';
+import { loadGlobalBrandKit, saveGlobalBrandKit, subscribeBrandKit } from '../utils/globalBrandKit';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
@@ -158,6 +159,16 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   // Magic Resize lite — re-gen cho platform khác (1 click)
   const [showResizeMenu, setShowResizeMenu] = useState(false);
 
+  // Carousel mode — gen 3 banner đồng nhất theme (Hook / Detail / CTA) cho FB carousel post
+  const [carouselMode, setCarouselMode] = useState<boolean>(false);
+
+  // Saved prompt presets — campaign template marketer dùng đi dùng lại
+  interface PromptPreset { id: string; name: string; prompt: string; style: string; platformId: string; industry: string; savedAt: string; }
+  const [promptPresets, setPromptPresets] = useState<PromptPreset[]>([]);
+  const [showPresetModal, setShowPresetModal] = useState(false);
+  const [showSavePresetDialog, setShowSavePresetDialog] = useState(false);
+  const [presetNameInput, setPresetNameInput] = useState('');
+
   // History
   const [sessions, setSessions] = useState<BannerSession[]>([]);
 
@@ -190,16 +201,31 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
       try { setPromptHistory(JSON.parse(savedPrompts)); } catch { /* ignore */ }
     }
     // Auto-restore Brand Kit (silent — không bật toast spam mỗi lần mở app)
-    const savedBrandKit = localStorage.getItem(BRAND_KIT_STORAGE_KEY);
-    if (savedBrandKit) {
-      try {
-        const kit: BrandKit & { savedAt?: string } = JSON.parse(savedBrandKit);
-        if (kit.colors?.length) setBrandColors(kit.colors);
-        if (kit.brandName) setTitle(kit.brandName);
-        if (kit.tagline) setSubtitle(kit.tagline);
-        if (kit.logoUrl) setBrandLogoUrl(kit.logoUrl);
-        if (kit.savedAt) setBrandKitSavedAt(kit.savedAt);
-      } catch { /* ignore */ }
+    // Ưu tiên Global Brand Kit (chia sẻ giữa Banner / Slide); fallback sang local key cũ.
+    const globalKit = loadGlobalBrandKit();
+    if (globalKit) {
+      if (globalKit.colors?.length) setBrandColors(globalKit.colors);
+      if (globalKit.brandName) setTitle(globalKit.brandName);
+      if (globalKit.slogan) setSubtitle(globalKit.slogan);
+      if (globalKit.logoUrl) setBrandLogoUrl(globalKit.logoUrl);
+      if (globalKit.savedAt) setBrandKitSavedAt(globalKit.savedAt);
+    } else {
+      const savedBrandKit = localStorage.getItem(BRAND_KIT_STORAGE_KEY);
+      if (savedBrandKit) {
+        try {
+          const kit: BrandKit & { savedAt?: string } = JSON.parse(savedBrandKit);
+          if (kit.colors?.length) setBrandColors(kit.colors);
+          if (kit.brandName) setTitle(kit.brandName);
+          if (kit.tagline) setSubtitle(kit.tagline);
+          if (kit.logoUrl) setBrandLogoUrl(kit.logoUrl);
+          if (kit.savedAt) setBrandKitSavedAt(kit.savedAt);
+        } catch { /* ignore */ }
+      }
+    }
+    // Load saved prompt presets
+    const savedPresets = localStorage.getItem(STORAGE_KEY + '_presets');
+    if (savedPresets) {
+      try { setPromptPresets(JSON.parse(savedPresets)); } catch { /* ignore */ }
     }
   }, []);
 
@@ -243,8 +269,15 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     };
     try {
       localStorage.setItem(BRAND_KIT_STORAGE_KEY, JSON.stringify(kit));
+      // Đồng thời push vào Global Brand Kit để Slide Creator load được
+      saveGlobalBrandKit({
+        brandName: title || undefined,
+        slogan:    subtitle || undefined,
+        logoUrl:   brandLogoUrl || undefined,
+        colors:    brandColors,
+      });
       setBrandKitSavedAt(now);
-      showToast('💾 Đã lưu bộ thương hiệu', 'success');
+      showToast('💾 Đã lưu bộ thương hiệu (Banner & Slide đều dùng được)', 'success');
     } catch {
       showToast('Không lưu được bộ thương hiệu', 'error');
     }
@@ -287,6 +320,49 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     reader.onload = () => setBrandLogoUrl(reader.result as string);
     reader.readAsDataURL(file);
   }, [showToast]);
+
+  // ── Prompt Preset (campaign template) — save/load/delete ────────────────
+  const savePromptPreset = useCallback(() => {
+    if (!presetNameInput.trim() || !localPrompt.trim()) {
+      showToast('Cần tên preset + mô tả banner', 'error');
+      return;
+    }
+    const preset: PromptPreset = {
+      id: 'preset_' + Date.now(),
+      name: presetNameInput.trim(),
+      prompt: localPrompt,
+      style: selectedStyle,
+      platformId: activePlatform,
+      industry: activeIndustry,
+      savedAt: new Date().toISOString(),
+    };
+    setPromptPresets(prev => {
+      const updated = [preset, ...prev].slice(0, 20); // max 20 presets
+      try { localStorage.setItem(STORAGE_KEY + '_presets', JSON.stringify(updated)); } catch {}
+      return updated;
+    });
+    setPresetNameInput('');
+    setShowSavePresetDialog(false);
+    showToast(`💾 Đã lưu preset "${preset.name}"`, 'success');
+  }, [presetNameInput, localPrompt, selectedStyle, activePlatform, activeIndustry, showToast]);
+
+  const applyPromptPreset = useCallback((preset: PromptPreset) => {
+    setLocalPrompt(preset.prompt);
+    setSelectedStyle(preset.style);
+    setActivePlatform(preset.platformId);
+    setActiveIndustry(preset.industry);
+    setShowPresetModal(false);
+    showToast(`↻ Đã áp dụng preset "${preset.name}"`, 'success');
+  }, [showToast]);
+
+  const deletePromptPreset = useCallback((e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setPromptPresets(prev => {
+      const updated = prev.filter(p => p.id !== id);
+      try { localStorage.setItem(STORAGE_KEY + '_presets', JSON.stringify(updated)); } catch {}
+      return updated;
+    });
+  }, []);
 
   // ── Magic Resize lite — chuyển sang platform khác và auto re-gen ──────────
   const handleResizePlatform = useCallback((platformId: string) => {
@@ -400,13 +476,19 @@ Không giải thích thêm.`;
     const stylePreset  = BANNER_STYLES.find(s => s.label === selectedStyle);
     const stylePrefix  = stylePreset?.promptPrefix ?? '';
 
-    const finalPrompt = `${industryCtx}${stylePrefix}Tạo banner mạng xã hội chuyên nghiệp. ${platformCtx} Phong cách: ${selectedStyle}. ${colorCtx} ${textCtx} ${logoCtx} Mô tả: ${localPrompt}. Chất lượng ${gen.selectedRes || '2k'}, bố cục tối ưu cho ${currentPlatform.platform}.`;
+    // Carousel mode — gen 3 banner đồng nhất theme cho FB carousel post (Hook → Detail → CTA)
+    const carouselCtx = carouselMode
+      ? 'Đây là 1 trong 3 slide của CAROUSEL POST đồng nhất theme: slide 1 hook attention với headline gây tò mò, slide 2 chi tiết tính năng/lợi ích, slide 3 CTA mạnh kết thúc. Giữ NHẤT QUÁN brand color, font, layout giữa các slide. '
+      : '';
+
+    const finalPrompt = `${industryCtx}${stylePrefix}Tạo banner mạng xã hội chuyên nghiệp. ${platformCtx} Phong cách: ${selectedStyle}. ${colorCtx} ${textCtx} ${logoCtx} ${carouselCtx}Mô tả: ${localPrompt}. Chất lượng ${gen.selectedRes || '2k'}, bố cục tối ưu cho ${currentPlatform.platform}.`;
 
     gen.setPrompt(finalPrompt);
     // Logo + references — logo prepend để AI ưu tiên reference cao hơn
     const allRefs = brandLogoUrl ? [brandLogoUrl, ...localReferences] : localReferences;
     gen.setReferences(allRefs.map(url => ({ url })));
-    gen.setQuantity(quantity);
+    // Carousel mode override quantity = 3 (override quantity setting)
+    gen.setQuantity(carouselMode ? 3 : quantity);
 
     const newHistory = [localPrompt, ...promptHistory.filter(p => p !== localPrompt)].slice(0, 10);
     setPromptHistory(newHistory);
@@ -415,14 +497,16 @@ Không giải thích thêm.`;
     gen.handleGenerate();
   };
 
-  const deleteSession = (e: React.MouseEvent, id: string) => {
+  const deleteSession = useCallback((e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    const updated = sessions.filter(s => s.id !== id);
-    setSessions(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  };
+    setSessions(prev => {
+      const updated = prev.filter(s => s.id !== id);
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); } catch {}
+      return updated;
+    });
+  }, []);
 
-  const handleDownloadUrl = async (url: string) => {
+  const handleDownloadUrl = useCallback(async (url: string) => {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
@@ -437,7 +521,21 @@ Không giải thích thêm.`;
     } catch {
       window.open(url, '_blank');
     }
-  };
+  }, []);
+
+  // Bulk download — sleep delay nhỏ giữa mỗi download để browser không block (multi-download throttle)
+  const handleBulkDownload = useCallback(async () => {
+    if (!sessions.length) {
+      showToast('Chưa có banner nào để tải', 'info');
+      return;
+    }
+    showToast(`Đang tải ${sessions.length} banner...`, 'info');
+    for (let i = 0; i < sessions.length; i++) {
+      await handleDownloadUrl(sessions[i].url);
+      if (i < sessions.length - 1) await new Promise(r => setTimeout(r, 350));
+    }
+    showToast(`✓ Đã tải xong ${sessions.length} banner`, 'success');
+  }, [sessions, handleDownloadUrl, showToast]);
 
   // ── Shared sub-components ──────────────────────────────────────────────────
 
@@ -520,6 +618,26 @@ Không giải thích thêm.`;
           >
             <Sparkles size={12} /> Cài đặt
           </button>
+          {/* Bulk download — chỉ hiện ở library view khi có ≥2 banner */}
+          {viewMode === 'library' && sessions.length >= 2 && (
+            <button
+              onClick={handleBulkDownload}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 dark:text-emerald-400 text-[10px] font-bold hover:bg-emerald-500/20 transition-colors"
+              title={`Tải xuống tất cả ${sessions.length} banner trong thư viện`}
+            >
+              <Download size={12} /> Tải tất cả ({sessions.length})
+            </button>
+          )}
+          {/* Saved presets — quick access campaign template đã lưu */}
+          {promptPresets.length > 0 && (
+            <button
+              onClick={() => setShowPresetModal(true)}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-500 dark:text-purple-400 text-[10px] font-bold hover:bg-purple-500/20 transition-colors"
+              title={`Mở ${promptPresets.length} preset đã lưu`}
+            >
+              <History size={12} /> Preset ({promptPresets.length})
+            </button>
+          )}
           <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-blue/10 border border-brand-blue/20 rounded-full">
             <Coins size={12} className="text-brand-blue" />
             <span className="text-[10px] font-black text-brand-blue">{credits.toLocaleString()} CR</span>
@@ -685,14 +803,24 @@ Không giải thích thêm.`;
                 rows={3}
                 className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 transition-colors"
               />
-              <button
-                onClick={handleEnhance}
-                disabled={isEnhancing || !localPrompt.trim()}
-                className="mt-1.5 flex items-center gap-1.5 text-[10px] font-semibold text-brand-blue hover:opacity-80 disabled:opacity-30 transition-opacity"
-              >
-                {isEnhancing ? <Loader2 size={11} className="animate-spin" /> : <Wand2 size={11} />}
-                AI Boost Prompt
-              </button>
+              <div className="mt-1.5 flex items-center gap-3">
+                <button
+                  onClick={handleEnhance}
+                  disabled={isEnhancing || !localPrompt.trim()}
+                  className="flex items-center gap-1.5 text-[10px] font-semibold text-brand-blue hover:opacity-80 disabled:opacity-30 transition-opacity"
+                >
+                  {isEnhancing ? <Loader2 size={11} className="animate-spin" /> : <Wand2 size={11} />}
+                  AI Boost Prompt
+                </button>
+                <button
+                  onClick={() => setShowSavePresetDialog(true)}
+                  disabled={!localPrompt.trim()}
+                  className="flex items-center gap-1.5 text-[10px] font-semibold text-purple-500 hover:opacity-80 disabled:opacity-30 transition-opacity"
+                  title="Lưu prompt + style + platform thành campaign preset để dùng lại"
+                >
+                  <History size={11} /> Lưu preset
+                </button>
+              </div>
 
               {/* CTA presets — 1-click thêm Call-to-Action marketer thường dùng vào mô tả */}
               <div className="mt-3">
@@ -787,13 +915,35 @@ Không giải thích thêm.`;
               )}
             </div>
 
+            {/* Carousel mode toggle — gen 3 banner đồng theme cho FB carousel post */}
+            <div className="rounded-xl border border-purple-500/20 bg-purple-500/[0.04] p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <LayersIcon size={14} className="text-purple-500" />
+                  <span className="text-[11px] font-bold text-slate-700 dark:text-white">Tạo Carousel (3 slide)</span>
+                </div>
+                <button
+                  onClick={() => setCarouselMode(v => !v)}
+                  className={`w-8 h-4 rounded-full transition-colors ${carouselMode ? 'bg-purple-500' : 'bg-slate-300 dark:bg-white/10'}`}
+                  title="Tạo 3 banner đồng theme cho FB carousel post (Hook → Detail → CTA)"
+                >
+                  <div className={`w-3 h-3 bg-white rounded-full mx-0.5 transition-transform ${carouselMode ? 'translate-x-4' : ''}`} />
+                </button>
+              </div>
+              <p className="text-[10px] text-slate-400 dark:text-gray-500 mt-1.5 leading-relaxed">
+                {carouselMode
+                  ? '✨ Sẽ tạo 3 slide đồng nhất theme: Hook → Detail → CTA. Tốn x3 credit.'
+                  : 'Bật để tạo 3 banner đồng theme cho FB carousel post.'}
+              </p>
+            </div>
+
             {/* Reference images */}
             <div>
               <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 mb-2 tracking-widest">Ảnh tham chiếu ({localReferences.length}/6)</p>
               <div className="grid grid-cols-3 gap-1.5">
                 {localReferences.map((ref, i) => (
                   <div key={i} className="aspect-square rounded-lg overflow-hidden relative group bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
-                    <img src={ref} alt="" className="w-full h-full object-cover" />
+                    <img src={ref} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     <button
                       onClick={() => setLocalReferences(prev => prev.filter((_, idx) => idx !== i))}
                       className="absolute top-1 right-1 p-0.5 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"
@@ -927,7 +1077,7 @@ Không giải thích thêm.`;
                       {brandLogoUrl ? (
                         <div className="flex items-center gap-2">
                           <div className="relative w-12 h-12 rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.03] overflow-hidden flex items-center justify-center">
-                            <img src={brandLogoUrl} alt="Logo" className="max-w-full max-h-full object-contain" />
+                            <img src={brandLogoUrl} alt="Logo" loading="lazy" decoding="async" className="max-w-full max-h-full object-contain" />
                           </div>
                           <button
                             onClick={() => logoInputRef.current?.click()}
@@ -1220,6 +1370,7 @@ Không giải thích thêm.`;
               <img
                 src={lightboxUrl}
                 alt="Banner preview"
+                decoding="async"
                 className="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
               />
               <div className="flex items-center gap-2 flex-wrap justify-center">
@@ -1384,6 +1535,138 @@ Không giải thích thêm.`;
                     </div>
                   </>
                 ) : null}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Save Preset Dialog (mini modal) ── */}
+      <AnimatePresence>
+        {showSavePresetDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[700] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6"
+            onClick={() => setShowSavePresetDialog(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-md bg-white dark:bg-[#1a1f2b] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden"
+            >
+              <div className="p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/15 text-purple-500 flex items-center justify-center">
+                    <History size={14} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-white">Lưu Campaign Preset</h3>
+                    <p className="text-[10px] text-slate-400 dark:text-gray-500">Tái sử dụng prompt + style + platform cho campaign tương lai</p>
+                  </div>
+                </div>
+                <input
+                  value={presetNameInput}
+                  onChange={e => setPresetNameInput(e.target.value)}
+                  placeholder='Tên preset (vd: "Sale tháng 11", "Khai trương Hà Nội")'
+                  autoFocus
+                  onKeyDown={e => { if (e.key === 'Enter') savePromptPreset(); }}
+                  className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] rounded-xl px-3 py-2.5 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 mb-3"
+                />
+                <div className="bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-xl p-2.5 mb-4 text-[10px] space-y-1">
+                  <div className="flex items-center gap-2"><span className="text-slate-400 w-16">Platform:</span><span className="font-semibold text-slate-700 dark:text-white">{currentPlatform.platform} · {currentPlatform.label}</span></div>
+                  <div className="flex items-center gap-2"><span className="text-slate-400 w-16">Phong cách:</span><span className="font-semibold text-slate-700 dark:text-white">{selectedStyle}</span></div>
+                  <div className="flex items-center gap-2"><span className="text-slate-400 w-16">Lĩnh vực:</span><span className="font-semibold text-slate-700 dark:text-white">{activeIndustryLabel}</span></div>
+                  <div className="flex items-start gap-2"><span className="text-slate-400 w-16 shrink-0">Mô tả:</span><span className="font-medium text-slate-600 dark:text-gray-300 line-clamp-2">{localPrompt}</span></div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowSavePresetDialog(false)}
+                    className="flex-1 py-2 rounded-xl bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-gray-300 text-[11px] font-bold hover:bg-slate-200 dark:hover:bg-white/[0.08] transition-colors"
+                  >
+                    Huỷ
+                  </button>
+                  <button
+                    onClick={savePromptPreset}
+                    disabled={!presetNameInput.trim()}
+                    className="flex-1 py-2 rounded-xl bg-purple-500 text-white text-[11px] font-bold hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <Check size={12} /> Lưu preset
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Preset List Modal — apply campaign template đã lưu ── */}
+      <AnimatePresence>
+        {showPresetModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[700] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6"
+            onClick={() => setShowPresetModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-lg bg-white dark:bg-[#1a1f2b] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+            >
+              <div className="px-5 py-4 border-b border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/15 text-purple-500 flex items-center justify-center">
+                    <History size={14} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-white">Campaign Preset đã lưu</h3>
+                    <p className="text-[10px] text-slate-400 dark:text-gray-500">{promptPresets.length}/20 preset · click để áp dụng</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowPresetModal(false)}
+                  className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="overflow-y-auto p-3 space-y-1.5">
+                {promptPresets.length === 0 ? (
+                  <div className="text-center py-12 text-slate-400 dark:text-gray-500 text-[12px]">Chưa có preset nào.</div>
+                ) : promptPresets.map(preset => {
+                  const platLabel = PLATFORMS.find(p => p.id === preset.platformId)?.platform || preset.platformId;
+                  return (
+                    <button
+                      key={preset.id}
+                      onClick={() => applyPromptPreset(preset)}
+                      className="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.02] hover:border-brand-blue/40 hover:bg-brand-blue/[0.04] transition-all group flex items-start justify-between gap-3"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-[12px] font-bold text-slate-800 dark:text-white truncate">{preset.name}</p>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-500 font-bold">{platLabel}</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-200 dark:bg-white/[0.06] text-slate-500 dark:text-gray-400 font-semibold">{preset.style}</span>
+                        </div>
+                        <p className="text-[10px] text-slate-500 dark:text-gray-400 line-clamp-2">{preset.prompt}</p>
+                        <p className="text-[9px] text-slate-300 dark:text-gray-600 mt-1">{new Date(preset.savedAt).toLocaleDateString('vi-VN')}</p>
+                      </div>
+                      <button
+                        onClick={(e) => deletePromptPreset(e, preset.id)}
+                        className="shrink-0 p-1.5 rounded-lg text-slate-300 dark:text-gray-600 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                        title="Xoá preset này"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </button>
+                  );
+                })}
               </div>
             </motion.div>
           </motion.div>

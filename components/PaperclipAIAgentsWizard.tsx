@@ -106,7 +106,7 @@ function StepWelcome() {
 function StepDept({ selectedDept, onSelect }: { selectedDept: string; onSelect: (id: string) => void }) {
   return (
     <div className="space-y-3">
-      <p className="text-[12px] text-slate-500 dark:text-[#888]">
+      <p className="text-[12px] text-slate-500 dark:text-gray-300">
         Chọn agent phù hợp với task đầu tiên của bạn. Bạn có thể thay đổi bất cứ lúc nào.
       </p>
       <div className="grid grid-cols-2 gap-3">
@@ -147,7 +147,7 @@ function StepTask({ selectedDept }: { selectedDept: string }) {
   const dept = WIZARD_DEPTS.find(d => d.id === selectedDept)!;
   return (
     <div className="space-y-4">
-      <p className="text-[12px] text-slate-500 dark:text-[#888]">
+      <p className="text-[12px] text-slate-500 dark:text-gray-300">
         Workspace sẽ tự động điền task này khi bạn bắt đầu:
       </p>
       <textarea
@@ -170,7 +170,7 @@ function StepTask({ selectedDept }: { selectedDept: string }) {
           ))}
         </div>
       </div>
-      <p className="text-[10px] text-slate-400 dark:text-[#555] bg-slate-50 dark:bg-white/[0.03] rounded-xl px-3 py-2 border border-slate-100 dark:border-white/[0.05]">
+      <p className="text-[10px] text-slate-400 dark:text-gray-400 bg-slate-50 dark:bg-white/[0.03] rounded-xl px-3 py-2 border border-slate-100 dark:border-white/[0.05]">
         💡 Bạn có thể thay đổi task bất cứ lúc nào trong workspace. Đây chỉ là gợi ý để bắt đầu nhanh.
       </p>
     </div>
@@ -180,7 +180,7 @@ function StepTask({ selectedDept }: { selectedDept: string }) {
 function StepBudget({ budget, onChange }: { budget: number; onChange: (v: number) => void }) {
   return (
     <div className="space-y-5">
-      <p className="text-[12px] text-slate-500 dark:text-[#888]">
+      <p className="text-[12px] text-slate-500 dark:text-gray-300">
         Budget Guard sẽ tự động dừng agent khi sắp vượt limit để bảo vệ chi phí.
       </p>
       <div className="text-center py-2">
@@ -196,7 +196,7 @@ function StepBudget({ budget, onChange }: { budget: number; onChange: (v: number
         onChange={e => onChange(Number(e.target.value))}
         className="w-full accent-brand-blue h-2 rounded-full"
       />
-      <div className="flex justify-between text-[9px] text-slate-300 dark:text-[#444] -mt-2 px-0.5">
+      <div className="flex justify-between text-[9px] text-slate-300 dark:text-gray-500 -mt-2 px-0.5">
         <span>$1</span><span>$5</span><span>$10</span><span>$15</span><span>$20</span>
       </div>
       <div className="space-y-2 pt-1">
@@ -250,7 +250,7 @@ function StepReady({ selectedDept, budget }: { selectedDept: string; budget: num
         </div>
       </div>
 
-      <p className="text-[11px] text-slate-400 dark:text-[#555] text-center px-2">
+      <p className="text-[11px] text-slate-400 dark:text-gray-400 text-center px-2">
         Nhấn <strong className="text-brand-blue">Bắt đầu!</strong> để chạy demo ngay — hoặc khám phá workspace tự do sau khi đóng.
       </p>
     </div>
@@ -283,7 +283,7 @@ export default function OnboardingWizard({ onComplete, onSkip }: OnboardingWizar
       transition={{ duration: 0.2 }}
     >
       <motion.div
-        className="w-full max-w-[580px] bg-white dark:bg-[#111113] rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+        className="w-full max-w-[580px] bg-white dark:bg-[#1a1f2b] rounded-3xl shadow-2xl flex flex-col overflow-hidden"
         initial={{ scale: 0.92, opacity: 0, y: 24 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.92, opacity: 0, y: 24 }}
@@ -302,7 +302,7 @@ export default function OnboardingWizard({ onComplete, onSkip }: OnboardingWizar
           ))}
           <button
             onClick={onSkip}
-            className="ml-3 p-1 text-slate-300 hover:text-slate-500 dark:text-[#444] dark:hover:text-[#888] transition-colors shrink-0"
+            className="ml-3 p-1 text-slate-300 hover:text-slate-500 dark:text-gray-500 dark:hover:text-[#888] transition-colors shrink-0"
             title="Bỏ qua"
           >
             <X size={14} />
@@ -311,7 +311,7 @@ export default function OnboardingWizard({ onComplete, onSkip }: OnboardingWizar
 
         {/* Step header */}
         <div className="px-7 pt-5 pb-1">
-          <p className="text-[10px] font-bold text-slate-400 dark:text-[#555] uppercase tracking-widest">
+          <p className="text-[10px] font-bold text-slate-400 dark:text-gray-400 uppercase tracking-widest">
             Bước {step + 1} / {STEPS.length}
           </p>
           <h2 className="text-[20px] font-black text-slate-800 dark:text-white mt-0.5 leading-tight">
@@ -344,7 +344,7 @@ export default function OnboardingWizard({ onComplete, onSkip }: OnboardingWizar
           <button
             onClick={goBack}
             disabled={step === 0}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-black/[0.08] dark:border-white/[0.08] text-slate-500 dark:text-[#666] text-[11px] font-semibold disabled:opacity-30 hover:border-slate-300 dark:hover:border-white/20 transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-black/[0.08] dark:border-white/[0.08] text-slate-500 dark:text-gray-400 text-[11px] font-semibold disabled:opacity-30 hover:border-slate-300 dark:hover:border-white/20 transition-all"
           >
             <ChevronLeft size={13} /> Quay lại
           </button>

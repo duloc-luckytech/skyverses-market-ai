@@ -20,7 +20,7 @@ export const AnimateHistory: React.FC<Props> = ({ tasks, isExpanded, setIsExpand
       {!isHistoryVisible && (
         <button 
           onClick={() => setIsExpanded(true)}
-          className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] px-10 py-4 bg-white/90 dark:bg-[#111]/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-full text-[11px] font-black uppercase tracking-[0.4em] hover:bg-cyan-600 hover:text-white transition-all shadow-2xl flex items-center gap-4 animate-in slide-in-from-bottom-8 text-slate-700 dark:text-white group"
+          className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] px-10 py-4 bg-white/90 dark:bg-[#13171f]/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-full text-[11px] font-black uppercase tracking-[0.4em] hover:bg-cyan-600 hover:text-white transition-all shadow-2xl flex items-center gap-4 animate-in slide-in-from-bottom-8 text-slate-700 dark:text-white group"
         >
           <HistoryIcon size={16} className="group-hover:rotate-180 transition-transform duration-700" /> 
           Lịch sử sản xuất <ChevronUp size={16} className="animate-bounce" />
@@ -30,7 +30,7 @@ export const AnimateHistory: React.FC<Props> = ({ tasks, isExpanded, setIsExpand
       <motion.div 
         initial={{ y: 240 }} 
         animate={{ y: isHistoryVisible ? 0 : 240 }}
-        className="fixed bottom-0 left-0 right-0 h-64 bg-white/95 dark:bg-[#0c0c0c]/95 backdrop-blur-3xl border-t border-slate-200 dark:border-white/10 z-[100] p-8 shadow-[0_-20px_100px_rgba(0,0,0,0.2)] dark:shadow-[0_-20px_100px_rgba(0,0,0,0.6)] transition-all duration-500"
+        className="fixed bottom-0 left-0 right-0 h-64 bg-white/95 dark:bg-[#0a0d14]/95 backdrop-blur-3xl border-t border-slate-200 dark:border-white/10 z-[100] p-8 shadow-[0_-20px_100px_rgba(0,0,0,0.2)] dark:shadow-[0_-20px_100px_rgba(0,0,0,0.6)] transition-all duration-500"
       >
          <div className="max-w-[1500px] mx-auto flex flex-col gap-8">
             <div className="flex items-center justify-between">
@@ -69,7 +69,7 @@ export const AnimateHistory: React.FC<Props> = ({ tasks, isExpanded, setIsExpand
 
             <div className="flex gap-6 overflow-x-auto no-scrollbar pb-6 pt-2">
                {tasks.length > 0 ? tasks.map((task) => (
-                  <div key={task.id} className="relative group shrink-0 w-44 aspect-[3/4.2] bg-slate-50 dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-md transition-all hover:border-cyan-500/50">
+                  <div key={task.id} className="relative group shrink-0 w-44 aspect-[3/4.2] bg-slate-50 dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-md transition-all hover:border-cyan-500/50">
                      {task.thumb ? (
                        <img src={task.thumb} className={`w-full h-full object-cover grayscale opacity-40 transition-all duration-700 ${task.status === 'processing' ? 'blur-[2px]' : 'group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110'}`} alt="" />
                      ) : (

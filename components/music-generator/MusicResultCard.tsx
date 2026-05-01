@@ -23,7 +23,7 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
   const isDone = status === 'done';
 
   return (
-    <div className={`bg-white dark:bg-[#161b22] border-2 rounded-3xl p-6 space-y-6 transition-all duration-500 group shadow-xl relative overflow-hidden ${
+    <div className={`bg-white dark:bg-[#1a1f2b] border-2 rounded-3xl p-6 space-y-6 transition-all duration-500 group shadow-xl relative overflow-hidden ${
       isDone ? 'border-brand-blue/20 dark:border-brand-blue/30' : 'border-black/5 dark:border-white/5'
     } ${status === 'error' ? 'opacity-60' : ''}`}>
       

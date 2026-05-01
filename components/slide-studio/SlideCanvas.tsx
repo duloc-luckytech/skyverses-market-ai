@@ -16,6 +16,8 @@ interface Props {
   /** Paste a copied block into the active slide */
   onPasteTextBlock?: (slideId: string, block: FreeTextBlock) => void;
   bottomBar?: React.ReactNode;
+  /** Aspect ratio cho canvas — Magic Resize across platform (16:9 thuyết trình, 9:16 reels, 1:1 IG, 4:5 FB) */
+  aspectRatio?: '16:9' | '9:16' | '1:1' | '4:5';
 }
 
 // ── Default text block positions per layout ───────────────────────────────────
@@ -90,7 +92,15 @@ function migrateSlide(slide: Slide): FreeTextBlock[] {
 const SlideCanvas: React.FC<Props> = ({
   slide, onUpdateTextBlock, onAddTextBlock, onRemoveTextBlock,
   onBringTextBlockForward, onUpdateSlide, onPasteTextBlock, bottomBar,
+  aspectRatio = '16:9',
 }) => {
+  // Map aspect ratio → Tailwind class + max-width để fit viewport tốt hơn
+  // 9:16 và 4:5 cần max-width nhỏ hơn (chiều cao chiếm dominate)
+  const ratioClass =
+    aspectRatio === '9:16' ? 'aspect-[9/16] max-w-md'
+    : aspectRatio === '1:1' ? 'aspect-square max-w-2xl'
+    : aspectRatio === '4:5' ? 'aspect-[4/5] max-w-xl'
+    : 'aspect-video max-w-4xl';
   injectFonts();
 
   const canvasRef     = useRef<HTMLDivElement>(null);
@@ -144,8 +154,8 @@ const SlideCanvas: React.FC<Props> = ({
 
   if (!slide) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-[#0d0d0f]">
-        <p className="text-sm text-slate-400 dark:text-white/30">Chưa có slide nào</p>
+      <div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-[#13171f]">
+        <p className="text-sm text-slate-400 dark:text-gray-400">Chưa có slide nào</p>
       </div>
     );
   }
@@ -154,7 +164,7 @@ const SlideCanvas: React.FC<Props> = ({
   const sorted = [...textBlocks].sort((a, b) => a.zIndex - b.zIndex);
 
   return (
-    <div className="flex-1 flex flex-col bg-slate-100 dark:bg-[#0d0d0f] overflow-hidden min-h-0">
+    <div className="flex-1 flex flex-col bg-slate-100 dark:bg-[#13171f] overflow-hidden min-h-0">
       <div className="flex-1 overflow-y-auto min-h-0">
         <div className="flex flex-col items-center p-4 pb-3 gap-2 w-full">
 
@@ -183,7 +193,7 @@ const SlideCanvas: React.FC<Props> = ({
             )}
 
             {activeBlockId && (
-              <span className="ml-auto text-[9px] text-slate-400 dark:text-white/20 hidden sm:block select-none">
+              <span className="ml-auto text-[9px] text-slate-400 dark:text-white/45 hidden sm:block select-none">
                 Double-click chỉnh text · Kéo để di chuyển · 8 handles resize
               </span>
             )}
@@ -192,7 +202,7 @@ const SlideCanvas: React.FC<Props> = ({
           {/* ── Canvas frame ── */}
           <div
             ref={canvasRef}
-            className="w-full max-w-4xl aspect-video relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.04] shrink-0"
+            className={`w-full ${ratioClass} relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.08] shrink-0 transition-all duration-300`}
             style={{ isolation: 'isolate' }}
             onClick={handleCanvasClick}
           >

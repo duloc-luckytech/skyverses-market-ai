@@ -29,14 +29,14 @@ const TextToSpeech = () => {
 
   if (isStudioOpen) {
     return (
-      <div className="fixed inset-0 z-[500] bg-white dark:bg-[#020203] animate-in fade-in duration-500">
+      <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0d14] animate-in fade-in duration-500">
         <TTSWorkspace onClose={() => setIsStudioOpen(false)} />
       </div>
     );
   }
 
   return (
-    <div className="pt-24 bg-white dark:bg-[#020203] min-h-screen text-black dark:text-white font-sans overflow-x-hidden transition-colors duration-500 pb-32">
+    <div className="pt-24 bg-white dark:bg-[#0a0d14] min-h-screen text-black dark:text-white font-sans overflow-x-hidden transition-colors duration-500 pb-32">
       <div className="fixed inset-0 pointer-events-none z-0">
          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,_#0090ff08_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_80%_20%,_#0090ff12_0%,_transparent_50%)]"></div>
          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)', backgroundSize: '80px 80px' }}></div>
@@ -83,7 +83,7 @@ const TextToSpeech = () => {
             </div>
 
             <div className="lg:col-span-5 w-full">
-               <div className="aspect-[4/5] bg-gray-100 dark:bg-[#0a0a0c] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group p-12 flex flex-col justify-between">
+               <div className="aspect-[4/5] bg-gray-100 dark:bg-[#0a0d14] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group p-12 flex flex-col justify-between">
                   <div className="space-y-6">
                     <div className="h-1 w-24 bg-brand-blue/40"></div>
                     <div className="space-y-8">
@@ -117,7 +117,7 @@ const TextToSpeech = () => {
                 { title: 'Voice Design', icon: <Settings2 />, desc: 'Fine-tune pitch, speed, and emotional stability for the perfect brand match.' },
                 { title: 'HD Mastering', icon: <AudioLines />, desc: 'Professional 48kHz audio output ready for broadcast and high-end media.' }
               ].map((f, i) => (
-                <div key={i} className="p-16 bg-white dark:bg-[#08080a] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-500 border-r border-black/5 dark:border-white/5 last:border-r-0">
+                <div key={i} className="p-16 bg-white dark:bg-[#0a0d14] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-500 border-r border-black/5 dark:border-white/5 last:border-r-0">
                    <div className="w-14 h-14 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-400 group-hover:text-brand-blue group-hover:border-brand-blue transition-all rounded-sm shadow-xl">
                       {React.cloneElement(f.icon as React.ReactElement<any>, { size: 24 })}
                    </div>

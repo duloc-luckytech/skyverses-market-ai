@@ -37,7 +37,7 @@ const AppsPage: React.FC = () => {
   } = useAppsPage();
 
   return (
-    <div className="pt-24 min-h-screen bg-[#fafafa] dark:bg-[#050507] text-slate-900 dark:text-white transition-colors duration-500 selection:bg-brand-blue/30 overflow-x-hidden pb-32">
+    <div className="pt-24 min-h-screen bg-[#fafafa] dark:bg-[#0a0d14] text-slate-900 dark:text-white transition-colors duration-500 selection:bg-brand-blue/30 overflow-x-hidden pb-32">
       
       {/* Background glows */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -58,7 +58,7 @@ const AppsPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-lg mx-auto text-center space-y-6"
           >
-            <div className="p-8 bg-white dark:bg-[#0a0a0e] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl space-y-5">
+            <div className="p-8 bg-white dark:bg-[#0a0d14] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl space-y-5">
               <div className="w-16 h-16 rounded-2xl bg-brand-blue/10 text-brand-blue flex items-center justify-center mx-auto">
                 <LogIn size={28} />
               </div>
@@ -89,7 +89,7 @@ const AppsPage: React.FC = () => {
               className="lg:col-span-2 space-y-6"
             >
               {/* Step Indicator */}
-              <div className="bg-white dark:bg-[#0a0a0e] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] p-5 shadow-sm">
+              <div className="bg-white dark:bg-[#0a0d14] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] p-5 shadow-sm">
                 <StepIndicator 
                   currentStep={currentStep} 
                   onGoToStep={goToStep}
@@ -141,7 +141,7 @@ const AppsPage: React.FC = () => {
               transition={{ delay: 0.3 }}
               className="lg:col-span-3 relative"
             >
-              <div className="bg-white dark:bg-[#0a0a0e] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl">
+              <div className="bg-white dark:bg-[#0a0d14] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl">
                 {/* Form Header */}
                 <div className="px-6 md:px-8 py-5 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
                   <div>

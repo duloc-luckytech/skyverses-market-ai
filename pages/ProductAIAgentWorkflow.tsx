@@ -33,7 +33,7 @@ const ProductAIAgentWorkflow = () => {
 
   if (isStudioOpen) {
     return (
-      <div className="fixed inset-0 z-[500] bg-white dark:bg-[#050505] animate-in fade-in duration-500">
+      <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0d14] animate-in fade-in duration-500">
         <div className="h-full flex flex-col">
            <div className="h-16 border-b border-black/10 dark:border-white/5 bg-white/80 dark:bg-black/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0">
              <div className="flex items-center gap-4">
@@ -53,7 +53,7 @@ const ProductAIAgentWorkflow = () => {
   }
 
   return (
-    <div className="pt-24 bg-white dark:bg-[#020203] min-h-screen text-black dark:text-white font-sans overflow-x-hidden transition-colors duration-500 pb-32">
+    <div className="pt-24 bg-white dark:bg-[#0a0d14] min-h-screen text-black dark:text-white font-sans overflow-x-hidden transition-colors duration-500 pb-32">
       {/* BACKGROUND LATTICE */}
       <div className="fixed inset-0 pointer-events-none z-0">
          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,_#10b98108_0%,_transparent_50%)]"></div>
@@ -125,7 +125,7 @@ const ProductAIAgentWorkflow = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className="group relative aspect-[3/4] bg-white dark:bg-[#0a0a0c] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-xl hover:border-emerald-500/40 transition-all cursor-pointer"
+                className="group relative aspect-[3/4] bg-white dark:bg-[#0a0d14] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-xl hover:border-emerald-500/40 transition-all cursor-pointer"
                 onClick={() => { flow.setWorkflowId(tmpl.templateId); setIsStudioOpen(true); }}
               >
                 <img 
@@ -201,7 +201,7 @@ const ProductAIAgentWorkflow = () => {
                   { step: '03', label: 'Tổng hợp Neural', icon: <Cpu />, desc: 'Hệ thống thực thi trên cụm GPU H100, xử lý hàng loạt khung hình trong tích tắc.' },
                   { step: '04', label: 'Xuất bản Master', icon: <Share2 />, desc: 'Nhận thành phẩm chất lượng cao nhất, sẵn sàng cho mọi nền tảng truyền thông.' }
                 ].map((item) => (
-                  <div key={item.step} className="p-16 bg-white dark:bg-[#08080a] space-y-10 group hover:bg-emerald-500/[0.01] transition-all duration-700 border-r border-black/5 dark:border-white/5 last:border-r-0">
+                  <div key={item.step} className="p-16 bg-white dark:bg-[#0a0d14] space-y-10 group hover:bg-emerald-500/[0.01] transition-all duration-700 border-r border-black/5 dark:border-white/5 last:border-r-0">
                     <div className="flex justify-between items-start">
                        <span className="text-5xl font-black text-emerald-500 italic opacity-20 group-hover:opacity-100 transition-opacity">{item.step}</span>
                        <div className="p-5 border border-black/10 dark:border-white/10 text-gray-500 group-hover:text-emerald-500 group-hover:border-emerald-500 transition-all rounded-sm shadow-xl bg-slate-50 dark:bg-white/[0.02]">

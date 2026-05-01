@@ -222,7 +222,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
             Powered by Gemini
           </span>
         </div>
-        <div className="text-slate-400 dark:text-[#555]">
+        <div className="text-slate-400 dark:text-gray-400">
           {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </div>
       </button>
@@ -248,7 +248,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
                     className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-medium whitespace-nowrap shrink-0 border-b-2 transition-colors ${
                       isActive
                         ? 'border-brand-blue text-brand-blue'
-                        : 'border-transparent text-slate-400 dark:text-[#555] hover:text-slate-600 dark:hover:text-[#888]'
+                        : 'border-transparent text-slate-400 dark:text-gray-400 hover:text-slate-600 dark:hover:text-[#888]'
                     }`}
                   >
                     <Icon size={11} />
@@ -264,7 +264,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
                 {activeTab === 'prompts' && (
                   <TabPane key="prompts">
                     <div className="flex items-center justify-between mb-2.5">
-                      <p className="text-[10px] text-slate-400 dark:text-[#555]">
+                      <p className="text-[10px] text-slate-400 dark:text-gray-400">
                         Click để chèn vào prompt
                       </p>
                       <button
@@ -296,10 +296,10 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
                             <span className="shrink-0 w-4 h-4 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue text-[8px] font-bold mt-0.5 group-hover:bg-brand-blue group-hover:text-white transition-colors">
                               {i + 1}
                             </span>
-                            <span className="text-[11px] text-slate-600 dark:text-[#aaa] leading-relaxed group-hover:text-slate-800 dark:group-hover:text-white transition-colors">
+                            <span className="text-[11px] text-slate-600 dark:text-gray-300 leading-relaxed group-hover:text-slate-800 dark:group-hover:text-white transition-colors">
                               {idea}
                             </span>
-                            <ChevronRight size={11} className="shrink-0 mt-0.5 text-slate-300 dark:text-[#444] group-hover:text-brand-blue transition-colors ml-auto" />
+                            <ChevronRight size={11} className="shrink-0 mt-0.5 text-slate-300 dark:text-gray-500 group-hover:text-brand-blue transition-colors ml-auto" />
                           </motion.button>
                         ))}
                       </div>
@@ -316,7 +316,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
 
                 {activeTab === 'styles' && (
                   <TabPane key="styles">
-                    <p className="text-[10px] text-slate-400 dark:text-[#555] mb-2.5">
+                    <p className="text-[10px] text-slate-400 dark:text-gray-400 mb-2.5">
                       Chọn phong cách — sẽ thêm prefix vào prompt
                     </p>
                     <div className="grid grid-cols-2 gap-1.5">
@@ -337,7 +337,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
                               {s.label}
                             </span>
                           </div>
-                          <p className="text-[9px] text-slate-400 dark:text-[#555] leading-relaxed">
+                          <p className="text-[9px] text-slate-400 dark:text-gray-400 leading-relaxed">
                             {s.description}
                           </p>
                         </motion.button>
@@ -366,7 +366,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
                             >
                               <div>
                                 <p className="text-[10px] font-medium text-brand-blue mb-0.5">{t.label}</p>
-                                <p className="text-[9px] text-slate-400 dark:text-[#555] line-clamp-2">{t.prompt}</p>
+                                <p className="text-[9px] text-slate-400 dark:text-gray-400 line-clamp-2">{t.prompt}</p>
                               </div>
                               <ChevronRight size={11} className="shrink-0 mt-0.5 text-brand-blue/40 group-hover:text-brand-blue" />
                             </motion.button>
@@ -378,7 +378,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
                     {/* User history */}
                     {history.length > 0 ? (
                       <div>
-                        <p className="text-[9px] font-semibold uppercase tracking-widest text-slate-400 dark:text-[#555] mb-2 flex items-center gap-1">
+                        <p className="text-[9px] font-semibold uppercase tracking-widest text-slate-400 dark:text-gray-400 mb-2 flex items-center gap-1">
                           <Clock size={9} /> Lịch sử của bạn
                         </p>
                         <div className="grid grid-cols-3 gap-1.5">
@@ -395,7 +395,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
                                 <img src={item.url} alt="" className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <LayoutTemplate size={14} className="text-slate-300 dark:text-[#444]" />
+                                  <LayoutTemplate size={14} className="text-slate-300 dark:text-gray-500" />
                                 </div>
                               )}
                               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -406,7 +406,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
                         </div>
                       </div>
                     ) : !featuredTemplates?.length ? (
-                      <p className="text-[11px] text-slate-400 dark:text-[#555] text-center py-4">
+                      <p className="text-[11px] text-slate-400 dark:text-gray-400 text-center py-4">
                         Chưa có template nào.<br />
                         <span className="text-brand-blue">Tạo ảnh đầu tiên</span> để lưu template.
                       </p>
@@ -416,7 +416,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
 
                 {activeTab === 'smartfill' && (
                   <TabPane key="smartfill">
-                    <p className="text-[10px] text-slate-400 dark:text-[#555] mb-3 leading-relaxed">
+                    <p className="text-[10px] text-slate-400 dark:text-gray-400 mb-3 leading-relaxed">
                       AI sẽ tự điền prompt, style và format phù hợp nhất cho <strong className="text-slate-600 dark:text-white/70">{productName}</strong>.
                     </p>
 
@@ -428,7 +428,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
                         {Object.entries(fillPreview).map(([key, val]) => val && (
                           <div key={key} className="flex items-start gap-2 p-2 rounded-lg bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.03]">
                             <span className="text-[9px] font-semibold uppercase text-brand-blue/60 w-14 shrink-0">{key}</span>
-                            <span className="text-[10px] text-slate-600 dark:text-[#aaa]">{String(val)}</span>
+                            <span className="text-[10px] text-slate-600 dark:text-gray-300">{String(val)}</span>
                           </div>
                         ))}
                         <div className="flex gap-2 mt-2">
@@ -464,7 +464,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
                       </motion.button>
                     )}
 
-                    <p className="text-[9px] text-slate-300 dark:text-[#444] text-center mt-2">
+                    <p className="text-[9px] text-slate-300 dark:text-gray-500 text-center mt-2">
                       Sử dụng Gemini AI để phân tích context
                     </p>
                   </TabPane>

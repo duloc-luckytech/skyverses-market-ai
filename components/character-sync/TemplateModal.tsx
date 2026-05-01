@@ -63,7 +63,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="relative w-full max-w-4xl bg-white dark:bg-[#0c0c0e] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col max-h-[85vh]"
+        className="relative w-full max-w-4xl bg-white dark:bg-[#0a0d14] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col max-h-[85vh]"
       >
         <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">

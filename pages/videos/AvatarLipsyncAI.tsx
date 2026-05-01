@@ -37,7 +37,7 @@ const AvatarLipsyncAI = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-violet-500/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-violet-500/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* --- TOP BAR CTA --- */}
       <div className="fixed top-24 right-12 z-[100] hidden md:block">
@@ -93,7 +93,7 @@ const AvatarLipsyncAI = () => {
             className="lg:col-span-6"
           >
             {/* STUDIO PREVIEW MOCKUP */}
-            <div className="relative aspect-video bg-white dark:bg-[#0a0a0c] border border-slate-200 dark:border-white/10 rounded-xl p-4 shadow-3xl overflow-hidden group">
+            <div className="relative aspect-video bg-white dark:bg-[#0a0d14] border border-slate-200 dark:border-white/10 rounded-xl p-4 shadow-3xl overflow-hidden group">
                <div className="absolute inset-0 bg-gradient-to-tr from-violet-500/5 to-transparent"></div>
                <div className="h-full w-full bg-black rounded-lg border border-slate-200 dark:border-white/5 overflow-hidden relative">
                   <video 
@@ -126,7 +126,7 @@ const AvatarLipsyncAI = () => {
       </section>
 
       {/* --- 2. HOW IT WORKS --- */}
-      <section className="py-40 border-y border-slate-200 dark:border-white/5 relative bg-slate-50 dark:bg-[#070709] transition-colors">
+      <section className="py-40 border-y border-slate-200 dark:border-white/5 relative bg-slate-50 dark:bg-[#0a0d14] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Instant Production Flow</h2>
@@ -166,7 +166,7 @@ const AvatarLipsyncAI = () => {
                 { t: 'Global Languages', i: <Globe />, d: 'Speak any language fluently with automated phonetic mapping.' },
                 { t: 'VPC Security', i: <ShieldCheck />, d: 'Proprietary models are VPC-isolated for enterprise-grade privacy.' }
               ].map((f, i) => (
-                <div key={i} className="p-12 bg-white dark:bg-[#0a0a0c] space-y-6 hover:bg-violet-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
+                <div key={i} className="p-12 bg-white dark:bg-[#0a0d14] space-y-6 hover:bg-violet-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
                    <div className="text-violet-600 dark:text-violet-400 opacity-60 group-hover:opacity-100 transition-colors">
                       {React.cloneElement(f.i as React.ReactElement<any>, { size: 24 })}
                    </div>
@@ -181,7 +181,7 @@ const AvatarLipsyncAI = () => {
       </section>
 
       {/* --- 4. USE CASES --- */}
-      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#070709] relative overflow-hidden transition-colors">
+      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#0a0d14] relative overflow-hidden transition-colors">
          <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-24 relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-end gap-8">
               <div className="space-y-4">
@@ -253,7 +253,7 @@ const AvatarLipsyncAI = () => {
       </section>
 
       {/* --- 7. FOOTER --- */}
-      <footer className="py-20 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#030304] transition-colors duration-500">
+      <footer className="py-20 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#0a0d14] transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">
            <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-4">

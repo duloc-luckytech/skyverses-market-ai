@@ -135,10 +135,10 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const activeScene = scenes.find(s => s.id === activeSceneId);
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#030304] text-black dark:text-white font-sans overflow-hidden relative selection:bg-brand-blue/30">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] text-black dark:text-white font-sans overflow-hidden relative selection:bg-brand-blue/30">
       
       {/* 1. LEFT PANEL */}
-      <aside className="w-full lg:w-[400px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-[#f9f9fb] dark:bg-[#080808] z-[100] shadow-2xl transition-colors duration-500 overflow-hidden">
+      <aside className="w-full lg:w-[400px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-[#f9f9fb] dark:bg-[#0a0d14] z-[100] shadow-2xl transition-colors duration-500 overflow-hidden">
         <div className="p-6 lg:p-8 border-b border-black/10 dark:border-white/5 bg-brand-blue/5 flex items-center justify-between">
            <div className="flex items-center gap-3">
               <Clapperboard size={20} className="text-brand-blue" />
@@ -183,7 +183,7 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </aside>
 
       {/* 2. CENTER: VIEWPORT HUB */}
-      <main className="flex-grow flex flex-col bg-[#f1f1f3] dark:bg-[#010102] relative overflow-hidden transition-colors duration-500 min-h-0">
+      <main className="flex-grow flex flex-col bg-[#f1f1f3] dark:bg-[#0a0d14] relative overflow-hidden transition-colors duration-500 min-h-0">
          <div className="flex-grow flex items-center justify-center p-4 lg:p-16 relative">
             <AnimatePresence mode="wait">
                {activeScene ? (
@@ -215,7 +215,7 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
          </div>
 
          {/* TIMELINE HUB */}
-         <div className="h-32 lg:h-40 border-t border-black/10 dark:border-white/5 bg-white dark:bg-[#080808] p-6 lg:p-8 flex items-center justify-between z-[90] shrink-0 transition-colors duration-500 shadow-2xl">
+         <div className="h-32 lg:h-40 border-t border-black/10 dark:border-white/5 bg-white dark:bg-[#0a0d14] p-6 lg:p-8 flex items-center justify-between z-[90] shrink-0 transition-colors duration-500 shadow-2xl">
             <div className="flex items-center gap-6 lg:gap-12 overflow-x-auto no-scrollbar flex-grow">
                <div className="space-y-3 lg:space-y-4 shrink-0">
                   <div className="flex items-center gap-3">

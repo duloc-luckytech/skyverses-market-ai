@@ -54,7 +54,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
   ].filter(Boolean).join(' · ');
 
   return (
-    <div className={`shrink-0 border-t border-black/[0.06] dark:border-white/[0.04] bg-white/80 dark:bg-[#0c0c10]/80 backdrop-blur-lg ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+    <div className={`shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
       <div className="px-4 py-3 space-y-2.5">
 
         {/* ─── COLLAPSIBLE HEADER ─── */}
@@ -107,7 +107,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
         )}
 
         {/* ─── COST BAR ─── */}
-        <div className="flex items-center justify-between pt-1 border-t border-black/[0.06] dark:border-white/[0.04]">
+        <div className="flex items-center justify-between pt-1 border-t border-black/[0.06] dark:border-white/[0.08]">
           <div className="flex items-center gap-2">
             <button onClick={() => props.setShowResourceModal(true)} className="p-1 text-slate-400 dark:text-slate-500 hover:text-indigo-400 transition-colors rounded-md hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
               <Settings size={12} />

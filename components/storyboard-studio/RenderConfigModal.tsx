@@ -62,7 +62,7 @@ const ModelCard: React.FC<ModelCardProps & { type: 'video' | 'image' }> = ({ mod
       {/* Gradient header */}
       <div className={`h-2 w-full bg-gradient-to-r ${accent.color} ${isSelected ? 'opacity-100' : 'opacity-40 group-hover:opacity-70'} transition-opacity`} />
       
-      <div className="bg-white dark:bg-[#0f0f14] p-4 space-y-2">
+      <div className="bg-white dark:bg-[#13171f] p-4 space-y-2">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-tight text-slate-800 dark:text-white">{model.name}</p>
@@ -233,7 +233,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
                       activeTab === tab.id
-                        ? 'bg-white dark:bg-[#1a1a1f] text-brand-blue shadow-md'
+                        ? 'bg-white dark:bg-[#13171f] text-brand-blue shadow-md'
                         : 'text-slate-400 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white'
                     }`}
                   >
@@ -338,7 +338,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                               onClick={() => handleChange('mode', mode)}
                               className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
                                 settings.mode === mode
-                                  ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-md'
+                                  ? 'bg-white dark:bg-[#13171f] text-brand-blue shadow-md'
                                   : 'text-slate-400 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white'
                               }`}
                             >

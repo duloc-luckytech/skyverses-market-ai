@@ -34,7 +34,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
       exit={{ opacity: 0, x: -20 }} 
       className="space-y-10"
     >
-      <div className="p-8 lg:p-12 bg-white dark:bg-[#0d0d0f] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-10 relative overflow-hidden transition-colors">
+      <div className="p-8 lg:p-12 bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-10 relative overflow-hidden transition-colors">
          <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#6366f1 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
          
          <div className="space-y-3 relative z-10">
@@ -150,7 +150,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-         <div className="p-10 bg-white dark:bg-[#111114] border border-black/5 dark:border-white/5 rounded-[3rem] space-y-6 shadow-sm group hover:border-indigo-500/20 transition-all">
+         <div className="p-10 bg-white dark:bg-[#1a1f2b] border border-black/5 dark:border-white/5 rounded-[3rem] space-y-6 shadow-sm group hover:border-indigo-500/20 transition-all">
             <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 shadow-inner group-hover:scale-110 transition-transform">
                <ShieldCheck size={28}/>
             </div>
@@ -161,7 +161,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                </p>
             </div>
          </div>
-         <div className="p-10 bg-white dark:bg-[#111114] border border-black/5 dark:border-white/5 rounded-[3rem] space-y-6 shadow-sm group hover:border-brand-blue/20 transition-all">
+         <div className="p-10 bg-white dark:bg-[#1a1f2b] border border-black/5 dark:border-white/5 rounded-[3rem] space-y-6 shadow-sm group hover:border-brand-blue/20 transition-all">
             <div className="w-14 h-14 rounded-2xl bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner group-hover:scale-110 transition-transform">
                <Layers size={28}/>
             </div>

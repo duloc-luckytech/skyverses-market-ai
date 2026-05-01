@@ -84,7 +84,7 @@ Submitted via Skyverses Booking Portal.
   ];
 
   return (
-    <main className="min-h-screen bg-[#fafafa] dark:bg-[#050507] text-slate-900 dark:text-white transition-colors duration-500 pt-28 pb-32">
+    <main className="min-h-screen bg-[#fafafa] dark:bg-[#0a0d14] text-slate-900 dark:text-white transition-colors duration-500 pt-28 pb-32">
       
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -195,7 +195,7 @@ Submitted via Skyverses Booking Portal.
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.3 }}
-            className="lg:col-span-3 bg-white dark:bg-[#0a0a0e] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl"
+            className="lg:col-span-3 bg-white dark:bg-[#0a0d14] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl"
           >
             {/* Form Header */}
             <div className="px-6 md:px-8 py-6 border-b border-black/[0.04] dark:border-white/[0.04]">

@@ -61,7 +61,7 @@ const VoiceDesignLibrary: React.FC<VoiceDesignLibraryProps> = ({
   onApplyTemplate
 }) => {
   return (
-    <div className="flex-grow flex flex-col bg-slate-50 dark:bg-[#141417] border border-slate-200 dark:border-white/5 rounded-2xl shadow-sm transition-colors overflow-hidden">
+    <div className="flex-grow flex flex-col bg-slate-50 dark:bg-[#13171f] border border-slate-200 dark:border-white/5 rounded-2xl shadow-sm transition-colors overflow-hidden">
       <div className="p-6 shrink-0 space-y-6 border-b border-black/5 dark:border-white/5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

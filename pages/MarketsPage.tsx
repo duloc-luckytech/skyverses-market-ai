@@ -144,7 +144,7 @@ const TrendingSlider: React.FC<{ items: Solution[]; lang: Language; onNavigate: 
       <div ref={scrollRef} className="flex gap-2.5 overflow-x-auto no-scrollbar snap-x pb-1">
         {limitedItems.map((sol, i) => (
           <div key={sol.id} onClick={() => onNavigate(sol.slug)}
-            className="snap-start shrink-0 w-[200px] bg-white dark:bg-[#111114] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
+            className="snap-start shrink-0 w-[200px] bg-white dark:bg-[#1a1f2b] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
             <div className="relative h-[100px] overflow-hidden">
               <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-black/50 backdrop-blur-sm text-white text-[8px] font-semibold rounded">#{i+1}</span>
@@ -174,7 +174,7 @@ const RecentlyViewed: React.FC<{ lang: Language; onNavigate: (slug: string) => v
       <div className="flex gap-2 overflow-x-auto no-scrollbar">
         {items.map((item) => (
           <div key={item.id} onClick={() => onNavigate(item.slug)}
-            className="shrink-0 flex items-center gap-2.5 px-3 py-2 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl cursor-pointer hover:border-brand-blue/20 transition-all group">
+            className="shrink-0 flex items-center gap-2.5 px-3 py-2 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-xl cursor-pointer hover:border-brand-blue/20 transition-all group">
             <img src={item.imageUrl} className="w-8 h-8 rounded-lg object-cover" alt="" />
             <div className="min-w-0">
               <p className="text-[12px] font-semibold text-slate-700 dark:text-white truncate max-w-[120px] group-hover:text-brand-blue transition-colors">{item.name?.[lang] || item.name?.en}</p>
@@ -253,7 +253,7 @@ const SuggestedSection: React.FC<{ solutions: Solution[]; lang: Language; onNavi
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {suggested.map(sol => (
           <div key={sol.id} onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}
-            className="bg-white dark:bg-[#111114] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
+            className="bg-white dark:bg-[#1a1f2b] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
             <div className="relative h-[80px] overflow-hidden">
               <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               {sol.isFree && <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-emerald-500 text-white text-[8px] font-bold rounded">FREE</span>}
@@ -283,7 +283,7 @@ const ProductCardGrid: React.FC<{
   const models = sol.models?.slice(0, 3) || [];
   return (
     <motion.div whileHover={{ y: -2 }}
-      className={`bg-white dark:bg-[#111114] border rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition-all group flex flex-col ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
+      className={`bg-white dark:bg-[#1a1f2b] border rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition-all group flex flex-col ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
       onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}>
       <div className="relative h-[160px] overflow-hidden">
         <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
@@ -309,15 +309,15 @@ const ProductCardGrid: React.FC<{
         {models.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {models.map(m => (
-              <span key={m} className="px-1.5 py-0.5 bg-slate-800/[0.06] dark:bg-white/[0.06] text-slate-500 dark:text-gray-400 rounded text-[8px] font-mono border border-black/[0.04] dark:border-white/[0.04]">{m}</span>
+              <span key={m} className="px-1.5 py-0.5 bg-slate-800/[0.06] dark:bg-white/[0.06] text-slate-500 dark:text-gray-400 rounded text-[8px] font-mono border border-black/[0.04] dark:border-white/[0.08]">{m}</span>
             ))}
           </div>
         )}
         <div className="flex flex-wrap gap-1 mt-auto pt-1">
           <span className="px-1.5 py-0.5 bg-brand-blue/[0.06] text-brand-blue rounded text-[9px] font-medium border border-brand-blue/10">{sol.category[lang]}</span>
-          {sol.complexity && <span className="px-1.5 py-0.5 bg-slate-50 dark:bg-white/[0.03] text-slate-400 dark:text-gray-500 rounded text-[9px] font-medium border border-black/[0.04] dark:border-white/[0.04]">{sol.complexity}</span>}
+          {sol.complexity && <span className="px-1.5 py-0.5 bg-slate-50 dark:bg-white/[0.03] text-slate-400 dark:text-gray-500 rounded text-[9px] font-medium border border-black/[0.04] dark:border-white/[0.08]">{sol.complexity}</span>}
         </div>
-        <div className="pt-2 border-t border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
+        <div className="pt-2 border-t border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between">
           <div className="text-[10px] font-semibold">
             {sol.priceCredits ? (
               <span className="text-orange-500 flex items-center gap-0.5"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
@@ -341,7 +341,7 @@ const ProductCardList: React.FC<{
 }> = React.memo(({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
   const models = sol.models?.slice(0, 2) || [];
   return (
-    <div className={`bg-white dark:bg-[#111114] border rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-all group flex ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
+    <div className={`bg-white dark:bg-[#1a1f2b] border rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-all group flex ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
       onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}>
       <div className="relative w-[180px] shrink-0 overflow-hidden">
         <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
@@ -367,7 +367,7 @@ const ProductCardList: React.FC<{
           {models.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1.5">
               {models.map(m => (
-                <span key={m} className="px-1.5 py-0.5 bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-gray-400 rounded text-[8px] font-mono border border-black/[0.04] dark:border-white/[0.04]">{m}</span>
+                <span key={m} className="px-1.5 py-0.5 bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-gray-400 rounded text-[8px] font-mono border border-black/[0.04] dark:border-white/[0.08]">{m}</span>
               ))}
             </div>
           )}
@@ -375,7 +375,7 @@ const ProductCardList: React.FC<{
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-2">
             <span className="px-1.5 py-0.5 bg-brand-blue/[0.06] text-brand-blue rounded text-[9px] font-medium border border-brand-blue/10">{sol.category[lang]}</span>
-            {sol.complexity && <span className="px-1.5 py-0.5 bg-slate-50 dark:bg-white/[0.03] text-slate-400 rounded text-[9px] font-medium border border-black/[0.04] dark:border-white/[0.04]">{sol.complexity}</span>}
+            {sol.complexity && <span className="px-1.5 py-0.5 bg-slate-50 dark:bg-white/[0.03] text-slate-400 rounded text-[9px] font-medium border border-black/[0.04] dark:border-white/[0.08]">{sol.complexity}</span>}
             {sol.priceCredits ? (
               <span className="flex items-center gap-0.5 text-[10px] font-semibold text-orange-500"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
             ) : sol.isFree ? (
@@ -402,7 +402,7 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/40 dark:bg-black/60 z-[600]" onClick={onClose} />
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[601] w-[90vw] max-w-[560px] bg-white dark:bg-[#111114] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[601] w-[90vw] max-w-[560px] bg-white dark:bg-[#1a1f2b] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
         <div className="relative h-[200px] overflow-hidden shrink-0">
           <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
@@ -432,7 +432,7 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
               <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">AI Models</h4>
               <div className="flex flex-wrap gap-1.5">
                 {sol.models.map(m => (
-                  <span key={m} className="px-2 py-1 bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-gray-300 rounded-lg text-[10px] font-mono border border-black/[0.04] dark:border-white/[0.04]">{m}</span>
+                  <span key={m} className="px-2 py-1 bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-gray-300 rounded-lg text-[10px] font-mono border border-black/[0.04] dark:border-white/[0.08]">{m}</span>
                 ))}
               </div>
             </div>
@@ -467,12 +467,12 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
           )}
           {sol.tags && sol.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
-              {sol.tags.map(t => <span key={t} className="px-2 py-1 bg-slate-50 dark:bg-white/[0.03] text-slate-500 rounded-lg text-[10px] font-medium border border-black/[0.04] dark:border-white/[0.04]">{t}</span>)}
+              {sol.tags.map(t => <span key={t} className="px-2 py-1 bg-slate-50 dark:bg-white/[0.03] text-slate-500 rounded-lg text-[10px] font-medium border border-black/[0.04] dark:border-white/[0.08]">{t}</span>)}
             </div>
           )}
           {sol.priceCredits && <p className="text-[12px] text-slate-500"><Zap size={12} className="inline text-orange-500 mr-1" />{sol.priceCredits} Credits / lượt</p>}
         </div>
-        <div className="p-4 border-t border-black/[0.04] dark:border-white/[0.04] shrink-0">
+        <div className="p-4 border-t border-black/[0.04] dark:border-white/[0.08] shrink-0">
           <button onClick={() => { onClose(); onNavigate(sol.slug); }}
             className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-brand-blue text-white text-[13px] font-semibold rounded-xl hover:brightness-110 active:scale-[0.98] transition-all">
             Mở công cụ <ArrowRight size={14} />
@@ -488,7 +488,7 @@ const ComparePanel: React.FC<{ items: Solution[]; lang: Language; onRemove: (id:
   if (items.length === 0) return null;
   return (
     <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }}
-      className="fixed bottom-0 left-0 right-0 z-[500] bg-white dark:bg-[#111114] border-t border-black/[0.06] dark:border-white/[0.06] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.4)]">
+      className="fixed bottom-0 left-0 right-0 z-[500] bg-white dark:bg-[#1a1f2b] border-t border-black/[0.06] dark:border-white/[0.06] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.4)]">
       <div className="max-w-[1500px] mx-auto px-6 py-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -502,7 +502,7 @@ const ComparePanel: React.FC<{ items: Solution[]; lang: Language; onRemove: (id:
             const sol = items[i];
             if (!sol) return <div key={i} className="h-[80px] border-2 border-dashed border-black/[0.06] dark:border-white/[0.06] rounded-xl flex items-center justify-center text-[11px] text-slate-300 dark:text-gray-600">Chọn để so sánh</div>;
             return (
-              <div key={sol.id} className="relative p-3 bg-slate-50 dark:bg-white/[0.03] rounded-xl border border-black/[0.04] dark:border-white/[0.04] flex gap-3">
+              <div key={sol.id} className="relative p-3 bg-slate-50 dark:bg-white/[0.03] rounded-xl border border-black/[0.04] dark:border-white/[0.08] flex gap-3">
                 <button onClick={() => onRemove(sol.id)} className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm"><X size={10} /></button>
                 <img src={sol.imageUrl} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
                 <div className="min-w-0 flex-1">
@@ -897,8 +897,8 @@ const MarketsPage: React.FC = () => {
       </div>
 
       {/* Categories Card — chia 2 group: "Tạo nội dung" (expand default) + "Khác" (collapse default) */}
-      <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center gap-2">
+      <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden">
+        <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center gap-2">
           <LayoutGrid size={13} className="text-brand-blue" />
           <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Danh mục</span>
         </div>
@@ -999,8 +999,8 @@ const MarketsPage: React.FC = () => {
       </div>
 
       {/* Toggles Card — basic, always visible (đưa lên trước advanced) */}
-      <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center gap-2">
+      <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden">
+        <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center gap-2">
           <SlidersHorizontal size={13} className="text-emerald-500" />
           <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Bộ lọc nhanh</span>
         </div>
@@ -1030,7 +1030,7 @@ const MarketsPage: React.FC = () => {
       {(() => {
         const advCount = [!!activeComplexity, activeTags.length > 0, activePlatform !== 'ALL'].filter(Boolean).length;
         return (
-          <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
+          <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden">
             <button
               onClick={() => setAdvancedOpen(v => !v)}
               className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors"
@@ -1052,7 +1052,7 @@ const MarketsPage: React.FC = () => {
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="overflow-hidden border-t border-black/[0.04] dark:border-white/[0.04]"
+                  className="overflow-hidden border-t border-black/[0.04] dark:border-white/[0.08]"
                 >
                   <div className="p-3 space-y-3">
                     {/* Complexity */}
@@ -1068,7 +1068,7 @@ const MarketsPage: React.FC = () => {
                             <button key={level.key} onClick={() => setActiveComplexity(isActive ? null : level.key)}
                               className={`flex items-center justify-center py-2 rounded-lg text-[11px] font-semibold transition-all ${isActive
                                 ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
-                                : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/[0.05] border border-black/[0.04] dark:border-white/[0.04]'
+                                : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/[0.05] border border-black/[0.04] dark:border-white/[0.08]'
                               }`}>
                               {level.label}
                             </button>
@@ -1120,7 +1120,7 @@ const MarketsPage: React.FC = () => {
                               <button key={tag} onClick={() => toggleTag(tag)}
                                 className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${isActive
                                   ? 'bg-brand-blue text-white shadow-sm'
-                                  : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/30 hover:text-brand-blue'
+                                  : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 border border-black/[0.04] dark:border-white/[0.08] hover:border-brand-blue/30 hover:text-brand-blue'
                                 }`}>
                                 {isActive && <Check size={9} className="inline mr-1 -mt-px" />}{tag}
                               </button>
@@ -1152,7 +1152,7 @@ const MarketsPage: React.FC = () => {
   );
 
   return (
-    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-white dark:bg-[#0a0a0c] text-black dark:text-white transition-colors duration-300">
+    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-white dark:bg-[#0a0d14] text-black dark:text-white transition-colors duration-300">
       <div className="max-w-[1500px] mx-auto px-4 md:px-6 lg:px-10">
 
         {/* ═══════ HEADER ═══════ */}
@@ -1221,7 +1221,7 @@ const MarketsPage: React.FC = () => {
                   </span>
                 ) : (
                   <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-                    className="text-[12px] px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-lg text-slate-600 dark:text-gray-300 outline-none cursor-pointer">
+                    className="text-[12px] px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-lg text-slate-600 dark:text-gray-300 outline-none cursor-pointer">
                     {SORT_OPTIONS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
                   </select>
                 )}
@@ -1246,7 +1246,7 @@ const MarketsPage: React.FC = () => {
               <div className={viewMode === 'grid' ? 'grid grid-cols-2 xl:grid-cols-3 gap-4' : 'space-y-3'}>
                 {[1,2,3,4,5,6].map(i => (
                   viewMode === 'grid' ? (
-                    <div key={i} className="animate-pulse rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] overflow-hidden">
+                    <div key={i} className="animate-pulse rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] overflow-hidden">
                       <div className="h-[160px] bg-slate-100 dark:bg-white/[0.03]" />
                       <div className="p-3.5 space-y-2.5">
                         <div className="h-4 bg-slate-100 dark:bg-white/[0.03] rounded w-3/4" />
@@ -1254,7 +1254,7 @@ const MarketsPage: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <div key={i} className="animate-pulse rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] h-[100px] flex">
+                    <div key={i} className="animate-pulse rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] h-[100px] flex">
                       <div className="w-[180px] bg-slate-100 dark:bg-white/[0.03]" />
                       <div className="flex-1 p-4 space-y-2">
                         <div className="h-4 bg-slate-100 dark:bg-white/[0.03] rounded w-1/2" />
@@ -1302,7 +1302,7 @@ const MarketsPage: React.FC = () => {
             ) : (
               /* ═══ CONTEXT-AWARE EMPTY STATE ═══ */
               <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
-                <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center">
+                <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] flex items-center justify-center">
                   <Search size={28} strokeWidth={1.5} className="text-slate-300 dark:text-gray-600" />
                 </div>
                 <div>
@@ -1341,8 +1341,8 @@ const MarketsPage: React.FC = () => {
               className="fixed inset-0 bg-black/30 dark:bg-black/60 z-[500]" onClick={() => setMobileSidebar(false)} />
             <motion.div initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed top-0 left-0 w-[300px] h-full bg-white dark:bg-[#0e0e12] z-[501] overflow-y-auto">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.04]">
+              className="fixed top-0 left-0 w-[300px] h-full bg-white dark:bg-[#1a1f2b] z-[501] overflow-y-auto">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.08]">
                 <h3 className="text-[15px] font-bold">Bộ lọc</h3>
                 <button onClick={() => setMobileSidebar(false)} className="p-1 text-slate-400 hover:text-slate-600"><X size={18} /></button>
               </div>

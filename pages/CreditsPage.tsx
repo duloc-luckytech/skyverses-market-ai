@@ -107,7 +107,7 @@ const CreditsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#030305] text-black dark:text-white pt-24 pb-32 transition-colors duration-500 overflow-x-hidden selection:bg-brand-blue/30">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#0a0d14] text-black dark:text-white pt-24 pb-32 transition-colors duration-500 overflow-x-hidden selection:bg-brand-blue/30">
       
       {/* ── Ambient Background ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -263,7 +263,7 @@ const CreditsPage = () => {
                       isHighlight 
                         ? 'shadow-xl z-10 lg:scale-[1.03]' 
                         : 'shadow-sm hover:shadow-lg'
-                    } bg-white dark:bg-[#0a0a0e]`}
+                    } bg-white dark:bg-[#0a0d14]`}
                     style={{ 
                       borderColor: isHighlight ? `${accent}40` : isHovered ? `${accent}25` : 'rgba(0,0,0,0.06)',
                       ...(isHighlight ? { boxShadow: `0 20px 60px ${accent}12` } : {})

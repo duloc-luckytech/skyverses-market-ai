@@ -121,10 +121,10 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   };
 
   return (
-    <div className={`flex flex-col lg:flex-row h-full w-full font-sans overflow-hidden relative transition-colors duration-700 ${tier === 'ULTRA' ? 'bg-[#050505] text-white' : 'bg-white text-black dark:bg-[#020202] dark:text-white'}`}>
+    <div className={`flex flex-col lg:flex-row h-full w-full font-sans overflow-hidden relative transition-colors duration-700 ${tier === 'ULTRA' ? 'bg-[#050505] text-white' : 'bg-white text-black dark:bg-[#0a0d14] dark:text-white'}`}>
 
       {/* 1. STUDIO SIDEBAR */}
-      <aside className={`w-full lg:w-[450px] shrink-0 h-full flex flex-col border-r z-[60] overflow-y-auto no-scrollbar shadow-2xl transition-all duration-700 ${tier === 'ULTRA' ? 'bg-[#0a0a0c] border-white/5 shadow-yellow-500/5' : 'bg-[#fafafa] dark:bg-[#080808] border-black/5 dark:border-white/5'}`}>
+      <aside className={`w-full lg:w-[450px] shrink-0 h-full flex flex-col border-r z-[60] overflow-y-auto no-scrollbar shadow-2xl transition-all duration-700 ${tier === 'ULTRA' ? 'bg-[#0a0a0c] border-white/5 shadow-yellow-500/5' : 'bg-[#fafafa] dark:bg-[#0a0d14] border-black/5 dark:border-white/5'}`}>
         <div className="p-8 lg:p-10 space-y-10 pb-40">
 
           {/* TIER SWITCHER */}
@@ -278,7 +278,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
       </aside>
 
       {/* 2. VIEWPORT & RENDERING */}
-      <main className="flex-grow flex flex-col bg-gray-50 dark:bg-[#020202] relative overflow-hidden transition-colors">
+      <main className="flex-grow flex flex-col bg-gray-50 dark:bg-[#0a0d14] relative overflow-hidden transition-colors">
 
         {/* HUD HEADER */}
         <div className="h-16 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-30">
@@ -365,7 +365,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         </div>
 
         {/* HUD FOOTER: ACTIONS */}
-        <div className={`h-40 border-t p-8 lg:px-12 flex items-center justify-between z-40 transition-all duration-700 shadow-2xl shrink-0 ${tier === 'ULTRA' ? 'bg-[#080808] border-white/5' : 'bg-white dark:bg-[#080808] border-black/5 dark:border-white/10'}`}>
+        <div className={`h-40 border-t p-8 lg:px-12 flex items-center justify-between z-40 transition-all duration-700 shadow-2xl shrink-0 ${tier === 'ULTRA' ? 'bg-[#080808] border-white/5' : 'bg-white dark:bg-[#0a0d14] border-black/5 dark:border-white/10'}`}>
            <div className="flex items-center gap-12">
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-gray-400">

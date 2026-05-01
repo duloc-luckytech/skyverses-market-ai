@@ -35,14 +35,14 @@ interface StudioSidebarProps {
 
 export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
   const labelStyle = "text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-3 block px-1";
-  const inputBg = "bg-slate-50 dark:bg-[#161b22] border border-slate-200 dark:border-transparent focus:border-brand-blue/30 rounded-xl transition-all outline-none text-slate-900 dark:text-white text-sm shadow-inner";
-  const selectStyle = "w-full bg-white dark:bg-[#0d1117] border border-slate-200 dark:border-white/5 p-2.5 rounded-lg text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-900 dark:text-white shadow-inner";
+  const inputBg = "bg-slate-50 dark:bg-[#1a1f2b] border border-slate-200 dark:border-transparent focus:border-brand-blue/30 rounded-xl transition-all outline-none text-slate-900 dark:text-white text-sm shadow-inner";
+  const selectStyle = "w-full bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/5 p-2.5 rounded-lg text-[10px] font-black uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-900 dark:text-white shadow-inner";
 
   const isInputValid = props.songName.trim().length >= 5 && props.description.trim().length > 0 && (props.isInstrumental || props.lyrics.trim().length > 0);
 
   return (
     <aside 
-      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[400px] bg-white dark:bg-[#0d1117] border-t lg:border-t-0 lg:border-r border-black/5 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-16 lg:h-full lg:rounded-none'}`}
+      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[400px] bg-white dark:bg-[#13171f] border-t lg:border-t-0 lg:border-r border-black/5 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-16 lg:h-full lg:rounded-none'}`}
     >
       {/* Mobile Handle Bar */}
       <div 
@@ -144,8 +144,8 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
                      onChange={(e) => props.setSelectedEngine(e.target.value)}
                      className="bg-transparent border-none p-0 text-[9px] font-black uppercase text-slate-500 dark:text-gray-400 outline-none cursor-pointer hover:text-slate-900 dark:hover:text-white"
                    >
-                     <option value="gommo" className="bg-white dark:bg-[#0d1117] text-slate-900 dark:text-white">Gommo</option>
-                     <option value="fxlab" className="bg-white dark:bg-[#0d1117] text-slate-900 dark:text-white">FxLab</option>
+                     <option value="gommo" className="bg-white dark:bg-[#13171f] text-slate-900 dark:text-white">Gommo</option>
+                     <option value="fxlab" className="bg-white dark:bg-[#13171f] text-slate-900 dark:text-white">FxLab</option>
                    </select>
                 </div>
               </div>
@@ -161,7 +161,7 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
                 >
                   {props.availableModels.length > 0 ? (
                     props.availableModels.map(m => (
-                      <option key={m._id} value={m._id} className="bg-white dark:bg-[#0d1117] text-slate-900 dark:text-white">{m.name}</option>
+                      <option key={m._id} value={m._id} className="bg-white dark:bg-[#13171f] text-slate-900 dark:text-white">{m.name}</option>
                     ))
                   ) : (
                     <option disabled>Loading Engine...</option>

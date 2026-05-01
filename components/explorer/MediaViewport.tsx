@@ -23,7 +23,7 @@ const MediaViewport: React.FC<MediaViewportProps> = ({ mediaUrl, thumbnailUrl, t
   const is3D = type === 'game_asset_3d';
 
   return (
-    <div className="flex-grow w-full h-full flex flex-col relative bg-slate-50 dark:bg-[#080810] overflow-hidden transition-colors">
+    <div className="flex-grow w-full h-full flex flex-col relative bg-slate-50 dark:bg-[#0a0d14] overflow-hidden transition-colors">
       {/* Subtle ambient glow */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-blue/[0.03] dark:bg-brand-blue/[0.06] rounded-full blur-[100px]" />
@@ -38,7 +38,7 @@ const MediaViewport: React.FC<MediaViewportProps> = ({ mediaUrl, thumbnailUrl, t
           className="relative w-full h-full max-w-5xl max-h-full flex items-center justify-center"
         >
           {is3D ? (
-            <div className="w-full h-full md:rounded-2xl overflow-hidden shadow-lg border border-black/[0.04] dark:border-white/[0.04] bg-white dark:bg-[#0a0a0e]">
+            <div className="w-full h-full md:rounded-2xl overflow-hidden shadow-lg border border-black/[0.04] dark:border-white/[0.04] bg-white dark:bg-[#0a0d14]">
               <ThreeDPreview modelUrl={mainUrl} />
             </div>
           ) : isVideo ? (
@@ -61,7 +61,7 @@ const MediaViewport: React.FC<MediaViewportProps> = ({ mediaUrl, thumbnailUrl, t
           ) : (
             <img 
               src={mainUrl} 
-              className="w-full h-full md:w-auto md:h-auto max-w-full max-h-full object-contain md:shadow-lg md:rounded-2xl border border-black/[0.04] dark:border-white/[0.04] bg-white dark:bg-[#0a0a0e]" 
+              className="w-full h-full md:w-auto md:h-auto max-w-full max-h-full object-contain md:shadow-lg md:rounded-2xl border border-black/[0.04] dark:border-white/[0.04] bg-white dark:bg-[#0a0d14]" 
               alt={title} 
             />
           )}

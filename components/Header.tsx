@@ -137,7 +137,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
       <nav aria-label="Main navigation" className={`fixed w-full z-[150] top-0 transition-all duration-300 ${
         scrolled 
-          ? 'h-14 bg-white/95 dark:bg-[#0a0a0c]/95 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.04] shadow-sm shadow-black/[0.03] dark:shadow-black/20' 
+          ? 'h-14 bg-white/95 dark:bg-[#0a0d14]/95 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.08] shadow-sm shadow-black/[0.03] dark:shadow-black/20' 
           : 'h-16 bg-white/50 dark:bg-transparent backdrop-blur-sm'
       }`}>
         <div className="max-w-[1440px] mx-auto px-4 lg:px-8 h-full">
@@ -190,7 +190,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                       initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
                       transition={{ duration: 0.12 }}
                       onMouseLeave={() => setShowExploreMenu(false)}
-                      className="absolute top-full left-0 mt-1 w-52 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl p-2 z-[200]"
+                      className="absolute top-full left-0 mt-1 w-52 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl p-2 z-[200]"
                       role="menu"
                     >
                       {/* Group: Discover */}
@@ -324,7 +324,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   {showDesktopLang && (
                     <motion.div
                       initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
-                      className="absolute top-full mt-1 right-0 w-20 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl overflow-hidden z-[200]"
+                      className="absolute top-full mt-1 right-0 w-20 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl overflow-hidden z-[200]"
                     >
                       {languages.map((l) => (
                         <button key={l.code} onClick={() => { setLang(l.code); setShowDesktopLang(false); localStorage.setItem('skyverses_lang_detected', '1'); }}
@@ -356,7 +356,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                         animate={{ opacity: 1, y: 0, scale: 1 }} 
                         exit={{ opacity: 0, y: 6, scale: 0.97 }}
                         transition={{ duration: 0.12 }}
-                        className="absolute top-full mt-1 right-0 w-64 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] shadow-2xl rounded-xl overflow-hidden z-[200]"
+                        className="absolute top-full mt-1 right-0 w-64 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] shadow-2xl rounded-xl overflow-hidden z-[200]"
                       >
                         {/* User Info */}
                         <div className="px-3 pt-3 pb-2">
@@ -373,7 +373,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                             </div>
                           </div>
                           {/* Credits card */}
-                          <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-lg">
+                          <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-lg">
                             <div className="flex items-center gap-1.5">
                               <Sparkles size={13} className="text-brand-blue" fill="currentColor" />
                               <span className="text-xs font-bold text-slate-700 dark:text-gray-200">{(credits || 0).toLocaleString()}</span>
@@ -449,10 +449,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
       {/* ═══════════ MOBILE DRAWER ═══════════ */}
       <div className={`fixed inset-0 z-[500] transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} role="dialog" aria-modal="true" aria-label="Navigation menu">
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
-        <div className={`absolute top-0 right-0 h-full w-[85%] max-w-sm bg-white dark:bg-[#0c0c10] shadow-2xl transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className={`absolute top-0 right-0 h-full w-[85%] max-w-sm bg-white dark:bg-[#13171f] shadow-2xl transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="flex flex-col h-full">
             {/* Drawer Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.04]">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.08]">
               <div className="flex items-center gap-2">
                 <img src={logoUrl} alt="Logo" className="w-6 h-6 object-contain" />
                 <span className="text-sm font-bold text-slate-900 dark:text-white">Skyverses</span>
@@ -533,7 +533,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
             </div>
 
             {/* Drawer Footer */}
-            <div className="px-5 py-4 border-t border-black/[0.04] dark:border-white/[0.04] space-y-3">
+            <div className="px-5 py-4 border-t border-black/[0.04] dark:border-white/[0.08] space-y-3">
               <div className="flex items-center gap-2">
                 <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-slate-400 shrink-0">
                   {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}

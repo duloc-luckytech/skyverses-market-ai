@@ -65,7 +65,7 @@ const AetherFlowInterface: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full bg-[#fcfcfd] dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans p-4 md:p-6 lg:p-8 flex items-start justify-center overflow-y-auto no-scrollbar relative transition-colors duration-500">
+    <div className="h-full w-full bg-[#fcfcfd] dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans p-4 md:p-6 lg:p-8 flex items-start justify-center overflow-y-auto no-scrollbar relative transition-colors duration-500">
       <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
         <div className="md:col-span-1 flex flex-col gap-4">
           <SettingsDrawer 

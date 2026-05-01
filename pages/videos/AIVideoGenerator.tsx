@@ -22,14 +22,14 @@ const AIVideoGenerator: React.FC = () => {
   // Studio Mode Overlay
   if (isStudioOpen) {
     return (
-      <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0a0c]">
+      <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0d14]">
         <AIVideoGeneratorWorkspace onClose={() => setIsStudioOpen(false)} />
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-[#0a0a0c] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-indigo-500/30 overflow-x-hidden pt-16 transition-colors duration-300">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-indigo-500/30 overflow-x-hidden pt-16 transition-colors duration-300">
       <HeroSection onStartStudio={() => setIsStudioOpen(true)} />
       <WorkflowSection />
       <ModesSection />

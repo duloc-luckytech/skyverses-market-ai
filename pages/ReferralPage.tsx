@@ -99,7 +99,7 @@ const ReferralPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#030304] text-slate-900 dark:text-white transition-colors duration-500 overflow-x-hidden pt-28 md:pt-32 pb-32">
+    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#0a0d14] text-slate-900 dark:text-white transition-colors duration-500 overflow-x-hidden pt-28 md:pt-32 pb-32">
 
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0">

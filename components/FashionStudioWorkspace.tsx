@@ -110,7 +110,7 @@ const CustomStudioDropdown = ({ label, value, options, onSelect }: any) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[#1a1b1e] border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-[150] max-h-64 overflow-y-auto no-scrollbar py-2"
+            className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-[150] max-h-64 overflow-y-auto no-scrollbar py-2"
           >
             {options.map((opt: string) => (
               <button
@@ -348,10 +348,10 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   const activeResult = results.find(r => r.id === activeResultId);
 
   return (
-    <div className="h-full w-full flex bg-[#f4f7f9] dark:bg-[#0a0b0d] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
+    <div className="h-full w-full flex bg-[#f4f7f9] dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
       
       {/* SIDEBAR */}
-      <aside className="w-[380px] shrink-0 border-r border-slate-200 dark:border-white/5 flex flex-col bg-white dark:bg-[#0d0e12] overflow-hidden relative shadow-2xl transition-colors">
+      <aside className="w-[380px] shrink-0 border-r border-slate-200 dark:border-white/5 flex flex-col bg-white dark:bg-[#13171f] overflow-hidden relative shadow-2xl transition-colors">
         <div className="p-6 border-b border-slate-100 dark:border-white/5 flex items-center gap-4 shrink-0">
            <Link to="/" className="p-2 -ml-2 text-slate-400 hover:text-brand-blue dark:hover:text-white transition-colors"><ChevronLeft size={24} /></Link>
            <div className="w-10 h-10 bg-pink-600/10 dark:bg-pink-600/20 border border-pink-500/20 dark:border-pink-500/30 rounded-lg flex items-center justify-center text-pink-600 dark:text-pink-500"><Shirt size={22} /></div>
@@ -562,7 +562,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       </aside>
 
       <main className="flex-grow flex flex-col relative overflow-hidden">
-         <div className="h-16 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-8 bg-white/60 dark:bg-[#0d0e12]/60 backdrop-blur-md z-[70]">
+         <div className="h-16 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-8 bg-white/60 dark:bg-[#13171f]/60 backdrop-blur-md z-[70]">
             <div className="flex bg-slate-200/50 dark:bg-white/5 p-1.5 rounded-lg border border-slate-100 dark:border-white/5">
               <button onClick={() => setActiveTab('current')} className={`px-8 py-2 text-[11px] font-black uppercase rounded-full transition-all ${activeTab === 'current' ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' : 'text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>Phiên hiện tại</button>
               <button onClick={() => setActiveTab('collection')} className={`px-8 py-2 text-[11px] font-black uppercase rounded-full transition-all ${activeTab === 'collection' ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' : 'text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>Bộ sưu tập</button>
@@ -605,7 +605,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             </AnimatePresence>
          </div>
 
-         <div className="absolute bottom-0 left-0 w-full p-6 bg-white/95 dark:bg-[#0d0e12]/95 backdrop-blur-xl border-t border-slate-100 dark:border-white/5 z-[80] shadow-2xl">
+         <div className="absolute bottom-0 left-0 w-full p-6 bg-white/95 dark:bg-[#13171f]/95 backdrop-blur-xl border-t border-slate-100 dark:border-white/5 z-[80] shadow-2xl">
             <div className="max-w-5xl mx-auto flex items-center justify-between gap-6">
                <ResourceControl 
                   usagePreference={usagePreference}
@@ -627,12 +627,12 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
          </div>
       </main>
 
-      <aside className="w-[320px] shrink-0 border-l border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d0e12] flex flex-col overflow-hidden z-50 transition-all duration-500">
+      <aside className="w-[320px] shrink-0 border-l border-slate-200 dark:border-white/5 bg-white dark:bg-[#13171f] flex flex-col overflow-hidden z-50 transition-all duration-500">
          <div className="h-16 border-b border-slate-200 dark:border-white/5 flex items-center px-6 shrink-0 bg-slate-50 dark:bg-black/20"><div className="flex items-center gap-2"><HistoryIcon size={14} className="text-brand-blue" /><span className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Lịch sử</span></div></div>
          <div className="flex-grow overflow-y-auto p-4 space-y-4 no-scrollbar">
             <AnimatePresence initial={false}>
                {results.map((res) => (
-                  <motion.div key={res.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className={`relative p-3 rounded-2xl border-2 transition-all cursor-pointer flex flex-col gap-3 group ${activeResultId === res.id ? 'border-pink-500 bg-pink-500/5 shadow-lg' : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#141416] hover:border-black/10'}`} onClick={() => setActiveResultId(res.id)}>
+                  <motion.div key={res.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className={`relative p-3 rounded-2xl border-2 transition-all cursor-pointer flex flex-col gap-3 group ${activeResultId === res.id ? 'border-pink-500 bg-pink-500/5 shadow-lg' : 'border-black/5 dark:border-white/5 bg-white dark:bg-[#13171f] hover:border-black/10'}`} onClick={() => setActiveResultId(res.id)}>
                      <div className="relative aspect-square rounded-xl overflow-hidden bg-black/5 border border-black/5">
                         {res.status === 'processing' ? (<div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-50/50 dark:bg-black/20"><Loader2 size={24} className="text-pink-500 animate-spin" /></div>) : res.url ? (<img src={res.url} className="w-full h-full object-cover" alt="" />) : (<div className="absolute inset-0 flex items-center justify-center text-red-500 bg-red-50 gap-4"><AlertCircle size={20}/></div>)}
                      </div>
@@ -659,7 +659,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       />
 
       <AnimatePresence>
-        {showLowCreditAlert && (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6"><motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="max-w-md w-full bg-white dark:bg-[#111218] p-10 border border-slate-200 dark:border-white/10 rounded-sm text-center space-y-8 shadow-3xl"><div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500"><AlertTriangle size={40} /></div><div className="space-y-3"><h3 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3><p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed uppercase tracking-tight">Fashion synthesis yêu cầu ít nhất **{actionCost} credits**.</p></div><div className="flex flex-col gap-4"><Link to="/credits" className="bg-pink-600 text-white py-5 rounded-sm text-xs font-black uppercase tracking-[0.4em] shadow-xl text-center hover:bg-pink-700 transition-colors">Nạp thêm Credits</Link><button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Đóng</button></div></motion.div></motion.div>)}
+        {showLowCreditAlert && (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6"><motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="max-w-md w-full bg-white dark:bg-[#13171f] p-10 border border-slate-200 dark:border-white/10 rounded-sm text-center space-y-8 shadow-3xl"><div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500"><AlertTriangle size={40} /></div><div className="space-y-3"><h3 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3><p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed uppercase tracking-tight">Fashion synthesis yêu cầu ít nhất **{actionCost} credits**.</p></div><div className="flex flex-col gap-4"><Link to="/credits" className="bg-pink-600 text-white py-5 rounded-sm text-xs font-black uppercase tracking-[0.4em] shadow-xl text-center hover:bg-pink-700 transition-colors">Nạp thêm Credits</Link><button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Đóng</button></div></motion.div></motion.div>)}
       </AnimatePresence>
       
       <ImageLibraryModal isOpen={isLibraryOpen} onClose={() => setIsLibraryOpen(false)} onConfirm={handleLibrarySelect} onEdit={(url) => { openEditor(url); setIsLibraryOpen(false); }} maxSelect={6} />

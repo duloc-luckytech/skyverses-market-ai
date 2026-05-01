@@ -81,9 +81,9 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[#030304] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
+    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[#0a0d14] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white dark:bg-[#08080a] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
+      <div className="bg-white dark:bg-[#0a0d14] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-brand-blue/10 dark:bg-brand-blue/20 rounded-xl flex items-center justify-center text-brand-blue">
             <Mic size={24} />
@@ -102,7 +102,7 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <div className="max-w-5xl mx-auto p-8 space-y-10">
           
           {/* Main Editor Card */}
-          <div className="bg-white dark:bg-[#0a0a0c] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-xl space-y-6">
+          <div className="bg-white dark:bg-[#0a0d14] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-xl space-y-6">
              <div className="relative">
                 <textarea 
                   value={text}
@@ -155,7 +155,7 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           </div>
 
           {/* Visualizer Area */}
-          <div className="bg-white dark:bg-[#0a0a0c] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-sm h-32 flex items-center justify-center relative overflow-hidden">
+          <div className="bg-white dark:bg-[#0a0d14] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-sm h-32 flex items-center justify-center relative overflow-hidden">
              <div className="flex items-center gap-1 h-12 w-full justify-center opacity-40">
                 {Array.from({length: 60}).map((_, i) => (
                    <motion.div 

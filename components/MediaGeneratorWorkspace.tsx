@@ -77,8 +77,8 @@ const MediaGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[#030304] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
-      <div className="bg-white dark:bg-[#08080a] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
+    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[#0a0d14] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
+      <div className="bg-white dark:bg-[#0a0d14] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
         <div className="flex flex-col">
           <h2 className="font-black text-2xl tracking-tight uppercase italic">AI Media Generator</h2>
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Lite Edition // Fast Synthesis</p>
@@ -96,7 +96,7 @@ const MediaGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
              <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium">Quickly generate video and image assets with direct semantic commands.</p>
           </div>
 
-          <div className="bg-white dark:bg-[#0a0a0c] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-xl space-y-6">
+          <div className="bg-white dark:bg-[#0a0d14] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-xl space-y-6">
              <div className="relative">
                 <textarea 
                   value={prompt}

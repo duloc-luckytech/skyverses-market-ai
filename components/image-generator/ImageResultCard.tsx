@@ -45,12 +45,12 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         ? 'border-rose-500/40 bg-rose-500/5'
         : isError
           ? 'border-red-500/20 bg-red-900/5 hover:border-red-500/30'
-          : 'border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-[#111114] hover:border-black/10 dark:hover:border-white/10'
+          : 'border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#1a1f2b] hover:border-black/10 dark:hover:border-white/10'
         }`}
       onClick={() => displayUrl ? onFullscreen(displayUrl) : null}
     >
       {/* Visual Area */}
-      <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-100 dark:bg-black border border-black/[0.06] dark:border-white/[0.04] flex items-center justify-center">
+      <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-100 dark:bg-black border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-center">
 
         {displayUrl && !isProcessing && !isError && (
           <div className="absolute inset-0 z-0">
@@ -229,7 +229,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           <h4 className="text-[10px] font-semibold text-slate-700 dark:text-white/80 truncate leading-tight">
             {res.prompt}
           </h4>
-          <div className="flex justify-between items-center text-[7px] font-medium text-slate-400 dark:text-[#444]">
+          <div className="flex justify-between items-center text-[7px] font-medium text-slate-400 dark:text-gray-500">
             <span className="flex items-center gap-1.5"><Clock size={10} /> {res.fullTimestamp}</span>
             <div className="flex items-center gap-2">
               <span className="bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded font-mono text-slate-500 dark:text-slate-400">
@@ -242,12 +242,12 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           </div>
         </div>
 
-        <div className="pt-2 border-t border-black/[0.06] dark:border-white/[0.04] flex items-center justify-between">
+        <div className="pt-2 border-t border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between">
           <div className="flex flex-wrap gap-1.5">
-            <div className="px-1.5 py-0.5 bg-black/[0.03] dark:bg-white/[0.03] rounded text-[7px] font-medium text-slate-500 dark:text-[#555] border border-black/[0.06] dark:border-white/[0.04]">
+            <div className="px-1.5 py-0.5 bg-black/[0.03] dark:bg-white/[0.03] rounded text-[7px] font-medium text-slate-500 dark:text-gray-400 border border-black/[0.06] dark:border-white/[0.08]">
               {res.resolution.toUpperCase()}
             </div>
-            <div className="px-1.5 py-0.5 bg-black/[0.03] dark:bg-white/[0.03] rounded text-[7px] font-medium text-slate-500 dark:text-[#555] border border-black/[0.06] dark:border-white/[0.04]">
+            <div className="px-1.5 py-0.5 bg-black/[0.03] dark:bg-white/[0.03] rounded text-[7px] font-medium text-slate-500 dark:text-gray-400 border border-black/[0.06] dark:border-white/[0.08]">
               {res.aspectRatio}
             </div>
           </div>

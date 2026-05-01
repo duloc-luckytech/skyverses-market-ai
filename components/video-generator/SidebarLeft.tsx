@@ -86,7 +86,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
         ${props.isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
         w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
-        bg-white dark:bg-[#0c0c10] border-r border-black/[0.06] dark:border-white/[0.04]
+        bg-white dark:bg-[#13171f] border-r border-black/[0.06] dark:border-white/[0.08]
         flex flex-col transition-transform duration-300
       `}>
 
@@ -102,7 +102,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
         />
 
         {/* ─── HEADER ─── */}
-        <div className={`px-4 pt-3 pb-2.5 border-b border-black/[0.06] dark:border-white/[0.04] shrink-0 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+        <div className={`px-4 pt-3 pb-2.5 border-b border-black/[0.06] dark:border-white/[0.08] shrink-0 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2.5">
               <button onClick={e => { stop(e); props.onClose(); }} className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
@@ -122,7 +122,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
           </div>
 
           {/* Mode tabs */}
-          <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+          <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.08] overflow-hidden">
             {(['SINGLE', 'MULTI', 'AUTO'] as const).map(m => (
               <button key={m} onClick={e => { stop(e); props.setActiveMode(m); }}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === m ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white/60'
@@ -147,7 +147,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
                   <p className="text-[9px] text-slate-400 dark:text-slate-500 px-0.5 leading-relaxed">Mô tả chi tiết nội dung video. Càng chi tiết, kết quả càng chính xác.</p>
                   <textarea
                     value={props.prompt} onChange={e => props.setPrompt(e.target.value)}
-                    className="w-full min-h-[100px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-lg p-3 text-xs font-medium focus:border-indigo-500/30 outline-none transition-all resize-y text-slate-800 dark:text-white/80 placeholder:text-slate-300 dark:placeholder:text-[#333] leading-relaxed"
+                    className="w-full min-h-[100px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.08] rounded-lg p-3 text-xs font-medium focus:border-indigo-500/30 outline-none transition-all resize-y text-slate-800 dark:text-white/80 placeholder:text-slate-300 dark:placeholder:text-[#333] leading-relaxed"
                     placeholder="VD: Một chú mèo đang nhảy qua hàng rào trong vườn hoa, ánh nắng chiều, phong cách cinematic 4K..."
                   />
                 </div>
@@ -193,8 +193,8 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
                         {props.multiFrames.length > 2 && <button onClick={e => { stop(e); props.removeFrame(f.id); }} className="absolute top-0.5 right-0.5 p-0.5 bg-black/50 rounded text-white/30 hover:text-red-400 transition-all"><Trash2 size={7} /></button>}
                       </div>
                       {i < props.multiFrames.length - 1
-                        ? <textarea value={f.prompt} onChange={e => props.handleFramePromptChange(f.id, e.target.value)} placeholder="..." className="w-full h-9 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded p-1.5 text-[9px] font-medium text-slate-700 dark:text-white/60 focus:border-indigo-500/30 outline-none resize-none" />
-                        : <div className="h-9 flex items-center justify-center border border-dashed border-black/[0.06] dark:border-white/[0.04] rounded opacity-30"><span className="text-[8px] font-semibold uppercase text-slate-400 dark:text-[#555]">End</span></div>
+                        ? <textarea value={f.prompt} onChange={e => props.handleFramePromptChange(f.id, e.target.value)} placeholder="..." className="w-full h-9 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.08] rounded p-1.5 text-[9px] font-medium text-slate-700 dark:text-white/60 focus:border-indigo-500/30 outline-none resize-none" />
+                        : <div className="h-9 flex items-center justify-center border border-dashed border-black/[0.06] dark:border-white/[0.08] rounded opacity-30"><span className="text-[8px] font-semibold uppercase text-slate-400 dark:text-gray-400">End</span></div>
                       }
                     </div>
                   ))}
@@ -225,12 +225,12 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
                 </AnimatePresence>
                 <div className="space-y-1.5">
                   {props.autoTasks.map((t, i) => (
-                    <div key={t.id} className="p-2 bg-black/[0.01] dark:bg-white/[0.015] border border-black/[0.06] dark:border-white/[0.04] rounded-lg space-y-1.5 group hover:border-indigo-500/20 transition-all">
+                    <div key={t.id} className="p-2 bg-black/[0.01] dark:bg-white/[0.015] border border-black/[0.06] dark:border-white/[0.08] rounded-lg space-y-1.5 group hover:border-indigo-500/20 transition-all">
                       <div className="flex justify-between items-center">
                         <span className="text-[9px] font-semibold text-indigo-400">#{i + 1}</span>
                         <button onClick={e => { stop(e); props.removeAutoTask(t.id); }} className="text-slate-300 dark:text-[#333] hover:text-red-400 transition-colors"><Trash2 size={9} /></button>
                       </div>
-                      <textarea value={t.prompt} onChange={e => props.handleAutoPromptChange(t.id, e.target.value)} placeholder="Kịch bản..." className="w-full h-9 bg-transparent border-b border-black/[0.06] dark:border-white/[0.04] text-[10px] font-medium outline-none focus:border-indigo-500/20 resize-none text-slate-700 dark:text-white/70" />
+                      <textarea value={t.prompt} onChange={e => props.handleAutoPromptChange(t.id, e.target.value)} placeholder="Kịch bản..." className="w-full h-9 bg-transparent border-b border-black/[0.06] dark:border-white/[0.08] text-[10px] font-medium outline-none focus:border-indigo-500/20 resize-none text-slate-700 dark:text-white/70" />
                       <div className="grid grid-cols-2 gap-1.5">
                         <div className="aspect-video bg-slate-100 dark:bg-white/[0.02] border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded flex items-center justify-center overflow-hidden relative group/s">
                           {props.isUploadingImage === `${t.id}-START` ? <Loader2 size={10} className="text-indigo-400 animate-spin" />

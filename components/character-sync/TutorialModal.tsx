@@ -98,7 +98,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
       <motion.div
         initial={{ scale: 0.95, y: 16, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
-        className="relative w-full max-w-md bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-md bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl"
       >
         {/* Header */}
         <div className="px-5 pt-5 pb-3 flex items-center justify-between">

@@ -82,7 +82,7 @@ const NexusStudioInterface = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#050505] overflow-hidden text-black dark:text-white relative">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white relative">
       <div className="w-full lg:w-[380px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/10 bg-gray-50 dark:bg-black overflow-y-auto no-scrollbar p-8 space-y-12">
         <div className="space-y-6">
           <label className="text-[10px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-widest flex items-center gap-3">
@@ -122,7 +122,7 @@ const NexusStudioInterface = () => {
         </div>
       </div>
 
-      <div className="flex-grow flex flex-col relative bg-gray-100 dark:bg-[#020202] overflow-hidden">
+      <div className="flex-grow flex flex-col relative bg-gray-100 dark:bg-[#0a0d14] overflow-hidden">
         <div className="flex-grow flex flex-col items-center justify-center p-6 lg:p-12 relative">
            <div className="w-full max-w-5xl relative z-10 group">
               <div className="aspect-video bg-black border border-black/10 dark:border-white/10 shadow-2xl relative overflow-hidden flex items-center justify-center">

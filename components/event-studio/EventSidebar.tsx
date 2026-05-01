@@ -51,7 +51,7 @@ const CollapsibleSection: React.FC<{
 }> = ({ title, icon, badge, defaultOpen = false, accentColor = 'brand-blue', children }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
-    <section className="border-t border-black/[0.04] dark:border-white/[0.04]">
+    <section className="border-t border-black/[0.04] dark:border-white/[0.08]">
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between py-3 group"
@@ -92,7 +92,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
   return (
     <div className="space-y-0">
       {/* ─── Branding Header ─── */}
-      <section className="-mx-5 -mt-5 p-5 pb-4 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-white/[0.02] dark:via-transparent dark:to-white/[0.01] border-b border-black/[0.04] dark:border-white/[0.04]">
+      <section className="-mx-5 -mt-5 p-5 pb-4 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-white/[0.02] dark:via-transparent dark:to-white/[0.01] border-b border-black/[0.04] dark:border-white/[0.08]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-${config.accentColor}-500/10 border border-${config.accentColor}-500/15 text-${config.accentColor}-500 shadow-sm`}>
@@ -125,7 +125,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
               {config.coupleMode ? 'Chân dung cặp đôi' : 'Chân dung gốc'}
             </label>
           </div>
-          <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 dark:bg-white/[0.03] px-2 py-0.5 rounded-md border border-black/[0.04] dark:border-white/[0.04]">
+          <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 dark:bg-white/[0.03] px-2 py-0.5 rounded-md border border-black/[0.04] dark:border-white/[0.08]">
             {sourceImages.length}{config.coupleMode ? '/2' : ''} ảnh
           </span>
         </div>
@@ -159,8 +159,8 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
           {(!config.coupleMode || sourceImages.length < 2) && (
             <div className="aspect-square rounded-xl border-2 border-dashed border-slate-200 dark:border-white/[0.06] flex items-center justify-center group relative overflow-hidden transition-all hover:border-slate-300 dark:hover:border-white/10 bg-slate-50/50 dark:bg-white/[0.01]">
               <Plus size={18} className="text-slate-300 dark:text-slate-600 group-hover:opacity-0 transition-opacity" />
-              <div className="absolute inset-0 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-[#0d0e12]">
-                <button onClick={onUpload} className={`flex-1 flex items-center justify-center hover:bg-${config.accentColor}-500/10 text-${config.accentColor}-500 border-b border-black/[0.04] dark:border-white/[0.04] transition-colors`} title="Tải ảnh">
+              <div className="absolute inset-0 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-[#13171f]">
+                <button onClick={onUpload} className={`flex-1 flex items-center justify-center hover:bg-${config.accentColor}-500/10 text-${config.accentColor}-500 border-b border-black/[0.04] dark:border-white/[0.08] transition-colors`} title="Tải ảnh">
                   <Upload size={14} />
                 </button>
                 <button onClick={onOpenLibrary} className="flex-1 flex items-center justify-center hover:bg-brand-blue/10 text-brand-blue transition-colors" title="Thư viện">
@@ -281,7 +281,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
                 className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg text-[8px] font-bold transition-all border ${
                   selectedStyle === style.id
                     ? `bg-${config.accentColor}-500/10 border-${config.accentColor}-500/30 text-${config.accentColor}-600`
-                    : 'bg-white dark:bg-white/[0.02] border-black/[0.04] dark:border-white/[0.04] text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-white/10'
+                    : 'bg-white dark:bg-white/[0.02] border-black/[0.04] dark:border-white/[0.08] text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-white/10'
                 }`}
               >
                 <span className="text-sm leading-none">{style.emoji}</span>
@@ -301,7 +301,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
               <button
                 key={theme}
                 onClick={() => setColorTheme(colorTheme === theme ? null : theme)}
-                className={`px-2 py-1 rounded-md text-[8px] font-bold transition-all border ${colorTheme === theme ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-600' : 'bg-white dark:bg-white/[0.02] border-black/[0.04] dark:border-white/[0.04] text-slate-500 dark:text-slate-400 hover:border-slate-300'}`}
+                className={`px-2 py-1 rounded-md text-[8px] font-bold transition-all border ${colorTheme === theme ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-600' : 'bg-white dark:bg-white/[0.02] border-black/[0.04] dark:border-white/[0.08] text-slate-500 dark:text-slate-400 hover:border-slate-300'}`}
               >
                 {theme}
               </button>
@@ -329,7 +329,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
                 <button
                   key={t.id}
                   onClick={() => onApplyTemplate(t)}
-                  className="w-full text-left p-2.5 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/30 transition-all group"
+                  className="w-full text-left p-2.5 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] hover:border-brand-blue/30 transition-all group"
                 >
                   <div className="flex items-center justify-between mb-0.5">
                     <span className="text-[9px] font-bold text-slate-700 dark:text-white/80">{t.name}</span>
@@ -346,7 +346,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
       {/* ════════════════════════════════════════════════════
           GROUP 3: PROMPT (always visible)
       ════════════════════════════════════════════════════ */}
-      <section className="space-y-3 pt-4 border-t border-black/[0.04] dark:border-white/[0.04]">
+      <section className="space-y-3 pt-4 border-t border-black/[0.04] dark:border-white/[0.08]">
         <div className="flex justify-between items-center">
           <label className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-2">
             <Sparkles size={13} className={`text-${config.accentColor}-500`} /> Yêu cầu bổ sung
@@ -356,13 +356,13 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
             <div className="relative">
               <button
                 onClick={() => setShowHistory(!showHistory)}
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[8px] font-bold transition-all border ${promptHistory.length > 0 ? 'bg-slate-100 dark:bg-white/[0.03] text-slate-500 border-black/[0.04] dark:border-white/[0.04] hover:text-brand-blue' : 'text-slate-300 border-transparent cursor-default'}`}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[8px] font-bold transition-all border ${promptHistory.length > 0 ? 'bg-slate-100 dark:bg-white/[0.03] text-slate-500 border-black/[0.04] dark:border-white/[0.08] hover:text-brand-blue' : 'text-slate-300 border-transparent cursor-default'}`}
                 disabled={promptHistory.length === 0}
               >
                 <History size={9} /> {promptHistory.length}
               </button>
               {showHistory && promptHistory.length > 0 && (
-                <div className="absolute right-0 top-full mt-1 w-56 max-h-40 bg-white dark:bg-[#111114] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl z-50 overflow-y-auto no-scrollbar">
+                <div className="absolute right-0 top-full mt-1 w-56 max-h-40 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl z-50 overflow-y-auto no-scrollbar">
                   {promptHistory.map((h, i) => (
                     <button
                       key={i}
@@ -413,7 +413,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
         </div>
 
         {/* Seed Lock */}
-        <div className="flex items-center justify-between bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] p-2.5 rounded-lg">
+        <div className="flex items-center justify-between bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] p-2.5 rounded-lg">
           <div className="flex items-center gap-2">
             {seedLock ? <Lock size={11} className="text-amber-500" /> : <Unlock size={11} className="text-slate-400" />}
             <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400">Khóa Seed</span>
@@ -429,7 +429,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
             )}
             <button
               onClick={() => setSeedLock(!seedLock)}
-              className={`px-2.5 py-1 rounded-md text-[8px] font-bold transition-all ${seedLock ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-slate-100 dark:bg-white/[0.04] text-slate-400 border border-black/[0.04] dark:border-white/[0.04]'}`}
+              className={`px-2.5 py-1 rounded-md text-[8px] font-bold transition-all ${seedLock ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-slate-100 dark:bg-white/[0.04] text-slate-400 border border-black/[0.04] dark:border-white/[0.08]'}`}
             >
               {seedLock ? 'ON' : 'OFF'}
             </button>

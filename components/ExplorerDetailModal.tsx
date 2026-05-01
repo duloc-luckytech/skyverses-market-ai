@@ -59,7 +59,7 @@ const ExplorerDetailModal: React.FC<ExplorerDetailModalProps> = ({ item, onClose
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[1000] bg-white dark:bg-[#0a0a0c] flex flex-col md:flex-row overflow-hidden transition-colors"
+        className="fixed inset-0 z-[1000] bg-white dark:bg-[#0a0d14] flex flex-col md:flex-row overflow-hidden transition-colors"
       >
         {/* LEFT: MEDIA VIEWPORT */}
         <div className="flex-grow w-full h-[45vh] md:h-full flex flex-col relative overflow-hidden">
@@ -83,7 +83,7 @@ const ExplorerDetailModal: React.FC<ExplorerDetailModalProps> = ({ item, onClose
         </div>
 
         {/* RIGHT: SIDEBAR */}
-        <aside className="w-full md:w-[420px] h-[55vh] md:h-full bg-white dark:bg-[#0e0e12] border-l border-black/[0.04] dark:border-white/[0.04] flex flex-col shrink-0 z-[60] transition-colors">
+        <aside className="w-full md:w-[420px] h-[55vh] md:h-full bg-white dark:bg-[#1a1f2b] border-l border-black/[0.04] dark:border-white/[0.04] flex flex-col shrink-0 z-[60] transition-colors">
           
           <SidebarHeader 
             authorName={item.authorName || 'Skyverses Creator'} 

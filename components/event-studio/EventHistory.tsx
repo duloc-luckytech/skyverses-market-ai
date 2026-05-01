@@ -21,7 +21,7 @@ export const EventHistory: React.FC<EventHistoryProps> = ({ results, activeId, o
   });
 
   return (
-    <aside className="hidden lg:flex w-20 xl:w-28 border-l border-black/[0.04] dark:border-white/[0.04] bg-white/60 dark:bg-[#0d0e12]/60 backdrop-blur-xl flex-col items-center py-6 gap-4 overflow-y-auto no-scrollbar z-50 transition-colors">
+    <aside className="hidden lg:flex w-20 xl:w-28 border-l border-black/[0.04] dark:border-white/[0.04] bg-white/60 dark:bg-[#13171f]/60 backdrop-blur-xl flex-col items-center py-6 gap-4 overflow-y-auto no-scrollbar z-50 transition-colors">
       <div className="flex flex-col items-center gap-1.5 mb-2 shrink-0">
         <HistoryIcon size={14} className="text-slate-400 dark:text-slate-500" />
         <span className="text-[7px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-widest">Kết quả</span>

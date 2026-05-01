@@ -126,9 +126,9 @@ const AetherVisualAgentInterface = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#030304] overflow-hidden text-black dark:text-white font-mono">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white font-mono">
       
-      <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#050506] border-r border-black/10 dark:border-white/5 p-8 space-y-10">
+      <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#0a0d14] border-r border-black/10 dark:border-white/5 p-8 space-y-10">
          <div className="space-y-6">
             <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
                <Target className="w-4 h-4 text-brand-blue" /> Intent_Uplink
@@ -172,7 +172,7 @@ const AetherVisualAgentInterface = () => {
          </div>
       </div>
 
-      <div className="flex-grow flex flex-col bg-white dark:bg-[#020202] relative overflow-hidden">
+      <div className="flex-grow flex flex-col bg-white dark:bg-[#0a0d14] relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #0090ff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
         <div className="flex-grow overflow-y-auto p-8 lg:p-12 relative z-10 no-scrollbar">
@@ -263,7 +263,7 @@ const AetherVisualAgentInterface = () => {
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-hidden">
+      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#0a0d14] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Activity className="w-4 h-4 text-brand-blue" /> Cognitive_Trace

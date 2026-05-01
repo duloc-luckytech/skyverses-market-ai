@@ -32,7 +32,7 @@ interface SidebarControlsProps {
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({ s, fileInputRef }) => {
   const labelStyle = "text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-2 flex items-center gap-2 px-1";
-  const selectStyle = "w-full bg-slate-50 dark:bg-[#16161a] border border-slate-200 dark:border-white/10 rounded-lg p-3 text-xs font-bold text-slate-800 dark:text-white outline-none focus:border-purple-500/50 transition-all appearance-none cursor-pointer shadow-sm";
+  const selectStyle = "w-full bg-slate-50 dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-lg p-3 text-xs font-bold text-slate-800 dark:text-white outline-none focus:border-purple-500/50 transition-all appearance-none cursor-pointer shadow-sm";
 
   return (
     <div className="p-8 space-y-10">
@@ -133,7 +133,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ s, fileInputRe
         </div>
         <textarea 
           value={s.extraPrompt} onChange={e => s.setExtraPrompt(e.target.value)}
-          className="w-full h-32 bg-slate-50 dark:bg-[#16161a] border border-slate-200 dark:border-white/10 rounded-xl p-4 text-[13px] font-medium focus:border-purple-500/50 outline-none transition-all resize-none text-slate-700 dark:text-gray-300 placeholder:text-slate-300 dark:placeholder:text-gray-700 shadow-inner" 
+          className="w-full h-32 bg-slate-50 dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-xl p-4 text-[13px] font-medium focus:border-purple-500/50 outline-none transition-all resize-none text-slate-700 dark:text-gray-300 placeholder:text-slate-300 dark:placeholder:text-gray-700 shadow-inner" 
           placeholder="Nhập thêm yêu cầu đặc biệt..."
         />
       </div>

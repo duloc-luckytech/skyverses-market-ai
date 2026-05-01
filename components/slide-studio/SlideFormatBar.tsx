@@ -199,7 +199,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
     <div
       data-slide-formatbar="true"
       onMouseDown={np}
-      className="flex flex-col gap-0 px-2 py-1.5 bg-white dark:bg-[#171719] border border-black/[0.07] dark:border-white/[0.07] rounded-xl shadow-2xl w-full"
+      className="flex flex-col gap-0 px-2 py-1.5 bg-white dark:bg-[#1a1f2b] border border-black/[0.07] dark:border-white/[0.1] rounded-xl shadow-2xl w-full"
     >
       {/* ══ ROW 1: Text formatting ══════════════════════════════════════════════ */}
       <div className={`flex items-center gap-0.5 flex-wrap min-h-[30px] ${dimRow1}`}>
@@ -214,7 +214,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
           >
             {FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
           </select>
-          <ChevronDown size={8} className="absolute right-0 text-slate-400 dark:text-white/30 pointer-events-none" />
+          <ChevronDown size={8} className="absolute right-0 text-slate-400 dark:text-gray-400 pointer-events-none" />
         </div>
 
         {sep}
@@ -265,7 +265,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
           ><Palette size={11} /></button>
           {showTextColors && (
             <div data-slide-formatbar="true" onMouseDown={np}
-              className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 rounded-xl bg-white dark:bg-[#171719] border border-black/[0.07] dark:border-white/[0.07] shadow-xl grid grid-cols-8 gap-1 z-50"
+              className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 rounded-xl bg-white dark:bg-[#1a1f2b] border border-black/[0.07] dark:border-white/[0.1] shadow-xl grid grid-cols-8 gap-1 z-50"
             >
               {TEXT_COLORS.map(c => (
                 <button key={c} style={{ backgroundColor: c }}
@@ -286,7 +286,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
           ><Highlighter size={11} /></button>
           {showHighlights && (
             <div data-slide-formatbar="true" onMouseDown={np}
-              className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 rounded-xl bg-white dark:bg-[#171719] border border-black/[0.07] dark:border-white/[0.07] shadow-xl grid grid-cols-5 gap-1.5 z-50"
+              className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 rounded-xl bg-white dark:bg-[#1a1f2b] border border-black/[0.07] dark:border-white/[0.1] shadow-xl grid grid-cols-5 gap-1.5 z-50"
             >
               {HIGHLIGHT_COLORS.map(c => (
                 <button key={c}
@@ -315,7 +315,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
         </div>
 
         {/* Hint */}
-        <span className="ml-auto text-[9px] text-slate-300 dark:text-white/20 hidden sm:block select-none pr-1">
+        <span className="ml-auto text-[9px] text-slate-300 dark:text-white/45 hidden sm:block select-none pr-1">
           {textEditing ? 'Bôi chọn text để format' : 'Double-click để chỉnh text'}
         </span>
       </div>
@@ -329,7 +329,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
 
             {/* BG fill */}
             <div className="relative flex items-center gap-1 shrink-0">
-              <span className="text-[9px] text-slate-400 dark:text-white/30 font-bold select-none">Fill</span>
+              <span className="text-[9px] text-slate-400 dark:text-gray-400 font-bold select-none">Fill</span>
               <button
                 onMouseDown={np}
                 onClick={() => { setShowBG(v => !v); setShowTC(false); setShowHL(false); }}
@@ -343,7 +343,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
               </button>
               {showBgColors && (
                 <div data-slide-formatbar="true" onMouseDown={np}
-                  className="absolute bottom-full mb-2 left-0 p-2 rounded-xl bg-white dark:bg-[#171719] border border-black/[0.07] dark:border-white/[0.07] shadow-xl grid grid-cols-8 gap-1 z-50"
+                  className="absolute bottom-full mb-2 left-0 p-2 rounded-xl bg-white dark:bg-[#1a1f2b] border border-black/[0.07] dark:border-white/[0.1] shadow-xl grid grid-cols-8 gap-1 z-50"
                   style={{ minWidth: 196 }}
                 >
                   {BG_FILL_COLORS.map(c => (
@@ -373,7 +373,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
 
             {/* Opacity */}
             <div className="flex items-center gap-1 shrink-0">
-              <span className="text-[9px] text-slate-400 dark:text-white/30 font-bold select-none">A</span>
+              <span className="text-[9px] text-slate-400 dark:text-gray-400 font-bold select-none">A</span>
               <input
                 type="range" min="0" max="100" step="1"
                 value={curOpacity}
@@ -388,7 +388,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
 
             {/* Border radius */}
             <div className="flex items-center gap-1 shrink-0">
-              <span className="text-[9px] text-slate-400 dark:text-white/30 font-bold select-none">R</span>
+              <span className="text-[9px] text-slate-400 dark:text-gray-400 font-bold select-none">R</span>
               <input
                 type="range" min="0" max="32" step="1"
                 value={curRadius}
@@ -403,7 +403,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
 
             {/* Padding */}
             <div className="flex items-center gap-0.5 shrink-0">
-              <span className="text-[9px] text-slate-400 dark:text-white/30 font-bold select-none mr-0.5">P</span>
+              <span className="text-[9px] text-slate-400 dark:text-gray-400 font-bold select-none mr-0.5">P</span>
               <button onMouseDown={np} onClick={() => onBlockUpdate({ padding: Math.max(0, curPadding - 2) })}
                 className="w-4 h-4 flex items-center justify-center text-slate-400 hover:text-brand-blue transition-colors rounded">
                 <Minus size={8} />
@@ -419,7 +419,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
 
             {/* Letter spacing */}
             <div className="flex items-center gap-0.5 shrink-0">
-              <span className="text-[9px] text-slate-400 dark:text-white/30 font-bold select-none mr-0.5">LS</span>
+              <span className="text-[9px] text-slate-400 dark:text-gray-400 font-bold select-none mr-0.5">LS</span>
               <button onMouseDown={np} onClick={() => onBlockUpdate({ letterSpacing: parseFloat((curLS - 0.5).toFixed(1)) })}
                 className="w-4 h-4 flex items-center justify-center text-slate-400 hover:text-brand-blue transition-colors rounded">
                 <Minus size={8} />
@@ -435,7 +435,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
 
             {/* Line height */}
             <div className="flex items-center gap-1 shrink-0">
-              <span className="text-[9px] text-slate-400 dark:text-white/30 font-bold select-none">LH</span>
+              <span className="text-[9px] text-slate-400 dark:text-gray-400 font-bold select-none">LH</span>
               <div className="relative">
                 <select
                   onMouseDown={np}
@@ -445,7 +445,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
                 >
                   {LINE_HEIGHTS.map(lh => <option key={lh} value={lh}>{lh}</option>)}
                 </select>
-                <ChevronDown size={7} className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/30 pointer-events-none" />
+                <ChevronDown size={7} className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 pointer-events-none" />
               </div>
             </div>
 

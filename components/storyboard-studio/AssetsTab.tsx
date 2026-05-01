@@ -264,7 +264,7 @@ const UrlUploadPanel: React.FC<UrlUploadProps> = ({ panelId, onAddUrl }) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 top-full mt-2 z-20 w-80 p-4 rounded-2xl bg-white dark:bg-[#0f0f14] border border-slate-200 dark:border-white/10 shadow-xl shadow-black/20"
+            className="absolute left-0 top-full mt-2 z-20 w-80 p-4 rounded-2xl bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 shadow-xl shadow-black/20"
           >
             <div className="space-y-3">
               <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">
@@ -744,7 +744,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex-1 min-h-0 flex flex-col p-5 lg:p-10 overflow-y-auto no-scrollbar bg-[#fafafa] dark:bg-[#050506] transition-colors duration-500"
+      className="flex-1 min-h-0 flex flex-col p-5 lg:p-10 overflow-y-auto no-scrollbar bg-[#fafafa] dark:bg-[#0a0d14] transition-colors duration-500"
     >
       <div className="max-w-6xl mx-auto w-full space-y-8 pb-32 lg:pb-10">
 

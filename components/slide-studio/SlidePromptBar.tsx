@@ -43,7 +43,7 @@ const SlidePromptBar: React.FC<Props> = ({
   };
 
   return (
-    <div className="shrink-0 px-3 py-2 bg-white dark:bg-[#111] border-t-2 border-black/[0.07] dark:border-white/[0.07]">
+    <div className="shrink-0 px-3 py-2 bg-white dark:bg-[#13171f] border-t-2 border-black/[0.07] dark:border-white/[0.1]">
 
       {/* ── Inner framed row ── */}
       <div className="flex items-center gap-2 rounded-xl border border-black/[0.1] dark:border-white/[0.1] bg-slate-50 dark:bg-white/[0.04] shadow-sm px-3 h-10 focus-within:border-brand-blue/50 focus-within:ring-2 focus-within:ring-brand-blue/10 transition-all">
@@ -70,7 +70,7 @@ const SlidePromptBar: React.FC<Props> = ({
               type="button"
               onClick={() => fileRef.current?.click()}
               title="Thêm ảnh tham chiếu"
-              className="w-6 h-6 rounded-md border border-dashed border-black/20 dark:border-white/20 flex items-center justify-center text-slate-400 dark:text-white/30 hover:text-brand-blue hover:border-brand-blue/50 transition-colors shrink-0"
+              className="w-6 h-6 rounded-md border border-dashed border-black/20 dark:border-white/20 flex items-center justify-center text-slate-400 dark:text-gray-400 hover:text-brand-blue hover:border-brand-blue/50 transition-colors shrink-0"
             >
               <Plus size={10} />
             </button>

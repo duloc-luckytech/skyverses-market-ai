@@ -95,7 +95,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   return (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[600] flex flex-col lg:flex-row bg-[#f4f7f9] dark:bg-[#0b0c10] overflow-hidden transition-colors duration-500"
+      className="fixed inset-0 z-[600] flex flex-col lg:flex-row bg-[#f4f7f9] dark:bg-[#0a0d14] overflow-hidden transition-colors duration-500"
     >
       {/* Mobile Backdrop */}
       <AnimatePresence>
@@ -132,8 +132,8 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         setIsMobileExpanded={setIsMobileExpanded}
       />
 
-      <main className="flex-grow flex flex-col bg-white dark:bg-[#0b0c10] relative transition-all min-w-0 border-l border-black/5 dark:border-white/5 h-full">
-        <header className="h-16 lg:h-20 flex items-center justify-between px-4 lg:px-8 border-b border-black/5 dark:border-white/5 shrink-0 z-50 bg-white/80 dark:bg-[#0b0c10]/80 backdrop-blur-xl">
+      <main className="flex-grow flex flex-col bg-white dark:bg-[#0a0d14] relative transition-all min-w-0 border-l border-black/5 dark:border-white/5 h-full">
+        <header className="h-16 lg:h-20 flex items-center justify-between px-4 lg:px-8 border-b border-black/5 dark:border-white/5 shrink-0 z-50 bg-white/80 dark:bg-[#0a0d14]/80 backdrop-blur-xl">
           
           <div className="flex items-center gap-2">
             <Music size={18} className="text-brand-blue lg:hidden" />
@@ -242,7 +242,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             >
               <motion.div 
                 initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }}
-                className="bg-white dark:bg-[#111318] border border-black/5 dark:border-white/10 w-full max-w-2xl rounded-3xl flex flex-col shadow-3xl overflow-hidden"
+                className="bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 w-full max-w-2xl rounded-3xl flex flex-col shadow-3xl overflow-hidden"
               >
                 <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-transparent">
                   <div className="flex items-center gap-3 text-brand-blue">
@@ -285,7 +285,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
         <AnimatePresence>
           {s.isGenerating && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-white/90 dark:bg-[#0b0c10]/90 backdrop-blur-md flex flex-col items-center justify-center z-[200]">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-white/90 dark:bg-[#0a0d14]/90 backdrop-blur-md flex flex-col items-center justify-center z-[200]">
               <div className="relative mb-6 lg:mb-10 text-brand-blue">
                 <Loader2 strokeWidth={1} className="w-16 h-16 lg:w-24 lg:h-24 animate-spin" />
                 <Music className="w-5 h-5 lg:w-8 lg:h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/50 animate-pulse" />
@@ -336,7 +336,7 @@ const MusicGenerator: React.FC = () => {
   const [isStudioOpen, setIsStudioOpen] = React.useState(false);
 
   return (
-    <div className="pt-24 bg-white dark:bg-[#020203] min-h-screen text-black dark:text-white font-sans transition-colors duration-500 pb-32">
+    <div className="pt-24 bg-white dark:bg-[#0a0d14] min-h-screen text-black dark:text-white font-sans transition-colors duration-500 pb-32">
       <div className="fixed inset-0 pointer-events-none z-0">
          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,_#ea580c08_0%,_transparent_50%)]"></div>
          <div className="absolute inset-0 opacity-[0.01] dark:opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)', backgroundSize: '120px 120px' }}></div>
@@ -376,7 +376,7 @@ const MusicGenerator: React.FC = () => {
             </div>
 
             <div className="lg:col-span-5 w-full">
-               <div className="aspect-[4/5] bg-gray-100 dark:bg-[#0a0a0c] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group p-12 flex flex-col justify-between">
+               <div className="aspect-[4/5] bg-gray-100 dark:bg-[#0a0d14] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group p-12 flex flex-col justify-between">
                   <div className="space-y-6">
                     <div className="h-1 w-24 bg-orange-500/40"></div>
                     <div className="space-y-8">
@@ -422,7 +422,7 @@ const MusicGenerator: React.FC = () => {
                   { title: 'Multi-genre Synth', icon: <Layers />, desc: 'Hỗ trợ hơn 20 thể loại âm nhạc từ Lo-fi, Cinematic đến Heavy Metal.' },
                   { title: 'HD Mastering', icon: <Sparkles />, desc: 'Tự động hậu kỳ và tối ưu chất lượng âm thanh 48kHz / 24-bit.' }
                 ].map((f, i) => (
-                  <div key={i} className="p-16 bg-white dark:bg-[#08080a] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-700 border-r border-black/5 dark:border-white/5 last:border-r-0">
+                  <div key={i} className="p-16 bg-white dark:bg-[#0a0d14] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-700 border-r border-black/5 dark:border-white/5 last:border-r-0">
                     <div className="w-14 h-14 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-400 group-hover:text-brand-blue group-hover:border-brand-blue transition-all rounded-sm shadow-xl">
                         {React.cloneElement(f.icon as React.ReactElement<any>, { size: 24 })}
                     </div>

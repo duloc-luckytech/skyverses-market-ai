@@ -23,7 +23,7 @@ const TECHNICAL_METADATA = [
 
 export const ProductionIntelSidebar: React.FC = () => {
   return (
-    <aside className="hidden xl:flex w-[320px] shrink-0 border-l border-black/5 dark:border-white/5 bg-white dark:bg-[#0d0d0f] flex flex-col overflow-hidden z-50 transition-all duration-500 shadow-2xl">
+    <aside className="hidden xl:flex w-[320px] shrink-0 border-l border-black/5 dark:border-white/5 bg-white dark:bg-[#13171f] flex flex-col overflow-hidden z-50 transition-all duration-500 shadow-2xl">
       {/* Header */}
       <div className="h-14 border-b border-black/5 dark:border-white/5 flex items-center px-6 shrink-0 bg-slate-50 dark:bg-black/20">
         <div className="flex items-center gap-3 text-rose-500">

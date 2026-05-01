@@ -94,7 +94,7 @@ export const VideoEngineSettings: React.FC<VideoEngineSettingsProps> = ({
         <button
           onClick={cycleDuration}
           disabled={isGenerating}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.04] text-[10px] font-semibold text-slate-600 dark:text-[#888] hover:border-rose-500/30 hover:text-rose-400 disabled:opacity-40 transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.04] text-[10px] font-semibold text-slate-600 dark:text-gray-300 hover:border-rose-500/30 hover:text-rose-400 disabled:opacity-40 transition-all"
         >
           <Clock size={10} />
           {selectedDuration}
@@ -106,7 +106,7 @@ export const VideoEngineSettings: React.FC<VideoEngineSettingsProps> = ({
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-semibold transition-all disabled:opacity-40 ${
           soundEnabled
             ? 'bg-rose-500/10 border-rose-500/25 text-rose-400'
-            : 'border-black/[0.06] dark:border-white/[0.04] text-slate-500 dark:text-[#666] hover:border-rose-500/30 hover:text-rose-400'
+            : 'border-black/[0.06] dark:border-white/[0.04] text-slate-500 dark:text-gray-400 hover:border-rose-500/30 hover:text-rose-400'
         }`}
       >
         {soundEnabled ? <Volume2 size={10} /> : <VolumeX size={10} />}

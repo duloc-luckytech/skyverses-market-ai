@@ -217,7 +217,7 @@ const MarketPage = () => {
   const activeFeatured = featuredSolutions[featuredIdx];
 
   return (
-    <div className="relative min-h-screen bg-[#fcfcfd] dark:bg-[#030304] font-sans transition-colors duration-500">
+    <div className="relative min-h-screen bg-[#fcfcfd] dark:bg-[#0a0d14] font-sans transition-colors duration-500">
       {/* ═══ LIGHTWEIGHT BACKGROUND ═══ */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Static gradient blobs — no animations, minimal blur */}
@@ -372,7 +372,7 @@ const MarketPage = () => {
                       stats={getFakeStats(sol._id || sol.id)}
                     />
                   ))}
-                  <div onClick={() => navigate('/markets')} className="flex-shrink-0 snap-start w-[140px] flex flex-col items-center justify-center bg-slate-50 dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] rounded-xl cursor-pointer hover:border-brand-blue/40 transition-all p-4 text-center space-y-3">
+                  <div onClick={() => navigate('/markets')} className="flex-shrink-0 snap-start w-[140px] flex flex-col items-center justify-center bg-slate-50 dark:bg-[#0a0d14] border border-black/[0.08] dark:border-white/[0.08] rounded-xl cursor-pointer hover:border-brand-blue/40 transition-all p-4 text-center space-y-3">
                     <div className="w-10 h-10 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue">
                       <ArrowRight size={18} />
                     </div>
@@ -516,7 +516,7 @@ const MarketPage = () => {
                             }}
                             whileHover={{ x: -4, transition: { duration: 0.2 } }}
                             onClick={() => handleNavigate(sol.slug)}
-                            className="flex-1 relative rounded-xl overflow-hidden cursor-pointer group bg-white dark:bg-[#0a0a0c] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 transition-all duration-300 flex"
+                            className="flex-1 relative rounded-xl overflow-hidden cursor-pointer group bg-white dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 transition-all duration-300 flex"
                           >
                             {/* Mini thumbnail */}
                             <div className="w-[38%] relative overflow-hidden">
@@ -693,7 +693,7 @@ const MarketPage = () => {
                         <p className="text-[10px] md:text-sm text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-3 md:line-clamp-none">{item.desc}</p>
                       </div>
                       {idx < 2 && (
-                        <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#0a0a0c] border border-black/[0.06] dark:border-white/[0.06] items-center justify-center shadow-lg">
+                        <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] items-center justify-center shadow-lg">
                           <ChevronRight size={14} className="text-brand-blue animate-[pulse_2s_ease-in-out_infinite]" />
                         </div>
                       )}
@@ -768,7 +768,7 @@ const MarketPage = () => {
 
                         <div
                           onClick={() => navigate('/markets')}
-                          className="flex-shrink-0 snap-start w-[180px] md:hidden flex flex-col items-center justify-center bg-slate-50 dark:bg-[#08080a] border border-black/[0.08] dark:border-white/[0.08] rounded-xl group cursor-pointer hover:border-brand-blue/40 transition-all p-6 text-center space-y-4"
+                          className="flex-shrink-0 snap-start w-[180px] md:hidden flex flex-col items-center justify-center bg-slate-50 dark:bg-[#0a0d14] border border-black/[0.08] dark:border-white/[0.08] rounded-xl group cursor-pointer hover:border-brand-blue/40 transition-all p-6 text-center space-y-4"
                         >
                           <div className="w-12 h-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
                             <ArrowRight size={24} />
@@ -1207,7 +1207,7 @@ const MarketPage = () => {
 
                     {/* Reward pills inline */}
                     <div className="flex gap-2">
-                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[#0d0d0f] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
+                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[#13171f] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
                         <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-blue to-blue-600 flex items-center justify-center text-white shrink-0">
                           <Zap size={16} fill="currentColor" />
                         </div>
@@ -1216,7 +1216,7 @@ const MarketPage = () => {
                           <p className="text-sm font-black text-slate-900 dark:text-white">+50 CR</p>
                         </div>
                       </div>
-                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[#0d0d0f] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
+                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[#13171f] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
                         <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white shrink-0">
                           <Gift size={16} />
                         </div>
@@ -1327,7 +1327,7 @@ const MarketPage = () => {
                           whileInView={{ opacity: 1, x: 0 }}
                           viewport={{ once: true }}
                           transition={{ delay: 0.2 + idx * 0.15, type: 'spring', stiffness: 120 }}
-                          className="flex items-center gap-4 p-5 bg-white dark:bg-[#0d0d0f] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl"
+                          className="flex items-center gap-4 p-5 bg-white dark:bg-[#13171f] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl"
                         >
                           <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${reward.color} flex items-center justify-center text-white shadow-lg shrink-0`}>
                             {reward.icon}

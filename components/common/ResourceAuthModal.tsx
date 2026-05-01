@@ -35,7 +35,7 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
             initial={{ scale: 0.9, y: 20 }} 
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
-            className="max-w-xl w-full bg-white dark:bg-[#111114] p-10 border border-slate-200 dark:border-white/10 rounded-[2rem] space-y-8 shadow-3xl transition-colors"
+            className="max-w-xl w-full bg-white dark:bg-[#1a1f2b] p-10 border border-slate-200 dark:border-white/10 rounded-[2rem] space-y-8 shadow-3xl transition-colors"
           >
             <div className="text-center space-y-4">
               <div className="w-16 h-16 bg-brand-blue/10 rounded-full flex items-center justify-center mx-auto text-brand-blue shadow-[0_0_30px_rgba(0,144,255,0.2)]">

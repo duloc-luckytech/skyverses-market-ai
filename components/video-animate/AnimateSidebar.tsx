@@ -40,7 +40,7 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
     : 'from-purple-600 to-fuchsia-600 shadow-purple-500/20';
 
   return (
-    <div className="w-full lg:w-[500px] flex flex-col h-full bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl relative transition-colors">
+    <div className="w-full lg:w-[500px] flex flex-col h-full bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl relative transition-colors">
       <div className="flex-grow overflow-y-auto no-scrollbar p-8 lg:p-10 space-y-10">
         <div className="absolute top-0 right-0 p-12 opacity-[0.03] dark:opacity-[0.02] pointer-events-none text-slate-900 dark:text-white">
           <Settings2 size={240} />
@@ -130,7 +130,7 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
               <select 
                 value={props.selectedEngine}
                 onChange={(e) => props.setSelectedEngine(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none focus:border-brand-blue transition-colors text-slate-900 dark:text-white appearance-none cursor-pointer shadow-sm"
+                className="w-full bg-slate-50 dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none focus:border-brand-blue transition-colors text-slate-900 dark:text-white appearance-none cursor-pointer shadow-sm"
               >
                 <option value="fxlab">Fxlab Node</option>
                 <option value="gommo">Gommo Cluster</option>
@@ -146,7 +146,7 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
               <div className="relative">
                 <button 
                   onClick={() => setShowModelMenu(!showModelMenu)}
-                  className="w-full bg-slate-50 dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 p-3 rounded-xl flex items-center justify-between group hover:border-brand-blue/30 transition-all shadow-sm"
+                  className="w-full bg-slate-50 dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 p-3 rounded-xl flex items-center justify-between group hover:border-brand-blue/30 transition-all shadow-sm"
                 >
                   <span className="font-black text-[10px] tracking-tight uppercase italic text-slate-900 dark:text-white truncate pr-4">
                     {props.selectedModel?.name || 'Loading...'}
@@ -158,7 +158,7 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
                   {showModelMenu && (
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                      className="absolute bottom-full mb-2 w-full bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl p-2 z-[110] overflow-hidden max-h-60 overflow-y-auto no-scrollbar"
+                      className="absolute bottom-full mb-2 w-full bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl p-2 z-[110] overflow-hidden max-h-60 overflow-y-auto no-scrollbar"
                     >
                       {props.availableModels.map(m => (
                         <button 
@@ -185,7 +185,7 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
             <select 
               value={props.selectedQuality} 
               onChange={e => props.setSelectedQuality(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-[11px] font-black uppercase outline-none focus:border-cyan-500/30 text-slate-900 dark:text-white shadow-inner"
+              className="w-full bg-slate-50 dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-[11px] font-black uppercase outline-none focus:border-cyan-500/30 text-slate-900 dark:text-white shadow-inner"
             >
               {QUALITY_MODES.map(q => <option key={q} value={q}>{q}</option>)}
             </select>
@@ -195,7 +195,7 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
             <select 
               value={props.selectedRatio} 
               onChange={e => props.setSelectedRatio(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-[11px] font-black uppercase outline-none focus:border-cyan-500/30 text-slate-900 dark:text-white shadow-inner"
+              className="w-full bg-slate-50 dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-[11px] font-black uppercase outline-none focus:border-cyan-500/30 text-slate-900 dark:text-white shadow-inner"
             >
               {RATIOS.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
@@ -204,11 +204,11 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
       </div>
 
       {/* ACTION FOOTER */}
-      <div className="p-10 border-t border-black/5 dark:border-white/5 bg-white/80 dark:bg-[#141414]/80 backdrop-blur-md shrink-0 space-y-4">
+      <div className="p-10 border-t border-black/5 dark:border-white/5 bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-md shrink-0 space-y-4">
         <button 
           onClick={props.handleSynthesize}
           disabled={props.isGenerating || !props.sourceImg}
-          className={`w-full py-7 rounded-[2.5rem] flex items-center justify-center gap-4 text-[14px] font-black uppercase tracking-[0.4em] shadow-2xl transition-all active:scale-[0.97] group overflow-hidden relative ${props.sourceImg ? `bg-gradient-to-r ${activeGradient} text-white` : 'bg-slate-100 dark:bg-[#222] text-slate-400 dark:text-gray-500 cursor-not-allowed'}`}
+          className={`w-full py-7 rounded-[2.5rem] flex items-center justify-center gap-4 text-[14px] font-black uppercase tracking-[0.4em] shadow-2xl transition-all active:scale-[0.97] group overflow-hidden relative ${props.sourceImg ? `bg-gradient-to-r ${activeGradient} text-white` : 'bg-slate-100 dark:bg-[#1a1f2b] text-slate-400 dark:text-gray-500 cursor-not-allowed'}`}
         >
           <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
           {props.isGenerating ? <Loader2 className="animate-spin" size={24} /> : <Zap size={24} fill="currentColor" />}

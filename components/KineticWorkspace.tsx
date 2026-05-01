@@ -191,10 +191,10 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const processingCount = tasks.filter(t => t.status === 'processing').length;
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#030304] text-black dark:text-white font-sans overflow-hidden relative selection:bg-yellow-500/30 transition-colors duration-500">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] text-black dark:text-white font-sans overflow-hidden relative selection:bg-yellow-500/30 transition-colors duration-500">
       
       {/* 1. CONTROL TERMINAL (LEFT) */}
-      <aside className="w-full lg:w-[380px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[#fcfcfd] dark:bg-[#08080a] z-[100] shadow-2xl overflow-hidden transition-colors">
+      <aside className="w-full lg:w-[380px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[#fcfcfd] dark:bg-[#0a0d14] z-[100] shadow-2xl overflow-hidden transition-colors">
          <div className="p-8 space-y-10 overflow-y-auto no-scrollbar flex-grow">
             <header className="flex justify-between items-center">
                <div className="flex items-center gap-3">
@@ -341,7 +341,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </aside>
 
       {/* 2. PRODUCTION HUB (CENTER) */}
-      <main className="flex-grow flex flex-col bg-[#f0f1f3] dark:bg-[#010102] relative overflow-hidden transition-colors duration-500">
+      <main className="flex-grow flex flex-col bg-[#f0f1f3] dark:bg-[#0a0d14] relative overflow-hidden transition-colors duration-500">
          
          <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-50 pointer-events-none">
             <div className="px-3 py-1.5 bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 flex items-center gap-2 pointer-events-auto">
@@ -401,7 +401,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
          </div>
 
          {/* PRODUCTION HUD (BOTTOM) */}
-         <div className="h-32 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#080808] px-8 lg:px-12 flex items-center justify-between z-40 transition-colors">
+         <div className="h-32 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#0a0d14] px-8 lg:px-12 flex items-center justify-between z-40 transition-colors">
             <div className="flex items-center gap-10">
                <div className="hidden md:flex flex-col gap-2">
                   <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Master Output</span>

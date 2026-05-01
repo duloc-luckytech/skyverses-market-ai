@@ -76,7 +76,7 @@ const ProductCaptchaToken = () => {
   ];
 
   return (
-    <div className="pt-20 bg-[#fcfcfd] dark:bg-[#050507] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-indigo-500/30 overflow-x-hidden transition-colors duration-500">
+    <div className="pt-20 bg-[#fcfcfd] dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-indigo-500/30 overflow-x-hidden transition-colors duration-500">
 
       {/* ═══════════ HERO ═══════════ */}
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12 pt-6">

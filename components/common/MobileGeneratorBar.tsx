@@ -42,7 +42,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
     <div 
       className={`lg:hidden flex flex-col items-center shrink-0 cursor-pointer relative transition-all duration-500 ease-in-out ${
         isExpanded 
-          ? 'h-14 border-b border-black/5 dark:border-white/5 justify-center bg-white dark:bg-[#0d0d0f]' 
+          ? 'h-14 border-b border-black/5 dark:border-white/5 justify-center bg-white dark:bg-[#13171f]' 
           : 'h-[160px] justify-start bg-white/70 dark:bg-black/70 backdrop-blur-xl border-t border-black/5 dark:border-white/10 pb-10 shadow-[0_-8px_30px_rgba(0,0,0,0.1)]'
       }`}
       onClick={() => !isExpanded && setIsExpanded(true)}

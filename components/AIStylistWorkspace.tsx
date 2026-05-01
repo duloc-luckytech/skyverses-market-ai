@@ -179,7 +179,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex flex-col bg-white dark:bg-[#080808] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
+    <div className="fixed inset-0 z-[1000] flex flex-col bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
       
       {/* Header bar */}
       <div className="h-14 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-6 shrink-0 bg-white/40 dark:bg-black/40 backdrop-blur-md z-[160]">
@@ -225,7 +225,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
         {/* SIDEBAR: Bottom sheet on mobile, left sidebar on desktop */}
         <aside 
-          className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[340px] bg-white dark:bg-[#0a0a0c] border-t lg:border-t-0 lg:border-r border-black/5 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileSidebarExpanded ? 'h-[85dvh] rounded-t-[2.5rem]' : 'h-16 lg:h-full lg:rounded-none'}`}
+          className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[340px] bg-white dark:bg-[#0a0d14] border-t lg:border-t-0 lg:border-r border-black/5 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileSidebarExpanded ? 'h-[85dvh] rounded-t-[2.5rem]' : 'h-16 lg:h-full lg:rounded-none'}`}
         >
            {/* Mobile Handle Bar */}
            <div 
@@ -365,9 +365,9 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         {getFullDataForCategory('pose').map(p => (
                           <button 
                             key={p.id} onClick={() => s.setSelectedPose(p.id)}
-                            className={`relative aspect-[3/4] bg-slate-200 dark:bg-[#1a1a1a] rounded-lg border-2 transition-all overflow-hidden group ${s.selectedPose === p.id ? 'border-[#dfff1a] ring-4 ring-[#dfff1a]/10' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                            className={`relative aspect-[3/4] bg-slate-200 dark:bg-[#1a1f2b] rounded-lg border-2 transition-all overflow-hidden group ${s.selectedPose === p.id ? 'border-[#dfff1a] ring-4 ring-[#dfff1a]/10' : 'border-transparent opacity-50 hover:opacity-100'}`}
                           >
-                              <div className="w-full h-full bg-slate-300 dark:bg-[#111] flex items-center justify-center relative">
+                              <div className="w-full h-full bg-slate-300 dark:bg-[#13171f] flex items-center justify-center relative">
                                 <div className="w-full h-full bg-[radial-gradient(circle_at_40%_40%,_#fff_0%,_transparent_60%)] dark:bg-[radial-gradient(circle_at_40%_40%,_#333_0%,_transparent_60%)]"></div>
                                 <img src={p.url} className="absolute inset-0 w-full h-full object-contain p-2" alt="Pose" />
                               </div>
@@ -387,9 +387,9 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         </aside>
 
         {/* VIEWPORT: Main Display Area */}
-        <main className="flex-grow flex flex-col relative bg-slate-100 dark:bg-[#050505] p-4 md:p-12 items-center justify-center transition-colors">
+        <main className="flex-grow flex flex-col relative bg-slate-100 dark:bg-[#0a0d14] p-4 md:p-12 items-center justify-center transition-colors">
            <div 
-             className={`w-full max-w-2xl aspect-[3/4] rounded-[2rem] md:rounded-[3.5rem] bg-white dark:bg-[#121212] border border-black/5 dark:border-white/5 shadow-[0_0_100px_rgba(0,0,0,0.05)] dark:shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center overflow-hidden relative transition-all ${s.hasResult ? 'border-none' : 'border-dashed border-slate-200 dark:border-white/10'}`}
+             className={`w-full max-w-2xl aspect-[3/4] rounded-[2rem] md:rounded-[3.5rem] bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/5 shadow-[0_0_100px_rgba(0,0,0,0.05)] dark:shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center overflow-hidden relative transition-all ${s.hasResult ? 'border-none' : 'border-dashed border-slate-200 dark:border-white/10'}`}
            >
               {s.isGenerating ? (
                 <div className="flex flex-col items-center gap-6">
@@ -476,7 +476,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 md:gap-3 w-full max-w-md">
                         <button 
                           onClick={() => s.useAsReference(s.history[s.activeHistoryIndex!])} 
-                          className="p-3.5 md:p-5 bg-white dark:bg-[#1a1a1c]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all group shrink-0"
+                          className="p-3.5 md:p-5 bg-white dark:bg-[#1a1f2b]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all group shrink-0"
                           title="Sử dụng làm ảnh mẫu gốc"
                         >
                            <UserCircle size={18} className="md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
@@ -484,7 +484,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         
                         <button 
                           onClick={handleEditClick} 
-                          className="p-3.5 md:p-5 bg-white dark:bg-[#1a1a1c]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all group shrink-0"
+                          className="p-3.5 md:p-5 bg-white dark:bg-[#1a1f2b]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all group shrink-0"
                           title="Chỉnh sửa ảnh chuyên sâu"
                         >
                            <Edit3 size={18} className="md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
@@ -496,7 +496,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         
                         <button 
                           onClick={() => s.history[s.activeHistoryIndex!] && handleDownload(s.history[s.activeHistoryIndex!])}
-                          className="p-3.5 md:p-5 bg-white dark:bg-[#1a1a1c]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all shrink-0"
+                          className="p-3.5 md:p-5 bg-white dark:bg-[#1a1f2b]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all shrink-0"
                           title="Tải xuống"
                         >
                           <Download size={18} className="md:w-5 md:h-5"/>
@@ -504,7 +504,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
                         <button 
                           onClick={handleDeleteClick}
-                          className="hidden sm:flex p-3.5 md:p-5 bg-white dark:bg-[#1a1a1c]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-red-400 hover:bg-red-500 hover:text-white transition-all shrink-0"
+                          className="hidden sm:flex p-3.5 md:p-5 bg-white dark:bg-[#1a1f2b]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-red-400 hover:bg-red-500 hover:text-white transition-all shrink-0"
                           title="Xóa ảnh"
                         >
                           <Trash2 size={18} className="md:w-5 md:h-5"/>
@@ -580,7 +580,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       <AnimatePresence>
         {s.showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[#111114] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[#1a1f2b] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors">
               <div className="w-24 h-24 bg-orange-500/10 border border-orange-500/20 rounded-full flex items-center justify-center mx-auto text-orange-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]"><AlertTriangle size={48} /></div>
               <div className="space-y-4">
                 <h3 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3>

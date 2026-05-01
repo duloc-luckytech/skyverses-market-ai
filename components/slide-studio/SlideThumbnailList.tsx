@@ -100,10 +100,10 @@ const SlideThumbnailList: React.FC<Props> = ({
   }, []);
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto bg-black/[0.02] dark:bg-white/[0.02] border-r border-black/[0.06] dark:border-white/[0.05] w-[120px] shrink-0">
+    <div className="flex flex-col h-full overflow-y-auto bg-black/[0.02] dark:bg-white/[0.02] border-r border-black/[0.06] dark:border-white/[0.08] w-[120px] shrink-0">
       {/* Header */}
-      <div className="sticky top-0 z-10 px-2 py-2.5 bg-white/80 dark:bg-[#0f0f11]/80 backdrop-blur border-b border-black/[0.05] dark:border-white/[0.05]">
-        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/30 text-center">
+      <div className="sticky top-0 z-10 px-2 py-2.5 bg-white/80 dark:bg-[#13171f]/80 backdrop-blur border-b border-black/[0.05] dark:border-white/[0.08]">
+        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 text-center">
           Slides ({slides.length})
         </p>
       </div>
@@ -231,7 +231,7 @@ const SlideThumbnailList: React.FC<Props> = ({
                 )}
 
                 {/* Slide number */}
-                <p className={`text-center text-[9px] mt-1 font-medium ${isActive ? 'text-brand-blue' : 'text-slate-400 dark:text-white/30'}`}>
+                <p className={`text-center text-[9px] mt-1 font-medium ${isActive ? 'text-brand-blue' : 'text-slate-400 dark:text-gray-400'}`}>
                   {idx + 1}
                 </p>
               </motion.div>
@@ -246,7 +246,7 @@ const SlideThumbnailList: React.FC<Props> = ({
           onClick={onAddSlide}
           className="w-full aspect-video rounded-lg border-2 border-dashed border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center hover:border-brand-blue/50 hover:bg-brand-blue/[0.03] transition-all group"
         >
-          <Plus size={14} className="text-slate-400 dark:text-white/30 group-hover:text-brand-blue transition-colors" />
+          <Plus size={14} className="text-slate-400 dark:text-gray-400 group-hover:text-brand-blue transition-colors" />
         </motion.button>
       </div>
     </div>

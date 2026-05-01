@@ -40,7 +40,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
   }, [activeJob?.status]);
 
   return (
-    <div className="flex-grow flex flex-col bg-slate-50/50 dark:bg-[#050506] overflow-hidden transition-colors duration-500 relative">
+    <div className="flex-grow flex flex-col bg-slate-50/50 dark:bg-[#0a0d14] overflow-hidden transition-colors duration-500 relative">
       
       {/* Ambient background glow */}
       <div className="absolute inset-0 pointer-events-none">
@@ -55,10 +55,10 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
               initial={{ opacity: 0, scale: 0.96, y: 10 }} 
               animate={{ opacity: 1, scale: 1, y: 0 }} 
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-5xl aspect-video bg-white dark:bg-[#0a0a0e] shadow-2xl dark:shadow-[0_20px_80px_rgba(0,0,0,0.4)] rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/[0.06] overflow-hidden group"
+              className="relative w-full max-w-5xl aspect-video bg-white dark:bg-[#0a0d14] shadow-2xl dark:shadow-[0_20px_80px_rgba(0,0,0,0.4)] rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/[0.06] overflow-hidden group"
             >
               {/* Window chrome bar */}
-              <div className="absolute top-0 left-0 right-0 h-10 bg-white/80 dark:bg-[#0d0e12]/80 backdrop-blur-md z-40 flex items-center px-4 border-b border-slate-100 dark:border-white/[0.04]">
+              <div className="absolute top-0 left-0 right-0 h-10 bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-md z-40 flex items-center px-4 border-b border-slate-100 dark:border-white/[0.04]">
                 <div className="flex gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-red-400/50"></div>
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-400/50"></div>
@@ -332,7 +332,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="h-[72px] shrink-0 bg-white/90 dark:bg-[#0b0c10]/90 backdrop-blur-2xl border-t border-slate-100 dark:border-white/[0.04] flex items-center justify-center px-4 md:px-8 z-[80]"
+            className="h-[72px] shrink-0 bg-white/90 dark:bg-[#0a0d14]/90 backdrop-blur-2xl border-t border-slate-100 dark:border-white/[0.04] flex items-center justify-center px-4 md:px-8 z-[80]"
           >
             <div className="flex items-center gap-1.5 md:gap-2 bg-slate-50 dark:bg-white/[0.03] p-1.5 rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-xl">
               <button 

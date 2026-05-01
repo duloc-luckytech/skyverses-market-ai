@@ -287,9 +287,9 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[#050505] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
+    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
       
-      <div className="h-14 bg-white dark:bg-[#0a0a0a] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-6 shrink-0 z-[100] transition-colors">
+      <div className="h-14 bg-white dark:bg-[#0a0d14] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-6 shrink-0 z-[100] transition-colors">
         <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-full border border-slate-200 dark:border-white/10 transition-colors">
           <button 
             onClick={() => setViewMode('current')}
@@ -319,7 +319,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
       <div className="flex-grow flex overflow-hidden">
         
-        <aside className="w-[380px] border-r border-slate-200 dark:border-white/5 bg-white dark:bg-[#0a0a0a] flex flex-col shrink-0 overflow-y-auto no-scrollbar pb-10 transition-colors duration-500">
+        <aside className="w-[380px] border-r border-slate-200 dark:border-white/5 bg-white dark:bg-[#0a0d14] flex flex-col shrink-0 overflow-y-auto no-scrollbar pb-10 transition-colors duration-500">
            <div className="p-5 space-y-8">
               
               <section className="space-y-4">
@@ -444,31 +444,31 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  <div className="space-y-2">
                     <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">MODEL AI</label>
                     <select value={selectedModel} onChange={e => setSelectedModel(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-2 rounded-md text-[10px] font-bold outline-none text-slate-800 dark:text-white">
-                       {MODELS.map(m => <option key={m} className="bg-white dark:bg-[#0a0a0a] text-slate-900 dark:text-white">{m}</option>)}
+                       {MODELS.map(m => <option key={m} className="bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white">{m}</option>)}
                     </select>
                  </div>
                  <div className="space-y-2">
                     <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">PHONG CÁCH</label>
                     <select value={selectedStyle} onChange={e => setSelectedStyle(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-2 rounded-md text-[10px] font-bold outline-none text-slate-800 dark:text-white">
-                       {STYLES.map(s => <option key={s} className="bg-white dark:bg-[#0a0a0a] text-slate-900 dark:text-white">{s}</option>)}
+                       {STYLES.map(s => <option key={s} className="bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white">{s}</option>)}
                     </select>
                  </div>
                  <div className="space-y-2">
                     <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">KÍCH THƯỚC</label>
                     <select value={selectedSize} onChange={e => setSelectedSize(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-2 rounded-md text-[10px] font-bold outline-none text-slate-800 dark:text-white">
-                       {SIZES.map(s => <option key={s} className="bg-white dark:bg-[#0a0a0a] text-slate-900 dark:text-white">{s}</option>)}
+                       {SIZES.map(s => <option key={s} className="bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white">{s}</option>)}
                     </select>
                  </div>
                  <div className="space-y-2">
                     <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">MODE</label>
                     <select value={selectedMode} onChange={e => setSelectedMode(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-2 rounded-md text-[10px] font-bold outline-none text-slate-800 dark:text-white">
-                       {MODES.map(m => <option key={m} className="bg-white dark:bg-[#0a0a0a] text-slate-900 dark:text-white">{m}</option>)}
+                       {MODES.map(m => <option key={m} className="bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white">{m}</option>)}
                     </select>
                  </div>
                  <div className="space-y-2">
                     <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">RES</label>
                     <select value={selectedRes} onChange={e => setSelectedRes(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-2 rounded-md text-[10px] font-bold outline-none text-slate-800 dark:text-white">
-                       {RESOLUTIONS.map(r => <option key={r} className="bg-white dark:bg-[#0a0a0a] text-slate-900 dark:text-white">{r.toUpperCase()}</option>)}
+                       {RESOLUTIONS.map(r => <option key={r} className="bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white">{r.toUpperCase()}</option>)}
                     </select>
                  </div>
                  <div className="space-y-2">
@@ -610,7 +610,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
            </div>
         </aside>
 
-        <main className="flex-grow bg-[#f0f3f6] dark:bg-[#020202] relative overflow-hidden flex flex-col items-center justify-center p-8 transition-colors duration-500">
+        <main className="flex-grow bg-[#f0f3f6] dark:bg-[#0a0d14] relative overflow-hidden flex flex-col items-center justify-center p-8 transition-colors duration-500">
            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
            <AnimatePresence mode="wait">
@@ -618,7 +618,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  <motion.div key="library-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full h-full overflow-y-auto p-10 no-scrollbar">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                        {sessions.map(s => (
-                          <div key={s.id} className="relative group/lib aspect-[3/4] bg-white dark:bg-[#0a0a0a] border border-slate-200 dark:border-white/5 rounded-lg overflow-hidden shadow-xl dark:shadow-2xl hover:border-brand-blue transition-all">
+                          <div key={s.id} className="relative group/lib aspect-[3/4] bg-white dark:bg-[#0a0d14] border border-slate-200 dark:border-white/5 rounded-lg overflow-hidden shadow-xl dark:shadow-2xl hover:border-brand-blue transition-all">
                              <img src={s.url} className="w-full h-full object-cover" />
                              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover/lib:opacity-100 transition-opacity"></div>
                              <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover/lib:opacity-100 transition-all translate-x-4 group-hover/lib:translate-x-0">
@@ -692,7 +692,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           >
              <motion.div 
                initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-               className="w-full max-w-5xl bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/10 rounded-2xl flex flex-col max-h-[90vh] shadow-[0_50px_100px_rgba(0,0,0,0.5)] transition-colors"
+               className="w-full max-w-5xl bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 rounded-2xl flex flex-col max-h-[90vh] shadow-[0_50px_100px_rgba(0,0,0,0.5)] transition-colors"
              >
                 <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-white/5 transition-colors">
                    <div className="flex items-center gap-3">
@@ -735,7 +735,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
       <AnimatePresence>
         {showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-             <div className="max-w-md w-full bg-white dark:bg-[#0c0c0e] p-10 border border-slate-200 dark:border-white/10 rounded-sm text-center space-y-8 shadow-3xl transition-colors">
+             <div className="max-w-md w-full bg-white dark:bg-[#0a0d14] p-10 border border-slate-200 dark:border-white/10 rounded-sm text-center space-y-8 shadow-3xl transition-colors">
                 <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500"><AlertTriangle size={40} /></div>
                 <div className="space-y-3">
                    <h3 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3>

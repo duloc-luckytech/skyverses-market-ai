@@ -58,7 +58,7 @@ const Pill = ({
     className={`px-2.5 py-1 rounded-md text-[10px] font-semibold transition-all border ${
       active
         ? 'bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border-indigo-500/25'
-        : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-600 dark:text-[#888] hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
+        : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-600 dark:text-gray-300 hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
     }`}
   >
     {label}
@@ -129,7 +129,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
                 >
                   {familyList.map(f => <option key={f} value={f}>{f}</option>)}
                 </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#555] pointer-events-none" size={11} />
+                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 pointer-events-none" size={11} />
               </div>
               <button
                 onClick={() => setIsDetailModalOpen(true)}
@@ -175,7 +175,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
               {hasMoreVariants && (
                 <button
                   onClick={() => setShowAllVariants(!showAllVariants)}
-                  className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-[#888] hover:text-indigo-400 transition-colors"
+                  className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-indigo-400 transition-colors"
                 >
                   {showAllVariants ? '↑ Thu gọn' : `+${allVariants.length - MAX_VARIANTS}`}
                 </button>
@@ -205,7 +205,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
                   <Pill label={selectedMode} active onClick={() => {}} disabled={isGenerating} />
                 )}
                 {hiddenCount > 0 && (
-                  <button onClick={() => toggleGroup('modes')} className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-[#888] hover:text-indigo-400 transition-colors">
+                  <button onClick={() => toggleGroup('modes')} className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-indigo-400 transition-colors">
                     {isGroupExpanded ? '↑ Thu gọn' : `+${hiddenCount}`}
                   </button>
                 )}
@@ -235,7 +235,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
                   ))}
                   {activeOutside && <Pill label={ratio} active onClick={() => {}} />}
                   {hiddenCount > 0 && (
-                    <button onClick={() => toggleGroup('ratios')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-[#888] hover:text-indigo-400 transition-colors">
+                    <button onClick={() => toggleGroup('ratios')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-indigo-400 transition-colors">
                       {isGroupExpanded ? '↑' : `+${hiddenCount}`}
                     </button>
                   )}
@@ -263,7 +263,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
                   ))}
                   {activeOutside && <Pill label={resolution} active onClick={() => {}} />}
                   {hiddenCount > 0 && (
-                    <button onClick={() => toggleGroup('res')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-[#888] hover:text-indigo-400 transition-colors">
+                    <button onClick={() => toggleGroup('res')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-indigo-400 transition-colors">
                       {isGroupExpanded ? '↑' : `+${hiddenCount}`}
                     </button>
                   )}
@@ -314,7 +314,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
                   className={`w-8 py-1 text-[10px] font-semibold transition-all ${
                     quantity === n
                       ? 'bg-indigo-500/15 text-indigo-500 dark:text-indigo-400'
-                      : 'text-slate-500 dark:text-[#888] hover:text-slate-700 dark:hover:text-white/70'
+                      : 'text-slate-500 dark:text-gray-300 hover:text-slate-700 dark:hover:text-white/70'
                   }`}
                 >
                   {n}
@@ -326,7 +326,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
 
         {/* ─── MODEL INFO ─── */}
         {selectedModelObj && (
-          <p className="text-[9px] text-slate-400 dark:text-[#444] truncate px-0.5">
+          <p className="text-[9px] text-slate-400 dark:text-gray-500 truncate px-0.5">
             → {selectedModelObj.name}{' '}
             <span className="text-slate-400 dark:text-[#333]">({selectedModelObj.modelKey})</span>
           </p>

@@ -198,7 +198,7 @@ const ProductCharacterSync = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-[#050508] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 transition-colors duration-500">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 transition-colors duration-500">
 
       {/* ═══ HERO ═══ */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -211,7 +211,7 @@ const ProductCharacterSync = () => {
             className="w-full h-full object-cover"
           />
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-[#050508]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-[#0a0d14]" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/20" />
           {/* Purple tint */}
           <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-fuchsia-900/10" />
@@ -286,7 +286,7 @@ const ProductCharacterSync = () => {
       </section>
 
       {/* ═══ STATS BAR ═══ */}
-      <section className="border-y border-slate-100 dark:border-white/[0.04] bg-white dark:bg-white/[0.01] transition-colors">
+      <section className="border-y border-slate-100 dark:border-white/[0.08] bg-white dark:bg-white/[0.01] transition-colors">
         <div className="max-w-5xl mx-auto px-6 lg:px-12 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
           {STATS.map((s, i) => (
             <motion.div key={i} {...fadeIn(i * 0.08)} className="text-center">
@@ -361,7 +361,7 @@ const ProductCharacterSync = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {FEATURES.map((f, i) => (
               <motion.div key={i} {...fadeUp(i * 0.07)}
-                className="group bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl overflow-hidden hover:border-purple-500/25 hover:shadow-xl dark:hover:shadow-purple-500/5 transition-all duration-500">
+                className="group bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-2xl overflow-hidden hover:border-purple-500/25 hover:shadow-xl dark:hover:shadow-purple-500/5 transition-all duration-500">
                 {/* Image */}
                 <div className="relative aspect-[16/9] overflow-hidden">
                   <img
@@ -477,10 +477,10 @@ const ProductCharacterSync = () => {
           </motion.div>
 
           <motion.div {...fadeUp(0.1)}
-            className="bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl overflow-hidden shadow-xl dark:shadow-black/40">
+            className="bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-xl dark:shadow-black/40">
             <table className="w-full">
               <thead>
-                <tr className="bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200/80 dark:border-white/[0.04]">
+                <tr className="bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200/80 dark:border-white/[0.08]">
                   <th className="p-5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/3">Tiêu chí</th>
                   <th className="p-5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 w-1/3">AI Truyền thống</th>
                   <th className="p-5 text-center text-[11px] font-bold uppercase tracking-wider text-purple-500 w-1/3">Character Sync</th>
@@ -527,7 +527,7 @@ const ProductCharacterSync = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {USE_CASES.map((uc, i) => (
               <motion.div key={i} {...fadeUp(i * 0.07)}
-                className="group relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/[0.04] cursor-pointer hover:border-purple-500/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-purple-500/5">
+                className="group relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/[0.08] cursor-pointer hover:border-purple-500/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-purple-500/5">
                 <img
                   src={uc.img}
                   alt={uc.title}
@@ -565,7 +565,7 @@ const ProductCharacterSync = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {TESTIMONIALS.map((t, i) => (
               <motion.div key={i} {...fadeUp(i * 0.12)}
-                className="group p-8 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl space-y-5 hover:border-purple-500/20 hover:shadow-xl dark:hover:shadow-purple-500/5 transition-all duration-500">
+                className="group p-8 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-2xl space-y-5 hover:border-purple-500/20 hover:shadow-xl dark:hover:shadow-purple-500/5 transition-all duration-500">
                 {/* Stars */}
                 <div className="flex gap-0.5">
                   {Array.from({ length: t.stars }).map((_, j) => (
@@ -578,7 +578,7 @@ const ProductCharacterSync = () => {
                   <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed italic">"{t.text}"</p>
                 </div>
                 {/* Author */}
-                <div className="flex items-center gap-3 pt-2 border-t border-slate-100 dark:border-white/[0.04]">
+                <div className="flex items-center gap-3 pt-2 border-t border-slate-100 dark:border-white/[0.08]">
                   <img
                     src={t.avatar}
                     alt={t.name}
@@ -596,7 +596,7 @@ const ProductCharacterSync = () => {
       </section>
 
       {/* ═══ CTA ═══ */}
-      <section className="py-40 text-center relative overflow-hidden bg-white dark:bg-[#050508] transition-colors">
+      <section className="py-40 text-center relative overflow-hidden bg-white dark:bg-[#0a0d14] transition-colors">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] bg-gradient-to-r from-purple-500/6 via-violet-500/8 to-fuchsia-500/6 rounded-full blur-[150px] pointer-events-none" />
 
         <div className="max-w-3xl mx-auto space-y-10 relative z-10 px-6">

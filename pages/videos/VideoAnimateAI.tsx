@@ -117,12 +117,12 @@ const VideoAnimateAI: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-[#050508] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-indigo-500/30 transition-colors duration-500">
+    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-indigo-500/30 transition-colors duration-500">
 
       <AnimatePresence>
         {isWorkspaceOpen && (
           <motion.div initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }}
-            className="fixed inset-0 z-[1000] bg-white dark:bg-[#050507]">
+            className="fixed inset-0 z-[1000] bg-white dark:bg-[#0a0d14]">
             <VideoAnimateWorkspace onClose={() => setIsWorkspaceOpen(false)} />
           </motion.div>
         )}
@@ -179,8 +179,8 @@ const VideoAnimateAI: React.FC = () => {
         </div>
 
         {/* Hero video carousel */}
-        <motion.div {...fadeUp(0.5)} className="relative max-w-5xl mx-auto mt-16 w-full border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[#0c0c10] rounded-2xl shadow-[0_40px_100px_rgba(0,0,0,0.08)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.4)] overflow-hidden">
-          <div className="h-10 border-b border-slate-100 dark:border-white/[0.04] bg-slate-50/80 dark:bg-white/[0.02] flex items-center px-4 gap-2">
+        <motion.div {...fadeUp(0.5)} className="relative max-w-5xl mx-auto mt-16 w-full border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[#13171f] rounded-2xl shadow-[0_40px_100px_rgba(0,0,0,0.08)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.4)] overflow-hidden">
+          <div className="h-10 border-b border-slate-100 dark:border-white/[0.08] bg-slate-50/80 dark:bg-white/[0.02] flex items-center px-4 gap-2">
             <div className="flex gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-red-400/60" />
               <div className="w-2.5 h-2.5 rounded-full bg-amber-400/60" />
@@ -234,7 +234,7 @@ const VideoAnimateAI: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {FEATURES.map((f, i) => (
               <motion.div key={i} {...fadeUp(i * 0.08)}
-                className="p-8 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl space-y-5 group hover:border-indigo-500/20 hover:shadow-lg dark:hover:shadow-indigo-500/5 transition-all duration-500">
+                className="p-8 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-2xl space-y-5 group hover:border-indigo-500/20 hover:shadow-lg dark:hover:shadow-indigo-500/5 transition-all duration-500">
                 <div className="w-12 h-12 border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:text-indigo-500 group-hover:border-indigo-500/30 transition-all rounded-xl">
                   {React.cloneElement(f.icon as React.ReactElement<any>, { size: 22 })}
                 </div>
@@ -266,7 +266,7 @@ const VideoAnimateAI: React.FC = () => {
                 className={`flex flex-col lg:flex-row items-center gap-12 lg:gap-20 ${idx % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
                 {/* Video */}
                 <div className="w-full lg:w-1/2">
-                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl group border border-slate-100 dark:border-white/[0.04] hover:border-indigo-500/20 transition-all">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl group border border-slate-100 dark:border-white/[0.08] hover:border-indigo-500/20 transition-all">
                     <video src={item.video} autoPlay loop muted playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
@@ -319,7 +319,7 @@ const VideoAnimateAI: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {WORKFLOW.map((s, i) => (
               <motion.div key={i} {...fadeUp(i * 0.1)}
-                className="flex gap-5 p-6 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl group hover:border-indigo-500/20 transition-all">
+                className="flex gap-5 p-6 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-2xl group hover:border-indigo-500/20 transition-all">
                 <div className="shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500/10 to-violet-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
                   {s.icon}
                 </div>
@@ -347,7 +347,7 @@ const VideoAnimateAI: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {USE_CASES.map((uc, i) => (
               <motion.div key={i} {...fadeUp(i * 0.06)}
-                className="p-6 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl text-center group hover:border-indigo-500/20 hover:shadow-md transition-all">
+                className="p-6 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-2xl text-center group hover:border-indigo-500/20 hover:shadow-md transition-all">
                 <span className="text-3xl">{uc.emoji}</span>
                 <h4 className="text-sm font-bold text-slate-800 dark:text-white/90 mt-3">{uc.title}</h4>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{uc.desc}</p>
@@ -358,7 +358,7 @@ const VideoAnimateAI: React.FC = () => {
       </section>
 
       {/* ═══ CTA ═══ */}
-      <section className="py-40 text-center relative overflow-hidden border-t border-slate-100 dark:border-white/[0.03] bg-white dark:bg-[#050508] transition-colors">
+      <section className="py-40 text-center relative overflow-hidden border-t border-slate-100 dark:border-white/[0.03] bg-white dark:bg-[#0a0d14] transition-colors">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-indigo-500/5 to-violet-500/5 rounded-full blur-[150px] pointer-events-none" />
         <div className="max-w-3xl mx-auto space-y-10 relative z-10 px-6">
           <motion.div {...fadeUp()} className="space-y-6">

@@ -32,7 +32,7 @@ const SolutionCardComponent: React.FC<SolutionCardProps> = ({
       role="article"
       aria-label={sol.name?.[currentLang] || sol.name?.en || 'Product'}
       tabIndex={0}
-      className={`flex-shrink-0 snap-start group relative flex flex-col bg-white dark:bg-[#08080a] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/40 dark:hover:border-brand-blue/30 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-brand-blue/5 rounded-2xl overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/50 ${
+      className={`flex-shrink-0 snap-start group relative flex flex-col bg-white dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/40 dark:hover:border-brand-blue/30 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-brand-blue/5 rounded-2xl overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/50 ${
         isGrid ? 'w-full' : 'w-[280px] md:w-[320px] xl:w-[360px]'
       }`}
     >
@@ -85,7 +85,7 @@ const SolutionCardComponent: React.FC<SolutionCardProps> = ({
         </div>
       </div>
 
-      <div className="p-3 md:p-6 flex-grow flex flex-col gap-3 md:gap-6 bg-white dark:bg-[#0d0d0f]">
+      <div className="p-3 md:p-6 flex-grow flex flex-col gap-3 md:gap-6 bg-white dark:bg-[#13171f]">
         <div className="space-y-2 md:space-y-4">
           <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter text-brand-blue italic transition-colors flex-grow pr-2 truncate">{sol.name[currentLang]}</h3>
           <p className="text-black/60 dark:text-white/50 text-[9px] md:text-[12px] leading-relaxed font-medium italic tracking-tight line-clamp-2 md:line-clamp-3">"{sol.description[currentLang]}"</p>

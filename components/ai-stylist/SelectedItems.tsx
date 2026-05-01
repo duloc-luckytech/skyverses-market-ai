@@ -36,7 +36,7 @@ export const SelectedItems: React.FC<SelectedItemsProps> = ({ s, categoryData })
           exit={{ height: 0, opacity: 0, marginBottom: 0 }}
           className="px-5 overflow-hidden shrink-0"
         >
-          <div className="bg-slate-100 dark:bg-[#161618] border border-black/5 dark:border-white/5 rounded-3xl p-6 space-y-6 shadow-sm dark:shadow-xl">
+          <div className="bg-slate-100 dark:bg-[#13171f] border border-black/5 dark:border-white/5 rounded-3xl p-6 space-y-6 shadow-sm dark:shadow-xl">
             <div className="flex justify-between items-center">
               <span className="text-[13px] font-bold text-slate-500 dark:text-gray-400">Selected items</span>
               <button className="text-[10px] font-black uppercase bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 px-4 py-2 rounded-xl hover:bg-slate-900 dark:hover:bg-white hover:text-white dark:hover:text-black transition-all">
@@ -49,7 +49,7 @@ export const SelectedItems: React.FC<SelectedItemsProps> = ({ s, categoryData })
                 if (!val) return null;
                 const url = categoryData[key]?.find(i => i.id === val)?.url;
                 return (
-                  <div key={key} className="w-20 h-20 rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-white dark:bg-[#222] relative group">
+                  <div key={key} className="w-20 h-20 rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-white dark:bg-[#1a1f2b] relative group">
                     <img src={url} className="w-full h-full object-cover" alt="Selected Item" />
                     <button 
                       onClick={() => s.setSelectedItem(key, null)}

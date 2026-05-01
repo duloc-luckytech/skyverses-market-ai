@@ -20,7 +20,7 @@ export const ExpandModal: React.FC<ExpandModalProps> = ({ isOpen, title, value, 
     >
       <motion.div 
         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }}
-        className="bg-white dark:bg-[#111318] border border-black/5 dark:border-white/10 w-full max-w-4xl rounded-2xl flex flex-col shadow-3xl overflow-hidden"
+        className="bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 w-full max-w-4xl rounded-2xl flex flex-col shadow-3xl overflow-hidden"
       >
         <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-transparent">
           <div className="flex items-center gap-3 text-brand-blue">

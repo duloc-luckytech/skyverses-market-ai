@@ -137,9 +137,9 @@ const PromptArchitectInterface = () => {
 
   // REPOSITORY COMPONENT
   const RepositoryPanel = () => (
-    <div className="flex flex-col h-full bg-[#fdfdfd] dark:bg-[#050506]">
+    <div className="flex flex-col h-full bg-[#fdfdfd] dark:bg-[#0a0d14]">
       <div className="p-4 lg:p-8 space-y-6">
-        <div className="relative flex items-center bg-white dark:bg-[#0a0a0b] border border-black/[0.08] dark:border-white/5 rounded-md shadow-sm overflow-hidden h-14">
+        <div className="relative flex items-center bg-white dark:bg-[#0a0d14] border border-black/[0.08] dark:border-white/5 rounded-md shadow-sm overflow-hidden h-14">
           <div className="pl-5 pr-2"><Search size={16} className="text-gray-300" /></div>
           <input 
             type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
@@ -180,7 +180,7 @@ const PromptArchitectInterface = () => {
   );
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#030304] overflow-hidden text-black dark:text-white font-mono transition-all duration-500">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white font-mono transition-all duration-500">
       
       {/* DESKTOP SIDEBAR / MOBILE REPOSITORY TAB */}
       <aside className={`${mobileTab === 'REPOSITORY' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[450px] shrink-0 border-r border-black/10 dark:border-white/5 z-20`}>
@@ -188,7 +188,7 @@ const PromptArchitectInterface = () => {
       </aside>
 
       {/* MAIN CONSTRUCTION AREA */}
-      <main className={`${mobileTab === 'ARCHITECT' ? 'flex' : 'hidden'} lg:flex flex-grow flex-col bg-white dark:bg-[#020202] relative overflow-hidden`}>
+      <main className={`${mobileTab === 'ARCHITECT' ? 'flex' : 'hidden'} lg:flex flex-grow flex-col bg-white dark:bg-[#0a0d14] relative overflow-hidden`}>
         <div className="flex-grow flex flex-col p-6 lg:p-12 overflow-y-auto no-scrollbar">
            <div className="max-w-4xl mx-auto w-full space-y-10 pb-48 lg:pb-32">
               <header className="flex justify-between items-center border-b border-black/10 dark:border-white/5 pb-8">
@@ -257,7 +257,7 @@ const PromptArchitectInterface = () => {
       </main>
 
       {/* PRODUCTION AUDIT PANEL (RIGHT/MODAL) */}
-      <aside className={`${mobileTab === 'AUDIT' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#050506] border-l border-black/10 dark:border-white/5 overflow-hidden z-20`}>
+      <aside className={`${mobileTab === 'AUDIT' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#0a0d14] border-l border-black/10 dark:border-white/5 overflow-hidden z-20`}>
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Eye className="w-4 h-4 text-brand-blue" /> Production_Audit

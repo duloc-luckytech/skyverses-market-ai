@@ -205,13 +205,13 @@ const ExplorerPage = () => {
   const canGenerate = useMemo(() => selectedItems.length > 0 && selectedItems.every(i => i.status !== 'processing' && i.status !== 'done'), [selectedItems]);
 
   return (
-    <div className="pt-20 md:pt-28 pb-32 bg-white dark:bg-[#0a0a0c] min-h-screen text-black dark:text-white transition-colors duration-300">
+    <div className="pt-20 md:pt-28 pb-32 bg-white dark:bg-[#0a0d14] min-h-screen text-black dark:text-white transition-colors duration-300">
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12">
         
         {/* ═══════ HERO HEADER ═══════ */}
         <header className="mb-8 md:mb-12">
           {isLoading && page === 1 ? (
-            <div className="animate-pulse rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] p-8 md:p-12">
+            <div className="animate-pulse rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] p-8 md:p-12">
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 <div className="lg:col-span-3 space-y-5">
                   <div className="h-10 bg-slate-100 dark:bg-white/[0.04] rounded-xl w-3/5" />
@@ -224,9 +224,9 @@ const ExplorerPage = () => {
               </div>
             </div>
           ) : (
-            <div className="relative rounded-2xl overflow-hidden border border-black/[0.04] dark:border-white/[0.04]">
+            <div className="relative rounded-2xl overflow-hidden border border-black/[0.04] dark:border-white/[0.08]">
               {/* Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-sky-50/50 dark:from-[#0e0e12] dark:via-[#0c0c0f] dark:to-[#0a1020]" />
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-sky-50/50 dark:from-[#1a1f2b] dark:via-[#0c0c0f] dark:to-[#0a1020]" />
               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/[0.05] dark:bg-brand-blue/[0.08] rounded-full blur-[120px] -translate-y-1/3 translate-x-1/4 pointer-events-none" />
               <div className="absolute bottom-0 left-1/4 w-[300px] h-[300px] bg-violet-500/[0.03] dark:bg-violet-500/[0.05] rounded-full blur-[80px] translate-y-1/3 pointer-events-none" />
               
@@ -330,7 +330,7 @@ const ExplorerPage = () => {
                       <div
                         key={item._id || item.id}
                         ref={isLast ? lastItemRef : null}
-                        className={`relative overflow-hidden group cursor-pointer rounded-2xl transition-all duration-300 bg-white dark:bg-[#111114] border ${aspectClass} ${isSelected ? 'border-brand-blue shadow-lg shadow-brand-blue/10 scale-[0.98]' : 'border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg'}`}
+                        className={`relative overflow-hidden group cursor-pointer rounded-2xl transition-all duration-300 bg-white dark:bg-[#1a1f2b] border ${aspectClass} ${isSelected ? 'border-brand-blue shadow-lg shadow-brand-blue/10 scale-[0.98]' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg'}`}
                         onClick={() => setSelectedItem(item)}
                       >
                         {/* Select checkbox */}
@@ -411,7 +411,7 @@ const ExplorerPage = () => {
       <AnimatePresence>
         {selectedIds.length > 0 && (
           <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }} className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[500] w-full max-w-xl px-4">
-            <div className="bg-white/95 dark:bg-[#151518]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] px-5 py-3.5 rounded-2xl shadow-2xl flex items-center justify-between gap-4">
+            <div className="bg-white/95 dark:bg-[#13171f]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] px-5 py-3.5 rounded-2xl shadow-2xl flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center">
                   <span className="text-sm font-bold text-brand-blue">{selectedIds.length}</span>

@@ -163,10 +163,10 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
   const processingCount = takes.filter(t => t.status === 'processing').length;
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#050505] text-black dark:text-white font-sans overflow-hidden relative selection:bg-yellow-500/30 transition-colors">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] text-black dark:text-white font-sans overflow-hidden relative selection:bg-yellow-500/30 transition-colors">
 
       {/* 1. ARCHITECT TERMINAL (LEFT) */}
-      <aside className="w-full lg:w-[420px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[#fcfcfd] dark:bg-[#080808] z-[100] shadow-2xl overflow-hidden">
+      <aside className="w-full lg:w-[420px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[#fcfcfd] dark:bg-[#0a0d14] z-[100] shadow-2xl overflow-hidden">
          <div className="p-8 space-y-10 overflow-y-auto no-scrollbar flex-grow">
             <header className="flex justify-between items-center">
                <div className="flex items-center gap-4">
@@ -262,7 +262,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
       </aside>
 
       {/* 2. PRODUCTION HUB (CENTER) */}
-      <main className="flex-grow flex flex-col bg-[#f0f1f3] dark:bg-[#010102] relative overflow-hidden">
+      <main className="flex-grow flex flex-col bg-[#f0f1f3] dark:bg-[#0a0d14] relative overflow-hidden">
 
          <div className="absolute top-8 left-8 right-8 flex justify-between items-start z-50 pointer-events-none">
             <div className="px-5 py-2.5 bg-white/60 dark:bg-black/60 backdrop-blur-xl border border-black/10 dark:border-white/10 flex items-center gap-3 pointer-events-auto">
@@ -328,7 +328,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
          </div>
 
          {/* PRODUCTION HUD (BOTTOM) */}
-         <div className="h-40 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#080808] px-10 lg:px-16 flex items-center justify-between z-40 transition-colors shadow-2xl shrink-0">
+         <div className="h-40 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#0a0d14] px-10 lg:px-16 flex items-center justify-between z-40 transition-colors shadow-2xl shrink-0">
             <div className="flex items-center gap-16">
                <div className="hidden md:flex flex-col gap-4">
                   <div className="flex items-center gap-3">

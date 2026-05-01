@@ -113,7 +113,7 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
     <motion.aside 
       initial={false}
       animate={{ width: isOpen ? '25%' : 48 }}
-      className="relative border-r border-black/5 dark:border-white/5 bg-white dark:bg-[#0f0f11] flex flex-row shrink-0 z-50 transition-all duration-300 min-w-[48px] h-full"
+      className="relative border-r border-black/5 dark:border-white/5 bg-white dark:bg-[#13171f] flex flex-row shrink-0 z-50 transition-all duration-300 min-w-[48px] h-full"
     >
       <div className="w-12 border-r border-black/5 dark:border-white/5 flex flex-col items-center py-4 bg-slate-50 dark:bg-black/40 shrink-0 h-full">
         <NavItem id="LIBRARY" icon={Package} label="Thư viện khối" />

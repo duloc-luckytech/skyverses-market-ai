@@ -195,6 +195,9 @@ export const useStoryboardStudio = () => {
 
   const isCancelledRef = useRef(false);
 
+  // Autosave indicator timestamp — UI hiển thị "Đã lưu Xs trước"
+  const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
+
   // Auto-save current project via useProjectManager
   useEffect(() => {
     projectManager.saveCurrentProject({
@@ -207,6 +210,7 @@ export const useStoryboardStudio = () => {
       assets,
       name: projectName,
     });
+    setLastSavedAt(Date.now());
   }, [script, totalDuration, sceneDuration, scenes, acts, assets, projectName, activeProjectId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Cancel all in-flight polls on unmount
@@ -1346,6 +1350,7 @@ Rewrite this as a better image generation prompt:`,
     // ── Scene UX: undo/redo + bulk duration ──
     undo, redo, canUndo, canRedo, handleBulkDurationChange,
     historyVersion,
+    lastSavedAt,
     // ── Acts ──
     acts, addAct, removeAct, renameAct, toggleActCollapse, assignSceneToAct, reorderActs,
   };

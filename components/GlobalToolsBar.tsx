@@ -108,7 +108,7 @@ const GlobalToolsBar: React.FC = () => {
           className="mr-auto pointer-events-auto relative"
         >
           {/* Clean Background */}
-          <div className="absolute inset-0 rounded-full bg-white/90 dark:bg-[#161618]/90 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-lg" style={{ borderRadius: g.isExpanded ? '1.25rem' : '9999px' }} />
+          <div className="absolute inset-0 rounded-full bg-white/90 dark:bg-[#13171f]/90 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-lg" style={{ borderRadius: g.isExpanded ? '1.25rem' : '9999px' }} />
           
           {/* CONTENT LAYER */}
           <div className="relative w-full h-full flex flex-col z-10 overflow-visible" style={{ borderRadius: g.isExpanded ? '1.25rem' : '9999px' }}>
@@ -272,7 +272,7 @@ const GlobalToolsBar: React.FC = () => {
                               initial={{ opacity: 0, y: 5 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: 5 }}
-                              className="absolute bottom-full mb-3 left-0 bg-white dark:bg-[#1a1a1e] border border-black/10 dark:border-white/10 rounded-xl p-1 shadow-2xl z-[310] min-w-[140px]"
+                              className="absolute bottom-full mb-3 left-0 bg-white dark:bg-[#13171f] border border-black/10 dark:border-white/10 rounded-xl p-1 shadow-2xl z-[310] min-w-[140px]"
                             >
                                <button 
                                  onClick={() => { g.setModality('video'); setShowModalityMenu(false); }}

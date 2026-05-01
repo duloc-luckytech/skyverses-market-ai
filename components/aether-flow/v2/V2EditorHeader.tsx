@@ -26,7 +26,7 @@ export const V2EditorHeader: React.FC<V2EditorHeaderProps> = ({ template, onClos
   );
 
   return (
-    <div className="h-16 border-b border-black/10 dark:border-white/10 flex items-center justify-between px-6 bg-white dark:bg-[#0d0d10] shrink-0 z-50 transition-colors shadow-sm">
+    <div className="h-16 border-b border-black/10 dark:border-white/10 flex items-center justify-between px-6 bg-white dark:bg-[#13171f] shrink-0 z-50 transition-colors shadow-sm">
       {/* LEFT: Branding & Template Info */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-3">
