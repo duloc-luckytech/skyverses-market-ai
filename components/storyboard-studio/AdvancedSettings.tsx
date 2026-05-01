@@ -10,7 +10,7 @@ interface AdvancedSettingsProps {
 }
 
 export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing, onSaveAndGenerate, settings, setSettings }) => {
-  const inputClass = "w-full bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/5 p-4 rounded-xl text-lg font-black italic outline-none focus:border-brand-blue/50 transition-all text-slate-900 dark:text-white text-center shadow-inner";
+  const inputClass = "w-full bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/5 p-4 rounded-xl text-lg font-black italic outline-none focus:border-brand-blue/50 transition-all text-slate-900 dark:text-white text-center shadow-inner";
   const labelClass = "text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.2em] mb-3 block px-1";
   const descClass = "text-[9px] text-gray-500 dark:text-gray-600 font-bold uppercase italic mt-3 px-1 leading-relaxed";
 
@@ -79,7 +79,7 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing
                 <input 
                   type="password"
                   placeholder="Nhập API key (AIza...)"
-                  className="w-full bg-white dark:bg-[#111114] border border-slate-200 dark:border-white/5 p-5 rounded-xl text-xs font-mono outline-none focus:border-brand-blue/50 transition-all text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-gray-800"
+                  className="w-full bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/5 p-5 rounded-xl text-xs font-mono outline-none focus:border-brand-blue/50 transition-all text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-gray-800"
                 />
                 <div className="absolute inset-0 rounded-xl border border-brand-blue/10 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity"></div>
              </div>

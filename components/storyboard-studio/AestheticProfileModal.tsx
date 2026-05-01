@@ -150,7 +150,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 30 }}
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-            className="relative w-full max-w-4xl bg-[#fafafa] dark:bg-[#0c0c10] rounded-[2rem] overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.45)] flex flex-col max-h-[90vh] border border-black/8 dark:border-white/8"
+            className="relative w-full max-w-4xl bg-[#fafafa] dark:bg-[#1a1f2b] rounded-[2rem] overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.45)] flex flex-col max-h-[90vh] border border-black/8 dark:border-white/8"
           >
             {/* Header */}
             <div className="px-7 py-6 border-b border-black/5 dark:border-white/5 bg-white/60 dark:bg-black/20 shrink-0 flex items-center justify-between">

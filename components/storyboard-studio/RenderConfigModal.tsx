@@ -198,7 +198,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-            className="relative w-full max-w-3xl bg-[#fafafa] dark:bg-[#0c0c10] rounded-[2rem] overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.4)] flex flex-col max-h-[88vh] border border-black/8 dark:border-white/8"
+            className="relative w-full max-w-3xl bg-[#fafafa] dark:bg-[#1a1f2b] rounded-[2rem] overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.4)] flex flex-col max-h-[88vh] border border-black/8 dark:border-white/8"
           >
             {/* Header */}
             <div className="px-7 pt-7 pb-0 shrink-0">

@@ -97,7 +97,7 @@ const SettingsCard: React.FC<{
             transition={{ duration: 0.22, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 border-t border-black/[0.04] dark:border-white/[0.04] pt-4">
+            <div className="px-5 pb-5 border-t border-black/[0.04] dark:border-white/[0.08] pt-4">
               {children}
             </div>
           </motion.div>

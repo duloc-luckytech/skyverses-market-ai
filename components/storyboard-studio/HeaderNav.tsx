@@ -54,7 +54,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, o
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#0a0a0c]/90 backdrop-blur-xl border-t border-white/5 flex items-center justify-around z-[200] px-4">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#13171f]/90 backdrop-blur-xl border-t border-white/8 flex items-center justify-around z-[200] px-4">
         {tabs.map(tab => (
           <button
             key={tab.id}

@@ -82,7 +82,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   };
 
   return (
-    <div className="h-full w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-[#0a0a0c] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
+    <div className="h-full w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
 
       {/* Mobile Backdrop */}
       <AnimatePresence>
@@ -114,13 +114,13 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           ${isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
           w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
-          bg-white dark:bg-[#0c0c10] border-r border-black/[0.06] dark:border-white/[0.04]
+          bg-white dark:bg-[#13171f] border-r border-black/[0.06] dark:border-white/[0.08]
           flex flex-col transition-transform duration-300
         `}
       >
 
         {/* ─── SIDEBAR HEADER ─── */}
-        <div className="px-4 pt-3 pb-2.5 border-b border-black/[0.06] dark:border-white/[0.04] shrink-0">
+        <div className="px-4 pt-3 pb-2.5 border-b border-black/[0.06] dark:border-white/[0.08] shrink-0">
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2.5">
               <button
@@ -169,7 +169,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           </div>
 
           {/* Tab switcher */}
-          <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+          <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.08] overflow-hidden">
             {[
               { id: 'STORYBOARD', label: 'Phân cảnh', icon: <Layers size={10} /> },
               { id: 'ASSETS',     label: 'Tài sản', icon: <Camera size={10} /> },
@@ -346,7 +346,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             </div>
 
             {/* Footer credits bar */}
-            <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.04] px-4 py-2.5 flex items-center justify-between bg-white/80 dark:bg-[#0c0c10]/80 backdrop-blur-lg">
+            <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] px-4 py-2.5 flex items-center justify-between bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg">
               <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
                 {credits.toLocaleString()} CR
               </span>
@@ -365,7 +365,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 Chọn tab <span className="font-black text-brand-blue">Board</span> để viết kịch bản và tạo phân cảnh
               </p>
             </div>
-            <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.04] px-4 py-2.5 flex items-center justify-between bg-white/80 dark:bg-[#0c0c10]/80 backdrop-blur-lg">
+            <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] px-4 py-2.5 flex items-center justify-between bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg">
               <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
                 {credits.toLocaleString()} CR
               </span>
