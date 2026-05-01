@@ -27,6 +27,7 @@ import { UsersTab } from '../components/admin-pro/UsersTab';
 import { LogsTab } from '../components/admin-pro/LogsTab';
 import { ExplorerTab } from '../components/admin-pro/ExplorerTab';
 import { AIModelsTab } from '../components/admin-pro/AIModelsTab';
+import { OllamaSettingsTab } from '../components/admin-pro/OllamaSettingsTab';
 import { MarketFiltersTab } from '../components/admin-pro/MarketFiltersTab';
 import { ConfigurationTab } from '../components/admin-pro/ConfigurationTab';
 import { ProviderTokensTab } from '../components/admin-pro/ProviderTokensTab';
@@ -42,7 +43,7 @@ import { AdminDepositTab } from '../components/admin-pro/AdminDepositTab';
 import { BlogTab } from '../components/admin-pro/BlogTab';
 import { TasksPendingTab } from '../components/admin-pro/TasksPendingTab';
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG' | 'TASKS_PENDING';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'OLLAMA_SETTINGS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG' | 'TASKS_PENDING';
 
 const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
   // ── MAIN ──
@@ -68,6 +69,7 @@ const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; gro
   // ── TOOLS ──
   { id: 'FXFLOW',          label: 'FXFlow Engine',  icon: <Zap size={16} />,        group: 'TOOLS' },
   { id: 'API_CLIENTS',     label: 'API Clients',    icon: <Key size={16} />,        group: 'TOOLS' },
+  { id: 'OLLAMA_SETTINGS', label: 'AI Provider',    icon: <Bot size={16} />,        group: 'TOOLS' },
 ];
 
 const GROUP_LABELS: Record<string, string> = {
@@ -331,6 +333,7 @@ const AdminCmsProPage = () => {
             {activeTab === 'BANKING' && <BankingTab key="banking" />}
             {activeTab === 'PRICING' && <PricingTab key="pricing" />}
             {activeTab === 'AI_MODELS' && <AIModelsTab key="ai_models" />}
+            {activeTab === 'OLLAMA_SETTINGS' && <OllamaSettingsTab key="ollama_settings" />}
             {activeTab === 'PROVIDER_TOKENS' && <ProviderTokensTab key="provider_tokens" />}
             {activeTab === 'LOGS' && <LogsTab key="logs" remoteSolutions={remoteSolutions} />}
             {activeTab === 'USERS' && <UsersTab key="users" loading={loading} response={null} onParamsChange={() => { }} />}

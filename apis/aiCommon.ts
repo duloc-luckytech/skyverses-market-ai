@@ -48,20 +48,30 @@ import type { ChatMessage } from './aiChat';
 // ── Model constants ────────────────────────────────────────────────────────
 
 /**
- * Model IDs được hỗ trợ qua EzAI proxy.
+ * Model IDs được hỗ trợ qua Ollama Cloud proxy.
  *
- * | Model          | Tốc độ | Chi phí | Độ mạnh | Dùng khi                                    |
- * |----------------|--------|---------|---------|---------------------------------------------|
- * | SONNET (mặc định) | ⚡⚡⚡ | $      | ★★★★   | Copy, chat, JSON nhỏ, streaming, UX real-time |
- * | OPUS           | ⚡      | $$$    | ★★★★★  | Phân tích sâu, reasoning, plan phức tạp     |
+ * Cấu hình danh sách model active trong CMS Admin → AI Provider tab.
+ * Backend tự fallback sang model đầu tiên trong whitelist nếu requested model không match.
  *
- * Không truyền model → backend dùng SONNET làm default.
+ * | Model        | Use case                                    |
+ * |--------------|---------------------------------------------|
+ * | qwen3.5      | Default — nhanh, đa năng (Tongyi)           |
+ * | deepseek-v3  | Reasoning sâu, code analysis                |
+ * | gpt-oss      | Open-source GPT-style                       |
+ * | kimi-k2      | Long context (128k tokens)                  |
+ *
+ * Legacy alias SONNET/OPUS giữ để backward compat — backend mapping về Ollama models.
  */
 export const AI_MODELS = {
-  /** claude-sonnet-4-6 — nhanh, rẻ, đủ mạnh cho hầu hết tác vụ workspace */
-  SONNET: 'claude-sonnet-4-6',
-  /** claude-opus-4 — mạnh nhất, dùng cho analysis/reasoning phức tạp */
-  OPUS:   'claude-opus-4',
+  /** qwen3.5 — default Ollama Cloud, nhanh và đa năng */
+  SONNET:    'qwen3.5',
+  /** deepseek-v3 — reasoning task phức tạp */
+  OPUS:      'deepseek-v3',
+  /** Aliases trực tiếp Ollama (recommended cho code mới) */
+  QWEN:      'qwen3.5',
+  DEEPSEEK:  'deepseek-v3',
+  GPT_OSS:   'gpt-oss',
+  KIMI:      'kimi-k2',
 } as const;
 
 export type AIModel = typeof AI_MODELS[keyof typeof AI_MODELS];

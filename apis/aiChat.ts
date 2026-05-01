@@ -1,18 +1,33 @@
 /**
  * aiChat.ts — Skyverses AI Chat API client
  * Supports two modes:
- *  - Direct: calls ezaiapi.com directly (used by AISupportChat global widget)
- *  - Proxy:  calls /ai/chat on our own backend (no CORS, API key hidden)
- *            Used by Storyboard Studio and other workspace features.
+ *  - Direct: calls Ollama Cloud (https://ollama.com/v1) — chỉ dùng demo/local dev (CORS strict).
+ *  - Proxy:  calls /ai/chat on our own backend → backend forward sang Ollama Cloud,
+ *            đọc API key từ DB SystemSetting (config qua CMS Admin → AI Provider tab).
+ *            Production luôn đi qua Proxy để ẩn API key.
+ *
+ * NOTE: Trước đây dùng EzAI (ezaiapi.com). Đã migrate sang Ollama Cloud.
+ * Env var legacy VITE_EZAI_* vẫn được honor làm fallback nếu chưa setup VITE_OLLAMA_*.
  */
 
 import { API_BASE_URL, getHeaders } from './config';
 
 // ── Config from env ────────────────────────────────────────────────────────
+// Ưu tiên VITE_OLLAMA_*. Fallback VITE_EZAI_* (legacy) nếu chưa migrate env.
 
-const EZAI_BASE_URL = import.meta.env.VITE_EZAI_BASE_URL || 'https://ezaiapi.com/v1';
-const EZAI_API_KEY  = import.meta.env.VITE_EZAI_API_KEY  || '';
-const AI_MODEL      = import.meta.env.VITE_AI_MODEL      || 'claude-sonnet-4-6';
+const OLLAMA_BASE_URL =
+  import.meta.env.VITE_OLLAMA_BASE_URL ||
+  import.meta.env.VITE_EZAI_BASE_URL   ||
+  'https://ollama.com/v1';
+const OLLAMA_API_KEY =
+  import.meta.env.VITE_OLLAMA_API_KEY ||
+  import.meta.env.VITE_EZAI_API_KEY   ||
+  '';
+const AI_MODEL = import.meta.env.VITE_AI_MODEL || 'qwen3.5';
+
+// Legacy aliases (giữ để tránh break existing code import)
+const EZAI_BASE_URL = OLLAMA_BASE_URL;
+const EZAI_API_KEY  = OLLAMA_API_KEY;
 
 // ── Message content types ──────────────────────────────────────────────────
 
