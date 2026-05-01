@@ -2,6 +2,12 @@
 
 > **📍 Source map:** [`docs/source-map/INDEX.md`](./docs/source-map/INDEX.md) — load đúng file cần (routes / components / pages / apis / hooks / backend / cms-blog / conventions / lookup). Đừng load full source map cho query đơn giản.
 
+> **🚫 Token-saving rules — BẮT BUỘC tuân thủ:**
+> 1. **KHÔNG** đọc/grep `docs/legacy/` (106 file archive cũ, 1.4 MB) — trừ khi user yêu cầu rõ tên file legacy.
+> 2. **KHÔNG** đọc/grep `docs/reference/` (16 file deep-dive, 392 KB) — trừ khi đang làm feature tương ứng VÀ user yêu cầu reference.
+> 3. Khi grep/glob source code, exclude pattern: `docs/`, `dist/`, `node_modules/`, `*/dist/*`, `skyverses-backend/uploads/`, `skyverses-backend/tmp-videos/`.
+> 4. Trước khi đọc file >20KB, ưu tiên `Read` với `offset/limit` thay vì full file.
+
 **Stack:** React 19 + TS + Vite 5 · Tailwind 3 (`brand-blue`=#0090ff) · react-router-dom 7 (lazy) · framer-motion · lucide-react · three 0.173 · @xyflow/react · @google/genai
 
 **Layout:** `App.tsx` (routes) · `pages/` (62) · `components/` (324, 25 sub-folder) · `context/` (5: Auth/Theme/Lang/Search/Toast) · `apis/` (19) · `hooks/` (30) · `constants/` · `utils/` · `services/` · `src/constants/` (CDN lists) · `cms/` `blog/` `skyverses-backend/` (sub-projects)

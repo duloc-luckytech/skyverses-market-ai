@@ -55,7 +55,12 @@ const STATIC_CATEGORIES = [
   { key: '3D', label: '3D & Game', icon: Box },
   { key: 'Sky Partners', label: 'Sky Partners', icon: BadgeCheck, isPartner: true },
 ];
-const COMPLEXITY_LEVELS = ['Standard', 'Advanced', 'Enterprise'];
+// Việt hoá label nhưng giữ key tiếng Anh để khớp Solution.complexity từ backend
+const COMPLEXITY_LEVELS: { key: string; label: string }[] = [
+  { key: 'Standard', label: 'Phổ thông' },
+  { key: 'Advanced', label: 'Nâng cao' },
+  { key: 'Enterprise', label: 'Doanh nghiệp' },
+];
 const PLATFORMS = [
   { key: 'ALL', label: 'Tất cả', icon: LayoutGrid },
   { key: 'web', label: 'Web App', icon: Globe },
@@ -69,8 +74,20 @@ const SORT_OPTIONS = [
   { key: 'name', label: 'Tên A-Z' },
   { key: 'relevant', label: 'Liên quan nhất' },
 ];
+// Quick path use-case driven cho user mới — click → set category + scroll xuống grid
+const QUICK_PATHS: { key: string; category: string; label: string; desc: string; icon: typeof Video; iconColor: string; gradient: string }[] = [
+  { key: 'video',      category: 'Video',      label: 'Tạo video TikTok',     desc: 'Veo 3, Kling, Sora',     icon: Video,     iconColor: 'text-pink-500',    gradient: 'from-pink-500/[0.07] to-rose-500/[0.05]' },
+  { key: 'image',      category: 'Image',      label: 'Vẽ ảnh AI',            desc: 'Midjourney, Flux, Imagen', icon: ImageIcon, iconColor: 'text-violet-500',  gradient: 'from-violet-500/[0.07] to-purple-500/[0.05]' },
+  { key: 'music',      category: 'Music',      label: 'Tạo nhạc AI',          desc: 'Suno, Udio, MusicGen',   icon: Music,     iconColor: 'text-amber-500',   gradient: 'from-amber-500/[0.07] to-orange-500/[0.05]' },
+  { key: 'audio',      category: 'Audio',      label: 'Lồng tiếng & TTS',     desc: 'ElevenLabs, voice AI',   icon: Mic,       iconColor: 'text-emerald-500', gradient: 'from-emerald-500/[0.07] to-teal-500/[0.05]' },
+  { key: 'script',     category: 'Script',     label: 'Viết blog & nội dung', desc: 'Kịch bản, bài viết AI',  icon: Film,      iconColor: 'text-blue-500',    gradient: 'from-blue-500/[0.07] to-cyan-500/[0.05]' },
+  { key: 'automation', category: 'Automation', label: 'Tự động hoá quy trình', desc: 'Workflow, n8n, agents',  icon: Zap,       iconColor: 'text-yellow-500',  gradient: 'from-yellow-500/[0.07] to-amber-500/[0.05]' },
+];
 const ITEMS_PER_PAGE = 12;
 const RECENTLY_VIEWED_KEY = 'skyverses_recently_viewed';
+const QUICKPATH_DISMISSED_KEY = 'skyverses_quickpath_dismissed';
+const ADVANCED_FILTERS_OPEN_KEY = 'skyverses_advanced_filters_open';
+const GRID_ANCHOR_ID = 'markets-grid-anchor';
 const MAX_RECENT = 8;
 const TRENDING_LIMIT = 12;
 const CTA_FEATURED_SLUG = 'ai-video-generator';
@@ -192,6 +209,43 @@ const RecentlyViewed: React.FC<{ lang: Language; onNavigate: (slug: string) => v
     </div>
   );
 });
+
+// ═══════ QUICK PATH HERO — "Bạn muốn làm gì?" ═══════
+// Hiển thị cho user mới chưa filter gì. Click 1 quick path → set category + scroll xuống grid.
+const QuickPathHero: React.FC<{ onPick: (cat: string) => void; onDismiss: () => void }> = React.memo(({ onPick, onDismiss }) => (
+  <div className="mb-8">
+    <div className="flex items-center justify-between mb-4">
+      <div>
+        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-500/[0.08] border border-amber-500/15 rounded-full mb-1.5">
+          <Sparkles size={10} className="text-amber-500" />
+          <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Bắt đầu nhanh</span>
+        </div>
+        <h2 className="text-[17px] md:text-[19px] font-bold text-slate-700 dark:text-white">Bạn muốn làm gì hôm nay?</h2>
+        <p className="text-[12px] text-slate-400 dark:text-gray-500 mt-0.5">Chọn một mục để xem ngay công cụ phù hợp</p>
+      </div>
+      <button onClick={onDismiss}
+        className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-medium text-slate-400 dark:text-gray-500 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/[0.03] rounded-lg transition-colors">
+        Ẩn <X size={10} />
+      </button>
+    </div>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 md:gap-3">
+      {QUICK_PATHS.map(p => {
+        const Icon = p.icon;
+        return (
+          <button key={p.key} onClick={() => onPick(p.category)}
+            className={`group relative bg-gradient-to-br ${p.gradient} dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.06] rounded-2xl p-3.5 md:p-4 text-left hover:border-brand-blue/30 hover:shadow-sm hover:-translate-y-0.5 transition-all`}>
+            <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl bg-white dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.05] flex items-center justify-center mb-2.5 ${p.iconColor}`}>
+              <Icon size={17} />
+            </div>
+            <p className="text-[12.5px] md:text-[13.5px] font-bold text-slate-700 dark:text-white group-hover:text-brand-blue transition-colors">{p.label}</p>
+            <p className="text-[10px] md:text-[11px] text-slate-400 dark:text-gray-500 mt-0.5 truncate">{p.desc}</p>
+            <ArrowRight size={11} className="absolute top-3.5 right-3.5 text-slate-300 dark:text-gray-600 group-hover:text-brand-blue group-hover:translate-x-0.5 transition-all" />
+          </button>
+        );
+      })}
+    </div>
+  </div>
+));
 
 // ═══════ SUGGESTED FOR YOU ═══════
 const SuggestedSection: React.FC<{ solutions: Solution[]; lang: Language; onNavigate: (slug: string) => void; onPreview: (e: React.MouseEvent, sol: Solution) => void; favorites: string[]; onToggleFav: (e: React.MouseEvent, id: string) => void }> = React.memo(({ solutions, lang, onNavigate, onPreview, favorites, onToggleFav }) => {
@@ -550,6 +604,25 @@ const MarketsPage: React.FC = () => {
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [showMoreCats, setShowMoreCats] = useState(false);
 
+  // Quick path hero — show for new users who haven't searched/filtered
+  const [quickPathDismissed, setQuickPathDismissed] = useState<boolean>(() => {
+    try { return localStorage.getItem(QUICKPATH_DISMISSED_KEY) === '1'; } catch { return false; }
+  });
+  const dismissQuickPath = useCallback(() => {
+    setQuickPathDismissed(true);
+    try { localStorage.setItem(QUICKPATH_DISMISSED_KEY, '1'); } catch {}
+  }, []);
+
+  // Advanced filters collapse — auto-open if user has any advanced filter active (e.g. arrived via URL)
+  const [advancedOpen, setAdvancedOpen] = useState<boolean>(() => {
+    // Auto-open if URL has advanced filter
+    if (searchParams.get('complexity') || searchParams.get('tags') || (searchParams.get('platform') && searchParams.get('platform') !== 'ALL')) return true;
+    try { return localStorage.getItem(ADVANCED_FILTERS_OPEN_KEY) === '1'; } catch { return false; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(ADVANCED_FILTERS_OPEN_KEY, advancedOpen ? '1' : '0'); } catch {}
+  }, [advancedOpen]);
+
   // SYNC filters → URL (non-search filters sync immediately)
   useEffect(() => {
     setSearchParams(prev => {
@@ -662,6 +735,20 @@ const MarketsPage: React.FC = () => {
   const handleNavigate = useCallback((slug: string) => {
     navigate(`/product/${slug}`);
   }, [navigate]);
+
+  // Quick path: set category + smooth scroll to grid (delay để đợi render xong)
+  const handleQuickPath = useCallback((cat: string) => {
+    setActiveCategory(cat);
+    setInputValue('');
+    requestAnimationFrame(() => {
+      const el = document.getElementById(GRID_ANCHOR_ID);
+      if (el) {
+        const offset = 100; // chừa header sticky
+        const top = el.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  }, []);
 
   // Extract all unique tags
   const allTags = useMemo(() => {
@@ -894,88 +981,11 @@ const MarketsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Complexity Card */}
-      <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center gap-2">
-          <Layers size={13} className="text-purple-500" />
-          <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Cấp độ</span>
-        </div>
-        <div className="p-2">
-          <div className="grid grid-cols-3 gap-1.5">
-            {COMPLEXITY_LEVELS.map(level => {
-              const isActive = activeComplexity === level;
-              return (
-                <button key={level} onClick={() => setActiveComplexity(isActive ? null : level)}
-                  className={`flex items-center justify-center py-2 rounded-lg text-[11px] font-semibold transition-all ${isActive
-                    ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
-                    : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/[0.05] border border-black/[0.04] dark:border-white/[0.04]'
-                  }`}>
-                  {level}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Platform Card */}
-      <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center gap-2">
-          <Globe size={13} className="text-cyan-500" />
-          <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Nền tảng</span>
-        </div>
-        <div className="p-2 space-y-0.5">
-          {PLATFORMS.map(plat => {
-            const Icon = plat.icon;
-            const isActive = activePlatform === plat.key;
-            return (
-              <button key={plat.key} onClick={() => setActivePlatform(plat.key)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all ${isActive
-                  ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
-                  : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.03]'
-                }`}>
-                <Icon size={14} className={isActive ? 'text-white' : ''} />
-                <span className="flex-1 text-left">{plat.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Tags Card */}
-      {allTags.length > 0 && (
-        <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
-          <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Tag size={13} className="text-orange-500" />
-              <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Tags</span>
-            </div>
-            {activeTags.length > 0 && (
-              <span className="text-[9px] font-bold text-brand-blue bg-brand-blue/10 px-1.5 py-0.5 rounded">{activeTags.length} chọn</span>
-            )}
-          </div>
-          <div className="p-3 flex flex-wrap gap-1.5 max-h-[160px] overflow-y-auto no-scrollbar">
-            {allTags.map(tag => {
-              const isActive = activeTags.includes(tag);
-              return (
-                <button key={tag} onClick={() => toggleTag(tag)}
-                  className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${isActive
-                    ? 'bg-brand-blue text-white shadow-sm'
-                    : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/30 hover:text-brand-blue'
-                  }`}>
-                  {isActive && <Check size={9} className="inline mr-1 -mt-px" />}{tag}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Toggles Card */}
+      {/* Toggles Card — basic, always visible (đưa lên trước advanced) */}
       <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
         <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center gap-2">
           <SlidersHorizontal size={13} className="text-emerald-500" />
-          <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Bộ lọc</span>
+          <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Bộ lọc nhanh</span>
         </div>
         <div className="p-2 space-y-0.5">
           <label className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors">
@@ -998,6 +1008,117 @@ const MarketsPage: React.FC = () => {
           </label>
         </div>
       </div>
+
+      {/* ─── BỘ LỌC NÂNG CAO — collapse mặc định đóng (Complexity + Platform + Tags) ─── */}
+      {(() => {
+        const advCount = [!!activeComplexity, activeTags.length > 0, activePlatform !== 'ALL'].filter(Boolean).length;
+        return (
+          <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden">
+            <button
+              onClick={() => setAdvancedOpen(v => !v)}
+              className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal size={13} className="text-slate-400" />
+                <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Bộ lọc nâng cao</span>
+                {advCount > 0 && (
+                  <span className="text-[9px] font-bold text-brand-blue bg-brand-blue/10 px-1.5 py-0.5 rounded-full">{advCount}</span>
+                )}
+              </div>
+              {advancedOpen ? <ChevronUp size={13} className="text-slate-400" /> : <ChevronDown size={13} className="text-slate-400" />}
+            </button>
+            <AnimatePresence initial={false}>
+              {advancedOpen && (
+                <motion.div
+                  key="adv-filters"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden border-t border-black/[0.04] dark:border-white/[0.04]"
+                >
+                  <div className="p-3 space-y-3">
+                    {/* Complexity */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Layers size={12} className="text-purple-500" />
+                        <span className="text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Cấp độ</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {COMPLEXITY_LEVELS.map(level => {
+                          const isActive = activeComplexity === level.key;
+                          return (
+                            <button key={level.key} onClick={() => setActiveComplexity(isActive ? null : level.key)}
+                              className={`flex items-center justify-center py-2 rounded-lg text-[11px] font-semibold transition-all ${isActive
+                                ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
+                                : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/[0.05] border border-black/[0.04] dark:border-white/[0.04]'
+                              }`}>
+                              {level.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Platform */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Globe size={12} className="text-cyan-500" />
+                        <span className="text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Nền tảng</span>
+                      </div>
+                      <div className="space-y-0.5">
+                        {PLATFORMS.map(plat => {
+                          const Icon = plat.icon;
+                          const isActive = activePlatform === plat.key;
+                          return (
+                            <button key={plat.key} onClick={() => setActivePlatform(plat.key)}
+                              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all ${isActive
+                                ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
+                                : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.03]'
+                              }`}>
+                              <Icon size={13} className={isActive ? 'text-white' : ''} />
+                              <span className="flex-1 text-left">{plat.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Tags */}
+                    {allTags.length > 0 && (
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <Tag size={12} className="text-orange-500" />
+                            <span className="text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Tags</span>
+                          </div>
+                          {activeTags.length > 0 && (
+                            <span className="text-[9px] font-bold text-brand-blue bg-brand-blue/10 px-1.5 py-0.5 rounded">{activeTags.length} chọn</span>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap gap-1.5 max-h-[160px] overflow-y-auto no-scrollbar">
+                          {allTags.map(tag => {
+                            const isActive = activeTags.includes(tag);
+                            return (
+                              <button key={tag} onClick={() => toggleTag(tag)}
+                                className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${isActive
+                                  ? 'bg-brand-blue text-white shadow-sm'
+                                  : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/30 hover:text-brand-blue'
+                                }`}>
+                                {isActive && <Check size={9} className="inline mr-1 -mt-px" />}{tag}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      })()}
 
       {/* Reset */}
       {activeFilterCount > 0 && (
@@ -1068,6 +1189,11 @@ const MarketsPage: React.FC = () => {
           {/* RIGHT CONTENT */}
           <div className="flex-1 min-w-0">
 
+            {/* Quick Path Hero — chỉ hiển thị cho user mới (chưa search/filter) và chưa dismiss */}
+            {!quickPathDismissed && !inputValue && activeCategory === 'ALL' && !loading && (
+              <QuickPathHero onPick={handleQuickPath} onDismiss={dismissQuickPath} />
+            )}
+
             {/* Recently Viewed */}
             <RecentlyViewed lang={currentLang} onNavigate={handleNavigate} />
 
@@ -1089,7 +1215,7 @@ const MarketsPage: React.FC = () => {
             )}
 
             {/* Toolbar */}
-            <div className="flex items-center justify-between mb-4">
+            <div id={GRID_ANCHOR_ID} className="flex items-center justify-between mb-4 scroll-mt-28">
               <p className="text-[13px] text-slate-400 dark:text-gray-500">
                 {loading ? 'Đang tải...' : <><strong className="text-slate-600 dark:text-gray-300">{filteredSolutions.length}</strong> kết quả</>}
                 {deferredSearch && <span className="text-brand-blue ml-1">"{deferredSearch}"</span>}
