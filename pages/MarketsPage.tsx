@@ -650,9 +650,23 @@ const MarketsPage: React.FC = () => {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  // Back to top
+  // Back to top — throttle bằng rAF + so sánh trước setState để bỏ qua tick không đổi
+  // (trước đây setShowBackTop chạy mọi tick scroll → trigger re-render thừa → cards giật lúc scroll)
   useEffect(() => {
-    const onScroll = () => setShowBackTop(window.scrollY > 600);
+    let ticking = false;
+    let last = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const next = window.scrollY > 600;
+        if (next !== last) {
+          last = next;
+          setShowBackTop(next);
+        }
+        ticking = false;
+      });
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -851,7 +865,10 @@ const MarketsPage: React.FC = () => {
   const compareSolutions = useMemo(() => compareIds.map(id => solutions.find(s => s.id === id)).filter(Boolean) as Solution[], [compareIds, solutions]);
 
   // ═══════ SIDEBAR ═══════
-  const SidebarContent = () => (
+  // ⚡ JSX biến (KHÔNG phải component) — tránh tạo new component identity mỗi render
+  // (vd khi gõ search → MarketsPage re-render → trước đây <SidebarContent /> bị unmount/remount,
+  // input mất focus + value reset → cảm giác giật lag).
+  const sidebarContent = (
     <div className="space-y-5">
       {/* Search */}
       <div className="relative">
@@ -1140,7 +1157,7 @@ const MarketsPage: React.FC = () => {
 
           {/* LEFT SIDEBAR */}
           <aside className="hidden lg:block w-[260px] shrink-0">
-            <div className="sticky top-28"><SidebarContent /></div>
+            <div className="sticky top-28 max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar pr-1">{sidebarContent}</div>
           </aside>
 
           {/* RIGHT CONTENT */}
@@ -1309,7 +1326,7 @@ const MarketsPage: React.FC = () => {
                 <h3 className="text-[15px] font-bold">Bộ lọc</h3>
                 <button onClick={() => setMobileSidebar(false)} className="p-1 text-slate-400 hover:text-slate-600"><X size={18} /></button>
               </div>
-              <div className="p-5"><SidebarContent /></div>
+              <div className="p-5">{sidebarContent}</div>
             </motion.div>
           </>
         )}
