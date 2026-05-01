@@ -576,6 +576,13 @@ export function createWorkerRouter(provider: string) {
           const resolution = job.config?.resolution;
           if (resolution) task.resolution = resolution;
 
+          // Duration (giây) — bên thứ 3 truyền duration: 4 / 6 / 8 qua POST /api-client/external/video-task,
+          // lưu vào job.config.duration. Forward sang FXFlow để worker render đúng độ dài.
+          const duration = job.config?.duration;
+          if (typeof duration === "number" && duration > 0) {
+            task.duration = duration;
+          }
+
           const quality = mapQuality(job.enginePayload?.mode) || config.videoQuality || "relaxed";
           if (quality !== "fast") task.quality = quality;
 
