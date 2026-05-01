@@ -49,7 +49,7 @@ export const IdentityAnchors: React.FC<IdentityAnchorsProps> = ({
           {assets.map((asset) => (
             <div key={asset.id} className={`w-[300px] shrink-0 snap-start bg-slate-100 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-[1.5rem] p-4 flex flex-col gap-4 group transition-all shadow-xl relative cursor-pointer hover:border-brand-blue/30`}>
                <div onClick={() => asset.url && onViewAsset(asset)} className="aspect-[3/4] bg-slate-200 dark:bg-black rounded-[1rem] overflow-hidden relative border border-slate-300 dark:border-white/5 transition-colors">
-                  {asset.url ? <img src={asset.url} className="w-full h-full object-cover" alt={asset.name} /> : <div className="absolute inset-0 flex flex-col items-center justify-center opacity-40">{asset.type === 'CHARACTER' ? <User size={64} className="text-slate-400 dark:text-gray-700" /> : <MapPin size={64} className="text-slate-400 dark:text-gray-700" />}</div>}
+                  {asset.url ? <img src={asset.url} className="w-full h-full object-cover" alt={asset.name} /> : <div className="absolute inset-0 flex flex-col items-center justify-center opacity-40">{asset.type === 'CHARACTER' ? <User size={64} className="text-slate-400 dark:text-gray-400" /> : <MapPin size={64} className="text-slate-400 dark:text-gray-400" />}</div>}
                   
                   {asset.status === 'processing' && (
                     <div className="absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center gap-4 animate-in fade-in duration-300 z-10">

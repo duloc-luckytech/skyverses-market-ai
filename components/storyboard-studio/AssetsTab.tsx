@@ -127,7 +127,7 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset, onEdit, onView, onDelete, 
         {asset.status === 'processing' ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
             <Loader2 size={20} className="animate-spin text-brand-blue/50" />
-            <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20">
+            <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
               Processing...
             </span>
           </div>
@@ -139,7 +139,7 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset, onEdit, onView, onDelete, 
             draggable={false}
           />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-200 dark:text-white/10">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-200 dark:text-white/45">
             {asset.type === 'CHARACTER' && <User size={28} />}
             {asset.type === 'LOCATION'  && <MapPin size={28} />}
             {asset.type === 'OBJECT'    && <Package size={28} />}
@@ -197,7 +197,7 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset, onEdit, onView, onDelete, 
 
       {/* Description */}
       {asset.description && (
-        <p className="px-2.5 pb-2 text-[9px] text-slate-400 dark:text-white/25 truncate">
+        <p className="px-2.5 pb-2 text-[9px] text-slate-400 dark:text-white/50 truncate">
           {asset.description}
         </p>
       )}
@@ -215,9 +215,9 @@ const AddCard: React.FC<{ onAdd: () => void; label: string }> = ({ onAdd, label 
     className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/8 hover:border-brand-blue/40 hover:bg-brand-blue/[0.03] flex flex-col items-center justify-center gap-2 transition-all group"
   >
     <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 group-hover:bg-brand-blue/10 flex items-center justify-center transition-all">
-      <Plus size={18} className="text-slate-300 dark:text-white/20 group-hover:text-brand-blue transition-colors" />
+      <Plus size={18} className="text-slate-300 dark:text-white/45 group-hover:text-brand-blue transition-colors" />
     </div>
-    <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20 group-hover:text-brand-blue transition-colors">
+    <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45 group-hover:text-brand-blue transition-colors">
       {label}
     </span>
   </motion.button>
@@ -267,7 +267,7 @@ const UrlUploadPanel: React.FC<UrlUploadProps> = ({ panelId, onAddUrl }) => {
             className="absolute left-0 top-full mt-2 z-20 w-80 p-4 rounded-2xl bg-white dark:bg-[#0f0f14] border border-slate-200 dark:border-white/10 shadow-xl shadow-black/20"
           >
             <div className="space-y-3">
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30">
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">
                 Thêm tài nguyên từ URL
               </p>
               <input
@@ -295,7 +295,7 @@ const UrlUploadPanel: React.FC<UrlUploadProps> = ({ panelId, onAddUrl }) => {
                 </button>
                 <button
                   onClick={() => setOpen(false)}
-                  className="px-3 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-slate-400 dark:text-white/30 hover:text-red-400 transition-all"
+                  className="px-3 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-slate-400 dark:text-gray-400 hover:text-red-400 transition-all"
                 >
                   <X size={12} />
                 </button>
@@ -357,14 +357,14 @@ const DragDropZone: React.FC<DragDropZoneProps> = ({ onDrop, assetType }) => {
         className="hidden"
         onChange={handleFileInput}
       />
-      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isDragging ? 'bg-brand-blue/20 text-brand-blue' : 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/20'}`}>
+      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isDragging ? 'bg-brand-blue/20 text-brand-blue' : 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/45'}`}>
         <Upload size={20} />
       </div>
       <div>
-        <p className={`text-[11px] font-black uppercase tracking-widest transition-colors ${isDragging ? 'text-brand-blue' : 'text-slate-400 dark:text-white/30'}`}>
+        <p className={`text-[11px] font-black uppercase tracking-widest transition-colors ${isDragging ? 'text-brand-blue' : 'text-slate-400 dark:text-gray-400'}`}>
           {isDragging ? 'Thả để upload' : 'Kéo thả ảnh vào đây'}
         </p>
-        <p className="text-[9px] text-slate-300 dark:text-white/15 mt-0.5">
+        <p className="text-[9px] text-slate-300 dark:text-white/35 mt-0.5">
           Hoặc click để chọn ảnh {typeLabel[assetType]}
         </p>
       </div>
@@ -414,7 +414,7 @@ const AssetPanel: React.FC<AssetPanelProps> = ({
       <div className="flex flex-wrap items-center gap-2.5">
         {/* Search */}
         <div className="flex items-center gap-2 flex-1 min-w-[160px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/8 rounded-xl px-3 py-2">
-          <Search size={11} className="text-slate-300 dark:text-white/20 shrink-0" />
+          <Search size={11} className="text-slate-300 dark:text-white/45 shrink-0" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -423,7 +423,7 @@ const AssetPanel: React.FC<AssetPanelProps> = ({
           />
           {search && (
             <button onClick={() => setSearch('')}>
-              <X size={10} className="text-slate-300 dark:text-white/20 hover:text-rose-400 transition-colors" />
+              <X size={10} className="text-slate-300 dark:text-white/45 hover:text-rose-400 transition-colors" />
             </button>
           )}
         </div>
@@ -442,7 +442,7 @@ const AssetPanel: React.FC<AssetPanelProps> = ({
 
       {/* Stats row */}
       {filtered.length > 0 && (
-        <div className="flex items-center gap-3 text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/20">
+        <div className="flex items-center gap-3 text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45">
           <span>{filtered.length} tài nguyên</span>
           <span>·</span>
           <span className="text-emerald-400">{filtered.filter(a => a.status === 'done').length} đã render</span>
@@ -487,7 +487,7 @@ const AssetPanel: React.FC<AssetPanelProps> = ({
             onDrop={files => onAddFiles(files, assetType)}
           />
           {search && (
-            <p className="text-center text-[10px] text-slate-300 dark:text-white/20">
+            <p className="text-center text-[10px] text-slate-300 dark:text-white/45">
               Không tìm thấy kết quả cho "<span className="font-bold">{search}</span>"
             </p>
           )}
@@ -555,7 +555,7 @@ const SfxPanel: React.FC = () => {
       <div className="flex flex-wrap items-center gap-2.5">
         {/* Search */}
         <div className="flex items-center gap-2 flex-1 min-w-[160px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/8 rounded-xl px-3 py-2">
-          <Search size={11} className="text-slate-300 dark:text-white/20 shrink-0" />
+          <Search size={11} className="text-slate-300 dark:text-white/45 shrink-0" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -573,7 +573,7 @@ const SfxPanel: React.FC = () => {
               className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
                 activeCategory === cat
                   ? 'bg-brand-blue text-white shadow-md'
-                  : 'text-slate-400 dark:text-white/30 hover:text-slate-700 dark:hover:text-white/60'
+                  : 'text-slate-400 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white/60'
               }`}
             >
               {cat}
@@ -598,7 +598,7 @@ const SfxPanel: React.FC = () => {
               className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                 playing === sfx.id
                   ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/20'
-                  : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/30 group-hover:bg-brand-blue/10 group-hover:text-brand-blue'
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-400 group-hover:bg-brand-blue/10 group-hover:text-brand-blue'
               }`}
             >
               {playing === sfx.id
@@ -617,10 +617,10 @@ const SfxPanel: React.FC = () => {
                 {sfx.emoji} {sfx.name}
               </p>
               <div className="flex items-center gap-1.5 mt-1">
-                <span className="text-[8px] font-bold text-slate-300 dark:text-white/20 uppercase tracking-widest">
+                <span className="text-[8px] font-bold text-slate-300 dark:text-white/45 uppercase tracking-widest">
                   {sfx.category}
                 </span>
-                <span className="text-[8px] font-mono text-slate-200 dark:text-white/15">
+                <span className="text-[8px] font-mono text-slate-200 dark:text-white/35">
                   {sfx.duration}
                 </span>
               </div>
@@ -630,7 +630,7 @@ const SfxPanel: React.FC = () => {
             {sfx.id.startsWith('sfx-custom') && (
               <button
                 onClick={() => handleRemove(sfx.id)}
-                className="shrink-0 w-6 h-6 rounded-lg hover:bg-rose-500/10 hover:text-rose-400 flex items-center justify-center text-slate-300 dark:text-white/20 transition-all opacity-0 group-hover:opacity-100"
+                className="shrink-0 w-6 h-6 rounded-lg hover:bg-rose-500/10 hover:text-rose-400 flex items-center justify-center text-slate-300 dark:text-white/45 transition-all opacity-0 group-hover:opacity-100"
               >
                 <X size={10} />
               </button>
@@ -641,8 +641,8 @@ const SfxPanel: React.FC = () => {
 
       {filtered.length === 0 && (
         <div className="py-12 flex flex-col items-center gap-3">
-          <Music2 size={32} className="text-slate-200 dark:text-white/10" />
-          <p className="text-[10px] text-slate-300 dark:text-white/20 font-bold uppercase tracking-widest">
+          <Music2 size={32} className="text-slate-200 dark:text-white/45" />
+          <p className="text-[10px] text-slate-300 dark:text-white/45 font-bold uppercase tracking-widest">
             Không tìm thấy âm thanh
           </p>
         </div>
@@ -650,7 +650,7 @@ const SfxPanel: React.FC = () => {
 
       {/* Upload custom SFX */}
       <div className="rounded-2xl border border-slate-200 dark:border-white/8 p-4 space-y-3">
-        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30 flex items-center gap-1.5">
+        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
           <Upload size={10} /> Upload SFX tùy chỉnh
         </p>
         <div className="flex gap-2">
@@ -754,7 +754,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
             <h2 className="text-2xl lg:text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">
               Thư viện tài nguyên
             </h2>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-600 mt-1.5">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-1.5">
               {assets.length} tài nguyên · {assets.filter(a => a.status === 'done').length} đã render
             </p>
           </div>
@@ -803,7 +803,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.18 }}
           >
-            <p className="text-[10px] text-slate-400 dark:text-white/25 mb-6">
+            <p className="text-[10px] text-slate-400 dark:text-white/50 mb-6">
               {PANELS.find(p => p.id === activePanel)?.desc}
             </p>
 

@@ -168,7 +168,7 @@ export const ProjectSwitcher: React.FC<Props> = ({
         </span>
         <ChevronDown
           size={11}
-          className={`shrink-0 text-slate-400 dark:text-white/30 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`shrink-0 text-slate-400 dark:text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -184,7 +184,7 @@ export const ProjectSwitcher: React.FC<Props> = ({
           >
             {/* Header */}
             <div className="px-3 py-2 border-b border-black/[0.05] dark:border-white/[0.06]">
-              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-white/30">
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400">
                 Kịch bản
               </span>
             </div>
@@ -224,7 +224,7 @@ export const ProjectSwitcher: React.FC<Props> = ({
                       <p className="text-[11px] font-semibold text-slate-800 dark:text-white truncate leading-tight">
                         {p.name}
                       </p>
-                      <p className="text-[9px] text-slate-400 dark:text-white/30 mt-0.5">
+                      <p className="text-[9px] text-slate-400 dark:text-gray-400 mt-0.5">
                         {p.sceneCount} cảnh · {fmtDate(p.updatedAt)}
                       </p>
                     </div>

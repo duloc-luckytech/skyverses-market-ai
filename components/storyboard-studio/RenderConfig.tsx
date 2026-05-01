@@ -19,7 +19,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
   const [loading, setLoading] = useState(true);
 
   const selectClass = "w-full bg-slate-50 dark:bg-black/60 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-xs font-bold uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-800 dark:text-white shadow-inner";
-  const sectionLabel = "text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-600 mb-3 block px-1";
+  const sectionLabel = "text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400 mb-3 block px-1";
 
   useEffect(() => {
     const fetchModels = async () => {

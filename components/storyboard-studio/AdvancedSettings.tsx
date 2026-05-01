@@ -12,7 +12,7 @@ interface AdvancedSettingsProps {
 export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing, onSaveAndGenerate, settings, setSettings }) => {
   const inputClass = "w-full bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/5 p-4 rounded-xl text-lg font-black italic outline-none focus:border-brand-blue/50 transition-all text-slate-900 dark:text-white text-center shadow-inner";
   const labelClass = "text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.2em] mb-3 block px-1";
-  const descClass = "text-[9px] text-gray-500 dark:text-gray-600 font-bold uppercase italic mt-3 px-1 leading-relaxed";
+  const descClass = "text-[9px] text-gray-500 dark:text-gray-400 font-bold uppercase italic mt-3 px-1 leading-relaxed";
 
   return (
     <div className="space-y-10">
@@ -36,7 +36,7 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing
                 />
                 <div className="absolute inset-0 rounded-xl border border-brand-blue/20 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity"></div>
               </div>
-              <span className="text-xs font-black uppercase text-slate-300 dark:text-gray-700 italic">lần</span>
+              <span className="text-xs font-black uppercase text-slate-300 dark:text-gray-400 italic">lần</span>
             </div>
             <p className={descClass}>Nếu tạo thất bại, hệ thống sẽ tự động thử lại tối đa số lần này.</p>
           </div>
@@ -54,7 +54,7 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing
                 />
                 <div className="absolute inset-0 rounded-xl border border-brand-blue/20 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity"></div>
               </div>
-              <span className="text-xs font-black uppercase text-slate-300 dark:text-gray-700 italic">luồng</span>
+              <span className="text-xs font-black uppercase text-slate-300 dark:text-gray-400 italic">luồng</span>
             </div>
             <p className={descClass}>Số lượng tối đa các tác vụ chạy song song.</p>
           </div>
@@ -89,8 +89,8 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing
           </div>
 
           <div className="h-32 border-2 border-dashed border-slate-200 dark:border-white/5 rounded-2xl flex flex-col items-center justify-center gap-4 bg-slate-50 dark:bg-black/20 group hover:border-brand-blue/20 transition-all">
-             <ZapIcon size={24} className="text-slate-300 dark:text-gray-800 group-hover:text-brand-blue transition-colors" />
-             <p className="text-[10px] font-bold text-gray-400 dark:text-gray-700 uppercase tracking-widest italic">Chưa có API key nào. Hệ thống sẽ dùng API miễn phí.</p>
+             <ZapIcon size={24} className="text-slate-300 dark:text-gray-500 group-hover:text-brand-blue transition-colors" />
+             <p className="text-[10px] font-bold text-gray-400 dark:text-gray-400 uppercase tracking-widest italic">Chưa có API key nào. Hệ thống sẽ dùng API miễn phí.</p>
           </div>
         </div>
       </div>

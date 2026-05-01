@@ -308,7 +308,7 @@ const Ruler: React.FC<RulerProps> = ({ totalSeconds, currentTime, onSeek, contai
           >
             <div className={`${isMajor ? 'h-4 w-px bg-slate-400 dark:bg-white/30' : 'h-2 w-px bg-slate-300 dark:bg-white/10'}`} />
             {isMajor && (
-              <span className="text-[8px] font-bold text-slate-400 dark:text-white/30 mt-0.5 select-none">
+              <span className="text-[8px] font-bold text-slate-400 dark:text-gray-400 mt-0.5 select-none">
                 {fmtTime(t)}
               </span>
             )}
@@ -395,7 +395,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
 
   if (isProcessing) {
     return (
-      <div className="flex items-center justify-center py-20 gap-3 text-slate-400 dark:text-white/30">
+      <div className="flex items-center justify-center py-20 gap-3 text-slate-400 dark:text-gray-400">
         <Loader2 size={20} className="animate-spin text-brand-blue" />
         <span className="text-[11px] font-black uppercase tracking-widest">Đang phân tích...</span>
       </div>
@@ -406,9 +406,9 @@ const TimelineView: React.FC<TimelineViewProps> = ({
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
-          <Film size={28} className="text-slate-300 dark:text-white/15" />
+          <Film size={28} className="text-slate-300 dark:text-white/35" />
         </div>
-        <p className="text-[11px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20">
+        <p className="text-[11px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
           Chưa có phân cảnh để hiển thị timeline
         </p>
       </div>
@@ -450,13 +450,13 @@ const TimelineView: React.FC<TimelineViewProps> = ({
         {/* Reset */}
         <button
           onClick={() => { setCurrentTime(0); setIsPlaying(false); }}
-          className="w-7 h-7 rounded-xl border border-slate-200 dark:border-white/8 flex items-center justify-center text-slate-400 dark:text-white/30 hover:text-brand-blue hover:border-brand-blue/30 transition-all"
+          className="w-7 h-7 rounded-xl border border-slate-200 dark:border-white/8 flex items-center justify-center text-slate-400 dark:text-gray-400 hover:text-brand-blue hover:border-brand-blue/30 transition-all"
           title="Reset về 0"
         >
           <RefreshCw size={11} />
         </button>
 
-        <div className="ml-auto flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20">
+        <div className="ml-auto flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
           <span>{scenes.length} cảnh</span>
           <span>·</span>
           <span>{fmtTime(totalDuration)} tổng</span>
@@ -475,7 +475,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
             className="flex items-center justify-center border-b border-slate-200 dark:border-white/8"
             style={{ height: RULER_HEIGHT }}
           >
-            <span className="text-[8px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20">
+            <span className="text-[8px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
               Time
             </span>
           </div>
@@ -484,7 +484,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
             className="flex items-center justify-center"
             style={{ height: TRACK_HEIGHT }}
           >
-            <div className="-rotate-90 whitespace-nowrap text-[8px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20">
+            <div className="-rotate-90 whitespace-nowrap text-[8px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
               Scenes
             </div>
           </div>
@@ -493,7 +493,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
             className="flex items-center justify-center border-t border-slate-200 dark:border-white/8"
             style={{ height: 32 }}
           >
-            <div className="-rotate-90 whitespace-nowrap text-[8px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20">
+            <div className="-rotate-90 whitespace-nowrap text-[8px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
               Chars
             </div>
           </div>
@@ -558,7 +558,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
                     style={{ width: blockW }}
                   >
                     {sceneChars.length === 0 ? (
-                      <span className="text-[8px] text-slate-300 dark:text-white/15 italic">—</span>
+                      <span className="text-[8px] text-slate-300 dark:text-white/35 italic">—</span>
                     ) : (
                       sceneChars.slice(0, 3).map(char => (
                         <span
@@ -596,7 +596,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
             className="flex items-center gap-3 px-4 py-2 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.01]"
           >
             <ChevronRight size={12} className="text-brand-blue shrink-0" />
-            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30 shrink-0">
+            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 shrink-0">
               Cảnh #{scenes[activeSceneIndex].order.toString().padStart(2, '0')}
             </span>
             <span
@@ -607,7 +607,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
             <p className="text-[10px] text-slate-500 dark:text-white/40 truncate flex-1">
               {scenes[activeSceneIndex].prompt.slice(0, 120)}
             </p>
-            <span className="text-[9px] tabular-nums text-slate-300 dark:text-white/20 shrink-0">
+            <span className="text-[9px] tabular-nums text-slate-300 dark:text-white/45 shrink-0">
               {fmtTime(sceneOffsets[activeSceneIndex])} → {fmtTime(sceneOffsets[activeSceneIndex] + (scenes[activeSceneIndex].duration ?? 8))}
             </span>
           </motion.div>

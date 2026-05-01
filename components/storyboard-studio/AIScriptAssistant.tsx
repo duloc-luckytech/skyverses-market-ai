@@ -327,9 +327,9 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
             Phase 3
           </span>
         </div>
-        <div className="flex items-center gap-2 text-slate-400 dark:text-white/30">
+        <div className="flex items-center gap-2 text-slate-400 dark:text-gray-400">
           {!script.trim() && (
-            <span className="text-[9px] text-slate-300 dark:text-white/20 italic hidden sm:inline">
+            <span className="text-[9px] text-slate-300 dark:text-white/45 italic hidden sm:inline">
               Nhập kịch bản để bắt đầu
             </span>
           )}
@@ -358,7 +358,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                   className={`flex items-center gap-1.5 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shrink-0 border-b-2 transition-all ${
                     activeTab === tab.id
                       ? 'border-brand-blue text-brand-blue'
-                      : 'border-transparent text-slate-400 dark:text-white/30 hover:text-slate-700 dark:hover:text-white/60'
+                      : 'border-transparent text-slate-400 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white/60'
                   }`}
                 >
                   {tab.icon}
@@ -378,8 +378,8 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                     <div className="h-52 overflow-y-auto no-scrollbar flex flex-col gap-3 pb-2 pr-1 mb-3">
                       {chatMessages.length === 0 && !isStreaming && (
                         <div className="h-full flex flex-col items-center justify-center gap-2 text-center py-6">
-                          <MessageSquare size={24} className="text-slate-200 dark:text-white/10" />
-                          <p className="text-[10px] text-slate-300 dark:text-white/20 font-medium">
+                          <MessageSquare size={24} className="text-slate-200 dark:text-white/45" />
+                          <p className="text-[10px] text-slate-300 dark:text-white/45 font-medium">
                             Hỏi AI về kịch bản của bạn
                           </p>
                           <div className="flex flex-wrap justify-center gap-1.5 mt-1 max-w-xs">
@@ -391,7 +391,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                               <button
                                 key={q}
                                 onClick={() => setChatInput(q)}
-                                className="text-[9px] px-2.5 py-1 rounded-full border border-slate-200 dark:border-white/10 text-slate-400 dark:text-white/30 hover:border-brand-blue/40 hover:text-brand-blue transition-all"
+                                className="text-[9px] px-2.5 py-1 rounded-full border border-slate-200 dark:border-white/10 text-slate-400 dark:text-gray-400 hover:border-brand-blue/40 hover:text-brand-blue transition-all"
                               >
                                 {q}
                               </button>
@@ -486,7 +486,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                       {chatMessages.length > 0 && !isStreaming && (
                         <button
                           onClick={() => setChatMessages([])}
-                          className="px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/8 text-slate-400 dark:text-white/30 hover:text-red-400 hover:border-red-400/30 transition-all"
+                          className="px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/8 text-slate-400 dark:text-gray-400 hover:text-red-400 hover:border-red-400/30 transition-all"
                           title="Xóa lịch sử chat"
                         >
                           <RefreshCw size={12} />
@@ -514,7 +514,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                       </motion.button>
 
                       {!script.trim() && (
-                        <p className="text-[10px] text-slate-300 dark:text-white/20 text-center italic">
+                        <p className="text-[10px] text-slate-300 dark:text-white/45 text-center italic">
                           Nhập kịch bản trước để AI có context
                         </p>
                       )}
@@ -523,7 +523,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                       <AnimatePresence>
                         {suggestions.length > 0 && (
                           <div className="space-y-2.5">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30 flex items-center gap-1.5">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
                               <Sparkles size={10} className="text-brand-blue" />
                               3 gợi ý tiếp theo
                             </p>
@@ -569,7 +569,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                     <div className="space-y-3.5">
                       {/* Director selector */}
                       <div className="space-y-1.5">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">
                           Chọn phong cách đạo diễn
                         </p>
                         <div className="grid grid-cols-2 gap-1.5">
@@ -630,7 +630,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                                 </button>
                                 <button
                                   onClick={() => setRewritePreview('')}
-                                  className="px-3 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-slate-400 dark:text-white/30 hover:text-red-400 hover:border-red-400/30 transition-all text-[10px]"
+                                  className="px-3 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-slate-400 dark:text-gray-400 hover:text-red-400 hover:border-red-400/30 transition-all text-[10px]"
                                 >
                                   Bỏ qua
                                 </button>
@@ -682,7 +682,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                                   className="rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-100 dark:border-white/5 px-3 py-2.5"
                                 >
                                   <p className={`text-sm font-black tabular-nums leading-none ${stat.accent}`}>{stat.value}</p>
-                                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/30 mt-1">{stat.label}</p>
+                                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-1">{stat.label}</p>
                                 </motion.div>
                               ))}
                             </div>
@@ -690,13 +690,13 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                             {/* Genre & Characters */}
                             <div className="space-y-2">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30">Genre:</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">Genre:</span>
                                 <span className="text-[10px] font-bold bg-brand-blue/10 text-brand-blue px-2.5 py-0.5 rounded-full border border-brand-blue/20">{stats.genre}</span>
                               </div>
 
                               {stats.characters.length > 0 && (
                                 <div className="flex items-start gap-2 flex-wrap">
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30 mt-0.5 shrink-0">Characters:</span>
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-0.5 shrink-0">Characters:</span>
                                   <div className="flex flex-wrap gap-1">
                                     {stats.characters.map(c => (
                                       <span key={c} className="text-[9px] font-bold bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/20">{c}</span>
@@ -707,7 +707,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
 
                               {stats.locations.length > 0 && (
                                 <div className="flex items-start gap-2 flex-wrap">
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30 mt-0.5 shrink-0">Locations:</span>
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-0.5 shrink-0">Locations:</span>
                                   <div className="flex flex-wrap gap-1">
                                     {stats.locations.map(l => (
                                       <span key={l} className="text-[9px] font-bold bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">{l}</span>

@@ -20,7 +20,7 @@ const Row: React.FC<{ keys: React.ReactNode[]; label: string; category?: boolean
     <div className="flex items-center gap-1 shrink-0">
       {keys.map((k, i) => (
         <React.Fragment key={i}>
-          {i > 0 && <span className="text-[9px] text-slate-300 dark:text-white/20 font-bold">+</span>}
+          {i > 0 && <span className="text-[9px] text-slate-300 dark:text-white/45 font-bold">+</span>}
           <KBD>{k}</KBD>
         </React.Fragment>
       ))}
@@ -30,7 +30,7 @@ const Row: React.FC<{ keys: React.ReactNode[]; label: string; category?: boolean
 
 const Divider: React.FC<{ label: string }> = ({ label }) => (
   <div className="flex items-center gap-2 py-1.5 mt-1">
-    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-white/30">{label}</span>
+    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400">{label}</span>
     <div className="flex-1 h-px bg-slate-100 dark:bg-white/[0.05]" />
   </div>
 );
@@ -62,7 +62,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
                 </div>
                 <div>
                   <p className="text-[12px] font-black uppercase tracking-widest text-slate-800 dark:text-white">Phím tắt</p>
-                  <p className="text-[9px] text-slate-400 dark:text-white/30 font-medium">Storyboard Studio</p>
+                  <p className="text-[9px] text-slate-400 dark:text-gray-400 font-medium">Storyboard Studio</p>
                 </div>
               </div>
               <button
@@ -94,7 +94,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
 
               {/* Tip */}
               <div className="pt-3">
-                <p className="text-[9px] text-slate-400 dark:text-white/25 leading-relaxed">
+                <p className="text-[9px] text-slate-400 dark:text-white/50 leading-relaxed">
                   💡 Phím tắt không hoạt động khi đang focus vào ô nhập liệu.
                 </p>
               </div>

@@ -198,7 +198,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
             {/* Script label */}
             <div className="px-4 pt-3 pb-1 shrink-0">
-              <span className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-white/30">
+              <span className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-400">
                 ✏️ KỊCH BẢN
               </span>
             </div>
@@ -255,7 +255,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                   className={`p-1.5 rounded-lg border transition-all text-[10px] ${
                     s.scriptRefImage
                       ? 'bg-brand-blue/10 border-brand-blue/30 text-brand-blue'
-                      : 'bg-slate-100 dark:bg-white/[0.04] border-slate-200 dark:border-white/[0.08] text-slate-400 dark:text-white/30 hover:text-brand-blue hover:border-brand-blue/30'
+                      : 'bg-slate-100 dark:bg-white/[0.04] border-slate-200 dark:border-white/[0.08] text-slate-400 dark:text-gray-400 hover:text-brand-blue hover:border-brand-blue/30'
                   }`}
                 >
                   <LucideImage size={13} />
@@ -266,7 +266,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                   className={`p-1.5 rounded-lg border transition-all ${
                     s.scriptRefAudio
                       ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500'
-                      : 'bg-slate-100 dark:bg-white/[0.04] border-slate-200 dark:border-white/[0.08] text-slate-400 dark:text-white/30 hover:text-emerald-500 hover:border-emerald-400/30'
+                      : 'bg-slate-100 dark:bg-white/[0.04] border-slate-200 dark:border-white/[0.08] text-slate-400 dark:text-gray-400 hover:text-emerald-500 hover:border-emerald-400/30'
                   }`}
                 >
                   <Music size={13} />
@@ -361,7 +361,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           /* ── OTHER TABS: minimal sidebar (just credits) ── */
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto no-scrollbar flex items-center justify-center p-6">
-              <p className="text-[10px] font-medium text-slate-300 dark:text-white/20 text-center leading-relaxed">
+              <p className="text-[10px] font-medium text-slate-300 dark:text-white/45 text-center leading-relaxed">
                 Chọn tab <span className="font-black text-brand-blue">Board</span> để viết kịch bản và tạo phân cảnh
               </p>
             </div>

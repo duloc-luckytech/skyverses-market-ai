@@ -149,8 +149,8 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
         {/* State A: Empty */}
         {!hasImage && !hasVideo && !isGenerating && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-[#0f0f14] dark:to-[#0a0a0e]">
-            <Clapperboard size={isListView ? 24 : 32} className="text-slate-300 dark:text-white/15" />
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-white/15">Chưa render</span>
+            <Clapperboard size={isListView ? 24 : 32} className="text-slate-300 dark:text-white/35" />
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-white/35">Chưa render</span>
           </div>
         )}
 
@@ -277,7 +277,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
 
       {/* Prompt textarea */}
       <div className="px-4 py-3 flex-grow bg-white dark:bg-transparent">
-        <p className="text-[7px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest mb-1.5">Kịch bản chi tiết</p>
+        <p className="text-[7px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-widest mb-1.5">Kịch bản chi tiết</p>
         <textarea
           value={scene.prompt}
           onChange={(e) => onUpdate({ prompt: e.target.value })}
@@ -305,7 +305,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
             <button
               onClick={(e) => { e.stopPropagation(); onDownloadAudio(); }}
               title="Tải audio xuống"
-              className="shrink-0 w-6 h-6 flex items-center justify-center rounded-lg text-slate-400 dark:text-white/30 hover:bg-violet-500/15 hover:text-violet-400 transition-all"
+              className="shrink-0 w-6 h-6 flex items-center justify-center rounded-lg text-slate-400 dark:text-gray-400 hover:bg-violet-500/15 hover:text-violet-400 transition-all"
             >
               <Volume2 size={11} />
             </button>
@@ -507,7 +507,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                 </h3>
               </div>
               {scenes.length > 0 && selectedSceneIds.length > 0 && (
-                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-600 mt-1 ml-7">
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400 mt-1 ml-7">
                   {selectedSceneIds.length} đã chọn
                 </p>
               )}
@@ -517,7 +517,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               {/* Scene search */}
               {scenes.length > 0 && (
                 <div className="relative flex items-center">
-                  <Search size={11} className="absolute left-2.5 text-slate-400 dark:text-white/30 pointer-events-none" />
+                  <Search size={11} className="absolute left-2.5 text-slate-400 dark:text-gray-400 pointer-events-none" />
                   <input
                     ref={searchInputRef}
                     value={searchQuery}
@@ -528,7 +528,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-2 text-slate-300 dark:text-white/25 hover:text-slate-600 dark:hover:text-white transition-colors"
+                      className="absolute right-2 text-slate-300 dark:text-white/50 hover:text-slate-600 dark:hover:text-white transition-colors"
                     >
                       <XIcon size={11} />
                     </button>
@@ -571,7 +571,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               {/* Bulk duration selector — visible when ≥2 scenes selected */}
               {selectedSceneIds.length >= 2 && onBulkDurationChange && (
                 <div className="flex items-center gap-1 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl px-2 py-1.5 shadow-sm">
-                  <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30 mr-1">⏱</span>
+                  <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 mr-1">⏱</span>
                   {([4, 8, 12, 16] as DurationPreset[]).map((d) => (
                     <button
                       key={d}
@@ -631,7 +631,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               <button
                 onClick={() => setIsShortcutsOpen(true)}
                 title="Xem phím tắt (?)"
-                className="p-2 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-slate-400 dark:text-white/30 hover:text-brand-blue transition-all"
+                className="p-2 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-all"
               >
                 <Keyboard size={13} />
               </button>
@@ -641,7 +641,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                 <button
                   onClick={() => onAddAct()}
                   title="Tạo Act mới (nhóm cảnh)"
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-slate-400 dark:text-white/30 hover:text-brand-blue dark:hover:text-brand-blue hover:border-brand-blue/40 transition-all text-[10px] font-black"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-slate-400 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue hover:border-brand-blue/40 transition-all text-[10px] font-black"
                 >
                   <Plus size={11} />
                   <span className="hidden lg:inline">Act</span>
@@ -684,7 +684,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   </div>
 
                   {/* Percent */}
-                  <span className="text-[9px] font-black tabular-nums text-slate-400 dark:text-white/30 shrink-0">
+                  <span className="text-[9px] font-black tabular-nums text-slate-400 dark:text-gray-400 shrink-0">
                     {totalScenes > 0 ? Math.round(((totalScenes - processingCount) / totalScenes) * 100) : 0}%
                   </span>
                 </div>
@@ -713,7 +713,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="aspect-video bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl animate-pulse flex flex-col items-center justify-center gap-3">
                   <Loader2 className="animate-spin text-brand-blue/40" size={24} />
-                  <span className="text-[9px] font-black text-slate-300 dark:text-gray-700 uppercase tracking-widest">Đang phân tích...</span>
+                  <span className="text-[9px] font-black text-slate-300 dark:text-gray-400 uppercase tracking-widest">Đang phân tích...</span>
                 </div>
               ))}
             </div>
@@ -726,13 +726,13 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
             >
               {/* Icon */}
               <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
-                <Clapperboard size={28} className="text-slate-300 dark:text-white/20" />
+                <Clapperboard size={28} className="text-slate-300 dark:text-white/45" />
               </div>
 
               {/* Title */}
               <div>
-                <p className="text-lg font-black uppercase italic tracking-tight text-slate-400 dark:text-white/30">🎬 Chưa có phân cảnh nào</p>
-                <p className="text-[11px] text-slate-400 dark:text-gray-600 mt-1.5">Để bắt đầu, hãy làm theo 3 bước:</p>
+                <p className="text-lg font-black uppercase italic tracking-tight text-slate-400 dark:text-gray-400">🎬 Chưa có phân cảnh nào</p>
+                <p className="text-[11px] text-slate-400 dark:text-gray-400 mt-1.5">Để bắt đầu, hãy làm theo 3 bước:</p>
               </div>
 
               {/* 3-step guide */}
@@ -747,7 +747,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                       <span className="w-6 h-6 rounded-full bg-brand-blue/90 text-white text-[10px] font-black flex items-center justify-center shrink-0">{step.num}</span>
                       <span className="text-[11px] font-semibold text-slate-600 dark:text-gray-300 whitespace-nowrap">{step.text}</span>
                     </div>
-                    {i < 2 && <span className="text-slate-200 dark:text-white/15 font-black hidden sm:block">→</span>}
+                    {i < 2 && <span className="text-slate-200 dark:text-white/35 font-black hidden sm:block">→</span>}
                   </React.Fragment>
                 ))}
               </div>
@@ -765,8 +765,8 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="flex flex-col items-center justify-center gap-3 py-12 text-center border-2 border-dashed border-slate-200 dark:border-white/8 rounded-2xl"
             >
-              <Search size={24} className="text-slate-300 dark:text-white/20" />
-              <p className="text-[12px] font-semibold text-slate-400 dark:text-white/30">
+              <Search size={24} className="text-slate-300 dark:text-white/45" />
+              <p className="text-[12px] font-semibold text-slate-400 dark:text-gray-400">
                 Không tìm thấy cảnh nào phù hợp với "{searchQuery}"
               </p>
               <button
@@ -927,7 +927,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               <p className="text-[13px] font-semibold text-slate-700 dark:text-white/80 leading-snug">
                 Bạn có chắc muốn xoá cảnh này không?
               </p>
-              <p className="text-[10px] text-slate-400 dark:text-white/30 mt-1">Hành động này không thể hoàn tác.</p>
+              <p className="text-[10px] text-slate-400 dark:text-gray-400 mt-1">Hành động này không thể hoàn tác.</p>
               <div className="flex items-center gap-2 mt-5">
                 <button
                   onClick={() => setKeyboardDeleteConfirm(null)}

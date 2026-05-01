@@ -95,7 +95,7 @@ const PillSelector: React.FC<{
   formatLabel?: (v: string) => string;
 }> = ({ label, options, value, onChange, formatLabel }) => (
   <div className="space-y-2.5">
-    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-600">{label}</p>
+    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400">{label}</p>
     <div className="flex flex-wrap gap-2">
       {options.map((opt) => (
         <button
@@ -234,7 +234,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
                       activeTab === tab.id
                         ? 'bg-white dark:bg-[#1a1a1f] text-brand-blue shadow-md'
-                        : 'text-slate-400 dark:text-gray-600 hover:text-slate-700 dark:hover:text-white'
+                        : 'text-slate-400 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white'
                     }`}
                   >
                     {tab.icon}
@@ -264,7 +264,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                     >
                       {/* Model cards */}
                       <div className="space-y-3">
-                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-600">Chọn mô hình video</p>
+                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-400">Chọn mô hình video</p>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           {videoModels.length > 0
                             ? videoModels.map((m) => (
@@ -305,7 +305,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
 
                       {/* Aspect ratio */}
                       <div className="space-y-3">
-                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-600">Tỉ lệ khung hình</p>
+                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-400">Tỉ lệ khung hình</p>
                         <div className="flex gap-3">
                           {[
                             { val: '16:9', label: '16:9', shape: 'w-14 h-8' },
@@ -330,7 +330,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
 
                       {/* Priority mode */}
                       <div className="space-y-3">
-                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-600">Chế độ ưu tiên</p>
+                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-400">Chế độ ưu tiên</p>
                         <div className="flex gap-2 bg-slate-100 dark:bg-black/40 p-1.5 rounded-xl w-fit border border-slate-200 dark:border-white/5">
                           {['fast', 'quality', 'relaxed'].map((mode) => (
                             <button
@@ -339,7 +339,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                               className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
                                 settings.mode === mode
                                   ? 'bg-white dark:bg-[#1a1a1e] text-brand-blue shadow-md'
-                                  : 'text-slate-400 dark:text-gray-600 hover:text-slate-800 dark:hover:text-white'
+                                  : 'text-slate-400 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white'
                               }`}
                             >
                               {mode}
@@ -359,7 +359,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                     >
                       {/* Model cards */}
                       <div className="space-y-3">
-                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-600">Chọn mô hình ảnh</p>
+                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-400">Chọn mô hình ảnh</p>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           {imageModels.length > 0
                             ? imageModels.map((m) => (
@@ -414,7 +414,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
 
                       {/* Privacy */}
                       <div className="space-y-3">
-                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-600">Quyền riêng tư</p>
+                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-400">Quyền riêng tư</p>
                         <div className="grid grid-cols-2 gap-3">
                           {[
                             { val: 'private', label: '🔒 Chỉ mình tôi', desc: 'Không xuất hiện trên Explorer' },
@@ -438,7 +438,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
 
                       {/* Toggles */}
                       <div className="space-y-3">
-                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-600">Tùy chọn khác</p>
+                        <p className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-400">Tùy chọn khác</p>
                         <div className="space-y-3">
                           {[
                             { key: 'autoDownload', label: 'Tự động tải xuống khi xong', desc: 'Download ngay khi render hoàn tất' },

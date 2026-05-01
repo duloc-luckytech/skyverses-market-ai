@@ -270,7 +270,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
                       <div className="space-y-6 pt-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-[0.3em] flex items-center gap-1.5">
+                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
                               <Layout size={11} className="text-brand-blue" /> Bối cảnh / Background
                             </label>
                             <textarea
@@ -281,7 +281,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
                             />
                           </div>
                           <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-[0.3em] flex items-center gap-1.5">
+                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
                               <Camera size={11} className="text-brand-blue" /> Camera & Cinematic
                             </label>
                             <textarea
@@ -295,7 +295,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-[0.3em] flex items-center gap-1.5">
+                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
                               <Music size={11} className="text-emerald-500" /> Âm nhạc (BGM)
                             </label>
                             <input
@@ -306,7 +306,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
                             />
                           </div>
                           <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-[0.3em] flex items-center gap-1.5">
+                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
                               <Mic size={11} className="text-emerald-500" /> Lời bình (Voice Over)
                             </label>
                             <input

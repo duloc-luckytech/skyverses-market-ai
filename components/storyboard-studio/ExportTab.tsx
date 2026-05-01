@@ -72,7 +72,7 @@ const StatusIcon: React.FC<{ status: Scene['status'] }> = ({ status }) => {
     case 'done':       return <CheckCircle size={13} className="text-emerald-400" />;
     case 'generating': return <RefreshCw   size={13} className="text-brand-blue animate-spin" />;
     case 'error':      return <AlertCircle size={13} className="text-rose-400" />;
-    default:           return <Clock       size={13} className="text-slate-300 dark:text-white/20" />;
+    default:           return <Clock       size={13} className="text-slate-300 dark:text-white/45" />;
   }
 };
 
@@ -356,8 +356,8 @@ const AnimaticPreview: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
   if (withImages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-        <MonitorPlay size={36} className="text-slate-200 dark:text-white/10" />
-        <p className="text-[11px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20">
+        <MonitorPlay size={36} className="text-slate-200 dark:text-white/45" />
+        <p className="text-[11px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
           Cần ít nhất 1 cảnh có hình ảnh
         </p>
       </div>
@@ -388,7 +388,7 @@ const AnimaticPreview: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
         />
         <div className="flex items-center gap-3">
           <button onClick={() => { setElapsed(0); setCurrentIdx(0); drawFrame(withImages[0]); setIsPlaying(false); }}
-            className="w-8 h-8 rounded-xl border border-slate-200 dark:border-white/8 flex items-center justify-center text-slate-400 dark:text-white/30 hover:text-brand-blue hover:border-brand-blue/30 transition-all">
+            className="w-8 h-8 rounded-xl border border-slate-200 dark:border-white/8 flex items-center justify-center text-slate-400 dark:text-gray-400 hover:text-brand-blue hover:border-brand-blue/30 transition-all">
             <SkipBack size={12} />
           </button>
           <button onClick={() => { if (elapsed >= totalDur) setElapsed(0); setIsPlaying(v => !v); }}
@@ -396,22 +396,22 @@ const AnimaticPreview: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
             {isPlaying ? <Pause size={14} /> : <Play size={14} />}
           </button>
           <button onClick={() => { setElapsed(totalDur - 0.1); setIsPlaying(false); }}
-            className="w-8 h-8 rounded-xl border border-slate-200 dark:border-white/8 flex items-center justify-center text-slate-400 dark:text-white/30 hover:text-brand-blue hover:border-brand-blue/30 transition-all">
+            className="w-8 h-8 rounded-xl border border-slate-200 dark:border-white/8 flex items-center justify-center text-slate-400 dark:text-gray-400 hover:text-brand-blue hover:border-brand-blue/30 transition-all">
             <SkipForward size={12} />
           </button>
-          <span className="tabular-nums text-[11px] text-slate-400 dark:text-white/30">
+          <span className="tabular-nums text-[11px] text-slate-400 dark:text-gray-400">
             {fmt(elapsed)} / {fmt(totalDur)}
           </span>
-          <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20">
+          <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
             SC.{String(withImages[currentIdx]?.order ?? 1).padStart(2,'0')} · {currentIdx + 1}/{withImages.length}
           </span>
         </div>
       </div>
 
       <div className="rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/5 px-4 py-3 flex items-center gap-4 text-[10px]">
-        <span className="flex items-center gap-1.5 text-slate-400 dark:text-white/30"><Film size={11} /> {withImages.length} cảnh có hình</span>
-        <span className="flex items-center gap-1.5 text-slate-400 dark:text-white/30"><Clock size={11} /> {fmt(totalDur)} tổng</span>
-        <p className="ml-auto text-slate-300 dark:text-white/15 italic text-[9px]">Canvas 960×540 preview</p>
+        <span className="flex items-center gap-1.5 text-slate-400 dark:text-gray-400"><Film size={11} /> {withImages.length} cảnh có hình</span>
+        <span className="flex items-center gap-1.5 text-slate-400 dark:text-gray-400"><Clock size={11} /> {fmt(totalDur)} tổng</span>
+        <p className="ml-auto text-slate-300 dark:text-white/35 italic text-[9px]">Canvas 960×540 preview</p>
       </div>
     </div>
   );
@@ -446,7 +446,7 @@ const SharePanel: React.FC<{ projectName: string; scenes: Scene[] }> = ({ projec
   return (
     <div className="space-y-5 max-w-lg">
       <div className="space-y-2">
-        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30">Quyền truy cập</p>
+        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">Quyền truy cập</p>
         <div className="flex gap-2">
           {[
             { id: 'private', icon: <Lock size={12} />,  label: 'Private', desc: 'Chỉ bạn có thể xem' },
@@ -478,7 +478,7 @@ const SharePanel: React.FC<{ projectName: string; scenes: Scene[] }> = ({ projec
           { label: 'Đã render', value: String(completedScenes(scenes).length), accent: 'text-emerald-500' },
         ].map(row => (
           <div key={row.label} className="flex items-center justify-between text-[10px]">
-            <span className="font-black uppercase tracking-widest text-slate-400 dark:text-white/30">{row.label}</span>
+            <span className="font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">{row.label}</span>
             <span className={`font-bold ${row.accent ?? 'text-slate-600 dark:text-white/60'}`}>{row.value}</span>
           </div>
         ))}
@@ -506,7 +506,7 @@ const SharePanel: React.FC<{ projectName: string; scenes: Scene[] }> = ({ projec
           )}
           <div className="flex gap-2">
             <button onClick={() => { setGenerated(false); shareIdRef.current = Math.random().toString(36).slice(2, 10); }}
-              className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30 hover:border-rose-400/30 hover:text-rose-400 transition-all">
+              className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 hover:border-rose-400/30 hover:text-rose-400 transition-all">
               Xóa link
             </button>
             <button onClick={handleCopy}
@@ -677,7 +677,7 @@ const VideoExportPanel: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
         <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-700 dark:text-white mb-1 flex items-center gap-2">
           <FileVideo size={14} className="text-rose-500" /> Export Video WebM
         </h3>
-        <p className="text-[10px] text-slate-400 dark:text-white/30">
+        <p className="text-[10px] text-slate-400 dark:text-gray-400">
           Xuất animatic dưới dạng file <code className="bg-slate-100 dark:bg-white/8 px-1 rounded text-[9px]">.webm</code> — chạy được trong Chrome, VLC, DaVinci Resolve.
         </p>
       </div>
@@ -698,13 +698,13 @@ const VideoExportPanel: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
       <div className="rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/5 px-4 py-3 flex flex-wrap items-center gap-4 text-[10px]">
         <span className="flex items-center gap-1.5 text-slate-500 dark:text-white/40"><Film size={11} /> {withImages.length} cảnh có hình</span>
         <span className="flex items-center gap-1.5 text-slate-500 dark:text-white/40"><Clock size={11} /> {withImages.reduce((a, s) => a + (s.duration ?? 8), 0)}s tổng</span>
-        <span className="text-slate-400 dark:text-white/25">· 960×540 · 30fps · VP9 WebM</span>
+        <span className="text-slate-400 dark:text-white/50">· 960×540 · 30fps · VP9 WebM</span>
       </div>
 
       {/* Progress bar */}
       {isRecording && (
         <div className="space-y-1.5">
-          <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30">
+          <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">
             <span>Đang ghi...</span>
             <span>{progress}%</span>
           </div>
@@ -820,7 +820,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
             <h2 className="text-2xl lg:text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">
               Export &amp; Chia sẻ
             </h2>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-600 mt-1.5">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-1.5">
               {done.length}/{scenes.length} cảnh hoàn tất · {totalDuration}s · {settings?.format || 'Storyboard'}
             </p>
           </div>
@@ -852,7 +852,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
           ].map(stat => (
             <div key={stat.label} className={`bg-gradient-to-br ${stat.bg} border ${stat.border} rounded-2xl p-4`}>
               <p className={`text-2xl font-black tabular-nums leading-none ${stat.color}`}>{stat.value}</p>
-              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/30 mt-1.5">{stat.label}</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-1.5">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -868,7 +868,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                   isActive
                     ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-brand-blue/20'
                     : locked
-                      ? 'border-slate-200 dark:border-white/5 text-slate-300 dark:text-white/20 bg-white dark:bg-white/[0.01] cursor-pointer'
+                      ? 'border-slate-200 dark:border-white/5 text-slate-300 dark:text-white/45 bg-white dark:bg-white/[0.01] cursor-pointer'
                       : 'border-slate-200 dark:border-white/8 text-slate-500 dark:text-white/40 hover:border-brand-blue/30 hover:text-brand-blue bg-white dark:bg-transparent'
                 }`}
               >
@@ -909,12 +909,12 @@ export const ExportTab: React.FC<ExportTabProps> = ({
 
                 {scenes.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-16 gap-4">
-                    <Clapperboard size={36} className="text-slate-200 dark:text-white/10" />
-                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20">Chưa có phân cảnh</p>
+                    <Clapperboard size={36} className="text-slate-200 dark:text-white/45" />
+                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">Chưa có phân cảnh</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/30 flex items-center gap-1.5">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
                       <FolderOpen size={10} /> Danh sách phân cảnh
                     </p>
                     {scenes.map((scene, index) => (
@@ -926,7 +926,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                         <div className="w-16 h-10 rounded-lg overflow-hidden bg-slate-100 dark:bg-white/5 shrink-0 cursor-pointer" onClick={() => onViewScene(scene)}>
                           {scene.videoUrl ? <video src={scene.videoUrl} className="w-full h-full object-cover" muted />
                             : scene.visualUrl ? <img src={scene.visualUrl} alt="" className="w-full h-full object-cover" />
-                            : <div className="w-full h-full flex items-center justify-center text-slate-200 dark:text-white/10"><Clock size={12} /></div>
+                            : <div className="w-full h-full flex items-center justify-center text-slate-200 dark:text-white/45"><Clock size={12} /></div>
                           }
                         </div>
                         <div className="flex-1 min-w-0">
@@ -936,9 +936,9 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                             {scene.videoUrl && <span className="text-[8px] font-bold bg-purple-500/10 text-purple-400 px-1.5 py-0.5 rounded border border-purple-500/20">VIDEO</span>}
                             {scene.visualUrl && !scene.videoUrl && <span className="text-[8px] font-bold bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20">IMG</span>}
                             {scene.audioUrl && <Music size={10} className="text-purple-400" />}
-                            <span className="text-[8px] text-slate-300 dark:text-white/15 ml-auto tabular-nums">{scene.duration ?? 8}s</span>
+                            <span className="text-[8px] text-slate-300 dark:text-white/35 ml-auto tabular-nums">{scene.duration ?? 8}s</span>
                           </div>
-                          <p className="text-[10px] text-slate-400 dark:text-white/30 truncate">{scene.prompt}</p>
+                          <p className="text-[10px] text-slate-400 dark:text-gray-400 truncate">{scene.prompt}</p>
                         </div>
                         <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                           {(scene.videoUrl || scene.visualUrl) && (
@@ -947,12 +947,12 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                               if (!url) return;
                               const a = document.createElement('a');
                               a.href = url; a.download = `scene-${String(scene.order).padStart(2,'0')}.${scene.videoUrl ? 'mp4' : 'jpg'}`; a.click();
-                            }} className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white flex items-center justify-center text-slate-400 dark:text-white/30 transition-all">
+                            }} className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white flex items-center justify-center text-slate-400 dark:text-gray-400 transition-all">
                               <Download size={11} />
                             </button>
                           )}
                           <button onClick={() => onViewScene(scene)}
-                            className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-purple-500 hover:text-white flex items-center justify-center text-slate-400 dark:text-white/30 transition-all">
+                            className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-purple-500 hover:text-white flex items-center justify-center text-slate-400 dark:text-gray-400 transition-all">
                             <Play size={11} />
                           </button>
                         </div>
@@ -963,7 +963,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
 
                 {script && (
                   <div className="rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-white/[0.02] p-5">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/20 mb-2">Kịch bản gốc</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45 mb-2">Kịch bản gốc</p>
                     <p className="text-[11px] text-slate-500 dark:text-white/40 leading-relaxed line-clamp-4">{script}</p>
                   </div>
                 )}
@@ -975,7 +975,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
               <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/[0.02] p-6 space-y-5">
                 <div>
                   <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-700 dark:text-white mb-1">PDF Storyboard</h3>
-                  <p className="text-[10px] text-slate-400 dark:text-white/30">Grid 3 cột, hình ảnh + prompt. Click "In / Lưu PDF" trong cửa sổ mới.</p>
+                  <p className="text-[10px] text-slate-400 dark:text-gray-400">Grid 3 cột, hình ảnh + prompt. Click "In / Lưu PDF" trong cửa sổ mới.</p>
                 </div>
 
                 {/* Preview mockup */}
@@ -986,7 +986,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                         <div className="aspect-video bg-slate-200 dark:bg-white/10 flex items-center justify-center">
                           {scenes[i]?.visualUrl
                             ? <img src={scenes[i].visualUrl!} className="w-full h-full object-cover" alt="" />
-                            : <ImageIcon size={14} className="text-slate-300 dark:text-white/10" />
+                            : <ImageIcon size={14} className="text-slate-300 dark:text-white/45" />
                           }
                         </div>
                         <div className="p-1.5 space-y-1">
@@ -1016,7 +1016,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
               <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/[0.02] p-6 space-y-5">
                 <div>
                   <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-700 dark:text-white mb-1">EDL — Edit Decision List</h3>
-                  <p className="text-[10px] text-slate-400 dark:text-white/30">Định dạng CMX 3600 chuẩn. Import vào Premiere Pro, DaVinci Resolve, Avid.</p>
+                  <p className="text-[10px] text-slate-400 dark:text-gray-400">Định dạng CMX 3600 chuẩn. Import vào Premiere Pro, DaVinci Resolve, Avid.</p>
                 </div>
                 <pre className="bg-slate-900 dark:bg-black/60 rounded-xl p-4 text-[10px] font-mono text-emerald-400 overflow-x-auto max-h-52 no-scrollbar leading-relaxed">
                   {generateEDL(scenes.slice(0, 4), projectName)}
@@ -1057,9 +1057,9 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                           <FileVideo size={14} className={card.color} />
                           <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-700 dark:text-white">{card.title}</h3>
                         </div>
-                        <p className="text-[10px] text-slate-400 dark:text-white/30">{card.sub}</p>
+                        <p className="text-[10px] text-slate-400 dark:text-gray-400">{card.sub}</p>
                       </div>
-                      <pre className="bg-slate-50 dark:bg-black/40 rounded-xl p-3 text-[9px] font-mono text-slate-400 dark:text-white/25 overflow-x-auto max-h-32 no-scrollbar leading-relaxed">
+                      <pre className="bg-slate-50 dark:bg-black/40 rounded-xl p-3 text-[9px] font-mono text-slate-400 dark:text-white/50 overflow-x-auto max-h-32 no-scrollbar leading-relaxed">
                         {card.preview}…
                       </pre>
                       <motion.button whileTap={{ scale: 0.97 }} onClick={card.onDownload} disabled={scenes.length === 0}
@@ -1069,7 +1069,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                     </div>
                   ))}
                 </div>
-                <p className="text-[10px] text-slate-300 dark:text-white/20 text-center">
+                <p className="text-[10px] text-slate-300 dark:text-white/45 text-center">
                   File XML chứa sequence metadata. Media paths link tới URL ảnh/video đã render.
                 </p>
               </div>
@@ -1080,7 +1080,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
               <div className="space-y-4">
                 <div>
                   <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-700 dark:text-white mb-1">Animatic Preview</h3>
-                  <p className="text-[10px] text-slate-400 dark:text-white/30">Canvas slideshow theo duration từng cảnh. Review nhịp độ trước khi render.</p>
+                  <p className="text-[10px] text-slate-400 dark:text-gray-400">Canvas slideshow theo duration từng cảnh. Review nhịp độ trước khi render.</p>
                 </div>
                 <AnimaticPreview scenes={scenes} />
               </div>
@@ -1096,7 +1096,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
               <div className="space-y-4">
                 <div>
                   <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-700 dark:text-white mb-1">Share Link</h3>
-                  <p className="text-[10px] text-slate-400 dark:text-white/30">Chia sẻ storyboard với client hoặc team.</p>
+                  <p className="text-[10px] text-slate-400 dark:text-gray-400">Chia sẻ storyboard với client hoặc team.</p>
                 </div>
                 <SharePanel projectName={projectName} scenes={scenes} />
               </div>
