@@ -4,12 +4,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Sparkles, ArrowRight, ChevronLeft, ChevronRight,
-  Video, ImageIcon, Mic, Music, LayoutGrid, Zap, Star,
-  Users, TrendingUp, Heart, BookmarkPlus, Bookmark,
+  Video, ImageIcon, Mic, Music, LayoutGrid, Zap,
+  TrendingUp, Heart, BookmarkPlus, Bookmark,
   X, Layers, Box, Cpu, SlidersHorizontal,
   Check, Grid3X3, List, ArrowUp, Clock, Tag, ChevronUp, ChevronDown,
   Eye, GitCompare, Command,
-  Globe, Smartphone, Tablet, BadgeCheck, Film, Lightbulb
+  Globe, Smartphone, Tablet, Film, Lightbulb
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -44,6 +44,8 @@ const useAnimatedCounter = (end: number, duration = 800) => {
 };
 
 // ═══════ CONSTANTS ═══════
+// Sky Partners đã được rút khỏi danh mục chính (khái niệm mơ hồ với user mới).
+// User vẫn có thể filter qua tag "Sky Partners" trong "Bộ lọc nâng cao → Tags" nếu muốn.
 const STATIC_CATEGORIES = [
   { key: 'ALL', label: 'Tất cả', icon: LayoutGrid },
   { key: 'Video', label: 'Video AI', icon: Video },
@@ -53,7 +55,6 @@ const STATIC_CATEGORIES = [
   { key: 'Music', label: 'Nhạc AI', icon: Music },
   { key: 'Automation', label: 'Tự động hóa', icon: Zap },
   { key: '3D', label: '3D & Game', icon: Box },
-  { key: 'Sky Partners', label: 'Sky Partners', icon: BadgeCheck, isPartner: true },
 ];
 // Việt hoá label nhưng giữ key tiếng Anh để khớp Solution.complexity từ backend
 const COMPLEXITY_LEVELS: { key: string; label: string }[] = [
@@ -68,11 +69,11 @@ const PLATFORMS = [
   { key: 'android', label: 'Mobile Android', icon: Tablet },
   { key: 'extension', label: 'Extension', icon: Cpu },
 ];
+// Sort options gọn — chỉ 2 lựa chọn user thực sự cần.
+// Khi user đang search, hệ thống tự sort theo relevance (không cần option riêng).
 const SORT_OPTIONS = [
-  { key: 'popular', label: 'Phổ biến nhất' },
+  { key: 'popular', label: 'Phổ biến' },
   { key: 'newest', label: 'Mới nhất' },
-  { key: 'name', label: 'Tên A-Z' },
-  { key: 'relevant', label: 'Liên quan nhất' },
 ];
 // Quick path use-case driven cho user mới — click → set category + scroll xuống grid
 const QUICK_PATHS: { key: string; category: string; label: string; desc: string; icon: typeof Video; iconColor: string; gradient: string }[] = [
@@ -94,17 +95,6 @@ const CTA_FEATURED_SLUG = 'ai-video-generator';
 const SCROLL_POS_KEY = 'skyverses_markets_scroll';
 
 // ═══════ HELPERS ═══════
-
-// Module-level Map cache for getStats so it's computed once per id, not every render
-const statsCache = new Map<string, { users: number; likes: number; rating: string }>();
-const getStats = (id: string) => {
-  if (!id) return { users: 100, likes: 30, rating: '4.0' };
-  if (statsCache.has(id)) return statsCache.get(id)!;
-  const h = id.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  const result = { users: (h % 900 + 100), likes: (h % 400 + 30), rating: (3.5 + (h % 15) / 10).toFixed(1) };
-  statsCache.set(id, result);
-  return result;
-};
 
 // Debounce helper for localStorage writes
 let favDebounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -274,27 +264,23 @@ const SuggestedSection: React.FC<{ solutions: Solution[]; lang: Language; onNavi
         <h3 className="text-[13px] font-bold text-slate-600 dark:text-gray-300">Gợi ý cho bạn</h3>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        {suggested.map(sol => {
-          const stats = getStats(sol.id);
-          return (
-            <div key={sol.id} onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}
-              className="bg-white dark:bg-[#111114] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
-              <div className="relative h-[80px] overflow-hidden">
-                <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                <button onClick={(e) => { e.stopPropagation(); onToggleFav(e, sol.id); }}
-                  className="absolute top-1.5 right-1.5 p-1 rounded-lg bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                  {favorites.includes(sol.id) ? <Bookmark size={10} className="text-brand-blue" fill="currentColor" /> : <BookmarkPlus size={10} className="text-white/70" />}
-                </button>
-              </div>
-              <div className="p-2">
-                <p className="text-[11px] font-bold text-slate-700 dark:text-white truncate group-hover:text-brand-blue transition-colors">{sol.name[lang]}</p>
-                <div className="flex items-center gap-1.5 mt-0.5 text-[9px] text-slate-400">
-                  <Star size={8} fill="currentColor" className="text-amber-400" />{stats.rating}
-                </div>
-              </div>
+        {suggested.map(sol => (
+          <div key={sol.id} onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}
+            className="bg-white dark:bg-[#111114] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
+            <div className="relative h-[80px] overflow-hidden">
+              <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+              {sol.isFree && <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-emerald-500 text-white text-[8px] font-bold rounded">FREE</span>}
+              <button onClick={(e) => { e.stopPropagation(); onToggleFav(e, sol.id); }}
+                className="absolute top-1.5 right-1.5 p-1 rounded-lg bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                {favorites.includes(sol.id) ? <Bookmark size={10} className="text-brand-blue" fill="currentColor" /> : <BookmarkPlus size={10} className="text-white/70" />}
+              </button>
             </div>
-          );
-        })}
+            <div className="p-2">
+              <p className="text-[11px] font-bold text-slate-700 dark:text-white truncate group-hover:text-brand-blue transition-colors">{sol.name[lang]}</p>
+              <p className="text-[9px] text-slate-400 dark:text-gray-500 mt-0.5 truncate">{sol.category[lang]}</p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -324,7 +310,6 @@ const ProductCardGrid: React.FC<{
   onPreview?: (e: React.MouseEvent) => void;
   isCompare?: boolean; onToggleCompare?: (e: React.MouseEvent) => void;
 }> = React.memo(({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
-  const stats = getStats(sol.id);
   const models = sol.models?.slice(0, 3) || [];
   return (
     <motion.div whileHover={{ y: -2 }}
@@ -363,9 +348,12 @@ const ProductCardGrid: React.FC<{
           {sol.complexity && <span className="px-1.5 py-0.5 bg-slate-50 dark:bg-white/[0.03] text-slate-400 dark:text-gray-500 rounded text-[9px] font-medium border border-black/[0.04] dark:border-white/[0.04]">{sol.complexity}</span>}
         </div>
         <div className="pt-2 border-t border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
-          <div className="flex items-center gap-2.5 text-[10px] text-slate-400">
-            <span className="flex items-center gap-0.5"><Users size={10} /> {stats.users}</span>
-            <span className="flex items-center gap-0.5"><Star size={10} fill="currentColor" className="text-amber-400" /> {stats.rating}</span>
+          <div className="text-[10px] font-semibold">
+            {sol.priceCredits ? (
+              <span className="text-orange-500 flex items-center gap-0.5"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
+            ) : sol.isFree ? (
+              <span className="text-emerald-500">Miễn phí</span>
+            ) : null}
           </div>
           <span className="flex items-center gap-1 text-[11px] font-medium text-brand-blue opacity-0 group-hover:opacity-100 transition-opacity">Mở <ArrowRight size={11} /></span>
         </div>
@@ -381,7 +369,6 @@ const ProductCardList: React.FC<{
   onPreview?: (e: React.MouseEvent) => void;
   isCompare?: boolean; onToggleCompare?: (e: React.MouseEvent) => void;
 }> = React.memo(({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
-  const stats = getStats(sol.id);
   const models = sol.models?.slice(0, 2) || [];
   return (
     <div className={`bg-white dark:bg-[#111114] border rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-all group flex ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
@@ -419,8 +406,11 @@ const ProductCardList: React.FC<{
           <div className="flex items-center gap-2">
             <span className="px-1.5 py-0.5 bg-brand-blue/[0.06] text-brand-blue rounded text-[9px] font-medium border border-brand-blue/10">{sol.category[lang]}</span>
             {sol.complexity && <span className="px-1.5 py-0.5 bg-slate-50 dark:bg-white/[0.03] text-slate-400 rounded text-[9px] font-medium border border-black/[0.04] dark:border-white/[0.04]">{sol.complexity}</span>}
-            <span className="flex items-center gap-0.5 text-[10px] text-slate-400"><Users size={10} /> {stats.users}</span>
-            <span className="flex items-center gap-0.5 text-[10px] text-slate-400"><Star size={10} fill="currentColor" className="text-amber-400" /> {stats.rating}</span>
+            {sol.priceCredits ? (
+              <span className="flex items-center gap-0.5 text-[10px] font-semibold text-orange-500"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
+            ) : sol.isFree ? (
+              <span className="text-[10px] font-semibold text-emerald-500">Miễn phí</span>
+            ) : null}
           </div>
           <span className="flex items-center gap-1 text-[12px] font-medium text-brand-blue">Thử ngay <ArrowRight size={12} /></span>
         </div>
@@ -431,8 +421,6 @@ const ProductCardList: React.FC<{
 
 // ═══════ QUICK PREVIEW MODAL ═══════
 const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () => void; onNavigate: (slug: string) => void }> = ({ sol, lang, onClose, onNavigate }) => {
-  const stats = getStats(sol.id);
-
   // ESC key to close
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -460,10 +448,13 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">{sol.name[lang]}</h2>
             <p className="text-[12px] text-slate-400 mt-1">{sol.description[lang]}</p>
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-slate-400">
-            <span className="flex items-center gap-1"><Users size={12} /> {stats.users} users</span>
-            <span className="flex items-center gap-1"><Star size={12} fill="currentColor" className="text-amber-400" /> {stats.rating}</span>
+          <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-400">
             <span className="px-2 py-0.5 bg-brand-blue/[0.06] text-brand-blue rounded text-[10px] font-medium border border-brand-blue/10">{sol.category[lang]}</span>
+            {sol.priceCredits ? (
+              <span className="px-2 py-0.5 bg-orange-500/[0.08] text-orange-600 dark:text-orange-400 rounded text-[10px] font-semibold border border-orange-500/20 flex items-center gap-1"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
+            ) : sol.isFree ? (
+              <span className="px-2 py-0.5 bg-emerald-500/[0.08] text-emerald-600 dark:text-emerald-400 rounded text-[10px] font-semibold border border-emerald-500/20">Miễn phí</span>
+            ) : null}
           </div>
           {/* Models */}
           {sol.models && sol.models.length > 0 && (
@@ -540,18 +531,19 @@ const ComparePanel: React.FC<{ items: Solution[]; lang: Language; onRemove: (id:
           {[0, 1, 2].map(i => {
             const sol = items[i];
             if (!sol) return <div key={i} className="h-[80px] border-2 border-dashed border-black/[0.06] dark:border-white/[0.06] rounded-xl flex items-center justify-center text-[11px] text-slate-300 dark:text-gray-600">Chọn để so sánh</div>;
-            const stats = getStats(sol.id);
             return (
               <div key={sol.id} className="relative p-3 bg-slate-50 dark:bg-white/[0.03] rounded-xl border border-black/[0.04] dark:border-white/[0.04] flex gap-3">
                 <button onClick={() => onRemove(sol.id)} className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm"><X size={10} /></button>
                 <img src={sol.imageUrl} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] font-bold text-slate-700 dark:text-white truncate">{sol.name[lang]}</p>
-                  <p className="text-[10px] text-slate-400 truncate">{sol.category[lang]} · {sol.complexity}</p>
-                  <div className="flex gap-2 mt-1 text-[10px] text-slate-400">
-                    <span><Users size={9} className="inline" /> {stats.users}</span>
-                    <span><Star size={9} className="inline text-amber-400" fill="currentColor" /> {stats.rating}</span>
-                    {sol.priceCredits && <span><Zap size={9} className="inline text-orange-500" /> {sol.priceCredits} CR</span>}
+                  <p className="text-[10px] text-slate-400 truncate">{sol.category[lang]}{sol.complexity ? ` · ${sol.complexity}` : ''}</p>
+                  <div className="flex gap-2 mt-1 text-[10px]">
+                    {sol.priceCredits ? (
+                      <span className="text-orange-500 font-semibold"><Zap size={9} className="inline" fill="currentColor" /> {sol.priceCredits} CR</span>
+                    ) : sol.isFree ? (
+                      <span className="text-emerald-500 font-semibold">Miễn phí</span>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -587,7 +579,7 @@ const MarketsPage: React.FC = () => {
   const [inputValue, setInputValue] = useState(searchParams.get('q') || '');
   const deferredSearch = useDeferredValue(inputValue);
   const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'ALL');
-  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'popular');
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showFreeOnly, setShowFreeOnly] = useState(searchParams.get('free') === 'true');
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(searchParams.get('featured') === 'true');
@@ -769,7 +761,7 @@ const MarketsPage: React.FC = () => {
       if (!catKey) return;
       // Skip if already covered by a static category (case-insensitive partial match)
       const alreadyCovered = Array.from(staticKeys).some(k =>
-        k !== 'all' && k !== 'sky partners' && (
+        k !== 'all' && (
           catKey.toLowerCase().includes(k) || k.includes(catKey.toLowerCase())
         )
       );
@@ -778,11 +770,8 @@ const MarketsPage: React.FC = () => {
       extraCats.push({ key: catKey, label: catEn, icon: Cpu });
     });
 
-    // Insert extra categories before 'Sky Partners'
-    const partnersIdx = STATIC_CATEGORIES.findIndex(c => c.key === 'Sky Partners');
-    const base = [...STATIC_CATEGORIES];
-    base.splice(partnersIdx, 0, ...extraCats);
-    return base;
+    // Append extra categories at the end (Sky Partners đã được rút ra)
+    return [...STATIC_CATEGORIES, ...extraCats];
   }, [solutions]);
 
   const toggleTag = useCallback((tag: string) => {
@@ -814,27 +803,17 @@ const MarketsPage: React.FC = () => {
       const matchPlatform = activePlatform === 'ALL' || !sol.platforms || sol.platforms.length === 0 || sol.platforms.includes(activePlatform);
       return matchSearch && matchCat && matchFree && matchFeatured && matchComplexity && matchTags && matchPlatform;
     });
-    if (sortBy === 'relevant' && deferredSearch.trim()) {
+    // Khi user đang search → auto sort theo relevance, bỏ qua sortBy
+    if (deferredSearch.trim()) {
       filtered = filtered
         .map(sol => ({ sol, score: getRelevanceScore(sol, deferredSearch.trim(), currentLang) }))
         .sort((a, b) => b.score - a.score)
         .map(({ sol }) => sol);
-    } else if (sortBy === 'name') {
-      filtered.sort((a, b) => (a.name[currentLang] || '').localeCompare(b.name[currentLang] || ''));
-    } else if (sortBy === 'newest') {
-      // solutions đã được reverse khi fetch → thứ tự hiện tại = newest-first → giữ nguyên
     } else if (sortBy === 'popular') {
       // featured products lên trước, còn lại giữ nguyên thứ tự newest-first
       filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
     }
-    // Sky Partners always at the end when viewing ALL
-    if (activeCategory === 'ALL') {
-      filtered.sort((a, b) => {
-        const aIsPartner = a.tags?.includes('Sky Partners') ? 1 : 0;
-        const bIsPartner = b.tags?.includes('Sky Partners') ? 1 : 0;
-        return aIsPartner - bIsPartner;
-      });
-    }
+    // sortBy === 'newest' → solutions đã reverse khi fetch nên giữ nguyên thứ tự
     return filtered;
   }, [solutions, deferredSearch, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, currentLang, activePlatform]);
 
@@ -845,17 +824,13 @@ const MarketsPage: React.FC = () => {
     const counts: Record<string, number> = { ALL: solutions.length };
     CATEGORIES.forEach(c => {
       if (c.key === 'ALL') return;
-      if (c.key === 'Sky Partners') {
-        counts[c.key] = solutions.filter(s => s.tags?.some(t => t === 'Sky Partners')).length;
-      } else {
-        const cKeyLower = c.key.trim().toLowerCase();
-        counts[c.key] = solutions.filter(s =>
-          s.category[currentLang]?.trim().toLowerCase().includes(cKeyLower) ||
-          s.category.en?.trim().toLowerCase().includes(cKeyLower) ||
-          s.tags?.some(t => t.trim().toLowerCase().includes(cKeyLower)) ||
-          s.demoType?.trim().toLowerCase() === cKeyLower
-        ).length;
-      }
+      const cKeyLower = c.key.trim().toLowerCase();
+      counts[c.key] = solutions.filter(s =>
+        s.category[currentLang]?.trim().toLowerCase().includes(cKeyLower) ||
+        s.category.en?.trim().toLowerCase().includes(cKeyLower) ||
+        s.tags?.some(t => t.trim().toLowerCase().includes(cKeyLower)) ||
+        s.demoType?.trim().toLowerCase() === cKeyLower
+      ).length;
     });
     return counts;
   }, [solutions, currentLang, CATEGORIES]);
@@ -921,21 +896,15 @@ const MarketsPage: React.FC = () => {
               const Icon = cat.icon;
               const isActive = activeCategory === cat.key;
               const count = catCounts[cat.key] || 0;
-              const isExternal = (cat as { isPartner?: boolean }).isPartner;
               return (
                 <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all ${
                     isActive
-                      ? isExternal
-                        ? 'bg-gradient-to-r from-brand-blue to-purple-500 text-white shadow-sm shadow-brand-blue/20'
-                        : 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
+                      ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
                       : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.03]'
                   }`}>
-                  <Icon size={14} className={isActive ? 'text-white' : isExternal ? 'text-brand-blue' : ''} />
+                  <Icon size={14} className={isActive ? 'text-white' : ''} />
                   <span className="flex-1 text-left">{cat.label}</span>
-                  {isExternal && !isActive && (
-                    <span className="text-[8px] font-bold text-brand-blue bg-brand-blue/[0.07] border border-brand-blue/15 px-1.5 py-0.5 rounded-full uppercase tracking-wider mr-1">Partner</span>
-                  )}
                   <span className={`text-[10px] font-semibold min-w-[20px] text-center py-0.5 rounded-full ${
                     isActive
                       ? 'bg-white/20 text-white'
@@ -1233,10 +1202,16 @@ const MarketsPage: React.FC = () => {
                     <List size={14} />
                   </button>
                 </div>
-                <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-                  className="text-[12px] px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-lg text-slate-600 dark:text-gray-300 outline-none cursor-pointer">
-                  {SORT_OPTIONS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
-                </select>
+                {deferredSearch ? (
+                  <span className="text-[11px] px-2.5 py-1.5 bg-brand-blue/[0.06] text-brand-blue border border-brand-blue/15 rounded-lg flex items-center gap-1 font-medium">
+                    <Sparkles size={11} /> Theo độ liên quan
+                  </span>
+                ) : (
+                  <select value={sortBy} onChange={e => setSortBy(e.target.value)}
+                    className="text-[12px] px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-lg text-slate-600 dark:text-gray-300 outline-none cursor-pointer">
+                    {SORT_OPTIONS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+                  </select>
+                )}
               </div>
             </div>
 
