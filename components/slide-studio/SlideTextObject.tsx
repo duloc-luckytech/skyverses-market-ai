@@ -21,7 +21,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { Trash2, Layers, Copy } from 'lucide-react';
+import { Trash2, Layers, Copy, Lock, Unlock, ArrowUpToLine, ArrowDownToLine } from 'lucide-react';
 import { FreeTextBlock } from '../../hooks/useSlideStudio';
 import SlideFormatBar from './SlideFormatBar';
 
@@ -69,6 +69,10 @@ interface Props {
   onDeactivate: () => void;
   /** Called on Ctrl+C — parent stores copied block */
   onCopy?: (b: FreeTextBlock) => void;
+  /** Called on Ctrl+D — parent duplicates block (offset position) */
+  onDuplicate?: () => void;
+  /** Called on Ctrl+[ — z-index decrease */
+  onSendBackward?: () => void;
   forceIdle?: boolean;
 }
 
@@ -77,7 +81,9 @@ interface Props {
 const SlideTextObject: React.FC<Props> = ({
   block, canvasRef, isOnlyBlock,
   onUpdate, onDelete, onBringForward,
-  onActivate, onDeactivate, onCopy, forceIdle,
+  onActivate, onDeactivate, onCopy,
+  onDuplicate, onSendBackward,
+  forceIdle,
 }) => {
   const [state, setState] = useState<ObjState>('idle');
   const editRef      = useRef<HTMLDivElement>(null);
@@ -149,7 +155,32 @@ const SlideTextObject: React.FC<Props> = ({
         onCopy?.({ ...block });
         return;
       }
-      // Arrow nudge
+      // Ctrl/Cmd+D — duplicate block (offset +3% x +3% y)
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        onDuplicate?.();
+        return;
+      }
+      // Ctrl/Cmd+] — bring forward (z-index)
+      if ((e.ctrlKey || e.metaKey) && e.key === ']') {
+        e.preventDefault();
+        onBringForward();
+        return;
+      }
+      // Ctrl/Cmd+[ — send backward
+      if ((e.ctrlKey || e.metaKey) && e.key === '[') {
+        e.preventDefault();
+        onSendBackward?.();
+        return;
+      }
+      // Ctrl/Cmd+L — toggle lock
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        onUpdate({ locked: !block.locked });
+        return;
+      }
+      // Arrow nudge — disable khi locked
+      if (block.locked) return;
       const step = e.shiftKey ? 5 : 1;
       if (e.key === 'ArrowLeft')  { e.preventDefault(); onUpdate({ x: Math.max(0, block.x - step) }); }
       if (e.key === 'ArrowRight') { e.preventDefault(); onUpdate({ x: Math.min(100 - block.w, block.x + step) }); }
@@ -158,7 +189,7 @@ const SlideTextObject: React.FC<Props> = ({
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [state, isOnlyBlock, onDelete, onCopy, block, onUpdate]);
+  }, [state, isOnlyBlock, onDelete, onCopy, onDuplicate, onSendBackward, onBringForward, block, onUpdate]);
 
   // ── Floating format bar position ─────────────────────────────────────────────
   const updateFbarPos = useCallback(() => {
@@ -257,32 +288,98 @@ const SlideTextObject: React.FC<Props> = ({
     window.addEventListener('mouseup', onUp);
   }, [canvasRef, block.x, block.y, block.w, block.h, onUpdate]);
 
-  // ── Drag move (click anywhere on block when selected) ─────────────────────────
+  // ── Drag move with smart-guides snap (Canva-style) ──────────────────────────
+  // Snap targets:
+  //   - Slide edges: 0, 100 (x and y)
+  //   - Slide center: 50 (x and y)
+  //   - Block edges/center align với canvas
+  // Hold Alt/Option để bypass snap
+  const SNAP_THRESHOLD = 1.5; // % canvas — Canva ~6-8px tương đương ~1.5% trên 1000px wide
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     if (state !== 'selected') return;
+    if (block.locked) return; // Lock check
     e.preventDefault();
     e.stopPropagation();
     const canvas = canvasRef.current;
     if (!canvas) return;
     const cr = canvas.getBoundingClientRect();
     const sx = block.x, sy = block.y, bw = block.w;
+    // Get height (% of canvas) — fallback compute từ DOM
+    let bh = block.h;
+    if (bh == null) {
+      const elH = containerRef.current?.getBoundingClientRect().height ?? 60;
+      bh = (elH / cr.height) * 100;
+    }
     const scX = e.clientX, scY = e.clientY;
 
     const onMove = (ev: MouseEvent) => {
       const dx = (ev.clientX - scX) / cr.width  * 100;
       const dy = (ev.clientY - scY) / cr.height * 100;
-      onUpdate({
-        x: Math.max(0, Math.min(100 - bw, sx + dx)),
-        y: Math.max(0, Math.min(95, sy + dy)),
-      });
+      let nx = sx + dx;
+      let ny = sy + dy;
+
+      const altBypass = ev.altKey;
+      const guidesV: number[] = [];
+      const guidesH: number[] = [];
+
+      if (!altBypass) {
+        // X-axis snap targets: left edge, center, right edge của block + canvas
+        const blockCenterX = nx + bw / 2;
+        const blockRightX  = nx + bw;
+        // Targets to snap block.left
+        const xCandidates: { target: number; type: 'left' | 'center' | 'right' }[] = [
+          { target: 0,           type: 'left' },        // canvas left
+          { target: 100 - bw,    type: 'right' },       // canvas right (block.right = 100)
+          { target: 50 - bw / 2, type: 'center' },      // canvas center (block center = 50)
+        ];
+        for (const c of xCandidates) {
+          if (Math.abs(nx - c.target) < SNAP_THRESHOLD) {
+            nx = c.target;
+            // Vertical guide line position
+            const linePos = c.type === 'left' ? 0 : c.type === 'right' ? 100 : 50;
+            guidesV.push(linePos);
+            break;
+          }
+        }
+        // Y-axis snap targets
+        const blockCenterY = ny + bh! / 2;
+        const yCandidates: { target: number; type: 'top' | 'middle' | 'bottom' }[] = [
+          { target: 0,            type: 'top' },
+          { target: 100 - bh!,    type: 'bottom' },
+          { target: 50 - bh! / 2, type: 'middle' },
+        ];
+        for (const c of yCandidates) {
+          if (Math.abs(ny - c.target) < SNAP_THRESHOLD) {
+            ny = c.target;
+            const linePos = c.type === 'top' ? 0 : c.type === 'bottom' ? 100 : 50;
+            guidesH.push(linePos);
+            break;
+          }
+        }
+
+        // Suppress unused vars
+        void blockCenterX; void blockRightX; void blockCenterY;
+      }
+
+      // Clamp + commit
+      nx = Math.max(0, Math.min(100 - bw, nx));
+      ny = Math.max(0, Math.min(95, ny));
+      onUpdate({ x: nx, y: ny });
+
+      // Dispatch guide lines event cho canvas overlay
+      window.dispatchEvent(new CustomEvent('slide-snap-guides', {
+        detail: { v: guidesV, h: guidesH },
+      }));
     };
     const onUp = () => {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
+      // Clear guides
+      window.dispatchEvent(new CustomEvent('slide-snap-guides', { detail: { v: [], h: [] } }));
     };
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
-  }, [state, canvasRef, block.x, block.y, block.w, onUpdate]);
+  }, [state, canvasRef, block.x, block.y, block.w, block.h, block.locked, onUpdate]);
 
   // ── Click / double-click ──────────────────────────────────────────────────────
   const handleClick = (e: React.MouseEvent) => {
@@ -292,14 +389,39 @@ const SlideTextObject: React.FC<Props> = ({
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (block.locked) return; // không edit nếu locked
     setState('editing');
     onActivate(block.id);
     setTimeout(() => editRef.current?.focus(), 10);
   };
 
+  // ── Context menu (right-click) ──
+  const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null);
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (state === 'idle') setState('selected');
+    setCtxMenu({ x: e.clientX, y: e.clientY });
+  };
+  // Close context menu on any click outside / escape
+  useEffect(() => {
+    if (!ctxMenu) return;
+    const close = () => setCtxMenu(null);
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setCtxMenu(null); };
+    setTimeout(() => {
+      document.addEventListener('mousedown', close);
+      document.addEventListener('keydown', esc);
+    }, 0);
+    return () => {
+      document.removeEventListener('mousedown', close);
+      document.removeEventListener('keydown', esc);
+    };
+  }, [ctxMenu]);
+
   const isSelected = state === 'selected';
   const isEditing  = state === 'editing';
   const isActive   = state !== 'idle';
+  const isLocked   = !!block.locked;
 
   // ── Container inline styles ───────────────────────────────────────────────────
   const containerStyle: React.CSSProperties = {
@@ -314,7 +436,7 @@ const SlideTextObject: React.FC<Props> = ({
     borderRadius: block.borderRadius ? `${block.borderRadius}px` : 0,
     padding:      block.padding ? `${block.padding}px` : undefined,
     boxSizing:    'border-box',
-    cursor:       isSelected ? 'move' : 'default',
+    cursor:       isLocked ? 'not-allowed' : (isSelected ? 'move' : 'default'),
   };
 
   return (
@@ -328,7 +450,8 @@ const SlideTextObject: React.FC<Props> = ({
         transition={{ type: 'spring', stiffness: 380, damping: 26 }}
         onClick={handleClick}
         onDoubleClick={handleDoubleClick}
-        onMouseDown={isSelected ? handleDragStart : undefined}
+        onContextMenu={handleContextMenu}
+        onMouseDown={isSelected && !isLocked ? handleDragStart : undefined}
         className="group/obj"
       >
         {/* Selection ring */}
@@ -341,8 +464,8 @@ const SlideTextObject: React.FC<Props> = ({
           }`}
         />
 
-        {/* ── 8 resize handles ── */}
-        {isSelected && HANDLES.map(h => (
+        {/* ── 8 resize handles (ẩn khi locked) ── */}
+        {isSelected && !isLocked && HANDLES.map(h => (
           <div
             key={h.dir}
             onMouseDown={e => handleResize(h.dir, e)}
@@ -357,6 +480,13 @@ const SlideTextObject: React.FC<Props> = ({
             className="bg-white border-[1.5px] border-brand-blue rounded-[2px] shadow-md hover:scale-125 transition-transform"
           />
         ))}
+
+        {/* ── Lock indicator ── khi locked, hiển thị padlock góc trên phải */}
+        {isLocked && (
+          <div className="absolute -top-2 -right-2 z-30 px-1.5 py-1 rounded-full bg-amber-500/90 text-white shadow-md flex items-center gap-1 text-[9px] font-bold pointer-events-none">
+            <Lock size={9} fill="currentColor" />
+          </div>
+        )}
 
         {/* ── Quick-action pills (appear above block when selected) ── */}
         {isSelected && (
@@ -457,6 +587,57 @@ const SlideTextObject: React.FC<Props> = ({
             block={block}
             onBlockUpdate={onUpdate}
           />
+        </div>,
+        document.body,
+      )}
+
+      {/* ── Right-click context menu ── */}
+      {ctxMenu && createPortal(
+        <div
+          className="fixed z-[99999] min-w-[180px] py-1 rounded-xl bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.1] shadow-2xl"
+          style={{ top: ctxMenu.y, left: ctxMenu.x }}
+          onMouseDown={e => e.stopPropagation()}
+          onContextMenu={e => e.preventDefault()}
+        >
+          <button
+            onClick={() => { onDuplicate?.(); setCtxMenu(null); }}
+            disabled={!onDuplicate}
+            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] disabled:opacity-40"
+          >
+            <Copy size={11} /> Nhân bản <span className="ml-auto text-[10px] text-slate-400">⌘D</span>
+          </button>
+          <button
+            onClick={() => { onBringForward(); setCtxMenu(null); }}
+            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]"
+          >
+            <ArrowUpToLine size={11} /> Đưa lên trước <span className="ml-auto text-[10px] text-slate-400">⌘]</span>
+          </button>
+          <button
+            onClick={() => { onSendBackward?.(); setCtxMenu(null); }}
+            disabled={!onSendBackward}
+            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] disabled:opacity-40"
+          >
+            <ArrowDownToLine size={11} /> Đưa xuống sau <span className="ml-auto text-[10px] text-slate-400">⌘[</span>
+          </button>
+          <div className="my-1 border-t border-slate-100 dark:border-white/[0.06]" />
+          <button
+            onClick={() => { onUpdate({ locked: !isLocked }); setCtxMenu(null); }}
+            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]"
+          >
+            {isLocked ? <Unlock size={11} /> : <Lock size={11} />}
+            {isLocked ? 'Mở khoá' : 'Khoá'} <span className="ml-auto text-[10px] text-slate-400">⌘L</span>
+          </button>
+          {!isOnlyBlock && (
+            <>
+              <div className="my-1 border-t border-slate-100 dark:border-white/[0.06]" />
+              <button
+                onClick={() => { onDelete(); setCtxMenu(null); }}
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] text-rose-500 hover:bg-rose-500/10"
+              >
+                <Trash2 size={11} /> Xoá <span className="ml-auto text-[10px] text-rose-400/70">Del</span>
+              </button>
+            </>
+          )}
         </div>,
         document.body,
       )}

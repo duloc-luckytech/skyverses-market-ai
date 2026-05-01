@@ -12,6 +12,10 @@ interface Props {
   onAddTextBlock: (slideId: string) => void;
   onRemoveTextBlock: (slideId: string, blockId: string) => void;
   onBringTextBlockForward: (slideId: string, blockId: string) => void;
+  /** Send block backward (Cmd+[) */
+  onSendTextBlockBackward?: (slideId: string, blockId: string) => void;
+  /** Duplicate block (Cmd+D) */
+  onDuplicateTextBlock?: (slideId: string, blockId: string) => void;
   onUpdateSlide: (id: string, patch: Partial<Slide>) => void;
   /** Paste a copied block into the active slide */
   onPasteTextBlock?: (slideId: string, block: FreeTextBlock) => void;
@@ -89,9 +93,42 @@ function migrateSlide(slide: Slide): FreeTextBlock[] {
 
 // ── Main Canvas ───────────────────────────────────────────────────────────────
 
+// ── Smart-guides overlay — listen to 'slide-snap-guides' event và render pink lines
+const SnapGuidesOverlay: React.FC = React.memo(() => {
+  const [guides, setGuides] = useState<{ v: number[]; h: number[] }>({ v: [], h: [] });
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { v: number[]; h: number[] };
+      setGuides({ v: detail.v || [], h: detail.h || [] });
+    };
+    window.addEventListener('slide-snap-guides', handler);
+    return () => window.removeEventListener('slide-snap-guides', handler);
+  }, []);
+  if (guides.v.length === 0 && guides.h.length === 0) return null;
+  return (
+    <>
+      {guides.v.map((x, i) => (
+        <div
+          key={`v${i}`}
+          className="absolute top-0 bottom-0 w-px bg-pink-400 pointer-events-none z-[40] shadow-[0_0_4px_rgba(236,72,153,0.7)]"
+          style={{ left: `${x}%` }}
+        />
+      ))}
+      {guides.h.map((y, i) => (
+        <div
+          key={`h${i}`}
+          className="absolute left-0 right-0 h-px bg-pink-400 pointer-events-none z-[40] shadow-[0_0_4px_rgba(236,72,153,0.7)]"
+          style={{ top: `${y}%` }}
+        />
+      ))}
+    </>
+  );
+});
+
 const SlideCanvas: React.FC<Props> = ({
   slide, onUpdateTextBlock, onAddTextBlock, onRemoveTextBlock,
-  onBringTextBlockForward, onUpdateSlide, onPasteTextBlock, bottomBar,
+  onBringTextBlockForward, onSendTextBlockBackward, onDuplicateTextBlock,
+  onUpdateSlide, onPasteTextBlock, bottomBar,
   aspectRatio = '16:9',
 }) => {
   // Map aspect ratio → Tailwind class + max-width để fit viewport tốt hơn
@@ -262,6 +299,8 @@ const SlideCanvas: React.FC<Props> = ({
                 onUpdate={patch => onUpdateTextBlock(slide.id, block.id, patch)}
                 onDelete={() => onRemoveTextBlock(slide.id, block.id)}
                 onBringForward={() => onBringTextBlockForward(slide.id, block.id)}
+                onSendBackward={onSendTextBlockBackward ? () => onSendTextBlockBackward(slide.id, block.id) : undefined}
+                onDuplicate={onDuplicateTextBlock ? () => onDuplicateTextBlock(slide.id, block.id) : undefined}
                 onActivate={handleActivate}
                 onDeactivate={handleDeactivate}
                 onCopy={setCopiedBlock}
@@ -269,11 +308,14 @@ const SlideCanvas: React.FC<Props> = ({
               />
             ))}
 
+            {/* ── Smart-guides overlay (snap lines pink) ── */}
+            <SnapGuidesOverlay />
+
             {/* Idle hint */}
             {!activeBlockId && (
               <div className="absolute bottom-2 inset-x-0 flex justify-center pointer-events-none">
                 <span className="text-[9px] text-white/20">
-                  Click để chọn · Double-click để chỉnh sửa · Kéo để di chuyển
+                  Click để chọn · Double-click để chỉnh sửa · Kéo để di chuyển · Alt để bypass snap
                 </span>
               </div>
             )}

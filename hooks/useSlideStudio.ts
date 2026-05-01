@@ -34,6 +34,8 @@ export interface FreeTextBlock {
   padding?: number;       // px
   letterSpacing?: number; // px
   lineHeight?: number;    // unitless, e.g. 1.4
+  // Lock — khi true, block không drag/resize được; protect khỏi accidental edit
+  locked?: boolean;
 }
 
 export interface Slide {
@@ -354,6 +356,38 @@ export const useSlideStudio = () => {
       const maxZ = Math.max(...blocks.map(b => b.zIndex));
       return { ...s, textBlocks: blocks.map(b => b.id === blockId ? { ...b, zIndex: maxZ + 1 } : b) };
     }));
+  }, []);
+
+  // Send block to back — z-index về < min hiện tại
+  const sendTextBlockBackward = useCallback((slideId: string, blockId: string) => {
+    setSlides(prev => prev.map(s => {
+      if (s.id !== slideId) return s;
+      const blocks = s.textBlocks ?? [];
+      const block = blocks.find(b => b.id === blockId);
+      if (!block) return s;
+      const minZ = Math.min(...blocks.map(b => b.zIndex));
+      return { ...s, textBlocks: blocks.map(b => b.id === blockId ? { ...b, zIndex: minZ - 1 } : b) };
+    }));
+  }, []);
+
+  // Duplicate block — clone với offset +3% x +3% y, zIndex = max+1
+  const duplicateTextBlock = useCallback((slideId: string, blockId: string) => {
+    setSlides(prev => prev.map(s => {
+      if (s.id !== slideId) return s;
+      const blocks = s.textBlocks ?? [];
+      const block = blocks.find(b => b.id === blockId);
+      if (!block) return s;
+      const maxZ = Math.max(...blocks.map(b => b.zIndex));
+      const dup: FreeTextBlock = {
+        ...block,
+        id: genId(),
+        x: Math.min(97 - block.w, block.x + 3),
+        y: Math.min(90, block.y + 3),
+        zIndex: maxZ + 1,
+      };
+      return { ...s, textBlocks: [...blocks, dup] };
+    }));
+    setIsDirty(true);
   }, []);
 
   const pasteTextBlock = useCallback((slideId: string, template: FreeTextBlock) => {
@@ -887,6 +921,8 @@ Return ONLY a JSON array, no explanation:
     updateTextBlock,
     removeTextBlock,
     bringTextBlockForward,
+    sendTextBlockBackward,
+    duplicateTextBlock,
     pasteTextBlock,
   };
 };

@@ -825,6 +825,8 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                 onAddTextBlock={s.addTextBlock}
                 onRemoveTextBlock={s.removeTextBlock}
                 onBringTextBlockForward={s.bringTextBlockForward}
+                onSendTextBlockBackward={s.sendTextBlockBackward}
+                onDuplicateTextBlock={s.duplicateTextBlock}
                 onPasteTextBlock={s.pasteTextBlock}
                 onUpdateSlide={s.updateSlide}
                 bottomBar={
