@@ -1222,7 +1222,7 @@ Không giải thích thêm.`;
                 alt="Banner preview"
                 className="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
               />
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 flex-wrap justify-center">
                 <button
                   onClick={() => setLightboxUrl(null)}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white/70 hover:bg-white/20 text-[11px] font-semibold transition-all"
@@ -1235,6 +1235,155 @@ Không giải thích thêm.`;
                 >
                   <Download size={13} /> Tải về
                 </button>
+                {/* Caption + Hashtag AI — gen post text đi kèm banner */}
+                <button
+                  onClick={() => { setShowCaptionModal(true); generateCaption(); }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500/20 text-purple-300 text-[11px] font-bold hover:bg-purple-500/30 transition-all"
+                  title="Tạo caption + hashtag cho post Facebook/X"
+                >
+                  <Hash size={13} /> Caption + Hashtag
+                </button>
+                {/* Magic Resize lite — toggle dropdown 6 platform khác */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowResizeMenu(v => !v)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/20 text-amber-300 text-[11px] font-bold hover:bg-amber-500/30 transition-all"
+                    title="Tạo lại banner cho platform/size khác"
+                  >
+                    <LayersIcon size={13} /> Tạo cho platform khác
+                  </button>
+                  <AnimatePresence>
+                    {showResizeMenu && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 5 }}
+                        className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-72 bg-[#1a1f2b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-10"
+                      >
+                        <p className="px-3 py-2 text-[9px] font-bold uppercase tracking-widest text-gray-400 border-b border-white/[0.06]">Re-render với cùng prompt + style</p>
+                        <div className="max-h-64 overflow-y-auto">
+                          {PLATFORMS.filter(p => p.id !== activePlatform).map(p => (
+                            <button
+                              key={p.id}
+                              onClick={() => { handleResizePlatform(p.id); setLightboxUrl(null); }}
+                              className="w-full text-left px-3 py-2.5 hover:bg-brand-blue/10 transition-colors flex items-center justify-between border-b border-white/[0.04] last:border-0"
+                            >
+                              <div>
+                                <p className="text-[11px] font-bold text-white">{p.platform}</p>
+                                <p className="text-[10px] text-gray-400">{p.label} · {p.size}</p>
+                              </div>
+                              <ChevronRight size={12} className="text-gray-500" />
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Caption + Hashtag Modal ── */}
+      <AnimatePresence>
+        {showCaptionModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[600] bg-black/70 backdrop-blur-md flex items-center justify-center p-6"
+            onClick={() => setShowCaptionModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+              onClick={e => e.stopPropagation()}
+              className="relative w-full max-w-lg bg-white dark:bg-[#1a1f2b] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+            >
+              <div className="px-5 py-4 border-b border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/15 text-purple-500 flex items-center justify-center">
+                    <Hash size={14} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-white">Caption + Hashtag</h3>
+                    <p className="text-[10px] text-slate-400 dark:text-gray-500">AI tạo nội dung post {currentPlatform.platform}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowCaptionModal(false)}
+                  className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="p-5 overflow-y-auto flex-1 space-y-4">
+                {captionGenerating ? (
+                  <div className="flex flex-col items-center justify-center gap-3 py-12 text-slate-400 dark:text-gray-400">
+                    <Loader2 size={28} className="animate-spin text-purple-500" />
+                    <p className="text-[12px] font-semibold">AI đang viết caption + chọn hashtag…</p>
+                  </div>
+                ) : captionResult ? (
+                  <>
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400">Caption</p>
+                        <button
+                          onClick={() => copyToClipboard(captionResult.caption, 'caption')}
+                          className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold text-brand-blue hover:bg-brand-blue/10 rounded-lg transition-colors"
+                        >
+                          <Copy size={11} /> Copy
+                        </button>
+                      </div>
+                      <p className="text-[13px] leading-relaxed text-slate-700 dark:text-white bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl p-3 whitespace-pre-line">
+                        {captionResult.caption}
+                      </p>
+                    </div>
+                    {captionResult.hashtags.length > 0 && (
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400">Hashtag ({captionResult.hashtags.length})</p>
+                          <button
+                            onClick={() => copyToClipboard(captionResult.hashtags.join(' '), 'hashtag')}
+                            className="flex items-center gap-1 px-2 py-1 text-[10px] font-semibold text-brand-blue hover:bg-brand-blue/10 rounded-lg transition-colors"
+                          >
+                            <Copy size={11} /> Copy tất cả
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {captionResult.hashtags.map((h, i) => (
+                            <button
+                              key={i}
+                              onClick={() => copyToClipboard(h, h)}
+                              className="px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-500 dark:text-purple-300 text-[11px] font-semibold border border-purple-500/20 hover:bg-purple-500/20 transition-colors"
+                              title="Click để copy"
+                            >
+                              {h}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    <div className="pt-2 border-t border-slate-100 dark:border-white/[0.05]">
+                      <button
+                        onClick={() => copyToClipboard(`${captionResult.caption}\n\n${captionResult.hashtags.join(' ')}`, 'toàn bộ post')}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-brand-blue text-white text-[11px] font-bold hover:brightness-110 transition-all"
+                      >
+                        <Check size={13} /> Copy toàn bộ (caption + hashtag)
+                      </button>
+                      <button
+                        onClick={generateCaption}
+                        className="w-full mt-1.5 flex items-center justify-center gap-2 py-2 rounded-xl bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-gray-300 text-[10px] font-semibold border border-slate-200 dark:border-white/[0.08] hover:bg-slate-200 dark:hover:bg-white/[0.08] transition-colors"
+                      >
+                        <RefreshCw size={11} /> Tạo lại
+                      </button>
+                    </div>
+                  </>
+                ) : null}
               </div>
             </motion.div>
           </motion.div>
