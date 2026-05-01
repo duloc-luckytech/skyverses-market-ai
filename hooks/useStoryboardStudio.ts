@@ -13,8 +13,9 @@ import { useProjectManager } from './useProjectManager';
 // ─── Shot Type ───────────────────────────────────────────────────────────────
 export type ShotType = 'WIDE' | 'MED' | 'CU' | 'ECU' | 'POV';
 export const SHOT_TYPES: ShotType[] = ['WIDE', 'MED', 'CU', 'ECU', 'POV'];
+// Việt hoá label hiển thị, giữ key tiếng Anh (ShotType) để không break data backward-compat
 export const SHOT_TYPE_LABELS: Record<ShotType, string> = {
-  WIDE: 'Wide', MED: 'Medium', CU: 'Close-Up', ECU: 'Extreme CU', POV: 'POV',
+  WIDE: 'Toàn cảnh', MED: 'Trung', CU: 'Cận', ECU: 'Đặc tả', POV: 'Góc nhân vật',
 };
 export const SHOT_TYPE_COLORS: Record<ShotType, string> = {
   WIDE: 'bg-sky-500/20 text-sky-300 border-sky-500/40',
@@ -23,7 +24,8 @@ export const SHOT_TYPE_COLORS: Record<ShotType, string> = {
   ECU:  'bg-rose-500/20 text-rose-300 border-rose-500/40',
   POV:  'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
 };
-export const DURATION_PRESETS = [4, 8, 12, 16] as const;
+// Preset thiên về short-form (TikTok/Reels) là use-case chính của user VN, vẫn cover được long-form 12s
+export const DURATION_PRESETS = [4, 6, 8, 12] as const;
 export type DurationPreset = typeof DURATION_PRESETS[number];
 
 export interface Scene {
@@ -92,8 +94,8 @@ export const useStoryboardStudio = () => {
 
   const [activeTab, setActiveTab] = useState<'STORYBOARD' | 'ASSETS' | 'SETTINGS' | 'LOGIC' | 'SCENES' | 'EXPORT'>('STORYBOARD');
   const [script, setScript] = useState(() => _initData().script || '');
-  const [totalDuration, setTotalDuration] = useState(() => _initData().totalDuration || 64);
-  const [sceneDuration, setSceneDuration] = useState(() => _initData().sceneDuration || 8);
+  const [totalDuration, setTotalDuration] = useState(() => _initData().totalDuration || 60);
+  const [sceneDuration, setSceneDuration] = useState(() => _initData().sceneDuration || 6);
   const [voiceOverEnabled, setVoiceOverEnabled] = useState(false);
   const [scenes, setScenes] = useState<Scene[]>(() => _initData().scenes || []);
   const [acts, setActs] = useState<Act[]>(() => _initData().acts || []);
@@ -245,8 +247,8 @@ export const useStoryboardStudio = () => {
     cinematic: 'Low-angle tracking shots, shallow depth of field, anamorphic lens flares.',
     bgm: 'Lo-fi hip hop beats blended with traditional Vietnamese instruments.',
     voiceOver: 'Deep, resonant male voice with a calm and wise tone.',
-    duration: '64',
-    sceneDuration: 8,
+    duration: '60',
+    sceneDuration: 6,
     model: 'veo_3_1',
     imageModel: 'google_image_gen_4_5',
     retryCount: 2,
@@ -1202,8 +1204,8 @@ Rewrite this as a better image generation prompt:`,
     setScenes(data.scenes || []);
     setActs(data.acts || []);
     setAssets(data.assets || []);
-    setTotalDuration(data.totalDuration || 64);
-    setSceneDuration(data.sceneDuration || 8);
+    setTotalDuration(data.totalDuration || 60);
+    setSceneDuration(data.sceneDuration || 6);
     setProjectName(data.name || 'Untitled Project');
   }, [projectManager]);
 

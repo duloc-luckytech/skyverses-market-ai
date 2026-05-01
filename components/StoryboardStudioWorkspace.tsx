@@ -171,10 +171,10 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           {/* Tab switcher */}
           <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
             {[
-              { id: 'STORYBOARD', label: 'Board', icon: <Layers size={10} /> },
+              { id: 'STORYBOARD', label: 'Phân cảnh', icon: <Layers size={10} /> },
               { id: 'ASSETS',     label: 'Tài sản', icon: <Camera size={10} /> },
-              { id: 'SETTINGS',   label: 'Cấu hình', icon: <Sliders size={10} /> },
-              { id: 'EXPORT',     label: 'Export', icon: <MonitorPlay size={10} /> },
+              { id: 'SETTINGS',   label: 'Cài đặt', icon: <Sliders size={10} /> },
+              { id: 'EXPORT',     label: 'Xuất', icon: <MonitorPlay size={10} /> },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -329,7 +329,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
             {/* Collapsible: Nhân vật & Phong cách */}
             <div className="flex-1 overflow-y-auto no-scrollbar">
-              <CollapsibleSection label="Nhân vật & Phong cách">
+              <CollapsibleSection label="Nhân vật & Phong cách" defaultOpen={true}>
                 <div className="pb-3">
                   <CharactersQuickView
                     assets={s.assets}

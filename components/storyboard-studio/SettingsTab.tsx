@@ -289,7 +289,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
         <SettingsCard
           icon={<ImageIcon size={15} />}
           accentClass="text-rose-500 bg-rose-500/10"
-          title="Image AI Engine"
+          title="Engine sinh ảnh AI"
           subtitle="Model sinh ảnh cho phân cảnh"
           badge={imgSelectedModel ? (imgSelectedModel.raw?.modelKey ?? '').split('_').slice(0, 2).join(' ') : undefined}
           defaultOpen
@@ -326,7 +326,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
         <SettingsCard
           icon={<Film size={15} />}
           accentClass="text-indigo-500 bg-indigo-500/10"
-          title="Video AI Engine"
+          title="Engine sinh video AI"
           subtitle="Model sinh video cho từng cảnh"
           badge={vid.selectedModelObj ? vid.selectedModelObj.name.split(' ').slice(0, 2).join(' ') : undefined}
           defaultOpen
