@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Loader2, Plus,
@@ -9,6 +9,7 @@ import {
   GraduationCap, Heart, Coffee, Plane, Cpu,
   LayoutGrid, Image as ImageIcon, Wand2, History,
   Maximize2, Download, RefreshCw, Bot,
+  Upload, Hash, Copy, Check, Layers as LayersIcon,
 } from 'lucide-react';
 import { aiTextViaProxy } from '../apis/aiCommon';
 import { useAuth } from '../context/AuthContext';
@@ -23,15 +24,25 @@ import ResourceAuthModal from './common/ResourceAuthModal';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'skyverses_SOCIAL-BANNER-AI_vault';
+const BRAND_KIT_STORAGE_KEY = 'skyverses_banner_brand_kit'; // lưu brand colors + title/subtitle/logo
 
+interface BrandKit {
+  brandName?: string;
+  tagline?: string;
+  logoUrl?: string;
+  colors: string[];
+}
+
+// Platform list — label bỏ prefix vì card đã render platform name riêng phía trên (rõ ràng hơn).
+// 'X' đổi thành 'X (Twitter)' để user Việt nhận ra ngay (X rebrand từ Twitter 2023).
 const PLATFORMS = [
-  { id: 'fb-cover',   label: 'FB Cover',    platform: 'Facebook', size: '820×312',   ratio: '16:9'  },
-  { id: 'fb-post',    label: 'FB Post',     platform: 'Facebook', size: '1200×630',  ratio: '16:9'  },
-  { id: 'fb-story',   label: 'FB Story',    platform: 'Facebook', size: '1080×1920', ratio: '9:16'  },
-  { id: 'x-header',   label: 'X Header',    platform: 'X',        size: '1500×500',  ratio: '3:1'   },
-  { id: 'x-post',     label: 'X Post',      platform: 'X',        size: '1200×675',  ratio: '16:9'  },
-  { id: 'ig-post',    label: 'IG Post',     platform: 'Instagram',size: '1080×1080', ratio: '1:1'   },
-  { id: 'ig-story',   label: 'IG Story',    platform: 'Instagram',size: '1080×1920', ratio: '9:16'  },
+  { id: 'fb-cover',   label: 'Ảnh bìa',     platform: 'Facebook',     size: '820×312',   ratio: '16:9'  },
+  { id: 'fb-post',    label: 'Bài đăng',    platform: 'Facebook',     size: '1200×630',  ratio: '16:9'  },
+  { id: 'fb-story',   label: 'Story',       platform: 'Facebook',     size: '1080×1920', ratio: '9:16'  },
+  { id: 'x-header',   label: 'Banner',      platform: 'X (Twitter)',  size: '1500×500',  ratio: '3:1'   },
+  { id: 'x-post',     label: 'Bài đăng',    platform: 'X (Twitter)',  size: '1200×675',  ratio: '16:9'  },
+  { id: 'ig-post',    label: 'Bài đăng',    platform: 'Instagram',    size: '1080×1080', ratio: '1:1'   },
+  { id: 'ig-story',   label: 'Story',       platform: 'Instagram',    size: '1080×1920', ratio: '9:16'  },
 ];
 
 const STYLES = ['Hiện đại', 'Luxury', 'Tối giản', 'Bold & Pop', 'Vintage', 'Cyberpunk'];
@@ -45,11 +56,32 @@ const BANNER_STYLES: StylePreset[] = [
   { id: 'cyber',    label: 'Cyberpunk', emoji: '🌐', description: 'Neon, futuristic',          promptPrefix: 'cyberpunk neon glow futuristic dark background, ' },
 ];
 
+// 12 templates marketing-focused cho user Việt Nam — bao quát các use case phổ biến nhất
+// (sale, ra mắt, tuyển dụng, sự kiện, lễ hội, webinar, app launch, voucher, before/after).
 const FEATURED_TEMPLATES = [
   { label: 'Flash Sale 50%',     prompt: 'Banner Flash Sale giảm 50%, nền đỏ năng lượng, chữ trắng bold, countdown timer, hiệu ứng ánh sáng rực rỡ', style: 'Bold & Pop' },
-  { label: 'Ra mắt sản phẩm',   prompt: 'Banner ra mắt sản phẩm mới, nền tối premium, hình sản phẩm làm hero center, ánh sáng studio spotlight', style: 'Luxury' },
-  { label: 'Tuyển dụng nhân sự', prompt: 'Banner tuyển dụng chuyên nghiệp, gradient xanh dương, icon nhân sự, text tuyển dụng rõ ràng, CTA nổi bật', style: 'Hiện đại' },
-  { label: 'Khai trương',        prompt: 'Banner khai trương cửa hàng, pháo hoa, màu vàng đỏ truyền thống Việt Nam, đèn lung linh festive', style: 'Bold & Pop' },
+  { label: 'Ra mắt sản phẩm',    prompt: 'Banner ra mắt sản phẩm mới, nền tối premium, hình sản phẩm làm hero center, ánh sáng studio spotlight', style: 'Luxury' },
+  { label: 'Tuyển dụng',          prompt: 'Banner tuyển dụng chuyên nghiệp, gradient xanh dương, icon nhân sự, text tuyển dụng rõ ràng, CTA nổi bật', style: 'Hiện đại' },
+  { label: 'Khai trương',         prompt: 'Banner khai trương cửa hàng, pháo hoa, màu vàng đỏ truyền thống Việt Nam, đèn lung linh festive', style: 'Bold & Pop' },
+  { label: 'Sự kiện / Workshop',  prompt: 'Banner sự kiện workshop chuyên nghiệp, gradient tím xanh, ngày giờ địa điểm rõ ràng, icon speaker, badge LIVE', style: 'Hiện đại' },
+  { label: 'Voucher / Quà tặng',  prompt: 'Banner voucher quà tặng hấp dẫn, nền vàng cam, icon quà tặng, badge "FREE" nổi bật, ribbon trang trí', style: 'Bold & Pop' },
+  { label: 'Black Friday',        prompt: 'Banner Black Friday giảm sốc, nền đen sang trọng, chữ vàng kim, badge -70%, neon glow accent', style: 'Luxury' },
+  { label: 'Tết / Lễ hội',        prompt: 'Banner Tết Nguyên Đán, hoa mai hoa đào, màu đỏ vàng truyền thống, lì xì, đèn lồng, không khí Tết Việt', style: 'Vintage' },
+  { label: 'Webinar / Livestream',prompt: 'Banner webinar livestream, nền tối với gradient brand-blue, icon mic camera, badge LIVE đỏ nhấp nháy, info diễn giả', style: 'Hiện đại' },
+  { label: 'Tải app',             prompt: 'Banner mời tải app, mockup điện thoại 3D nghiêng, badge App Store và Google Play, gradient brand color, CTA nổi bật', style: 'Hiện đại' },
+  { label: 'Thông báo',           prompt: 'Banner thông báo quan trọng, layout tối giản clean, icon megaphone, viền màu nhấn, text rõ ràng dễ đọc', style: 'Tối giản' },
+  { label: 'Trước & Sau',          prompt: 'Banner so sánh trước và sau (before/after), split layout đối xứng, label "TRƯỚC" và "SAU" rõ ràng, mũi tên transformation', style: 'Hiện đại' },
+];
+
+// CTA gắn nhanh — click sẽ append vào prompt mô tả banner để AI render kèm CTA nổi bật
+const CTA_PRESETS: { label: string; emoji: string; appendText: string }[] = [
+  { emoji: '🛒', label: 'Mua ngay',     appendText: ' Có CTA "MUA NGAY" nổi bật bên dưới.' },
+  { emoji: '📅', label: 'Đặt chỗ',      appendText: ' Có CTA "ĐẶT CHỖ NGAY" nổi bật.' },
+  { emoji: '✏️', label: 'Đăng ký',     appendText: ' Có CTA "ĐĂNG KÝ NGAY" nổi bật.' },
+  { emoji: '📲', label: 'Tải app',      appendText: ' Có CTA "TẢI APP" + 2 badge App Store/Google Play.' },
+  { emoji: '📞', label: 'Liên hệ',      appendText: ' Có CTA "LIÊN HỆ NGAY" + số hotline nổi bật.' },
+  { emoji: '🔍', label: 'Xem chi tiết', appendText: ' Có CTA "XEM CHI TIẾT" nổi bật.' },
+  { emoji: '🎁', label: 'Nhận voucher', appendText: ' Có CTA "SĂN VOUCHER NGAY" nổi bật.' },
 ];
 
 const INDUSTRIES = [
@@ -112,6 +144,20 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const [useBrandColor, setUseBrandColor]   = useState(true);
   const [addTextToBanner, setAddTextToBanner] = useState(true);
 
+  // ── PRO features ─────────────────────────────────────────────────────────
+  // Brand Kit (logo + brand name + tagline) — persist localStorage để reuse across session
+  const [brandLogoUrl, setBrandLogoUrl]   = useState<string>('');
+  const [brandKitSavedAt, setBrandKitSavedAt] = useState<string | null>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  // Caption + Hashtag AI generator (post FB/X)
+  const [showCaptionModal, setShowCaptionModal] = useState(false);
+  const [captionGenerating, setCaptionGenerating] = useState(false);
+  const [captionResult, setCaptionResult] = useState<{ caption: string; hashtags: string[] } | null>(null);
+
+  // Magic Resize lite — re-gen cho platform khác (1 click)
+  const [showResizeMenu, setShowResizeMenu] = useState(false);
+
   // History
   const [sessions, setSessions] = useState<BannerSession[]>([]);
 
@@ -133,7 +179,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   // Lightbox
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
-  // Load history
+  // Load history + brand kit on mount
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -142,6 +188,18 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     const savedPrompts = localStorage.getItem(STORAGE_KEY + '_prompts');
     if (savedPrompts) {
       try { setPromptHistory(JSON.parse(savedPrompts)); } catch { /* ignore */ }
+    }
+    // Auto-restore Brand Kit (silent — không bật toast spam mỗi lần mở app)
+    const savedBrandKit = localStorage.getItem(BRAND_KIT_STORAGE_KEY);
+    if (savedBrandKit) {
+      try {
+        const kit: BrandKit & { savedAt?: string } = JSON.parse(savedBrandKit);
+        if (kit.colors?.length) setBrandColors(kit.colors);
+        if (kit.brandName) setTitle(kit.brandName);
+        if (kit.tagline) setSubtitle(kit.tagline);
+        if (kit.logoUrl) setBrandLogoUrl(kit.logoUrl);
+        if (kit.savedAt) setBrandKitSavedAt(kit.savedAt);
+      } catch { /* ignore */ }
     }
   }, []);
 
@@ -172,6 +230,118 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   }, [gen.results]);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
+
+  // ── Brand Kit handlers ─────────────────────────────────────────────────────
+  const saveBrandKit = useCallback(() => {
+    const now = new Date().toISOString();
+    const kit: BrandKit & { savedAt: string } = {
+      brandName: title || undefined,
+      tagline:   subtitle || undefined,
+      logoUrl:   brandLogoUrl || undefined,
+      colors:    brandColors,
+      savedAt:   now,
+    };
+    try {
+      localStorage.setItem(BRAND_KIT_STORAGE_KEY, JSON.stringify(kit));
+      setBrandKitSavedAt(now);
+      showToast('💾 Đã lưu bộ thương hiệu', 'success');
+    } catch {
+      showToast('Không lưu được bộ thương hiệu', 'error');
+    }
+  }, [title, subtitle, brandLogoUrl, brandColors, showToast]);
+
+  const loadBrandKit = useCallback(() => {
+    const saved = localStorage.getItem(BRAND_KIT_STORAGE_KEY);
+    if (!saved) {
+      showToast('Chưa có bộ thương hiệu nào được lưu', 'info');
+      return;
+    }
+    try {
+      const kit: BrandKit & { savedAt?: string } = JSON.parse(saved);
+      if (kit.colors?.length) setBrandColors(kit.colors);
+      if (kit.brandName) setTitle(kit.brandName);
+      if (kit.tagline) setSubtitle(kit.tagline);
+      if (kit.logoUrl) setBrandLogoUrl(kit.logoUrl);
+      showToast('↻ Đã áp dụng bộ thương hiệu', 'success');
+    } catch {
+      showToast('Bộ thương hiệu lưu bị lỗi', 'error');
+    }
+  }, [showToast]);
+
+  const clearBrandKit = useCallback(() => {
+    try {
+      localStorage.removeItem(BRAND_KIT_STORAGE_KEY);
+      setBrandKitSavedAt(null);
+      showToast('🗑 Đã xoá bộ thương hiệu đã lưu', 'info');
+    } catch { /* ignore */ }
+  }, [showToast]);
+
+  const handleLogoUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      showToast('Logo quá lớn (>2MB). Hãy nén lại.', 'error');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setBrandLogoUrl(reader.result as string);
+    reader.readAsDataURL(file);
+  }, [showToast]);
+
+  // ── Magic Resize lite — chuyển sang platform khác và auto re-gen ──────────
+  const handleResizePlatform = useCallback((platformId: string) => {
+    setActivePlatform(platformId);
+    setShowResizeMenu(false);
+    // gen.handleGenerate sẽ pick currentPlatform mới khi render — chỉ cần wait 1 tick
+    requestAnimationFrame(() => {
+      // Re-trigger generation. handleGenerate dùng state hiện tại (đã có prompt + style + brand).
+      // Đảm bảo đủ điều kiện gen, không call nếu chưa auth/processing.
+      if (!localPrompt.trim()) {
+        showToast('Cần có Mô tả Banner trước khi resize.', 'error');
+        return;
+      }
+      // Trigger qua nút Generate gốc — set prompt lại để force re-run
+      handleGenerate();
+    });
+  }, [localPrompt, showToast]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Caption + Hashtag AI ──────────────────────────────────────────────────
+  const generateCaption = useCallback(async () => {
+    if (captionGenerating) return;
+    setCaptionGenerating(true);
+    setCaptionResult(null);
+    try {
+      const platformName = currentPlatform.platform.includes('Twitter') ? 'X (Twitter)' : currentPlatform.platform;
+      const system = `Bạn là chuyên gia social media marketing tiếng Việt. User vừa tạo banner cho ${platformName}.
+Hãy viết 1 caption ngắn gọn (2-3 câu, có emoji phù hợp) và đề xuất 8 hashtag liên quan (kèm dấu #) để đăng kèm banner.
+Trả về CHÍNH XÁC theo format JSON:
+{"caption": "...", "hashtags": ["#...", "#..."]}
+Không giải thích thêm.`;
+      const userMsg = `Mô tả banner: ${localPrompt}\nLĩnh vực: ${activeIndustryLabel}\nTiêu đề: ${title || '(không có)'}\nTiêu đề phụ: ${subtitle || '(không có)'}`;
+      const raw = await aiTextViaProxy(`${system}\n\n${userMsg}`);
+      // Parse JSON robustly — AI sometimes wraps in markdown ```json ... ```
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+      if (parsed?.caption && Array.isArray(parsed.hashtags)) {
+        setCaptionResult({ caption: parsed.caption, hashtags: parsed.hashtags });
+      } else {
+        // Fallback: hiển thị raw text nếu parse fail
+        setCaptionResult({ caption: raw, hashtags: [] });
+      }
+    } catch (err: any) {
+      showToast(err?.message || 'Không tạo được caption', 'error');
+      setShowCaptionModal(false);
+    } finally {
+      setCaptionGenerating(false);
+    }
+  }, [captionGenerating, currentPlatform, localPrompt, activeIndustryLabel, title, subtitle, showToast]);
+
+  const copyToClipboard = useCallback((text: string, label: string) => {
+    navigator.clipboard?.writeText(text).then(
+      () => showToast(`✓ Đã copy ${label}`, 'success'),
+      () => showToast('Không copy được', 'error')
+    );
+  }, [showToast]);
 
   const handleEnhance = async () => {
     if (!localPrompt.trim() || isEnhancing) return;
@@ -225,13 +395,17 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     const platformCtx  = `Platform: ${currentPlatform.platform} ${currentPlatform.label} (${currentPlatform.size}, tỷ lệ ${currentPlatform.ratio}).`;
     const colorCtx     = useBrandColor ? `Màu thương hiệu: ${brandColors.join(', ')}.` : '';
     const textCtx      = addTextToBanner && title ? `Tiêu đề chính: "${title}". Tiêu đề phụ: "${subtitle}".` : '';
+    // Logo context — nếu user đã upload logo thì hint AI giữ logo position góc trên trái (chuẩn social banner)
+    const logoCtx      = brandLogoUrl ? 'Có logo thương hiệu (đính kèm) đặt ở góc trên trái, kích thước vừa phải, không che nội dung chính.' : '';
     const stylePreset  = BANNER_STYLES.find(s => s.label === selectedStyle);
     const stylePrefix  = stylePreset?.promptPrefix ?? '';
 
-    const finalPrompt = `${industryCtx}${stylePrefix}Tạo banner mạng xã hội chuyên nghiệp. ${platformCtx} Phong cách: ${selectedStyle}. ${colorCtx} ${textCtx} Mô tả: ${localPrompt}. Chất lượng ${gen.selectedRes || '2k'}, bố cục tối ưu cho ${currentPlatform.platform}.`;
+    const finalPrompt = `${industryCtx}${stylePrefix}Tạo banner mạng xã hội chuyên nghiệp. ${platformCtx} Phong cách: ${selectedStyle}. ${colorCtx} ${textCtx} ${logoCtx} Mô tả: ${localPrompt}. Chất lượng ${gen.selectedRes || '2k'}, bố cục tối ưu cho ${currentPlatform.platform}.`;
 
     gen.setPrompt(finalPrompt);
-    gen.setReferences(localReferences.map(url => ({ url })));
+    // Logo + references — logo prepend để AI ưu tiên reference cao hơn
+    const allRefs = brandLogoUrl ? [brandLogoUrl, ...localReferences] : localReferences;
+    gen.setReferences(allRefs.map(url => ({ url })));
     gen.setQuantity(quantity);
 
     const newHistory = [localPrompt, ...promptHistory.filter(p => p !== localPrompt)].slice(0, 10);
@@ -274,7 +448,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
     const model = session?.config.model ?? gen.selectedModel?.name ?? '';
     const ts    = session?.timestamp ?? '';
     return (
-      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#0d0d0f] border-t border-black/[0.05] dark:border-white/[0.05] flex-wrap">
+      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#13171f] border-t border-black/[0.05] dark:border-white/[0.08] flex-wrap">
         {plat && (
           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-blue/10 text-brand-blue text-[9px] font-bold">
             {plat.platform} · {plat.label}
@@ -284,21 +458,21 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           {style}
         </span>
         {model && (
-          <span className="flex items-center gap-1 text-[9px] text-slate-400 dark:text-[#555]">
+          <span className="flex items-center gap-1 text-[9px] text-slate-400 dark:text-gray-400">
             <Bot size={9} /> {model}
           </span>
         )}
         <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold ml-auto">
           {gen.totalCost} CR
         </span>
-        {ts && <span className="text-[9px] text-slate-300 dark:text-[#444]">{ts}</span>}
+        {ts && <span className="text-[9px] text-slate-300 dark:text-gray-500">{ts}</span>}
       </div>
     );
   };
 
   /** Action buttons below result image */
   const ResultActions = ({ url }: { url: string }) => (
-    <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#0d0d0f]">
+    <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#13171f]">
       <button
         onClick={handleGenerate}
         disabled={gen.isGenerating}
@@ -324,10 +498,10 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[#050505] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
+    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
 
       {/* ── TOP NAV ── */}
-      <div className="h-14 bg-white dark:bg-[#0a0a0a] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-6 shrink-0 z-[100] transition-colors">
+      <div className="h-14 bg-white dark:bg-[#0a0d14] border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-6 shrink-0 z-[100] transition-colors">
         <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-full border border-slate-200 dark:border-white/10">
           {(['current', 'library'] as const).map(m => (
             <button
@@ -359,14 +533,14 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
       <div className="flex-grow flex overflow-hidden">
 
         {/* ── SIDEBAR ── hidden on mobile, sticky generate button ── */}
-        <div className="hidden md:flex w-[360px] shrink-0 bg-white dark:bg-[#0d0d0f] border-r border-slate-200 dark:border-white/5 flex-col h-full transition-colors">
+        <div className="hidden md:flex w-[360px] shrink-0 bg-white dark:bg-[#13171f] border-r border-slate-200 dark:border-white/10 flex-col h-full transition-colors">
 
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
 
             {/* Platform Picker */}
             <div>
-              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Nền tảng & Format</p>
+              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 mb-2 tracking-widest">Nền tảng & Format</p>
               <div className="grid grid-cols-2 gap-1.5">
                 {PLATFORMS.map(p => (
                   <button
@@ -375,7 +549,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     className={`flex flex-col items-start p-2.5 rounded-xl text-left border transition-all ${
                       activePlatform === p.id
                         ? 'bg-brand-blue text-white border-brand-blue shadow-sm shadow-brand-blue/20'
-                        : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-500 dark:text-[#666] hover:border-brand-blue/30 hover:text-brand-blue'
+                        : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.08] text-slate-500 dark:text-gray-400 hover:border-brand-blue/30 hover:text-brand-blue'
                     }`}
                   >
                     <span className={`text-[10px] font-bold ${activePlatform === p.id ? 'text-white/70' : 'text-slate-400'}`}>{p.platform}</span>
@@ -388,7 +562,8 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
             {/* Industry Picker */}
             <div>
-              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Lĩnh vực</p>
+              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 mb-1 tracking-widest">Lĩnh vực</p>
+              <p className="text-[10px] text-slate-400 dark:text-gray-500 mb-2 leading-relaxed">AI sẽ tạo banner phù hợp với ngành bạn chọn (icon, mood, layout).</p>
               <div className="flex flex-wrap gap-1.5">
                 {INDUSTRIES.map(ind => {
                   const Icon = ind.icon;
@@ -400,7 +575,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                       className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-medium border transition-all ${
                         isActive
                           ? 'bg-brand-blue text-white border-brand-blue shadow-sm shadow-brand-blue/20'
-                          : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-500 dark:text-[#666] hover:border-brand-blue/30 hover:text-brand-blue'
+                          : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.08] text-slate-500 dark:text-gray-400 hover:border-brand-blue/30 hover:text-brand-blue'
                       }`}
                     >
                       <Icon size={11} />
@@ -415,7 +590,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
             <div>
               <button
                 onClick={() => setShowAISuggest(v => !v)}
-                className="flex items-center justify-between w-full text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] hover:text-brand-blue transition-colors tracking-widest mb-1"
+                className="flex items-center justify-between w-full text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-colors tracking-widest mb-1"
               >
                 <span>AI Gợi ý & Templates</span>
                 {showAISuggest
@@ -454,12 +629,12 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
             {/* Prompt textarea */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-widest">Mô tả Banner</p>
+                <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 tracking-widest">Mô tả Banner</p>
                 {promptHistory.length > 0 && (
                   <div className="relative">
                     <button
                       onClick={() => setShowHistory(v => !v)}
-                      className="flex items-center gap-1 text-[9px] font-semibold text-slate-400 dark:text-[#555] hover:text-brand-blue transition-colors"
+                      className="flex items-center gap-1 text-[9px] font-semibold text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-colors"
                     >
                       <History size={10} /> Lịch sử ({promptHistory.length})
                     </button>
@@ -470,9 +645,9 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: -4, scale: 0.97 }}
                           transition={{ duration: 0.15 }}
-                          className="absolute right-0 top-5 z-50 w-72 bg-white dark:bg-[#111113] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-2xl overflow-hidden"
+                          className="absolute right-0 top-5 z-50 w-72 bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-2xl overflow-hidden"
                         >
-                          <div className="p-2 border-b border-black/[0.05] dark:border-white/[0.05]">
+                          <div className="p-2 border-b border-black/[0.05] dark:border-white/[0.08]">
                             <p className="text-[9px] font-bold uppercase text-slate-400 tracking-widest px-1">10 Prompts gần nhất</p>
                           </div>
                           <div className="max-h-52 overflow-y-auto">
@@ -480,7 +655,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                               <button
                                 key={i}
                                 onClick={() => { setLocalPrompt(p); setShowHistory(false); }}
-                                className="w-full text-left px-3 py-2.5 text-[11px] text-slate-700 dark:text-white/70 hover:bg-brand-blue/[0.06] hover:text-brand-blue transition-colors line-clamp-2 border-b border-black/[0.03] dark:border-white/[0.03] last:border-0"
+                                className="w-full text-left px-3 py-2.5 text-[11px] text-slate-700 dark:text-white/70 hover:bg-brand-blue/[0.06] hover:text-brand-blue transition-colors line-clamp-2 border-b border-black/[0.03] dark:border-white/[0.05] last:border-0"
                               >
                                 {p}
                               </button>
@@ -508,7 +683,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 }}
                 placeholder={`Mô tả banner ${currentPlatform.label} bạn muốn tạo...`}
                 rows={3}
-                className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
+                className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2.5 resize-none text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 transition-colors"
               />
               <button
                 onClick={handleEnhance}
@@ -518,6 +693,26 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 {isEnhancing ? <Loader2 size={11} className="animate-spin" /> : <Wand2 size={11} />}
                 AI Boost Prompt
               </button>
+
+              {/* CTA presets — 1-click thêm Call-to-Action marketer thường dùng vào mô tả */}
+              <div className="mt-3">
+                <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 tracking-widest mb-1.5">
+                  Thêm CTA <span className="font-normal normal-case tracking-normal text-slate-400 dark:text-gray-500">(click để gắn vào mô tả)</span>
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {CTA_PRESETS.map(cta => (
+                    <button
+                      key={cta.label}
+                      onClick={() => setLocalPrompt(prev => (prev.trim() + cta.appendText).trim())}
+                      className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] text-[10px] font-semibold text-slate-600 dark:text-gray-300 hover:bg-brand-blue/10 hover:border-brand-blue/30 hover:text-brand-blue transition-all"
+                      title={`Thêm "${cta.label}" vào mô tả banner`}
+                    >
+                      <span>{cta.emoji}</span>
+                      <span>{cta.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               {/* AI Enhance diff preview */}
               <AnimatePresence>
@@ -551,7 +746,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                       </div>
                       <div className="px-3 py-2 border-b border-dashed border-brand-blue/10">
                         <p className="text-[8px] font-bold text-slate-400 uppercase mb-1">Trước</p>
-                        <p className="text-[10px] text-slate-500 dark:text-[#888] line-clamp-2 leading-relaxed">{localPrompt}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-gray-300 line-clamp-2 leading-relaxed">{localPrompt}</p>
                       </div>
                       <div className="px-3 py-2">
                         <p className="text-[8px] font-bold text-brand-blue uppercase mb-1">Sau</p>
@@ -566,7 +761,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
             {/* Title / Subtitle */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-widest">Text trên Banner</p>
+                <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 tracking-widest">Text trên Banner</p>
                 <button
                   onClick={() => setAddTextToBanner(v => !v)}
                   className={`w-8 h-4 rounded-full transition-colors ${addTextToBanner ? 'bg-brand-blue' : 'bg-slate-300 dark:bg-white/10'}`}
@@ -580,13 +775,13 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     placeholder="Tiêu đề chính (VD: SALE 50%)"
-                    className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
+                    className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 transition-colors"
                   />
                   <input
                     value={subtitle}
                     onChange={e => setSubtitle(e.target.value)}
                     placeholder="Tiêu đề phụ (VD: Chỉ hôm nay)"
-                    className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-[#444] focus:outline-none focus:border-brand-blue/50 transition-colors"
+                    className="w-full text-[12px] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-xl px-3 py-2 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:border-brand-blue/50 transition-colors"
                   />
                 </div>
               )}
@@ -594,10 +789,10 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
             {/* Reference images */}
             <div>
-              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Ảnh tham chiếu ({localReferences.length}/6)</p>
+              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 mb-2 tracking-widest">Ảnh tham chiếu ({localReferences.length}/6)</p>
               <div className="grid grid-cols-3 gap-1.5">
                 {localReferences.map((ref, i) => (
-                  <div key={i} className="aspect-square rounded-lg overflow-hidden relative group bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5">
+                  <div key={i} className="aspect-square rounded-lg overflow-hidden relative group bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                     <img src={ref} alt="" className="w-full h-full object-cover" />
                     <button
                       onClick={() => setLocalReferences(prev => prev.filter((_, idx) => idx !== i))}
@@ -610,7 +805,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 {localReferences.length < 6 && (
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="aspect-square rounded-lg border border-dashed border-slate-300 dark:border-white/10 flex items-center justify-center hover:border-brand-blue/40 transition-colors text-slate-400 dark:text-[#555]"
+                    className="aspect-square rounded-lg border border-dashed border-slate-300 dark:border-white/10 flex items-center justify-center hover:border-brand-blue/40 transition-colors text-slate-400 dark:text-gray-400"
                   >
                     <Plus size={16} />
                   </button>
@@ -621,7 +816,8 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
             {/* Phong cách */}
             <div>
-              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Phong cách</p>
+              <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 mb-1 tracking-widest">Phong cách</p>
+              <p className="text-[10px] text-slate-400 dark:text-gray-500 mb-1.5 leading-relaxed">Định hình tổng thể: typography, màu sắc, mood của banner.</p>
               <div className="flex flex-wrap gap-1.5">
                 {STYLES.map(s => (
                   <button
@@ -630,7 +826,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold border transition-all ${
                       selectedStyle === s
                         ? 'bg-brand-blue text-white border-brand-blue shadow-sm'
-                        : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.05] text-slate-500 dark:text-[#666] hover:border-brand-blue/30 hover:text-brand-blue'
+                        : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.05] dark:border-white/[0.08] text-slate-500 dark:text-gray-400 hover:border-brand-blue/30 hover:text-brand-blue'
                     }`}
                   >
                     {s}
@@ -669,7 +865,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
             <div>
               <button
                 onClick={() => setShowAdvanced(v => !v)}
-                className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-400 dark:text-[#555] hover:text-brand-blue transition-colors"
+                className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-colors"
               >
                 <ChevronDown size={12} className={`transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
                 Nâng cao
@@ -684,15 +880,17 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     className="overflow-hidden mt-3 space-y-3"
                   >
                     <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] tracking-widest">Màu thương hiệu</p>
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 tracking-widest">Màu thương hiệu</p>
                         <button
                           onClick={() => setUseBrandColor(v => !v)}
                           className={`w-8 h-4 rounded-full transition-colors ${useBrandColor ? 'bg-brand-blue' : 'bg-slate-300 dark:bg-white/10'}`}
+                          title="Bật/tắt áp dụng màu thương hiệu vào banner"
                         >
                           <div className={`w-3 h-3 bg-white rounded-full mx-0.5 transition-transform ${useBrandColor ? 'translate-x-4' : ''}`} />
                         </button>
                       </div>
+                      <p className="text-[10px] text-slate-400 dark:text-gray-500 mb-2 leading-relaxed">AI sẽ ưu tiên dùng các màu này làm tông chủ đạo cho banner.</p>
                       {useBrandColor && (
                         <div className="flex flex-wrap gap-1.5 items-center">
                           {brandColors.map((c, i) => (
@@ -721,6 +919,81 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                         </div>
                       )}
                     </div>
+
+                    {/* ── Logo upload — auto đặt logo góc trên trái khi gen banner ── */}
+                    <div>
+                      <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 mb-1 tracking-widest">Logo thương hiệu</p>
+                      <p className="text-[10px] text-slate-400 dark:text-gray-500 mb-2 leading-relaxed">AI sẽ tự đặt logo ở góc trên trái banner.</p>
+                      {brandLogoUrl ? (
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-12 h-12 rounded-lg border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.03] overflow-hidden flex items-center justify-center">
+                            <img src={brandLogoUrl} alt="Logo" className="max-w-full max-h-full object-contain" />
+                          </div>
+                          <button
+                            onClick={() => logoInputRef.current?.click()}
+                            className="text-[10px] font-semibold text-brand-blue hover:underline"
+                          >
+                            Đổi logo
+                          </button>
+                          <button
+                            onClick={() => setBrandLogoUrl('')}
+                            className="text-[10px] font-semibold text-rose-500 hover:underline"
+                          >
+                            Xoá
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => logoInputRef.current?.click()}
+                          className="w-full py-3 rounded-xl border-2 border-dashed border-slate-200 dark:border-white/[0.08] text-[10px] font-semibold text-slate-400 dark:text-gray-400 hover:border-brand-blue/40 hover:text-brand-blue transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <Upload size={12} /> Tải logo (PNG transparent · ≤ 2MB)
+                        </button>
+                      )}
+                      <input
+                        ref={logoInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                      />
+                    </div>
+
+                    {/* ── Brand Kit save/load — persist toàn bộ brand info localStorage ── */}
+                    <div className="pt-2 border-t border-slate-100 dark:border-white/[0.05]">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 tracking-widest">Bộ thương hiệu</p>
+                        {brandKitSavedAt && (
+                          <span className="text-[9px] text-emerald-500 font-semibold">✓ Đã lưu</span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-slate-400 dark:text-gray-500 mb-2 leading-relaxed">Lưu màu + logo + tiêu đề để tái dùng nhanh ở lần sau.</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        <button
+                          onClick={saveBrandKit}
+                          className="flex-1 min-w-[100px] flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg bg-brand-blue/10 text-brand-blue text-[10px] font-bold border border-brand-blue/20 hover:bg-brand-blue/20 transition-colors"
+                          title="Lưu brand colors + logo + tiêu đề + tagline hiện tại"
+                        >
+                          💾 Lưu
+                        </button>
+                        <button
+                          onClick={loadBrandKit}
+                          className="flex-1 min-w-[100px] flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-gray-300 text-[10px] font-bold border border-slate-200 dark:border-white/[0.08] hover:bg-slate-200 dark:hover:bg-white/[0.08] transition-colors"
+                          title="Khôi phục bộ thương hiệu đã lưu trước đó"
+                        >
+                          ↻ Áp dụng
+                        </button>
+                        {brandKitSavedAt && (
+                          <button
+                            onClick={clearBrandKit}
+                            className="flex items-center justify-center px-2 py-1.5 rounded-lg text-rose-500 text-[10px] font-bold hover:bg-rose-500/10 transition-colors"
+                            title="Xoá bộ thương hiệu đã lưu"
+                          >
+                            🗑
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -729,8 +1002,8 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           </div>{/* end scroll area */}
 
           {/* ── Generate button — sticky bottom ── */}
-          <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#0d0d0f] space-y-2">
-            <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-[#555]">
+          <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/10 bg-white dark:bg-[#13171f] space-y-2">
+            <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-gray-400">
               <div className="flex items-center gap-1.5">
                 <div className={`w-1.5 h-1.5 rounded-full ${gen.isGenerating ? 'bg-brand-blue animate-pulse' : 'bg-emerald-400'}`} />
                 {gen.isGenerating ? 'AI đang tạo banner...' : 'Sẵn sàng'}
@@ -754,7 +1027,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </div>{/* end sidebar */}
 
         {/* ── MAIN VIEWPORT ── */}
-        <div className="flex-1 flex flex-col bg-[#f0f2f5] dark:bg-[#060608] overflow-hidden">
+        <div className="flex-1 flex flex-col bg-[#f0f2f5] dark:bg-[#0a0d14] overflow-hidden">
 
           {viewMode === 'current' ? (
             <div className="flex-1 overflow-y-auto p-6 flex flex-col items-center">
@@ -781,7 +1054,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
                   {/* Result cards */}
                   {gen.results.map(result => (
-                    <div key={result.id} className="rounded-xl overflow-hidden shadow-sm bg-white dark:bg-[#0d0d0f] border border-black/[0.06] dark:border-white/[0.04]">
+                    <div key={result.id} className="rounded-xl overflow-hidden shadow-sm bg-white dark:bg-[#13171f] border border-black/[0.06] dark:border-white/[0.08]">
                       <ImageJobCard
                         status={result.status}
                         resultUrl={result.url ?? undefined}
@@ -809,8 +1082,8 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 /* Empty state — starter prompt cards */
                 <div className="flex flex-col items-center justify-center gap-6 text-center w-full max-w-md my-auto">
                   <div>
-                    <p className="text-sm font-semibold text-slate-400 dark:text-[#555]">Bắt đầu với một gợi ý</p>
-                    <p className="text-[11px] text-slate-300 dark:text-[#444] mt-1">Nhấn vào mẫu bên dưới hoặc nhập mô tả của bạn</p>
+                    <p className="text-sm font-semibold text-slate-400 dark:text-gray-400">Bắt đầu với một gợi ý</p>
+                    <p className="text-[11px] text-slate-300 dark:text-gray-500 mt-1">Nhấn vào mẫu bên dưới hoặc nhập mô tả của bạn</p>
                   </div>
                   <div className="grid grid-cols-2 gap-2.5 w-full">
                     {[
@@ -838,9 +1111,9 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               {sessions.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
                   <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
-                    <ImageIcon size={24} className="text-slate-300 dark:text-[#444]" />
+                    <ImageIcon size={24} className="text-slate-300 dark:text-gray-500" />
                   </div>
-                  <p className="text-sm text-slate-400 dark:text-[#555]">Thư viện trống — tạo banner đầu tiên!</p>
+                  <p className="text-sm text-slate-400 dark:text-gray-400">Thư viện trống — tạo banner đầu tiên!</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
@@ -857,9 +1130,9 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                           resultUrl={session.url}
                           aspectRatio={plat?.ratio === '9:16' ? '9/16' : plat?.ratio === '1:1' ? '1/1' : plat?.ratio === '3:1' ? '3/1' : '16/9'}
                           mode="compact"
-                          cardClassName="border border-black/[0.06] dark:border-white/[0.04] bg-white dark:bg-[#0d0d0f] hover:border-brand-blue/30 hover:-translate-y-0.5 transition-all"
+                          cardClassName="border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#13171f] hover:border-brand-blue/30 hover:-translate-y-0.5 transition-all"
                           infoSlot={
-                            <div className="bg-white dark:bg-[#0d0d0f] px-3 pt-2 pb-1.5 border-t border-black/[0.05] dark:border-white/[0.05]">
+                            <div className="bg-white dark:bg-[#13171f] px-3 pt-2 pb-1.5 border-t border-black/[0.05] dark:border-white/[0.08]">
                               {/* Badges row */}
                               <div className="flex flex-wrap gap-1 mb-1.5">
                                 {plat && (
@@ -873,7 +1146,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                                   </span>
                                 )}
                                 {session.config.model && (
-                                  <span className="flex items-center gap-0.5 text-[8px] text-slate-400 dark:text-[#555]">
+                                  <span className="flex items-center gap-0.5 text-[8px] text-slate-400 dark:text-gray-400">
                                     <Bot size={8} /> {session.config.model}
                                   </span>
                                 )}
@@ -882,7 +1155,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                               <p className="text-[10px] text-slate-600 dark:text-white/60 line-clamp-2 leading-relaxed">{session.prompt}</p>
                               {/* Footer */}
                               <div className="flex items-center justify-between mt-1.5">
-                                <p className="text-[8px] text-slate-300 dark:text-[#444]">{session.timestamp}</p>
+                                <p className="text-[8px] text-slate-300 dark:text-gray-500">{session.timestamp}</p>
                                 <button
                                   onClick={(e) => { e.stopPropagation(); handleDownloadUrl(session.url); }}
                                   className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-blue/10 text-brand-blue text-[8px] font-bold hover:bg-brand-blue hover:text-white transition-all"
@@ -984,7 +1257,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 26, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
-              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#0d0d0f] rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#13171f] rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
             >
               <div className="flex items-center justify-between px-5 pt-4 pb-2 shrink-0">
                 <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-white/20 mx-auto absolute left-1/2 -translate-x-1/2 top-3" />
@@ -996,7 +1269,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
               <div className="overflow-y-auto flex-1 px-4 pb-4 space-y-4">
                 <div>
-                  <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Nền tảng</p>
+                  <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 mb-2 tracking-widest">Nền tảng</p>
                   <div className="grid grid-cols-2 gap-1.5">
                     {PLATFORMS.map(p => (
                       <button
@@ -1016,7 +1289,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 </div>
 
                 <div>
-                  <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-2 tracking-widest">Lĩnh vực</p>
+                  <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 mb-2 tracking-widest">Lĩnh vực</p>
                   <div className="flex flex-wrap gap-1.5">
                     {INDUSTRIES.map(ind => {
                       const Icon = ind.icon;
@@ -1038,7 +1311,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 </div>
 
                 <div>
-                  <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-[#555] mb-1.5 tracking-widest">Phong cách</p>
+                  <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 mb-1.5 tracking-widest">Phong cách</p>
                   <select
                     value={selectedStyle}
                     onChange={e => setSelectedStyle(e.target.value)}
@@ -1074,7 +1347,7 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 />
               </div>
 
-              <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/5">
+              <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/10">
                 <motion.button
                   onClick={() => { setShowMobileSheet(false); handleGenerate(); }}
                   disabled={gen.isGenerating || !localPrompt.trim()}
