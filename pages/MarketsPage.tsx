@@ -819,6 +819,24 @@ const MarketsPage: React.FC = () => {
   const paginatedSolutions = useMemo(() => filteredSolutions.slice(0, visibleCount), [filteredSolutions, visibleCount]);
   const hasMore = visibleCount < filteredSolutions.length;
 
+  // Auto-load infinite scroll — IntersectionObserver pre-load 300px trước khi sentinel vào viewport
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!hasMore) return;
+    const el = loadMoreRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setVisibleCount(prev => prev + ITEMS_PER_PAGE);
+        }
+      },
+      { rootMargin: '300px 0px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore]);
+
   const catCounts = useMemo(() => {
     const counts: Record<string, number> = { ALL: solutions.length };
     CATEGORIES.forEach(c => {
@@ -1268,14 +1286,16 @@ const MarketsPage: React.FC = () => {
                   ))}
                 </div>
 
-                {/* Load More */}
+                {/* Auto-load sentinel — IntersectionObserver tự load thêm khi scroll gần tới */}
                 {hasMore && (
-                  <div className="flex justify-center mt-8">
-                    <button onClick={() => setVisibleCount(prev => prev + ITEMS_PER_PAGE)}
-                      className="flex items-center gap-2 px-8 py-3 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-[13px] font-semibold text-slate-600 dark:text-gray-300 hover:border-brand-blue/30 hover:text-brand-blue transition-all">
-                      Xem thêm ({filteredSolutions.length - visibleCount} còn lại)
-                      <ChevronDown size={14} />
-                    </button>
+                  <div ref={loadMoreRef} className="mt-8 py-6 flex justify-center items-center gap-2.5 text-[12px] text-slate-400 dark:text-gray-500">
+                    <div className="w-4 h-4 border-2 border-brand-blue/30 border-t-brand-blue rounded-full animate-spin" />
+                    <span>Đang tải thêm <span className="text-slate-500 dark:text-gray-400 font-medium">({filteredSolutions.length - visibleCount} còn lại)</span>…</span>
+                  </div>
+                )}
+                {!hasMore && filteredSolutions.length > ITEMS_PER_PAGE && (
+                  <div className="mt-8 py-4 flex justify-center text-[11px] text-slate-300 dark:text-gray-600">
+                    — Đã hiển thị toàn bộ {filteredSolutions.length} kết quả —
                   </div>
                 )}
               </>
