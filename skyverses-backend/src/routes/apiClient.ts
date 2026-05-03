@@ -410,10 +410,11 @@ router.post("/external/image-task", authenticateApiToken, async (req: any, res) 
     if (mask) input.mask = mask;
     if (referenceImage) input.referenceImage = referenceImage;
 
-    if (!input.prompt && !input.image) {
+    // ❌ Reject nếu prompt rỗng (undefined / null / "" / whitespace-only)
+    if (typeof input.prompt !== "string" || input.prompt.trim() === "") {
       return res.status(400).json({
         success: false,
-        message: "Cần ít nhất prompt hoặc image",
+        message: "Prompt là bắt buộc và không được để trống",
       });
     }
 
@@ -579,10 +580,11 @@ router.post("/external/video-task", authenticateApiToken, async (req: any, res) 
     if (referenceVideo) input.referenceVideo = referenceVideo;
     if (audio) input.audio = audio;
 
-    if (!input.prompt && !input.startImage && !input.images?.length) {
+    // ❌ Reject nếu prompt rỗng (undefined / null / "" / whitespace-only)
+    if (typeof input.prompt !== "string" || input.prompt.trim() === "") {
       return res.status(400).json({
         success: false,
-        message: "Cần ít nhất prompt, startImage hoặc images",
+        message: "Prompt là bắt buộc và không được để trống",
       });
     }
 
