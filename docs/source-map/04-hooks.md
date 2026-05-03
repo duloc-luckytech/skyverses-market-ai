@@ -19,6 +19,7 @@ State machine + business logic per workspace.
 | `useImageModels.ts` | Image model dropdown (`MappedImageModel`) |
 | `useJobPoller.ts` | **Generic polling cho image/video/music jobs** |
 | `useMusicStudio.ts` | MusicWorkspace |
+| `usePodcastVoice.ts` | PodcastVoiceWorkspace |
 | `useOrgBuilder.ts` | OrgBuilderTab (agent-workspace) |
 | `usePageMeta.ts` | Set `<title>`, `<meta>` per page |
 | `useProductImageEditor.ts` | ProductImageWorkspace |

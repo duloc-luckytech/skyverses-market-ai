@@ -61,6 +61,7 @@ const pageImports = {
   music: () => import('./pages/audio/MusicGenerator'),
   voiceDesign: () => import('./pages/audio/VoiceDesignAI'),
   voiceStudio: () => import('./pages/audio/VoiceStudio'),
+  podcastVoice: () => import('./pages/audio/AIPodcastVoice'),
   // Other
   spatial: () => import('./pages/SpatialArchitectPage'),
   charSync: () => import('./pages/ProductCharacterSync'),
@@ -123,6 +124,7 @@ const TextToSpeech = React.lazy(pageImports.tts);
 const MusicGenerator = React.lazy(pageImports.music);
 const VoiceDesignAI = React.lazy(pageImports.voiceDesign);
 const VoiceStudio = React.lazy(pageImports.voiceStudio);
+const AIPodcastVoice = React.lazy(pageImports.podcastVoice);
 
 // Product pages — other
 const SpatialArchitectPage = React.lazy(pageImports.spatial);
@@ -246,6 +248,7 @@ const App: React.FC = () => {
                       <Route path="/product/ai-video-generator" element={<AIVideoGenerator />} />
                       <Route path="/product/ai-image-generator" element={<AIImageGenerator />} />
                       <Route path="/product/voice-design-ai" element={<VoiceDesignAI />} />
+                      <Route path="/product/ai-podcast-voice" element={<AIPodcastVoice />} />
                       <Route path="/product/ai-voice-studio" element={<VoiceStudio />} />
                       <Route path="/product/studio-architect" element={<GenyuProduct />} />
                       <Route path="/product/avatar-sync-ai" element={<AvatarLipsyncAI />} />

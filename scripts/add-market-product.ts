@@ -15,6 +15,7 @@
 
 const API_BASE = 'https://api.skyverses.com';
 const BEARER_TOKEN =
+  process.env.SKYVERSES_MARKET_TOKEN ||
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWM4ZGE4M2M0YjAzYTQyNGYxNjE3YTEiLCJlbWFpbCI6ImR1bG9jMjcwOEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsIm5hbWUiOiJMb2MgRFYiLCJpYXQiOjE3NzU3ODY1NzYsImV4cCI6MTc3NjM5MTM3Nn0.ygWEBUIc4oB9iGs5AhdtX5zjyTDATQNJmYNxqqmpBBI';
 
 /* =============================================================================
@@ -34,20 +35,24 @@ interface MarketProduct {
   category: { en: string; vi?: string; ko?: string; ja?: string };
   description: { en: string; vi?: string; ko?: string; ja?: string };
   imageUrl: string;
+  gallery?: string[];
   demoType?: string; // 'image' | 'video' | 'interactive'
   homeBlocks: string[];
   tags: string[];
   models?: string[];
   industries?: string[];
-  features?: { en: string; vi?: string }[];
-  neuralStack?: { name: string; version?: string; capability: { en: string; vi?: string } }[];
+  problems?: string[];
+  features?: { en: string; vi?: string; ko?: string; ja?: string }[];
+  neuralStack?: { name: string; version?: string; capability: { en: string; vi?: string; ko?: string; ja?: string } }[];
   complexity?: string; // 'beginner' | 'intermediate' | 'advanced'
+  priceReference?: string;
   priceCredits?: number;
   isFree?: boolean;
   isActive?: boolean;
   status?: string;
   featured?: boolean;
   order?: number;
+  platforms?: string[];
 }
 
 const PRODUCTS: Record<string, MarketProduct> = {
@@ -102,6 +107,112 @@ const PRODUCTS: Record<string, MarketProduct> = {
     status: 'active',
     featured: false,
     order: 50,
+  },
+
+  /* ─── AI Podcast Voice ─────────────────────────────────────────────────── */
+  'ai-podcast-voice': {
+    id: 'AI-PODCAST-VOICE',
+    slug: 'ai-podcast-voice',
+    name: {
+      en: 'AI Podcast Voice',
+      vi: 'AI Podcast Voice',
+      ko: 'AI 팟캐스트 보이스',
+      ja: 'AIポッドキャストボイス',
+    },
+    category: {
+      en: 'Audio & Music',
+      vi: 'Âm thanh & Nhạc',
+      ko: '오디오 & 음악',
+      ja: 'オーディオ＆ミュージック',
+    },
+    description: {
+      en: 'Create complete podcast episodes with AI-written scripts, Vietnamese multi-speaker voices, background music mixing, and MP3 export.',
+      vi: 'Tạo tập podcast hoàn chỉnh với kịch bản AI, nhiều giọng Việt tự nhiên, mix nhạc nền và xuất MP3.',
+      ko: 'AI 대본, 베트남어 멀티 스피커 음성, 배경음악 믹싱, MP3 내보내기로 완성형 팟캐스트를 제작하세요.',
+      ja: 'AI台本、ベトナム語マルチスピーカー音声、BGMミックス、MP3書き出しでポッドキャストを制作できます。',
+    },
+    imageUrl: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/0b19cde1-0a88-4670-2abb-feb9ca77ab00/public',
+    gallery: [
+      'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/6fefe3fa-5ffc-4f8f-5289-32478668ef00/public',
+      'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/8ddabe04-b3b9-40ca-b459-e175af399b00/public',
+      'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/41117ac8-f886-4802-94a6-785e841ea500/public',
+      'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a10abf09-9265-4419-34c1-3df034dd0300/public',
+    ],
+    demoType: 'automation',
+    homeBlocks: ['app-other'],
+    tags: ['podcast', 'voice', 'tts', 'audio', 'Vietnamese', 'multi-speaker', 'MP3'],
+    models: ['Gemini', 'Google TTS', 'Skyverses Audio Mixer'],
+    industries: ['Podcasting', 'Education', 'Marketing', 'Media', 'Audiobook'],
+    problems: [
+      'Studio recording is expensive and slow',
+      'Finding consistent voice talent is difficult',
+      'Podcast editing and audio mixing take too much time',
+    ],
+    features: [
+      {
+        en: 'AI script builder from a short outline',
+        vi: 'AI viết kịch bản từ outline ngắn',
+        ko: '짧은 아웃라인에서 AI 대본 생성',
+        ja: '短いアウトラインからAI台本を作成',
+      },
+      {
+        en: 'Vietnamese multi-speaker voice presets',
+        vi: 'Preset nhiều giọng Việt cho host và khách mời',
+        ko: '호스트와 게스트용 베트남어 멀티 스피커 음성',
+        ja: 'ホストとゲスト向けのベトナム語マルチスピーカー音声',
+      },
+      {
+        en: 'Background music with intro and outro mixing',
+        vi: 'Mix nhạc nền, intro và outro tự động',
+        ko: '인트로와 아웃트로를 포함한 배경음악 믹싱',
+        ja: 'イントロとアウトロを含むBGMミックス',
+      },
+      {
+        en: 'Export-ready MP3 episode output',
+        vi: 'Xuất tập podcast MP3 sẵn sàng đăng tải',
+        ko: '바로 게시할 수 있는 MP3 에피소드 내보내기',
+        ja: '公開準備済みのMP3エピソードを書き出し',
+      },
+    ],
+    neuralStack: [
+      {
+        name: 'Gemini',
+        version: '2.5',
+        capability: {
+          en: 'Podcast script generation and dialogue structure',
+          vi: 'Sinh kịch bản podcast và cấu trúc hội thoại',
+          ko: '팟캐스트 대본 및 대화 구조 생성',
+          ja: 'ポッドキャスト台本と会話構成の生成',
+        },
+      },
+      {
+        name: 'Google TTS',
+        capability: {
+          en: 'Natural multi-language speech synthesis',
+          vi: 'Tổng hợp giọng nói đa ngôn ngữ tự nhiên',
+          ko: '자연스러운 다국어 음성 합성',
+          ja: '自然な多言語音声合成',
+        },
+      },
+      {
+        name: 'Skyverses Mixer',
+        capability: {
+          en: 'Episode timeline, voice segments, and music bed mixing',
+          vi: 'Mix timeline tập, đoạn thoại và nhạc nền',
+          ko: '에피소드 타임라인, 음성 세그먼트, 배경음악 믹싱',
+          ja: 'エピソードタイムライン、音声セグメント、BGMミックス',
+        },
+      },
+    ],
+    complexity: 'Standard',
+    priceReference: '50 CR / minute',
+    priceCredits: 50,
+    isFree: false,
+    isActive: true,
+    status: 'active',
+    featured: true,
+    order: 44,
+    platforms: ['web'],
   },
 
   /* ─── ADD NEW PRODUCTS BELOW ───────────────────────────────────────────── */

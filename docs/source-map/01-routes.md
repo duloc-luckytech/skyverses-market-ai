@@ -54,6 +54,7 @@ Static slugs trước, fallthrough → `pages/SolutionDetail`.
 | `ai-video-generator` | `pages/videos/AIVideoGenerator` | video |
 | `ai-image-generator` | `pages/images/AIImageGenerator` | image |
 | `voice-design-ai` | `pages/audio/VoiceDesignAI` | audio |
+| `ai-podcast-voice` | `pages/audio/AIPodcastVoice` | audio |
 | `ai-voice-studio` | `pages/audio/VoiceStudio` | audio |
 | `studio-architect` | `pages/videos/GenyuProduct` | video |
 | `avatar-sync-ai` | `pages/videos/AvatarLipsyncAI` | video |

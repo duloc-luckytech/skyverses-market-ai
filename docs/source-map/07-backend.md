@@ -30,7 +30,7 @@ skyverses-backend/
 | `ai.ts` | AI generic endpoints |
 | `aiModel.admin.ts` | Admin: AI model CRUD |
 | `apiClient.ts` | API client management |
-| `audio.ts` | Audio (TTS, music) |
+| `audio.ts` | Audio (Gommo voice design + Podcast Voice TTS/dialogue/history/export) |
 | `auth.ts` | Login, register, OAuth |
 | `blog.ts` | Blog posts |
 | `category.route.ts` | Categories |
@@ -56,9 +56,9 @@ skyverses-backend/
 | `webhook.ts` | Provider webhooks |
 | `workerRouter.ts` | Worker control |
 
-## Models — `src/models/` (30 Mongoose schemas)
+## Models — `src/models/` (32 Mongoose schemas)
 
-`AIModel`, `AffiliateTransaction`, `BankTransaction`, `BlogPost`, `Category`, `CreditPackage`, `CreditTransaction`, `DeployLog`, `EditImageJob`, `ExplorerMedia`, `FxflowOwner`, `GoogleToken`, `ImageBase64`, `ImageJob`, `ImageOwner`, `MarketItem`, `MetaPromptTemplate`, `ModelPricingMatrix`, `Plan`, `PlanPurchase`, `ProductSubmission`, `PromptGenerationJob`, `ProviderToken`, `RunningHubTemplate`, `ServerStatus`, `SystemSetting`, `User`, `VideoConcatJob`, `VideoJob`, `VideoJobV2`.
+`AIModel`, `AffiliateTransaction`, `AudioGeneration`, `AudioVoice`, `BankTransaction`, `BlogPost`, `Category`, `CreditPackage`, `CreditTransaction`, `DeployLog`, `EditImageJob`, `ExplorerMedia`, `FxflowOwner`, `GoogleToken`, `ImageBase64`, `ImageJob`, `ImageOwner`, `MarketItem`, `MetaPromptTemplate`, `ModelPricingMatrix`, `Plan`, `PlanPurchase`, `ProductSubmission`, `PromptGenerationJob`, `ProviderToken`, `RunningHubTemplate`, `ServerStatus`, `SystemSetting`, `User`, `VideoConcatJob`, `VideoJob`, `VideoJobV2`.
 
 Each is `<Name>.model.ts` (or `<Name>.ts` for older).
 
@@ -87,12 +87,13 @@ Worker pool cho image / video / music. Mỗi domain có:
 
 ## Services — `src/services/`
 
+- `audioStorage.ts` — save Podcast Voice audio/transcript under `/audio/generated`
 - `runninghub/index.ts`, `runninghub/syncTemplates.ts`
 - `utils/affiliate.ts`
 
 ## Utils — `src/utils/`
 
-`buildFinalImagePayload`, `buildPricingMatrix`, `checkPlanValidity`, `downloadVideoFromUrl`, `fetchSessionFromCookie`, `getAccessTokenForJob`, `getCookieForJob`, `getPricingCredits`, `image`, `isSameDay`, `makeSlug`, `refundJobCredits`, `roleHelpers`.
+`audioWav`, `buildFinalImagePayload`, `buildPricingMatrix`, `checkPlanValidity`, `downloadVideoFromUrl`, `fetchSessionFromCookie`, `getAccessTokenForJob`, `getCookieForJob`, `getPricingCredits`, `image`, `isSameDay`, `makeSlug`, `refundJobCredits`, `roleHelpers`.
 
 ## Scripts — `src/scripts/`
 

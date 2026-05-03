@@ -1,4 +1,4 @@
-# Components — `components/` (324 files)
+# Components — `components/` (325 files)
 
 ## Shell / Global (top-level)
 
@@ -47,6 +47,7 @@
 | `MotionSynthUltraWorkspace.tsx` | motion | inline |
 | `MusicWorkspace.tsx` | audio | `useMusicStudio` |
 | `PaperclipAIAgentsWizard.tsx` + `PaperclipAIAgentsWorkspace.tsx` | agent | `useAgentRegistry` |
+| `PodcastVoiceWorkspace.tsx` | audio | `usePodcastVoice` |
 | `PosterStudioWorkspace.tsx` | image | inline |
 | `ProductImageWorkspace.tsx` | image | `useProductImageEditor` |
 | `RealEstateVisualWorkspace.tsx` + `RealEstateWorkspace.tsx` | real-estate | `useRealEstateAI` |

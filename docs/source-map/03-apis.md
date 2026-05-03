@@ -20,6 +20,7 @@ Base URL từ `apis/config.ts` (env-driven, fallback localhost).
 | `aiChat.ts` | `aiChatApi` | streaming chat (support widget) |
 | `aiCommon.ts` | shared helpers | retries, error mapping |
 | `paperclipProjects.ts` | `paperclipApi` | Paperclip agent CRUD |
+| `podcastVoice.ts` | `podcastVoiceApi`, audio DTOs | AI Podcast Voice TTS/dialogue/history |
 | `provider-tokens.ts` | `providerTokensApi`, `ProviderToken` | OAuth provider tokens |
 | `product-submission.ts` | `productSubmissionApi` | "Submit your AI tool" form |
 | `deploy.ts` | `deployApi`, `DeployLog` | deploy logs viewer |

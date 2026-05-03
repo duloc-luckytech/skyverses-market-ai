@@ -1,4 +1,4 @@
-# Pages — `pages/` (62 files)
+# Pages — `pages/` (63 files)
 
 ## Top-level
 
@@ -53,6 +53,7 @@
 | `MusicGenerator.tsx` | `/product/ai-music-generator`, `/product/music-generator` |
 | `TextToSpeech.tsx` | `/product/text-to-speech` |
 | `VoiceDesignAI.tsx` | `/product/voice-design-ai` |
+| `AIPodcastVoice.tsx` | `/product/ai-podcast-voice` |
 | `VoiceStudio.tsx` | `/product/ai-voice-studio` |
 
 ## `pages/images/`
