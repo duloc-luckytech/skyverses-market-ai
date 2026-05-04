@@ -830,6 +830,165 @@ router.get("/external/video-task/:id", authenticateApiToken, async (req: any, re
 });
 
 /* ============================================================
+   🔍 1️⃣3️⃣ External API: Tạo Image Upscale Pending Task
+   POST /api-client/external/upscale-task
+   — Auth bằng Bearer Token (apiToken)
+   — Body: { image, resolution? }  hoặc nested { input, config, engine }
+   — image: URL ảnh nguồn cần upscale (https://...)
+   — resolution: "2K" | "4K" | "8K" (default "4K")
+============================================================ */
+router.post("/external/upscale-task", authenticateApiToken, async (req: any, res) => {
+  try {
+    const {
+      // Flat format
+      image,
+      resolution,
+      // Nested format
+      input: rawInput,
+      config: rawConfig,
+      engine = {},
+    } = req.body;
+
+    // Build input
+    const input: any = rawInput ? { ...rawInput } : {};
+    if (image) input.image = image;
+
+    // ❌ Reject nếu image rỗng (undefined / null / "" / whitespace-only)
+    if (typeof input.image !== "string" || input.image.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        message: "Image URL là bắt buộc và không được để trống",
+      });
+    }
+
+    // Build config
+    const config: any = rawConfig ? { ...rawConfig } : {};
+    if (resolution) config.aspectRatio = resolution;
+    if (!config.aspectRatio) config.aspectRatio = "4K";
+
+    const finalEngine = {
+      provider: engine.provider || "fxflow",
+      model: engine.model || "image_upscale",
+      version: engine.version || undefined,
+    };
+
+    // Assign FXFlow owner (sticky per user)
+    let jobOwner: string | null = null;
+    if (finalEngine.provider === "fxflow") {
+      jobOwner = await getOrAssignOwnerForUser(req.user.userId);
+    }
+
+    const job = await ImageJob.create({
+      userId: req.user.userId,
+      type: ImageJobType.IMAGE_UPSCALE,
+      input,
+      config,
+      engine: finalEngine,
+      enginePayload: {
+        urlImage: input.image,
+        resolution: config.aspectRatio,
+      },
+      status: ImageJobStatus.PENDING,
+      creditsUsed: 0,
+      owner: jobOwner,
+    });
+
+    console.log(
+      `🔍 [EXT-API] Upscale task created: ${job._id} by ${req.user.email} ` +
+      `resolution=${config.aspectRatio} owner=${jobOwner}`
+    );
+
+    return res.json({
+      success: true,
+      data: {
+        jobId: job._id,
+        status: job.status,
+        type: job.type,
+        engine: finalEngine,
+        owner: jobOwner,
+        resolution: config.aspectRatio,
+        createdAt: job.createdAt,
+      },
+    });
+  } catch (err: any) {
+    console.error("❌ [POST /api-client/external/upscale-task]", err);
+    return res.status(500).json({ success: false, message: err.message || "Internal error" });
+  }
+});
+
+/* ============================================================
+   📋 1️⃣4️⃣ External API: List upscale jobs của user
+   GET /api-client/external/upscale-tasks
+============================================================ */
+router.get("/external/upscale-tasks", authenticateApiToken, async (req: any, res) => {
+  try {
+    const { page = 1, limit = 20, status } = req.query;
+    const query: any = {
+      userId: req.user.userId,
+      type: ImageJobType.IMAGE_UPSCALE,
+    };
+    if (status) query.status = status;
+
+    const data = await ImageJob.find(query)
+      .sort({ createdAt: -1 })
+      .skip((+page - 1) * +limit)
+      .limit(+limit)
+      .select("_id type status engine input config result progress error creditsUsed owner createdAt updatedAt")
+      .lean();
+
+    const total = await ImageJob.countDocuments(query);
+
+    return res.json({
+      success: true,
+      data,
+      pagination: { page: +page, limit: +limit, total },
+    });
+  } catch (err: any) {
+    console.error("❌ [GET /api-client/external/upscale-tasks]", err);
+    return res.status(500).json({ success: false, message: "Internal error" });
+  }
+});
+
+/* ============================================================
+   🔍 1️⃣5️⃣ External API: Get upscale job detail
+   GET /api-client/external/upscale-task/:id
+============================================================ */
+router.get("/external/upscale-task/:id", authenticateApiToken, async (req: any, res) => {
+  try {
+    const job = await ImageJob.findOne({
+      _id: req.params.id,
+      userId: req.user.userId,
+      type: ImageJobType.IMAGE_UPSCALE,
+    }).lean();
+
+    if (!job) {
+      return res.status(404).json({ success: false, message: "Upscale job not found" });
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        jobId: job._id,
+        type: job.type,
+        status: job.status,
+        engine: job.engine,
+        input: job.input,
+        config: job.config,
+        result: job.result,
+        progress: job.progress,
+        error: job.error,
+        owner: job.owner,
+        createdAt: job.createdAt,
+        updatedAt: job.updatedAt,
+      },
+    });
+  } catch (err: any) {
+    console.error("❌ [GET /api-client/external/upscale-task/:id]", err);
+    return res.status(500).json({ success: false, message: "Internal error" });
+  }
+});
+
+/* ============================================================
    📰 EXTERNAL BLOG API — Dành cho bên thứ 3
    Auth bằng Bearer Token (apiToken giống image/video tasks)
    
