@@ -2,13 +2,13 @@
 
 Cả hai là Vite app riêng (independent build), share pattern với main app nhưng scope nhỏ hơn.
 
-## `cms/` — Admin CMS (76 file)
+## `cms/` — Admin CMS (89 file)
 
 Mini-app mirror main app primitives cho admin use.
 
 ```
 cms/
-├── App.tsx, index.tsx, vite.config.ts, data.ts, types.ts
+├── App.tsx, index.tsx, index.css, vite.config.ts, tailwind.config.js, postcss.config.js, data.ts, types.ts
 ├── apis/                  Mirror /apis (ai-models, api-client, auth, blog, config, credits,
 │                          deploy, explorer, images, market, media, pricing, product-submission,
 │                          provider-tokens, upscale, user, videos)
@@ -17,12 +17,14 @@ cms/
 ├── constants/             market-config.tsx, media-presets.ts
 ├── context/               AuthContext, LanguageContext, ThemeContext, ToastContext (subset)
 ├── hooks/                 useSettingsLogic.ts
-├── pages/                 AdminCmsProPage.tsx, LoginPage.tsx
+├── pages/                 AdminCmsProPage.tsx (grouped searchable Control Center + lazy tabs), LoginPage.tsx
 ├── services/              gemini.ts, storage.ts
 └── utils/                 adminAuth.ts, pricing-helpers.ts
 ```
 
 **Lưu ý:** CMS có `services/gemini.ts` (main app không có) — gọi `@google/genai` trực tiếp cho admin AI helpers.
+
+**Dọn admin-pro:** bỏ các tab legacy/mồ côi `ProductsTab`, `SolutionManagerTab`, `ApiSandboxTab`; shell hiện dùng `NodeRegistryTab` cho Market Products.
 
 ## `blog/` — Blog frontend (21 file)
 

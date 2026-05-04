@@ -1,13 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   BarChart3, Cloud, DollarSign,
-  Package, Users, Banknote, Globe,
+  Package, Users, Banknote,
   Compass, Bot, Key, Zap, Inbox, Sparkles,
   ShieldCheck, ChevronLeft, ChevronRight,
-  Sun, Moon, LogOut, Plus, CreditCard, FileText, Webhook, Cpu
+  Sun, Moon, LogOut, Plus, CreditCard, FileText, Webhook, Cpu,
+  Search, LayoutGrid, Settings2, RefreshCw
 } from 'lucide-react';
 
 import { marketApi } from '../apis/market';
@@ -18,68 +19,117 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 
-// Sub-components
-import { DashboardTab } from '../components/admin-pro/DashboardTab';
-import { NodeRegistryTab } from '../components/admin-pro/NodeRegistryTab';
-import { PricingTab } from '../components/admin-pro/PricingTab';
-import { CreditPacksTab } from '../components/admin-pro/CreditPacksTab';
-import { UsersTab } from '../components/admin-pro/UsersTab';
-import { LogsTab } from '../components/admin-pro/LogsTab';
-import { ExplorerTab } from '../components/admin-pro/ExplorerTab';
-import { AIModelsTab } from '../components/admin-pro/AIModelsTab';
-import { OllamaSettingsTab } from '../components/admin-pro/OllamaSettingsTab';
-import { MarketFiltersTab } from '../components/admin-pro/MarketFiltersTab';
-import { ConfigurationTab } from '../components/admin-pro/ConfigurationTab';
-import { ProviderTokensTab } from '../components/admin-pro/ProviderTokensTab';
-import { BankingTab } from '../components/admin-pro/BankingTab';
-import { PaymentHistoryTab } from '../components/admin-pro/PaymentHistoryTab';
-import { WebhookLogsTab } from '../components/admin-pro/WebhookLogsTab';
-import { FxflowTab } from '../components/admin-pro/FxflowTab';
-import { ProductsTab } from '../components/admin-pro/ProductsTab';
-import { ApiClientsTab } from '../components/admin-pro/ApiClientsTab';
-import { SolutionDrawer } from '../components/admin-pro/solution-drawer/SolutionDrawer';
-import { SubmissionsTab } from '../components/admin-pro/SubmissionsTab';
-import { AdminDepositTab } from '../components/admin-pro/AdminDepositTab';
-import { BlogTab } from '../components/admin-pro/BlogTab';
-import { TasksPendingTab } from '../components/admin-pro/TasksPendingTab';
+const DashboardTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/DashboardTab')).DashboardTab }));
+const NodeRegistryTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/NodeRegistryTab')).NodeRegistryTab }));
+const PricingTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/PricingTab')).PricingTab }));
+const CreditPacksTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/CreditPacksTab')).CreditPacksTab }));
+const UsersTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/UsersTab')).UsersTab }));
+const LogsTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/LogsTab')).LogsTab }));
+const ExplorerTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/ExplorerTab')).ExplorerTab }));
+const AIModelsTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/AIModelsTab')).AIModelsTab }));
+const OllamaSettingsTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/OllamaSettingsTab')).OllamaSettingsTab }));
+const MarketFiltersTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/MarketFiltersTab')).MarketFiltersTab }));
+const ConfigurationTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/ConfigurationTab')).ConfigurationTab }));
+const ProviderTokensTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/ProviderTokensTab')).ProviderTokensTab }));
+const BankingTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/BankingTab')).BankingTab }));
+const PaymentHistoryTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/PaymentHistoryTab')).PaymentHistoryTab }));
+const WebhookLogsTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/WebhookLogsTab')).WebhookLogsTab }));
+const FxflowTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/FxflowTab')).FxflowTab }));
+const ApiClientsTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/ApiClientsTab')).ApiClientsTab }));
+const SolutionDrawer = React.lazy(async () => ({ default: (await import('../components/admin-pro/solution-drawer/SolutionDrawer')).SolutionDrawer }));
+const SubmissionsTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/SubmissionsTab')).SubmissionsTab }));
+const AdminDepositTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/AdminDepositTab')).AdminDepositTab }));
+const BlogTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/BlogTab')).BlogTab }));
+const TasksPendingTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/TasksPendingTab')).TasksPendingTab }));
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'OLLAMA_SETTINGS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'PRODUCTS' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG' | 'TASKS_PENDING';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'OLLAMA_SETTINGS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG' | 'TASKS_PENDING';
+type AdminGroup = 'MAIN' | 'MARKET' | 'CONTENT' | 'FINANCE' | 'OPERATIONS' | 'INFRA' | 'SYSTEM';
 
-const sidebarItems: { id: ProAdminTab; label: string; icon: React.ReactNode; group?: string }[] = [
-  // ── MAIN ──
-  { id: 'DASHBOARD',       label: 'Tổng quan',      icon: <BarChart3 size={16} />,  group: 'MAIN' },
+interface SidebarItem {
+  id: ProAdminTab;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+  group: AdminGroup;
+  badge?: string;
+}
 
-  // ── MARKET ──
-  { id: 'CLOUD',           label: 'Sản phẩm Cloud', icon: <Cloud size={16} />,      group: 'MARKET' },
-  { id: 'SUBMISSIONS',     label: 'Đề xuất SP',     icon: <Inbox size={16} />,      group: 'MARKET' },
-  { id: 'BLOG',            label: 'Blog',            icon: <FileText size={16} />,   group: 'MARKET' },
+const sidebarItems: SidebarItem[] = [
+  { id: 'DASHBOARD',       label: 'Command Center', icon: <BarChart3 size={16} />,  group: 'MAIN',       description: 'Tổng quan vận hành' },
 
-  // ── FINANCE ──
-  { id: 'PRICING',         label: 'Bảng giá',       icon: <DollarSign size={16} />, group: 'FINANCE' },
-  { id: 'CREDIT_PACKS',    label: 'Gói Credits',    icon: <Package size={16} />,    group: 'FINANCE' },
-  { id: 'BANKING',         label: 'Banking & QR',   icon: <CreditCard size={16} />, group: 'FINANCE' },
-  { id: 'PAYMENT_HISTORY', label: 'Lịch sử nạp',   icon: <Banknote size={16} />,   group: 'FINANCE' },
-  { id: 'ADMIN_DEPOSIT',   label: 'Nạp Credit',     icon: <Sparkles size={16} />,   group: 'FINANCE' },
+  { id: 'CLOUD',           label: 'Market Products', icon: <Cloud size={16} />,     group: 'MARKET',     description: 'CRUD, active, featured, home blocks' },
+  { id: 'MARKET_FILTERS',  label: 'Home Blocks',     icon: <LayoutGrid size={16} />, group: 'MARKET',    description: 'Sắp xếp section marketplace' },
+  { id: 'SUBMISSIONS',     label: 'Submissions',     icon: <Inbox size={16} />,     group: 'MARKET',     description: 'Duyệt đề xuất sản phẩm' },
 
-  // ── SYSTEM ──
-  { id: 'USERS',           label: 'Khách hàng',     icon: <Users size={16} />,      group: 'SYSTEM' },
-  { id: 'TASKS_PENDING',   label: 'Task Pending',   icon: <Cpu size={16} />,        group: 'SYSTEM' },
-  { id: 'WEBHOOK_LOGS',    label: 'Webhook Logs',   icon: <Webhook size={16} />,    group: 'SYSTEM' },
+  { id: 'BLOG',            label: 'Blog CMS',        icon: <FileText size={16} />,  group: 'CONTENT',    description: 'Bài viết, SEO, publish' },
+  { id: 'EXPLORER',        label: 'Explorer',        icon: <Compass size={16} />,   group: 'CONTENT',    description: 'Gallery công khai' },
 
-  // ── TOOLS ──
-  { id: 'FXFLOW',          label: 'FXFlow Engine',  icon: <Zap size={16} />,        group: 'TOOLS' },
-  { id: 'API_CLIENTS',     label: 'API Clients',    icon: <Key size={16} />,        group: 'TOOLS' },
-  { id: 'OLLAMA_SETTINGS', label: 'AI Provider',    icon: <Bot size={16} />,        group: 'TOOLS' },
+  { id: 'PRICING',         label: 'Model Pricing',   icon: <DollarSign size={16} />, group: 'FINANCE',   description: 'Matrix credits theo model' },
+  { id: 'CREDIT_PACKS',    label: 'Credit Packs',    icon: <Package size={16} />,   group: 'FINANCE',    description: 'Gói bán credits' },
+  { id: 'BANKING',         label: 'Banking & QR',    icon: <CreditCard size={16} />, group: 'FINANCE',   description: 'Tài khoản bank, VietQR' },
+  { id: 'PAYMENT_HISTORY', label: 'Payments',        icon: <Banknote size={16} />,  group: 'FINANCE',    description: 'Lịch sử nạp tiền' },
+  { id: 'ADMIN_DEPOSIT',   label: 'Manual Credits',  icon: <Sparkles size={16} />,  group: 'FINANCE',    description: 'Cộng/trừ credit thủ công' },
+
+  { id: 'USERS',           label: 'Users',           icon: <Users size={16} />,     group: 'OPERATIONS', description: 'Khách hàng và tài khoản' },
+  { id: 'TASKS_PENDING',   label: 'Tasks',           icon: <Cpu size={16} />,       group: 'OPERATIONS', description: 'Image/video/edit job queue', badge: 'LIVE' },
+  { id: 'API_CLIENTS',     label: 'API Clients',     icon: <Key size={16} />,       group: 'OPERATIONS', description: 'External API keys và usage' },
+
+  { id: 'FXFLOW',          label: 'FXFlow Engine',   icon: <Zap size={16} />,       group: 'INFRA',      description: 'Worker owner pool' },
+  { id: 'OLLAMA_SETTINGS', label: 'AI Provider',     icon: <Bot size={16} />,       group: 'INFRA',      description: 'LLM provider settings' },
+  { id: 'AI_MODELS',       label: 'AI Models',       icon: <Cpu size={16} />,       group: 'INFRA',      description: 'Model registry' },
+  { id: 'PROVIDER_TOKENS', label: 'Provider Tokens', icon: <ShieldCheck size={16} />, group: 'INFRA',    description: 'Token pool và cooldown' },
+
+  { id: 'CONFIG',          label: 'System Config',   icon: <Settings2 size={16} />, group: 'SYSTEM',     description: 'SystemSetting JSON' },
+  { id: 'LOGS',            label: 'Deploy Logs',     icon: <FileText size={16} />,  group: 'SYSTEM',     description: 'Nhật ký deploy/runtime' },
+  { id: 'WEBHOOK_LOGS',    label: 'Webhook Logs',    icon: <Webhook size={16} />,   group: 'SYSTEM',     description: 'Webhook payment raw logs' },
 ];
 
-const GROUP_LABELS: Record<string, string> = {
+const GROUP_LABELS: Record<AdminGroup, string> = {
   MAIN:    '',
-  MARKET:  'Thị trường',
+  MARKET:  'Marketplace',
+  CONTENT: 'Content',
   FINANCE: 'Tài chính',
-  SYSTEM:  'Hệ thống',
-  TOOLS:   'Công cụ kỹ thuật',
+  OPERATIONS: 'Operations',
+  INFRA:   'Infrastructure',
+  SYSTEM:  'System',
 };
 
+
+const createLocalizedString = () => ({ en: '', vi: '', ko: '', ja: '' });
+
+const createDraftSolution = (): Solution => ({
+  id: `NODE_${Date.now()}`,
+  slug: '',
+  name: createLocalizedString(),
+  category: createLocalizedString(),
+  description: createLocalizedString(),
+  problems: [],
+  industries: [],
+  models: [],
+  priceCredits: 0,
+  isFree: false,
+  imageUrl: '',
+  demoType: 'text',
+  tags: [],
+  features: [],
+  complexity: 'Standard',
+  priceReference: '',
+  isActive: true,
+  featured: false,
+  order: 0,
+  status: 'active',
+  neuralStack: [],
+  homeBlocks: [],
+});
+
+const TabLoadingFallback = () => (
+  <div className="flex min-h-[320px] items-center justify-center p-8">
+    <div className="flex items-center gap-2 rounded-lg border border-black/[0.04] bg-white px-3 py-2 text-[11px] font-bold text-slate-400 dark:border-white/[0.05] dark:bg-white/[0.03]">
+      <RefreshCw size={12} className="animate-spin text-brand-blue" />
+      Loading panel
+    </div>
+  </div>
+);
 
 const AdminCmsProPage = () => {
   const { user, logout } = useAuth();
@@ -102,14 +152,15 @@ const AdminCmsProPage = () => {
   const [homeBlocks, setHomeBlocks] = useState<HomeBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [tabQuery, setTabQuery] = useState('');
 
   // Solution Editing State
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editedItem, setEditedItem] = useState<any | null>(null);
+  const [editedItem, setEditedItem] = useState<Solution | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [solRes, configRes] = await Promise.all([
@@ -118,15 +169,18 @@ const AdminCmsProPage = () => {
       ]);
       if (solRes?.data) setRemoteSolutions(solRes.data);
       if (configRes?.success && configRes.data.marketHomeBlock) setHomeBlocks(configRes.data.marketHomeBlock);
-    } catch (error) { console.error("Fetch Error:", error); }
-    setLoading(false);
-  };
+    } catch (error) {
+      console.error("Fetch Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  useEffect(() => { fetchData(); }, [activeTab]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const isSyncedOnCloud = (slug: string) => remoteSolutions.some(r => r.slug.toLowerCase().trim() === slug.toLowerCase().trim());
 
-  const handleEdit = (sol: any) => {
+  const handleEdit = (sol: Solution) => {
     setEditingId(sol._id || sol.id);
     setEditedItem({
       ...sol,
@@ -138,7 +192,9 @@ const AdminCmsProPage = () => {
       neuralStack: sol.neuralStack || [], priceCredits: sol.priceCredits || 0,
       isFree: sol.isFree ?? false, featured: sol.featured ?? false, isActive: sol.isActive ?? true,
       order: sol.order ?? 0, status: sol.status || 'active', complexity: sol.complexity || 'Standard',
-      demoType: sol.demoType || 'text'
+      demoType: sol.demoType || 'text',
+      imageUrl: sol.imageUrl || '',
+      priceReference: sol.priceReference || '',
     });
   };
 
@@ -191,12 +247,17 @@ const AdminCmsProPage = () => {
     if (!editedItem) return;
     setIsSaving(true);
     try {
-      const existingRemote = remoteSolutions.find(r => r.slug.toLowerCase().trim() === editedItem.slug.toLowerCase().trim());
-      let res;
+      const normalizedSlug = editedItem.slug.toLowerCase().trim();
+      const existingRemote = remoteSolutions.find(r =>
+        r._id === editingId ||
+        r.id === editingId ||
+        r.slug.toLowerCase().trim() === normalizedSlug
+      );
       const isNew = !existingRemote || editingId === 'NEW';
-      if (!isNew) res = await marketApi.updateSolution(existingRemote._id || existingRemote.id, editedItem);
-      else res = await marketApi.createSolution(editedItem);
-      if (res.success || (res as any)?.data) {
+      const res = isNew
+        ? await marketApi.createSolution(editedItem)
+        : await marketApi.updateSolution(existingRemote._id || existingRemote.id, editedItem);
+      if (res.success) {
         await fetchData();
         setEditingId(null);
         setEditedItem(null);
@@ -210,22 +271,32 @@ const AdminCmsProPage = () => {
     setIsSaving(false);
   };
 
-  // Group sidebar items
-  const groupedItems = sidebarItems.reduce((acc: { group: string; items: typeof sidebarItems }[], item) => {
-    const last = acc[acc.length - 1];
-    if (last && last.group === (item.group || '')) last.items.push(item);
-    else acc.push({ group: item.group || '', items: [item] });
-    return acc;
-  }, []);
+  const filteredSidebarItems = useMemo(() => {
+    const q = tabQuery.trim().toLowerCase();
+    if (!q) return sidebarItems;
+    return sidebarItems.filter(item =>
+      item.label.toLowerCase().includes(q) ||
+      item.description.toLowerCase().includes(q) ||
+      item.id.toLowerCase().includes(q)
+    );
+  }, [tabQuery]);
 
-  const currentLabel = sidebarItems.find(i => i.id === activeTab)?.label || '';
+  // Group sidebar items
+  const groupedItems = useMemo(() => filteredSidebarItems.reduce((acc: { group: AdminGroup; items: SidebarItem[] }[], item) => {
+    const last = acc[acc.length - 1];
+    if (last && last.group === item.group) last.items.push(item);
+    else acc.push({ group: item.group, items: [item] });
+    return acc;
+  }, []), [filteredSidebarItems]);
+
+  const currentTab = sidebarItems.find(i => i.id === activeTab);
+  const currentLabel = currentTab?.label || '';
+  const activeSolutions = remoteSolutions.filter(sol => sol.isActive).length;
 
   return (
     <div className="h-screen flex bg-slate-50 dark:bg-[#050505] text-slate-900 dark:text-white font-sans overflow-hidden relative">
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-blue/[0.03] dark:bg-brand-blue/[0.05] rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-purple-500/[0.02] dark:bg-purple-500/[0.04] rounded-full blur-[100px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:28px_28px]" />
       </div>
 
       {/* ======= SIDEBAR ======= */}
@@ -238,15 +309,39 @@ const AdminCmsProPage = () => {
           {!sidebarCollapsed && (
             <div className="min-w-0">
               <p className="text-xs font-bold text-slate-900 dark:text-white truncate">Skyverses CMS</p>
-              <p className="text-[9px] text-slate-400 font-medium">Admin Panel</p>
+              <p className="text-[9px] text-slate-400 font-medium">Control Center</p>
             </div>
           )}
         </div>
 
+        {!sidebarCollapsed && (
+          <div className="shrink-0 px-3 py-3 border-b border-black/[0.04] dark:border-white/[0.04]">
+            <div className="relative">
+              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                value={tabQuery}
+                onChange={e => setTabQuery(e.target.value)}
+                placeholder="Search tabs..."
+                className="w-full h-9 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] pl-9 pr-3 text-[11px] font-semibold text-slate-700 dark:text-white outline-none focus:border-brand-blue/40"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <div className="rounded-xl bg-brand-blue/[0.06] border border-brand-blue/10 px-3 py-2">
+                <p className="text-[9px] font-bold uppercase text-slate-400">Products</p>
+                <p className="text-sm font-black text-brand-blue">{activeSolutions}/{remoteSolutions.length}</p>
+              </div>
+              <div className="rounded-xl bg-emerald-500/[0.06] border border-emerald-500/10 px-3 py-2">
+                <p className="text-[9px] font-bold uppercase text-slate-400">Blocks</p>
+                <p className="text-sm font-black text-emerald-500">{homeBlocks.length}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Nav */}
         <nav className="flex-grow overflow-y-auto py-4 px-3 space-y-1 no-scrollbar">
-          {groupedItems.map((group, gi) => (
-            <div key={gi}>
+          {groupedItems.map((group) => (
+            <div key={group.group}>
               {group.group && GROUP_LABELS[group.group] && !sidebarCollapsed && (
                 <p className="text-[9px] font-bold uppercase text-slate-400 tracking-wider px-2.5 pt-4 pb-1.5">{GROUP_LABELS[group.group]}</p>
               )}
@@ -264,7 +359,15 @@ const AdminCmsProPage = () => {
                     }`}
                 >
                   <span className="shrink-0">{item.icon}</span>
-                  {!sidebarCollapsed && <span className="text-[11px] font-semibold truncate">{item.label}</span>}
+                  {!sidebarCollapsed && (
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-2">
+                        <span className="text-[11px] font-bold truncate">{item.label}</span>
+                        {item.badge && <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 text-[8px] font-black">{item.badge}</span>}
+                      </span>
+                      <span className={`block text-[9px] truncate ${activeTab === item.id ? 'text-white/70' : 'text-slate-400 dark:text-gray-500'}`}>{item.description}</span>
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -282,7 +385,7 @@ const AdminCmsProPage = () => {
             {!sidebarCollapsed && <span className="text-[12px] font-semibold">Thu gọn</span>}
           </button>
           {user && (
-            <button onClick={logout} title="Đăng xuất" className={`w-full flex items-center gap-3 rounded-xl text-slate-500 dark:text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all ${sidebarCollapsed ? 'justify-center p-3' : 'px-3 py-2.5'}`}>
+            <button onClick={handleLogout} title="Đăng xuất" className={`w-full flex items-center gap-3 rounded-xl text-slate-500 dark:text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all ${sidebarCollapsed ? 'justify-center p-3' : 'px-3 py-2.5'}`}>
               <LogOut size={15} />
               {!sidebarCollapsed && <span className="text-[12px] font-semibold">Đăng xuất</span>}
             </button>
@@ -293,18 +396,32 @@ const AdminCmsProPage = () => {
       {/* ======= MAIN ======= */}
       <main className="relative z-10 flex-grow flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
-        <header className="shrink-0 h-16 flex items-center justify-between px-8 bg-white/60 dark:bg-[#0a0a0c]/60 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.04]">
-          <div className="flex items-center gap-3">
-            <h1 className="text-sm font-bold text-slate-900 dark:text-white">{currentLabel}</h1>
-            <span className="text-[9px] text-slate-400 font-medium bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded">{activeTab}</span>
+        <header className="shrink-0 h-16 flex items-center justify-between px-5 lg:px-8 bg-white/70 dark:bg-[#0a0a0c]/70 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.04]">
+          <div className="min-w-0">
+            <div className="flex items-center gap-3">
+              <h1 className="text-sm font-bold text-slate-900 dark:text-white truncate">{currentLabel}</h1>
+              <span className="text-[9px] text-slate-400 font-medium bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded">{activeTab}</span>
+            </div>
+            {currentTab?.description && (
+              <p className="text-[11px] text-slate-400 mt-0.5 truncate">{currentTab.description}</p>
+            )}
           </div>
           <div className="flex items-center gap-3">
+            {(activeTab === 'CLOUD' || activeTab === 'LOGS') && (
+              <button
+                onClick={fetchData}
+                disabled={loading}
+                className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-[10px] font-bold text-slate-500 dark:text-gray-300 hover:text-brand-blue transition-colors disabled:opacity-50"
+              >
+                <RefreshCw size={12} className={loading ? 'animate-spin' : ''} /> Sync
+              </button>
+            )}
             {activeTab === 'CLOUD' && (
               <button
-                onClick={() => handleEdit({ id: 'NODE_' + Date.now(), slug: '', name: { en: '', vi: '', ko: '', ja: '' }, category: { en: '', vi: '', ko: '', ja: '' }, description: { en: '', vi: '', ko: '', ja: '' }, problems: [], industries: [], models: [], priceCredits: 0, isFree: false, imageUrl: '', demoType: 'text', tags: [], features: [], complexity: 'Standard', priceReference: '', isActive: true, neuralStack: [], homeBlocks: [] })}
-                className="flex items-center gap-2 px-4 py-1.5 bg-brand-blue text-white rounded-md text-[10px] font-bold hover:bg-brand-blue transition-colors shadow-sm"
+                onClick={() => handleEdit(createDraftSolution())}
+                className="flex items-center gap-2 px-4 py-1.5 bg-brand-blue text-white rounded-lg text-[10px] font-bold hover:brightness-110 transition-colors shadow-sm"
               >
-                <Plus size={12} /> Thêm giải pháp
+                <Plus size={12} /> New Product
               </button>
             )}
             {user && (
@@ -325,51 +442,54 @@ const AdminCmsProPage = () => {
 
         {/* Content */}
         <div className="flex-grow overflow-y-auto no-scrollbar">
-          <AnimatePresence mode="wait">
-            {activeTab === 'DASHBOARD' && <DashboardTab key="dashboard" />}
-            {activeTab === 'EXPLORER' && <ExplorerTab key="explorer" />}
-            {activeTab === 'MARKET_FILTERS' && <MarketFiltersTab key="market_filters" />}
-            {activeTab === 'CREDIT_PACKS' && <CreditPacksTab key="packs" />}
-            {activeTab === 'BANKING' && <BankingTab key="banking" />}
-            {activeTab === 'PRICING' && <PricingTab key="pricing" />}
-            {activeTab === 'AI_MODELS' && <AIModelsTab key="ai_models" />}
-            {activeTab === 'OLLAMA_SETTINGS' && <OllamaSettingsTab key="ollama_settings" />}
-            {activeTab === 'PROVIDER_TOKENS' && <ProviderTokensTab key="provider_tokens" />}
-            {activeTab === 'LOGS' && <LogsTab key="logs" remoteSolutions={remoteSolutions} />}
-            {activeTab === 'USERS' && <UsersTab key="users" loading={loading} response={null} onParamsChange={() => { }} />}
-            {activeTab === 'PAYMENT_HISTORY' && <PaymentHistoryTab key="payment_history" />}
-            {activeTab === 'WEBHOOK_LOGS' && <WebhookLogsTab key="webhook_logs" />}
-            {activeTab === 'CONFIG' && <ConfigurationTab key="config" />}
-            {activeTab === 'FXFLOW' && <FxflowTab key="fxflow" />}
-            {activeTab === 'API_CLIENTS' && <ApiClientsTab key="api_clients" />}
-            {activeTab === 'PRODUCTS' && <ProductsTab key="products" />}
-            {activeTab === 'SUBMISSIONS' && <SubmissionsTab key="submissions" />}
-            {activeTab === 'ADMIN_DEPOSIT' && <AdminDepositTab key="admin_deposit" />}
-            {activeTab === 'BLOG' && <BlogTab key="blog" />}
-            {activeTab === 'TASKS_PENDING' && <TasksPendingTab key="tasks_pending" />}
-            {activeTab === 'CLOUD' && (
-              <NodeRegistryTab
-                key={activeTab}
-                activeTab={activeTab}
-                solutions={remoteSolutions}
-                onEdit={handleEdit} onDelete={handleDelete}
-                onToggleActive={handleToggleActive}
-                onUpdateHomeBlocks={handleQuickUpdateHomeBlocks}
-                isSyncedOnCloud={isSyncedOnCloud}
-                onRefresh={fetchData}
-              />
-            )}
-          </AnimatePresence>
+          <React.Suspense fallback={<TabLoadingFallback />}>
+            <AnimatePresence mode="wait">
+              {activeTab === 'DASHBOARD' && <DashboardTab key="dashboard" />}
+              {activeTab === 'EXPLORER' && <ExplorerTab key="explorer" />}
+              {activeTab === 'MARKET_FILTERS' && <MarketFiltersTab key="market_filters" />}
+              {activeTab === 'CREDIT_PACKS' && <CreditPacksTab key="packs" />}
+              {activeTab === 'BANKING' && <BankingTab key="banking" />}
+              {activeTab === 'PRICING' && <PricingTab key="pricing" />}
+              {activeTab === 'AI_MODELS' && <AIModelsTab key="ai_models" />}
+              {activeTab === 'OLLAMA_SETTINGS' && <OllamaSettingsTab key="ollama_settings" />}
+              {activeTab === 'PROVIDER_TOKENS' && <ProviderTokensTab key="provider_tokens" />}
+              {activeTab === 'LOGS' && <LogsTab key="logs" remoteSolutions={remoteSolutions} />}
+              {activeTab === 'USERS' && <UsersTab key="users" loading={loading} response={null} onParamsChange={() => { }} />}
+              {activeTab === 'PAYMENT_HISTORY' && <PaymentHistoryTab key="payment_history" />}
+              {activeTab === 'WEBHOOK_LOGS' && <WebhookLogsTab key="webhook_logs" />}
+              {activeTab === 'CONFIG' && <ConfigurationTab key="config" />}
+              {activeTab === 'FXFLOW' && <FxflowTab key="fxflow" />}
+              {activeTab === 'API_CLIENTS' && <ApiClientsTab key="api_clients" />}
+              {activeTab === 'SUBMISSIONS' && <SubmissionsTab key="submissions" />}
+              {activeTab === 'ADMIN_DEPOSIT' && <AdminDepositTab key="admin_deposit" />}
+              {activeTab === 'BLOG' && <BlogTab key="blog" />}
+              {activeTab === 'TASKS_PENDING' && <TasksPendingTab key="tasks_pending" />}
+              {activeTab === 'CLOUD' && (
+                <NodeRegistryTab
+                  key={activeTab}
+                  activeTab={activeTab}
+                  solutions={remoteSolutions}
+                  onEdit={handleEdit} onDelete={handleDelete}
+                  onToggleActive={handleToggleActive}
+                  onUpdateHomeBlocks={handleQuickUpdateHomeBlocks}
+                  isSyncedOnCloud={isSyncedOnCloud}
+                  onRefresh={fetchData}
+                />
+              )}
+            </AnimatePresence>
+          </React.Suspense>
         </div>
       </main>
 
       {/* ======= SOLUTION DRAWER ======= */}
       <AnimatePresence>
         {editedItem && (
-          <SolutionDrawer
-            editingId={editingId} editedItem={editedItem} setEditedItem={setEditedItem}
-            isSaving={isSaving} onClose={() => setEditedItem(null)} onSave={handleSaveSolution}
-          />
+          <React.Suspense fallback={null}>
+            <SolutionDrawer
+              editingId={editingId} editedItem={editedItem} setEditedItem={setEditedItem}
+              isSaving={isSaving} onClose={() => setEditedItem(null)} onSave={handleSaveSolution}
+            />
+          </React.Suspense>
         )}
       </AnimatePresence>
     </div>
