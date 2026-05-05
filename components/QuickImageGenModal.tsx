@@ -350,7 +350,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                       </div>
                     </div>
 
-                    <h3 className="text-[19px] font-black text-white text-center leading-tight mb-2 tracking-tight">
+                    <h3 className="text-[19px] font-bold text-white text-center leading-tight mb-2 tracking-tight">
                       Tạo ảnh AI miễn phí
                     </h3>
                     <p className="text-[12px] text-white/40 text-center leading-relaxed mb-1">
@@ -542,7 +542,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                     <Wand2 size={19} style={{ color: '#a855f7' }} />
                   </div>
                   <div>
-                    <h3 className="text-[15px] font-black text-white tracking-tight">AI Image Studio</h3>
+                    <h3 className="text-[15px] font-bold text-white tracking-tight">AI Image Studio</h3>
                     {freeImageRemaining > 0 ? (
                       <div className="flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 6px rgba(52,211,153,0.8)' }} />
@@ -780,12 +780,12 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                           {freeImageRemaining > 0 ? (
                             <>
                               <Gift size={11} className="text-emerald-400" />
-                              <span className="text-[11px] font-black text-emerald-400">MIỄN PHÍ</span>
+                              <span className="text-[11px] font-bold text-emerald-400">MIỄN PHÍ</span>
                             </>
                           ) : (
                             <>
                               <Zap size={11} fill="currentColor" className="text-amber-400" />
-                              <span className="text-[11px] font-black text-amber-400">{currentUnitCost} Credits</span>
+                              <span className="text-[11px] font-bold text-amber-400">{currentUnitCost} Credits</span>
                             </>
                           )}
                         </div>
@@ -801,7 +801,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                         whileTap={{ scale: 0.97 }}
                         onClick={handleGenerate}
                         disabled={isGenerating || !prompt.trim()}
-                        className="q-gen-btn relative flex items-center gap-2 px-6 py-3 rounded-xl text-[12px] font-black text-white overflow-hidden disabled:opacity-30 transition-all"
+                        className="q-gen-btn relative flex items-center gap-2 px-6 py-3 rounded-xl text-[12px] font-bold text-white overflow-hidden disabled:opacity-30 transition-all"
                         style={{
                           background: isGenerating || !prompt.trim()
                             ? 'rgba(139,92,246,0.2)'

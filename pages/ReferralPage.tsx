@@ -99,7 +99,7 @@ const ReferralPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#0a0d14] text-slate-900 dark:text-white transition-colors duration-500 overflow-x-hidden pt-28 md:pt-32 pb-32">
+    <div className="min-h-screen bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white transition-colors duration-500 overflow-x-hidden pt-28 md:pt-32 pb-32">
 
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -241,7 +241,7 @@ const ReferralPage: React.FC = () => {
               <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20 flex items-center justify-center relative">
                 <Crown size={48} className="text-amber-400" />
                 <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                  <span className="text-[11px] font-black text-white">5%</span>
+                  <span className="text-[11px] font-bold text-white">5%</span>
                 </div>
               </div>
               <span className="text-[10px] font-semibold text-white/30 uppercase tracking-widest">Commission</span>

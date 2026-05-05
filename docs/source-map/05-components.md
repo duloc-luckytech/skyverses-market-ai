@@ -1,4 +1,17 @@
-# Components — `components/` (325 files)
+# Components — `components/` (330 files)
+
+## Atlas design-system primitives — `components/atlas/`
+
+> Atlas Cloud-inspired design system (purple #7036F0, 4px radius, Manrope font). Use these in new pages, gradually migrate existing.
+
+| File | Role |
+|------|------|
+| `AtlasButton.tsx` | Polymorphic CTA — variants: primary (purple gradient) / secondary / outline / ghost / danger; sizes sm/md/lg; renders `<Link>` if `to`, `<a>` if `href`, else `<button>` |
+| `AtlasCard.tsx` | Surface — variants: default / soft / outlined / gradient / glass; padding sm/md/lg; optional hover-lift |
+| `AtlasSection.tsx` | Page section wrapper — width narrow/default/wide/full, tone page/soft/panel/gradient |
+| `AtlasPill.tsx` | Badge — tones purple/orange/success/info/warning/neutral |
+| `AtlasHero.tsx` | Hero pattern — eyebrow + title + subtitle + actions slots, decorative purple/orange blobs, stagger reveal |
+| `index.ts` | Barrel exports |
 
 ## Shell / Global (top-level)
 

@@ -42,7 +42,7 @@ const VoiceLibraryModal: React.FC<VoiceLibraryModalProps> = ({ isOpen, onClose, 
            {/* LEFT NAV: PROVIDERS */}
            <div className="w-[300px] border-r border-white/5 flex flex-col shrink-0 bg-black/40">
               <div className="p-8 border-b border-white/5">
-                 <h2 className="text-2xl font-black uppercase italic tracking-tighter">Thư viện giọng</h2>
+                 <h2 className="text-2xl font-bold uppercase italic tracking-tighter">Thư viện giọng</h2>
                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">Chọn nhà cung cấp giọng nói</p>
               </div>
               <div className="p-4 space-y-3">
@@ -56,7 +56,7 @@ const VoiceLibraryModal: React.FC<VoiceLibraryModalProps> = ({ isOpen, onClose, 
                     >
                        <div className="flex items-center gap-4 mb-3">
                           <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${activeProvider === p.id ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 group-hover:text-white'}`}>{p.icon}</div>
-                          <span className={`text-lg font-black italic tracking-tighter ${activeProvider === p.id ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>{p.id}</span>
+                          <span className={`text-lg font-bold italic tracking-tighter ${activeProvider === p.id ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>{p.id}</span>
                        </div>
                        <p className="text-[10px] font-bold text-gray-500 leading-relaxed uppercase">{p.desc}</p>
                     </button>
@@ -71,13 +71,13 @@ const VoiceLibraryModal: React.FC<VoiceLibraryModalProps> = ({ isOpen, onClose, 
                  <div className="flex bg-white/5 p-1 rounded-lg border border-white/10">
                     <button 
                       onClick={() => setActiveTab('EXPLORE')}
-                      className={`flex items-center gap-3 px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all rounded-md ${activeTab === 'EXPLORE' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}
+                      className={`flex items-center gap-3 px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-all rounded-md ${activeTab === 'EXPLORE' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}
                     >
                        <Globe size={14}/> Khám phá (Hệ thống)
                     </button>
                     <button 
                       onClick={() => setActiveTab('DESIGN')}
-                      className={`flex items-center gap-3 px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all rounded-md ${activeTab === 'DESIGN' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}
+                      className={`flex items-center gap-3 px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-all rounded-md ${activeTab === 'DESIGN' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}
                     >
                        <User size={14}/> Voice Design
                     </button>
@@ -85,7 +85,7 @@ const VoiceLibraryModal: React.FC<VoiceLibraryModalProps> = ({ isOpen, onClose, 
 
                  <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-md">
-                       <span className="text-[9px] font-black text-green-500 uppercase">Sẵn sàng</span>
+                       <span className="text-[9px] font-bold text-green-500 uppercase">Sẵn sàng</span>
                     </div>
                     <button className="p-2 text-gray-500 hover:text-white transition-colors"><RefreshCw size={20}/></button>
                     <button onClick={onClose} className="p-2 text-gray-500 hover:text-red-500 transition-colors ml-4"><X size={24}/></button>
@@ -111,11 +111,11 @@ const VoiceLibraryModal: React.FC<VoiceLibraryModalProps> = ({ isOpen, onClose, 
                           <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity"><Volume2 size={80}/></div>
                           <div className="flex justify-between items-start mb-6">
                              <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-purple-500 group-hover:bg-purple-500/10 transition-all shadow-inner"><Play size={24} fill="currentColor" className="ml-1"/></div>
-                             <span className="text-[8px] font-black uppercase px-2 py-1 bg-black/40 border border-white/10 text-gray-500 rounded-sm">{v.gender}</span>
+                             <span className="text-[8px] font-bold uppercase px-2 py-1 bg-black/40 border border-white/10 text-gray-500 rounded-sm">{v.gender}</span>
                           </div>
-                          <h4 className="text-xl font-black uppercase italic tracking-tighter mb-2">{v.name}</h4>
+                          <h4 className="text-xl font-bold uppercase italic tracking-tighter mb-2">{v.name}</h4>
                           <div className="flex flex-wrap gap-2">
-                             {v.tags.map(t => <span key={t} className="text-[7px] font-black uppercase tracking-widest text-gray-500 border border-white/5 px-1.5 py-0.5 rounded-sm">{t}</span>)}
+                             {v.tags.map(t => <span key={t} className="text-[7px] font-bold uppercase tracking-widest text-gray-500 border border-white/5 px-1.5 py-0.5 rounded-sm">{t}</span>)}
                           </div>
                        </button>
                     ))}
@@ -124,7 +124,7 @@ const VoiceLibraryModal: React.FC<VoiceLibraryModalProps> = ({ isOpen, onClose, 
                  {VOICES.filter(v => v.type === activeProvider).length === 0 && (
                    <div className="py-40 flex flex-col items-center justify-center text-center space-y-6 opacity-20">
                       <Sparkles size={100} strokeWidth={1} />
-                      <p className="text-lg font-black uppercase tracking-[0.5em] italic">Không tìm thấy giọng trong danh mục này.</p>
+                      <p className="text-lg font-bold uppercase tracking-[0.5em] italic">Không tìm thấy giọng trong danh mục này.</p>
                    </div>
                  )}
               </div>

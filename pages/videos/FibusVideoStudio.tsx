@@ -239,7 +239,7 @@ const FibusVideoStudio: React.FC = () => {
           <motion.h1
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 1, ease: [0.22, 1, 0.36, 1] as const }}
-            className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.05]"
+            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.05]"
           >
             Tạo{' '}
             <span className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">
@@ -292,7 +292,7 @@ const FibusVideoStudio: React.FC = () => {
           >
             {STATS.map((s, i) => (
               <div key={i} className="text-center">
-                <div className="text-2xl md:text-3xl font-black text-white">{s.value}</div>
+                <div className="text-2xl md:text-3xl font-bold text-white">{s.value}</div>
                 <div className="text-[10px] font-semibold text-[#94a3b8] uppercase tracking-wider mt-1">{s.label}</div>
               </div>
             ))}
@@ -337,7 +337,7 @@ const FibusVideoStudio: React.FC = () => {
               <Zap size={11} />
               TÍNH NĂNG
             </div>
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">
               Mọi thứ bạn cần,{' '}
               <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
                 trong một ứng dụng
@@ -384,7 +384,7 @@ const FibusVideoStudio: React.FC = () => {
               <Video size={11} />
               SHOWCASE
             </div>
-            <h2 className="text-4xl lg:text-6xl font-black tracking-tight">
+            <h2 className="text-4xl lg:text-6xl font-bold tracking-tight">
               Tác phẩm{' '}
               <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">AI</span>
             </h2>
@@ -407,7 +407,7 @@ const FibusVideoStudio: React.FC = () => {
               <Zap size={11} />
               HƯỚNG DẪN
             </div>
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">
               Bắt đầu trong{' '}
               <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">4 bước</span>
             </h2>
@@ -454,7 +454,7 @@ const FibusVideoStudio: React.FC = () => {
               <Shield size={11} />
               BẢNG GIÁ
             </div>
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">
               Chọn gói{' '}
               <span className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">phù hợp</span>
             </h2>
@@ -481,7 +481,7 @@ const FibusVideoStudio: React.FC = () => {
                   </div>
                 )}
 
-                <h3 className="text-xl font-black text-white/90 mb-6">{plan.name}</h3>
+                <h3 className="text-xl font-bold text-white/90 mb-6">{plan.name}</h3>
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feat, j) => (
                     <li key={j} className="flex items-start gap-3">
@@ -521,7 +521,7 @@ const FibusVideoStudio: React.FC = () => {
               style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1))', border: '1px solid rgba(99,102,241,0.2)' }}>
               <Video size={32} />
             </div>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tight leading-[0.95]">
+            <h2 className="text-5xl md:text-7xl font-bold tracking-tight leading-[0.95]">
               TẠO VIDEO AI
               <br />
               <span className="bg-gradient-to-r from-purple-400 via-indigo-400 to-pink-400 bg-clip-text text-transparent">

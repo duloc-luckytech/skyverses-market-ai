@@ -39,7 +39,7 @@ const AppInterfacePage = () => {
                 <User size={32} />
              </div>
              <div>
-                <h3 className="text-xl font-black uppercase italic tracking-tighter">{user?.name || 'Xvirion'}</h3>
+                <h3 className="text-xl font-bold uppercase italic tracking-tighter">{user?.name || 'Xvirion'}</h3>
                 <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">@{user?.email?.split('@')[0] || 'xvirion25749'}</p>
              </div>
           </div>
@@ -48,9 +48,9 @@ const AppInterfacePage = () => {
              <div className="text-center space-y-1">
                 <div className="flex items-center gap-3 text-yellow-500">
                    <Zap size={18} fill="currentColor" />
-                   <span className="text-2xl font-black italic tracking-tighter">{credits.toLocaleString()}</span>
+                   <span className="text-2xl font-bold italic tracking-tighter">{credits.toLocaleString()}</span>
                 </div>
-                <p className="text-[9px] font-black uppercase text-gray-500 tracking-widest">AI Credits</p>
+                <p className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">AI Credits</p>
              </div>
              
              <div className="h-12 w-px bg-white/5"></div>
@@ -58,9 +58,9 @@ const AppInterfacePage = () => {
              <div className="text-center space-y-1">
                 <div className="flex items-center gap-3 text-purple-500">
                    <Download size={18} />
-                   <span className="text-2xl font-black italic tracking-tighter">0 / 5</span>
+                   <span className="text-2xl font-bold italic tracking-tighter">0 / 5</span>
                 </div>
-                <p className="text-[9px] font-black uppercase text-gray-500 tracking-widest">Limit Download Sora</p>
+                <p className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">Limit Download Sora</p>
              </div>
           </div>
 
@@ -81,7 +81,7 @@ const AppInterfacePage = () => {
              placeholder="https://sora.chatgpt.com/p/s_..."
              className="flex-grow bg-[#0d1117] border border-white/5 rounded-2xl px-8 py-5 text-sm font-medium focus:ring-1 focus:ring-brand-blue outline-none transition-all placeholder:text-gray-700"
            />
-           <button className="bg-brand-blue text-white px-12 py-5 rounded-2xl text-sm font-black uppercase tracking-widest shadow-xl hover:brightness-110 active:scale-95 transition-all">
+           <button className="bg-brand-blue text-white px-12 py-5 rounded-2xl text-sm font-bold uppercase tracking-widest shadow-xl hover:brightness-110 active:scale-95 transition-all">
               Lấy Link Download
            </button>
         </motion.div>
@@ -119,7 +119,7 @@ const AppInterfacePage = () => {
 const InfoCard = ({ title, features, isEn = false }: any) => (
   <div className="bg-[#161b22] border border-white/5 p-10 rounded-[2.5rem] space-y-8 shadow-xl">
      <div className="space-y-4">
-        <h2 className="text-2xl font-black italic tracking-tighter text-white">🌟 {title}</h2>
+        <h2 className="text-2xl font-bold italic tracking-tighter text-white">🌟 {title}</h2>
         <p className="text-gray-400 text-sm font-medium leading-relaxed italic">
            {isEn 
              ? '♦ Experience the smoothest and fastest way to download Sora videos. Get original quality, logo-free videos ready for any use, all with a single click.'

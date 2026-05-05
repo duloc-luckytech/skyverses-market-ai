@@ -417,7 +417,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
         const lang = match?.[1] || 'code';
         const code = match?.[2] || '';
         return (
-          <div key={idx} className="my-2 rounded-lg overflow-hidden border border-black/[0.06] dark:border-white/[0.06] bg-[#f8f9fa] dark:bg-[#1a1f2b]">
+          <div key={idx} className="my-2 rounded-lg overflow-hidden border border-black/[0.06] dark:border-white/[0.06] bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-panel)]">
             <div className="flex items-center justify-between px-3 py-1.5 bg-black/[0.02] dark:bg-white/[0.03] border-b border-black/[0.04] dark:border-white/[0.04]">
               <span className="text-[8px] font-bold uppercase text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
                 <Terminal size={9} /> {lang}
@@ -466,14 +466,14 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
           className={`relative w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
             isOpen 
               ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-2xl rotate-90' 
-              : 'bg-white dark:bg-[#13171f] text-brand-blue shadow-xl hover:shadow-2xl'
+              : 'bg-white dark:bg-[var(--atlas-bg-panel)] text-brand-blue shadow-xl hover:shadow-2xl'
           }`}
         >
           {/* Animated border ring */}
           {!isOpen && (
             <>
               <div className="absolute -inset-[3px] rounded-2xl animate-[ai-orbit_3s_linear_infinite]" style={{
-                background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, #0090ff 300deg, #a855f7 330deg, transparent 360deg)',
+                background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, #7036F0 300deg, #a855f7 330deg, transparent 360deg)',
                 mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
                 WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
               }} />
@@ -525,7 +525,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
               className="fixed bottom-[9rem] right-6 md:right-8 w-[calc(100vw-3rem)] md:w-[420px] h-[560px] max-h-[75dvh] flex flex-col overflow-hidden z-[700] rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_80px_rgba(0,0,0,0.5)]"
             >
             {/* Glass background */}
-            <div className="absolute inset-0 bg-white/95 dark:bg-[#13171f]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] rounded-2xl" />
+            <div className="absolute inset-0 bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] rounded-2xl" />
 
             {/* ─── HEADER ─── */}
             <div className="relative z-10 px-5 py-4 flex items-center justify-between shrink-0 border-b border-black/[0.04] dark:border-white/[0.04]">
@@ -887,7 +887,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-[#13171f] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-[320px] shadow-2xl text-center space-y-4"
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-[320px] shadow-2xl text-center space-y-4"
             >
               <div className="w-12 h-12 mx-auto rounded-xl bg-red-500/10 flex items-center justify-center">
                 <AlertTriangle size={22} className="text-red-500" />

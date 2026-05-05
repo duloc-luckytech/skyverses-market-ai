@@ -278,7 +278,7 @@ const GlobalEventBonusModal: React.FC = () => {
                       </div>
                       {/* Badge */}
                       <div className="absolute top-3 right-3 z-10">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[8.5px] font-black uppercase tracking-[.18em]"
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[8.5px] font-bold uppercase tracking-[.18em]"
                           style={{ background: 'rgba(7,5,15,.7)', border: '1px solid rgba(139,92,246,.4)', color: '#c4b5fd', backdropFilter: 'blur(8px)' }}>
                           <Sparkles size={8} fill="currentColor" /> AI Generated
                         </span>
@@ -290,7 +290,7 @@ const GlobalEventBonusModal: React.FC = () => {
 
                     {/* Content */}
                     <div className="px-6 pt-3 pb-2">
-                      <h2 className="text-[22px] font-black text-white leading-tight mb-1.5" style={{ letterSpacing: '-0.02em' }}>
+                      <h2 className="text-[22px] font-bold text-white leading-tight mb-1.5" style={{ letterSpacing: '-0.02em' }}>
                         Tạo ảnh AI đẹp
                         <br />
                         <span style={{
@@ -306,7 +306,7 @@ const GlobalEventBonusModal: React.FC = () => {
 
                       {/* Hot new models strip */}
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="shrink-0 text-[8px] font-black uppercase tracking-widest text-white/25">Mới nhất</span>
+                        <span className="shrink-0 text-[8px] font-bold uppercase tracking-widest text-white/25">Mới nhất</span>
                         <div className="flex items-center gap-1.5">
                           {[
                             { key: 'seedance', name: 'Seedance' },
@@ -352,7 +352,7 @@ const GlobalEventBonusModal: React.FC = () => {
                     <div className="px-6 pb-6">
                       <motion.button whileHover={{ scale: 1.025, y: -1 }} whileTap={{ scale: .97 }}
                         onClick={() => setStep(1)}
-                        className="group w-full relative inline-flex items-center justify-center gap-2 py-[14px] rounded-2xl text-[13px] font-black text-white overflow-hidden"
+                        className="group w-full relative inline-flex items-center justify-center gap-2 py-[14px] rounded-2xl text-[13px] font-bold text-white overflow-hidden"
                         style={{ background: 'linear-gradient(135deg,#7c3aed,#9333ea,#a78bfa)', boxShadow: '0 8px 30px rgba(139,92,246,.5),0 0 0 1px rgba(255,255,255,.1)', animation: 'ev-pulse 2.5s ease-in-out infinite' }}>
                         <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                           style={{ background: 'linear-gradient(135deg,#8b5cf6,#a78bfa,#c4b5fd)' }} />
@@ -389,11 +389,11 @@ const GlobalEventBonusModal: React.FC = () => {
 
                       {/* Badges */}
                       <div className="flex items-center justify-center gap-2 mb-4">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[.2em]"
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-[.2em]"
                           style={{ background: 'rgba(239,68,68,.12)', border: '1px solid rgba(239,68,68,.3)', color: '#f87171' }}>
                           <Flame size={9} fill="currentColor" /> Có hạn
                         </span>
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[.2em]"
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-[.2em]"
                           style={{ background: 'rgba(139,92,246,.15)', border: '1px solid rgba(139,92,246,.3)', color: '#a78bfa' }}>
                           <Gift size={9} /> Welcome Bonus
                         </span>
@@ -402,7 +402,7 @@ const GlobalEventBonusModal: React.FC = () => {
                       {/* Big numbers */}
                       <div className="flex items-center justify-center gap-5 mb-3">
                         <div className="text-center">
-                          <div className="text-[58px] font-black leading-none" style={{
+                          <div className="text-[58px] font-bold leading-none" style={{
                             background: 'linear-gradient(135deg,#a78bfa,#c4b5fd)',
                             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
                             letterSpacing: '-0.05em',
@@ -411,7 +411,7 @@ const GlobalEventBonusModal: React.FC = () => {
                         </div>
                         <div className="text-white/15 text-2xl font-thin pb-5">+</div>
                         <div className="text-center">
-                          <div className="text-[58px] font-black leading-none" style={{
+                          <div className="text-[58px] font-bold leading-none" style={{
                             background: 'linear-gradient(135deg,#fbbf24,#fb923c)',
                             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
                             letterSpacing: '-0.05em',
@@ -467,7 +467,7 @@ const GlobalEventBonusModal: React.FC = () => {
                     <div className="px-6 pb-6 pt-3">
                       <motion.button whileHover={{ scale: 1.025, y: -1 }} whileTap={{ scale: .97 }}
                         onClick={handleCTA}
-                        className="group w-full relative inline-flex items-center justify-center gap-2 py-[14px] rounded-2xl text-[13px] font-black text-white overflow-hidden"
+                        className="group w-full relative inline-flex items-center justify-center gap-2 py-[14px] rounded-2xl text-[13px] font-bold text-white overflow-hidden"
                         style={{ background: 'linear-gradient(135deg,#7c3aed,#9333ea,#a78bfa)', boxShadow: '0 8px 30px rgba(139,92,246,.45),0 0 0 1px rgba(255,255,255,.1)' }}>
                         <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                           style={{ background: 'linear-gradient(135deg,#8b5cf6,#fbbf24,#fb923c)' }} />

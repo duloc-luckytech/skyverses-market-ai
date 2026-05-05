@@ -45,7 +45,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         ? 'border-rose-500/40 bg-rose-500/5'
         : isError
           ? 'border-red-500/20 bg-red-900/5 hover:border-red-500/30'
-          : 'border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#1a1f2b] hover:border-black/10 dark:hover:border-white/10'
+          : 'border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[var(--atlas-bg-panel)] hover:border-black/10 dark:hover:border-white/10'
         }`}
       onClick={() => displayUrl ? onFullscreen(displayUrl) : null}
     >
@@ -70,7 +70,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/60 backdrop-blur-sm z-10 p-6 text-center">
             <AlertCircle size={36} className="text-red-500/50" />
             <div className="space-y-1">
-              <p className="text-[11px] font-black uppercase tracking-widest text-red-500">LỖI TỔNG HỢP</p>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-red-500">LỖI TỔNG HỢP</p>
               <p className="text-[9px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-tighter">Vui lòng kiểm tra lại kịch bản</p>
             </div>
           </div>
@@ -83,7 +83,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center bg-red-500/5 text-red-500/40 gap-2">
             <AlertCircle size={24} />
-            <span className="text-[8px] font-black uppercase">Lỗi hệ thống</span>
+            <span className="text-[8px] font-bold uppercase">Lỗi hệ thống</span>
           </div>
         )}
 
@@ -95,7 +95,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
               </div>
             ))}
             {res.references.length > 2 && (
-              <div className="w-8 h-8 rounded-lg border border-white/40 shadow-2xl bg-black/60 backdrop-blur-md flex items-center justify-center text-[8px] font-black text-white">
+              <div className="w-8 h-8 rounded-lg border border-white/40 shadow-2xl bg-black/60 backdrop-blur-md flex items-center justify-center text-[8px] font-bold text-white">
                 +{res.references.length - 2}
               </div>
             )}
@@ -104,7 +104,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
 
         {!isProcessing && !isError && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            <span className="bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[8px] font-black text-white/80 border border-white/10 uppercase tracking-widest">
+            <span className="bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[8px] font-bold text-white/80 border border-white/10 uppercase tracking-widest">
               {res.aspectRatio}
             </span>
           </div>
@@ -122,7 +122,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
             {upscaleInfo.status === 'processing' && <Loader2 size={10} className="animate-spin" />}
             {upscaleInfo.status === 'done' && <ArrowUpCircle size={10} />}
             {upscaleInfo.status === 'error' && <AlertCircle size={10} />}
-            <span className="text-[8px] font-black uppercase tracking-wider">
+            <span className="text-[8px] font-bold uppercase tracking-wider">
               {upscaleInfo.status === 'processing' ? `↑ ${upscaleInfo.resolution}` : upscaleInfo.status === 'done' ? `↑ ${upscaleInfo.resolution} ✓` : `↑ ${upscaleInfo.resolution} ✗`}
             </span>
           </div>
@@ -166,7 +166,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
                 <div className="flex items-center bg-white/90 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={() => onUpscale(res.id, '2K')}
-                    className="px-2 py-2 text-[9px] font-black text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
+                    className="px-2 py-2 text-[9px] font-bold text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
                     title="Upscale 2K"
                   >
                     2K
@@ -174,7 +174,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
                   <div className="w-px h-4 bg-purple-200" />
                   <button
                     onClick={() => onUpscale(res.id, '4K')}
-                    className="px-2 py-2 text-[9px] font-black text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
+                    className="px-2 py-2 text-[9px] font-bold text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
                     title="Upscale 4K"
                   >
                     4K
@@ -202,14 +202,14 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
               className="w-full py-3 bg-rose-500 text-white rounded-xl shadow-2xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95"
             >
               <RefreshCw size={14} />
-              <span className="text-[10px] font-black uppercase">Tạo lại</span>
+              <span className="text-[10px] font-bold uppercase">Tạo lại</span>
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(res.id); }}
               className="w-full py-3 bg-red-600 text-white rounded-xl shadow-2xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95"
             >
               <Trash2 size={14} />
-              <span className="text-[10px] font-black uppercase">Xóa bản ghi</span>
+              <span className="text-[10px] font-bold uppercase">Xóa bản ghi</span>
             </button>
           </div>
         )}
@@ -252,7 +252,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
             </div>
           </div>
 
-          <div className={`flex items-center gap-1 text-[10px] font-black italic ${res.isRefunded ? 'text-emerald-500' : isError ? 'text-red-500' : 'text-orange-500'}`}>
+          <div className={`flex items-center gap-1 text-[10px] font-bold italic ${res.isRefunded ? 'text-emerald-500' : isError ? 'text-red-500' : 'text-orange-500'}`}>
             <Zap size={10} fill="currentColor" />
             {res.isRefunded ? 'REFUNDED' : isError ? 'FAILED' : `-${res.cost}`}
           </div>

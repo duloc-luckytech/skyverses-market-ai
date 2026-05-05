@@ -13,7 +13,7 @@ export const LiveStatsBar: React.FC = () => (
           <Layers size={16} />
         </div>
         <div>
-          <p className="text-xl font-black leading-none text-brand-blue">
+          <p className="text-xl font-bold leading-none text-brand-blue">
             <CountUp value={1240} suffix="+" duration={1.8} />
           </p>
           <p className="text-[10px] text-slate-400 dark:text-white/30 mt-0.5">Slides tạo hôm nay</p>
@@ -28,7 +28,7 @@ export const LiveStatsBar: React.FC = () => (
           <Users size={16} />
         </div>
         <div>
-          <p className="text-xl font-black leading-none text-violet-500">
+          <p className="text-xl font-bold leading-none text-violet-500">
             <CountUp value={8500} suffix="+" duration={1.8} />
           </p>
           <p className="text-[10px] text-slate-400 dark:text-white/30 mt-0.5">Người dùng</p>
@@ -43,7 +43,7 @@ export const LiveStatsBar: React.FC = () => (
           <Star size={16} />
         </div>
         <div>
-          <p className="text-xl font-black leading-none text-amber-500">
+          <p className="text-xl font-bold leading-none text-amber-500">
             4.8<span className="text-[13px] font-semibold text-slate-400 dark:text-white/30">/5</span>
           </p>
           <p className="text-[10px] text-slate-400 dark:text-white/30 mt-0.5">Đánh giá trung bình</p>

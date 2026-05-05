@@ -28,13 +28,13 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, type, title }) =
       />
       
       {/* Modal Container */}
-      <div className="relative w-full max-w-6xl bg-brand-gray border border-white/10 shadow-[0_0_100px_rgba(0,144,255,0.2)] flex flex-col max-h-[90vh] animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
+      <div className="relative w-full max-w-6xl bg-brand-gray border border-white/10 shadow-[0_0_100px_rgba(112,54,240,0.2)] flex flex-col max-h-[90vh] animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
         
         {/* Header */}
         <div className="flex justify-between items-center px-8 py-6 border-b border-white/5 bg-black/40">
           <div className="flex items-center gap-4">
             <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>
-            <h3 className="text-xl font-black uppercase tracking-tighter text-white">
+            <h3 className="text-xl font-bold uppercase tracking-tighter text-white">
               {title} <span className="text-brand-blue ml-2">// NEURAL_LAB_v4.2</span>
             </h3>
           </div>
@@ -57,7 +57,7 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, type, title }) =
         </div>
         
         {/* Footer Info */}
-        <div className="px-8 py-4 bg-black border-t border-white/5 flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-gray-600">
+        <div className="px-8 py-4 bg-black border-t border-white/5 flex justify-between items-center text-[9px] font-bold uppercase tracking-widest text-gray-600">
           <div className="flex gap-8">
             <span className="flex items-center gap-2"><Zap className="w-3 h-3 text-brand-blue" /> LATENCY: 24MS</span>
             <span className="flex items-center gap-2">ENCRYPTION: AES-256</span>

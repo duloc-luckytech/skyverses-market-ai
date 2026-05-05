@@ -113,7 +113,7 @@ const WelcomeBonusModal: React.FC = () => {
                 transition={{ delay: 0.3 }}
                 className="relative z-10"
               >
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/15 border border-amber-500/25 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-amber-400 mb-4">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/15 border border-amber-500/25 rounded-full text-[9px] font-bold uppercase tracking-[0.3em] text-amber-400 mb-4">
                   <Sparkles size={10} fill="currentColor" />
                   Welcome Bonus
                 </span>
@@ -124,7 +124,7 @@ const WelcomeBonusModal: React.FC = () => {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
-                className="relative z-10 text-2xl md:text-3xl font-black text-white tracking-tight leading-tight mt-3 mb-3"
+                className="relative z-10 text-2xl md:text-3xl font-bold text-white tracking-tight leading-tight mt-3 mb-3"
               >
                 Đăng ký nhận ngay
                 <br />
@@ -145,7 +145,7 @@ const WelcomeBonusModal: React.FC = () => {
             </div>
 
             {/* Bottom section */}
-            <div className="bg-white dark:bg-[#13171f] px-8 py-7 space-y-5">
+            <div className="bg-white dark:bg-[var(--atlas-bg-panel)] px-8 py-7 space-y-5">
               {/* Benefits */}
               <div className="space-y-3">
                 {[

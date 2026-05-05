@@ -7,27 +7,27 @@ interface V2EditorFooterProps {
 }
 
 export const V2EditorFooter: React.FC<V2EditorFooterProps> = ({ onClose }) => (
-  <div className="h-16 md:h-20 border-t border-black/10 dark:border-white/10 bg-slate-50 dark:bg-[#0a0d14] shrink-0 flex items-center justify-between px-10 z-50 transition-colors">
+  <div className="h-16 md:h-20 border-t border-black/10 dark:border-white/10 bg-slate-50 dark:bg-[var(--atlas-bg-page)] shrink-0 flex items-center justify-between px-10 z-50 transition-colors">
     <div className="flex items-center gap-10">
       <div className="flex items-center gap-3 opacity-60">
          <Database size={16} className="text-indigo-600" />
-         <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-zinc-400 italic">Đã đồng bộ dữ liệu</span>
+         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-800 dark:text-zinc-400 italic">Đã đồng bộ dữ liệu</span>
       </div>
       <div className="hidden sm:flex items-center gap-3 opacity-60">
          <Zap size={16} className="text-yellow-500" />
-         <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-zinc-400 italic">Giao thức bảo mật: Hoạt động</span>
+         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-800 dark:text-zinc-400 italic">Giao thức bảo mật: Hoạt động</span>
       </div>
     </div>
 
     <div className="flex gap-4">
       <button 
         onClick={onClose}
-        className="px-8 py-3 bg-white dark:bg-[#1a1f2b] border border-black/10 dark:border-white/10 text-slate-700 dark:text-zinc-300 rounded-none text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-white dark:hover:text-black transition-all shadow-sm"
+        className="px-8 py-3 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/10 dark:border-white/10 text-slate-700 dark:text-zinc-300 rounded-none text-[10px] font-bold uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-white dark:hover:text-black transition-all shadow-sm"
       >
          HỦY BỎ
       </button>
       <button 
-        className="px-10 py-3 bg-indigo-600 text-white rounded-none text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-indigo-700 transition-all flex items-center gap-3 active:scale-95 group"
+        className="px-10 py-3 bg-indigo-600 text-white rounded-none text-[10px] font-bold uppercase tracking-widest shadow-lg hover:bg-indigo-700 transition-all flex items-center gap-3 active:scale-95 group"
       >
          <Save size={14} fill="currentColor" className="group-hover:scale-110 transition-transform" /> LƯU VÀ CHẠY THỬ
       </button>

@@ -61,12 +61,12 @@ const VoiceDesignLibrary: React.FC<VoiceDesignLibraryProps> = ({
   onApplyTemplate
 }) => {
   return (
-    <div className="flex-grow flex flex-col bg-slate-50 dark:bg-[#13171f] border border-slate-200 dark:border-white/5 rounded-2xl shadow-sm transition-colors overflow-hidden">
+    <div className="flex-grow flex flex-col bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/5 rounded-2xl shadow-sm transition-colors overflow-hidden">
       <div className="p-6 shrink-0 space-y-6 border-b border-black/5 dark:border-white/5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Volume2 size={18} className="text-brand-blue" />
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-500 dark:text-gray-400">Thư viện giọng đã thiết kế</h3>
+            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-gray-400">Thư viện giọng đã thiết kế</h3>
           </div>
           {voices.length > 0 && <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>}
         </div>
@@ -95,13 +95,13 @@ const VoiceDesignLibrary: React.FC<VoiceDesignLibraryProps> = ({
                   exit={{ opacity: 0, scale: 0.95 }}
                   className="p-5 bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 rounded-2xl group hover:border-brand-blue/30 transition-all shadow-sm relative overflow-hidden"
                 >
-                  <div className="absolute -top-1 -left-1 w-7 h-7 bg-slate-50 dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-center rounded-br-xl text-[9px] font-black text-slate-400 z-10">
+                  <div className="absolute -top-1 -left-1 w-7 h-7 bg-slate-50 dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-center rounded-br-xl text-[9px] font-bold text-slate-400 z-10">
                     {(voices.length - idx).toString().padStart(2, '0')}
                   </div>
 
                   <div className="flex justify-between items-start mb-4 pl-4">
                     <div className="space-y-1 min-w-0 flex-grow">
-                      <h4 className="text-[13px] font-black uppercase italic text-slate-900 dark:text-white truncate">"{v.label}"</h4>
+                      <h4 className="text-[13px] font-bold uppercase italic text-slate-900 dark:text-white truncate">"{v.label}"</h4>
                       <p className="text-[9px] font-bold text-brand-blue uppercase tracking-widest leading-none truncate opacity-60">{v.prompt}</p>
                     </div>
                     <div className="flex gap-1 shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -113,13 +113,13 @@ const VoiceDesignLibrary: React.FC<VoiceDesignLibraryProps> = ({
                   <div className="flex items-center justify-between gap-3">
                     <button 
                       onClick={() => onPlay(v)}
-                      className={`flex-grow py-3 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all ${isPlayingId === v.id ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'bg-slate-50 dark:bg-white/5 text-gray-500 hover:text-slate-900 dark:hover:text-white border border-transparent dark:border-white/5'}`}
+                      className={`flex-grow py-3 rounded-xl text-[10px] font-bold uppercase flex items-center justify-center gap-2 transition-all ${isPlayingId === v.id ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'bg-slate-50 dark:bg-white/5 text-gray-500 hover:text-slate-900 dark:hover:text-white border border-transparent dark:border-white/5'}`}
                     >
                       {isPlayingId === v.id ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />} 
                       {isPlayingId === v.id ? 'Đang phát' : 'Nghe thử'}
                     </button>
                     <div className="flex flex-col items-end shrink-0">
-                      <span className="text-[8px] font-black text-slate-300 dark:text-gray-700 uppercase tracking-widest">{v.date}</span>
+                      <span className="text-[8px] font-bold text-slate-300 dark:text-gray-700 uppercase tracking-widest">{v.date}</span>
                       <span className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">{v.duration}</span>
                     </div>
                   </div>
@@ -138,7 +138,7 @@ const VoiceDesignLibrary: React.FC<VoiceDesignLibraryProps> = ({
                     <div className="p-2 bg-brand-blue/10 rounded-lg text-brand-blue">
                        <Lightbulb size={18} />
                     </div>
-                    <h4 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-white">Hướng dẫn nhanh</h4>
+                    <h4 className="text-sm font-bold uppercase tracking-widest text-slate-800 dark:text-white">Hướng dẫn nhanh</h4>
                  </div>
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[
@@ -149,7 +149,7 @@ const VoiceDesignLibrary: React.FC<VoiceDesignLibraryProps> = ({
                       <div key={i} className="p-5 bg-white dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-2xl space-y-3">
                          <div className="text-brand-blue">{step.icon}</div>
                          <div className="space-y-1">
-                            <p className="text-[10px] font-black uppercase text-slate-900 dark:text-white">{step.t}</p>
+                            <p className="text-[10px] font-bold uppercase text-slate-900 dark:text-white">{step.t}</p>
                             <p className="text-[9px] text-gray-500 dark:text-gray-400 font-bold leading-relaxed">"{step.d}"</p>
                          </div>
                       </div>
@@ -164,7 +164,7 @@ const VoiceDesignLibrary: React.FC<VoiceDesignLibraryProps> = ({
                        <div className="p-2 bg-purple-500/10 rounded-lg text-purple-500">
                           <Zap size={18} />
                        </div>
-                       <h4 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-white">Mẫu gợi ý</h4>
+                       <h4 className="text-sm font-bold uppercase tracking-widest text-slate-800 dark:text-white">Mẫu gợi ý</h4>
                     </div>
                  </div>
                  <div className="grid grid-cols-1 gap-4">
@@ -180,7 +180,7 @@ const VoiceDesignLibrary: React.FC<VoiceDesignLibraryProps> = ({
                          <div className="flex justify-between items-start relative z-10">
                             <div className="space-y-4 flex-grow">
                                <div className="space-y-1">
-                                  <h5 className="text-lg font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">{tmpl.title}</h5>
+                                  <h5 className="text-lg font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">{tmpl.title}</h5>
                                   <p className="text-[10px] font-bold text-brand-blue uppercase tracking-widest opacity-70 leading-none">{tmpl.prompt}</p>
                                </div>
                                <p className="text-[11px] text-slate-500 dark:text-gray-400 font-medium italic line-clamp-1 pr-12">"{tmpl.text}"</p>
@@ -196,7 +196,7 @@ const VoiceDesignLibrary: React.FC<VoiceDesignLibraryProps> = ({
 
               <div className="pt-6 border-t border-black/5 dark:border-white/5 flex items-center justify-center gap-2 opacity-30">
                  <Info size={14} />
-                 <p className="text-[9px] font-black uppercase tracking-widest italic">Chọn một mẫu để bắt đầu thiết kế ngay lập tức</p>
+                 <p className="text-[9px] font-bold uppercase tracking-widest italic">Chọn một mẫu để bắt đầu thiết kế ngay lập tức</p>
               </div>
             </motion.div>
           )}

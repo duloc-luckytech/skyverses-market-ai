@@ -143,7 +143,7 @@ const StoryboardStudioPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-[#fafafa] dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-20 transition-colors duration-500">
 
       {/* ══════════════════════════════════════════════════════
           §1 HERO — split layout, CDN hero image
@@ -158,7 +158,7 @@ const StoryboardStudioPage: React.FC = () => {
           <div className="space-y-10 order-2 lg:order-1">
             <motion.div
               initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[10px] font-black uppercase tracking-[0.25em]"
+              className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[10px] font-bold uppercase tracking-[0.25em]"
             >
               <Clapperboard size={13} /> AI Script-to-Screen Engine
             </motion.div>
@@ -166,7 +166,7 @@ const StoryboardStudioPage: React.FC = () => {
             <div className="space-y-6">
               <motion.h1
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-5xl lg:text-[80px] xl:text-[96px] font-black leading-[0.88] tracking-tighter text-slate-900 dark:text-white"
+                className="text-5xl lg:text-[80px] xl:text-[96px] font-bold leading-[0.88] tracking-tighter text-slate-900 dark:text-white"
               >
                 Biến Kịch Bản<br />
                 Thành <span className="text-brand-blue italic">Điện Ảnh</span><br />
@@ -188,7 +188,7 @@ const StoryboardStudioPage: React.FC = () => {
               <button
                 id="btn-launch-studio-hero"
                 onClick={() => setIsStudioOpen(true)}
-                className="group inline-flex items-center justify-center gap-3 bg-brand-blue text-white px-10 py-5 rounded-xl text-xs font-black uppercase tracking-[0.3em] shadow-[0_20px_60px_rgba(0,144,255,0.35)] hover:scale-105 active:scale-95 transition-all"
+                className="group inline-flex items-center justify-center gap-3 bg-brand-blue text-white px-10 py-5 rounded-xl text-xs font-bold uppercase tracking-[0.3em] shadow-[0_20px_60px_rgba(112,54,240,0.35)] hover:scale-105 active:scale-95 transition-all"
               >
                 <Zap size={16} fill="currentColor" />
                 Khởi chạy Studio Pro
@@ -196,7 +196,7 @@ const StoryboardStudioPage: React.FC = () => {
               </button>
               <button
                 onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
-                className="inline-flex items-center justify-center gap-3 px-10 py-5 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-black uppercase tracking-[0.3em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
+                className="inline-flex items-center justify-center gap-3 px-10 py-5 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold uppercase tracking-[0.3em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
               >
                 <Play size={14} fill="currentColor" /> Xem cách hoạt động
               </button>
@@ -214,8 +214,8 @@ const StoryboardStudioPage: React.FC = () => {
                 { val: '100%', label: 'Nhất quán nhân vật' },
               ].map((s) => (
                 <div key={s.label} className="flex flex-col">
-                  <span className="text-2xl font-black italic text-brand-blue leading-none">{s.val}</span>
-                  <span className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest mt-1">{s.label}</span>
+                  <span className="text-2xl font-bold italic text-brand-blue leading-none">{s.val}</span>
+                  <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest mt-1">{s.label}</span>
                 </div>
               ))}
             </motion.div>
@@ -237,7 +237,7 @@ const StoryboardStudioPage: React.FC = () => {
               {/* Floating badge */}
               <div className="absolute bottom-6 left-6 flex items-center gap-3 bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl px-5 py-3">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-white">Studio Engine Active</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white">Studio Engine Active</span>
               </div>
             </div>
             {/* Decorative glow ring */}
@@ -249,11 +249,11 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §2 FEATURES GRID — 6 CDN image cards
       ══════════════════════════════════════════════════════ */}
-      <section aria-label="Tính năng" className="py-32 lg:py-40 bg-slate-50 dark:bg-[#0a0d14] border-y border-slate-100 dark:border-white/5 transition-colors">
+      <section aria-label="Tính năng" className="py-32 lg:py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-y border-slate-100 dark:border-white/5 transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-20">
-            <p className="text-brand-blue text-[10px] font-black uppercase tracking-[0.5em]">Kiến trúc sản xuất AI</p>
-            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter text-slate-900 dark:text-white">
+            <p className="text-brand-blue text-[10px] font-bold uppercase tracking-[0.5em]">Kiến trúc sản xuất AI</p>
+            <h2 className="text-4xl lg:text-6xl font-bold tracking-tighter text-slate-900 dark:text-white">
               Mọi công đoạn. Hoàn toàn tự động.
             </h2>
             <p className="text-slate-500 dark:text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
@@ -269,7 +269,7 @@ const StoryboardStudioPage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
-                className="group bg-white dark:bg-[#13171f] rounded-2xl overflow-hidden border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 hover:shadow-xl dark:hover:shadow-brand-blue/5 transition-all duration-500 flex flex-col"
+                className="group bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl overflow-hidden border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 hover:shadow-xl dark:hover:shadow-brand-blue/5 transition-all duration-500 flex flex-col"
               >
                 {/* CDN Image */}
                 <div className="aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-black relative">
@@ -287,7 +287,7 @@ const StoryboardStudioPage: React.FC = () => {
                     {f.icon}
                   </div>
                   <div className="space-y-2 flex-grow">
-                    <h3 className="text-lg font-black tracking-tight text-slate-900 dark:text-white">{f.title}</h3>
+                    <h3 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">{f.title}</h3>
                     <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed">{f.desc}</p>
                   </div>
                 </div>
@@ -300,11 +300,11 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §3 HOW IT WORKS — 4-step workflow
       ══════════════════════════════════════════════════════ */}
-      <section id="how-it-works" aria-label="Quy trình 4 bước" className="py-32 lg:py-40 bg-white dark:bg-[#0a0d14] transition-colors">
+      <section id="how-it-works" aria-label="Quy trình 4 bước" className="py-32 lg:py-40 bg-white dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
-            <p className="text-brand-blue text-[10px] font-black uppercase tracking-[0.5em]">Quy trình sản xuất</p>
-            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter text-slate-900 dark:text-white">
+            <p className="text-brand-blue text-[10px] font-bold uppercase tracking-[0.5em]">Quy trình sản xuất</p>
+            <h2 className="text-4xl lg:text-6xl font-bold tracking-tighter text-slate-900 dark:text-white">
               4 bước từ ý tưởng<br />
               đến <span className="text-brand-blue">thước phim hoàn chỉnh.</span>
             </h2>
@@ -329,18 +329,18 @@ const StoryboardStudioPage: React.FC = () => {
                     loading="lazy"
                   />
                   {/* Step number overlay */}
-                  <div className="absolute top-5 left-5 w-12 h-12 rounded-full bg-brand-blue flex items-center justify-center text-white text-xs font-black shadow-lg shadow-brand-blue/40">
+                  <div className="absolute top-5 left-5 w-12 h-12 rounded-full bg-brand-blue flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-brand-blue/40">
                     {step.num}
                   </div>
                 </div>
                 {/* Text side */}
                 <div className={`${i % 2 !== 0 ? 'lg:order-1' : ''} space-y-6 px-0 lg:px-8`}>
                   <div className="space-y-2">
-                    <span className="text-brand-blue text-[10px] font-black uppercase tracking-[0.4em]">Bước {step.num}</span>
-                    <h3 className="text-3xl lg:text-4xl font-black tracking-tighter text-slate-900 dark:text-white">{step.title}</h3>
+                    <span className="text-brand-blue text-[10px] font-bold uppercase tracking-[0.4em]">Bước {step.num}</span>
+                    <h3 className="text-3xl lg:text-4xl font-bold tracking-tighter text-slate-900 dark:text-white">{step.title}</h3>
                   </div>
                   <p className="text-slate-500 dark:text-gray-400 text-base leading-relaxed max-w-md">{step.desc}</p>
-                  <div className="flex items-center gap-2 text-brand-blue text-xs font-black uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-brand-blue text-xs font-bold uppercase tracking-wider">
                     <ChevronRight size={16} />
                     <span>{i < 3 ? `Tiếp theo: Bước ${WORKFLOW_STEPS[i + 1]?.num}` : 'Hoàn thành dự án'}</span>
                   </div>
@@ -354,19 +354,19 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §4 SCENE SHOWCASE — demo scene cards với CDN images
       ══════════════════════════════════════════════════════ */}
-      <section aria-label="Scene showcase" className="py-32 lg:py-40 bg-slate-50 dark:bg-[#0a0d14] border-y border-slate-100 dark:border-white/5 transition-colors">
+      <section aria-label="Scene showcase" className="py-32 lg:py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-y border-slate-100 dark:border-white/5 transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row justify-between items-end gap-8 mb-16">
             <div className="space-y-4">
-              <p className="text-brand-blue text-[10px] font-black uppercase tracking-[0.5em]">Storyboard Demo</p>
-              <h2 className="text-4xl lg:text-6xl font-black tracking-tighter text-slate-900 dark:text-white">
+              <p className="text-brand-blue text-[10px] font-bold uppercase tracking-[0.5em]">Storyboard Demo</p>
+              <h2 className="text-4xl lg:text-6xl font-bold tracking-tighter text-slate-900 dark:text-white">
                 Từng phân cảnh.<br />
                 Hoàn hảo từng frame.
               </h2>
             </div>
             <button
               onClick={() => setIsStudioOpen(true)}
-              className="group inline-flex items-center gap-3 bg-brand-blue text-white px-8 py-4 rounded-xl text-xs font-black uppercase tracking-[0.3em] shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+              className="group inline-flex items-center gap-3 bg-brand-blue text-white px-8 py-4 rounded-xl text-xs font-bold uppercase tracking-[0.3em] shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
             >
               Dùng thử ngay <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </button>
@@ -380,7 +380,7 @@ const StoryboardStudioPage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="group bg-white dark:bg-[#13171f] rounded-2xl overflow-hidden border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 shadow-sm hover:shadow-xl transition-all duration-500"
+                className="group bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl overflow-hidden border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 shadow-sm hover:shadow-xl transition-all duration-500"
               >
                 {/* Scene image */}
                 <div className="relative aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-black">
@@ -393,23 +393,23 @@ const StoryboardStudioPage: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   {/* Scene badge */}
                   <div className="absolute top-3 left-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-3 py-1">
-                    <span className="text-[9px] font-black uppercase text-white tracking-widest">Cảnh {scene.order}</span>
+                    <span className="text-[9px] font-bold uppercase text-white tracking-widest">Cảnh {scene.order}</span>
                   </div>
                   {/* Type badge */}
-                  <div className="absolute top-3 right-3 bg-brand-blue text-white text-[8px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg">
+                  <div className="absolute top-3 right-3 bg-brand-blue text-white text-[8px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg">
                     {scene.type}
                   </div>
                 </div>
                 {/* Card content */}
                 <div className="p-5 space-y-3">
-                  <p className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">Prompt kịch bản</p>
+                  <p className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">Prompt kịch bản</p>
                   <p className="text-sm text-slate-600 dark:text-gray-300 italic leading-relaxed line-clamp-3">"{scene.prompt}"</p>
                   <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-white/5">
                     <div className="flex items-center gap-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                      <span className="text-[9px] font-black uppercase text-emerald-500 tracking-widest">AI Generated</span>
+                      <span className="text-[9px] font-bold uppercase text-emerald-500 tracking-widest">AI Generated</span>
                     </div>
-                    <span className="text-[9px] font-black uppercase text-slate-300 dark:text-gray-600 tracking-wider">Storyboard Studio</span>
+                    <span className="text-[9px] font-bold uppercase text-slate-300 dark:text-gray-600 tracking-wider">Storyboard Studio</span>
                   </div>
                 </div>
               </motion.div>
@@ -421,11 +421,11 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §5 USE CASES
       ══════════════════════════════════════════════════════ */}
-      <section aria-label="Use cases" className="py-32 lg:py-40 bg-white dark:bg-[#0a0d14] transition-colors">
+      <section aria-label="Use cases" className="py-32 lg:py-40 bg-white dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-16">
-            <p className="text-brand-blue text-[10px] font-black uppercase tracking-[0.5em]">Ứng dụng thực tế</p>
-            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter text-slate-900 dark:text-white">
+            <p className="text-brand-blue text-[10px] font-bold uppercase tracking-[0.5em]">Ứng dụng thực tế</p>
+            <h2 className="text-4xl lg:text-6xl font-bold tracking-tighter text-slate-900 dark:text-white">
               Giải pháp cho mọi<br />
               <span className="text-brand-blue">thể loại nội dung.</span>
             </h2>
@@ -451,8 +451,8 @@ const StoryboardStudioPage: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <span className="text-brand-blue text-[9px] font-black uppercase tracking-widest block mb-1">{uc.tag}</span>
-                  <h3 className="text-xl font-black tracking-tight text-white translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
+                  <span className="text-brand-blue text-[9px] font-bold uppercase tracking-widest block mb-1">{uc.tag}</span>
+                  <h3 className="text-xl font-bold tracking-tight text-white translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
                     {uc.title}
                   </h3>
                 </div>
@@ -465,16 +465,16 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §6 FINAL CTA
       ══════════════════════════════════════════════════════ */}
-      <section aria-label="Call to action" className="py-48 text-center relative overflow-hidden bg-slate-50 dark:bg-[#0a0d14] border-t border-slate-100 dark:border-white/5 transition-colors">
+      <section aria-label="Call to action" className="py-48 text-center relative overflow-hidden bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-t border-slate-100 dark:border-white/5 transition-colors">
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none flex items-center justify-center">
-          <span className="text-[320px] font-black text-slate-100 dark:text-white/[0.02] leading-none tracking-tighter italic opacity-60">
+          <span className="text-[320px] font-bold text-slate-100 dark:text-white/[0.02] leading-none tracking-tighter italic opacity-60">
             STORY
           </span>
         </div>
 
         <div className="max-w-3xl mx-auto px-6 space-y-12 relative z-10">
           <div className="space-y-6">
-            <h2 className="text-5xl lg:text-8xl font-black tracking-tighter leading-[0.85] text-slate-900 dark:text-white">
+            <h2 className="text-5xl lg:text-8xl font-bold tracking-tighter leading-[0.85] text-slate-900 dark:text-white">
               Sẵn sàng tạo<br />
               <span className="text-brand-blue italic">tuyệt phẩm?</span>
             </h2>
@@ -487,13 +487,13 @@ const StoryboardStudioPage: React.FC = () => {
             <button
               id="btn-launch-studio-cta"
               onClick={() => setIsStudioOpen(true)}
-              className="group inline-flex items-center gap-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-16 py-7 rounded-2xl text-sm font-black uppercase tracking-[0.4em] shadow-[0_30px_80px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-95 transition-all"
+              className="group inline-flex items-center gap-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-16 py-7 rounded-2xl text-sm font-bold uppercase tracking-[0.4em] shadow-[0_30px_80px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-95 transition-all"
             >
               <Clapperboard size={20} />
               Trải nghiệm Studio ngay
               <Zap size={20} fill="currentColor" />
             </button>
-            <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-600">
+            <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-600">
               <div className="flex items-center gap-2"><ShieldCheck size={14} className="text-emerald-500" /> VEO 3 Engine</div>
               <div className="flex items-center gap-2"><Star size={14} className="text-amber-500" /> 4K Export</div>
               <div className="flex items-center gap-2"><Cpu size={14} className="text-brand-blue" /> Bảo mật tuyệt đối</div>

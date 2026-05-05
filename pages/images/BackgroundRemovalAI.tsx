@@ -33,7 +33,7 @@ const BackgroundRemovalAI = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-white dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* 1. HERO SECTION */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-20 relative overflow-hidden">
@@ -46,13 +46,13 @@ const BackgroundRemovalAI = () => {
           <div className="lg:col-span-5 space-y-10 order-2 lg:order-1">
             <motion.div 
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[10px] font-black uppercase tracking-[0.2em]"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[10px] font-bold uppercase tracking-[0.2em]"
             >
               <Sparkles size={14} /> AI-Powered Edge Intelligence
             </motion.div>
             
             <div className="space-y-6">
-              <h1 className="text-6xl lg:text-[100px] font-black leading-[0.85] tracking-tighter italic uppercase text-slate-900 dark:text-white">
+              <h1 className="text-6xl lg:text-[100px] font-bold leading-[0.85] tracking-tighter italic uppercase text-slate-900 dark:text-white">
                 Magic <br /> <span className="text-brand-blue">Erase.</span> <br /> Seamless PNG.
               </h1>
               <p className="text-xl lg:text-3xl text-slate-500 dark:text-gray-400 font-medium leading-tight border-l-2 border-brand-blue pl-8">
@@ -63,18 +63,18 @@ const BackgroundRemovalAI = () => {
             <div className="flex flex-col sm:flex-row gap-6 pt-4">
               <button 
                 onClick={() => setIsStudioOpen(true)}
-                className="bg-brand-blue text-white px-12 py-6 rounded-sm text-[12px] font-black uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(0,144,255,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
+                className="bg-brand-blue text-white px-12 py-6 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(112,54,240,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
               >
                 Mở Studio Xóa Nền <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-[12px] font-black uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/5 dark:bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
+              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/5 dark:bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
                 Xem Tài liệu <Play size={16} fill="currentColor" />
               </button>
             </div>
           </div>
 
           <div className="lg:col-span-7 relative order-1 lg:order-2">
-             <div className="aspect-[16/10] bg-slate-50 dark:bg-[#0a0d14] border border-slate-200 dark:border-white/5 rounded-sm p-4 shadow-3xl overflow-hidden group transition-colors">
+             <div className="aspect-[16/10] bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-sm p-4 shadow-3xl overflow-hidden group transition-colors">
                 <div className="relative w-full h-full bg-white dark:bg-black rounded-sm border border-brand-blue/10 overflow-hidden flex items-center justify-center transition-colors">
                    <div className="absolute inset-0 grid grid-cols-2">
                       <img 
@@ -90,10 +90,10 @@ const BackgroundRemovalAI = () => {
                          />
                       </div>
                    </div>
-                   <div className="absolute inset-y-0 left-1/2 w-1 bg-brand-blue shadow-[0_0_20px_rgba(0,144,255,0.8)] z-20"></div>
+                   <div className="absolute inset-y-0 left-1/2 w-1 bg-brand-blue shadow-[0_0_20px_rgba(112,54,240,0.8)] z-20"></div>
                    <div className="absolute bottom-8 left-8 space-y-2 z-30">
-                      <h3 className="text-3xl font-black italic uppercase tracking-tighter leading-none text-white drop-shadow-lg">Precision Cut</h3>
-                      <p className="text-[10px] font-black text-brand-blue uppercase tracking-[0.4em] italic">Segment_Core_v4.2_Active</p>
+                      <h3 className="text-3xl font-bold italic uppercase tracking-tighter leading-none text-white drop-shadow-lg">Precision Cut</h3>
+                      <p className="text-[10px] font-bold text-brand-blue uppercase tracking-[0.4em] italic">Segment_Core_v4.2_Active</p>
                    </div>
                 </div>
              </div>
@@ -102,7 +102,7 @@ const BackgroundRemovalAI = () => {
       </section>
 
       {/* 2. SPEC SECTION */}
-      <section className="py-40 bg-slate-50 dark:bg-[#0a0d14] border-y border-slate-200 dark:border-white/5 transition-colors">
+      <section className="py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-y border-slate-200 dark:border-white/5 transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-3xl">
              {[
@@ -116,7 +116,7 @@ const BackgroundRemovalAI = () => {
                      {React.cloneElement(f.i as React.ReactElement<any>, { size: 24 })}
                   </div>
                   <div className="space-y-3">
-                     <h4 className="text-2xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">{f.t}</h4>
+                     <h4 className="text-2xl font-bold uppercase tracking-tighter italic text-slate-900 dark:text-white">{f.t}</h4>
                      <p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed uppercase tracking-widest leading-loose">"{f.d}"</p>
                   </div>
                </div>

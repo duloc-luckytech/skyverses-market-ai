@@ -23,7 +23,7 @@ const ImageUpscaleAI = () => {
 
   if (isStudioOpen) {
     return (
-      <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0d14]">
+      <div className="fixed inset-0 z-[500] bg-white dark:bg-[var(--atlas-bg-page)]">
         <UpscaleWorkspace onClose={() => setIsStudioOpen(false)} />
       </div>
     );
@@ -117,7 +117,7 @@ const ImageUpscaleAI = () => {
   ];
 
   return (
-    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
+    <div className="bg-white dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
 
       {/* ═══ HERO ═══ */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-16 relative overflow-hidden">
@@ -173,7 +173,7 @@ const ImageUpscaleAI = () => {
             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }}
             className="lg:col-span-6"
           >
-            <div className="aspect-[16/10] bg-slate-50 dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-3 overflow-hidden relative">
+            <div className="aspect-[16/10] bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-3 overflow-hidden relative">
               <div className="relative w-full h-full rounded-xl overflow-hidden bg-white dark:bg-black">
                 <div className="absolute inset-0 grid grid-cols-2">
                   <img

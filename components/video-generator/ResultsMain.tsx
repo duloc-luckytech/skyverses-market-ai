@@ -123,9 +123,9 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
   const errorCount = useMemo(() => results.filter(r => r.status === 'error').length, [results]);
 
   return (
-    <main className="flex-grow flex flex-col bg-slate-50 dark:bg-[#0a0d14] relative overflow-hidden">
+    <main className="flex-grow flex flex-col bg-slate-50 dark:bg-[var(--atlas-bg-page)] relative overflow-hidden">
       {/* ─── TOOLBAR ─── */}
-      <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/95 dark:bg-[#1a1f2b]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
+      <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
         <div className="flex items-center gap-3">
           {onClose && (
             <button onClick={onClose} className="lg:hidden p-1.5 -ml-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><ChevronLeft size={18} /></button>
@@ -217,7 +217,7 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
                   const stats = getFakeStats(item._id || item.id || idx.toString());
                   return (
                     <motion.div layout key={item._id || item.id} ref={isLast ? lastItemRef : null}
-                      className="relative overflow-hidden bg-white dark:bg-[#1a1f2b] group border border-black/[0.06] dark:border-white/[0.08] rounded-2xl transition-all hover:border-indigo-500/20 shadow-sm dark:shadow-none">
+                      className="relative overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] group border border-black/[0.06] dark:border-white/[0.08] rounded-2xl transition-all hover:border-indigo-500/20 shadow-sm dark:shadow-none">
                       <div className="aspect-video relative overflow-hidden bg-black cursor-pointer" onClick={() => setSelectedDetailItem(item)}>
                         <img src={item.thumbnailUrl} className="w-full h-full object-cover opacity-60 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700" alt={item.title} />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />

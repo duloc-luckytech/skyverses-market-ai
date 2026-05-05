@@ -41,7 +41,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
           </FadeInUp>
 
           <FadeInUp delay={0.1}>
-            <h1 className="text-5xl sm:text-6xl lg:text-[72px] xl:text-[82px] font-black leading-[0.9] tracking-tighter text-slate-900 dark:text-white">
+            <h1 className="text-5xl sm:text-6xl lg:text-[72px] xl:text-[82px] font-bold leading-[0.9] tracking-tighter text-slate-900 dark:text-white">
               Hồi sinh<br />
               <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
                 Ký ức

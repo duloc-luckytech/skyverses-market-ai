@@ -254,7 +254,7 @@ const SlideSidebar: React.FC<Props> = ({
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="w-72 h-full flex flex-col bg-white dark:bg-[#13171f] border-l border-black/[0.05] dark:border-white/[0.08]">
+    <div className="w-72 h-full flex flex-col bg-white dark:bg-[var(--atlas-bg-panel)] border-l border-black/[0.05] dark:border-white/[0.08]">
 
       {/* ── Tab bar ─────────────────────────────────────────────────────────── */}
       <div className="flex gap-1 px-3 pt-3 pb-2 shrink-0 border-b border-black/[0.05] dark:border-white/[0.08]">
@@ -441,7 +441,7 @@ const SlideSidebar: React.FC<Props> = ({
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
-                      className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-lg z-10 overflow-hidden"
+                      className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-lg z-10 overflow-hidden"
                     >
                       {LANGUAGES.map(lang => (
                         <button
@@ -593,7 +593,7 @@ const SlideSidebar: React.FC<Props> = ({
                 ))}
               </div>
               <button
-                onClick={() => setBrandColors(['#0090FF', '#6366F1', '#F59E0B', '#0F172A'])}
+                onClick={() => setBrandColors(['#7036F0', '#6366F1', '#F59E0B', '#0F172A'])}
                 className="mt-2 text-[10px] font-semibold text-brand-blue hover:underline"
               >
                 ↻ Reset về mặc định
@@ -695,7 +695,7 @@ const SlideSidebar: React.FC<Props> = ({
               localStorage.setItem('slide_has_generated', '1');
               onOpenGenerateModal();
             }}
-            whileHover={{ scale: 1.02, boxShadow: imageDeckMode ? '0 8px 24px rgba(139,92,246,0.3)' : '0 8px 24px rgba(0,144,255,0.25)' }}
+            whileHover={{ scale: 1.02, boxShadow: imageDeckMode ? '0 8px 24px rgba(139,92,246,0.3)' : '0 8px 24px rgba(112,54,240,0.25)' }}
             whileTap={{ scale: 0.97 }}
             disabled={!deckTopic.trim()}
             className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white text-[12px] font-bold shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none relative overflow-hidden ${

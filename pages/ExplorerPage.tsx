@@ -205,7 +205,7 @@ const ExplorerPage = () => {
   const canGenerate = useMemo(() => selectedItems.length > 0 && selectedItems.every(i => i.status !== 'processing' && i.status !== 'done'), [selectedItems]);
 
   return (
-    <div className="pt-20 md:pt-28 pb-32 bg-white dark:bg-[#0a0d14] min-h-screen text-black dark:text-white transition-colors duration-300">
+    <div className="pt-20 md:pt-28 pb-32 bg-white dark:bg-[var(--atlas-bg-page)] min-h-screen text-black dark:text-white transition-colors duration-300">
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12">
         
         {/* ═══════ HERO HEADER ═══════ */}
@@ -330,7 +330,7 @@ const ExplorerPage = () => {
                       <div
                         key={item._id || item.id}
                         ref={isLast ? lastItemRef : null}
-                        className={`relative overflow-hidden group cursor-pointer rounded-2xl transition-all duration-300 bg-white dark:bg-[#1a1f2b] border ${aspectClass} ${isSelected ? 'border-brand-blue shadow-lg shadow-brand-blue/10 scale-[0.98]' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg'}`}
+                        className={`relative overflow-hidden group cursor-pointer rounded-2xl transition-all duration-300 bg-white dark:bg-[var(--atlas-bg-panel)] border ${aspectClass} ${isSelected ? 'border-brand-blue shadow-lg shadow-brand-blue/10 scale-[0.98]' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg'}`}
                         onClick={() => setSelectedItem(item)}
                       >
                         {/* Select checkbox */}
@@ -411,7 +411,7 @@ const ExplorerPage = () => {
       <AnimatePresence>
         {selectedIds.length > 0 && (
           <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }} className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[500] w-full max-w-xl px-4">
-            <div className="bg-white/95 dark:bg-[#13171f]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] px-5 py-3.5 rounded-2xl shadow-2xl flex items-center justify-between gap-4">
+            <div className="bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] px-5 py-3.5 rounded-2xl shadow-2xl flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center">
                   <span className="text-sm font-bold text-brand-blue">{selectedIds.length}</span>

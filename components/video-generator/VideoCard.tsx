@@ -90,7 +90,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
   const cardClass = `group relative p-3 rounded-2xl border transition-all flex flex-col gap-3 ${isSelected
     ? 'border-indigo-500/40 bg-indigo-500/5'
-    : 'border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#1a1f2b] hover:border-black/[0.1] dark:hover:border-white/[0.08] shadow-sm dark:shadow-none'
+    : 'border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[var(--atlas-bg-panel)] hover:border-black/[0.1] dark:hover:border-white/[0.08] shadow-sm dark:shadow-none'
     }`;
 
   return (
@@ -105,10 +105,10 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         {res.status === 'processing' ? (
           <div className="w-full h-full flex flex-col items-center justify-center relative bg-slate-200 dark:bg-black/60">
             <div className="absolute inset-0 opacity-10 pointer-events-none">
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-[#0090ff] animate-[scan_2s_infinite_linear]"></div>
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-[#7036F0] animate-[scan_2s_infinite_linear]"></div>
             </div>
-            <Loader2 size={32} className="text-[#0090ff] animate-spin mb-4" />
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0090ff] animate-pulse">Rendering...</p>
+            <Loader2 size={32} className="text-[#7036F0] animate-spin mb-4" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#7036F0] animate-pulse">Rendering...</p>
           </div>
         ) : (res.status === 'error' || (!res.url && res.status === 'done')) ? (
           <div className="w-full h-full flex flex-col items-center justify-center text-center p-4 gap-2 bg-red-50 dark:bg-red-950/20">
@@ -218,7 +218,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         {/* Resolution Badge (2K/4K) */}
         {isHighRes && (
           <div className="absolute bottom-3 left-3 z-20">
-            <span className="px-2 py-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-md text-[9px] font-black text-white uppercase tracking-wider shadow-lg shadow-amber-500/30 animate-pulse">
+            <span className="px-2 py-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-md text-[9px] font-bold text-white uppercase tracking-wider shadow-lg shadow-amber-500/30 animate-pulse">
               {resBadgeLabel}
             </span>
           </div>

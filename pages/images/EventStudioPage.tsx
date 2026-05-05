@@ -140,7 +140,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
     setIsStudioOpen(false);
   }, [type]);
 
-  if (!config) return <div className="pt-40 text-center uppercase font-black tracking-widest opacity-20">Configuration Not Found</div>;
+  if (!config) return <div className="pt-40 text-center uppercase font-bold tracking-widest opacity-20">Configuration Not Found</div>;
   if (isStudioOpen) return (
     <div className="fixed inset-0 z-[500] bg-white dark:bg-black animate-in fade-in duration-500">
       <EventStudioWorkspace config={config} onClose={() => setIsStudioOpen(false)} />
@@ -151,7 +151,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
   const EvIcon = config.icon;
 
   return (
-    <div className="bg-[#fdfdfe] dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden transition-colors duration-500">
+    <div className="bg-[#fdfdfe] dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden transition-colors duration-500">
       
       {/* ═══════════════════════════════════════════════════
           SECTION 1: HERO
@@ -177,7 +177,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
 
             {/* Headline */}
             <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.08 }}>
-              <h1 className="text-5xl sm:text-6xl lg:text-[84px] font-black leading-[0.9] tracking-tight text-slate-900 dark:text-white whitespace-pre-line">
+              <h1 className="text-5xl sm:text-6xl lg:text-[84px] font-bold leading-[0.9] tracking-tight text-slate-900 dark:text-white whitespace-pre-line">
                 {l.headline.split('\\n').map((line, i) => (
                   <span key={i}>
                     {i > 0 && <br />}
@@ -196,7 +196,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
             <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.24 }} className="flex gap-6 sm:gap-10">
               {l.stats.map((s, i) => (
                 <div key={i} className="flex flex-col items-center">
-                  <span className={`text-2xl sm:text-3xl font-black text-${ac}-500 leading-none`}>{s.value}</span>
+                  <span className={`text-2xl sm:text-3xl font-bold text-${ac}-500 leading-none`}>{s.value}</span>
                   <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mt-1.5">{s.label}</span>
                 </div>
               ))}
@@ -225,7 +225,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
               ) : images.length > 0 ? (
                 <div className="grid grid-cols-2 gap-4 animate-marquee-vertical">
                   {[...images, ...images].map((img, idx) => (
-                    <div key={`${img._id}-${idx}`} className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-[#0a0d14] border border-black/[0.04] dark:border-white/[0.04] group shadow-lg">
+                    <div key={`${img._id}-${idx}`} className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-[var(--atlas-bg-page)] border border-black/[0.04] dark:border-white/[0.04] group shadow-lg">
                       <img src={img.thumbnailUrl} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" alt={img.title} loading="lazy" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                       <div className="absolute bottom-4 left-4 right-4">
@@ -248,13 +248,13 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       {/* ═══════════════════════════════════════════════════
           SECTION 2: HOW IT WORKS
       ═══════════════════════════════════════════════════ */}
-      <section className="py-28 lg:py-36 bg-white dark:bg-[#0a0d14] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
+      <section className="py-28 lg:py-36 bg-white dark:bg-[var(--atlas-bg-page)] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
         <div className="max-w-5xl mx-auto px-6 space-y-20">
           <motion.div {...fadeUp} className="text-center space-y-4">
             <span className={`inline-flex items-center gap-2 px-3 py-1.5 bg-${ac}-500/8 border border-${ac}-500/15 rounded-lg text-${ac}-500 text-[9px] font-bold uppercase tracking-[0.2em]`}>
               <Sparkles size={11} /> Cách hoạt động
             </span>
-            <h2 className="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
               3 bước. 30 giây.{' '}
               <span className={`text-${ac}-500`}>Xong.</span>
             </h2>
@@ -265,7 +265,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
             {l.howItWorks.map((step, i) => (
               <motion.div key={i} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.12 }} className="relative group">
                 <div className={`p-8 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl hover:border-${ac}-500/20 transition-all h-full`}>
-                  <div className={`w-12 h-12 rounded-xl bg-${ac}-500/10 border border-${ac}-500/15 flex items-center justify-center text-${ac}-500 text-lg font-black mb-6`}>
+                  <div className={`w-12 h-12 rounded-xl bg-${ac}-500/10 border border-${ac}-500/15 flex items-center justify-center text-${ac}-500 text-lg font-bold mb-6`}>
                     {step.step}
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight">{step.title}</h3>
@@ -291,7 +291,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
             <span className={`inline-flex items-center gap-2 px-3 py-1.5 bg-${ac}-500/8 border border-${ac}-500/15 rounded-lg text-${ac}-500 text-[9px] font-bold uppercase tracking-[0.2em]`}>
               <Palette size={11} /> Mẫu có sẵn
             </span>
-            <h2 className="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
               Chọn mẫu. <span className={`text-${ac}-500`}>1 Click.</span> Xong.
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto">Mỗi template được thiết kế sẵn với prompt chuyên nghiệp và phong cách phù hợp.</p>
@@ -326,10 +326,10 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       {/* ═══════════════════════════════════════════════════
           SECTION 4: STYLE PRESETS
       ═══════════════════════════════════════════════════ */}
-      <section className="py-20 lg:py-28 bg-white dark:bg-[#0a0d14] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
+      <section className="py-20 lg:py-28 bg-white dark:bg-[var(--atlas-bg-page)] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
         <div className="max-w-5xl mx-auto px-6 space-y-12">
           <motion.div {...fadeUp} className="text-center space-y-3">
-            <h2 className="text-2xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-2xl lg:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
               6 phong cách AI <span className={`text-${ac}-500`}>chuyên nghiệp</span>
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">Mỗi phong cách thay đổi hoàn toàn tone ảnh — từ Cinematic đến Manga.</p>
@@ -361,7 +361,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
             <span className={`inline-flex items-center gap-2 px-3 py-1.5 bg-${ac}-500/8 border border-${ac}-500/15 rounded-lg text-${ac}-500 text-[9px] font-bold uppercase tracking-[0.2em]`}>
               <ShieldCheck size={11} /> Tại sao chọn {config.name}
             </span>
-            <h2 className="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
               Công nghệ <span className={`text-${ac}-500`}>tạo nên sự khác biệt.</span>
             </h2>
           </motion.div>
@@ -370,7 +370,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
             {config.benefits.map((item, i) => (
               <motion.div key={i} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.1 }} className={`p-8 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl group hover:border-${ac}-500/20 transition-all`}>
                 <div className="flex items-start gap-5">
-                  <div className={`w-12 h-12 shrink-0 rounded-xl bg-${ac}-500/10 border border-${ac}-500/15 flex items-center justify-center text-${ac}-500 text-xl font-black`}>
+                  <div className={`w-12 h-12 shrink-0 rounded-xl bg-${ac}-500/10 border border-${ac}-500/15 flex items-center justify-center text-${ac}-500 text-xl font-bold`}>
                     0{i + 1}
                   </div>
                   <div className="space-y-2">
@@ -387,10 +387,10 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       {/* ═══════════════════════════════════════════════════
           SECTION 6: FEATURES GRID
       ═══════════════════════════════════════════════════ */}
-      <section className="py-24 bg-white dark:bg-[#0a0d14] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
+      <section className="py-24 bg-white dark:bg-[var(--atlas-bg-page)] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
         <div className="max-w-5xl mx-auto px-6 space-y-16">
           <motion.div {...fadeUp} className="text-center space-y-3">
-            <h2 className="text-2xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-2xl lg:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
               Tính năng <span className={`text-${ac}-500`}>vượt trội</span>
             </h2>
           </motion.div>
@@ -421,7 +421,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
         <section className="py-28 lg:py-36 transition-colors">
           <div className="max-w-6xl mx-auto px-6 space-y-16">
             <motion.div {...fadeUp} className="text-center space-y-4">
-              <h2 className="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+              <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {l.showcaseTitle}
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto">{l.showcaseDesc}</p>
@@ -429,7 +429,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.slice(0, 8).map((img, i) => (
-                <motion.div key={img._id} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.05 }} className="aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-[#0a0d14] border border-black/[0.04] dark:border-white/[0.04] group relative shadow-sm hover:shadow-xl transition-all">
+                <motion.div key={img._id} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.05 }} className="aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-[var(--atlas-bg-page)] border border-black/[0.04] dark:border-white/[0.04] group relative shadow-sm hover:shadow-xl transition-all">
                   <img src={img.thumbnailUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={img.title} loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
@@ -445,13 +445,13 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       {/* ═══════════════════════════════════════════════════
           SECTION 8: PRICING COMPARISON
       ═══════════════════════════════════════════════════ */}
-      <section className="py-24 lg:py-32 bg-white dark:bg-[#0a0d14] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
+      <section className="py-24 lg:py-32 bg-white dark:bg-[var(--atlas-bg-page)] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
         <div className="max-w-4xl mx-auto px-6 space-y-16">
           <motion.div {...fadeUp} className="text-center space-y-4">
             <span className={`inline-flex items-center gap-2 px-3 py-1.5 bg-${ac}-500/8 border border-${ac}-500/15 rounded-lg text-${ac}-500 text-[9px] font-bold uppercase tracking-[0.2em]`}>
               <CircleDollarSign size={11} /> So sánh chi phí
             </span>
-            <h2 className="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
               Tiết kiệm <span className={`text-${ac}-500`}>đến 95%</span>
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">So sánh chi phí thực tế giữa studio truyền thống và AI Studio.</p>
@@ -475,7 +475,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
                   </div>
                   <div className="flex justify-between items-center pt-3">
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tổng chi phí</span>
-                    <span className="text-xl font-black text-red-500 line-through decoration-2">{pricing.traditional.total}</span>
+                    <span className="text-xl font-bold text-red-500 line-through decoration-2">{pricing.traditional.total}</span>
                   </div>
                 </motion.div>
 
@@ -493,7 +493,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
                   </div>
                   <div className="flex justify-between items-center pt-3">
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Chỉ từ</span>
-                    <span className={`text-xl font-black text-${ac}-500`}>{pricing.ai.total}</span>
+                    <span className={`text-xl font-bold text-${ac}-500`}>{pricing.ai.total}</span>
                   </div>
                 </motion.div>
               </div>
@@ -511,7 +511,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
             <span className={`inline-flex items-center gap-2 px-3 py-1.5 bg-${ac}-500/8 border border-${ac}-500/15 rounded-lg text-${ac}-500 text-[9px] font-bold uppercase tracking-[0.2em]`}>
               <HelpCircle size={11} /> FAQ
             </span>
-            <h2 className="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
               Câu hỏi <span className={`text-${ac}-500`}>thường gặp</span>
             </h2>
           </motion.div>
@@ -527,10 +527,10 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       {/* ═══════════════════════════════════════════════════
           SECTION 10: CROSS-SELL
       ═══════════════════════════════════════════════════ */}
-      <section className="py-20 lg:py-28 bg-white dark:bg-[#0a0d14] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
+      <section className="py-20 lg:py-28 bg-white dark:bg-[var(--atlas-bg-page)] border-y border-black/[0.04] dark:border-white/[0.04] transition-colors">
         <div className="max-w-5xl mx-auto px-6 space-y-12">
           <motion.div {...fadeUp} className="text-center space-y-3">
-            <h2 className="text-2xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-2xl lg:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
               Khám phá thêm <span className={`text-${ac}-500`}>studio khác</span>
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">Mỗi dịp lễ đều có studio AI riêng — được tối ưu cho từng bối cảnh.</p>
@@ -564,7 +564,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
           <div className={`w-16 h-16 mx-auto rounded-2xl bg-${ac}-500/10 border border-${ac}-500/15 flex items-center justify-center text-${ac}-500`}>
             <EvIcon size={28} />
           </div>
-          <h2 className="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+          <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
             Sẵn sàng tạo<br />
             <span className={`text-${ac}-500`}>tác phẩm đầu tiên?</span>
           </h2>

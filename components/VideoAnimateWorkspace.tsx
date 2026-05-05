@@ -117,7 +117,7 @@ const LinkExtractorModal: React.FC<{
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
           <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-            className="relative w-full max-w-lg bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
+            className="relative w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
             <div className="p-6 border-b border-slate-100 dark:border-white/[0.08] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
@@ -305,10 +305,10 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-slate-50 dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300">
+    <div className="h-full w-full flex flex-col bg-slate-50 dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300">
 
       {/* ─── HEADER ─── */}
-      <header className="h-14 border-b border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between px-4 lg:px-6 shrink-0 z-50 bg-white/90 dark:bg-[#13171f]/90 backdrop-blur-lg">
+      <header className="h-14 border-b border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between px-4 lg:px-6 shrink-0 z-50 bg-white/90 dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur-lg">
         <div className="flex items-center gap-3">
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
             <ChevronLeft size={18} />
@@ -363,7 +363,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           ${isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
           w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
-          bg-white dark:bg-[#13171f] border-r border-slate-200/80 dark:border-white/[0.08]
+          bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-slate-200/80 dark:border-white/[0.08]
           flex flex-col transition-transform duration-300
         `}>
           {/* Close mobile */}
@@ -468,7 +468,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                       <AnimatePresence>
                         {showModelMenu && (
                           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
-                            className="absolute bottom-full mb-1 w-full bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/[0.06] rounded-xl shadow-xl p-1.5 z-[110] max-h-48 overflow-y-auto no-scrollbar">
+                            className="absolute bottom-full mb-1 w-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-xl shadow-xl p-1.5 z-[110] max-h-48 overflow-y-auto no-scrollbar">
                             {v.availableModels.map(m => (
                               <button key={m._id} onClick={() => { v.setSelectedModel(m); setShowModelMenu(false); }}
                                 className={`w-full p-2.5 flex flex-col items-start rounded-lg transition-all text-left ${v.selectedModel?._id === m._id
@@ -515,7 +515,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           </div>
 
           {/* ─── FOOTER: Cost + Generate ─── */}
-          <div className="shrink-0 border-t border-slate-200/80 dark:border-white/[0.08] bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg px-4 py-3 space-y-2.5">
+          <div className="shrink-0 border-t border-slate-200/80 dark:border-white/[0.08] bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-lg px-4 py-3 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <button onClick={() => setShowQualityModal(true)} className="p-1 text-slate-400 dark:text-slate-500 hover:text-indigo-400 transition-colors rounded-md hover:bg-black/5 dark:hover:bg-white/5">
@@ -542,7 +542,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         </aside>
 
         {/* ─── VIEWPORT (Right) ─── */}
-        <div className="flex-grow flex flex-col bg-slate-50 dark:bg-[#0a0d14] overflow-hidden">
+        <div className="flex-grow flex flex-col bg-slate-50 dark:bg-[var(--atlas-bg-page)] overflow-hidden">
           <AnimatePresence mode="wait">
             {hasJobs ? (
               <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -601,7 +601,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
-              className="bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/[0.06] rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl">
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl">
               <div className="p-6 border-b border-slate-100 dark:border-white/[0.08] flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-500"><Info size={18} /></div>

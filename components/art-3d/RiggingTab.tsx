@@ -26,7 +26,7 @@ export const RiggingTab: React.FC<RiggingTabProps> = ({ variants }) => (
         
         {/* Mock Animation Label in image */}
         <div className="absolute top-1/2 right-10 -translate-y-12 z-20 space-y-2">
-            <div className="px-8 py-2 bg-[#5e5ce6] text-white text-[10px] font-black rounded-lg shadow-xl uppercase tracking-widest">
+            <div className="px-8 py-2 bg-[#5e5ce6] text-white text-[10px] font-bold rounded-lg shadow-xl uppercase tracking-widest">
                 Animation
             </div>
             <div className="grid grid-cols-2 gap-1.5 p-2 bg-black/40 backdrop-blur-md rounded-xl border border-white/10">
@@ -48,15 +48,15 @@ export const RiggingTab: React.FC<RiggingTabProps> = ({ variants }) => (
 
     {/* Bottom Controls */}
     <div className="mt-auto space-y-6 pt-6 border-t border-white/5 pb-4">
-      <button className="w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 hover:text-pink-400 transition-colors group">
+      <button className="w-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600 hover:text-pink-400 transition-colors group">
         v2.0-20250506 <ChevronUp size={12} className="group-hover:-translate-y-1 transition-transform" />
       </button>
 
       <button className="w-full py-4 px-6 bg-[#1c1d22] border border-white/5 rounded-full flex items-center justify-center gap-3 group hover:bg-[#25272d] transition-all shadow-xl active:scale-[0.98]">
-        <span className="text-xs font-black uppercase tracking-widest text-gray-400 italic">Auto Rig</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-gray-400 italic">Auto Rig</span>
         <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
           <Zap size={12} className="text-gray-500" fill="currentColor" />
-          <span className="text-[11px] font-black italic text-gray-500">20</span>
+          <span className="text-[11px] font-bold italic text-gray-500">20</span>
         </div>
       </button>
     </div>

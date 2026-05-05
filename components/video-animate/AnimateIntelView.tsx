@@ -71,7 +71,7 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
                   {mode === 'MOTION' ? <Move size={24} className="text-white" /> : <User size={24} className="text-white" />}
                 </div>
                 <div>
-                  <h2 className="text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
+                  <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">
                     {mode === 'MOTION' ? 'Motion AI' : 'Swap AI'}
                   </h2>
                   <p className="text-[11px] font-semibold text-indigo-500 dark:text-indigo-400 uppercase tracking-wider mt-1">

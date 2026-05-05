@@ -119,7 +119,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
   const boxShadow = useTransform(
     y,
     [-5, 0, 5],
-    ['0 8px 30px rgba(0,144,255,0.18)', '0 2px 8px rgba(0,0,0,0.08)', '0 8px 30px rgba(0,144,255,0.18)']
+    ['0 8px 30px rgba(112,54,240,0.18)', '0 2px 8px rgba(0,0,0,0.08)', '0 8px 30px rgba(112,54,240,0.18)']
   );
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -150,7 +150,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
         {!hasImage && !hasVideo && !isGenerating && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-[#0f0f14] dark:to-[#0a0a0e]">
             <Clapperboard size={isListView ? 24 : 32} className="text-slate-300 dark:text-white/35" />
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-white/35">Chưa render</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-300 dark:text-white/35">Chưa render</span>
           </div>
         )}
 
@@ -165,7 +165,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
             />
             <button
               onClick={(e) => { e.stopPropagation(); onView(); }}
-              className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-black uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
+              className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-bold uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
             >
               <Maximize2 size={10} /> <span className={isListView ? '' : 'hidden sm:inline'}>Xem</span>
             </button>
@@ -197,7 +197,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onView(); }}
-              className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-black uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
+              className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-bold uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
             >
               <Play size={10} fill="currentColor" /> <span className={isListView ? '' : 'hidden sm:inline'}>Xem</span>
             </button>
@@ -211,13 +211,13 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
               <Loader2 className="text-brand-blue animate-spin" size={28} />
               <div className="absolute inset-0 rounded-full bg-brand-blue/20 blur-xl animate-pulse" />
             </div>
-            <span className="text-[9px] font-black text-slate-700 dark:text-white uppercase tracking-[0.4em] animate-pulse">Rendering...</span>
+            <span className="text-[9px] font-bold text-slate-700 dark:text-white uppercase tracking-[0.4em] animate-pulse">Rendering...</span>
           </div>
         )}
 
         {/* Media type badge */}
-        {hasVideo && <div className="absolute top-2 right-9 bg-purple-600 text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md z-10">VIDEO</div>}
-        {hasImage && !hasVideo && <div className="absolute top-2 right-9 bg-brand-blue text-white text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md z-10">HÌNH</div>}
+        {hasVideo && <div className="absolute top-2 right-9 bg-purple-600 text-white text-[7px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md z-10">VIDEO</div>}
+        {hasImage && !hasVideo && <div className="absolute top-2 right-9 bg-brand-blue text-white text-[7px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md z-10">HÌNH</div>}
 
         {/* Selection checkbox */}
         <div
@@ -258,18 +258,18 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
       {characterAssets.length > 0 && (
         <div className="px-4 py-2 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5 flex items-center gap-2">
           <User size={10} className="text-emerald-500 shrink-0" />
-          <span className="text-[7px] font-black uppercase text-emerald-500 tracking-widest shrink-0">Mỏ neo:</span>
+          <span className="text-[7px] font-bold uppercase text-emerald-500 tracking-widest shrink-0">Mỏ neo:</span>
           <div className="flex -space-x-1.5">
             {characterAssets.slice(0, 4).map((asset) => (
               <div key={asset.id} className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0d0d10] overflow-hidden shadow-sm" title={asset.name}>
                 {asset.url
                   ? <img src={asset.url} className="w-full h-full object-cover" alt={asset.name} />
-                  : <div className="w-full h-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[7px] font-black text-slate-500">{asset.name.charAt(0)}</div>
+                  : <div className="w-full h-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[7px] font-bold text-slate-500">{asset.name.charAt(0)}</div>
                 }
               </div>
             ))}
             {characterAssets.length > 4 && (
-              <div className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0d0d10] bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[7px] font-black text-slate-500">+{characterAssets.length - 4}</div>
+              <div className="w-6 h-6 rounded-full border-2 border-white dark:border-[#0d0d10] bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[7px] font-bold text-slate-500">+{characterAssets.length - 4}</div>
             )}
           </div>
         </div>
@@ -277,7 +277,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
 
       {/* Prompt textarea */}
       <div className="px-4 py-3 flex-grow bg-white dark:bg-transparent">
-        <p className="text-[7px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-widest mb-1.5">Kịch bản chi tiết</p>
+        <p className="text-[7px] font-bold uppercase text-slate-400 dark:text-gray-400 tracking-widest mb-1.5">Kịch bản chi tiết</p>
         <textarea
           value={scene.prompt}
           onChange={(e) => onUpdate({ prompt: e.target.value })}
@@ -293,7 +293,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
           <div className="w-5 h-5 rounded-md bg-violet-500/15 flex items-center justify-center shrink-0">
             <Music2 size={10} className="text-violet-400" />
           </div>
-          <span className="text-[7px] font-black uppercase text-violet-400 tracking-widest shrink-0">Voice-over</span>
+          <span className="text-[7px] font-bold uppercase text-violet-400 tracking-widest shrink-0">Voice-over</span>
           <audio
             src={scene.audioUrl}
             controls
@@ -350,10 +350,10 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
         className={`relative flex overflow-hidden transition-all duration-300 cursor-pointer ml-1 rounded-2xl
           ${isListView ? 'flex-row min-h-[120px]' : 'flex-col'}
           ${isSelected
-            ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(0,144,255,0.12)]'
+            ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(112,54,240,0.12)]'
             : 'ring-1 ring-slate-200 dark:ring-white/8 hover:ring-brand-blue/30 hover:shadow-xl dark:hover:shadow-brand-blue/5'
           }
-          bg-white dark:bg-[#0a0d14]`}
+          bg-white dark:bg-[var(--atlas-bg-page)]`}
       >
         {visualArea}
         {infoPane}
@@ -489,7 +489,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-      className="flex-1 min-h-0 flex flex-col bg-[#fafafa] dark:bg-[#0a0d14] transition-colors duration-500 relative"
+      className="flex-1 min-h-0 flex flex-col bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] transition-colors duration-500 relative"
     >
       {/* ── Scrollable content area ──────────────────────────────── */}
       <div className="flex-1 overflow-y-auto no-scrollbar p-5 lg:p-8 pb-24">
@@ -502,12 +502,12 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
             <div>
               <div className="flex items-center gap-2.5">
                 <MonitorPlay size={18} className="text-brand-blue" />
-                <h3 className="text-xl lg:text-2xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">
+                <h3 className="text-xl lg:text-2xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">
                   🎬 Phân Cảnh{scenes.length > 0 ? ` (${scenes.length})` : ''}
                 </h3>
               </div>
               {scenes.length > 0 && selectedSceneIds.length > 0 && (
-                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400 mt-1 ml-7">
+                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400 mt-1 ml-7">
                   {selectedSceneIds.length} đã chọn
                 </p>
               )}
@@ -539,7 +539,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               {scenes.length > 0 && (
                 <button
                   onClick={selectAllScenes}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[9px] font-bold uppercase tracking-widest transition-all ${
                     allSelected
                       ? 'bg-brand-blue text-white border-brand-blue'
                       : 'border-slate-200 dark:border-white/8 text-slate-500 dark:text-gray-500 hover:border-brand-blue/30 hover:text-brand-blue'
@@ -557,13 +557,13 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   <button
                     onClick={onGenerateImages}
                     disabled={isProcessing}
-                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
                     <LucideImage size={12} /> Ảnh
                   </button>
                   <button
                     onClick={onGenerateVideos}
                     disabled={isProcessing}
-                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-purple-500 transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-purple-500 transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
                     <Film size={12} /> Video
                   </button>
                 </>
@@ -571,12 +571,12 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               {/* Bulk duration selector — visible when ≥2 scenes selected */}
               {selectedSceneIds.length >= 2 && onBulkDurationChange && (
                 <div className="flex items-center gap-1 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl px-2 py-1.5 shadow-sm">
-                  <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 mr-1">⏱</span>
+                  <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mr-1">⏱</span>
                   {([4, 8, 12, 16] as DurationPreset[]).map((d) => (
                     <button
                       key={d}
                       onClick={() => onBulkDurationChange(selectedSceneIds, d)}
-                      className="px-2 py-0.5 rounded-lg text-[9px] font-black text-slate-500 dark:text-white/50 hover:bg-brand-blue hover:text-white transition-all"
+                      className="px-2 py-0.5 rounded-lg text-[9px] font-bold text-slate-500 dark:text-white/50 hover:bg-brand-blue hover:text-white transition-all"
                       title={`Đặt ${d}s cho ${selectedSceneIds.length} cảnh`}
                     >
                       {d}s
@@ -641,7 +641,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                 <button
                   onClick={() => onAddAct()}
                   title="Tạo Act mới (nhóm cảnh)"
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-slate-400 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue hover:border-brand-blue/40 transition-all text-[10px] font-black"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-slate-400 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue hover:border-brand-blue/40 transition-all text-[10px] font-bold"
                 >
                   <Plus size={11} />
                   <span className="hidden lg:inline">Act</span>
@@ -666,7 +666,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   <Loader2 size={13} className="text-brand-blue animate-spin shrink-0" />
 
                   {/* Label */}
-                  <span className="text-[10px] font-black text-slate-500 dark:text-white/40 uppercase tracking-widest">
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-white/40 uppercase tracking-widest">
                     <span className="text-brand-blue">{processingCount}</span>
                     /{totalScenes} đang xử lý…
                   </span>
@@ -684,7 +684,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   </div>
 
                   {/* Percent */}
-                  <span className="text-[9px] font-black tabular-nums text-slate-400 dark:text-gray-400 shrink-0">
+                  <span className="text-[9px] font-bold tabular-nums text-slate-400 dark:text-gray-400 shrink-0">
                     {totalScenes > 0 ? Math.round(((totalScenes - processingCount) / totalScenes) * 100) : 0}%
                   </span>
                 </div>
@@ -713,7 +713,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="aspect-video bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl animate-pulse flex flex-col items-center justify-center gap-3">
                   <Loader2 className="animate-spin text-brand-blue/40" size={24} />
-                  <span className="text-[9px] font-black text-slate-300 dark:text-gray-400 uppercase tracking-widest">Đang phân tích...</span>
+                  <span className="text-[9px] font-bold text-slate-300 dark:text-gray-400 uppercase tracking-widest">Đang phân tích...</span>
                 </div>
               ))}
             </div>
@@ -731,7 +731,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
 
               {/* Title */}
               <div>
-                <p className="text-lg font-black uppercase italic tracking-tight text-slate-400 dark:text-gray-400">🎬 Chưa có phân cảnh nào</p>
+                <p className="text-lg font-bold uppercase italic tracking-tight text-slate-400 dark:text-gray-400">🎬 Chưa có phân cảnh nào</p>
                 <p className="text-[11px] text-slate-400 dark:text-gray-400 mt-1.5">Để bắt đầu, hãy làm theo 3 bước:</p>
               </div>
 
@@ -744,10 +744,10 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                 ].map((step, i) => (
                   <React.Fragment key={step.num}>
                     <div className="flex items-center gap-2.5 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/8 rounded-xl px-4 py-2.5 text-left">
-                      <span className="w-6 h-6 rounded-full bg-brand-blue/90 text-white text-[10px] font-black flex items-center justify-center shrink-0">{step.num}</span>
+                      <span className="w-6 h-6 rounded-full bg-brand-blue/90 text-white text-[10px] font-bold flex items-center justify-center shrink-0">{step.num}</span>
                       <span className="text-[11px] font-semibold text-slate-600 dark:text-gray-300 whitespace-nowrap">{step.text}</span>
                     </div>
-                    {i < 2 && <span className="text-slate-200 dark:text-white/35 font-black hidden sm:block">→</span>}
+                    {i < 2 && <span className="text-slate-200 dark:text-white/35 font-bold hidden sm:block">→</span>}
                   </React.Fragment>
                 ))}
               </div>
@@ -755,7 +755,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               {/* CTA */}
               <button
                 onClick={() => setIsTemplatePickerOpen(true)}
-                className="flex items-center gap-2 px-6 py-2.5 bg-brand-blue/10 hover:bg-brand-blue/20 border border-brand-blue/20 hover:border-brand-blue/40 rounded-xl text-[11px] font-black uppercase tracking-widest text-brand-blue transition-all"
+                className="flex items-center gap-2 px-6 py-2.5 bg-brand-blue/10 hover:bg-brand-blue/20 border border-brand-blue/20 hover:border-brand-blue/40 rounded-xl text-[11px] font-bold uppercase tracking-widest text-brand-blue transition-all"
               >
                 <LayoutGrid size={13} /> 📋 Dùng mẫu kịch bản có sẵn
               </button>
@@ -771,7 +771,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               </p>
               <button
                 onClick={() => setSearchQuery('')}
-                className="text-[10px] font-black text-brand-blue hover:underline"
+                className="text-[10px] font-bold text-brand-blue hover:underline"
               >
                 Xóa bộ lọc
               </button>
@@ -920,10 +920,10 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.92, opacity: 0, y: 8 }}
               transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-              className="bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
-              <p className="text-[11px] font-black uppercase tracking-widest text-rose-500 mb-1">Xác nhận xoá</p>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-rose-500 mb-1">Xác nhận xoá</p>
               <p className="text-[13px] font-semibold text-slate-700 dark:text-white/80 leading-snug">
                 Bạn có chắc muốn xoá cảnh này không?
               </p>
@@ -931,7 +931,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               <div className="flex items-center gap-2 mt-5">
                 <button
                   onClick={() => setKeyboardDeleteConfirm(null)}
-                  className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white transition-all"
+                  className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white transition-all"
                 >
                   Huỷ
                 </button>
@@ -940,7 +940,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                     onDeleteScene(keyboardDeleteConfirm);
                     setKeyboardDeleteConfirm(null);
                   }}
-                  className="flex-1 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-md"
+                  className="flex-1 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-bold uppercase tracking-widest transition-all shadow-md"
                 >
                   Xoá cảnh
                 </button>

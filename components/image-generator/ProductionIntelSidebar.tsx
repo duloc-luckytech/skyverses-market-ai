@@ -23,12 +23,12 @@ const TECHNICAL_METADATA = [
 
 export const ProductionIntelSidebar: React.FC = () => {
   return (
-    <aside className="hidden xl:flex w-[320px] shrink-0 border-l border-black/5 dark:border-white/5 bg-white dark:bg-[#13171f] flex flex-col overflow-hidden z-50 transition-all duration-500 shadow-2xl">
+    <aside className="hidden xl:flex w-[320px] shrink-0 border-l border-black/5 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)] flex flex-col overflow-hidden z-50 transition-all duration-500 shadow-2xl">
       {/* Header */}
       <div className="h-14 border-b border-black/5 dark:border-white/5 flex items-center px-6 shrink-0 bg-slate-50 dark:bg-black/20">
         <div className="flex items-center gap-3 text-rose-500">
           <Terminal size={16} />
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] italic">System_Intel_v4.2</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] italic">System_Intel_v4.2</span>
         </div>
       </div>
 
@@ -37,13 +37,13 @@ export const ProductionIntelSidebar: React.FC = () => {
         <section className="space-y-5">
            <div className="flex items-center gap-2 px-1">
               <Tag size={14} className="text-gray-400" />
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">Phân loại (Tags)</h4>
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">Phân loại (Tags)</h4>
            </div>
            <div className="flex flex-wrap gap-2">
               {CATEGORY_TAGS.map(tag => (
                 <button 
                   key={tag} 
-                  className="px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:border-rose-500 hover:text-rose-500 transition-all"
+                  className="px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-lg text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:border-rose-500 hover:text-rose-500 transition-all"
                 >
                   {tag}
                 </button>
@@ -55,25 +55,25 @@ export const ProductionIntelSidebar: React.FC = () => {
         <section className="space-y-5 pt-2 border-t border-black/5 dark:border-white/5">
            <div className="flex items-center gap-2 px-1">
               <Fingerprint size={14} className="text-rose-500" />
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">Visual DNA</h4>
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">Visual DNA</h4>
            </div>
            <div className="p-5 bg-slate-50 dark:bg-black/40 rounded-2xl border border-black/5 dark:border-white/5 space-y-4 shadow-inner">
               <div className="space-y-3">
-                 <div className="flex justify-between text-[8px] font-black uppercase text-gray-400">
+                 <div className="flex justify-between text-[8px] font-bold uppercase text-gray-400">
                     <span>Fidelity Level</span>
                     <span className="text-rose-500">98%</span>
                  </div>
                  <div className="h-1 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <motion.div initial={{ width: 0 }} animate={{ width: '98%' }} transition={{ duration: 1 }} className="h-full bg-rose-500 shadow-[0_0_10px_#0090ff]" />
+                    <motion.div initial={{ width: 0 }} animate={{ width: '98%' }} transition={{ duration: 1 }} className="h-full bg-rose-500 shadow-[0_0_10px_#7036F0]" />
                  </div>
               </div>
               <div className="space-y-3">
-                 <div className="flex justify-between text-[8px] font-black uppercase text-gray-400">
+                 <div className="flex justify-between text-[8px] font-bold uppercase text-gray-400">
                     <span>Composition Logic</span>
                     <span className="text-rose-500">Optimal</span>
                  </div>
                  <div className="h-1 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <motion.div initial={{ width: 0 }} animate={{ width: '85%' }} transition={{ duration: 1.2 }} className="h-full bg-rose-500 shadow-[0_0_10px_#0090ff]" />
+                    <motion.div initial={{ width: 0 }} animate={{ width: '85%' }} transition={{ duration: 1.2 }} className="h-full bg-rose-500 shadow-[0_0_10px_#7036F0]" />
                  </div>
               </div>
            </div>
@@ -83,13 +83,13 @@ export const ProductionIntelSidebar: React.FC = () => {
         <section className="space-y-5">
            <div className="flex items-center gap-2 px-1">
               <Cpu size={14} className="text-gray-400" />
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">Network Specs</h4>
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">Network Specs</h4>
            </div>
            <div className="grid grid-cols-1 gap-2">
               {TECHNICAL_METADATA.map(item => (
                 <div key={item.label} className="flex justify-between items-center p-3 bg-white dark:bg-white/[0.01] border border-black/5 border-slate-200 dark:border-white/5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{item.label}</span>
-                   <span className="text-[10px] font-black text-slate-900 dark:text-white uppercase italic group-hover:text-rose-500 transition-colors">{item.val}</span>
+                   <span className="text-[10px] font-bold text-slate-900 dark:text-white uppercase italic group-hover:text-rose-500 transition-colors">{item.val}</span>
                 </div>
               ))}
            </div>
@@ -99,7 +99,7 @@ export const ProductionIntelSidebar: React.FC = () => {
         <section className="p-6 bg-rose-500/5 border border-rose-500/10 rounded-2xl space-y-3">
            <div className="flex items-center gap-2 text-rose-500">
               <ShieldCheck size={14} />
-              <span className="text-[9px] font-black uppercase tracking-widest">Authorized_Node</span>
+              <span className="text-[9px] font-bold uppercase tracking-widest">Authorized_Node</span>
            </div>
            <p className="text-[9px] text-gray-500 dark:text-gray-400 font-bold leading-relaxed uppercase italic">
              Tác vụ được thực thi trên môi trường sandbox riêng tư. Dữ liệu được bảo mật tuyệt đối.
@@ -109,7 +109,7 @@ export const ProductionIntelSidebar: React.FC = () => {
 
       {/* Footer Actions */}
       <div className="p-6 border-t border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/20 shrink-0">
-         <button className="w-full py-4 border border-black/10 dark:border-white/10 text-slate-400 dark:text-gray-500 hover:text-rose-500 hover:border-rose-500/40 transition-all rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
+         <button className="w-full py-4 border border-black/10 dark:border-white/10 text-slate-400 dark:text-gray-500 hover:text-rose-500 hover:border-rose-500/40 transition-all rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2">
             <ExternalLink size={12} /> Registry Documentation
          </button>
       </div>

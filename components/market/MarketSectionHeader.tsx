@@ -29,10 +29,10 @@ export const MarketSectionHeader: React.FC<MarketSectionHeaderProps> = ({
         <Icon size={20} className={`${colorClass} md:w-6 md:h-6`} />
       </div>
       <div className="flex flex-col">
-        <h2 className={`text-xl md:text-4xl font-black uppercase tracking-tighter italic ${colorClass}`}>{title}</h2>
+        <h2 className={`text-xl md:text-4xl font-bold uppercase tracking-tighter italic ${colorClass}`}>{title}</h2>
         <div className="flex items-center gap-2">
           <div className={`h-0.5 w-8 md:w-12 rounded-full ${colorClass.replace('text-', 'bg-')}`}></div>
-          <span className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">
+          <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest">
             {subtitle || `${count} giải pháp`}
           </span>
         </div>
@@ -55,7 +55,7 @@ export const MarketSectionHeader: React.FC<MarketSectionHeaderProps> = ({
       </div>
       <button 
         onClick={onSeeAll}
-        className="flex items-center gap-1.5 md:gap-2 text-[9px] md:text-[10px] font-black uppercase text-gray-400 hover:text-brand-blue transition-colors py-1.5 px-3 bg-black/5 dark:bg-white/5 rounded-full md:bg-transparent md:p-0"
+        className="flex items-center gap-1.5 md:gap-2 text-[9px] md:text-[10px] font-bold uppercase text-gray-400 hover:text-brand-blue transition-colors py-1.5 px-3 bg-black/5 dark:bg-white/5 rounded-full md:bg-transparent md:p-0"
       >
         <span className="hidden xs:inline">Xem tất cả</span>
         <span className="xs:hidden">Tất cả</span>

@@ -5,11 +5,20 @@
 - Types chung: `types.ts` (`Language`, `Solution`, `SystemConfig`, `LocalizedString`, `NeuralStackItem`, `HomeBlock`, …)
 - `LocalizedString = { en, vi, ko, ja }` cho mọi i18n field
 
-## Styling
+## Styling — Atlas design system (refactor 2026-05)
 - Tailwind 3 cho mọi style — không inline style
-- Brand color: `brand-blue` (#0090ff), `brand-dark`, `brand-gray`, `brand-muted` (`tailwind.config.ts`)
-- Font: `Inter` (sans), `JetBrains Mono` (mono)
-- Dark mode: `darkMode: 'class'` → `<html class="dark">`
+- **Brand color (Atlas Cloud-inspired):** primary `atlas.purple` (#7036F0), hover `atlas.purpleHover` (#5326B5), secondary `atlas.indigo`, accent `atlas.orangeBright` (#FE6C11)
+- **Legacy alias:** `brand-blue` giờ trỏ tới #7036F0 (BC) — KHÔNG dùng cho code mới
+- **Token CSS vars** trong `src/index.css`: `--atlas-bg-page`, `--atlas-bg-panel`, `--atlas-text-primary`, `--atlas-border`, `--atlas-purple` (đổi tự động theo light/dark)
+- **Font:** `Manrope` (sans, primary), `Plus Jakarta Sans` (display), `Fragment Mono` (mono). Inter/JetBrains giữ làm fallback
+- **Border-radius default = 4px** (Atlas signature). Cards `rounded-atlas-card` (8px), pills `rounded-full`
+- **Shadows:** `shadow-atlas-xs/sm/md/lg/xl`, `shadow-atlas-glow` (purple brand glow)
+- **Gradients:** `bg-atlas-cta` (135deg purple), `bg-atlas-banner` (indigo), `atlas-text-gradient` cho heading
+- **Utility classes** (component layer): `atlas-btn`, `atlas-btn-outline`, `atlas-btn-ghost`, `atlas-card`, `atlas-pill`, `atlas-glass`, `atlas-nav`, `atlas-container`, `atlas-section`
+- **Primitives:** import từ `components/atlas` (AtlasButton, AtlasCard, AtlasSection, AtlasPill, AtlasHero)
+- **Easing:** `ease-atlas` (`cubic-bezier(.22,1,.36,1)`), `ease-atlas-spring`
+- **Stagger reveal:** wrap children với `.atlas-stagger`, set `style={{ '--i': N }}` (30ms increment)
+- Dark mode: `darkMode: 'class'` → `<html class="dark">` (token vars tự switch)
 
 ## Animation
 - `framer-motion` cho show/hide: `<motion.div>` + `<AnimatePresence>`

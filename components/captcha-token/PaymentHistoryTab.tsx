@@ -12,16 +12,16 @@ interface PaymentHistoryTabProps {
 export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({ logs, loading }) => {
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
-      <div className="bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all">
+      <div className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all">
          <div className="p-8 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50/50 dark:bg-black/20">
             <div className="flex items-center gap-3">
                <CreditCard size={20} className="text-indigo-600" />
-               <h3 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Lịch sử Thanh toán.</h3>
+               <h3 className="text-xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">Lịch sử Thanh toán.</h3>
             </div>
             {loading && (
               <div className="flex items-center gap-2">
                 <Loader2 size={14} className="animate-spin text-indigo-600" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Đang đồng bộ...</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Đang đồng bộ...</span>
               </div>
             )}
          </div>
@@ -29,7 +29,7 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({ logs, load
          <div className="overflow-x-auto no-scrollbar">
             <table className="w-full text-left border-collapse font-mono">
                <thead>
-                  <tr className="bg-black/5 dark:bg-white/5 text-[9px] font-black uppercase tracking-widest text-gray-500">
+                  <tr className="bg-black/5 dark:bg-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500">
                      <th className="px-10 py-6">Mã Giao dịch / BankRef</th>
                      <th className="px-10 py-6">Ngày nạp</th>
                      <th className="px-10 py-6">Gói cước</th>
@@ -42,14 +42,14 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({ logs, load
                     <tr>
                       <td colSpan={5} className="py-32 text-center">
                          <Loader2 size={48} className="mx-auto mb-4 text-indigo-600 animate-spin" />
-                         <p className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse">Syncing_Ledger...</p>
+                         <p className="text-[10px] font-bold uppercase tracking-[0.5em] animate-pulse">Syncing_Ledger...</p>
                       </td>
                     </tr>
                   ) : logs.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="py-32 text-center opacity-10">
                          <Activity size={48} className="mx-auto mb-4" />
-                         <p className="text-[10px] font-black uppercase tracking-[0.5em]">Chưa có dữ liệu thanh toán</p>
+                         <p className="text-[10px] font-bold uppercase tracking-[0.5em]">Chưa có dữ liệu thanh toán</p>
                       </td>
                     </tr>
                   ) : logs.map(l => (
@@ -77,16 +77,16 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({ logs, load
                           </div>
                        </td>
                        <td className="px-10 py-6">
-                          <span className={`px-2 py-0.5 rounded text-[8px] font-black shadow-sm bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 uppercase`}>
+                          <span className={`px-2 py-0.5 rounded text-[8px] font-bold shadow-sm bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 uppercase`}>
                             {l.plan?.name || 'Standard'}
                           </span>
                        </td>
-                       <td className="px-10 py-6 text-right font-black italic text-slate-900 dark:text-white">
+                       <td className="px-10 py-6 text-right font-bold italic text-slate-900 dark:text-white">
                           {l.amount.toLocaleString()} {l.currency || 'VND'}
                        </td>
                        <td className="px-10 py-6">
                           <div className="flex items-center justify-center">
-                            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase ${
+                            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
                               l.status === 'SUCCESS' ? 'text-emerald-500 bg-emerald-500/10' : 
                               l.status === 'FAILED' ? 'text-red-500 bg-red-500/10' : 
                               'text-orange-500 bg-orange-500/10'

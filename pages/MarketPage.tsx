@@ -217,16 +217,15 @@ const MarketPage = () => {
   const activeFeatured = featuredSolutions[featuredIdx];
 
   return (
-    <div className="relative min-h-screen bg-[#fcfcfd] dark:bg-[#0a0d14] font-sans transition-colors duration-500">
+    <div className="relative min-h-screen bg-[var(--atlas-bg-page)] font-sans transition-colors duration-500">
       {/* ═══ LIGHTWEIGHT BACKGROUND ═══ */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* Static gradient blobs — no animations, minimal blur */}
-        <div className="absolute top-[-10%] left-[40%] w-[600px] h-[400px] bg-brand-blue/[0.04] dark:bg-brand-blue/[0.06] rounded-full blur-[80px]" />
-        <div className="absolute top-[65%] left-[-5%] w-[350px] h-[350px] bg-purple-500/[0.03] dark:bg-purple-500/[0.04] rounded-full blur-[60px]" />
-        {/* Single subtle aurora — static */}
-        <div className="absolute top-[15%] left-0 right-0 h-[150px] bg-gradient-to-r from-transparent via-brand-blue/[0.04] to-transparent blur-[40px] rotate-[-4deg] opacity-40 dark:opacity-50" />
-        {/* Grid overlay */}
-        <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(0,144,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,144,255,0.3) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
+        {/* Atlas-style gradient blobs — purple + orange accents */}
+        <div className="absolute top-[-10%] left-[40%] w-[600px] h-[400px] bg-atlas-purple/[0.06] dark:bg-atlas-purple/[0.10] rounded-full blur-[80px]" />
+        <div className="absolute top-[65%] left-[-5%] w-[350px] h-[350px] bg-atlas-orangeBright/[0.04] dark:bg-atlas-orangeBright/[0.06] rounded-full blur-[60px]" />
+        <div className="absolute top-[15%] left-0 right-0 h-[150px] bg-gradient-to-r from-transparent via-atlas-purple/[0.05] to-transparent blur-[40px] rotate-[-4deg] opacity-50" />
+        {/* Atlas grid overlay (50px) */}
+        <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(112,54,240,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(112,54,240,0.3) 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
       </div>
 
       <div className="relative z-10">
@@ -236,7 +235,7 @@ const MarketPage = () => {
             {/* Lightweight floating particles — desktop only */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
               {[0, 1, 2, 3].map(i => (
-                <div key={i} className={`absolute rounded-full ${i % 2 === 0 ? 'w-1.5 h-1.5 bg-brand-blue/30' : 'w-1 h-1 bg-purple-400/25'}`} style={{
+                <div key={i} className={`absolute rounded-full ${i % 2 === 0 ? 'w-1.5 h-1.5 bg-atlas-purple/40' : 'w-1 h-1 bg-atlas-orangeBright/30'}`} style={{
                   left: `${15 + i * 20}%`, top: `${20 + ((i * 17) % 50)}%`,
                   animation: `float ${3 + i * 0.8}s ease-in-out infinite ${i * 0.5}s`
                 }} />
@@ -253,9 +252,9 @@ const MarketPage = () => {
                   transition={{ duration: 0.6, delay: 0.1 }}
                   className="hidden md:block"
                 >
-                  <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25">
-                    <div className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-blue">Skyverses AI Ecosystem</span>
+                  <div className="atlas-pill">
+                    <div className="w-1.5 h-1.5 rounded-full bg-atlas-purple animate-pulse" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.25em]">Skyverses AI Ecosystem</span>
                   </div>
                 </motion.div>
 
@@ -266,10 +265,10 @@ const MarketPage = () => {
                   transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
                   className="space-y-3"
                 >
-                  <h1 className="text-[1.6rem] md:text-[3.5rem] lg:text-[4.2rem] font-black tracking-[-0.04em] leading-[1.1] md:leading-[1.05] text-slate-900 dark:text-white">
+                  <h1 className="text-[1.75rem] md:text-[3.25rem] lg:text-[3.75rem] font-bold tracking-[-0.02em] leading-[1.1] md:leading-[1.05] text-[var(--atlas-text-primary)]">
                     {t('home.hero.title1')}{' '}
                     <span className="relative inline-block">
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500 bg-[length:200%_auto] animate-[gradient_4s_ease_infinite]">
+                      <span className="atlas-text-gradient bg-[length:200%_auto] animate-[atlasGradientShift_5s_ease_infinite]">
                         {t('home.hero.title_highlight')}
                       </span>
                     </span>
@@ -280,7 +279,7 @@ const MarketPage = () => {
                   <motion.p
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                     transition={{ delay: 0.6, duration: 0.8 }}
-                    className="text-[13px] md:text-lg text-slate-500 dark:text-gray-400 leading-relaxed max-w-xl"
+                    className="text-[13px] md:text-lg text-[var(--atlas-text-secondary)] leading-relaxed max-w-xl"
                   >
                     {t('home.hero.subtitle')}
                     <span className="hidden md:inline">{t('home.hero.subtitle2')}</span>
@@ -296,21 +295,20 @@ const MarketPage = () => {
                 >
                   <button
                     onClick={() => navigate('/markets')}
-                    className="group relative inline-flex items-center gap-2 md:gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-5 py-3 md:px-7 md:py-4 rounded-xl md:rounded-2xl text-[13px] md:text-sm font-bold shadow-xl hover:shadow-2xl hover:shadow-brand-blue/20 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
+                    className="group relative inline-flex items-center gap-2 md:gap-3 bg-atlas-cta text-white px-5 py-3 md:px-7 md:py-4 rounded text-[13px] md:text-sm font-semibold hover:shadow-atlas-glow hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 ease-atlas"
                     aria-label={t('home.hero.cta1')}
                   >
-                    <span className="absolute inset-0 bg-gradient-to-r from-brand-blue to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <span className="relative z-10 flex items-center gap-3 group-hover:text-white">
+                    <span className="relative z-10 flex items-center gap-3">
                       {t('home.hero.cta1')}
                       <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform duration-300" />
                     </span>
                   </button>
                   <button
                     onClick={() => navigate('/markets')}
-                    className="inline-flex items-center gap-2 md:gap-3 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-5 py-3 md:px-7 md:py-4 rounded-xl md:rounded-2xl text-[13px] md:text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/10 hover:border-brand-blue/30 transition-all duration-300"
+                    className="inline-flex items-center gap-2 md:gap-3 bg-transparent text-[var(--atlas-text-primary)] border border-[var(--atlas-border)] px-5 py-3 md:px-7 md:py-4 rounded text-[13px] md:text-sm font-semibold hover:border-atlas-purple hover:text-atlas-purple hover:bg-atlas-purple/5 transition-all duration-200"
                     aria-label={t('home.hero.cta2')}
                   >
-                    <Play size={14} className="text-brand-blue" fill="currentColor" />
+                    <Play size={14} className="text-atlas-purple" fill="currentColor" />
                     {t('home.hero.cta2')}
                   </button>
                 </motion.div>
@@ -332,7 +330,7 @@ const MarketPage = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.9 + si * 0.15, type: 'spring', stiffness: 200 }}
                     >
-                      <div className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                      <div className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
                         <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                       </div>
                       <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">{stat.label}</div>
@@ -346,7 +344,7 @@ const MarketPage = () => {
               <div className="md:hidden mt-3 -mx-4 px-4">
                 <div className="flex items-center gap-1.5 mb-2.5">
                   <Zap size={10} className="text-orange-500" fill="currentColor" />
-                  <span className="text-[8px] font-black uppercase tracking-[0.25em] text-orange-500">Trending</span>
+                  <span className="text-[8px] font-bold uppercase tracking-[0.25em] text-orange-500">Trending</span>
                 </div>
                 {featuredSolutions.length === 0 ? (
                   <div className="flex gap-3 overflow-hidden">
@@ -372,12 +370,12 @@ const MarketPage = () => {
                       stats={getFakeStats(sol._id || sol.id)}
                     />
                   ))}
-                  <div onClick={() => navigate('/markets')} className="flex-shrink-0 snap-start w-[140px] flex flex-col items-center justify-center bg-slate-50 dark:bg-[#0a0d14] border border-black/[0.08] dark:border-white/[0.08] rounded-xl cursor-pointer hover:border-brand-blue/40 transition-all p-4 text-center space-y-3">
+                  <div onClick={() => navigate('/markets')} className="flex-shrink-0 snap-start w-[140px] flex flex-col items-center justify-center bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl cursor-pointer hover:border-brand-blue/40 transition-all p-4 text-center space-y-3">
                     <div className="w-10 h-10 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue">
                       <ArrowRight size={18} />
                     </div>
                     <div className="space-y-0.5">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-800 dark:text-white">{t('home.hero.view_all')}</p>
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-slate-800 dark:text-white">{t('home.hero.view_all')}</p>
                       <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tight">{solutions.length} {t('home.grid.solutions')}</p>
                     </div>
                   </div>
@@ -414,7 +412,7 @@ const MarketPage = () => {
                       initial={{ opacity: 0, x: -8 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.6, duration: 0.4 }}
-                      className="text-[9px] font-black uppercase tracking-[0.25em] text-orange-500/80"
+                      className="text-[9px] font-bold uppercase tracking-[0.25em] text-orange-500/80"
                     >Trending</motion.span>
                     <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.7, duration: 0.6 }} className="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent ml-1 origin-left" />
                   </div>
@@ -451,7 +449,7 @@ const MarketPage = () => {
 
                         {/* Category badge */}
                         <div className="absolute top-4 left-4 z-10">
-                          <span className="px-2.5 py-1 bg-brand-blue/90 backdrop-blur-sm text-white text-[8px] font-black uppercase tracking-[0.2em] rounded-md">
+                          <span className="px-2.5 py-1 bg-brand-blue/90 backdrop-blur-sm text-white text-[8px] font-bold uppercase tracking-[0.2em] rounded-md">
                             {featuredSolutions[0]?.category[lang as Language]}
                           </span>
                         </div>
@@ -468,9 +466,9 @@ const MarketPage = () => {
                         <div className="absolute bottom-0 left-0 right-0 p-5 lg:p-6 z-10">
                           <div className="flex items-center gap-2 mb-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-emerald-400/90">Featured</span>
+                            <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-emerald-400/90">Featured</span>
                           </div>
-                          <h3 className="text-lg lg:text-2xl font-black text-white tracking-tight leading-tight mb-2">
+                          <h3 className="text-lg lg:text-2xl font-bold text-white tracking-tight leading-tight mb-2">
                             {featuredSolutions[0]?.name[lang as Language]}
                           </h3>
                           <p className="text-[11px] lg:text-xs text-white/60 leading-relaxed line-clamp-2 max-w-xs mb-3">
@@ -482,11 +480,11 @@ const MarketPage = () => {
                               <span className="text-[9px] font-bold">{getFakeStats(featuredSolutions[0]?._id || featuredSolutions[0]?.id).users}</span>
                             </div>
                             {featuredSolutions[0]?.isFree ? (
-                              <span className="px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[8px] font-black uppercase tracking-widest rounded-sm">Free</span>
+                              <span className="px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[8px] font-bold uppercase tracking-widest rounded-sm">Free</span>
                             ) : (
                               <div className="flex items-center gap-1 px-2 py-0.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/10">
                                 <Zap size={9} className="text-brand-blue" fill="currentColor" />
-                                <span className="text-[9px] font-black text-white">{featuredSolutions[0]?.priceCredits}</span>
+                                <span className="text-[9px] font-bold text-white">{featuredSolutions[0]?.priceCredits}</span>
                               </div>
                             )}
                           </div>
@@ -495,7 +493,7 @@ const MarketPage = () => {
                           <div className="mt-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                             <div className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg flex items-center gap-2">
                               <Sparkles size={11} className="text-brand-blue" fill="currentColor" />
-                              <span className="text-[9px] font-black text-white uppercase tracking-wider">{t('home.hero.explore_now')}</span>
+                              <span className="text-[9px] font-bold text-white uppercase tracking-wider">{t('home.hero.explore_now')}</span>
                               <ArrowRight size={11} className="text-white/60" />
                             </div>
                           </div>
@@ -516,7 +514,7 @@ const MarketPage = () => {
                             }}
                             whileHover={{ x: -4, transition: { duration: 0.2 } }}
                             onClick={() => handleNavigate(sol.slug)}
-                            className="flex-1 relative rounded-xl overflow-hidden cursor-pointer group bg-white dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 transition-all duration-300 flex"
+                            className="flex-1 relative rounded-xl overflow-hidden cursor-pointer group bg-white dark:bg-[var(--atlas-bg-page)] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 transition-all duration-300 flex"
                           >
                             {/* Mini thumbnail */}
                             <div className="w-[38%] relative overflow-hidden">
@@ -530,8 +528,8 @@ const MarketPage = () => {
                             </div>
                             {/* Content */}
                             <div className="flex-1 p-3 lg:p-4 flex flex-col justify-center gap-1.5">
-                              <span className="text-[7px] font-black uppercase tracking-[0.2em] text-brand-blue/60">{sol.category[lang as Language]}</span>
-                              <h3 className="text-[11px] lg:text-[13px] font-black text-slate-900 dark:text-white tracking-tight leading-snug line-clamp-1">
+                              <span className="text-[7px] font-bold uppercase tracking-[0.2em] text-brand-blue/60">{sol.category[lang as Language]}</span>
+                              <h3 className="text-[11px] lg:text-[13px] font-bold text-slate-900 dark:text-white tracking-tight leading-snug line-clamp-1">
                                 {sol.name[lang as Language]}
                               </h3>
                               <div className="flex items-center gap-3 mt-auto">
@@ -540,7 +538,7 @@ const MarketPage = () => {
                                   <span className="text-[8px] font-bold">{getFakeStats(sol._id || sol.id).users}</span>
                                 </div>
                                 {sol.isFree ? (
-                                  <span className="text-[7px] font-black text-emerald-500 uppercase">Free</span>
+                                  <span className="text-[7px] font-bold text-emerald-500 uppercase">Free</span>
                                 ) : (
                                   <div className="flex items-center gap-0.5">
                                     <Zap size={8} className="text-brand-blue" fill="currentColor" />
@@ -600,7 +598,7 @@ const MarketPage = () => {
                 <div key={item.title} className={`flex-shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-xl ${item.bg} border ${item.border} backdrop-blur-sm`}>
                   <div className={`${item.color}`}>{item.icon}</div>
                   <div className="flex items-center gap-1.5">
-                    <span className={`text-sm font-black ${item.color}`}>{item.stat}</span>
+                    <span className={`text-sm font-bold ${item.color}`}>{item.stat}</span>
                     <span className="text-[9px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">{item.title}</span>
                   </div>
                 </div>
@@ -631,7 +629,7 @@ const MarketPage = () => {
                       {item.icon}
                     </div>
                     <div className="mb-3">
-                      <span className={`text-3xl md:text-4xl font-black tracking-tight ${item.color}`}>{item.stat}</span>
+                      <span className={`text-3xl md:text-4xl font-bold tracking-tight ${item.color}`}>{item.stat}</span>
                       <span className="block text-[8px] font-bold text-slate-400 dark:text-gray-600 uppercase tracking-[0.3em] mt-1">{item.statLabel}</span>
                     </div>
                     <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">{item.title}</h3>
@@ -654,9 +652,9 @@ const MarketPage = () => {
                 <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full mb-3 md:mb-5">
                     <Sparkles size={12} className="text-brand-blue" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">How It Works</span>
+                    <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-brand-blue">How It Works</span>
                   </div>
-                  <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
+                  <h2 className="text-xl md:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
                     {t('home.hiw.title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">{t('home.hiw.title_highlight')}</span>
                   </h2>
                   <p className="text-xs md:text-base text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">{t('home.hiw.subtitle')}</p>
@@ -684,16 +682,16 @@ const MarketPage = () => {
                         <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                         <div className="absolute top-2 left-2 md:top-3 md:left-3">
-                          <span className="px-2 py-0.5 bg-brand-blue/20 backdrop-blur-sm border border-brand-blue/30 text-[8px] font-black text-brand-blue uppercase tracking-widest rounded-md">Step {item.step}</span>
+                          <span className="px-2 py-0.5 bg-brand-blue/20 backdrop-blur-sm border border-brand-blue/30 text-[8px] font-bold text-brand-blue uppercase tracking-widest rounded-md">Step {item.step}</span>
                         </div>
                       </div>
                       {/* Text */}
                       <div className="p-4 md:p-6 space-y-1.5 md:space-y-3">
-                        <h3 className="text-sm md:text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
+                        <h3 className="text-sm md:text-lg font-bold text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
                         <p className="text-[10px] md:text-sm text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-3 md:line-clamp-none">{item.desc}</p>
                       </div>
                       {idx < 2 && (
-                        <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] items-center justify-center shadow-lg">
+                        <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[var(--atlas-bg-page)] border border-black/[0.06] dark:border-white/[0.06] items-center justify-center shadow-lg">
                           <ChevronRight size={14} className="text-brand-blue animate-[pulse_2s_ease-in-out_infinite]" />
                         </div>
                       )}
@@ -768,13 +766,13 @@ const MarketPage = () => {
 
                         <div
                           onClick={() => navigate('/markets')}
-                          className="flex-shrink-0 snap-start w-[180px] md:hidden flex flex-col items-center justify-center bg-slate-50 dark:bg-[#0a0d14] border border-black/[0.08] dark:border-white/[0.08] rounded-xl group cursor-pointer hover:border-brand-blue/40 transition-all p-6 text-center space-y-4"
+                          className="flex-shrink-0 snap-start w-[180px] md:hidden flex flex-col items-center justify-center bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl group cursor-pointer hover:border-brand-blue/40 transition-all p-6 text-center space-y-4"
                         >
                           <div className="w-12 h-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
                             <ArrowRight size={24} />
                           </div>
                           <div className="space-y-1">
-                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-800 dark:text-white">{t('home.hero.view_all')}</p>
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-slate-800 dark:text-white">{t('home.hero.view_all')}</p>
                             <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tight">{blockSolutions.length} {t('home.grid.solutions')}</p>
                           </div>
                         </div>
@@ -786,8 +784,8 @@ const MarketPage = () => {
             ) : (
               <div className="py-40 text-center space-y-6 opacity-30">
                 <SearchX size={48} className="mx-auto mb-4" />
-                <p className="text-sm font-black uppercase tracking-widest">{t('market.search.no_matches')}</p>
-                <button onClick={() => { setQuery(''); setPrimary('ALL'); setSecondary('ALL'); }} className="text-[10px] font-black uppercase tracking-widest text-brand-blue hover:underline">{t('market.search.reset')}</button>
+                <p className="text-sm font-bold uppercase tracking-widest">{t('market.search.no_matches')}</p>
+                <button onClick={() => { setQuery(''); setPrimary('ALL'); setSecondary('ALL'); }} className="text-[10px] font-bold uppercase tracking-widest text-brand-blue hover:underline">{t('market.search.reset')}</button>
               </div>
             )}
           </div>
@@ -798,9 +796,9 @@ const MarketPage = () => {
               <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="text-center mb-6 md:mb-14">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/8 dark:bg-emerald-500/15 border border-emerald-500/15 dark:border-emerald-500/25 rounded-full mb-3 md:mb-5">
                   <Globe2 size={12} className="text-emerald-500" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500">Use Cases</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-emerald-500">Use Cases</span>
                 </div>
-                <h2 className="text-xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
+                <h2 className="text-xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
                   {t('home.usecase.title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-brand-blue">{t('home.usecase.title_highlight')}</span>
                 </h2>
                 <p className="text-xs md:text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">{t('home.usecase.subtitle')}</p>
@@ -831,7 +829,7 @@ const MarketPage = () => {
                     </div>
                     {/* Text */}
                     <div className="p-3 md:p-5 space-y-2 md:space-y-3">
-                      <h3 className="text-sm md:text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.industry}</h3>
+                      <h3 className="text-sm md:text-lg font-bold text-slate-900 dark:text-white tracking-tight">{item.industry}</h3>
                       <p className="text-[10px] md:text-xs text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-2 md:line-clamp-none">{item.desc}</p>
                       <div className="flex flex-wrap gap-1 md:gap-1.5 pt-1">
                         {item.tools.map(tool => (
@@ -851,9 +849,9 @@ const MarketPage = () => {
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-6 md:mb-14">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/8 dark:bg-amber-500/15 border border-amber-500/15 dark:border-amber-500/25 rounded-full mb-3 md:mb-5">
                   <Sparkles size={12} className="text-amber-500" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">Testimonials</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-amber-500">Testimonials</span>
                 </div>
-                <h2 className="text-xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
+                <h2 className="text-xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
                   {t('home.testimonial.title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">{t('home.testimonial.title_highlight')}</span>
                 </h2>
               </motion.div>
@@ -886,7 +884,7 @@ const MarketPage = () => {
                       </div>
                       <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed italic">"{item.quote}"</p>
                       <div className="flex items-center gap-3 pt-2 border-t border-black/[0.04] dark:border-white/[0.04]">
-                        <div className={`relative w-10 h-10 rounded-full ${item.avatarBg} flex items-center justify-center text-sm font-black`}>
+                        <div className={`relative w-10 h-10 rounded-full ${item.avatarBg} flex items-center justify-center text-sm font-bold`}>
                           {item.initials}
                         </div>
                         <div>
@@ -912,9 +910,9 @@ const MarketPage = () => {
                     <div className="space-y-2 md:space-y-3">
                       <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full">
                         <Zap size={12} className="text-amber-400" fill="currentColor" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-400">Universal Credits</span>
+                        <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-amber-400">Universal Credits</span>
                       </div>
-                      <h2 className="text-xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
+                      <h2 className="text-xl md:text-4xl font-bold tracking-tight text-white leading-[1.1]">
                         {t('home.credits.title1')}{' '}
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
                           {t('home.credits.title_highlight')}
@@ -953,7 +951,7 @@ const MarketPage = () => {
                           <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                           <div className="absolute top-2 left-2 md:top-3 md:left-3">
-                            <span className="px-2 py-0.5 bg-amber-500/20 backdrop-blur-sm border border-amber-500/30 text-[8px] font-black text-amber-400 uppercase tracking-widest rounded-md">Step {item.step}</span>
+                            <span className="px-2 py-0.5 bg-amber-500/20 backdrop-blur-sm border border-amber-500/30 text-[8px] font-bold text-amber-400 uppercase tracking-widest rounded-md">Step {item.step}</span>
                           </div>
                         </div>
                         <div className="p-3 md:p-5 space-y-1.5 md:space-y-2">
@@ -1007,7 +1005,7 @@ const MarketPage = () => {
                       <div className="shrink-0 space-y-2">
                         <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
                           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400">{t('home.credits.payment')}</span>
+                          <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-400">{t('home.credits.payment')}</span>
                         </div>
                         <p className="text-sm font-bold text-white/60 max-w-[160px] leading-relaxed">
                           {t('home.credits.payment_desc')}
@@ -1026,7 +1024,7 @@ const MarketPage = () => {
                               <Landmark size={20} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-black text-white mb-1">{t('home.credits.bank')}</p>
+                              <p className="text-sm font-bold text-white mb-1">{t('home.credits.bank')}</p>
                               <p className="text-[10px] text-white/35 leading-relaxed">{t('home.credits.bank_desc')}</p>
                               <div className="flex flex-wrap gap-1.5 mt-3">
                                 {['Vietcombank', 'Techcombank', 'MB Bank', 'BIDV'].map(b => (
@@ -1058,7 +1056,7 @@ const MarketPage = () => {
                               </svg>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-black text-white mb-1">Crypto USDT</p>
+                              <p className="text-sm font-bold text-white mb-1">Crypto USDT</p>
                               <p className="text-[10px] text-white/35 leading-relaxed">BSC / ETH — MetaMask, Trust Wallet, Coinbase</p>
                               <div className="flex flex-wrap gap-1.5 mt-3">
                                 {['BEP-20', 'ERC-20', 'MetaMask', 'WalletConnect'].map(b => (
@@ -1085,7 +1083,7 @@ const MarketPage = () => {
                       >
                         <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <Sparkles size={20} className="relative z-10" fill="currentColor" />
-                        <span className="relative z-10 text-xs font-black whitespace-nowrap">{t('home.credits.topup')}</span>
+                        <span className="relative z-10 text-xs font-bold whitespace-nowrap">{t('home.credits.topup')}</span>
                       </motion.button>
                     </div>
                   </div>
@@ -1101,9 +1099,9 @@ const MarketPage = () => {
               <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="text-center mb-6 md:mb-14">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/8 dark:bg-amber-500/15 border border-amber-500/15 dark:border-amber-500/25 rounded-full mb-3 md:mb-5">
                   <Cpu size={12} className="text-amber-500" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">Enterprise Solutions</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-amber-500">Enterprise Solutions</span>
                 </div>
-                <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
+                <h2 className="text-xl md:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
                   {t('home.enterprise.title1')}{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500">
                     {t('home.enterprise.title_highlight')}
@@ -1137,7 +1135,7 @@ const MarketPage = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                       {/* Tag badge */}
                       <div className="absolute top-2 left-2 md:top-3 md:left-3">
-                        <span className={`px-2 py-0.5 backdrop-blur-sm border text-[8px] font-black uppercase tracking-widest rounded-md ${item.tagBg}`}>{item.tag}</span>
+                        <span className={`px-2 py-0.5 backdrop-blur-sm border text-[8px] font-bold uppercase tracking-widest rounded-md ${item.tagBg}`}>{item.tag}</span>
                       </div>
                       {/* Icon in bottom-right of overlay */}
                       <div className="absolute bottom-2.5 right-2.5 md:bottom-4 md:right-4">
@@ -1148,7 +1146,7 @@ const MarketPage = () => {
                     </div>
                     {/* Text content */}
                     <div className="p-3 md:p-5 space-y-1.5 md:space-y-2">
-                      <h3 className="text-sm md:text-base font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
+                      <h3 className="text-sm md:text-base font-bold text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
                       <p className="text-[10px] md:text-xs text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-2 md:line-clamp-none">{item.desc}</p>
                     </div>
                   </motion.div>
@@ -1196,33 +1194,33 @@ const MarketPage = () => {
                     <div className="flex items-center justify-between">
                       <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue/10 dark:bg-brand-blue/15 border border-brand-blue/20 rounded-full">
                         <Users size={10} className="text-brand-blue" />
-                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-blue">{t('home.referral.badge')}</span>
+                        <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-brand-blue">{t('home.referral.badge')}</span>
                       </div>
                       <ArrowRight size={16} className="text-brand-blue" />
                     </div>
 
-                    <h2 className="text-lg font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                    <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
                       {t('home.referral.title_mobile1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">{t('home.referral.title_mobile_highlight')}</span>
                     </h2>
 
                     {/* Reward pills inline */}
                     <div className="flex gap-2">
-                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[#13171f] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
+                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
                         <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-blue to-blue-600 flex items-center justify-center text-white shrink-0">
                           <Zap size={16} fill="currentColor" />
                         </div>
                         <div>
                           <p className="text-[8px] text-slate-400 font-medium">{t('home.referral.you_get')}</p>
-                          <p className="text-sm font-black text-slate-900 dark:text-white">+50 CR</p>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white">+50 CR</p>
                         </div>
                       </div>
-                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[#13171f] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
+                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
                         <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white shrink-0">
                           <Gift size={16} />
                         </div>
                         <div>
                           <p className="text-[8px] text-slate-400 font-medium">{t('home.referral.friend_gets')}</p>
-                          <p className="text-sm font-black text-slate-900 dark:text-white">+50 CR</p>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white">+50 CR</p>
                         </div>
                       </div>
                     </div>
@@ -1259,13 +1257,13 @@ const MarketPage = () => {
                 <div className="flex items-center justify-center gap-5 py-2.5 px-4 bg-slate-50 dark:bg-white/[0.02] rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
                   <div className="flex items-center gap-1.5">
                     <Users size={11} className="text-brand-blue" />
-                    <span className="text-xs font-black text-slate-900 dark:text-white">2,847</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">2,847</span>
                     <span className="text-[7px] font-bold text-slate-400 uppercase">{t('home.referral.stat_joined')}</span>
                   </div>
                   <div className="w-px h-4 bg-black/[0.06] dark:bg-white/[0.06]" />
                   <div className="flex items-center gap-1.5">
                     <Zap size={11} className="text-amber-500" fill="currentColor" />
-                    <span className="text-xs font-black text-brand-blue">142K</span>
+                    <span className="text-xs font-bold text-brand-blue">142K</span>
                     <span className="text-[7px] font-bold text-slate-400 uppercase">{t('home.referral.stat_given')}</span>
                   </div>
                 </div>
@@ -1283,9 +1281,9 @@ const MarketPage = () => {
                   <div className="flex-1 text-left space-y-6">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/10 dark:bg-brand-blue/15 border border-brand-blue/20 rounded-full">
                       <Users size={12} className="text-brand-blue" />
-                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">{t('home.referral.badge')}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-brand-blue">{t('home.referral.badge')}</span>
                     </div>
-                    <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1]">
+                    <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
                       {t('home.referral.title_desktop1')}{' '}
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">{t('home.referral.title_desktop_highlight')}</span>
                     </h2>
@@ -1327,14 +1325,14 @@ const MarketPage = () => {
                           whileInView={{ opacity: 1, x: 0 }}
                           viewport={{ once: true }}
                           transition={{ delay: 0.2 + idx * 0.15, type: 'spring', stiffness: 120 }}
-                          className="flex items-center gap-4 p-5 bg-white dark:bg-[#13171f] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl"
+                          className="flex items-center gap-4 p-5 bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl"
                         >
                           <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${reward.color} flex items-center justify-center text-white shadow-lg shrink-0`}>
                             {reward.icon}
                           </div>
                           <div className="flex-1">
                             <p className="text-xs text-slate-400 dark:text-gray-500 font-medium">{reward.label}</p>
-                            <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{reward.amount}</p>
+                            <p className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{reward.amount}</p>
                           </div>
                           <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
                             <Check size={16} className="text-emerald-500" />
@@ -1344,12 +1342,12 @@ const MarketPage = () => {
                     </div>
                     <div className="flex items-center justify-center gap-6 mt-6 py-3 px-4 bg-white/50 dark:bg-white/[0.02] rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
                       <div className="text-center">
-                        <p className="text-xl font-black text-slate-900 dark:text-white">2,847</p>
+                        <p className="text-xl font-bold text-slate-900 dark:text-white">2,847</p>
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{t('home.referral.stat_participants')}</p>
                       </div>
                       <div className="w-px h-8 bg-black/[0.06] dark:bg-white/[0.06]" />
                       <div className="text-center">
-                        <p className="text-xl font-black text-brand-blue">142K</p>
+                        <p className="text-xl font-bold text-brand-blue">142K</p>
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{t('home.referral.stat_credits_given')}</p>
                       </div>
                     </div>
@@ -1374,14 +1372,14 @@ const MarketPage = () => {
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/15 border border-amber-500/25 rounded-full">
                         <Rocket size={11} className="text-amber-400" />
-                        <span className="text-[8px] font-black uppercase tracking-widest text-amber-400">Coming Q2 2026</span>
+                        <span className="text-[8px] font-bold uppercase tracking-widest text-amber-400">Coming Q2 2026</span>
                       </div>
                       <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
                         <CreditCard size={10} className="text-white/40" />
                         <span className="text-[8px] font-bold uppercase tracking-widest text-white/40">Passive Income</span>
                       </div>
                     </div>
-                    <h3 className="text-2xl font-black tracking-tight text-white leading-tight">
+                    <h3 className="text-2xl font-bold tracking-tight text-white leading-tight">
                       {t('home.referral.commission_title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">{t('home.referral.commission_highlight')}</span>{t('home.referral.commission_title2')}
                     </h3>
                     <p className="text-sm text-white/40 max-w-lg leading-relaxed">
@@ -1406,7 +1404,7 @@ const MarketPage = () => {
                   {/* Earn Example Card */}
                   <div className="shrink-0 w-full lg:w-auto">
                     <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5 space-y-3">
-                      <p className="text-[9px] font-black text-white/30 uppercase tracking-widest">{t('home.referral.example_title')}</p>
+                      <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest">{t('home.referral.example_title')}</p>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2.5 px-3 py-2 bg-white/[0.03] rounded-xl border border-white/[0.05]">
                           <Users size={13} className="text-brand-blue shrink-0" />
@@ -1424,7 +1422,7 @@ const MarketPage = () => {
                         </div>
                         <div className="flex items-center gap-2.5 px-3 py-2.5 bg-amber-500/10 rounded-xl border border-amber-500/20">
                           <Zap size={14} className="text-amber-400 shrink-0" fill="currentColor" />
-                          <span className="text-[12px] font-black text-amber-400">{t('home.referral.example_earn')}</span>
+                          <span className="text-[12px] font-bold text-amber-400">{t('home.referral.example_earn')}</span>
                         </div>
                       </div>
                     </div>
@@ -1445,12 +1443,12 @@ const MarketPage = () => {
         {isDemoOpen && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/90 backdrop-blur-2xl" onClick={() => setIsDemoOpen(false)} />
-            <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="relative w-full max-w-5xl bg-[#0a0a0c] border border-white/10 rounded-[2rem] overflow-hidden shadow-3xl aspect-video flex flex-col">
+            <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="relative w-full max-w-5xl bg-[var(--atlas-bg-page)] border border-white/10 rounded-[2rem] overflow-hidden shadow-3xl aspect-video flex flex-col">
               <div className="absolute top-6 right-6 z-50"><button onClick={() => setIsDemoOpen(false)} className="p-2 bg-black/40 hover:bg-red-500 rounded-full text-white transition-colors"><X size={24} /></button></div>
               <div className="flex-grow relative flex items-center justify-center overflow-hidden bg-black">
                 <div className="text-center space-y-8 z-10 p-12">
-                  <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }} className="relative"><div className="absolute inset-0 bg-brand-blue blur-[80px] opacity-20 rounded-full animate-pulse"></div><img src={logoUrl} className="w-32 h-32 md:w-48 md:h-48 object-contain mx-auto relative drop-shadow-[0_0_30px_rgba(0,144,255,0.2)]" alt="Skyverses Logo" /></motion.div>
-                  <div className="space-y-2"><h3 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white">Coming <span className="text-brand-blue">Soon.</span></h3></div>
+                  <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }} className="relative"><div className="absolute inset-0 bg-brand-blue blur-[80px] opacity-20 rounded-full animate-pulse"></div><img src={logoUrl} className="w-32 h-32 md:w-48 md:h-48 object-contain mx-auto relative drop-shadow-[0_0_30px_rgba(112,54,240,0.2)]" alt="Skyverses Logo" /></motion.div>
+                  <div className="space-y-2"><h3 className="text-4xl md:text-6xl font-bold uppercase italic tracking-tighter text-white">Coming <span className="text-brand-blue">Soon.</span></h3></div>
                 </div>
               </div>
             </motion.div>

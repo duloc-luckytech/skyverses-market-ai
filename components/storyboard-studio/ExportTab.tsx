@@ -357,7 +357,7 @@ const AnimaticPreview: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
         <MonitorPlay size={36} className="text-slate-200 dark:text-white/45" />
-        <p className="text-[11px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
+        <p className="text-[11px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45">
           Cần ít nhất 1 cảnh có hình ảnh
         </p>
       </div>
@@ -402,7 +402,7 @@ const AnimaticPreview: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
           <span className="tabular-nums text-[11px] text-slate-400 dark:text-gray-400">
             {fmt(elapsed)} / {fmt(totalDur)}
           </span>
-          <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
+          <span className="ml-auto text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45">
             SC.{String(withImages[currentIdx]?.order ?? 1).padStart(2,'0')} · {currentIdx + 1}/{withImages.length}
           </span>
         </div>
@@ -446,7 +446,7 @@ const SharePanel: React.FC<{ projectName: string; scenes: Scene[] }> = ({ projec
   return (
     <div className="space-y-5 max-w-lg">
       <div className="space-y-2">
-        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">Quyền truy cập</p>
+        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">Quyền truy cập</p>
         <div className="flex gap-2">
           {[
             { id: 'private', icon: <Lock size={12} />,  label: 'Private', desc: 'Chỉ bạn có thể xem' },
@@ -463,7 +463,7 @@ const SharePanel: React.FC<{ projectName: string; scenes: Scene[] }> = ({ projec
             >
               {opt.icon}
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest">{opt.label}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest">{opt.label}</p>
                 <p className="text-[9px] opacity-60 mt-0.5">{opt.desc}</p>
               </div>
             </button>
@@ -478,7 +478,7 @@ const SharePanel: React.FC<{ projectName: string; scenes: Scene[] }> = ({ projec
           { label: 'Đã render', value: String(completedScenes(scenes).length), accent: 'text-emerald-500' },
         ].map(row => (
           <div key={row.label} className="flex items-center justify-between text-[10px]">
-            <span className="font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">{row.label}</span>
+            <span className="font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">{row.label}</span>
             <span className={`font-bold ${row.accent ?? 'text-slate-600 dark:text-white/60'}`}>{row.value}</span>
           </div>
         ))}
@@ -486,7 +486,7 @@ const SharePanel: React.FC<{ projectName: string; scenes: Scene[] }> = ({ projec
 
       {!generated ? (
         <motion.button whileTap={{ scale: 0.97 }} onClick={handleGenerate} disabled={isGenerating}
-          className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-brand-blue to-indigo-600 text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-brand-blue/20 hover:brightness-110 disabled:opacity-50 transition-all">
+          className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-brand-blue to-indigo-600 text-white text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/20 hover:brightness-110 disabled:opacity-50 transition-all">
           {isGenerating ? <><Loader2 size={14} className="animate-spin" /> Đang tạo link...</> : <><Share2 size={14} /> Tạo share link</>}
         </motion.button>
       ) : (
@@ -506,11 +506,11 @@ const SharePanel: React.FC<{ projectName: string; scenes: Scene[] }> = ({ projec
           )}
           <div className="flex gap-2">
             <button onClick={() => { setGenerated(false); shareIdRef.current = Math.random().toString(36).slice(2, 10); }}
-              className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 hover:border-rose-400/30 hover:text-rose-400 transition-all">
+              className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 hover:border-rose-400/30 hover:text-rose-400 transition-all">
               Xóa link
             </button>
             <button onClick={handleCopy}
-              className="flex-1 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-md shadow-brand-blue/20">
+              className="flex-1 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-bold uppercase tracking-widest hover:brightness-110 transition-all shadow-md shadow-brand-blue/20">
               {copied ? '✓ Đã copy' : 'Copy link'}
             </button>
           </div>
@@ -674,7 +674,7 @@ const VideoExportPanel: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
   return (
     <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/[0.02] p-6 space-y-5">
       <div>
-        <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-700 dark:text-white mb-1 flex items-center gap-2">
+        <h3 className="text-[13px] font-bold uppercase tracking-widest text-slate-700 dark:text-white mb-1 flex items-center gap-2">
           <FileVideo size={14} className="text-rose-500" /> Export Video WebM
         </h3>
         <p className="text-[10px] text-slate-400 dark:text-gray-400">
@@ -704,7 +704,7 @@ const VideoExportPanel: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
       {/* Progress bar */}
       {isRecording && (
         <div className="space-y-1.5">
-          <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">
+          <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">
             <span>Đang ghi...</span>
             <span>{progress}%</span>
           </div>
@@ -727,7 +727,7 @@ const VideoExportPanel: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
 
       {/* Done */}
       {done && !isRecording && (
-        <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest">
+        <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-bold uppercase tracking-widest">
           <CheckCircle size={12} /> Video đã tải xuống thành công!
         </div>
       )}
@@ -736,7 +736,7 @@ const VideoExportPanel: React.FC<{ scenes: Scene[] }> = ({ scenes }) => {
         whileTap={{ scale: 0.97 }}
         onClick={handleExport}
         disabled={isRecording || !supported || withImages.length === 0}
-        className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-rose-600/20 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-white text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-rose-600/20 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
       >
         {isRecording
           ? <><Loader2 size={14} className="animate-spin" /> Đang xuất {progress}%...</>
@@ -810,14 +810,14 @@ export const ExportTab: React.FC<ExportTabProps> = ({
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex-1 min-h-0 flex flex-col p-5 lg:p-10 overflow-y-auto no-scrollbar bg-[#fafafa] dark:bg-[#0a0d14] transition-colors duration-500"
+      className="flex-1 min-h-0 flex flex-col p-5 lg:p-10 overflow-y-auto no-scrollbar bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] transition-colors duration-500"
     >
       <div className="max-w-6xl mx-auto w-full space-y-8 pb-32 lg:pb-10">
 
         {/* ── Header ──────────────────────────────────────────────── */}
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
-            <h2 className="text-2xl lg:text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">
+            <h2 className="text-2xl lg:text-3xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">
               Export &amp; Chia sẻ
             </h2>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-1.5">
@@ -826,15 +826,15 @@ export const ExportTab: React.FC<ExportTabProps> = ({
           </div>
           <div className="flex gap-2 flex-wrap">
             <button onClick={onNewProject}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40 hover:border-brand-blue/30 hover:text-brand-blue transition-all">
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-white/40 hover:border-brand-blue/30 hover:text-brand-blue transition-all">
               <Plus size={12} /> New
             </button>
             <button onClick={() => importRef.current?.click()}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40 hover:border-brand-blue/30 hover:text-brand-blue transition-all">
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-white/40 hover:border-brand-blue/30 hover:text-brand-blue transition-all">
               <Upload size={12} /> Import
             </button>
             <button onClick={onExportJSON}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-md shadow-brand-blue/20">
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-bold uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-md shadow-brand-blue/20">
               <FileJson size={12} /> JSON
             </button>
           </div>
@@ -851,7 +851,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
             { label: 'Tài nguyên', value: assets.filter(a => a.url).length,       color: 'text-amber-300',    bg: 'from-amber-500/20 to-amber-500/5',       border: 'border-amber-500/20' },
           ].map(stat => (
             <div key={stat.label} className={`bg-gradient-to-br ${stat.bg} border ${stat.border} rounded-2xl p-4`}>
-              <p className={`text-2xl font-black tabular-nums leading-none ${stat.color}`}>{stat.value}</p>
+              <p className={`text-2xl font-bold tabular-nums leading-none ${stat.color}`}>{stat.value}</p>
               <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-1.5">{stat.label}</p>
             </div>
           ))}
@@ -864,7 +864,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
             const isActive = activeMode === mode.id;
             return (
               <button key={mode.id} onClick={() => handleTabClick(mode.id)}
-                className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
+                className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${
                   isActive
                     ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-brand-blue/20'
                     : locked
@@ -875,7 +875,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                 {locked ? <Lock size={11} className="opacity-50" /> : mode.icon}
                 {mode.label}
                 {mode.badge && (
-                  <span className={`text-[7px] font-black px-1.5 py-0.5 rounded-full ${
+                  <span className={`text-[7px] font-bold px-1.5 py-0.5 rounded-full ${
                     isActive
                       ? 'bg-white/20 text-white'
                       : locked
@@ -902,7 +902,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
               <div className="space-y-6">
                 {(hasVideo || hasImage) && (
                   <button onClick={handleDownloadAll} disabled={isProcessing}
-                    className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-2xl bg-gradient-to-r from-brand-blue to-indigo-600 text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-brand-blue/20 hover:brightness-110 active:scale-[0.99] disabled:opacity-50 transition-all">
+                    className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-2xl bg-gradient-to-r from-brand-blue to-indigo-600 text-white text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/20 hover:brightness-110 active:scale-[0.99] disabled:opacity-50 transition-all">
                     <Download size={15} /> Tải xuống tất cả ({done.length} file)
                   </button>
                 )}
@@ -910,11 +910,11 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                 {scenes.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-16 gap-4">
                     <Clapperboard size={36} className="text-slate-200 dark:text-white/45" />
-                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">Chưa có phân cảnh</p>
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45">Chưa có phân cảnh</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
                       <FolderOpen size={10} /> Danh sách phân cảnh
                     </p>
                     {scenes.map((scene, index) => (
@@ -932,7 +932,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-0.5">
                             <StatusIcon status={scene.status} />
-                            <span className="text-[10px] font-black text-slate-700 dark:text-white/70">SC.{String(scene.order).padStart(2,'0')}</span>
+                            <span className="text-[10px] font-bold text-slate-700 dark:text-white/70">SC.{String(scene.order).padStart(2,'0')}</span>
                             {scene.videoUrl && <span className="text-[8px] font-bold bg-purple-500/10 text-purple-400 px-1.5 py-0.5 rounded border border-purple-500/20">VIDEO</span>}
                             {scene.visualUrl && !scene.videoUrl && <span className="text-[8px] font-bold bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20">IMG</span>}
                             {scene.audioUrl && <Music size={10} className="text-purple-400" />}
@@ -963,7 +963,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
 
                 {script && (
                   <div className="rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-white/[0.02] p-5">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45 mb-2">Kịch bản gốc</p>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45 mb-2">Kịch bản gốc</p>
                     <p className="text-[11px] text-slate-500 dark:text-white/40 leading-relaxed line-clamp-4">{script}</p>
                   </div>
                 )}
@@ -974,7 +974,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
             {activeMode === 'pdf' && (
               <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/[0.02] p-6 space-y-5">
                 <div>
-                  <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-700 dark:text-white mb-1">PDF Storyboard</h3>
+                  <h3 className="text-[13px] font-bold uppercase tracking-widest text-slate-700 dark:text-white mb-1">PDF Storyboard</h3>
                   <p className="text-[10px] text-slate-400 dark:text-gray-400">Grid 3 cột, hình ảnh + prompt. Click "In / Lưu PDF" trong cửa sổ mới.</p>
                 </div>
 
@@ -1001,7 +1001,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                 <motion.button whileTap={{ scale: 0.97 }}
                   onClick={() => generatePDF(scenes, projectName, script, settings)}
                   disabled={isPDFGenerating || scenes.length === 0}
-                  className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black text-[11px] font-black uppercase tracking-widest hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black text-[11px] font-bold uppercase tracking-widest hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   {isPDFGenerating
                     ? <><Loader2 size={14} className="animate-spin" /> Đang tạo... {pdfProgress}%</>
@@ -1015,7 +1015,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
             {activeMode === 'edl' && (
               <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/[0.02] p-6 space-y-5">
                 <div>
-                  <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-700 dark:text-white mb-1">EDL — Edit Decision List</h3>
+                  <h3 className="text-[13px] font-bold uppercase tracking-widest text-slate-700 dark:text-white mb-1">EDL — Edit Decision List</h3>
                   <p className="text-[10px] text-slate-400 dark:text-gray-400">Định dạng CMX 3600 chuẩn. Import vào Premiere Pro, DaVinci Resolve, Avid.</p>
                 </div>
                 <pre className="bg-slate-900 dark:bg-black/60 rounded-xl p-4 text-[10px] font-mono text-emerald-400 overflow-x-auto max-h-52 no-scrollbar leading-relaxed">
@@ -1024,7 +1024,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                 <motion.button whileTap={{ scale: 0.97 }}
                   onClick={() => downloadText(generateEDL(scenes, projectName), `${projectName.replace(/\s+/g,'-')}.edl`)}
                   disabled={scenes.length === 0}
-                  className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-emerald-600/20 hover:brightness-110 disabled:opacity-40 transition-all"
+                  className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-emerald-600/20 hover:brightness-110 disabled:opacity-40 transition-all"
                 >
                   <Download size={14} /> Download .EDL
                 </motion.button>
@@ -1055,7 +1055,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <FileVideo size={14} className={card.color} />
-                          <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-700 dark:text-white">{card.title}</h3>
+                          <h3 className="text-[12px] font-bold uppercase tracking-widest text-slate-700 dark:text-white">{card.title}</h3>
                         </div>
                         <p className="text-[10px] text-slate-400 dark:text-gray-400">{card.sub}</p>
                       </div>
@@ -1063,7 +1063,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
                         {card.preview}…
                       </pre>
                       <motion.button whileTap={{ scale: 0.97 }} onClick={card.onDownload} disabled={scenes.length === 0}
-                        className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl ${card.btnBg} text-white text-[10px] font-black uppercase tracking-widest hover:brightness-110 disabled:opacity-40 transition-all`}>
+                        className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl ${card.btnBg} text-white text-[10px] font-bold uppercase tracking-widest hover:brightness-110 disabled:opacity-40 transition-all`}>
                         <Download size={12} /> {card.btnLabel}
                       </motion.button>
                     </div>
@@ -1079,7 +1079,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
             {activeMode === 'animatic' && (
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-700 dark:text-white mb-1">Animatic Preview</h3>
+                  <h3 className="text-[13px] font-bold uppercase tracking-widest text-slate-700 dark:text-white mb-1">Animatic Preview</h3>
                   <p className="text-[10px] text-slate-400 dark:text-gray-400">Canvas slideshow theo duration từng cảnh. Review nhịp độ trước khi render.</p>
                 </div>
                 <AnimaticPreview scenes={scenes} />
@@ -1095,7 +1095,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({
             {activeMode === 'share' && (
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-[13px] font-black uppercase tracking-widest text-slate-700 dark:text-white mb-1">Share Link</h3>
+                  <h3 className="text-[13px] font-bold uppercase tracking-widest text-slate-700 dark:text-white mb-1">Share Link</h3>
                   <p className="text-[10px] text-slate-400 dark:text-gray-400">Chia sẻ storyboard với client hoặc team.</p>
                 </div>
                 <SharePanel projectName={projectName} scenes={scenes} />

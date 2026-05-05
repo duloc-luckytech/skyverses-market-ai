@@ -19,7 +19,7 @@ const TIER_ICONS: Record<AgentTier, React.ElementType> = {
 
 const TIER_COLORS: Record<AgentTier, string> = {
   orchestrator: '#f59e0b',
-  department: '#0090ff',
+  department: '#7036F0',
   specialist: '#8b5cf6',
 };
 
@@ -132,7 +132,7 @@ const AgentCard: React.FC<{
           <button
             onClick={e => { e.stopPropagation(); onDelete(); }}
             title="Delete"
-            className="w-6 h-6 rounded-lg bg-white dark:bg-[#13171f] border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 text-slate-400 transition-all shadow-sm"
+            className="w-6 h-6 rounded-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 text-slate-400 transition-all shadow-sm"
           >
             <Trash2 size={10} />
           </button>
@@ -140,14 +140,14 @@ const AgentCard: React.FC<{
         <button
           onClick={e => { e.stopPropagation(); onDuplicate(); }}
           title="Duplicate"
-          className="w-6 h-6 rounded-lg bg-white dark:bg-[#13171f] border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center hover:bg-brand-blue/5 hover:text-brand-blue text-slate-400 transition-all shadow-sm"
+          className="w-6 h-6 rounded-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center hover:bg-brand-blue/5 hover:text-brand-blue text-slate-400 transition-all shadow-sm"
         >
           <Copy size={10} />
         </button>
         <button
           onClick={e => { e.stopPropagation(); onEdit(); }}
           title="Edit"
-          className="w-6 h-6 rounded-lg bg-white dark:bg-[#13171f] border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center hover:bg-brand-blue/5 hover:text-brand-blue text-slate-400 transition-all shadow-sm"
+          className="w-6 h-6 rounded-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center hover:bg-brand-blue/5 hover:text-brand-blue text-slate-400 transition-all shadow-sm"
         >
           <Edit2 size={10} />
         </button>
@@ -290,7 +290,7 @@ const MyAgentsTab: React.FC<Props> = ({
                 </AnimatePresence>
 
                 <motion.button
-                  whileHover={{ scale: 1.02, borderColor: 'rgba(0,144,255,0.5)' }}
+                  whileHover={{ scale: 1.02, borderColor: 'rgba(112,54,240,0.5)' }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => { setEditingAgent(null); setShowBuilder(true); }}
                   className="rounded-2xl border-2 border-dashed border-black/[0.08] dark:border-white/[0.08] p-4 flex flex-col items-center justify-center gap-2 text-slate-400 hover:text-brand-blue transition-all min-h-[140px] group"
@@ -313,7 +313,7 @@ const MyAgentsTab: React.FC<Props> = ({
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.2 }}
-                className="w-[280px] shrink-0 border-l border-black/[0.05] dark:border-white/[0.04] bg-white dark:bg-[#13171f] flex flex-col overflow-hidden"
+                className="w-[280px] shrink-0 border-l border-black/[0.05] dark:border-white/[0.04] bg-white dark:bg-[var(--atlas-bg-panel)] flex flex-col overflow-hidden"
               >
                 {/* Agent header */}
                 <div
@@ -327,7 +327,7 @@ const MyAgentsTab: React.FC<Props> = ({
                     {selectedAgent.emoji}
                   </div>
                   <div className="text-center">
-                    <p className="text-[13px] font-black text-slate-800 dark:text-white">{selectedAgent.name}</p>
+                    <p className="text-[13px] font-bold text-slate-800 dark:text-white">{selectedAgent.name}</p>
                     <p className="text-[10px] text-slate-400 mt-0.5">{selectedAgent.role}</p>
                   </div>
                   {!selectedAgent.isDefault && (

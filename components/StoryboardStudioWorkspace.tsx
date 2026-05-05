@@ -119,7 +119,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   };
 
   return (
-    <div className="h-full w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
+    <div className="h-full w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
 
       {/* Mobile Backdrop */}
       <AnimatePresence>
@@ -151,7 +151,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           ${isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
           w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
-          bg-white dark:bg-[#13171f] border-r border-black/[0.06] dark:border-white/[0.08]
+          bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-black/[0.06] dark:border-white/[0.08]
           flex flex-col transition-transform duration-300
         `}
       >
@@ -236,7 +236,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
             {/* Script label */}
             <div className="px-4 pt-3 pb-1 shrink-0">
-              <span className="text-[9px] font-black uppercase tracking-[0.35em] text-slate-400 dark:text-gray-400">
+              <span className="text-[9px] font-bold uppercase tracking-[0.35em] text-slate-400 dark:text-gray-400">
                 ✏️ KỊCH BẢN
               </span>
             </div>
@@ -271,7 +271,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               <button
                 onClick={s.handleLoadSuggestion}
                 disabled={s.isProcessing}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-blue/10 hover:bg-brand-blue/20 border border-brand-blue/20 hover:border-brand-blue/40 text-[10px] font-black uppercase tracking-wider text-brand-blue transition-all disabled:opacity-40"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-blue/10 hover:bg-brand-blue/20 border border-brand-blue/20 hover:border-brand-blue/40 text-[10px] font-bold uppercase tracking-wider text-brand-blue transition-all disabled:opacity-40"
               >
                 <Sparkles size={11} /> Gợi ý AI
               </button>
@@ -280,7 +280,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               <button
                 onClick={s.handleLoadSample}
                 disabled={s.isProcessing}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200 dark:hover:bg-white/[0.07] border border-slate-200 dark:border-white/[0.08] text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70 transition-all disabled:opacity-40"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200 dark:hover:bg-white/[0.07] border border-slate-200 dark:border-white/[0.08] text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70 transition-all disabled:opacity-40"
               >
                 <LayoutGrid size={11} /> Dùng mẫu
               </button>
@@ -349,7 +349,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 className={`
                   w-full flex items-center justify-center gap-2
                   py-3 rounded-xl
-                  text-[11px] font-black uppercase tracking-widest
+                  text-[11px] font-bold uppercase tracking-widest
                   transition-all duration-200
                   ${s.isProcessing || !s.script.trim()
                     ? 'bg-brand-blue/30 text-white/40 cursor-not-allowed'
@@ -384,7 +384,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             </div>
 
             {/* Footer credits bar */}
-            <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] px-4 py-2.5 flex items-center justify-between bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg">
+            <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] px-4 py-2.5 flex items-center justify-between bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-lg">
               <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
                 {credits.toLocaleString()} CR
               </span>
@@ -400,10 +400,10 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto no-scrollbar flex items-center justify-center p-6">
               <p className="text-[10px] font-medium text-slate-300 dark:text-white/45 text-center leading-relaxed">
-                Chọn tab <span className="font-black text-brand-blue">Board</span> để viết kịch bản và tạo phân cảnh
+                Chọn tab <span className="font-bold text-brand-blue">Board</span> để viết kịch bản và tạo phân cảnh
               </p>
             </div>
-            <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] px-4 py-2.5 flex items-center justify-between bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg">
+            <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] px-4 py-2.5 flex items-center justify-between bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-lg">
               <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
                 {credits.toLocaleString()} CR
               </span>

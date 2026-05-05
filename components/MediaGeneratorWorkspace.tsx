@@ -77,10 +77,10 @@ const MediaGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[#0a0d14] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
-      <div className="bg-white dark:bg-[#0a0d14] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
+    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[var(--atlas-bg-page)] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
+      <div className="bg-white dark:bg-[var(--atlas-bg-page)] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
         <div className="flex flex-col">
-          <h2 className="font-black text-2xl tracking-tight uppercase italic">AI Media Generator</h2>
+          <h2 className="font-bold text-2xl tracking-tight uppercase italic">AI Media Generator</h2>
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Lite Edition // Fast Synthesis</p>
         </div>
         <button onClick={onClose} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
@@ -92,11 +92,11 @@ const MediaGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
         <div className="max-w-[800px] mx-auto p-8 space-y-12">
           
           <div className="text-center space-y-4">
-             <h1 className="text-4xl font-black tracking-tighter uppercase italic">Fast Media Synthesis</h1>
+             <h1 className="text-4xl font-bold tracking-tighter uppercase italic">Fast Media Synthesis</h1>
              <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium">Quickly generate video and image assets with direct semantic commands.</p>
           </div>
 
-          <div className="bg-white dark:bg-[#0a0d14] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-xl space-y-6">
+          <div className="bg-white dark:bg-[var(--atlas-bg-page)] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-xl space-y-6">
              <div className="relative">
                 <textarea 
                   value={prompt}
@@ -116,13 +116,13 @@ const MediaGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                      <span>{modality} Mode</span>
                    </button>
                 </div>
-                <div className="text-xs font-black text-gray-400 uppercase tracking-widest">Standard Tier</div>
+                <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">Standard Tier</div>
              </div>
 
              <button 
                onClick={handleGenerate}
                disabled={isGenerating || !prompt.trim()}
-               className="w-full bg-slate-900 dark:bg-white dark:text-black text-white py-5 rounded-2xl text-base font-black uppercase tracking-[0.2em] shadow-sm hover:brightness-110 transition-all flex items-center justify-center gap-4"
+               className="w-full bg-slate-900 dark:bg-white dark:text-black text-white py-5 rounded-2xl text-base font-bold uppercase tracking-[0.2em] shadow-sm hover:brightness-110 transition-all flex items-center justify-center gap-4"
              >
                 {isGenerating ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={18} />}
                 Generate {modality}
@@ -140,7 +140,7 @@ const MediaGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
             <button onClick={() => setResult(null)} className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors bg-white/10 rounded-full p-2">
               <X size={32}/>
             </button>
-            <div className="max-w-5xl w-full aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(0,144,255,0.3)] border border-white/10">
+            <div className="max-w-5xl w-full aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(112,54,240,0.3)] border border-white/10">
                {result.type === 'video' ? (
                  <video src={result.url} controls autoPlay className="w-full h-full" />
                ) : (
@@ -148,10 +148,10 @@ const MediaGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                )}
             </div>
             <div className="mt-12 flex flex-wrap justify-center gap-6">
-              <a href={result.url} download className="bg-white text-black px-12 py-5 rounded-full font-black text-xs uppercase tracking-widest flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-xl">
+              <a href={result.url} download className="bg-white text-black px-12 py-5 rounded-full font-bold text-xs uppercase tracking-widest flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-xl">
                 <Download size={20}/> Download Asset
               </a>
-              <button className="bg-white/10 text-white border border-white/20 px-12 py-5 rounded-full font-black text-xs uppercase tracking-widest flex items-center gap-3 hover:bg-white/20 transition-all">
+              <button className="bg-white/10 text-white border border-white/20 px-12 py-5 rounded-full font-bold text-xs uppercase tracking-widest flex items-center gap-3 hover:bg-white/20 transition-all">
                 <Share2 size={20}/> Share Creative
               </button>
             </div>

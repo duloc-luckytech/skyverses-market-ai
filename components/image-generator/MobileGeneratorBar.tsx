@@ -77,16 +77,16 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
              {/* Resource Telemetry - Slimmed Down */}
              <div className="flex items-center gap-3 bg-black/5 dark:bg-white/5 px-3 h-10 rounded-xl border border-black/5 dark:border-white/10 shadow-inner">
                 <div className="flex flex-col items-start leading-none gap-0.5">
-                   <span className="text-[6px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">Ví</span>
+                   <span className="text-[6px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">Ví</span>
                    <div className="flex items-center gap-1">
                       <Sparkles size={8} className="text-rose-500" />
-                      <span className="text-[10px] font-black text-slate-700 dark:text-zinc-300 italic">{(credits || 0).toLocaleString()}</span>
+                      <span className="text-[10px] font-bold text-slate-700 dark:text-zinc-300 italic">{(credits || 0).toLocaleString()}</span>
                    </div>
                 </div>
                 <div className="w-px h-5 bg-black/10 dark:bg-white/10"></div>
                 <div className="flex flex-col items-end leading-none gap-0.5">
-                   <span className="text-[6px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">Phí</span>
-                   <div className="flex items-center gap-0.5 text-orange-500 font-black italic">
+                   <span className="text-[6px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">Phí</span>
+                   <div className="flex items-center gap-0.5 text-orange-500 font-bold italic">
                       <Zap size={8} fill="currentColor" />
                       <span className="text-[10px]">-{totalCost}</span>
                    </div>
@@ -97,7 +97,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
              <button 
                onClick={onGenerate}
                disabled={isGenerateDisabled}
-               className={`flex-grow h-10 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 relative overflow-hidden ${
+               className={`flex-grow h-10 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 relative overflow-hidden ${
                  isGenerateDisabled 
                   ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 grayscale cursor-not-allowed' 
                   : 'bg-rose-500 text-white shadow-lg shadow-rose-500/20 hover:brightness-110 active:scale-95'
@@ -122,7 +122,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
             <div className="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-500">
               <SlidersHorizontal size={14} />
             </div>
-            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white italic">Cấu hình thuật toán</h2>
+            <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-900 dark:text-white italic">Cấu hình thuật toán</h2>
           </div>
           <button 
             onClick={(e) => { e.stopPropagation(); setIsExpanded(false); }}

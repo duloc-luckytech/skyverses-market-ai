@@ -19,7 +19,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
   const [loading, setLoading] = useState(true);
 
   const selectClass = "w-full bg-slate-50 dark:bg-black/60 border border-slate-200 dark:border-white/10 p-4 rounded-xl text-xs font-bold uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-800 dark:text-white shadow-inner";
-  const sectionLabel = "text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400 mb-3 block px-1";
+  const sectionLabel = "text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400 mb-3 block px-1";
 
   useEffect(() => {
     const fetchModels = async () => {
@@ -60,7 +60,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
     return (
       <div className="py-20 flex flex-col items-center justify-center gap-6">
         <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 animate-pulse italic">Synchronizing Model Registry...</p>
+        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 animate-pulse italic">Synchronizing Model Registry...</p>
       </div>
     );
   }
@@ -73,7 +73,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
           <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue">
             <ImageIcon size={18} />
           </div>
-          <h4 className="text-sm font-black uppercase italic tracking-widest text-slate-900 dark:text-white">Storyboard Engine (Image)</h4>
+          <h4 className="text-sm font-bold uppercase italic tracking-widest text-slate-900 dark:text-white">Storyboard Engine (Image)</h4>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -86,7 +86,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                 onChange={(e) => setSettings({ ...settings, imageModel: e.target.value })}
               >
                 {imageModels.map(m => (
-                  <option key={m._id} value={m.modelKey} className="dark:bg-[#13171f]">{m.name}</option>
+                  <option key={m._id} value={m.modelKey} className="dark:bg-[var(--atlas-bg-panel)]">{m.name}</option>
                 ))}
               </select>
               <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
@@ -98,9 +98,9 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                <label className={sectionLabel}>TỈ LỆ (RATIO)</label>
                <div className="relative">
                   <select className={selectClass}>
-                    <option className="dark:bg-[#13171f]">1:1</option>
-                    <option className="dark:bg-[#13171f]">16:9</option>
-                    <option className="dark:bg-[#13171f]">9:16</option>
+                    <option className="dark:bg-[var(--atlas-bg-panel)]">1:1</option>
+                    <option className="dark:bg-[var(--atlas-bg-panel)]">16:9</option>
+                    <option className="dark:bg-[var(--atlas-bg-panel)]">9:16</option>
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
                </div>
@@ -109,9 +109,9 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                <label className={sectionLabel}>CHẤT LƯỢNG</label>
                <div className="relative">
                   <select className={selectClass}>
-                    <option className="dark:bg-[#13171f]">1K</option>
-                    <option className="dark:bg-[#13171f]">2K</option>
-                    <option className="dark:bg-[#13171f]">4K</option>
+                    <option className="dark:bg-[var(--atlas-bg-panel)]">1K</option>
+                    <option className="dark:bg-[var(--atlas-bg-panel)]">2K</option>
+                    <option className="dark:bg-[var(--atlas-bg-panel)]">4K</option>
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
                </div>
@@ -126,7 +126,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
           <div className="w-8 h-8 rounded-lg bg-purple-600/10 flex items-center justify-center text-purple-600">
             <Film size={18} />
           </div>
-          <h4 className="text-sm font-black uppercase italic tracking-widest text-slate-900 dark:text-white">Synthesis Engine (Video)</h4>
+          <h4 className="text-sm font-bold uppercase italic tracking-widest text-slate-900 dark:text-white">Synthesis Engine (Video)</h4>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -139,7 +139,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                 onChange={(e) => setSettings({ ...settings, model: e.target.value })}
               >
                 {videoModels.map(m => (
-                  <option key={m._id} value={m.modelKey} className="dark:bg-[#13171f]">{m.name}</option>
+                  <option key={m._id} value={m.modelKey} className="dark:bg-[var(--atlas-bg-panel)]">{m.name}</option>
                 ))}
               </select>
               <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
@@ -152,7 +152,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                <div className="relative">
                   <select className={selectClass}>
                     {availableVideoResolutions.map(res => (
-                      <option key={res} value={res} className="dark:bg-[#13171f]">{res.toUpperCase()}</option>
+                      <option key={res} value={res} className="dark:bg-[var(--atlas-bg-panel)]">{res.toUpperCase()}</option>
                     ))}
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
@@ -163,7 +163,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                <div className="relative">
                   <select className={selectClass}>
                     {availableVideoDurations.map(dur => (
-                      <option key={dur} value={dur} className="dark:bg-[#13171f]">{dur}s</option>
+                      <option key={dur} value={dur} className="dark:bg-[var(--atlas-bg-panel)]">{dur}s</option>
                     ))}
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
@@ -179,7 +179,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
                <button 
                  key={mode}
                  onClick={() => handleChange('mode', mode)}
-                 className={`px-8 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${settings.mode === mode ? 'bg-white dark:bg-[#2a2a2e] text-brand-blue shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
+                 className={`px-8 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${settings.mode === mode ? 'bg-white dark:bg-[#2a2a2e] text-brand-blue shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
                >
                  {mode}
                </button>

@@ -20,11 +20,11 @@ export const IdentityAnchors: React.FC<IdentityAnchorsProps> = ({
        <header className="flex items-center justify-between px-2">
           <div className="flex items-center gap-3">
             <Layers size={18} className="text-emerald-500" />
-            <h3 className="text-sm font-black uppercase tracking-[0.4em] text-slate-800 dark:text-white italic transition-colors">THAM CHIẾU, NHÂN VẬT</h3>
+            <h3 className="text-sm font-bold uppercase tracking-[0.4em] text-slate-800 dark:text-white italic transition-colors">THAM CHIẾU, NHÂN VẬT</h3>
           </div>
           <button 
             onClick={() => openAssetModal()} 
-            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-transparent border border-slate-200 dark:border-white/10 hover:border-brand-blue dark:hover:border-white/20 rounded-lg text-slate-500 dark:text-gray-400 hover:text-brand-blue dark:hover:text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-sm dark:shadow-none"
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-transparent border border-slate-200 dark:border-white/10 hover:border-brand-blue dark:hover:border-white/20 rounded-lg text-slate-500 dark:text-gray-400 hover:text-brand-blue dark:hover:text-white text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm dark:shadow-none"
           >
             <Plus size={14}/> Thêm mới
           </button>
@@ -40,7 +40,7 @@ export const IdentityAnchors: React.FC<IdentityAnchorsProps> = ({
                  <div className="w-16 h-16 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform"><Plus size={32} /></div>
               </div>
               <div className="space-y-1 text-center">
-                <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-800 dark:text-white">Thêm nhân vật mới</h4>
+                <h4 className="text-sm font-bold uppercase italic tracking-tighter text-slate-800 dark:text-white">Thêm nhân vật mới</h4>
                 <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest leading-relaxed">Khởi tạo tham chiếu</p>
               </div>
             </div>
@@ -54,14 +54,14 @@ export const IdentityAnchors: React.FC<IdentityAnchorsProps> = ({
                   {asset.status === 'processing' && (
                     <div className="absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center gap-4 animate-in fade-in duration-300 z-10">
                       <Loader2 size={32} className="text-brand-blue animate-spin" />
-                      <p className="text-[10px] font-black uppercase tracking-widest text-brand-blue">Đang tạo...</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-brand-blue">Đang tạo...</p>
                     </div>
                   )}
 
                   {asset.status === 'error' && (
                     <div className="absolute inset-0 bg-red-100/60 dark:bg-red-900/60 backdrop-blur-sm flex flex-col items-center justify-center gap-2 p-4 text-center z-10">
                        <AlertCircle size={32} className="text-red-600 dark:text-white opacity-80" />
-                       <p className="text-[10px] font-black uppercase text-red-600 dark:text-white leading-tight">Lỗi khởi tạo</p>
+                       <p className="text-[10px] font-bold uppercase text-red-600 dark:text-white leading-tight">Lỗi khởi tạo</p>
                     </div>
                   )}
 
@@ -71,14 +71,14 @@ export const IdentityAnchors: React.FC<IdentityAnchorsProps> = ({
                   </div>
                </div>
                <div onClick={() => openAssetModal(asset)} className="space-y-1 text-center">
-                  <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-800 dark:text-white">{asset.name}</h4>
+                  <h4 className="text-sm font-bold uppercase italic tracking-tighter text-slate-800 dark:text-white">{asset.name}</h4>
                   <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{asset.type}</p>
                </div>
                <div className="grid grid-cols-1 gap-2 pt-2 border-t border-slate-200 dark:border-white/5">
                   <button 
                     onClick={(e) => { e.stopPropagation(); handleReGenerateAsset(asset.id); }} 
                     disabled={asset.status === 'processing'} 
-                    className={`w-full py-3 rounded-lg flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${asset.url ? 'bg-slate-200 dark:bg-black/40 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-300 dark:hover:bg-black/60' : 'bg-brand-blue text-white shadow-lg'}`}
+                    className={`w-full py-3 rounded-lg flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all ${asset.url ? 'bg-slate-200 dark:bg-black/40 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-300 dark:hover:bg-black/60' : 'bg-brand-blue text-white shadow-lg'}`}
                   >
                     {asset.status === 'processing' ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12}/>} Tạo lại (AI)
                   </button>

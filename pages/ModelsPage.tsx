@@ -50,7 +50,7 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
       />
       <motion.div 
         initial={{ scale: 0.97, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.97, opacity: 0, y: 10 }}
-        className="relative w-full max-w-4xl bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
       >
         {/* Header */}
         <div className="px-6 py-5 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between shrink-0">
@@ -208,7 +208,7 @@ const ModelsPage: React.FC = () => {
   }, [models, search, activeCat, activeServer]);
 
   return (
-    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-white dark:bg-[#0a0d14] text-black dark:text-white transition-colors duration-300">
+    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-white dark:bg-[var(--atlas-bg-page)] text-black dark:text-white transition-colors duration-300">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12">
         
         {/* ═══════ HERO ═══════ */}
@@ -281,7 +281,7 @@ const ModelsPage: React.FC = () => {
                 <motion.div 
                   key={model.id_base}
                   whileHover={{ y: -4 }}
-                  className="group relative bg-white dark:bg-[#1a1f2b] border border-black/[0.04] dark:border-white/[0.08] rounded-2xl p-5 space-y-4 cursor-pointer hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg transition-all flex flex-col"
+                  className="group relative bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.04] dark:border-white/[0.08] rounded-2xl p-5 space-y-4 cursor-pointer hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg transition-all flex flex-col"
                   onClick={() => setSelectedModel(model)}
                 >
                   {/* NEW Badge */}

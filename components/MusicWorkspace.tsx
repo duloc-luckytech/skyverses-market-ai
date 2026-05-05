@@ -51,15 +51,15 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[#0a0d14] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
+    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[var(--atlas-bg-page)] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white dark:bg-[#0a0d14] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
+      <div className="bg-white dark:bg-[var(--atlas-bg-page)] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-brand-blue/10 dark:bg-brand-blue/20 rounded-xl flex items-center justify-center text-brand-blue">
             <MusicIcon size={24} />
           </div>
           <div className="flex flex-col">
-            <h2 className="font-black text-xl tracking-tight uppercase italic">Neural Music Studio</h2>
+            <h2 className="font-bold text-xl tracking-tight uppercase italic">Neural Music Studio</h2>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Enterprise Composition Engine</p>
           </div>
         </div>
@@ -71,13 +71,13 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       <div className="flex-grow overflow-y-auto no-scrollbar pb-32">
         <div className="max-w-[1200px] mx-auto p-12">
           
-          <div className="bg-white dark:bg-[#0a0d14] border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row h-full min-h-[600px]">
+          <div className="bg-white dark:bg-[var(--atlas-bg-page)] border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row h-full min-h-[600px]">
              
              {/* LEFT PANEL: CONFIG */}
              <div className="w-full lg:w-1/2 p-10 border-r border-gray-50 dark:border-white/5 flex flex-col justify-between">
                 <div className="space-y-10">
                    <div className="space-y-4">
-                      <label className="text-[11px] font-black uppercase text-gray-400 tracking-[0.4em] block">{t('music.workspace.label')}</label>
+                      <label className="text-[11px] font-bold uppercase text-gray-400 tracking-[0.4em] block">{t('music.workspace.label')}</label>
                       <textarea 
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
@@ -87,7 +87,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       <button 
                         onClick={handleGenerate}
                         disabled={isGenerating || !prompt.trim()}
-                        className="bg-slate-600 dark:bg-white dark:text-black text-white px-10 py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-50"
+                        className="bg-slate-600 dark:bg-white dark:text-black text-white px-10 py-4 rounded-xl text-xs font-bold uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-50"
                       >
                          {isGenerating ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} fill="currentColor" />}
                          {t('music.workspace.generate')}
@@ -95,7 +95,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                    </div>
 
                    <div className="space-y-6">
-                      <label className="text-[11px] font-black uppercase text-gray-400 tracking-[0.4em] block">{t('music.workspace.picks')}</label>
+                      <label className="text-[11px] font-bold uppercase text-gray-400 tracking-[0.4em] block">{t('music.workspace.picks')}</label>
                       <div className="space-y-3">
                          {PICKS.map(pick => (
                             <button 
@@ -107,7 +107,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                                   <Disc className={isPlaying && activePick.id === pick.id ? 'animate-spin' : ''} />
                                </div>
                                <div className="text-left flex-grow">
-                                  <h4 className="text-sm font-black uppercase italic tracking-tight">{pick.name}</h4>
+                                  <h4 className="text-sm font-bold uppercase italic tracking-tight">{pick.name}</h4>
                                   <p className="text-[9px] font-medium text-gray-400 uppercase tracking-widest">{pick.tags}</p>
                                </div>
                             </button>
@@ -125,7 +125,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                    <div className={`absolute inset-0 rounded-[2.5rem] ${activePick.color} opacity-80 shadow-2xl transition-all duration-700`}></div>
                    
                    <div className="relative z-10 w-full h-full p-10 flex flex-col justify-between text-white">
-                      <h3 className="text-2xl font-black uppercase italic tracking-tighter">{activePick.name}</h3>
+                      <h3 className="text-2xl font-bold uppercase italic tracking-tighter">{activePick.name}</h3>
                       
                       {/* Central Glowing Sphere */}
                       <div className="flex-grow flex items-center justify-center">
@@ -142,7 +142,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
                       <div className="space-y-1">
                          {activePick.details.map((d, i) => (
-                            <p key={i} className="text-xs font-black uppercase tracking-widest opacity-80">{d}</p>
+                            <p key={i} className="text-xs font-bold uppercase tracking-widest opacity-80">{d}</p>
                          ))}
                       </div>
                    </div>
@@ -195,7 +195,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       {React.cloneElement(f.icon as React.ReactElement<any>, { size: 20 })}
                    </div>
                    <div className="space-y-2">
-                      <h4 className="text-base font-black uppercase italic tracking-tight">{f.title}</h4>
+                      <h4 className="text-base font-bold uppercase italic tracking-tight">{f.title}</h4>
                       <p className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed">"{f.desc}"</p>
                    </div>
                 </div>

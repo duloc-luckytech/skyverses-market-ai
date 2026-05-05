@@ -124,8 +124,8 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                  <Crown size={18} />
               </div>
               <div className="space-y-0.5">
-                 <h2 className="text-xs font-black uppercase tracking-[0.4em] text-yellow-500">Ultra Studio</h2>
-                 <p className="text-[14px] font-black uppercase italic tracking-tighter">VEO_DIRECTOR_v3</p>
+                 <h2 className="text-xs font-bold uppercase tracking-[0.4em] text-yellow-500">Ultra Studio</h2>
+                 <p className="text-[14px] font-bold uppercase italic tracking-tighter">VEO_DIRECTOR_v3</p>
               </div>
            </div>
            <button onClick={onClose} className="p-2 text-gray-500 hover:text-red-500 transition-colors">
@@ -139,7 +139,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
              <button
                key={tab}
                onClick={() => setActiveTab(tab)}
-               className={`py-4 text-[8px] font-black uppercase tracking-widest border-r border-white/5 transition-all ${activeTab === tab ? 'text-yellow-500 bg-yellow-500/5' : 'text-gray-600 hover:text-white'}`}
+               className={`py-4 text-[8px] font-bold uppercase tracking-widest border-r border-white/5 transition-all ${activeTab === tab ? 'text-yellow-500 bg-yellow-500/5' : 'text-gray-600 hover:text-white'}`}
              >
                 {tab}
              </button>
@@ -151,7 +151,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               {activeTab === 'DIRECTIVES' && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                    <div className="space-y-4">
-                      <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
+                      <label className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
                         <Terminal size={14} className="text-yellow-500" /> Semantic Payload
                       </label>
                       <textarea
@@ -162,7 +162,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                       />
                    </div>
                    <div className="space-y-4">
-                      <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
+                      <label className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
                         <Camera size={14} className="text-yellow-500" /> Virtual Trajectory
                       </label>
                       <div className="grid grid-cols-2 gap-2">
@@ -170,7 +170,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                            <button
                              key={m}
                              onClick={() => setCameraMotion(m)}
-                             className={`py-3 text-[9px] font-black uppercase border transition-all ${cameraMotion === m ? 'bg-yellow-500 text-black border-yellow-500' : 'border-white/5 text-gray-600 hover:text-white'}`}
+                             className={`py-3 text-[9px] font-bold uppercase border transition-all ${cameraMotion === m ? 'bg-yellow-500 text-black border-yellow-500' : 'border-white/5 text-gray-600 hover:text-white'}`}
                            >
                               {m}
                            </button>
@@ -184,7 +184,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                    <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                         <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
+                         <label className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
                             <Fingerprint size={14} className="text-yellow-500" /> Identity Anchors
                          </label>
                          <span className="text-[8px] text-yellow-500/40">{references.length}/3 locked</span>
@@ -204,7 +204,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                              className="aspect-square border border-dashed border-white/10 hover:border-yellow-500 flex flex-col items-center justify-center gap-2 transition-all group"
                            >
                               <Plus size={20} className="text-gray-600 group-hover:text-yellow-500" />
-                              <span className="text-[7px] font-black uppercase text-gray-700">Add Ref</span>
+                              <span className="text-[7px] font-bold uppercase text-gray-700">Add Ref</span>
                            </button>
                          )}
                       </div>
@@ -219,12 +219,12 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               {activeTab === 'PHYSICS' && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                    <div className="space-y-6">
-                      <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
+                      <label className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
                         <Sliders size={14} className="text-yellow-500" /> Temporal Control
                       </label>
                       <div className="space-y-6">
                          <div className="space-y-3">
-                            <div className="flex justify-between text-[10px] font-black uppercase">
+                            <div className="flex justify-between text-[10px] font-bold uppercase">
                                <span className="text-gray-400">Motion Strength</span>
                                <span className="text-yellow-500">{motionBucket}</span>
                             </div>
@@ -237,7 +237,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                          <div className="p-5 border border-yellow-500/10 bg-yellow-500/5 space-y-4">
                             <div className="flex items-center gap-2 text-yellow-500">
                                <ShieldCheck size={14} />
-                               <span className="text-[9px] font-black uppercase">Flicker_Shield_Active</span>
+                               <span className="text-[9px] font-bold uppercase">Flicker_Shield_Active</span>
                             </div>
                             <p className="text-[8px] text-gray-500 leading-relaxed uppercase">Neural temporal smoothing enabled. Zero-artifact output prioritization.</p>
                          </div>
@@ -249,7 +249,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               {activeTab === 'COMPUTE' && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                    <div className="space-y-4">
-                      <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
+                      <label className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.4em] flex items-center gap-2">
                         <Settings2 size={14} className="text-yellow-500" /> Infrastructure
                       </label>
                       <div className="grid grid-cols-1 gap-2">
@@ -260,8 +260,8 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                            { label: 'Modality', val: 'TEXT_TO_MOTION_S' }
                          ].map(item => (
                            <div key={item.label} className="p-4 bg-white/[0.02] border border-white/5 flex justify-between items-center">
-                              <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest">{item.label}</span>
-                              <span className="text-[10px] font-black text-yellow-500 italic">{item.val}</span>
+                              <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">{item.label}</span>
+                              <span className="text-[10px] font-bold text-yellow-500 italic">{item.val}</span>
                            </div>
                          ))}
                       </div>
@@ -274,7 +274,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         {/* LOG CONSOLE (BOTTOM LEFT) */}
         <div className="h-48 border-t border-white/5 p-6 bg-black flex flex-col gap-3">
            <div className="flex justify-between items-center">
-              <span className="text-[8px] font-black uppercase tracking-widest text-gray-500">Node_Telemetry</span>
+              <span className="text-[8px] font-bold uppercase tracking-widest text-gray-500">Node_Telemetry</span>
               <div className="flex gap-2">
                 <div className="w-1 h-1 bg-green-500 rounded-full"></div>
                 <div className="w-1 h-1 bg-yellow-500 rounded-full animate-pulse"></div>
@@ -299,17 +299,17 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         <div className="absolute top-8 left-8 right-8 flex justify-between items-start z-40 pointer-events-none">
            <div className="flex items-center gap-6">
               <div className="flex flex-col">
-                 <span className="text-[12px] font-black uppercase tracking-[0.4em] italic text-yellow-500">VEO_ULTRA_VIEWPORT</span>
+                 <span className="text-[12px] font-bold uppercase tracking-[0.4em] italic text-yellow-500">VEO_ULTRA_VIEWPORT</span>
                  <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                    <span className="text-[8px] font-black text-white/40 uppercase">Broadcast: 1080p // 24FPS</span>
+                    <span className="text-[8px] font-bold text-white/40 uppercase">Broadcast: 1080p // 24FPS</span>
                  </div>
               </div>
            </div>
            <div className="flex gap-4">
               <div className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/10 flex items-center gap-3">
                  <Activity size={12} className="text-yellow-500 animate-pulse" />
-                 <span className="text-[8px] font-black text-white/60 tracking-widest uppercase">Sync: ACTIVE</span>
+                 <span className="text-[8px] font-bold text-white/60 tracking-widest uppercase">Sync: ACTIVE</span>
               </div>
            </div>
         </div>
@@ -321,7 +321,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                  <div className="w-32 h-32 border-2 border-dashed border-yellow-500/20 rounded-full flex items-center justify-center mx-auto">
                     <MonitorPlay size={64} className="text-yellow-500/20" />
                  </div>
-                 <p className="text-[12px] font-black uppercase tracking-[0.8em] text-gray-700 animate-pulse">Waiting_For_Director_Instruction</p>
+                 <p className="text-[12px] font-bold uppercase tracking-[0.8em] text-gray-700 animate-pulse">Waiting_For_Director_Instruction</p>
               </motion.div>
             ) : isGenerating ? (
               <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-16">
@@ -333,7 +333,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                     </div>
                  </div>
                  <div className="space-y-6 text-center">
-                    <h3 className="text-4xl font-black uppercase tracking-[0.5em] italic text-white leading-none">Synthesizing</h3>
+                    <h3 className="text-4xl font-bold uppercase tracking-[0.5em] italic text-white leading-none">Synthesizing</h3>
                     <div className="flex gap-2 justify-center">
                        {Array.from({length: 6}).map((_, i) => (
                          <div key={i} className="w-16 h-0.5 bg-yellow-500/10 overflow-hidden">
@@ -341,7 +341,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                          </div>
                        ))}
                     </div>
-                    <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Temporal_Interpolation_Node // GPU_CLUSTER_A</p>
+                    <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Temporal_Interpolation_Node // GPU_CLUSTER_A</p>
                  </div>
               </motion.div>
             ) : (
@@ -351,11 +351,11 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
 
                  <div className="absolute bottom-10 left-10 space-y-4">
                     <div className="flex gap-3">
-                       <span className="bg-yellow-500 text-black px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.4em] shadow-xl flex items-center gap-3 italic">
+                       <span className="bg-yellow-500 text-black px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.4em] shadow-xl flex items-center gap-3 italic">
                           <Film size={12} /> Master_Take_Ultra
                        </span>
                     </div>
-                    <h2 className="text-6xl font-black uppercase italic tracking-tighter leading-none text-white">VEO_SYNTH_042</h2>
+                    <h2 className="text-6xl font-bold uppercase italic tracking-tighter leading-none text-white">VEO_SYNTH_042</h2>
                  </div>
 
                  <div className="absolute top-10 right-10 flex flex-col gap-4 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
@@ -377,7 +377,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               <div className="space-y-4">
                  <div className="flex items-center gap-3">
                     <HistoryIcon size={16} className="text-gray-500" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-600">Vault_Explorer</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-gray-600">Vault_Explorer</span>
                  </div>
                  <div className="flex gap-4">
                     {history.map((h, i) => (
@@ -402,7 +402,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               {resultVideo && (
                  <button className="h-24 px-12 border border-yellow-500/20 text-yellow-500/60 hover:text-yellow-500 hover:bg-yellow-500/5 transition-all flex flex-col items-center justify-center gap-2 group">
                     <FastForward size={24} className="group-hover:translate-x-1 transition-transform" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em]">Extend +7s</span>
+                    <span className="text-[9px] font-bold uppercase tracking-[0.3em]">Extend +7s</span>
                  </button>
               )}
               <button
@@ -411,7 +411,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 className={`h-24 px-20 lg:px-40 flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden group shadow-[0_20px_60px_rgba(0,0,0,0.5)] rounded-sm ${prompt.trim() ? 'bg-yellow-500 text-black hover:scale-105 active:scale-95' : 'bg-white/5 text-gray-800'}`}
               >
                  <Zap size={28} fill="currentColor" className={isGenerating ? 'animate-pulse' : ''} />
-                 <span className="text-[11px] font-black uppercase tracking-[0.6em]">{isGenerating ? 'Synthesizing' : 'Launch Master Synth'}</span>
+                 <span className="text-[11px] font-bold uppercase tracking-[0.6em]">{isGenerating ? 'Synthesizing' : 'Launch Master Synth'}</span>
                  <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
               </button>
            </div>
@@ -421,24 +421,24 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       {/* 3. RIGHT SIDEBAR: DNA INSPECTOR */}
       <aside className="hidden xl:flex w-[350px] shrink-0 flex-col bg-[#080808] border-l border-white/5">
          <div className="h-16 border-b border-white/5 flex items-center px-8 shrink-0">
-            <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.4em] text-gray-500 flex items-center gap-3">
                <Database className="w-4 h-4 text-yellow-500" /> DNA_Inspector
             </h3>
          </div>
          <div className="flex-grow p-8 space-y-12 overflow-y-auto no-scrollbar">
             <div className="space-y-6">
-               <label className="text-[9px] font-black uppercase text-gray-600 tracking-widest italic">Identity_Consistency</label>
+               <label className="text-[9px] font-bold uppercase text-gray-600 tracking-widest italic">Identity_Consistency</label>
                <div className="aspect-[3/4] bg-black border border-white/5 p-8 flex flex-col justify-between relative group overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-5">
                     <Fingerprint size={120} />
                   </div>
                   <div className="relative z-10 flex justify-between items-start">
                      <Lock size={20} className="text-yellow-500" />
-                     <span className="text-[9px] font-black text-gray-700">HASH: VEO_992_X</span>
+                     <span className="text-[9px] font-bold text-gray-700">HASH: VEO_992_X</span>
                   </div>
                   <div className="relative z-10 space-y-4">
-                     <p className="text-5xl font-black italic">99.9%</p>
-                     <p className="text-[10px] font-black uppercase tracking-widest text-yellow-500">Parity Stability</p>
+                     <p className="text-5xl font-bold italic">99.9%</p>
+                     <p className="text-[10px] font-bold uppercase tracking-widest text-yellow-500">Parity Stability</p>
                      <div className="h-[1px] w-full bg-white/10"></div>
                      <p className="text-[9px] text-gray-500 uppercase leading-relaxed font-bold">Identity locked across sequence lattice. Zero-drift logic active.</p>
                   </div>
@@ -446,7 +446,7 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
             </div>
 
             <div className="space-y-6">
-               <label className="text-[9px] font-black uppercase text-gray-600 tracking-widest italic">Output_Metric</label>
+               <label className="text-[9px] font-bold uppercase text-gray-600 tracking-widest italic">Output_Metric</label>
                <div className="space-y-4">
                   {[
                     { l: 'Bitrate', v: '45Mbps' },
@@ -454,15 +454,15 @@ const MotionSynthUltraWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                     { l: 'Coherence', v: 'Optimal' }
                   ].map(stat => (
                     <div key={stat.l} className="flex justify-between items-center border-b border-white/5 pb-3">
-                       <span className="text-[9px] font-black text-gray-600 uppercase">{stat.l}</span>
-                       <span className="text-[10px] font-black text-white">{stat.v}</span>
+                       <span className="text-[9px] font-bold text-gray-600 uppercase">{stat.l}</span>
+                       <span className="text-[10px] font-bold text-white">{stat.v}</span>
                     </div>
                   ))}
                </div>
             </div>
          </div>
          <div className="p-8 border-t border-white/5">
-            <button className="w-full py-5 bg-white/5 border border-white/10 text-gray-500 text-[10px] font-black uppercase tracking-widest hover:text-white hover:border-yellow-500 transition-all">Export_Studio_Logs</button>
+            <button className="w-full py-5 bg-white/5 border border-white/10 text-gray-500 text-[10px] font-bold uppercase tracking-widest hover:text-white hover:border-yellow-500 transition-all">Export_Studio_Logs</button>
          </div>
       </aside>
 

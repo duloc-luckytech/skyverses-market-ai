@@ -143,7 +143,7 @@ const CategoryPage = () => {
   const currentLang = lang as Language;
 
   return (
-    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#0a0d14] font-sans transition-colors duration-500 pt-24 md:pt-32 pb-40 relative">
+    <div className="min-h-screen bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] font-sans transition-colors duration-500 pt-24 md:pt-32 pb-40 relative">
       {/* Dynamic Ambient Background */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className={`absolute top-[-5%] right-[-5%] w-[1000px] h-[1000px] rounded-full blur-[250px] opacity-10 dark:opacity-20 animate-pulse ${uiInfo.glow}`}></div>
@@ -153,7 +153,7 @@ const CategoryPage = () => {
         
         {/* REFINED BREADCRUMB & HEADER HUD */}
         <header className="mb-10 space-y-6">
-           <Link to="/" className="inline-flex items-center gap-2 text-[9px] font-black uppercase text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors tracking-[0.3em] group">
+           <Link to="/" className="inline-flex items-center gap-2 text-[9px] font-bold uppercase text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors tracking-[0.3em] group">
               <ChevronLeft size={12} className="group-hover:-translate-x-1 transition-transform" /> {t('nav.browse')}
            </Link>
            
@@ -164,7 +164,7 @@ const CategoryPage = () => {
                  </div>
                  <div className="space-y-0.5">
                     <div className="flex items-center gap-3">
-                       <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic leading-none text-slate-900 dark:text-white">
+                       <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tighter italic leading-none text-slate-900 dark:text-white">
                          {currentBlock ? currentBlock.title[currentLang] : 'Loading...'}
                        </h1>
                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
@@ -182,7 +182,7 @@ const CategoryPage = () => {
                    value={searchQuery}
                    onChange={(e) => setSearchQuery(e.target.value)}
                    placeholder="Tìm kiếm trong danh mục..."
-                   className="w-full bg-white dark:bg-[#0a0d14] border border-black/5 dark:border-white/10 rounded-full pl-12 pr-6 py-3.5 text-xs md:text-sm font-bold focus:border-brand-blue outline-none transition-all shadow-lg dark:shadow-none"
+                   className="w-full bg-white dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/10 rounded-full pl-12 pr-6 py-3.5 text-xs md:text-sm font-bold focus:border-brand-blue outline-none transition-all shadow-lg dark:shadow-none"
                  />
               </div>
            </div>
@@ -213,8 +213,8 @@ const CategoryPage = () => {
                   <Search size={48} strokeWidth={1} className="text-slate-900 dark:text-white" />
                </div>
                <div className="space-y-2">
-                  <p className="text-lg md:text-xl font-black uppercase tracking-[0.4em] italic text-slate-400 dark:text-gray-600">No nodes found</p>
-                  <button onClick={() => setSearchQuery('')} className="text-[9px] font-black text-brand-blue uppercase tracking-widest border-b border-brand-blue/30 pb-1 hover:border-brand-blue transition-all">Thiết lập lại bộ lọc</button>
+                  <p className="text-lg md:text-xl font-bold uppercase tracking-[0.4em] italic text-slate-400 dark:text-gray-600">No nodes found</p>
+                  <button onClick={() => setSearchQuery('')} className="text-[9px] font-bold text-brand-blue uppercase tracking-widest border-b border-brand-blue/30 pb-1 hover:border-brand-blue transition-all">Thiết lập lại bộ lọc</button>
                </div>
             </div>
           )}
@@ -222,11 +222,11 @@ const CategoryPage = () => {
         
         {/* FOOTER STATS */}
         <div className="mt-40 pt-10 border-t border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 opacity-40">
-           <div className="flex items-center gap-8 text-[9px] font-black uppercase tracking-widest italic">
+           <div className="flex items-center gap-8 text-[9px] font-bold uppercase tracking-widest italic">
               <span className="flex items-center gap-2"><ShieldCheck size={14}/> Security: Encrypted</span>
               <span className="flex items-center gap-2"><Zap size={14}/> Latency: 24ms</span>
            </div>
-           <p className="text-[9px] font-black uppercase tracking-widest">© 2025 Skyverses Cloud Ledger</p>
+           <p className="text-[9px] font-bold uppercase tracking-widest">© 2025 Skyverses Cloud Ledger</p>
         </div>
       </div>
     </div>

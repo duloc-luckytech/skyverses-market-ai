@@ -129,7 +129,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
           </FadeInUp>
 
           <FadeInUp delay={0.08}>
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-[1.1] tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-[1.1] tracking-tight">
               Tạo Slide
               <br />
               <span className="relative text-brand-blue inline-block">
@@ -172,7 +172,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
             <div className="flex flex-col sm:flex-row gap-3">
               <motion.button
                 onClick={onStartStudio}
-                whileHover={{ scale: 1.03, boxShadow: '0 12px 32px rgba(0,144,255,0.3)' }}
+                whileHover={{ scale: 1.03, boxShadow: '0 12px 32px rgba(112,54,240,0.3)' }}
                 whileTap={{ scale: 0.97 }}
                 className="flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl bg-brand-blue text-white font-bold text-sm shadow-xl shadow-brand-blue/20 hover:bg-brand-blue/90 transition-all"
               >
@@ -262,7 +262,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
                   </div>
 
                   {/* Active slide canvas */}
-                  <div className="flex-1 p-3 flex items-center justify-center bg-slate-100 dark:bg-[#0a0a0c]">
+                  <div className="flex-1 p-3 flex items-center justify-center bg-slate-100 dark:bg-[var(--atlas-bg-page)]">
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeSlide}
@@ -290,7 +290,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
                             <Edit3 size={8} className="text-white/40" />
                             <span className="text-[8px] text-white/40">Click để chỉnh sửa</span>
                           </div>
-                          <p className="text-white font-black text-lg leading-tight mb-2 drop-shadow-md">{MOCK_SLIDES[activeSlide].title}</p>
+                          <p className="text-white font-bold text-lg leading-tight mb-2 drop-shadow-md">{MOCK_SLIDES[activeSlide].title}</p>
                           <p className="text-white/70 text-[10px] leading-relaxed whitespace-pre-line">{MOCK_SLIDES[activeSlide].body}</p>
                         </div>
                       </motion.div>

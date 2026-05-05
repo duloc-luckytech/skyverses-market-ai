@@ -102,7 +102,7 @@ export const UseCasesSection: React.FC = () => (
     <div className="max-w-[1400px] mx-auto">
       <FadeInUp className="text-center mb-14">
         <SectionLabel>ỨNG DỤNG THỰC TẾ</SectionLabel>
-        <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-3">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3">
           Phù hợp với mọi ngành nghề
         </h2>
         <p className="text-base text-slate-500 dark:text-white/40 max-w-lg mx-auto">

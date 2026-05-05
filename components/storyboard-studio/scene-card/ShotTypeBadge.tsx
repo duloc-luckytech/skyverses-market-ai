@@ -23,7 +23,7 @@ export const ShotTypeBadge: React.FC<ShotTypeBadgeProps> = ({ shotType, onChange
       onClick={cycleNext}
       disabled={disabled}
       title={`Shot: ${shotType} — click to cycle`}
-      className={`text-[9px] font-black px-2 py-0.5 rounded border uppercase tracking-widest transition-all select-none disabled:cursor-not-allowed disabled:opacity-50 ${SHOT_TYPE_COLORS[shotType]}`}
+      className={`text-[9px] font-bold px-2 py-0.5 rounded border uppercase tracking-widest transition-all select-none disabled:cursor-not-allowed disabled:opacity-50 ${SHOT_TYPE_COLORS[shotType]}`}
     >
       {shotType}
     </motion.button>

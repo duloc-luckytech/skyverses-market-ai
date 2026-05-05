@@ -19,17 +19,17 @@ export const SandboxTab: React.FC<SandboxTabProps> = ({
 }) => {
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
-      <div className="p-10 bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 rounded-[2.5rem] shadow-2xl space-y-10">
+      <div className="p-10 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-[2.5rem] shadow-2xl space-y-10">
          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="space-y-1">
-               <h3 className="text-2xl font-black uppercase italic tracking-tighter">Thử nghiệm API.</h3>
+               <h3 className="text-2xl font-bold uppercase italic tracking-tighter">Thử nghiệm API.</h3>
                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Kiểm thử giải mã trực tiếp từ trình duyệt</p>
             </div>
             <div className="flex bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/10">
                {(['IMAGE', 'VIDEO', 'CUSTOM'] as const).map(m => (
                  <button 
                    key={m} onClick={() => setRequestMode(m)}
-                   className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase transition-all ${requestMode === m ? 'bg-white dark:bg-[#13171f] text-indigo-600 shadow-lg' : 'text-gray-400'}`}
+                   className={`px-6 py-2.5 rounded-lg text-[9px] font-bold uppercase transition-all ${requestMode === m ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-indigo-600 shadow-lg' : 'text-gray-400'}`}
                  >
                    {m}
                  </button>
@@ -39,7 +39,7 @@ export const SandboxTab: React.FC<SandboxTabProps> = ({
 
          <div className="space-y-6">
             <div className="space-y-3">
-               <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-2 italic">SiteKey / Dữ liệu kịch bản</label>
+               <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-2 italic">SiteKey / Dữ liệu kịch bản</label>
                <textarea 
                  value={targetUrl} onChange={e => setTargetUrl(e.target.value)}
                  className="w-full h-32 bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/5 p-5 rounded-2xl font-mono text-[12px] text-slate-800 dark:text-zinc-300 outline-none focus:ring-1 focus:ring-indigo-500/40 transition-all resize-none shadow-inner"
@@ -50,7 +50,7 @@ export const SandboxTab: React.FC<SandboxTabProps> = ({
             <button 
               onClick={handleRunSandbox}
               disabled={!targetUrl.trim() || isExecuting}
-              className={`w-full py-6 rounded-2xl font-black uppercase text-xs tracking-[0.4em] shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-4 relative overflow-hidden group ${!targetUrl.trim() || isExecuting ? 'bg-slate-100 dark:bg-white/5 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 text-white hover:scale-[1.01]'}`}
+              className={`w-full py-6 rounded-2xl font-bold uppercase text-xs tracking-[0.4em] shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-4 relative overflow-hidden group ${!targetUrl.trim() || isExecuting ? 'bg-slate-100 dark:bg-white/5 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 text-white hover:scale-[1.01]'}`}
             >
                <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                {isExecuting ? <Loader2 className="animate-spin" size={20} /> : <Play size={20} fill="currentColor" />}
@@ -62,7 +62,7 @@ export const SandboxTab: React.FC<SandboxTabProps> = ({
       <div className="p-8 bg-black rounded-[2rem] border border-white/5 overflow-hidden relative shadow-2xl">
          <div className="absolute top-4 right-4 text-emerald-500/20"><Terminal size={32}/></div>
          <div className="space-y-6">
-            <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-500 italic">Kết quả phản hồi hệ thống</h4>
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.3em] text-gray-500 italic">Kết quả phản hồi hệ thống</h4>
             <div className="font-mono text-[12px] text-emerald-500 space-y-2 max-h-40 overflow-y-auto no-scrollbar pb-2">
                {isExecuting && <p className="animate-pulse">&gt; ĐANG GỬI YÊU CẦU TỚI MÁY CHỦ...</p>}
                <p className="opacity-40">&gt; Hệ thống sẵn sàng. Đang chờ lệnh thực thi.</p>

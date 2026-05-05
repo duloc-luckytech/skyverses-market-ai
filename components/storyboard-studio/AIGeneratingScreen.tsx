@@ -156,7 +156,7 @@ export const AIGeneratingScreen: React.FC<AIGeneratingScreenProps> = ({
         {/* ── Title ── */}
         <div className="text-center space-y-2">
           <motion.h2
-            className="text-2xl md:text-3xl font-black text-white tracking-tight"
+            className="text-2xl md:text-3xl font-bold text-white tracking-tight"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -204,7 +204,7 @@ export const AIGeneratingScreen: React.FC<AIGeneratingScreenProps> = ({
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 + i * 0.1 }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border transition-all duration-500 ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all duration-500 ${
                     currentStage === s.id
                       ? `${s.bg} ${s.border} ${s.color}`
                       : currentStage > s.id
@@ -250,7 +250,7 @@ export const AIGeneratingScreen: React.FC<AIGeneratingScreenProps> = ({
             </div>
 
             <div className="flex items-center justify-between px-0.5">
-              <span className="text-[11px] font-black uppercase tracking-widest text-brand-blue">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-brand-blue">
                 {progress}% hoàn thành
               </span>
               <span className="text-[11px] font-medium text-white/25">{etaLabel}</span>

@@ -81,15 +81,15 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[#0a0d14] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
+    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[var(--atlas-bg-page)] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white dark:bg-[#0a0d14] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
+      <div className="bg-white dark:bg-[var(--atlas-bg-page)] border-b border-gray-200 dark:border-white/10 px-8 py-6 flex justify-between items-center shrink-0 z-50">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-brand-blue/10 dark:bg-brand-blue/20 rounded-xl flex items-center justify-center text-brand-blue">
             <Mic size={24} />
           </div>
           <div className="flex flex-col">
-            <h2 className="font-black text-xl tracking-tight uppercase italic">Neural TTS Studio</h2>
+            <h2 className="font-bold text-xl tracking-tight uppercase italic">Neural TTS Studio</h2>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Enterprise Speech Synthesis</p>
           </div>
         </div>
@@ -102,7 +102,7 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <div className="max-w-5xl mx-auto p-8 space-y-10">
           
           {/* Main Editor Card */}
-          <div className="bg-white dark:bg-[#0a0d14] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-xl space-y-6">
+          <div className="bg-white dark:bg-[var(--atlas-bg-page)] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-xl space-y-6">
              <div className="relative">
                 <textarea 
                   value={text}
@@ -110,7 +110,7 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   className="w-full bg-gray-50 dark:bg-black/40 border border-gray-100 dark:border-white/5 rounded-2xl p-8 text-lg font-medium text-gray-700 dark:text-gray-300 min-h-[250px] focus:ring-2 focus:ring-brand-blue outline-none transition-all leading-relaxed no-scrollbar"
                   placeholder={t('tts.workspace.placeholder')}
                 />
-                <div className="absolute right-6 bottom-6 text-[10px] font-black text-gray-400 uppercase tracking-widest bg-white dark:bg-black px-2 py-1 rounded">
+                <div className="absolute right-6 bottom-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-white dark:bg-black px-2 py-1 rounded">
                    {text.length} / 5000 chars
                 </div>
              </div>
@@ -118,14 +118,14 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
              <div className="flex flex-wrap items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('tts.workspace.settings')}</span>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('tts.workspace.settings')}</span>
                       <div className="flex items-center gap-3">
                          <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-lg">
                             {['Kore', 'Zephyr'].map(v => (
                                <button 
                                  key={v}
                                  onClick={() => setSelectedVoice(VOICE_PRESETS.find(p => p.id === v)!)}
-                                 className={`px-5 py-2 text-xs font-black uppercase rounded-md transition-all ${selectedVoice.id === v ? 'bg-white dark:bg-black text-brand-blue shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                                 className={`px-5 py-2 text-xs font-bold uppercase rounded-md transition-all ${selectedVoice.id === v ? 'bg-white dark:bg-black text-brand-blue shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
                                >
                                   {v}
                                </button>
@@ -145,7 +145,7 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                    <button 
                      onClick={handleGenerate}
                      disabled={isGenerating || !text.trim()}
-                     className="bg-slate-900 dark:bg-white dark:text-black text-white px-10 py-4 rounded-xl text-sm font-black uppercase tracking-[0.2em] shadow-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-50"
+                     className="bg-slate-900 dark:bg-white dark:text-black text-white px-10 py-4 rounded-xl text-sm font-bold uppercase tracking-[0.2em] shadow-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-50"
                    >
                      {isGenerating ? <Loader2 size={18} className="animate-spin" /> : <Zap size={18} fill="currentColor" />}
                      {t('tts.workspace.generate')}
@@ -155,7 +155,7 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           </div>
 
           {/* Visualizer Area */}
-          <div className="bg-white dark:bg-[#0a0d14] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-sm h-32 flex items-center justify-center relative overflow-hidden">
+          <div className="bg-white dark:bg-[var(--atlas-bg-page)] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-sm h-32 flex items-center justify-center relative overflow-hidden">
              <div className="flex items-center gap-1 h-12 w-full justify-center opacity-40">
                 {Array.from({length: 60}).map((_, i) => (
                    <motion.div 
@@ -181,7 +181,7 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           {/* Voice Library Card */}
           <div className="space-y-6">
              <div className="flex items-center justify-between">
-                <h3 className="font-black text-lg uppercase tracking-widest italic">Voice Library</h3>
+                <h3 className="font-bold text-lg uppercase tracking-widest italic">Voice Library</h3>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em]">5 Enterprise Models</span>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -197,11 +197,11 @@ const TTSWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                          </div>
                          {selectedVoice.id === voice.id && <CheckCircle2 size={20} className="text-brand-blue" />}
                       </div>
-                      <h4 className="text-lg font-black uppercase italic tracking-tight">{voice.name}</h4>
+                      <h4 className="text-lg font-bold uppercase italic tracking-tight">{voice.name}</h4>
                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">{voice.traits}</p>
                       <div className="flex items-center justify-between pt-4 border-t border-gray-50 dark:border-white/5">
-                         <span className="text-[8px] font-black uppercase px-2 py-0.5 bg-gray-100 dark:bg-white/5 text-gray-500 rounded">{voice.gender}</span>
-                         <button className="text-[10px] font-black uppercase text-brand-blue opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">Preview <Play size={10} fill="currentColor"/></button>
+                         <span className="text-[8px] font-bold uppercase px-2 py-0.5 bg-gray-100 dark:bg-white/5 text-gray-500 rounded">{voice.gender}</span>
+                         <button className="text-[10px] font-bold uppercase text-brand-blue opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">Preview <Play size={10} fill="currentColor"/></button>
                       </div>
                    </button>
                 ))}

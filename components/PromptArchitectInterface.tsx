@@ -137,21 +137,21 @@ const PromptArchitectInterface = () => {
 
   // REPOSITORY COMPONENT
   const RepositoryPanel = () => (
-    <div className="flex flex-col h-full bg-[#fdfdfd] dark:bg-[#0a0d14]">
+    <div className="flex flex-col h-full bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)]">
       <div className="p-4 lg:p-8 space-y-6">
-        <div className="relative flex items-center bg-white dark:bg-[#0a0d14] border border-black/[0.08] dark:border-white/5 rounded-md shadow-sm overflow-hidden h-14">
+        <div className="relative flex items-center bg-white dark:bg-[var(--atlas-bg-page)] border border-black/[0.08] dark:border-white/5 rounded-md shadow-sm overflow-hidden h-14">
           <div className="pl-5 pr-2"><Search size={16} className="text-gray-300" /></div>
           <input 
             type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="SEARCH REPOSITORY..."
-            className="flex-grow bg-transparent border-none py-2 text-[10px] font-black uppercase tracking-[0.2em] focus:outline-none"
+            className="flex-grow bg-transparent border-none py-2 text-[10px] font-bold uppercase tracking-[0.2em] focus:outline-none"
           />
         </div>
         <div className="flex gap-2 overflow-x-auto no-scrollbar py-2">
           {['ALL', 'IMG', 'VID', 'PROMPT'].map(cat => (
             <button 
               key={cat} onClick={() => setActiveCategory(cat as any)}
-              className={`px-6 py-2 border text-[9px] font-black uppercase tracking-widest rounded-sm transition-all whitespace-nowrap ${activeCategory === cat ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/5 text-gray-400'}`}
+              className={`px-6 py-2 border text-[9px] font-bold uppercase tracking-widest rounded-sm transition-all whitespace-nowrap ${activeCategory === cat ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/5 text-gray-400'}`}
             >
               {cat}
             </button>
@@ -159,7 +159,7 @@ const PromptArchitectInterface = () => {
         </div>
         <div className="flex flex-wrap gap-2">
           {repositoryTags.map(tag => (
-            <button key={tag} onClick={() => setActiveTag(activeTag === tag ? null : tag)} className={`px-3 py-1 border rounded-full text-[8px] font-black uppercase transition-all ${activeTag === tag ? 'bg-brand-blue/10 border-brand-blue text-brand-blue' : 'border-black/5 text-gray-400'}`}>
+            <button key={tag} onClick={() => setActiveTag(activeTag === tag ? null : tag)} className={`px-3 py-1 border rounded-full text-[8px] font-bold uppercase transition-all ${activeTag === tag ? 'bg-brand-blue/10 border-brand-blue text-brand-blue' : 'border-black/5 text-gray-400'}`}>
               #{tag}
             </button>
           ))}
@@ -169,10 +169,10 @@ const PromptArchitectInterface = () => {
         {filteredAssets.map(asset => (
           <div key={asset.id} onClick={() => loadAsset(asset)} className="p-4 bg-white dark:bg-white/[0.01] border border-black/[0.05] dark:border-white/5 hover:border-brand-blue/30 cursor-pointer rounded-sm group transition-all">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[10px] font-black uppercase group-hover:text-brand-blue transition-colors">{asset.name}</span>
-              <span className="text-[7px] font-black bg-brand-blue/10 text-brand-blue px-2 py-0.5">{asset.type}</span>
+              <span className="text-[10px] font-bold uppercase group-hover:text-brand-blue transition-colors">{asset.name}</span>
+              <span className="text-[7px] font-bold bg-brand-blue/10 text-brand-blue px-2 py-0.5">{asset.type}</span>
             </div>
-            <div className="flex gap-2">{asset.tags.map(t => <span key={t} className="text-[6px] font-black text-gray-400">#{t}</span>)}</div>
+            <div className="flex gap-2">{asset.tags.map(t => <span key={t} className="text-[6px] font-bold text-gray-400">#{t}</span>)}</div>
           </div>
         ))}
       </div>
@@ -180,7 +180,7 @@ const PromptArchitectInterface = () => {
   );
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white font-mono transition-all duration-500">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white font-mono transition-all duration-500">
       
       {/* DESKTOP SIDEBAR / MOBILE REPOSITORY TAB */}
       <aside className={`${mobileTab === 'REPOSITORY' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[450px] shrink-0 border-r border-black/10 dark:border-white/5 z-20`}>
@@ -188,14 +188,14 @@ const PromptArchitectInterface = () => {
       </aside>
 
       {/* MAIN CONSTRUCTION AREA */}
-      <main className={`${mobileTab === 'ARCHITECT' ? 'flex' : 'hidden'} lg:flex flex-grow flex-col bg-white dark:bg-[#0a0d14] relative overflow-hidden`}>
+      <main className={`${mobileTab === 'ARCHITECT' ? 'flex' : 'hidden'} lg:flex flex-grow flex-col bg-white dark:bg-[var(--atlas-bg-page)] relative overflow-hidden`}>
         <div className="flex-grow flex flex-col p-6 lg:p-12 overflow-y-auto no-scrollbar">
            <div className="max-w-4xl mx-auto w-full space-y-10 pb-48 lg:pb-32">
               <header className="flex justify-between items-center border-b border-black/10 dark:border-white/5 pb-8">
                  <div className="flex items-center gap-4">
                     <Terminal className="w-5 h-5 text-brand-blue" />
                     <div>
-                       <span className="text-[11px] font-black uppercase tracking-[0.4em] text-gray-400">Constructor_v1.2</span>
+                       <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-gray-400">Constructor_v1.2</span>
                        <p className="hidden sm:block text-[8px] font-bold text-gray-800 uppercase tracking-widest">Semantic Grid Architecture</p>
                     </div>
                  </div>
@@ -209,14 +209,14 @@ const PromptArchitectInterface = () => {
                  {fields.map((field) => (
                     <div key={field.id} className={`p-5 border transition-all ${field.active ? 'border-black/[0.08] dark:border-white/5' : 'border-dashed opacity-30'}`}>
                        <div className="flex justify-between items-center mb-4">
-                          <label className="text-[9px] font-black uppercase tracking-[0.4em] text-brand-blue">{field.label}</label>
+                          <label className="text-[9px] font-bold uppercase tracking-[0.4em] text-brand-blue">{field.label}</label>
                           <button onClick={() => setFields(fields.map(f => f.id === field.id ? {...f, active: !f.active} : f))}>
                              <Eye className={`w-3.5 h-3.5 ${field.active ? 'text-gray-300' : 'text-red-500'}`} />
                           </button>
                        </div>
                        <textarea 
                          value={field.value} onChange={(e) => updateField(field.id, e.target.value)}
-                         className="w-full bg-transparent border-none text-xl lg:text-3xl font-black text-black dark:text-white/90 focus:outline-none resize-none min-h-[40px] tracking-tight leading-tight uppercase"
+                         className="w-full bg-transparent border-none text-xl lg:text-3xl font-bold text-black dark:text-white/90 focus:outline-none resize-none min-h-[40px] tracking-tight leading-tight uppercase"
                          rows={1}
                        />
                     </div>
@@ -229,7 +229,7 @@ const PromptArchitectInterface = () => {
         <div className={`fixed lg:absolute bottom-20 lg:bottom-0 left-0 right-0 lg:h-36 bg-white dark:bg-black border-t border-black/10 dark:border-white/5 p-6 flex items-center justify-between z-[50] lg:z-30 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] ${mobileTab === 'ARCHITECT' ? 'flex' : 'hidden lg:flex'}`}>
            <div className="hidden sm:flex items-center gap-12">
               <div className="space-y-2">
-                 <div className="flex justify-between text-[8px] font-black uppercase text-gray-400">
+                 <div className="flex justify-between text-[8px] font-bold uppercase text-gray-400">
                     <span>SYNTAX STRENGTH</span>
                     <span className="text-brand-blue">{strength}%</span>
                  </div>
@@ -238,8 +238,8 @@ const PromptArchitectInterface = () => {
                  </div>
               </div>
               <div className="flex flex-col">
-                 <span className="text-[9px] font-black uppercase text-gray-400">ADAPTER</span>
-                 <select value={targetModel} onChange={(e) => setTargetModel(e.target.value)} className="bg-transparent border-none text-[11px] font-black uppercase tracking-widest outline-none">
+                 <span className="text-[9px] font-bold uppercase text-gray-400">ADAPTER</span>
+                 <select value={targetModel} onChange={(e) => setTargetModel(e.target.value)} className="bg-transparent border-none text-[11px] font-bold uppercase tracking-widest outline-none">
                     <option value="Gemini_3_Pro">GEMINI 3 PRO</option>
                     <option value="SDXL">SDXL TURBO</option>
                  </select>
@@ -248,7 +248,7 @@ const PromptArchitectInterface = () => {
 
            <button 
              onClick={handleCompile} disabled={isCompiling}
-             className="w-full sm:w-auto bg-brand-blue text-white px-10 py-5 text-[11px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black transition-all shadow-xl active:scale-[0.98] disabled:opacity-20"
+             className="w-full sm:w-auto bg-brand-blue text-white px-10 py-5 text-[11px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black transition-all shadow-xl active:scale-[0.98] disabled:opacity-20"
            >
              {isCompiling ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5 fill-current" />}
              COMPILE_LOGIC
@@ -257,9 +257,9 @@ const PromptArchitectInterface = () => {
       </main>
 
       {/* PRODUCTION AUDIT PANEL (RIGHT/MODAL) */}
-      <aside className={`${mobileTab === 'AUDIT' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#0a0d14] border-l border-black/10 dark:border-white/5 overflow-hidden z-20`}>
+      <aside className={`${mobileTab === 'AUDIT' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-hidden z-20`}>
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Eye className="w-4 h-4 text-brand-blue" /> Production_Audit
             </h3>
          </div>
@@ -267,14 +267,14 @@ const PromptArchitectInterface = () => {
             {isCompiling ? (
                <div className="py-20 text-center space-y-8 animate-pulse">
                   <Cpu className="w-12 h-12 text-brand-blue mx-auto animate-spin" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.4em]">ANALYZING_TOKENS...</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.4em]">ANALYZING_TOKENS...</p>
                </div>
             ) : testResult ? (
                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-700">
                   <div className="space-y-4">
                      <div className="flex items-center gap-3 text-green-500">
                         <CheckCircle2 size={14} />
-                        <span className="text-[9px] font-black uppercase tracking-widest">Logic_Verified</span>
+                        <span className="text-[9px] font-bold uppercase tracking-widest">Logic_Verified</span>
                      </div>
                      <div className="p-6 bg-black text-[#00ff41] font-mono text-[10px] leading-relaxed border border-[#00ff41]/20 shadow-[0_0_20px_rgba(0,255,65,0.05)]">
                         {testResult}
@@ -282,12 +282,12 @@ const PromptArchitectInterface = () => {
                   </div>
 
                   <div className="space-y-4">
-                     <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest">SYNTHESIS PREVIEW</h4>
+                     <h4 className="text-[10px] font-bold uppercase text-gray-400 tracking-widest">SYNTHESIS PREVIEW</h4>
                      <div className="aspect-square bg-black border border-white/10 relative group overflow-hidden rounded-sm">
                         <img src={`https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=600`} className="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all duration-1000" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                         <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center">
-                           <span className="text-[8px] font-black uppercase tracking-widest text-white/40 italic">Watermarked Preview</span>
+                           <span className="text-[8px] font-bold uppercase tracking-widest text-white/40 italic">Watermarked Preview</span>
                            <button className="p-2.5 bg-white/10 backdrop-blur-md rounded-sm border border-white/10 text-white hover:bg-brand-blue transition-all"><Maximize2 size={14} /></button>
                         </div>
                      </div>
@@ -296,7 +296,7 @@ const PromptArchitectInterface = () => {
                   <div className="p-6 border border-brand-blue/20 bg-brand-blue/5 rounded-sm space-y-4">
                      <div className="flex items-center gap-3 text-brand-blue">
                         <Lock size={14} />
-                        <span className="text-[9px] font-black uppercase tracking-widest">VPC_LOCK</span>
+                        <span className="text-[9px] font-bold uppercase tracking-widest">VPC_LOCK</span>
                      </div>
                      <p className="text-[8px] text-gray-500 font-bold uppercase leading-relaxed tracking-wider">Logic node is pinned to private studio instance. Authorized for export.</p>
                   </div>
@@ -307,7 +307,7 @@ const PromptArchitectInterface = () => {
                     <Command className="w-10 h-10 mx-auto" />
                     <HistoryIcon className="w-6 h-6 text-brand-blue/30" />
                   </div>
-                  <p className="text-[9px] font-black uppercase tracking-widest italic">Awaiting Synthesis Sequence</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest italic">Awaiting Synthesis Sequence</p>
                </div>
             )}
          </div>
@@ -327,7 +327,7 @@ const PromptArchitectInterface = () => {
             <div className={`p-1.5 rounded-full transition-all ${mobileTab === tab.id ? 'bg-brand-blue/10' : ''}`}>
                {tab.icon}
             </div>
-            <span className="text-[8px] font-black uppercase tracking-widest">{tab.label}</span>
+            <span className="text-[8px] font-bold uppercase tracking-widest">{tab.label}</span>
           </button>
         ))}
       </nav>
@@ -336,7 +336,7 @@ const PromptArchitectInterface = () => {
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .custom-scrollbar::-webkit-scrollbar { width: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #0090ff; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #7036F0; }
       `}</style>
     </div>
   );

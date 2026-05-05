@@ -25,7 +25,7 @@ export const SegmentationTab: React.FC<SegmentationTabProps> = ({ variants }) =>
               <div className="absolute inset-0 bg-gradient-to-b from-brand-blue/5 to-transparent rounded-full blur-3xl opacity-20"></div>
               <img 
                 src="https://ai-cdn.gommo.net/ai/images/c1df07a5156c5710/9eb466139cc29515.png" 
-                className="w-full h-full object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(0,144,255,0.1)]" 
+                className="w-full h-full object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(112,54,240,0.1)]" 
                 alt="Segmentation Preview" 
               />
             </div>
@@ -43,7 +43,7 @@ export const SegmentationTab: React.FC<SegmentationTabProps> = ({ variants }) =>
                 <div className="p-1.5 bg-brand-blue/10 rounded-lg text-brand-blue">
                    <Box size={14} />
                 </div>
-                <h3 className="text-[12px] font-black uppercase tracking-widest text-white">Part Completion</h3>
+                <h3 className="text-[12px] font-bold uppercase tracking-widest text-white">Part Completion</h3>
              </div>
 
              <div className="space-y-2">
@@ -72,22 +72,22 @@ export const SegmentationTab: React.FC<SegmentationTabProps> = ({ variants }) =>
                 <div className="w-8 h-8 bg-brand-blue/20 rounded-full flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
                   <Crown size={16} fill="currentColor" />
                 </div>
-                <span className="text-xs font-black uppercase tracking-widest text-white italic">Start Segmenting</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-white italic">Start Segmenting</span>
               </div>
               <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
                 <Zap size={10} className="text-yellow-400" fill="currentColor" />
-                <span className="text-[11px] font-black italic text-white">40</span>
+                <span className="text-[11px] font-bold italic text-white">40</span>
               </div>
             </button>
 
             <div className="flex items-center gap-3 px-4 py-2 opacity-40">
               <Box size={14} className="text-gray-400" />
-              <span className="text-[11px] font-black uppercase tracking-widest text-gray-400 italic">Part Completion</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400 italic">Part Completion</span>
             </div>
           </div>
         ) : (
           <div className="space-y-6">
-            <button className="w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 hover:text-brand-blue transition-colors group">
+            <button className="w-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600 hover:text-brand-blue transition-colors group">
               How it works <HelpCircle size={12} className="group-hover:rotate-12 transition-transform" />
             </button>
 
@@ -98,11 +98,11 @@ export const SegmentationTab: React.FC<SegmentationTabProps> = ({ variants }) =>
                 <div className="w-8 h-8 bg-brand-blue/20 rounded-full flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
                   <Crown size={16} fill="currentColor" />
                 </div>
-                <span className="text-xs font-black uppercase tracking-widest text-white italic">Part Completion</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-white italic">Part Completion</span>
               </div>
               <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
                 <Zap size={10} className="text-yellow-400" fill="currentColor" />
-                <span className="text-[11px] font-black italic text-white">5</span>
+                <span className="text-[11px] font-bold italic text-white">5</span>
               </div>
             </button>
           </div>

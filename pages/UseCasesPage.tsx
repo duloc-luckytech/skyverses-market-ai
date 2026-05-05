@@ -160,7 +160,7 @@ const UseCasesPage = () => {
             <TrendingUp size={14} /> Industry Solutions
           </motion.div>
 
-          <motion.h1 variants={fadeUp} custom={1} className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.95] mb-6">
+          <motion.h1 variants={fadeUp} custom={1} className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.95] mb-6">
             AI That Works for{' '}
             <span className="bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
               Your Industry
@@ -184,7 +184,7 @@ const UseCasesPage = () => {
             <motion.div key={i} variants={fadeUp} custom={i}
               className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 text-center"
             >
-              <div className="text-3xl font-black bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
+              <div className="text-3xl font-bold bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
               <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">{s.label}</div>
             </motion.div>
           ))}
@@ -216,7 +216,7 @@ const UseCasesPage = () => {
                       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.gradient} flex items-center justify-center text-white mb-5 shadow-lg`}>
                         {cat.icon}
                       </div>
-                      <h3 className="text-2xl font-black mb-1">{cat.title}</h3>
+                      <h3 className="text-2xl font-bold mb-1">{cat.title}</h3>
                       <p className="text-sm text-gray-500 mb-6">{cat.subtitle}</p>
 
                       <div className="flex flex-wrap gap-2 mb-6">
@@ -262,7 +262,7 @@ const UseCasesPage = () => {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-gradient-to-b from-violet-500/20 to-transparent blur-3xl pointer-events-none" />
 
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-5xl font-black mb-6">
+              <h2 className="text-3xl md:text-5xl font-bold mb-6">
                 Don't See Your Industry?
               </h2>
               <p className="text-gray-400 max-w-xl mx-auto mb-10">

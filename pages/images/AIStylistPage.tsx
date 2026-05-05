@@ -34,7 +34,7 @@ const AIStylistPage = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-white dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* 1. HERO SECTION */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-20 relative overflow-hidden">
@@ -44,13 +44,13 @@ const AIStylistPage = () => {
           <div className="lg:col-span-6 space-y-10 order-2 lg:order-1">
             <motion.div 
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[10px] font-black uppercase tracking-[0.2em]"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[10px] font-bold uppercase tracking-[0.2em]"
             >
               <Sparkles size={14} /> Next-Gen AI Fashion Production
             </motion.div>
             
             <div className="space-y-6">
-              <h1 className="text-6xl lg:text-[100px] font-black leading-[0.85] tracking-tighter italic uppercase text-slate-900 dark:text-white">
+              <h1 className="text-6xl lg:text-[100px] font-bold leading-[0.85] tracking-tighter italic uppercase text-slate-900 dark:text-white">
                 The World is <br /> <span className="text-brand-blue">Your Studio.</span>
               </h1>
               <p className="text-xl lg:text-3xl text-slate-500 dark:text-gray-400 font-medium leading-tight border-l-2 border-brand-blue pl-8">
@@ -61,24 +61,24 @@ const AIStylistPage = () => {
             <div className="flex flex-col sm:flex-row gap-6 pt-4">
               <button 
                 onClick={() => setIsStudioOpen(true)}
-                className="bg-brand-blue text-white px-12 py-6 rounded-sm text-xs font-black uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(0,144,255,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
+                className="bg-brand-blue text-white px-12 py-6 rounded-sm text-xs font-bold uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(112,54,240,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
               >
                 Launch Stylist Studio <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-xs font-black uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-all backdrop-blur-md flex items-center justify-center gap-4">
+              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-all backdrop-blur-md flex items-center justify-center gap-4">
                 View Showreel <Play size={16} fill="currentColor" />
               </button>
             </div>
           </div>
 
           <div className="lg:col-span-6 relative order-1 lg:order-2">
-             <div className="aspect-[3/4] bg-slate-100 dark:bg-[#0a0d14] border border-slate-200 dark:border-white/5 rounded-[3rem] p-12 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center">
+             <div className="aspect-[3/4] bg-slate-100 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-[3rem] p-12 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center">
                 <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue/10 to-transparent"></div>
                 <div className="relative z-10 w-full max-w-sm aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-white/10 rotate-3">
                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover" alt="Stylist Mockup" />
                    <div className="absolute bottom-6 left-6 right-6 p-4 bg-black/60 backdrop-blur-md border border-white/10 rounded-xl">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-brand-blue mb-1">Active Synthesis</p>
-                      <h4 className="text-xl font-black uppercase italic leading-none">VIRTUAL_FIT_042</h4>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-brand-blue mb-1">Active Synthesis</p>
+                      <h4 className="text-xl font-bold uppercase italic leading-none">VIRTUAL_FIT_042</h4>
                    </div>
                 </div>
                 <div className="absolute top-10 right-10 flex flex-col gap-3">
@@ -90,11 +90,11 @@ const AIStylistPage = () => {
       </section>
 
       {/* 2. CAPABILITIES GRID */}
-      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#0a0d14] transition-colors">
+      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
-             <h2 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter">Bespoke Fashion Logic</h2>
-             <p className="text-slate-400 dark:text-gray-500 uppercase text-[10px] font-black tracking-[0.5em]">Identity Persistence // Multi-Modal Orchestration</p>
+             <h2 className="text-4xl lg:text-6xl font-bold uppercase italic tracking-tighter">Bespoke Fashion Logic</h2>
+             <p className="text-slate-400 dark:text-gray-500 uppercase text-[10px] font-bold tracking-[0.5em]">Identity Persistence // Multi-Modal Orchestration</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-3xl">
@@ -111,7 +111,7 @@ const AIStylistPage = () => {
                     {f.i}
                  </div>
                  <div className="space-y-3">
-                    <h4 className="text-2xl font-black uppercase tracking-tighter italic">{f.t}</h4>
+                    <h4 className="text-2xl font-bold uppercase tracking-tighter italic">{f.t}</h4>
                     <p className="text-sm text-gray-500 font-medium leading-relaxed uppercase tracking-widest leading-loose">"{f.d}"</p>
                  </div>
               </div>
@@ -124,8 +124,8 @@ const AIStylistPage = () => {
       <section className="py-60 text-center relative overflow-hidden bg-white dark:bg-black transition-colors">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-brand-blue/5 rounded-full blur-[250px] pointer-events-none"></div>
         <div className="max-w-4xl mx-auto space-y-16 relative z-10">
-           <h2 className="text-7xl lg:text-[140px] font-black uppercase tracking-tighter leading-[0.8] italic text-slate-900 dark:text-white">Design Your <br /> <span className="text-brand-blue">Presence.</span></h2>
-           <button onClick={() => setIsStudioOpen(true)} className="bg-slate-900 dark:bg-white text-white dark:text-black px-24 py-8 rounded-full text-sm font-black uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(0,144,255,0.1)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group">
+           <h2 className="text-7xl lg:text-[140px] font-bold uppercase tracking-tighter leading-[0.8] italic text-slate-900 dark:text-white">Design Your <br /> <span className="text-brand-blue">Presence.</span></h2>
+           <button onClick={() => setIsStudioOpen(true)} className="bg-slate-900 dark:bg-white text-white dark:text-black px-24 py-8 rounded-full text-sm font-bold uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(112,54,240,0.1)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group">
               Launch AI Stylist Studio <Zap size={24} fill="currentColor" />
            </button>
         </div>

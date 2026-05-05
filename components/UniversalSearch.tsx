@@ -98,7 +98,7 @@ const UniversalSearch = () => {
             }}
             onKeyDown={handleKeyDown}
             placeholder="Search AI products, apps, and systems..."
-            className="w-full bg-transparent border-none py-3 px-4 text-[11px] font-black tracking-[0.15em] focus:outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-800 uppercase"
+            className="w-full bg-transparent border-none py-3 px-4 text-[11px] font-bold tracking-[0.15em] focus:outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-800 uppercase"
           />
 
           <div className="flex items-center gap-2 mr-5">
@@ -118,12 +118,12 @@ const UniversalSearch = () => {
 
       {/* Results Dropdown */}
       {isOpen && (
-        <div className="absolute top-full mt-4 w-full bg-white/95 dark:bg-[#0a0d14]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="absolute top-full mt-4 w-full bg-white/95 dark:bg-[var(--atlas-bg-page)]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
           {results.length > 0 ? (
             <div className="py-2">
               <div className="px-6 py-3 border-b border-black/5 dark:border-white/5 flex justify-between items-center">
-                <span className="text-[9px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest">Verified AI Systems</span>
-                <span className="text-[9px] font-black text-brand-blue uppercase tracking-widest">{results.length} Found</span>
+                <span className="text-[9px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest">Verified AI Systems</span>
+                <span className="text-[9px] font-bold text-brand-blue uppercase tracking-widest">{results.length} Found</span>
               </div>
               {results.map((sol, index) => (
                 <button
@@ -141,7 +141,7 @@ const UniversalSearch = () => {
                   </div>
                   <div className="flex-grow min-w-0">
                     <div className="flex items-center gap-2">
-                       <span className="text-[11px] font-black text-black dark:text-white uppercase tracking-tight truncate">{sol.name[lang]}</span>
+                       <span className="text-[11px] font-bold text-black dark:text-white uppercase tracking-tight truncate">{sol.name[lang]}</span>
                        <span className="text-[8px] font-bold text-brand-blue uppercase px-1.5 py-0.5 bg-brand-blue/10 rounded-sm">{sol.category[lang]}</span>
                     </div>
                     <div className="text-[9px] text-gray-500 font-medium truncate mt-0.5 mono tracking-tight">{sol.description[lang]}</div>
@@ -152,7 +152,7 @@ const UniversalSearch = () => {
                 </button>
               ))}
               <div className="p-4 bg-black/[0.02] dark:bg-black/40 border-t border-black/5 dark:border-white/5 flex justify-center">
-                 <button onClick={() => setIsOpen(false)} className="text-[9px] font-black text-gray-400 dark:text-gray-700 hover:text-black dark:hover:text-white uppercase tracking-widest transition-colors">Terminate Session</button>
+                 <button onClick={() => setIsOpen(false)} className="text-[9px] font-bold text-gray-400 dark:text-gray-700 hover:text-black dark:hover:text-white uppercase tracking-widest transition-colors">Terminate Session</button>
               </div>
             </div>
           ) : (
@@ -161,7 +161,7 @@ const UniversalSearch = () => {
                 <>
                   <div className="flex flex-col items-center gap-4 opacity-20">
                     <Command className="w-8 h-8 text-black dark:text-white" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-black dark:text-white">Awaiting System Query...</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-black dark:text-white">Awaiting System Query...</p>
                   </div>
                   <div className="text-[9px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest mb-4">
                     Image · Video · Voice · Game
@@ -171,7 +171,7 @@ const UniversalSearch = () => {
                       <button 
                         key={cmd} 
                         onClick={() => setQuery(cmd)}
-                        className="p-3 border border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.02] text-[9px] font-black text-gray-400 dark:text-gray-600 hover:text-brand-blue hover:border-brand-blue/30 dark:hover:border-brand-blue/30 transition-all uppercase tracking-widest"
+                        className="p-3 border border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.02] text-[9px] font-bold text-gray-400 dark:text-gray-600 hover:text-brand-blue hover:border-brand-blue/30 dark:hover:border-brand-blue/30 transition-all uppercase tracking-widest"
                       >
                         {cmd}
                       </button>
@@ -183,7 +183,7 @@ const UniversalSearch = () => {
                    <div className="inline-block p-4 rounded-full bg-red-500/10 text-red-500 mb-2">
                       <Zap className="w-6 h-6 opacity-40" />
                    </div>
-                   <p className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">No matching systems found in repository</p>
+                   <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">No matching systems found in repository</p>
                 </div>
               )}
             </div>

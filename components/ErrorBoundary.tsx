@@ -88,7 +88,7 @@ class ErrorBoundary extends React.Component<
             </div>
 
             {/* Title */}
-            <h2 className="text-xl font-black tracking-tight text-white mb-3">
+            <h2 className="text-xl font-bold tracking-tight text-white mb-3">
               {this.state.isChunkError
                 ? 'Không thể tải trang'
                 : 'Đã xảy ra lỗi'}

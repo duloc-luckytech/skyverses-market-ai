@@ -21,13 +21,13 @@ export const RestorationSidebar: React.FC<Props> = ({ jobs, activeJobId, onSelec
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <aside className="w-20 md:w-72 border-r border-slate-100 dark:border-white/[0.04] flex flex-col shrink-0 bg-white dark:bg-[#0a0d14] transition-colors duration-500 overflow-y-auto no-scrollbar relative z-10">
+    <aside className="w-20 md:w-72 border-r border-slate-100 dark:border-white/[0.04] flex flex-col shrink-0 bg-white dark:bg-[var(--atlas-bg-page)] transition-colors duration-500 overflow-y-auto no-scrollbar relative z-10">
       
       {/* Upload Section */}
       <div className="p-4 md:p-5 border-b border-slate-100 dark:border-white/[0.04]">
         <button 
           onClick={() => fileInputRef.current?.click()}
-          className="w-full py-3.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-500/[0.06] dark:to-teal-500/[0.06] border border-emerald-200/60 dark:border-emerald-500/15 rounded-xl flex items-center justify-center gap-2.5 text-[10px] font-black uppercase tracking-[0.15em] text-emerald-700 dark:text-emerald-400 hover:border-emerald-400 dark:hover:border-emerald-500/30 transition-all group shadow-sm hover:shadow-md hover:shadow-emerald-500/5"
+          className="w-full py-3.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-500/[0.06] dark:to-teal-500/[0.06] border border-emerald-200/60 dark:border-emerald-500/15 rounded-xl flex items-center justify-center gap-2.5 text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-700 dark:text-emerald-400 hover:border-emerald-400 dark:hover:border-emerald-500/30 transition-all group shadow-sm hover:shadow-md hover:shadow-emerald-500/5"
         >
           <div className="w-6 h-6 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/15 flex items-center justify-center group-hover:scale-110 transition-transform">
             <Plus size={14} strokeWidth={3} />
@@ -43,8 +43,8 @@ export const RestorationSidebar: React.FC<Props> = ({ jobs, activeJobId, onSelec
       {/* Job Queue Label */}
       {jobs.length > 0 && (
         <div className="hidden md:flex items-center gap-2 px-5 py-3 border-b border-slate-50 dark:border-white/[0.03]">
-          <span className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-gray-600">Hàng đợi</span>
-          <span className="text-[8px] font-black text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">{jobs.length}</span>
+          <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-slate-300 dark:text-gray-600">Hàng đợi</span>
+          <span className="text-[8px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">{jobs.length}</span>
         </div>
       )}
 
@@ -73,14 +73,14 @@ export const RestorationSidebar: React.FC<Props> = ({ jobs, activeJobId, onSelec
               {/* Info */}
               <div className="hidden md:flex flex-col flex-grow text-left overflow-hidden gap-1.5">
                 <div className="flex items-center justify-between">
-                  <p className="text-[10px] font-black uppercase text-slate-700 dark:text-white/80 tracking-tight truncate">
+                  <p className="text-[10px] font-bold uppercase text-slate-700 dark:text-white/80 tracking-tight truncate">
                     Task #{job.id.slice(-4)}
                   </p>
                   <span className="text-[7px] text-slate-300 dark:text-gray-600 font-bold">{job.timestamp}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <StatusIcon size={10} className={`${status.color} ${job.status === 'PROCESSING' ? 'animate-spin' : ''}`} />
-                  <span className={`text-[8px] font-black uppercase tracking-wider ${status.color}`}>
+                  <span className={`text-[8px] font-bold uppercase tracking-wider ${status.color}`}>
                     {status.label}
                   </span>
                 </div>
@@ -96,7 +96,7 @@ export const RestorationSidebar: React.FC<Props> = ({ jobs, activeJobId, onSelec
               <ImageIcon size={24} strokeWidth={1.5} className="text-slate-200 dark:text-white/10" />
             </div>
             <div className="hidden md:block space-y-1.5">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 dark:text-gray-600">Chưa có ảnh nào</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-300 dark:text-gray-600">Chưa có ảnh nào</p>
               <p className="text-[8px] font-bold text-slate-200 dark:text-gray-700 uppercase tracking-wider">Tải ảnh lên để bắt đầu</p>
             </div>
           </div>

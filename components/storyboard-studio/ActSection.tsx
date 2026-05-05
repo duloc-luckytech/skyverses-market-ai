@@ -102,7 +102,7 @@ export const ActSection: React.FC<ActSectionProps> = ({
         )}
 
         {/* Scene count badge */}
-        <span className="shrink-0 text-[9px] font-black text-white/25 tabular-nums">
+        <span className="shrink-0 text-[9px] font-bold text-white/25 tabular-nums">
           {scenes.length} cảnh
         </span>
 
@@ -114,13 +114,13 @@ export const ActSection: React.FC<ActSectionProps> = ({
                 <span className="text-[9px] text-rose-400 font-medium whitespace-nowrap">Xóa act?</span>
                 <button
                   onClick={() => { setShowDeleteConfirm(false); onRemove(); }}
-                  className="px-1.5 py-0.5 text-[9px] font-black rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/30 transition-colors"
+                  className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/30 transition-colors"
                 >
                   Xóa
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="px-1.5 py-0.5 text-[9px] font-black rounded bg-white/[0.06] text-white/40 border border-white/10 hover:text-white/70 transition-colors"
+                  className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-white/[0.06] text-white/40 border border-white/10 hover:text-white/70 transition-colors"
                 >
                   Hủy
                 </button>
@@ -214,7 +214,7 @@ export const UnassignedGroup: React.FC<UnassignedGroupProps> = ({
         </button>
         <span className="w-2.5 h-2.5 rounded-full bg-white/20 shrink-0 ring-1 ring-white/10" />
         <span className="flex-1 text-[11px] font-semibold text-white/30 truncate">Chưa phân nhóm</span>
-        <span className="shrink-0 text-[9px] font-black text-white/20 tabular-nums">{scenes.length} cảnh</span>
+        <span className="shrink-0 text-[9px] font-bold text-white/20 tabular-nums">{scenes.length} cảnh</span>
       </div>
 
       <div className="h-px mx-1 mb-2 bg-white/10 opacity-40" />

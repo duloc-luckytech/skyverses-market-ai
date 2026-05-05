@@ -875,7 +875,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -4, scale: 0.97 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-5 z-50 w-72 bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-2xl overflow-hidden"
+                    className="absolute right-0 top-5 z-50 w-72 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-2xl overflow-hidden"
                   >
                     <div className="p-2 border-b border-black/[0.05] dark:border-white/[0.05]">
                       <p className="text-[9px] font-bold uppercase text-slate-400 tracking-widest px-1">10 Prompts gần nhất</p>
@@ -1002,10 +1002,10 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   // RENDER
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
+    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
 
       {/* ── TOP NAV (h-14) ── */}
-      <div className="h-14 bg-white dark:bg-[#0a0d14] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-4 md:px-6 shrink-0 z-[100] transition-colors gap-3">
+      <div className="h-14 bg-white dark:bg-[var(--atlas-bg-page)] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-4 md:px-6 shrink-0 z-[100] transition-colors gap-3">
         {/* Left: title + processing indicator */}
         <div className="flex items-center gap-2">
           <span className="text-[12px] font-bold text-slate-700 dark:text-white/80 whitespace-nowrap">
@@ -1047,7 +1047,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           {/* Credits badge */}
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-blue/10 border border-brand-blue/20 rounded-full">
             <Coins size={12} className="text-brand-blue" />
-            <span className="text-[10px] font-black text-brand-blue">{credits.toLocaleString()} CR</span>
+            <span className="text-[10px] font-bold text-brand-blue">{credits.toLocaleString()} CR</span>
           </div>
           <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
             <X size={20} />
@@ -1059,11 +1059,11 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       <div className="flex-grow flex overflow-hidden">
 
         {/* ── SIDEBAR (hidden on mobile) ── */}
-        <div className="hidden md:flex w-[380px] shrink-0 bg-white dark:bg-[#13171f] border-r border-slate-200 dark:border-white/5 flex-col overflow-hidden transition-colors">
+        <div className="hidden md:flex w-[380px] shrink-0 bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-slate-200 dark:border-white/5 flex-col overflow-hidden transition-colors">
           {renderSidebarContent()}
 
           {/* Generate button footer */}
-          <div className="p-4 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#13171f] shrink-0 space-y-2">
+          <div className="p-4 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)] shrink-0 space-y-2">
             <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-gray-400">
               <div className="flex items-center gap-1.5">
                 {/* W11: Status dot */}
@@ -1106,10 +1106,10 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         </div>
 
         {/* ── MAIN VIEWPORT ── */}
-        <div className="flex-1 flex overflow-hidden bg-[#f0f2f5] dark:bg-[#0a0d14]">
+        <div className="flex-1 flex overflow-hidden bg-[#f0f2f5] dark:bg-[var(--atlas-bg-page)]">
 
           {/* ── Task list / history panel (right rail) ── */}
-          <div className="hidden lg:flex w-[220px] shrink-0 flex-col bg-white dark:bg-[#13171f] border-l border-slate-200 dark:border-white/5 overflow-hidden">
+          <div className="hidden lg:flex w-[220px] shrink-0 flex-col bg-white dark:bg-[var(--atlas-bg-panel)] border-l border-slate-200 dark:border-white/5 overflow-hidden">
             <div className="flex items-center gap-1 p-2 border-b border-slate-100 dark:border-white/5 shrink-0">
               {(['current', 'library'] as const).map(m => (
                 <button
@@ -1239,7 +1239,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           </div>
 
           {/* ── Active Result Viewport (center) ── */}
-          <div className="flex-1 flex flex-col bg-[#f0f2f5] dark:bg-[#0a0d14] overflow-hidden">
+          <div className="flex-1 flex flex-col bg-[#f0f2f5] dark:bg-[var(--atlas-bg-page)] overflow-hidden">
             <div className="flex-1 flex items-center justify-center p-6 md:p-8">
               {activeResult ? (
                 <div className="w-full max-w-2xl">
@@ -1312,7 +1312,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
               onClick={e => e.stopPropagation()}
-              className="bg-white dark:bg-[#13171f] rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-black/[0.06] dark:border-white/[0.06] text-center"
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-black/[0.06] dark:border-white/[0.06] text-center"
             >
               <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
                 <AlertTriangle size={24} className="text-amber-500" />
@@ -1360,7 +1360,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 26, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
-              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#13171f] rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[var(--atlas-bg-panel)] rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
             >
               {/* Sheet handle */}
               <div className="flex items-center justify-between px-5 pt-4 pb-2 shrink-0 relative">

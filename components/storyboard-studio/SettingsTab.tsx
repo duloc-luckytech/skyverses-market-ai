@@ -70,7 +70,7 @@ const SettingsCard: React.FC<{
           {icon}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-black uppercase italic tracking-tight text-slate-800 dark:text-white leading-none">
+          <p className="text-xs font-bold uppercase italic tracking-tight text-slate-800 dark:text-white leading-none">
             {title}
           </p>
           <p className="text-[9px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5 leading-none truncate">
@@ -78,7 +78,7 @@ const SettingsCard: React.FC<{
           </p>
         </div>
         {badge && (
-          <span className="shrink-0 px-2 py-0.5 rounded-full bg-brand-blue/10 text-brand-blue text-[9px] font-black uppercase tracking-wider border border-brand-blue/20">
+          <span className="shrink-0 px-2 py-0.5 rounded-full bg-brand-blue/10 text-brand-blue text-[9px] font-bold uppercase tracking-wider border border-brand-blue/20">
             {badge}
           </span>
         )}
@@ -256,14 +256,14 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex-1 min-h-0 flex flex-col overflow-y-auto no-scrollbar bg-slate-50 dark:bg-[#0a0d14] transition-colors duration-300"
+      className="flex-1 min-h-0 flex flex-col overflow-y-auto no-scrollbar bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors duration-300"
     >
       <div className="max-w-5xl mx-auto w-full px-5 lg:px-10 py-8 space-y-4 pb-40">
 
         {/* ── Page header ── */}
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h2 className="text-lg font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">
+            <h2 className="text-lg font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">
               Cấu hình sản xuất
             </h2>
             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
@@ -274,7 +274,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
           <button
             onClick={handleSave}
             disabled={isProcessing || isSaving}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-blue text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand-blue/25 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-blue text-white text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/25 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
           >
             {isSaving && <Loader2 size={12} className="animate-spin" />}
             {savedOk  && <Check size={12} strokeWidth={3} />}
@@ -365,7 +365,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
           <button
             onClick={handleSave}
             disabled={isProcessing || isSaving}
-            className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-brand-blue text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand-blue/25 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 relative overflow-hidden group"
+            className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-brand-blue text-white text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/25 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
             {isSaving  ? <><Loader2 size={13} className="animate-spin" /> Đang lưu...</>

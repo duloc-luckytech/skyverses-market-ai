@@ -82,10 +82,10 @@ const NexusStudioInterface = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white relative">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white relative">
       <div className="w-full lg:w-[380px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/10 bg-gray-50 dark:bg-black overflow-y-auto no-scrollbar p-8 space-y-12">
         <div className="space-y-6">
-          <label className="text-[10px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-widest flex items-center gap-3">
+          <label className="text-[10px] font-bold uppercase text-gray-500 dark:text-gray-600 tracking-widest flex items-center gap-3">
             <Briefcase className="w-4 h-4 text-brand-blue" /> Production_Profile
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -93,7 +93,7 @@ const NexusStudioInterface = () => {
               <button
                 key={s}
                 onClick={() => setSegment(s)}
-                className={`py-3 px-3 text-[9px] font-black uppercase border transition-all text-left ${segment === s ? 'bg-brand-blue border-brand-blue text-white' : 'border-black/5 dark:border-white/5 text-gray-400 dark:text-gray-700 hover:border-brand-blue/30'}`}
+                className={`py-3 px-3 text-[9px] font-bold uppercase border transition-all text-left ${segment === s ? 'bg-brand-blue border-brand-blue text-white' : 'border-black/5 dark:border-white/5 text-gray-400 dark:text-gray-700 hover:border-brand-blue/30'}`}
               >
                 {s}
               </button>
@@ -102,7 +102,7 @@ const NexusStudioInterface = () => {
         </div>
 
         <div className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
-           <label className="text-[10px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-widest flex items-center gap-3">
+           <label className="text-[10px] font-bold uppercase text-gray-500 dark:text-gray-600 tracking-widest flex items-center gap-3">
               <Layers className="w-4 h-4 text-brand-blue" /> Master_Keyframe
            </label>
            <div
@@ -114,7 +114,7 @@ const NexusStudioInterface = () => {
               ) : (
                 <>
                   <Upload className="w-6 h-6 text-gray-400 dark:text-gray-700 mb-2 group-hover:text-brand-blue transition-colors" />
-                  <span className="text-[9px] font-black uppercase text-gray-400 dark:text-gray-700">Drop Master Frame</span>
+                  <span className="text-[9px] font-bold uppercase text-gray-400 dark:text-gray-700">Drop Master Frame</span>
                 </>
               )}
               <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
@@ -122,7 +122,7 @@ const NexusStudioInterface = () => {
         </div>
       </div>
 
-      <div className="flex-grow flex flex-col relative bg-gray-100 dark:bg-[#0a0d14] overflow-hidden">
+      <div className="flex-grow flex flex-col relative bg-gray-100 dark:bg-[var(--atlas-bg-page)] overflow-hidden">
         <div className="flex-grow flex flex-col items-center justify-center p-6 lg:p-12 relative">
            <div className="w-full max-w-5xl relative z-10 group">
               <div className="aspect-video bg-black border border-black/10 dark:border-white/10 shadow-2xl relative overflow-hidden flex items-center justify-center">
@@ -131,14 +131,14 @@ const NexusStudioInterface = () => {
                  ) : (
                    <div className="flex flex-col items-center justify-center space-y-6 opacity-10 dark:opacity-5">
                       <Monitor className="w-16 h-16 text-black dark:text-white" />
-                      <span className="text-xl font-black uppercase tracking-[0.8em] text-black dark:text-white">Signal_Offline</span>
+                      <span className="text-xl font-bold uppercase tracking-[0.8em] text-black dark:text-white">Signal_Offline</span>
                    </div>
                  )}
 
                  {isGenerating && (
                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-xl z-20">
                       <Loader2 className="w-20 h-20 text-brand-blue animate-spin mb-8" />
-                      <p className="text-[12px] font-black uppercase tracking-[0.5em] text-white animate-pulse">Synthesizing_Take...</p>
+                      <p className="text-[12px] font-bold uppercase tracking-[0.5em] text-white animate-pulse">Synthesizing_Take...</p>
                    </div>
                  )}
               </div>
@@ -152,13 +152,13 @@ const NexusStudioInterface = () => {
                    value={prompt}
                    onChange={(e) => setPrompt(e.target.value)}
                    placeholder="Direct industrial intent command..."
-                   className="w-full h-full bg-black/5 dark:bg-white/[0.03] border border-black/5 dark:border-white/5 p-5 text-[13px] mono font-black focus:outline-none focus:border-brand-blue/30 text-black dark:text-white uppercase tracking-tighter resize-none"
+                   className="w-full h-full bg-black/5 dark:bg-white/[0.03] border border-black/5 dark:border-white/5 p-5 text-[13px] mono font-bold focus:outline-none focus:border-brand-blue/30 text-black dark:text-white uppercase tracking-tighter resize-none"
                    disabled={isGenerating}
                  />
               </div>
               <button onClick={handleSynthesis} disabled={isGenerating || (!prompt.trim() && !selectedImage)} className="w-64 bg-brand-blue text-white flex flex-col items-center justify-center gap-3 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all group active:scale-[0.98] disabled:opacity-20">
                  <Zap className="w-6 h-6 fill-current group-hover:scale-110 transition-transform" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.3em]">Synthesize_Take</span>
+                 <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Synthesize_Take</span>
               </button>
            </div>
         </div>
@@ -166,7 +166,7 @@ const NexusStudioInterface = () => {
 
       <div className="hidden xl:flex w-[320px] shrink-0 flex-col border-l border-black/10 dark:border-white/10 bg-gray-50 dark:bg-black overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <HistoryIcon className="w-4 h-4 text-brand-blue" /> Take_Archives
             </h3>
          </div>

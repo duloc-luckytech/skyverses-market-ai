@@ -479,10 +479,10 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 10 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="relative w-full h-full max-w-[1400px] max-h-[95vh] bg-white dark:bg-[#0a0d14] border border-black/10 dark:border-white/[0.06] flex flex-col md:rounded-2xl overflow-hidden z-10 shadow-2xl"
+        className="relative w-full h-full max-w-[1400px] max-h-[95vh] bg-white dark:bg-[var(--atlas-bg-page)] border border-black/10 dark:border-white/[0.06] flex flex-col md:rounded-2xl overflow-hidden z-10 shadow-2xl"
       >
         {/* ─── HEADER ─── */}
-        <header className="px-5 py-4 md:px-8 md:py-5 border-b border-black/[0.06] dark:border-white/[0.04] bg-white/80 dark:bg-[#0a0d14]/80 backdrop-blur-xl shrink-0">
+        <header className="px-5 py-4 md:px-8 md:py-5 border-b border-black/[0.06] dark:border-white/[0.04] bg-white/80 dark:bg-[var(--atlas-bg-page)]/80 backdrop-blur-xl shrink-0">
           {/* Row 1 */}
           <div className="flex items-center justify-between gap-4 mb-4">
             <div className="flex items-center gap-4">
@@ -752,7 +752,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
                 animate={{ width: 360, opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="hidden md:flex flex-col border-l border-black/[0.06] dark:border-white/[0.04] bg-slate-50 dark:bg-[#0a0d14] shrink-0 overflow-hidden"
+                className="hidden md:flex flex-col border-l border-black/[0.06] dark:border-white/[0.04] bg-slate-50 dark:bg-[var(--atlas-bg-page)] shrink-0 overflow-hidden"
               >
                 <div className="flex-grow overflow-y-auto no-scrollbar">
                   <div className="relative aspect-square bg-black flex items-center justify-center cursor-pointer" onClick={() => setLightboxItem(previewItem)}>
@@ -826,7 +826,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
         )}
 
         {/* ─── FOOTER ─── */}
-        <div className="px-5 py-4 md:px-8 md:py-5 bg-white dark:bg-[#0a0d14] border-t border-black/[0.06] dark:border-white/[0.04] shrink-0 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="px-5 py-4 md:px-8 md:py-5 bg-white dark:bg-[var(--atlas-bg-page)] border-t border-black/[0.06] dark:border-white/[0.04] shrink-0 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4 order-2 md:order-1">
             <div className="flex items-center gap-3">
               <div className="flex -space-x-2">

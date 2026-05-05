@@ -42,7 +42,7 @@ const VoiceDesignModal: React.FC<VoiceDesignModalProps> = ({ isOpen, onClose }) 
                  <Sparkles size={28} />
               </div>
               <div className="space-y-1">
-                 <h2 className="text-2xl font-black uppercase tracking-tighter italic">Thiết kế giọng nói AI</h2>
+                 <h2 className="text-2xl font-bold uppercase tracking-tighter italic">Thiết kế giọng nói AI</h2>
                  <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Tạo giọng nói độc đáo với AI</p>
               </div>
            </div>
@@ -52,13 +52,13 @@ const VoiceDesignModal: React.FC<VoiceDesignModalProps> = ({ isOpen, onClose }) 
         <div className="flex bg-black/40 p-1 shrink-0">
            <button 
              onClick={() => setActiveTab('CREATE')}
-             className={`flex-grow py-5 text-[11px] font-black uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4 ${activeTab === 'CREATE' ? 'bg-[#2a2a2e] text-[#ff4b3a] shadow-xl border-b-2 border-[#ff4b3a]' : 'text-gray-500 hover:text-white'}`}
+             className={`flex-grow py-5 text-[11px] font-bold uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4 ${activeTab === 'CREATE' ? 'bg-[#2a2a2e] text-[#ff4b3a] shadow-xl border-b-2 border-[#ff4b3a]' : 'text-gray-500 hover:text-white'}`}
            >
               <Sparkles size={16} fill={activeTab === 'CREATE' ? 'currentColor' : 'none'} /> Tạo giọng mới
            </button>
            <button 
              onClick={() => setActiveTab('CLONE')}
-             className={`flex-grow py-5 text-[11px] font-black uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4 ${activeTab === 'CLONE' ? 'bg-[#2a2a2e] text-[#ff4b3a] shadow-xl border-b-2 border-[#ff4b3a]' : 'text-gray-500 hover:text-white'}`}
+             className={`flex-grow py-5 text-[11px] font-bold uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4 ${activeTab === 'CLONE' ? 'bg-[#2a2a2e] text-[#ff4b3a] shadow-xl border-b-2 border-[#ff4b3a]' : 'text-gray-500 hover:text-white'}`}
            >
               <Layout size={16} /> Clone giọng
            </button>
@@ -69,7 +69,7 @@ const VoiceDesignModal: React.FC<VoiceDesignModalProps> = ({ isOpen, onClose }) 
               {activeTab === 'CREATE' ? (
                  <motion.div key="create" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-10">
                     <div className="space-y-4">
-                       <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
+                       <label className="text-[10px] font-bold uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
                           <User size={14} /> TÊN GIỌNG NÓI
                        </label>
                        <input 
@@ -81,7 +81,7 @@ const VoiceDesignModal: React.FC<VoiceDesignModalProps> = ({ isOpen, onClose }) 
 
                     <div className="space-y-4">
                        <div className="flex justify-between items-center">
-                          <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
+                          <label className="text-[10px] font-bold uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
                              <AlignLeft size={14} /> MÔ TẢ GIỌNG NÓI <span className="text-[#ff4b3a]">*</span>
                           </label>
                        </div>
@@ -93,7 +93,7 @@ const VoiceDesignModal: React.FC<VoiceDesignModalProps> = ({ isOpen, onClose }) 
                     </div>
 
                     <div className="space-y-4">
-                       <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
+                       <label className="text-[10px] font-bold uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
                           <Volume2 size={14} /> VĂN BẢN MẪU <span className="text-[#ff4b3a]">*</span>
                        </label>
                        <textarea 
@@ -104,7 +104,7 @@ const VoiceDesignModal: React.FC<VoiceDesignModalProps> = ({ isOpen, onClose }) 
                     </div>
 
                     <div className="space-y-4">
-                       <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
+                       <label className="text-[10px] font-bold uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
                           <Database size={14} /> SEED (TÙY CHỌN)
                        </label>
                        <div className="flex gap-4">
@@ -120,7 +120,7 @@ const VoiceDesignModal: React.FC<VoiceDesignModalProps> = ({ isOpen, onClose }) 
               ) : (
                  <motion.div key="clone" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-10">
                     <div className="space-y-4">
-                       <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
+                       <label className="text-[10px] font-bold uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
                           <User size={14} /> TÊN GIỌNG CLONE
                        </label>
                        <input 
@@ -130,7 +130,7 @@ const VoiceDesignModal: React.FC<VoiceDesignModalProps> = ({ isOpen, onClose }) 
                     </div>
 
                     <div className="space-y-4">
-                       <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
+                       <label className="text-[10px] font-bold uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
                           <Upload size={14} /> TẢI LÊN MẪU GIỌNG
                        </label>
                        <div 
@@ -141,7 +141,7 @@ const VoiceDesignModal: React.FC<VoiceDesignModalProps> = ({ isOpen, onClose }) 
                              <AudioLines size={40} />
                           </div>
                           <div className="text-center space-y-1">
-                             <h4 className="text-lg font-black uppercase tracking-tight italic">Nhấn để tải lên</h4>
+                             <h4 className="text-lg font-bold uppercase tracking-tight italic">Nhấn để tải lên</h4>
                              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">MP3, WAV, M4A - Tối đa 10MB</p>
                           </div>
                           <input type="file" ref={fileInputRef} className="hidden" accept="audio/*" onChange={e => setCloneFile(e.target.files?.[0]?.name || null)} />
@@ -160,7 +160,7 @@ const VoiceDesignModal: React.FC<VoiceDesignModalProps> = ({ isOpen, onClose }) 
         </div>
 
         <div className="p-8 border-t border-white/5 shrink-0 bg-black/20">
-           <button className="w-full py-6 bg-[#ff4b3a] text-white rounded-xl text-xs font-black uppercase tracking-[0.4em] transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-4 group">
+           <button className="w-full py-6 bg-[#ff4b3a] text-white rounded-xl text-xs font-bold uppercase tracking-[0.4em] transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-4 group">
               <Zap size={18} fill="currentColor" className="group-hover:rotate-12 transition-transform" /> 
               {activeTab === 'CREATE' ? 'Tạo mẫu giọng nói' : 'Khởi tạo Clone'}
            </button>

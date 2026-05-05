@@ -102,7 +102,7 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="relative w-full max-w-2xl bg-white dark:bg-[#13171f] border border-black/10 dark:border-white/5 rounded-[2rem] overflow-hidden shadow-3xl flex flex-col transition-colors duration-500 max-h-[90vh]"
+        className="relative w-full max-w-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/10 dark:border-white/5 rounded-[2rem] overflow-hidden shadow-3xl flex flex-col transition-colors duration-500 max-h-[90vh]"
       >
         {/* Header */}
         <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/20">
@@ -111,7 +111,7 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
                 <FileJson size={20} />
              </div>
              <div className="space-y-0.5">
-                <h3 className="text-base font-black uppercase tracking-tight text-slate-900 dark:text-white">Import Workflow JSON</h3>
+                <h3 className="text-base font-bold uppercase tracking-tight text-slate-900 dark:text-white">Import Workflow JSON</h3>
                 <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Configuration Uplink</p>
              </div>
           </div>
@@ -123,7 +123,7 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
         {/* Content */}
         <div className="flex-grow overflow-y-auto no-scrollbar p-6 space-y-8">
            <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest px-1">Paste Workflow JSON (API Format)</label>
+              <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest px-1">Paste Workflow JSON (API Format)</label>
               <div className="relative group">
                 <textarea 
                   value={jsonText}
@@ -151,21 +151,21 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
                >
                   <div className="flex items-center gap-2 px-1">
                      <Search size={14} className="text-indigo-500" />
-                     <h4 className="text-[11px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">Detected Nodes:</h4>
+                     <h4 className="text-[11px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">Detected Nodes:</h4>
                   </div>
 
                   {isAnalyzing ? (
                     <div className="py-10 flex flex-col items-center justify-center gap-4 opacity-50">
                        <Loader2 className="animate-spin text-brand-blue" />
-                       <span className="text-[10px] font-black uppercase tracking-[0.4em]">Analyzing Structure...</span>
+                       <span className="text-[10px] font-bold uppercase tracking-[0.4em]">Analyzing Structure...</span>
                     </div>
                   ) : (
                     <div className="space-y-4">
                        {detectedNodes.map((node) => (
-                         <div key={node.id} className="bg-slate-50 dark:bg-[#13171f] border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden shadow-sm">
+                         <div key={node.id} className="bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden shadow-sm">
                             <div className="px-5 py-3 bg-black/5 dark:bg-black/20 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
                                <div className="flex items-center gap-3">
-                                  <span className="text-[11px] font-black text-indigo-500 dark:text-indigo-400 italic">Node {node.id}: {node.title}</span>
+                                  <span className="text-[11px] font-bold text-indigo-500 dark:text-indigo-400 italic">Node {node.id}: {node.title}</span>
                                </div>
                                <ChevronDown size={14} className="text-gray-500" />
                             </div>
@@ -196,7 +196,7 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
 
            <div className="flex items-center gap-4">
               <div className="h-px flex-grow bg-black/5 dark:bg-white/5"></div>
-              <span className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest italic">Hoặc sử dụng tệp tin</span>
+              <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-600 tracking-widest italic">Hoặc sử dụng tệp tin</span>
               <div className="h-px flex-grow bg-black/5 dark:bg-white/5"></div>
            </div>
 
@@ -205,7 +205,7 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
              className="w-full py-4 border border-dashed border-black/10 dark:border-white/10 hover:border-indigo-500/40 bg-slate-50 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.04] transition-all rounded-xl flex flex-col items-center justify-center gap-2 group shadow-sm"
            >
               <Upload size={20} className="text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-700 dark:group-hover:text-gray-300">Tải tệp .json từ máy tính</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-slate-700 dark:group-hover:text-gray-300">Tải tệp .json từ máy tính</span>
            </button>
            <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleFileChange} />
         </div>
@@ -215,7 +215,7 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
            <button 
              onClick={handleAnalyze}
              disabled={isAnalyzing || !jsonText.trim()}
-             className="flex items-center justify-center gap-3 py-4 bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-300 transition-all disabled:opacity-30 shadow-sm"
+             className="flex items-center justify-center gap-3 py-4 bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-300 transition-all disabled:opacity-30 shadow-sm"
            >
               {isAnalyzing ? <Loader2 className="animate-spin" size={16}/> : <Search size={16} />} 
               Analyze Workflow
@@ -223,7 +223,7 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
            <button 
              onClick={handleTextImport}
              disabled={isProcessing || !jsonText.trim()}
-             className="flex items-center justify-center gap-3 py-4 bg-[#10b981] text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 hover:brightness-110 active:scale-95 transition-all disabled:opacity-30 relative overflow-hidden"
+             className="flex items-center justify-center gap-3 py-4 bg-[#10b981] text-white rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-emerald-500/20 hover:brightness-110 active:scale-95 transition-all disabled:opacity-30 relative overflow-hidden"
            >
               {isProcessing ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle size={16} />}
               Apply to Settings

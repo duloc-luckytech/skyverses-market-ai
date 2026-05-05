@@ -37,7 +37,7 @@ const AppsPage: React.FC = () => {
   } = useAppsPage();
 
   return (
-    <div className="pt-24 min-h-screen bg-[#fafafa] dark:bg-[#0a0d14] text-slate-900 dark:text-white transition-colors duration-500 selection:bg-brand-blue/30 overflow-x-hidden pb-32">
+    <div className="pt-24 min-h-screen bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white transition-colors duration-500 selection:bg-brand-blue/30 overflow-x-hidden pb-32">
       
       {/* Background glows */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -58,7 +58,7 @@ const AppsPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-lg mx-auto text-center space-y-6"
           >
-            <div className="p-8 bg-white dark:bg-[#0a0d14] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl space-y-5">
+            <div className="p-8 bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl space-y-5">
               <div className="w-16 h-16 rounded-2xl bg-brand-blue/10 text-brand-blue flex items-center justify-center mx-auto">
                 <LogIn size={28} />
               </div>
@@ -89,7 +89,7 @@ const AppsPage: React.FC = () => {
               className="lg:col-span-2 space-y-6"
             >
               {/* Step Indicator */}
-              <div className="bg-white dark:bg-[#0a0d14] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] p-5 shadow-sm">
+              <div className="bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] p-5 shadow-sm">
                 <StepIndicator 
                   currentStep={currentStep} 
                   onGoToStep={goToStep}
@@ -141,7 +141,7 @@ const AppsPage: React.FC = () => {
               transition={{ delay: 0.3 }}
               className="lg:col-span-3 relative"
             >
-              <div className="bg-white dark:bg-[#0a0d14] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl">
+              <div className="bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl">
                 {/* Form Header */}
                 <div className="px-6 md:px-8 py-5 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
                   <div>
@@ -244,10 +244,10 @@ const AppsPage: React.FC = () => {
                     className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full"
                   >
                     <Code2 size={12} className="text-brand-blue" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/70">Developer Portal</span>
+                    <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/70">Developer Portal</span>
                   </motion.div>
                   
-                  <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
+                  <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white leading-[1.1]">
                     Xây dựng trên{' '}
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-400">
                       nền tảng Skyverses
@@ -302,7 +302,7 @@ const AppsPage: React.FC = () => {
                     { step: '04', title: 'Go Live!', desc: 'Sản phẩm lên sàn cho users', status: 'pending' },
                   ].map((item, i) => (
                     <div key={i} className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-xs font-black ${
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold ${
                         item.status === 'active' 
                           ? 'bg-brand-blue text-white' 
                           : 'bg-white/[0.04] text-white/30'

@@ -52,7 +52,7 @@ export const ModelAISelector: React.FC<ModelAISelectorProps> = ({
             className="appearance-none bg-slate-100 dark:bg-white/5 border border-slate-100 dark:border-white/[0.06] pl-2.5 pr-7 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight outline-none focus:border-brand-blue transition-all cursor-pointer text-slate-700 dark:text-white"
           >
             {models.map(m => (
-              <option key={m.id} value={m.id} className="dark:bg-[#13171f]">{m.name}</option>
+              <option key={m.id} value={m.id} className="dark:bg-[var(--atlas-bg-panel)]">{m.name}</option>
             ))}
           </select>
           <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/30 pointer-events-none" />
@@ -74,8 +74,8 @@ export const ModelAISelector: React.FC<ModelAISelectorProps> = ({
             onChange={(e) => onSelectEngine?.(e.target.value)}
             className={selectClass}
           >
-            <option value="gommo" className="dark:bg-[#13171f]">Gommo Cluster</option>
-            <option value="fxlab" className="dark:bg-[#13171f]">FxLab Node</option>
+            <option value="gommo" className="dark:bg-[var(--atlas-bg-panel)]">Gommo Cluster</option>
+            <option value="fxlab" className="dark:bg-[var(--atlas-bg-panel)]">FxLab Node</option>
           </select>
           <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/30 pointer-events-none" />
         </div>
@@ -93,7 +93,7 @@ export const ModelAISelector: React.FC<ModelAISelectorProps> = ({
             className={selectClass}
           >
             {models.map(m => (
-              <option key={m.id} value={m.id} className="dark:bg-[#13171f]">{m.name}</option>
+              <option key={m.id} value={m.id} className="dark:bg-[var(--atlas-bg-panel)]">{m.name}</option>
             ))}
           </select>
           <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/30 pointer-events-none" />

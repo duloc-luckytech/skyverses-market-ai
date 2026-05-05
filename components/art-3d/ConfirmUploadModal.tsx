@@ -228,8 +228,8 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
                 <Box size={18} />
              </div>
              <div className="flex flex-col">
-                <h2 className="text-sm font-black uppercase tracking-widest text-white italic">Xác nhận tải lên mô hình 3D</h2>
-                <p className="text-[7px] font-black text-brand-blue uppercase tracking-[0.4em]">Công cụ quản lý tài sản 3D chuyên nghiệp</p>
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white italic">Xác nhận tải lên mô hình 3D</h2>
+                <p className="text-[7px] font-bold text-brand-blue uppercase tracking-[0.4em]">Công cụ quản lý tài sản 3D chuyên nghiệp</p>
              </div>
              <HelpCircle size={16} className="text-gray-500 ml-4" />
           </div>
@@ -240,7 +240,7 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
           {/* Left Panel: Examples */}
           <div className="w-[320px] border-r border-white/5 bg-black/20 p-8 overflow-y-auto no-scrollbar space-y-8 shrink-0">
              <div className="space-y-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-blue italic">Hướng dẫn góc nhìn</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-blue italic">Hướng dẫn góc nhìn</p>
                 <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
                   Đảm bảo góc nhìn bao quát được các chi tiết hình học quan trọng để tối ưu hóa việc hiển thị và xử lý tài sản.
                 </p>
@@ -265,18 +265,18 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
              </div>
              
              <div className="pt-8 border-t border-white/5 space-y-4">
-                <p className="text-[8px] font-black text-gray-600 uppercase tracking-widest italic leading-relaxed">
+                <p className="text-[8px] font-bold text-gray-600 uppercase tracking-widest italic leading-relaxed">
                   "Sản xuất tài sản 3D chất lượng cao. Quy trình sáng tạo và quản lý thông minh."
                 </p>
              </div>
           </div>
 
           {/* Right Panel: Interactive Viewport */}
-          <div className="flex-grow relative bg-[#0a0a0c] flex flex-col items-center justify-center">
+          <div className="flex-grow relative bg-[var(--atlas-bg-page)] flex flex-col items-center justify-center">
              {loading && (
                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/20 backdrop-blur-sm">
                  <Loader2 className="animate-spin text-brand-blue mb-4" size={48} />
-                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Đang tải mô hình...</p>
+                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">Đang tải mô hình...</p>
                </div>
              )}
              
@@ -284,8 +284,8 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center p-8 text-center bg-black">
                  <div className="p-8 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 space-y-4">
                    <AlertCircle className="mx-auto" size={48} />
-                   <p className="text-sm font-black uppercase tracking-widest">{error}</p>
-                   <button onClick={onClose} className="px-6 py-2 bg-red-600 text-white rounded-lg text-xs font-black uppercase">Thử lại</button>
+                   <p className="text-sm font-bold uppercase tracking-widest">{error}</p>
+                   <button onClick={onClose} className="px-6 py-2 bg-red-600 text-white rounded-lg text-xs font-bold uppercase">Thử lại</button>
                  </div>
                </div>
              )}
@@ -296,27 +296,27 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
              <div className="absolute top-10 left-10 flex items-center gap-4 pointer-events-none">
                 <div className="bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg flex items-center gap-2">
                    <MousePointer2 size={12} className="text-brand-blue" />
-                   <span className="text-[9px] font-black uppercase text-white/80">Điều khiển xoay</span>
+                   <span className="text-[9px] font-bold uppercase text-white/80">Điều khiển xoay</span>
                 </div>
                 <div className="bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg flex items-center gap-2">
                    <Move size={12} className="text-brand-blue" />
-                   <span className="text-[9px] font-black uppercase text-white/80">Cuộn để phóng to</span>
+                   <span className="text-[9px] font-bold uppercase text-white/80">Cuộn để phóng to</span>
                 </div>
              </div>
 
              <div className="absolute bottom-10 right-10 bg-black/60 backdrop-blur-xl border border-white/10 p-5 rounded-2xl flex items-center gap-8 shadow-2xl">
                 <div className="flex items-center gap-3">
-                   <span className="text-[9px] font-black uppercase text-gray-500 tracking-[0.2em]">Tọa độ xoay</span>
+                   <span className="text-[9px] font-bold uppercase text-gray-500 tracking-[0.2em]">Tọa độ xoay</span>
                    <span className="text-[11px] font-mono font-bold text-white whitespace-nowrap">{Math.round(uiRotation.x)}°, {Math.round(uiRotation.y)}°</span>
                 </div>
                 <div className="h-5 w-px bg-white/10"></div>
                 <div className="flex items-center gap-3">
-                   <span className="text-[9px] font-black uppercase text-gray-400 tracking-[0.2em]">Tỷ lệ</span>
+                   <span className="text-[9px] font-bold uppercase text-gray-400 tracking-[0.2em]">Tỷ lệ</span>
                    <span className="text-[11px] font-mono font-bold text-white whitespace-nowrap">x{uiZoom.toFixed(2)}</span>
                 </div>
              </div>
 
-             <div className="absolute top-10 right-10 px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase text-gray-400 tracking-widest italic shadow-xl">
+             <div className="absolute top-10 right-10 px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase text-gray-400 tracking-widest italic shadow-xl">
                {file ? file.name : "Vật_thể_chưa_định_danh.glb"}
              </div>
           </div>
@@ -327,12 +327,12 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
            <div className="flex items-center gap-10">
               <div className="flex items-center gap-6">
                  <div className="space-y-0.5">
-                    <p className="text-[11px] font-black uppercase text-white tracking-widest italic">Duy trì UV gốc</p>
+                    <p className="text-[11px] font-bold uppercase text-white tracking-widest italic">Duy trì UV gốc</p>
                     <p className="text-[9px] text-gray-500 uppercase tracking-widest italic opacity-60">Bảo toàn sơ đồ kết cấu nguyên bản của mô hình</p>
                  </div>
                  <button 
                    onClick={() => setUseOriginalUV(!useOriginalUV)}
-                   className={`w-14 h-7 rounded-full relative transition-colors ${useOriginalUV ? 'bg-brand-blue shadow-[0_0_20px_rgba(0,144,255,0.4)]' : 'bg-white/10'}`}
+                   className={`w-14 h-7 rounded-full relative transition-colors ${useOriginalUV ? 'bg-brand-blue shadow-[0_0_20px_rgba(112,54,240,0.4)]' : 'bg-white/10'}`}
                  >
                     <motion.div animate={{ x: useOriginalUV ? 28 : 2 }} className="absolute top-1 w-5 h-5 bg-white rounded-full shadow-lg" />
                  </button>
@@ -340,11 +340,11 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
            </div>
 
            <div className="flex items-center gap-8">
-             <button onClick={onClose} className="px-10 py-4 text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors">Hủy bỏ</button>
+             <button onClick={onClose} className="px-10 py-4 text-[11px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">Hủy bỏ</button>
              <button 
                onClick={handleInternalConfirm}
                disabled={loading || !!error}
-               className="px-20 py-4 bg-brand-blue text-white rounded-full font-black uppercase text-xs tracking-[0.4em] hover:brightness-110 active:scale-95 transition-all shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-4"
+               className="px-20 py-4 bg-brand-blue text-white rounded-full font-bold uppercase text-xs tracking-[0.4em] hover:brightness-110 active:scale-95 transition-all shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-4"
              >
                 <ShieldCheck size={18} />
                 Xác nhận tải lên

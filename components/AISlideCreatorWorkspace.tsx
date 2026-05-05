@@ -21,7 +21,7 @@ const SpeakerNotesPanel: React.FC<SpeakerNotesPanelProps> = React.memo(({ slide,
   }, [open]);
   if (!slide) return null;
   return (
-    <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#13171f]">
+    <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[var(--atlas-bg-panel)]">
       <button
         onClick={() => setOpen(v => !v)}
         className="w-full flex items-center justify-between px-4 py-2 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors"
@@ -456,7 +456,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 12 }}
       transition={{ duration: 0.25, ease: 'easeOut' }}
-      className="fixed inset-0 z-[500] flex flex-col bg-white dark:bg-[#13171f]"
+      className="fixed inset-0 z-[500] flex flex-col bg-white dark:bg-[var(--atlas-bg-panel)]"
     >
       {/* ══ Onboarding Wizard ═══════════════════════════════════════════════════ */}
       <AnimatePresence>
@@ -468,7 +468,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
         )}
       </AnimatePresence>
       {/* ══ Header Nav ══════════════════════════════════════════════════════════ */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/90 dark:bg-[#13171f]/90 backdrop-blur shrink-0">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/90 dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur shrink-0">
         {/* Left: Close + Title + Project Switcher */}
         <div className="flex items-center gap-3">
           <motion.button
@@ -599,7 +599,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.97 }}
                     transition={{ duration: 0.13 }}
-                    className="absolute top-full mt-1.5 right-0 z-50 bg-white dark:bg-[#13171f] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl overflow-hidden min-w-[130px]"
+                    className="absolute top-full mt-1.5 right-0 z-50 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl overflow-hidden min-w-[130px]"
                   >
                     {[
                       { label: 'PowerPoint (.pptx)', value: 'pptx' as const },
@@ -658,7 +658,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
         <div className="flex-1 flex flex-col overflow-hidden relative">
           {s.slides.length === 0 ? (
             /* ── Rich empty state / onboarding ── */
-            <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 dark:bg-[#0a0d14] p-6 overflow-y-auto">
+            <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 dark:bg-[var(--atlas-bg-page)] p-6 overflow-y-auto">
               <div className="w-full max-w-lg flex flex-col items-center gap-6">
 
                 {/* Hero icon with glow */}
@@ -712,7 +712,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                   <motion.button
                     onClick={() => s.setIsGenerateModalOpen(true)}
                     disabled={!s.deckTopic.trim()}
-                    whileHover={{ scale: 1.04, boxShadow: '0 12px 32px rgba(0,144,255,0.35)' }}
+                    whileHover={{ scale: 1.04, boxShadow: '0 12px 32px rgba(112,54,240,0.35)' }}
                     whileTap={{ scale: 0.97 }}
                     className="relative flex items-center gap-2 px-7 py-3 rounded-xl bg-brand-blue text-white font-bold text-sm shadow-lg shadow-brand-blue/20 hover:bg-brand-blue/90 transition-all disabled:opacity-40 disabled:shadow-none"
                   >
@@ -792,7 +792,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
           ) : (
             <>
               {/* Toolbar */}
-              <div className="px-4 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.08] bg-white/50 dark:bg-[#13171f]/50 shrink-0">
+              <div className="px-4 pt-3 pb-2 border-b border-black/[0.05] dark:border-white/[0.08] bg-white/50 dark:bg-[var(--atlas-bg-panel)]/50 shrink-0">
                 <SlideToolbar
                   slide={s.activeSlide}
                   slides={s.slides}
@@ -939,7 +939,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-md bg-white dark:bg-[#1a1f2b] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden"
+              className="w-full max-w-md bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden"
             >
               <div className="p-5">
                 <div className="flex items-center gap-2 mb-3">
@@ -982,7 +982,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-lg bg-white dark:bg-[#1a1f2b] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+              className="w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
             >
               <div className="px-5 py-4 border-b border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-2">

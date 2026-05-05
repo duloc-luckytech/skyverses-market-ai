@@ -84,7 +84,7 @@ Submitted via Skyverses Booking Portal.
   ];
 
   return (
-    <main className="min-h-screen bg-[#fafafa] dark:bg-[#0a0d14] text-slate-900 dark:text-white transition-colors duration-500 pt-28 pb-32">
+    <main className="min-h-screen bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white transition-colors duration-500 pt-28 pb-32">
       
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -102,10 +102,10 @@ Submitted via Skyverses Booking Portal.
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full mb-6">
             <Rocket size={14} className="text-brand-blue" />
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">Custom Solutions</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-brand-blue">Custom Solutions</span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.1] mb-5">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-5">
             {t('booking.title.1')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">
               {t('booking.title.2')}
@@ -162,7 +162,7 @@ Submitted via Skyverses Booking Portal.
                   const parts = step.split('—');
                   return (
                     <div key={i} className="flex items-start gap-3">
-                      <div className="w-7 h-7 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center shrink-0 text-xs font-black mt-0.5">
+                      <div className="w-7 h-7 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
                         {i + 1}
                       </div>
                       <div>
@@ -195,7 +195,7 @@ Submitted via Skyverses Booking Portal.
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.3 }}
-            className="lg:col-span-3 bg-white dark:bg-[#0a0d14] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl"
+            className="lg:col-span-3 bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl"
           >
             {/* Form Header */}
             <div className="px-6 md:px-8 py-6 border-b border-black/[0.04] dark:border-white/[0.04]">

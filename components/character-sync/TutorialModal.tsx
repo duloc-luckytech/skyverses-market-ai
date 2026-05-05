@@ -98,7 +98,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
       <motion.div
         initial={{ scale: 0.95, y: 16, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
-        className="relative w-full max-w-md bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-md bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl"
       >
         {/* Header */}
         <div className="px-5 pt-5 pb-3 flex items-center justify-between">
@@ -152,7 +152,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
                 {step.tips.map((tip, i) => (
                   <div key={i} className="flex items-start gap-2">
                     <div className={`w-4 h-4 rounded-md ${colors.bg} ${colors.text} flex items-center justify-center shrink-0 mt-0.5`}>
-                      <span className="text-[8px] font-black">{i + 1}</span>
+                      <span className="text-[8px] font-bold">{i + 1}</span>
                     </div>
                     <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-relaxed font-medium">{tip}</p>
                   </div>

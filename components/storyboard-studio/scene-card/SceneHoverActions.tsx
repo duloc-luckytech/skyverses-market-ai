@@ -26,7 +26,7 @@ const DeleteConfirm: React.FC<{ onConfirm: () => void; onCancel: () => void }> =
     animate={{ opacity: 1, scale: 1, y: 0 }}
     exit={{ opacity: 0, scale: 0.9, y: 4 }}
     transition={{ duration: 0.12 }}
-    className="absolute bottom-full right-0 mb-1.5 w-52 bg-white dark:bg-[#13171f] border border-rose-200 dark:border-rose-500/20 rounded-2xl shadow-2xl z-50 p-3 space-y-2.5"
+    className="absolute bottom-full right-0 mb-1.5 w-52 bg-white dark:bg-[var(--atlas-bg-panel)] border border-rose-200 dark:border-rose-500/20 rounded-2xl shadow-2xl z-50 p-3 space-y-2.5"
     onClick={e => e.stopPropagation()}
   >
     <div className="flex items-start gap-2">
@@ -34,20 +34,20 @@ const DeleteConfirm: React.FC<{ onConfirm: () => void; onCancel: () => void }> =
         <AlertTriangle size={13} className="text-rose-500" />
       </div>
       <div>
-        <p className="text-[11px] font-black text-slate-800 dark:text-white leading-tight">Xóa cảnh này?</p>
+        <p className="text-[11px] font-bold text-slate-800 dark:text-white leading-tight">Xóa cảnh này?</p>
         <p className="text-[9px] text-slate-400 dark:text-white/30 mt-0.5 leading-snug">Thao tác không thể hoàn tác.</p>
       </div>
     </div>
     <div className="flex gap-1.5">
       <button
         onClick={onCancel}
-        className="flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider border border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
+        className="flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider border border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
       >
         Hủy
       </button>
       <button
         onClick={onConfirm}
-        className="flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider bg-rose-500 text-white hover:bg-rose-600 transition-all flex items-center justify-center gap-1"
+        className="flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider bg-rose-500 text-white hover:bg-rose-600 transition-all flex items-center justify-center gap-1"
       >
         <Trash2 size={9} /> Xóa
       </button>
@@ -121,7 +121,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
 
   return (
     <div
-      className={`flex items-center border-t border-slate-100 dark:border-white/8 bg-white dark:bg-[#0a0d14] gap-1 ${isListView ? 'px-3 py-2' : 'px-2 py-1.5 gap-0.5'}`}
+      className={`flex items-center border-t border-slate-100 dark:border-white/8 bg-white dark:bg-[var(--atlas-bg-page)] gap-1 ${isListView ? 'px-3 py-2' : 'px-2 py-1.5 gap-0.5'}`}
       onClick={e => e.stopPropagation()}
     >
       {/* Primary action buttons */}
@@ -136,7 +136,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
           className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg text-slate-400 dark:text-white/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed ${action.color} ${isListView ? 'py-2 px-2' : 'py-1.5 px-1'}`}
         >
           {action.icon}
-          <span className={`text-[8px] font-black uppercase tracking-wider leading-none ${isListView ? '' : 'hidden md:inline'}`}>
+          <span className={`text-[8px] font-bold uppercase tracking-wider leading-none ${isListView ? '' : 'hidden md:inline'}`}>
             {action.label}
           </span>
         </motion.button>
@@ -155,7 +155,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
           className={`flex items-center justify-center gap-1.5 rounded-lg text-slate-400 dark:text-white/30 transition-all hover:bg-emerald-500/15 hover:text-emerald-400 ${isListView ? 'py-2 px-2' : 'py-1.5 px-1.5'}`}
         >
           <Download size={11} />
-          {isListView && <span className="text-[8px] font-black uppercase tracking-wider leading-none">Tải</span>}
+          {isListView && <span className="text-[8px] font-bold uppercase tracking-wider leading-none">Tải</span>}
         </motion.button>
       )}
 
@@ -170,7 +170,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
           className={`flex items-center justify-center gap-1.5 rounded-lg text-slate-400 dark:text-white/30 transition-all hover:bg-violet-500/15 hover:text-violet-400 disabled:opacity-40 disabled:cursor-not-allowed ${isListView ? 'py-2 px-2' : 'py-1.5 px-1.5'}`}
         >
           <Mic size={11} />
-          {isListView && <span className="text-[8px] font-black uppercase tracking-wider leading-none">Voice</span>}
+          {isListView && <span className="text-[8px] font-bold uppercase tracking-wider leading-none">Voice</span>}
         </motion.button>
       )}
 
@@ -202,7 +202,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.92, y: 4 }}
               transition={{ duration: 0.13 }}
-              className="absolute bottom-full right-0 mb-1.5 w-40 bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-50 py-1 overflow-hidden"
+              className="absolute bottom-full right-0 mb-1.5 w-40 bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-50 py-1 overflow-hidden"
             >
               {/* Duplicate */}
               <button

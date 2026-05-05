@@ -189,7 +189,7 @@ export const TemplatePickerModal: React.FC<TemplatePickerModalProps> = ({
             exit={{ opacity: 0, y: 40, scale: 0.97 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
             onClick={e => e.stopPropagation()}
-            className="w-full sm:max-w-2xl bg-white dark:bg-[#1a1f2b] rounded-t-3xl sm:rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl flex flex-col overflow-hidden max-h-[90dvh]"
+            className="w-full sm:max-w-2xl bg-white dark:bg-[var(--atlas-bg-panel)] rounded-t-3xl sm:rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl flex flex-col overflow-hidden max-h-[90dvh]"
           >
             {/* Header */}
             <div className="px-5 pt-5 pb-4 border-b border-black/[0.06] dark:border-white/[0.06] shrink-0">

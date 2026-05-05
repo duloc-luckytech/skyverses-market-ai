@@ -41,7 +41,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
             {lines.map((line, li) => {
               // Heading 2
               if (line.startsWith('## ')) {
-                return <h3 key={li} className="text-base font-black text-white uppercase tracking-tight mt-6 mb-2">{line.replace('## ', '')}</h3>;
+                return <h3 key={li} className="text-base font-bold text-white uppercase tracking-tight mt-6 mb-2">{line.replace('## ', '')}</h3>;
               }
               // List item
               if (line.trim().startsWith('- ')) {
@@ -94,7 +94,7 @@ const WidgetField = ({ value, index, nodeId, onChange }: any) => {
     return (
       <div className="flex items-center justify-between py-3 group border-b border-black/5 dark:border-white/[0.03] last:border-0">
         <div className="flex flex-col">
-          <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">{fieldLabel}</span>
+          <span className="text-[9px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">{fieldLabel}</span>
         </div>
         <button 
           onClick={() => onChange(nodeId, index, !value)}
@@ -115,7 +115,7 @@ const WidgetField = ({ value, index, nodeId, onChange }: any) => {
         <div className="flex items-center justify-between">
            <div className="flex items-center gap-2">
              <FileText size={14} className="text-brand-blue" />
-             <span className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">BẢN GHI CHÚ QUY TRÌNH</span>
+             <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">BẢN GHI CHÚ QUY TRÌNH</span>
            </div>
            <button 
              onClick={() => {
@@ -144,7 +144,7 @@ const WidgetField = ({ value, index, nodeId, onChange }: any) => {
   return (
     <div className="space-y-2 py-4 border-b border-black/5 dark:border-white/[0.03] last:border-0">
       <div className="flex justify-between items-center">
-        <span className="text-[9px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">{fieldLabel}</span>
+        <span className="text-[9px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">{fieldLabel}</span>
         {isNumber && fieldLabel.includes('SEED') && (
            <button 
              onClick={() => onChange(nodeId, index, Math.floor(Math.random() * 1000000000000000))}
@@ -188,13 +188,13 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   const isMissingRequirements = !apiKey.trim() || !workflowId.trim();
 
   return (
-    <div className="flex-1 bg-white dark:bg-[#1a1f2b] rounded-none p-0 flex flex-col relative h-full overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
+    <div className="flex-1 bg-white dark:bg-[var(--atlas-bg-panel)] rounded-none p-0 flex flex-col relative h-full overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none">
       
-      <div className="p-8 bg-slate-50 dark:bg-[#1a1f2b] shrink-0 border-b border-black/5 dark:border-none">
+      <div className="p-8 bg-slate-50 dark:bg-[var(--atlas-bg-panel)] shrink-0 border-b border-black/5 dark:border-none">
         <div className="flex justify-between items-center mb-6">
            <div className="flex items-center gap-3">
               <div className="w-1.5 h-6 bg-indigo-600"></div>
-              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white leading-none">CẤU HÌNH QUY TRÌNH</h3>
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-900 dark:text-white leading-none">CẤU HÌNH QUY TRÌNH</h3>
            </div>
            <button 
              onClick={() => setShowSettings(!showSettings)}
@@ -207,7 +207,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-none ${isGenerating || isUploadingJson ? 'bg-orange-500 animate-pulse' : 'bg-emerald-500'}`}></div>
-            <p className="text-[9px] text-slate-400 dark:text-zinc-500 uppercase font-black tracking-widest leading-none">
+            <p className="text-[9px] text-slate-400 dark:text-zinc-500 uppercase font-bold tracking-widest leading-none">
               {statusText.replace('Hệ thống sẵn sàng', 'Hệ thống trực tuyến').replace('_', ' ')}
             </p>
           </div>
@@ -224,7 +224,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         </div>
       </div>
 
-      <div className="flex-grow overflow-y-auto no-scrollbar p-0 bg-white dark:bg-[#1a1f2b]">
+      <div className="flex-grow overflow-y-auto no-scrollbar p-0 bg-white dark:bg-[var(--atlas-bg-panel)]">
         {workflowConfig.length > 0 ? (
           <div className="divide-y divide-black/5 dark:divide-white/[0.03]">
              {workflowConfig.map((node) => {
@@ -236,7 +236,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                       className={`w-full px-8 py-5 flex items-center justify-between transition-all ${isOpen ? 'bg-slate-50 dark:bg-white/[0.02]' : 'hover:bg-slate-50 dark:hover:bg-white/[0.01]'}`}
                     >
                       <div className="flex items-center gap-4">
-                         <span className={`text-[10px] font-black uppercase italic tracking-widest ${isOpen ? 'text-indigo-600 dark:text-white' : 'text-slate-400 dark:text-zinc-500'}`}>
+                         <span className={`text-[10px] font-bold uppercase italic tracking-widest ${isOpen ? 'text-indigo-600 dark:text-white' : 'text-slate-400 dark:text-zinc-500'}`}>
                            {node.title.replace('_', ' ')} (ID: {node.id})
                          </span>
                       </div>
@@ -273,17 +273,17 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         ) : (
           <div className="py-32 flex flex-col items-center justify-center gap-6 opacity-20 italic">
              <Sliders size={48} strokeWidth={1} className="text-slate-900 dark:text-white" />
-             <p className="text-[10px] font-black uppercase tracking-[0.6em] text-center px-10 text-slate-900 dark:text-white">Đang đợi nạp quy trình...</p>
+             <p className="text-[10px] font-bold uppercase tracking-[0.6em] text-center px-10 text-slate-900 dark:text-white">Đang đợi nạp quy trình...</p>
           </div>
         )}
       </div>
 
       {/* STICKY BOTTOM BUTTON */}
-      <div className="mt-auto bg-slate-50 dark:bg-[#1a1f2b] p-0 z-30 border-t border-black/5 dark:border-white/5 sticky bottom-0">
+      <div className="mt-auto bg-slate-50 dark:bg-[var(--atlas-bg-panel)] p-0 z-30 border-t border-black/5 dark:border-white/5 sticky bottom-0">
         <button 
           onClick={onGenerate}
           disabled={isGenerating || isUploadingJson || isMissingRequirements}
-          className={`w-full py-8 rounded-none flex items-center justify-center gap-6 text-sm font-black uppercase tracking-[0.5em] transition-all active:scale-[0.99] group overflow-hidden relative ${isGenerating || isUploadingJson || isMissingRequirements ? 'bg-slate-200 dark:bg-zinc-900 text-slate-400 dark:text-zinc-700 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700 dark:hover:bg-indigo-500 shadow-lg shadow-indigo-600/20'}`}
+          className={`w-full py-8 rounded-none flex items-center justify-center gap-6 text-sm font-bold uppercase tracking-[0.5em] transition-all active:scale-[0.99] group overflow-hidden relative ${isGenerating || isUploadingJson || isMissingRequirements ? 'bg-slate-200 dark:bg-zinc-900 text-slate-400 dark:text-zinc-700 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700 dark:hover:bg-indigo-500 shadow-lg shadow-indigo-600/20'}`}
         >
           {isGenerating ? (
             <Loader2 className="animate-spin" size={24} />
@@ -293,7 +293,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
               <span>BẮT ĐẦU KHỞI TẠO</span>
               <div className="flex items-center gap-2 bg-black/20 dark:bg-black/40 px-4 py-1.5 rounded-none border border-white/10">
                  <Coins size={14} className="text-yellow-400" fill="currentColor" />
-                 <span className="text-[10px] font-black tracking-normal">500</span>
+                 <span className="text-[10px] font-bold tracking-normal">500</span>
               </div>
             </>
           )}

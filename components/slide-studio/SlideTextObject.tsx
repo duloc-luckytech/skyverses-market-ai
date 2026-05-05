@@ -458,7 +458,7 @@ const SlideTextObject: React.FC<Props> = ({
         <div
           style={{ borderRadius: 'inherit' }}
           className={`absolute inset-0 pointer-events-none transition-all duration-100 ${
-            isEditing  ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(0,144,255,0.18)]' :
+            isEditing  ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(112,54,240,0.18)]' :
             isSelected ? 'ring-2 ring-brand-blue/90' :
                          'ring-1 ring-transparent group-hover/obj:ring-white/40 group-hover/obj:ring-dashed'
           }`}
@@ -594,7 +594,7 @@ const SlideTextObject: React.FC<Props> = ({
       {/* ── Right-click context menu ── */}
       {ctxMenu && createPortal(
         <div
-          className="fixed z-[99999] min-w-[180px] py-1 rounded-xl bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.1] shadow-2xl"
+          className="fixed z-[99999] min-w-[180px] py-1 rounded-xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.1] shadow-2xl"
           style={{ top: ctxMenu.y, left: ctxMenu.x }}
           onMouseDown={e => e.stopPropagation()}
           onContextMenu={e => e.preventDefault()}

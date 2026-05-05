@@ -131,7 +131,7 @@ export const PromptBar: React.FC<PromptBarProps> = ({
                 <button
                   key={i}
                   onClick={() => handleQuickPrompt(p)}
-                  className="px-3 py-1.5 rounded-full text-[10px] font-semibold bg-white/90 dark:bg-[#1a1f2b]/90 backdrop-blur border border-slate-200 dark:border-white/[0.07] text-slate-600 dark:text-slate-300 hover:border-brand-blue hover:text-brand-blue transition-all shadow-sm whitespace-nowrap"
+                  className="px-3 py-1.5 rounded-full text-[10px] font-semibold bg-white/90 dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur border border-slate-200 dark:border-white/[0.07] text-slate-600 dark:text-slate-300 hover:border-brand-blue hover:text-brand-blue transition-all shadow-sm whitespace-nowrap"
                 >
                   {p}
                 </button>
@@ -150,7 +150,7 @@ export const PromptBar: React.FC<PromptBarProps> = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-white/97 dark:bg-[#13171f]/97 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.14)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)] overflow-hidden"
+              className="bg-white/97 dark:bg-[var(--atlas-bg-panel)]/97 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.14)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)] overflow-hidden"
             >
               {/* Panel Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/[0.04]">
@@ -201,14 +201,14 @@ export const PromptBar: React.FC<PromptBarProps> = ({
         {/* ══════════════════════════════════════════════════════════
             MAIN BOTTOM BAR CARD
         ═══════════════════════════════════════════════════════════ */}
-        <div className="bg-white/95 dark:bg-[#13171f]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.07] rounded-2xl shadow-[0_4px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_4px_32px_rgba(0,0,0,0.35)] overflow-hidden">
+        <div className="bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.07] rounded-2xl shadow-[0_4px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_4px_32px_rgba(0,0,0,0.35)] overflow-hidden">
 
           {/* ── Top row: mode badge + references + input ── */}
           <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
 
             {/* Mode badge */}
             <div
-              className={`shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-colors ${
+              className={`shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest border transition-colors ${
                 isDrawMode
                   ? 'bg-violet-500/10 border-violet-500/25 text-violet-500'
                   : 'bg-brand-blue/10 border-brand-blue/25 text-brand-blue'
@@ -276,7 +276,7 @@ export const PromptBar: React.FC<PromptBarProps> = ({
             {/* Credits / cost pill */}
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.04] shrink-0">
               <Coins size={10} className="text-amber-500 flex-shrink-0" />
-              <span className={`text-[10px] font-black leading-none tracking-tight ${isKeyMode ? 'text-purple-500' : 'text-slate-700 dark:text-white'}`}>
+              <span className={`text-[10px] font-bold leading-none tracking-tight ${isKeyMode ? 'text-purple-500' : 'text-slate-700 dark:text-white'}`}>
                 {isKeyMode ? 'API Key' : credits.toLocaleString()}
               </span>
               <span className="w-px h-3 bg-slate-200 dark:bg-white/10 mx-0.5" />

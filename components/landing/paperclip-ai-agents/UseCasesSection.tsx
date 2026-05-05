@@ -20,7 +20,7 @@ const USE_CASES: UseCase[] = [
     icon: Building,
     title: 'Startup & Scale-up',
     desc: 'Chạy toàn bộ operations với team nhỏ. Marketing AI viết content, Sales AI outreach, DevOps AI deploy — bạn chỉ cần review kết quả.',
-    color: '#0090ff',
+    color: '#7036F0',
     img: PAPERCLIP_CDN.usecaseStartup,
   },
   {

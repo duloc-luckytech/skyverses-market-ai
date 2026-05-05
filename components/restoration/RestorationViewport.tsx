@@ -40,7 +40,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
   }, [activeJob?.status]);
 
   return (
-    <div className="flex-grow flex flex-col bg-slate-50/50 dark:bg-[#0a0d14] overflow-hidden transition-colors duration-500 relative">
+    <div className="flex-grow flex flex-col bg-slate-50/50 dark:bg-[var(--atlas-bg-page)] overflow-hidden transition-colors duration-500 relative">
       
       {/* Ambient background glow */}
       <div className="absolute inset-0 pointer-events-none">
@@ -55,10 +55,10 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
               initial={{ opacity: 0, scale: 0.96, y: 10 }} 
               animate={{ opacity: 1, scale: 1, y: 0 }} 
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-5xl aspect-video bg-white dark:bg-[#0a0d14] shadow-2xl dark:shadow-[0_20px_80px_rgba(0,0,0,0.4)] rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/[0.06] overflow-hidden group"
+              className="relative w-full max-w-5xl aspect-video bg-white dark:bg-[var(--atlas-bg-page)] shadow-2xl dark:shadow-[0_20px_80px_rgba(0,0,0,0.4)] rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/[0.06] overflow-hidden group"
             >
               {/* Window chrome bar */}
-              <div className="absolute top-0 left-0 right-0 h-10 bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-md z-40 flex items-center px-4 border-b border-slate-100 dark:border-white/[0.04]">
+              <div className="absolute top-0 left-0 right-0 h-10 bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-md z-40 flex items-center px-4 border-b border-slate-100 dark:border-white/[0.04]">
                 <div className="flex gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-red-400/50"></div>
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-400/50"></div>
@@ -71,7 +71,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                     : activeJob.status === 'PROCESSING' ? 'bg-amber-500 animate-pulse' 
                     : 'bg-emerald-500 animate-pulse'
                   }`}></div>
-                  <span className="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400 dark:text-gray-500">
+                  <span className="text-[8px] font-bold uppercase tracking-[0.25em] text-slate-400 dark:text-gray-500">
                     {activeJob.status === 'DONE' ? 'Restoration Complete' 
                     : activeJob.status === 'ERROR' ? 'Error — Tap Retry' 
                     : activeJob.status === 'PROCESSING' ? (activeJob.progressStep || 'Processing...') 
@@ -116,20 +116,20 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                   />
 
                   {/* Labels */}
-                  <div className="absolute bottom-5 left-5 z-30 pointer-events-none flex items-center gap-2 px-4 py-2 bg-emerald-600/90 backdrop-blur-md text-white text-[9px] font-black uppercase tracking-[0.2em] rounded-lg shadow-lg shadow-emerald-600/20">
+                  <div className="absolute bottom-5 left-5 z-30 pointer-events-none flex items-center gap-2 px-4 py-2 bg-emerald-600/90 backdrop-blur-md text-white text-[9px] font-bold uppercase tracking-[0.2em] rounded-lg shadow-lg shadow-emerald-600/20">
                     <Sparkles size={12} /> Ảnh phục hồi
                   </div>
-                  <div className="absolute bottom-5 right-5 z-30 pointer-events-none flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-xl text-white/80 text-[9px] font-black uppercase tracking-[0.2em] rounded-lg border border-white/10">
+                  <div className="absolute bottom-5 right-5 z-30 pointer-events-none flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-xl text-white/80 text-[9px] font-bold uppercase tracking-[0.2em] rounded-lg border border-white/10">
                     <RotateCcw size={12} /> Ảnh gốc
                   </div>
 
                   {/* #4 Zoom Controls */}
                   <div className="absolute top-14 right-4 z-30 flex flex-col gap-1 bg-white/80 dark:bg-black/60 backdrop-blur-xl rounded-xl border border-slate-200 dark:border-white/10 p-1 shadow-lg">
                     <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="p-1.5 hover:bg-emerald-500/10 rounded-lg text-slate-500 dark:text-slate-400 hover:text-emerald-500 transition-colors"><Plus size={14} /></button>
-                    <div className="text-center text-[8px] font-black text-slate-400 dark:text-slate-500">{Math.round(zoom * 100)}%</div>
+                    <div className="text-center text-[8px] font-bold text-slate-400 dark:text-slate-500">{Math.round(zoom * 100)}%</div>
                     <button onClick={() => setZoom(z => Math.max(1, z - 0.25))} className="p-1.5 hover:bg-emerald-500/10 rounded-lg text-slate-500 dark:text-slate-400 hover:text-emerald-500 transition-colors"><Minus size={14} /></button>
                     {zoom !== 1 && (
-                      <button onClick={() => setZoom(1)} className="p-1.5 hover:bg-red-500/10 rounded-lg text-[8px] font-black text-red-400 transition-colors">1:1</button>
+                      <button onClick={() => setZoom(1)} className="p-1.5 hover:bg-red-500/10 rounded-lg text-[8px] font-bold text-red-400 transition-colors">1:1</button>
                     )}
                   </div>
                 </div>
@@ -148,7 +148,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                     </div>
                     
                     <div className="space-y-2">
-                      <p className="text-sm font-black uppercase tracking-[0.3em] text-red-600 dark:text-red-400 italic">
+                      <p className="text-sm font-bold uppercase tracking-[0.3em] text-red-600 dark:text-red-400 italic">
                         Lỗi xử lý
                       </p>
                       <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500 max-w-xs mx-auto leading-relaxed">
@@ -159,7 +159,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                     {onRetry && (
                       <button
                         onClick={() => onRetry(activeJob.id)}
-                        className="inline-flex items-center gap-2.5 px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-emerald-600/25"
+                        className="inline-flex items-center gap-2.5 px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-emerald-600/25"
                       >
                         <RotateCw size={14} />
                         Thử lại (Miễn phí)
@@ -186,7 +186,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                     </div>
 
                     <div className="text-center space-y-4 w-72">
-                      <p className="text-sm md:text-base font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400 animate-pulse italic">
+                      <p className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400 animate-pulse italic">
                         {activeJob.progressStep || 'Đang xử lý...'}
                       </p>
 
@@ -200,7 +200,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                             transition={{ duration: 0.6, ease: 'easeOut' }}
                           />
                         </div>
-                        <p className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">
+                        <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">
                           {activeJob.progress || 0}%
                         </p>
                       </div>
@@ -230,7 +230,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                   
                   <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex items-center gap-2 px-5 py-2.5 bg-white/80 dark:bg-black/60 backdrop-blur-xl rounded-full border border-slate-200 dark:border-white/10 shadow-xl">
                     <Zap size={12} className="text-emerald-500" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.15em] text-slate-500 dark:text-gray-400">
+                    <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-gray-400">
                       Chọn kịch bản & nhấn "Phục chế ngay" để bắt đầu
                     </span>
                   </div>
@@ -250,7 +250,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                 <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/15 rounded-2xl flex items-center justify-center mb-6">
                   <RefreshCw size={28} className="text-emerald-500" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-2xl md:text-3xl font-black uppercase italic tracking-tight text-slate-900 dark:text-white">
+                <h3 className="text-2xl md:text-3xl font-bold uppercase italic tracking-tight text-slate-900 dark:text-white">
                   Neural Restoration Studio
                 </h3>
                 <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-[0.4em]">
@@ -268,10 +268,10 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                         <div className="w-10 h-10 rounded-xl bg-emerald-500/[0.06] dark:bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
                           <Icon size={18} />
                         </div>
-                        <span className="text-lg font-black text-emerald-500/30 italic">0{step.id}</span>
+                        <span className="text-lg font-bold text-emerald-500/30 italic">0{step.id}</span>
                       </div>
                       <div className="space-y-1 pt-1">
-                        <p className="text-[11px] font-black uppercase text-slate-800 dark:text-white tracking-tight">{step.title}</p>
+                        <p className="text-[11px] font-bold uppercase text-slate-800 dark:text-white tracking-tight">{step.title}</p>
                         <p className="text-[9px] text-slate-400 dark:text-gray-500 font-bold leading-relaxed">{step.desc}</p>
                       </div>
                     </div>
@@ -283,7 +283,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
               <div className="space-y-6 w-full px-4">
                 <div className="flex items-center gap-3">
                   <div className="h-px flex-grow bg-slate-100 dark:bg-white/[0.04]"></div>
-                  <h3 className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-gray-600 italic flex items-center gap-2">
+                  <h3 className="text-[9px] font-bold uppercase tracking-[0.4em] text-slate-300 dark:text-gray-600 italic flex items-center gap-2">
                     <Layers size={12} /> Khám phá sức mạnh phục chế
                   </h3>
                   <div className="h-px flex-grow bg-slate-100 dark:bg-white/[0.04]"></div>
@@ -303,7 +303,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                       <div className="absolute bottom-3 left-3 right-3 text-left">
-                        <p className="text-[8px] md:text-[9px] font-black uppercase text-white truncate tracking-tight">{preset.label}</p>
+                        <p className="text-[8px] md:text-[9px] font-bold uppercase text-white truncate tracking-tight">{preset.label}</p>
                       </div>
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                         <div className="p-3 bg-emerald-600 rounded-xl text-white shadow-2xl shadow-emerald-600/30 scale-75 group-hover:scale-100 transition-transform duration-300">
@@ -332,12 +332,12 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="h-[72px] shrink-0 bg-white/90 dark:bg-[#0a0d14]/90 backdrop-blur-2xl border-t border-slate-100 dark:border-white/[0.04] flex items-center justify-center px-4 md:px-8 z-[80]"
+            className="h-[72px] shrink-0 bg-white/90 dark:bg-[var(--atlas-bg-page)]/90 backdrop-blur-2xl border-t border-slate-100 dark:border-white/[0.04] flex items-center justify-center px-4 md:px-8 z-[80]"
           >
             <div className="flex items-center gap-1.5 md:gap-2 bg-slate-50 dark:bg-white/[0.03] p-1.5 rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-xl">
               <button 
                 onClick={() => onEdit(activeJob.result!)}
-                className="flex items-center gap-2 px-4 md:px-6 py-2.5 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] text-slate-600 dark:text-white/70 hover:bg-blue-500 hover:text-white transition-all duration-200 group"
+                className="flex items-center gap-2 px-4 md:px-6 py-2.5 rounded-xl text-[9px] md:text-[10px] font-bold uppercase tracking-[0.15em] text-slate-600 dark:text-white/70 hover:bg-blue-500 hover:text-white transition-all duration-200 group"
               >
                 <Edit3 size={15} className="group-hover:scale-110 transition-transform" />
                 <span className="hidden sm:inline">Editor Studio</span>
@@ -347,7 +347,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
               
               <button 
                 onClick={() => onUpscale(activeJob.result!)}
-                className="flex items-center gap-2 px-4 md:px-6 py-2.5 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] text-slate-600 dark:text-white/70 hover:bg-purple-600 hover:text-white transition-all duration-200 group"
+                className="flex items-center gap-2 px-4 md:px-6 py-2.5 rounded-xl text-[9px] md:text-[10px] font-bold uppercase tracking-[0.15em] text-slate-600 dark:text-white/70 hover:bg-purple-600 hover:text-white transition-all duration-200 group"
               >
                 <Maximize2 size={15} className="group-hover:scale-110 transition-transform" />
                 <span className="hidden sm:inline">Nâng cấp 4K</span>
@@ -357,7 +357,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
 
               <button 
                 onClick={() => onDownload(activeJob.result!)}
-                className="flex items-center gap-2 px-5 md:px-8 py-2.5 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 transition-all duration-200 group shadow-lg shadow-emerald-600/15"
+                className="flex items-center gap-2 px-5 md:px-8 py-2.5 rounded-xl text-[9px] md:text-[10px] font-bold uppercase tracking-[0.15em] text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-110 transition-all duration-200 group shadow-lg shadow-emerald-600/15"
               >
                 <Download size={15} className="group-hover:translate-y-0.5 transition-transform" />
                 <span>Tải xuống</span>

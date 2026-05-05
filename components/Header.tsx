@@ -135,10 +135,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
       {/* Top accent line */}
       <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-blue/40 to-transparent z-[160]"></div>
 
-      <nav aria-label="Main navigation" className={`fixed w-full z-[150] top-0 transition-all duration-300 ${
-        scrolled 
-          ? 'h-14 bg-white/95 dark:bg-[#0a0d14]/95 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.08] shadow-sm shadow-black/[0.03] dark:shadow-black/20' 
-          : 'h-16 bg-white/50 dark:bg-transparent backdrop-blur-sm'
+      <nav aria-label="Main navigation" className={`fixed w-full z-[150] top-0 transition-all duration-300 ease-atlas ${
+        scrolled
+          ? 'h-14 atlas-nav shadow-atlas-sm'
+          : 'h-16 bg-white/40 dark:bg-transparent backdrop-blur-sm'
       }`}>
         <div className="max-w-[1440px] mx-auto px-4 lg:px-8 h-full">
           <div className="flex items-center h-full">
@@ -146,7 +146,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
             {/* Logo */}
             <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2 shrink-0 mr-8">
               <img src={logoUrl} alt="Logo" className="w-7 h-7 object-contain" />
-              <span className="text-base font-black tracking-tight text-black dark:text-white">Skyverses</span>
+              <span className="text-base font-bold tracking-tight text-black dark:text-white">Skyverses</span>
             </Link>
 
             {/* Nav Links — Desktop */}
@@ -190,11 +190,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                       initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
                       transition={{ duration: 0.12 }}
                       onMouseLeave={() => setShowExploreMenu(false)}
-                      className="absolute top-full left-0 mt-1 w-52 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl p-2 z-[200]"
+                      className="absolute top-full left-0 mt-1 w-52 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl p-2 z-[200]"
                       role="menu"
                     >
                       {/* Group: Discover */}
-                      <p className="text-[9px] font-black tracking-[0.15em] uppercase text-slate-400 px-2 pb-1.5 pt-0.5">Discover</p>
+                      <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-slate-400 px-2 pb-1.5 pt-0.5">Discover</p>
                       <DropdownLink to="/explorer" icon={null} label="Explorer Gallery" onClick={() => setShowExploreMenu(false)} />
                       <DropdownLink to="/models" icon={null} label="AI Models" onClick={() => setShowExploreMenu(false)} />
                       {isAuthenticated && (
@@ -286,13 +286,13 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
                   {/* PRO Badge / Upgrade CTA — Desktop */}
                   {isPro ? (
-                    <div className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-brand-blue/15 to-purple-500/15 border border-brand-blue/30 text-[10px] font-black uppercase tracking-widest text-brand-blue">
+                    <div className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-brand-blue/15 to-purple-500/15 border border-brand-blue/30 text-[10px] font-bold uppercase tracking-widest text-brand-blue">
                       <Crown size={11} /> PRO
                     </div>
                   ) : (
                     <button
                       onClick={() => setIsUpgradeModalOpen(true)}
-                      className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:bg-amber-500/15 transition-all"
+                      className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-lg text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:bg-amber-500/15 transition-all"
                     >
                       <Zap size={11} /> Upgrade
                     </button>
@@ -301,7 +301,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   {/* Credits — Mobile */}
                   <button
                     onClick={() => setIsPurchaseModalOpen(true)}
-                    className="md:hidden flex items-center gap-1.5 px-3 py-1.5 bg-brand-blue text-white rounded-lg text-[11px] font-bold active:scale-95 transition-all"
+                    className="md:hidden flex items-center gap-1.5 px-3 py-1.5 bg-atlas-cta text-white rounded text-[11px] font-bold active:scale-95 transition-all hover:shadow-atlas-glow"
                   >
                     <Sparkles size={11} fill="currentColor" />
                     {(credits || 0).toLocaleString()}
@@ -324,7 +324,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   {showDesktopLang && (
                     <motion.div
                       initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
-                      className="absolute top-full mt-1 right-0 w-20 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl overflow-hidden z-[200]"
+                      className="absolute top-full mt-1 right-0 w-20 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl overflow-hidden z-[200]"
                     >
                       {languages.map((l) => (
                         <button key={l.code} onClick={() => { setLang(l.code); setShowDesktopLang(false); localStorage.setItem('skyverses_lang_detected', '1'); }}
@@ -356,7 +356,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                         animate={{ opacity: 1, y: 0, scale: 1 }} 
                         exit={{ opacity: 0, y: 6, scale: 0.97 }}
                         transition={{ duration: 0.12 }}
-                        className="absolute top-full mt-1 right-0 w-64 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] shadow-2xl rounded-xl overflow-hidden z-[200]"
+                        className="absolute top-full mt-1 right-0 w-64 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] shadow-2xl rounded-xl overflow-hidden z-[200]"
                       >
                         {/* User Info */}
                         <div className="px-3 pt-3 pb-2">
@@ -390,12 +390,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                           {isPro ? (
                             <div className="mt-1.5 flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-gradient-to-r from-brand-blue/10 to-purple-500/10 border border-brand-blue/20">
                               <Crown size={11} className="text-brand-blue" />
-                              <span className="text-[10px] font-black uppercase tracking-widest text-brand-blue">Pro Member</span>
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-brand-blue">Pro Member</span>
                             </div>
                           ) : (
                             <button
                               onClick={() => { setIsUpgradeModalOpen(true); setShowUserMenu(false); }}
-                              className="mt-1.5 w-full flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-amber-500/8 border border-amber-500/15 text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:bg-amber-500/12 transition-all"
+                              className="mt-1.5 w-full flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-amber-500/8 border border-amber-500/15 text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:bg-amber-500/12 transition-all"
                             >
                               <Zap size={11} /> Nâng cấp lên Pro
                             </button>
@@ -432,8 +432,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 </Link>
               )}
 
-              {/* CTA — Desktop */}
-              <Link to="/booking" className="hidden md:flex items-center px-4 py-1.5 bg-brand-blue text-white text-[13px] font-semibold rounded-lg hover:brightness-110 transition-all shadow-sm shadow-brand-blue/20 ml-1">
+              {/* CTA — Desktop (Atlas gradient) */}
+              <Link to="/booking" className="hidden md:flex items-center px-4 py-1.5 bg-atlas-cta text-white text-[13px] font-semibold rounded transition-all hover:shadow-atlas-glow hover:-translate-y-px active:scale-[.98] ml-1">
                 {t('nav.deploy')}
               </Link>
 
@@ -449,7 +449,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
       {/* ═══════════ MOBILE DRAWER ═══════════ */}
       <div className={`fixed inset-0 z-[500] transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} role="dialog" aria-modal="true" aria-label="Navigation menu">
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
-        <div className={`absolute top-0 right-0 h-full w-[85%] max-w-sm bg-white dark:bg-[#13171f] shadow-2xl transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className={`absolute top-0 right-0 h-full w-[85%] max-w-sm bg-white dark:bg-[var(--atlas-bg-panel)] shadow-2xl transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="flex flex-col h-full">
             {/* Drawer Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.08]">
@@ -526,7 +526,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               </div>
 
               {!isAuthenticated && (
-                <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full py-3 bg-brand-blue text-white text-center rounded-xl text-sm font-bold shadow-lg shadow-brand-blue/20">
+                <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full py-3 bg-atlas-cta text-white text-center rounded text-sm font-bold hover:shadow-atlas-glow transition-all">
                   {t('nav.login')}
                 </Link>
               )}
@@ -538,7 +538,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-slate-400 shrink-0">
                   {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
                 </button>
-                <Link to="/booking" onClick={() => setIsOpen(false)} className="flex-1 flex items-center justify-center py-2.5 bg-brand-blue text-white rounded-xl text-sm font-bold">
+                <Link to="/booking" onClick={() => setIsOpen(false)} className="flex-1 flex items-center justify-center py-2.5 bg-atlas-cta text-white rounded text-sm font-bold hover:shadow-atlas-glow transition-all">
                   {t('nav.deploy')}
                 </Link>
               </div>

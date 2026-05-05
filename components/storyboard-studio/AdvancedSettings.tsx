@@ -10,8 +10,8 @@ interface AdvancedSettingsProps {
 }
 
 export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing, onSaveAndGenerate, settings, setSettings }) => {
-  const inputClass = "w-full bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/5 p-4 rounded-xl text-lg font-black italic outline-none focus:border-brand-blue/50 transition-all text-slate-900 dark:text-white text-center shadow-inner";
-  const labelClass = "text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.2em] mb-3 block px-1";
+  const inputClass = "w-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/5 p-4 rounded-xl text-lg font-bold italic outline-none focus:border-brand-blue/50 transition-all text-slate-900 dark:text-white text-center shadow-inner";
+  const labelClass = "text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.2em] mb-3 block px-1";
   const descClass = "text-[9px] text-gray-500 dark:text-gray-400 font-bold uppercase italic mt-3 px-1 leading-relaxed";
 
   return (
@@ -19,7 +19,7 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing
       <div className="p-10 bg-slate-50/50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/5 rounded-[2.5rem] space-y-10 shadow-sm dark:shadow-2xl transition-colors">
         <div className="flex items-center gap-3">
           <Settings size={20} className="text-slate-400 dark:text-gray-500" />
-          <h3 className="text-sm font-black uppercase tracking-[0.3em] italic text-slate-500 dark:text-gray-400">CÀI ĐẶT NÂNG CAO</h3>
+          <h3 className="text-sm font-bold uppercase tracking-[0.3em] italic text-slate-500 dark:text-gray-400">CÀI ĐẶT NÂNG CAO</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -36,7 +36,7 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing
                 />
                 <div className="absolute inset-0 rounded-xl border border-brand-blue/20 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity"></div>
               </div>
-              <span className="text-xs font-black uppercase text-slate-300 dark:text-gray-400 italic">lần</span>
+              <span className="text-xs font-bold uppercase text-slate-300 dark:text-gray-400 italic">lần</span>
             </div>
             <p className={descClass}>Nếu tạo thất bại, hệ thống sẽ tự động thử lại tối đa số lần này.</p>
           </div>
@@ -54,7 +54,7 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing
                 />
                 <div className="absolute inset-0 rounded-xl border border-brand-blue/20 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity"></div>
               </div>
-              <span className="text-xs font-black uppercase text-slate-300 dark:text-gray-400 italic">luồng</span>
+              <span className="text-xs font-bold uppercase text-slate-300 dark:text-gray-400 italic">luồng</span>
             </div>
             <p className={descClass}>Số lượng tối đa các tác vụ chạy song song.</p>
           </div>
@@ -67,9 +67,9 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing
                 <div className="w-5 h-5 bg-brand-blue rounded-full flex items-center justify-center text-white">
                   <ZapIcon size={10} fill="currentColor" />
                 </div>
-                <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.2em]">API KEY GEMINI</label>
+                <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.2em]">API KEY GEMINI</label>
              </div>
-             <button className="text-[9px] font-black uppercase bg-orange-500/10 text-orange-600 dark:text-orange-500 px-3 py-1 rounded-full border border-orange-500/20 hover:bg-orange-500 hover:text-white transition-all">
+             <button className="text-[9px] font-bold uppercase bg-orange-500/10 text-orange-600 dark:text-orange-500 px-3 py-1 rounded-full border border-orange-500/20 hover:bg-orange-500 hover:text-white transition-all">
                 Dùng API miễn phí
              </button>
           </div>
@@ -79,11 +79,11 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing
                 <input 
                   type="password"
                   placeholder="Nhập API key (AIza...)"
-                  className="w-full bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/5 p-5 rounded-xl text-xs font-mono outline-none focus:border-brand-blue/50 transition-all text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-gray-800"
+                  className="w-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/5 p-5 rounded-xl text-xs font-mono outline-none focus:border-brand-blue/50 transition-all text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-gray-800"
                 />
                 <div className="absolute inset-0 rounded-xl border border-brand-blue/10 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity"></div>
              </div>
-             <button className="bg-brand-blue/10 border border-brand-blue/20 text-brand-blue px-8 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-brand-blue hover:text-white transition-all flex items-center gap-2">
+             <button className="bg-brand-blue/10 border border-brand-blue/20 text-brand-blue px-8 rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-brand-blue hover:text-white transition-all flex items-center gap-2">
                 <Plus size={14} strokeWidth={3} /> Thêm
              </button>
           </div>
@@ -99,14 +99,14 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing
       <div className="flex flex-col sm:flex-row gap-4 pt-6">
         <button 
           onClick={onSaveAndGenerate}
-          className="flex-grow bg-brand-blue text-white py-6 rounded-[2rem] font-black uppercase text-xs tracking-[0.4em] shadow-[0_20px_80px_rgba(0,144,255,0.3)] hover:scale-[1.02] active:scale-[0.95] transition-all flex items-center justify-center gap-4 group relative overflow-hidden"
+          className="flex-grow bg-brand-blue text-white py-6 rounded-[2rem] font-bold uppercase text-xs tracking-[0.4em] shadow-[0_20px_80px_rgba(112,54,240,0.3)] hover:scale-[1.02] active:scale-[0.95] transition-all flex items-center justify-center gap-4 group relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
           <ShieldCheck size={18} />
           Lưu thiết lập cấu hình
         </button>
         <button 
-          className="px-12 py-6 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 rounded-[2rem] text-xs font-black uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center gap-4 group shadow-sm"
+          className="px-12 py-6 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 rounded-[2rem] text-xs font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center gap-4 group shadow-sm"
         >
           Lưu bản nháp <Save size={18} className="group-hover:scale-110 transition-transform" />
         </button>

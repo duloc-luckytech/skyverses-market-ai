@@ -126,11 +126,11 @@ const AetherVisualAgentInterface = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white font-mono">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white font-mono">
       
-      <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#0a0d14] border-r border-black/10 dark:border-white/5 p-8 space-y-10">
+      <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-r border-black/10 dark:border-white/5 p-8 space-y-10">
          <div className="space-y-6">
-            <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
+            <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
                <Target className="w-4 h-4 text-brand-blue" /> Intent_Uplink
             </label>
             <div className="relative group">
@@ -146,7 +146,7 @@ const AetherVisualAgentInterface = () => {
          </div>
 
          <div className="space-y-6 pt-6 border-t border-black/10 dark:border-white/5">
-            <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-600 tracking-[0.4em]">Agent_Constraints</label>
+            <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-600 tracking-[0.4em]">Agent_Constraints</label>
             <div className="space-y-3">
                {[
                  { label: 'Creative Autonomy', value: 'High' },
@@ -154,8 +154,8 @@ const AetherVisualAgentInterface = () => {
                  { label: 'Style Alignment', value: 'Locked' }
                ].map(item => (
                  <div key={item.label} className="flex justify-between items-center p-3 border border-black/5 dark:border-white/5 bg-black/[0.01]">
-                    <span className="text-[8px] font-black uppercase text-gray-400">{item.label}</span>
-                    <span className="text-[9px] font-black text-brand-blue">{item.value}</span>
+                    <span className="text-[8px] font-bold uppercase text-gray-400">{item.label}</span>
+                    <span className="text-[9px] font-bold text-brand-blue">{item.value}</span>
                  </div>
                ))}
             </div>
@@ -165,15 +165,15 @@ const AetherVisualAgentInterface = () => {
             <div className="p-4 bg-brand-blue/5 border border-brand-blue/20 space-y-3">
                <div className="flex items-center gap-3 text-brand-blue">
                   <ShieldCheck size={14} />
-                  <span className="text-[9px] font-black uppercase tracking-widest">Autonomous_Active</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest">Autonomous_Active</span>
                </div>
                <p className="text-[7px] font-bold text-gray-500 uppercase leading-relaxed">Agent will decide prompts, batching, and refinement nodes locally.</p>
             </div>
          </div>
       </div>
 
-      <div className="flex-grow flex flex-col bg-white dark:bg-[#0a0d14] relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #0090ff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="flex-grow flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #7036F0 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         
         <div className="flex-grow overflow-y-auto p-8 lg:p-12 relative z-10 no-scrollbar">
            <div className="max-w-5xl mx-auto space-y-12">
@@ -182,7 +182,7 @@ const AetherVisualAgentInterface = () => {
                     <div className="flex items-center gap-3">
                        <Bot className="w-6 h-6 text-brand-blue" />
                        <div className="space-y-0.5">
-                          <span className="text-[11px] font-black uppercase tracking-[0.4em] text-black dark:text-white">AVA-1_Agent</span>
+                          <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-black dark:text-white">AVA-1_Agent</span>
                           <p className="text-[8px] font-bold text-brand-blue uppercase tracking-widest">{loopState}</p>
                        </div>
                     </div>
@@ -190,7 +190,7 @@ const AetherVisualAgentInterface = () => {
                  <div className="flex gap-4">
                     <div className="flex items-center gap-2 px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-full">
                        <Activity size={10} className="animate-pulse" />
-                       <span className="text-[8px] font-black uppercase">Core_Frequency: 1.2GHZ</span>
+                       <span className="text-[8px] font-bold uppercase">Core_Frequency: 1.2GHZ</span>
                     </div>
                  </div>
               </div>
@@ -198,7 +198,7 @@ const AetherVisualAgentInterface = () => {
               {concepts.length === 0 ? (
                  <div className="py-48 text-center opacity-10 space-y-8 flex flex-col items-center">
                     <LayoutGrid size={80} />
-                    <p className="text-sm font-black uppercase tracking-[0.8em]">Awaiting_Intent_Link</p>
+                    <p className="text-sm font-bold uppercase tracking-[0.8em]">Awaiting_Intent_Link</p>
                  </div>
               ) : (
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in zoom-in-95 duration-500">
@@ -212,8 +212,8 @@ const AetherVisualAgentInterface = () => {
                              )}
                              
                              <div className="absolute top-4 left-4 flex gap-2">
-                                <span className="bg-black/60 backdrop-blur-md px-2 py-0.5 text-[8px] font-black text-white uppercase border border-white/10">NODE_0{idx+1}</span>
-                                {concept.score > 0 && <span className="bg-brand-blue px-2 py-0.5 text-[8px] font-black text-white uppercase">{concept.score}% STABLE</span>}
+                                <span className="bg-black/60 backdrop-blur-md px-2 py-0.5 text-[8px] font-bold text-white uppercase border border-white/10">NODE_0{idx+1}</span>
+                                {concept.score > 0 && <span className="bg-brand-blue px-2 py-0.5 text-[8px] font-bold text-white uppercase">{concept.score}% STABLE</span>}
                              </div>
                              
                              <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -230,13 +230,13 @@ const AetherVisualAgentInterface = () => {
            </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 lg:h-36 bg-[#fafafa] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
+        <div className="absolute bottom-0 left-0 right-0 h-32 lg:h-36 bg-[var(--atlas-bg-panel-hover)] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
            <div className="hidden lg:flex flex-col gap-3">
               <div className="flex items-center gap-6">
                  {['UNDERSTAND', 'PLAN', 'CREATE', 'REVIEW', 'REFINE'].map((step, i) => (
                     <div key={step} className="flex items-center gap-3">
                        <div className={`w-2 h-2 rounded-full ${loopState === step ? 'bg-brand-blue animate-pulse' : concepts.length > 0 && i < 3 ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-800'}`}></div>
-                       <span className={`text-[8px] font-black uppercase tracking-widest ${loopState === step ? 'text-brand-blue' : 'text-gray-400'}`}>{step}</span>
+                       <span className={`text-[8px] font-bold uppercase tracking-widest ${loopState === step ? 'text-brand-blue' : 'text-gray-400'}`}>{step}</span>
                     </div>
                  ))}
               </div>
@@ -254,7 +254,7 @@ const AetherVisualAgentInterface = () => {
               </button>
               <button 
                 onClick={startAgent} disabled={isBusy || !goal.trim()}
-                className="flex-grow lg:flex-none bg-brand-blue text-white px-16 py-6 text-[11px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-2xl active:scale-[0.98] disabled:opacity-20 rounded-sm"
+                className="flex-grow lg:flex-none bg-brand-blue text-white px-16 py-6 text-[11px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-2xl active:scale-[0.98] disabled:opacity-20 rounded-sm"
               >
                 {isBusy ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles size={11} />}
                 INITIALIZE_AGENT_FLOW
@@ -263,9 +263,9 @@ const AetherVisualAgentInterface = () => {
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#0a0d14] border-l border-black/10 dark:border-white/5 overflow-hidden">
+      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Activity className="w-4 h-4 text-brand-blue" /> Cognitive_Trace
             </h3>
          </div>
@@ -273,12 +273,12 @@ const AetherVisualAgentInterface = () => {
             {logs.length === 0 ? (
                <div className="py-24 text-center opacity-10">
                   <Terminal className="w-10 h-10 mx-auto mb-4" />
-                  <p className="text-[9px] font-black uppercase tracking-widest italic">Awaiting Telemetry</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest italic">Awaiting Telemetry</p>
                </div>
             ) : (
                logs.map((log, i) => (
                   <div key={i} className="space-y-2 animate-in fade-in slide-in-from-right-4 duration-500">
-                     <div className="flex justify-between items-center text-[7px] font-black uppercase text-gray-400">
+                     <div className="flex justify-between items-center text-[7px] font-bold uppercase text-gray-400">
                         <span className={`px-2 py-0.5 rounded-sm ${log.type === 'PLAN' ? 'bg-brand-blue/10 text-brand-blue' : 'bg-black/5 dark:bg-white/5'}`}>{log.type}</span>
                         <span>{log.timestamp}</span>
                      </div>
@@ -292,13 +292,13 @@ const AetherVisualAgentInterface = () => {
             {isBusy && (
                <div className="flex items-center gap-4 text-brand-blue animate-pulse">
                   <div className="w-1 h-1 rounded-full bg-brand-blue"></div>
-                  <span className="text-[8px] font-black uppercase">Thinking...</span>
+                  <span className="text-[8px] font-bold uppercase">Thinking...</span>
                </div>
             )}
          </div>
          
          <div className="p-8 border-t border-black/10 dark:border-white/5 bg-gray-50 dark:bg-black/40">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-3">
                <HistoryIcon className="w-4 h-4 text-brand-blue" /> Session_History
             </h3>
             <div className="space-y-3">

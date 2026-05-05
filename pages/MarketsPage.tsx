@@ -144,7 +144,7 @@ const TrendingSlider: React.FC<{ items: Solution[]; lang: Language; onNavigate: 
       <div ref={scrollRef} className="flex gap-2.5 overflow-x-auto no-scrollbar snap-x pb-1">
         {limitedItems.map((sol, i) => (
           <div key={sol.id} onClick={() => onNavigate(sol.slug)}
-            className="snap-start shrink-0 w-[200px] bg-white dark:bg-[#1a1f2b] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
+            className="snap-start shrink-0 w-[200px] bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
             <div className="relative h-[100px] overflow-hidden">
               <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-black/50 backdrop-blur-sm text-white text-[8px] font-semibold rounded">#{i+1}</span>
@@ -253,7 +253,7 @@ const SuggestedSection: React.FC<{ solutions: Solution[]; lang: Language; onNavi
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {suggested.map(sol => (
           <div key={sol.id} onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}
-            className="bg-white dark:bg-[#1a1f2b] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
+            className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
             <div className="relative h-[80px] overflow-hidden">
               <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               {sol.isFree && <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-emerald-500 text-white text-[8px] font-bold rounded">FREE</span>}
@@ -283,7 +283,7 @@ const ProductCardGrid: React.FC<{
   const models = sol.models?.slice(0, 3) || [];
   return (
     <motion.div whileHover={{ y: -2 }}
-      className={`bg-white dark:bg-[#1a1f2b] border rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition-all group flex flex-col ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
+      className={`bg-white dark:bg-[var(--atlas-bg-panel)] border rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition-all group flex flex-col ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
       onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}>
       <div className="relative h-[160px] overflow-hidden">
         <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
@@ -341,7 +341,7 @@ const ProductCardList: React.FC<{
 }> = React.memo(({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
   const models = sol.models?.slice(0, 2) || [];
   return (
-    <div className={`bg-white dark:bg-[#1a1f2b] border rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-all group flex ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
+    <div className={`bg-white dark:bg-[var(--atlas-bg-panel)] border rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-all group flex ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
       onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}>
       <div className="relative w-[180px] shrink-0 overflow-hidden">
         <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
@@ -402,7 +402,7 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/40 dark:bg-black/60 z-[600]" onClick={onClose} />
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[601] w-[90vw] max-w-[560px] bg-white dark:bg-[#1a1f2b] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[601] w-[90vw] max-w-[560px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
         <div className="relative h-[200px] overflow-hidden shrink-0">
           <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
@@ -488,7 +488,7 @@ const ComparePanel: React.FC<{ items: Solution[]; lang: Language; onRemove: (id:
   if (items.length === 0) return null;
   return (
     <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }}
-      className="fixed bottom-0 left-0 right-0 z-[500] bg-white dark:bg-[#1a1f2b] border-t border-black/[0.06] dark:border-white/[0.06] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.4)]">
+      className="fixed bottom-0 left-0 right-0 z-[500] bg-white dark:bg-[var(--atlas-bg-panel)] border-t border-black/[0.06] dark:border-white/[0.06] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.4)]">
       <div className="max-w-[1500px] mx-auto px-6 py-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -1152,7 +1152,7 @@ const MarketsPage: React.FC = () => {
   );
 
   return (
-    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-white dark:bg-[#0a0d14] text-black dark:text-white transition-colors duration-300">
+    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-white dark:bg-[var(--atlas-bg-page)] text-black dark:text-white transition-colors duration-300">
       <div className="max-w-[1500px] mx-auto px-4 md:px-6 lg:px-10">
 
         {/* ═══════ HEADER ═══════ */}
@@ -1341,7 +1341,7 @@ const MarketsPage: React.FC = () => {
               className="fixed inset-0 bg-black/30 dark:bg-black/60 z-[500]" onClick={() => setMobileSidebar(false)} />
             <motion.div initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed top-0 left-0 w-[300px] h-full bg-white dark:bg-[#1a1f2b] z-[501] overflow-y-auto">
+              className="fixed top-0 left-0 w-[300px] h-full bg-white dark:bg-[var(--atlas-bg-panel)] z-[501] overflow-y-auto">
               <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.08]">
                 <h3 className="text-[15px] font-bold">Bộ lọc</h3>
                 <button onClick={() => setMobileSidebar(false)} className="p-1 text-slate-400 hover:text-slate-600"><X size={18} /></button>

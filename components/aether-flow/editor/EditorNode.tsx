@@ -64,7 +64,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
           <div className="flex items-center gap-2.5">
             <div className="w-1.5 h-1.5 bg-indigo-500 shadow-[0_0_8px_#6366f1] animate-pulse"></div>
             <div className="flex flex-col overflow-hidden">
-              <span className="text-[10px] font-black uppercase tracking-wider text-white italic leading-none truncate">{data.label}</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-white italic leading-none truncate">{data.label}</span>
             </div>
           </div>
           <span className="text-[7px] font-mono font-bold text-white/20 shrink-0">ID: {id}</span>
@@ -82,7 +82,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
                       id={input.name} 
                       style={{ left: -14, top: '50%', background: '#6366f1', border: '3px solid #1a1b23', width: '10px', height: '10px' }} 
                     />
-                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest pl-1 italic">{input.name}</span>
+                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest pl-1 italic">{input.name}</span>
                  </div>
                ))}
             </div>
@@ -107,7 +107,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
                  if (isVideoFile) {
                     return (
                       <div key={idx} className="space-y-1.5 py-1">
-                        <label className="text-[8px] font-black uppercase text-gray-500 tracking-tighter italic flex items-center gap-1.5">
+                        <label className="text-[8px] font-bold uppercase text-gray-500 tracking-tighter italic flex items-center gap-1.5">
                           <Film size={10} className="text-purple-400" /> {widget.label}
                         </label>
                         <div className="relative w-full aspect-video bg-black/40 rounded-lg overflow-hidden border border-white/5 group/vid shadow-inner">
@@ -136,7 +136,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
                  if (imagePreviewUrl) {
                     return (
                       <div key={idx} className="space-y-1.5 py-1">
-                        <label className="text-[8px] font-black uppercase text-gray-500 tracking-tighter italic flex items-center gap-1.5">
+                        <label className="text-[8px] font-bold uppercase text-gray-500 tracking-tighter italic flex items-center gap-1.5">
                           <ImageIcon size={10} className="text-indigo-400" /> {widget.label}
                         </label>
                         <div className="relative w-full aspect-video bg-black/40 rounded-lg overflow-hidden border border-white/5 group/img shadow-inner">
@@ -171,7 +171,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
                    return (
                      <div key={idx} className="space-y-1.5">
                         <div className="flex items-center justify-between px-1">
-                          <label className="text-[8px] font-black uppercase text-gray-500 tracking-tighter italic flex items-center gap-1.5">
+                          <label className="text-[8px] font-bold uppercase text-gray-500 tracking-tighter italic flex items-center gap-1.5">
                             <FileText size={10} className="text-indigo-400" /> {widget.label}
                           </label>
                         </div>
@@ -194,7 +194,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
                    >
                       <ChevronLeft size={10} className="text-gray-600 group-hover:text-indigo-400" />
                       <div className="flex-grow flex justify-between items-center px-2 overflow-hidden">
-                        <span className="text-[8px] font-black uppercase text-gray-500 tracking-tighter group-hover:text-gray-300 truncate mr-2">
+                        <span className="text-[8px] font-bold uppercase text-gray-500 tracking-tighter group-hover:text-gray-300 truncate mr-2">
                           {widget.label}
                         </span>
                         <span className="text-[10px] font-mono font-bold text-gray-200 tracking-tight whitespace-nowrap">
@@ -213,7 +213,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
             <div className="space-y-1.5 pt-1.5">
                {data.outputs.map((out: string, idx: number) => (
                  <div key={idx} className="relative py-0.5 flex justify-end items-center">
-                    <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest italic pr-1">{out}</span>
+                    <span className="text-[8px] font-bold text-emerald-500 uppercase tracking-widest italic pr-1">{out}</span>
                     <Handle 
                       type="source" 
                       position={Position.Right} 
@@ -226,7 +226,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
           )}
         </div>
 
-        <div className="px-4 py-1.5 bg-black/40 flex justify-between items-center text-[6px] font-black text-white/10 uppercase tracking-[0.4em] border-t border-white/[0.03]">
+        <div className="px-4 py-1.5 bg-black/40 flex justify-between items-center text-[6px] font-bold text-white/10 uppercase tracking-[0.4em] border-t border-white/[0.03]">
            <span>Neural Node</span>
            <Zap size={7} />
         </div>
@@ -244,7 +244,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
               <div className="bg-[#1a1b2e] rounded-none p-6 flex flex-col gap-5 shadow-3xl border border-white/10 w-full max-w-sm" onClick={e => e.stopPropagation()}>
                  <div className="flex items-center gap-3 border-b border-white/5 pb-3">
                     <Settings size={18} className="text-indigo-500"/>
-                    <span className="text-white text-xs font-black uppercase tracking-widest italic">Cập nhật: {editingField.key}</span>
+                    <span className="text-white text-xs font-bold uppercase tracking-widest italic">Cập nhật: {editingField.key}</span>
                  </div>
                  <input 
                    ref={inputRef} type="text" value={tempValue} 
@@ -253,8 +253,8 @@ export const EditorNode = ({ id, data, selected }: any) => {
                    className="w-full bg-black border border-white/10 rounded-none p-4 text-white text-sm font-bold outline-none focus:border-indigo-500 transition-all" 
                  />
                  <div className="flex gap-3">
-                   <button onClick={() => setEditingField(null)} className="flex-1 py-3 text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors">Hủy</button>
-                   <button onClick={submitEdit} className="flex-1 bg-indigo-600 text-white py-3 rounded-none text-[9px] font-black uppercase tracking-widest shadow-xl hover:bg-indigo-700 active:scale-95 transition-all">Xác nhận</button>
+                   <button onClick={() => setEditingField(null)} className="flex-1 py-3 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">Hủy</button>
+                   <button onClick={submitEdit} className="flex-1 bg-indigo-600 text-white py-3 rounded-none text-[9px] font-bold uppercase tracking-widest shadow-xl hover:bg-indigo-700 active:scale-95 transition-all">Xác nhận</button>
                  </div>
               </div>
             </motion.div>

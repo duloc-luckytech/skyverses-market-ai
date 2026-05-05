@@ -74,12 +74,12 @@ const AetherFlowInterface: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full bg-[#f4f7f9] dark:bg-[#0a0d14] text-slate-700 dark:text-zinc-300 font-sans p-0 flex flex-col transition-all duration-500 relative overflow-hidden">
+    <div className="h-full w-full bg-[#f4f7f9] dark:bg-[var(--atlas-bg-page)] text-slate-700 dark:text-zinc-300 font-sans p-0 flex flex-col transition-all duration-500 relative overflow-hidden">
       {/* 12-Column Industrial Grid - Ép chiều cao h-full để độc lập vùng cuộn */}
       <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-0 flex-grow overflow-hidden">
         
         {/* LEFT PANEL: CONFIGURATION (4/12 width) - Cố định và có vùng cuộn riêng */}
-        <div className="md:col-span-4 flex flex-col h-full bg-white dark:bg-[#1a1f2b] border-r border-black/5 dark:border-white/5 overflow-hidden">
+        <div className="md:col-span-4 flex flex-col h-full bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-black/5 dark:border-white/5 overflow-hidden">
           <SettingsDrawer 
             isOpen={showSettings}
             apiKey={flow.apiKey}
@@ -104,7 +104,7 @@ const AetherFlowInterface: React.FC = () => {
         </div>
 
         {/* RIGHT PANEL: RESULTS & TEMPLATES (8/12 width) - Cuộn độc lập */}
-        <div className="md:col-span-8 h-full bg-slate-50 dark:bg-[#0a0d14] overflow-hidden">
+        <div className="md:col-span-8 h-full bg-slate-50 dark:bg-[var(--atlas-bg-page)] overflow-hidden">
           <ResultsPanel 
             results={flow.results}
             generationTime={flow.generationTime}
@@ -145,7 +145,7 @@ const AetherFlowInterface: React.FC = () => {
               <div className="w-16 h-16 border-2 border-indigo-600/20 dark:border-indigo-500/20 border-t-indigo-600 dark:border-t-indigo-500 rounded-none animate-spin"></div>
             </div>
             <div className="space-y-2 text-center">
-              <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white animate-pulse italic">ĐANG ĐỒNG BỘ HỆ THỐNG...</h3>
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.4em] text-white animate-pulse italic">ĐANG ĐỒNG BỘ HỆ THỐNG...</h3>
             </div>
           </motion.div>
         )}

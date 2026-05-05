@@ -157,9 +157,9 @@ function renderMarkdown(text: string): React.ReactNode[] {
     if (line.startsWith('### ')) {
       nodes.push(<h3 key={key++} className="text-[12px] font-bold text-slate-800 dark:text-white mt-3 mb-1">{inlineFormat(line.slice(4))}</h3>);
     } else if (line.startsWith('## ')) {
-      nodes.push(<h2 key={key++} className="text-[13px] font-black text-slate-800 dark:text-white mt-3 mb-1.5">{inlineFormat(line.slice(3))}</h2>);
+      nodes.push(<h2 key={key++} className="text-[13px] font-bold text-slate-800 dark:text-white mt-3 mb-1.5">{inlineFormat(line.slice(3))}</h2>);
     } else if (line.startsWith('# ')) {
-      nodes.push(<h1 key={key++} className="text-[14px] font-black text-slate-800 dark:text-white mt-3 mb-2">{inlineFormat(line.slice(2))}</h1>);
+      nodes.push(<h1 key={key++} className="text-[14px] font-bold text-slate-800 dark:text-white mt-3 mb-2">{inlineFormat(line.slice(2))}</h1>);
     }
     // Bullet
     else if (line.match(/^[-*+] /)) {
@@ -468,7 +468,7 @@ const AgentSandbox: React.FC<{ agent: CustomAgent }> = ({ agent }) => {
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                className="absolute top-full left-0 right-0 mt-1 z-50 bg-white dark:bg-[#13171f] rounded-xl shadow-xl border border-black/[0.08] dark:border-white/[0.08] overflow-hidden max-h-[200px] overflow-y-auto"
+                className="absolute top-full left-0 right-0 mt-1 z-50 bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl shadow-xl border border-black/[0.08] dark:border-white/[0.08] overflow-hidden max-h-[200px] overflow-y-auto"
               >
                 {threads.length === 0 ? (
                   <p className="text-[10px] text-slate-400 p-3 text-center">No conversations yet</p>

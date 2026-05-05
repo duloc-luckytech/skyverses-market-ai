@@ -140,8 +140,8 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const [quantity, setQuantity]           = useState(1);
 
   // Brand state
-  const [brandColors, setBrandColors]       = useState(['#0090FF', '#6366F1']);
-  const [hexInput, setHexInput]             = useState('#0090FF');
+  const [brandColors, setBrandColors]       = useState(['#7036F0', '#6366F1']);
+  const [hexInput, setHexInput]             = useState('#7036F0');
   const [useBrandColor, setUseBrandColor]   = useState(true);
   const [addTextToBanner, setAddTextToBanner] = useState(true);
 
@@ -546,7 +546,7 @@ Không giải thích thêm.`;
     const model = session?.config.model ?? gen.selectedModel?.name ?? '';
     const ts    = session?.timestamp ?? '';
     return (
-      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#13171f] border-t border-black/[0.05] dark:border-white/[0.08] flex-wrap">
+      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[var(--atlas-bg-panel)] border-t border-black/[0.05] dark:border-white/[0.08] flex-wrap">
         {plat && (
           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-blue/10 text-brand-blue text-[9px] font-bold">
             {plat.platform} · {plat.label}
@@ -570,7 +570,7 @@ Không giải thích thêm.`;
 
   /** Action buttons below result image */
   const ResultActions = ({ url }: { url: string }) => (
-    <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#13171f]">
+    <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[var(--atlas-bg-panel)]">
       <button
         onClick={handleGenerate}
         disabled={gen.isGenerating}
@@ -596,10 +596,10 @@ Không giải thích thêm.`;
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
+    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
 
       {/* ── TOP NAV ── */}
-      <div className="h-14 bg-white dark:bg-[#0a0d14] border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-6 shrink-0 z-[100] transition-colors">
+      <div className="h-14 bg-white dark:bg-[var(--atlas-bg-page)] border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-6 shrink-0 z-[100] transition-colors">
         <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-full border border-slate-200 dark:border-white/10">
           {(['current', 'library'] as const).map(m => (
             <button
@@ -640,7 +640,7 @@ Không giải thích thêm.`;
           )}
           <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-blue/10 border border-brand-blue/20 rounded-full">
             <Coins size={12} className="text-brand-blue" />
-            <span className="text-[10px] font-black text-brand-blue">{credits.toLocaleString()} CR</span>
+            <span className="text-[10px] font-bold text-brand-blue">{credits.toLocaleString()} CR</span>
           </div>
           <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
             <X size={20} />
@@ -651,7 +651,7 @@ Không giải thích thêm.`;
       <div className="flex-grow flex overflow-hidden">
 
         {/* ── SIDEBAR ── hidden on mobile, sticky generate button ── */}
-        <div className="hidden md:flex w-[360px] shrink-0 bg-white dark:bg-[#13171f] border-r border-slate-200 dark:border-white/10 flex-col h-full transition-colors">
+        <div className="hidden md:flex w-[360px] shrink-0 bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-slate-200 dark:border-white/10 flex-col h-full transition-colors">
 
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
@@ -763,7 +763,7 @@ Không giải thích thêm.`;
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: -4, scale: 0.97 }}
                           transition={{ duration: 0.15 }}
-                          className="absolute right-0 top-5 z-50 w-72 bg-white dark:bg-[#1a1f2b] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-2xl overflow-hidden"
+                          className="absolute right-0 top-5 z-50 w-72 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-2xl overflow-hidden"
                         >
                           <div className="p-2 border-b border-black/[0.05] dark:border-white/[0.08]">
                             <p className="text-[9px] font-bold uppercase text-slate-400 tracking-widest px-1">10 Prompts gần nhất</p>
@@ -1152,7 +1152,7 @@ Không giải thích thêm.`;
           </div>{/* end scroll area */}
 
           {/* ── Generate button — sticky bottom ── */}
-          <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/10 bg-white dark:bg-[#13171f] space-y-2">
+          <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/10 bg-white dark:bg-[var(--atlas-bg-panel)] space-y-2">
             <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-gray-400">
               <div className="flex items-center gap-1.5">
                 <div className={`w-1.5 h-1.5 rounded-full ${gen.isGenerating ? 'bg-brand-blue animate-pulse' : 'bg-emerald-400'}`} />
@@ -1177,7 +1177,7 @@ Không giải thích thêm.`;
         </div>{/* end sidebar */}
 
         {/* ── MAIN VIEWPORT ── */}
-        <div className="flex-1 flex flex-col bg-[#f0f2f5] dark:bg-[#0a0d14] overflow-hidden">
+        <div className="flex-1 flex flex-col bg-[#f0f2f5] dark:bg-[var(--atlas-bg-page)] overflow-hidden">
 
           {viewMode === 'current' ? (
             <div className="flex-1 overflow-y-auto p-6 flex flex-col items-center">
@@ -1204,7 +1204,7 @@ Không giải thích thêm.`;
 
                   {/* Result cards */}
                   {gen.results.map(result => (
-                    <div key={result.id} className="rounded-xl overflow-hidden shadow-sm bg-white dark:bg-[#13171f] border border-black/[0.06] dark:border-white/[0.08]">
+                    <div key={result.id} className="rounded-xl overflow-hidden shadow-sm bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.08]">
                       <ImageJobCard
                         status={result.status}
                         resultUrl={result.url ?? undefined}
@@ -1280,9 +1280,9 @@ Không giải thích thêm.`;
                           resultUrl={session.url}
                           aspectRatio={plat?.ratio === '9:16' ? '9/16' : plat?.ratio === '1:1' ? '1/1' : plat?.ratio === '3:1' ? '3/1' : '16/9'}
                           mode="compact"
-                          cardClassName="border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#13171f] hover:border-brand-blue/30 hover:-translate-y-0.5 transition-all"
+                          cardClassName="border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[var(--atlas-bg-panel)] hover:border-brand-blue/30 hover:-translate-y-0.5 transition-all"
                           infoSlot={
-                            <div className="bg-white dark:bg-[#13171f] px-3 pt-2 pb-1.5 border-t border-black/[0.05] dark:border-white/[0.08]">
+                            <div className="bg-white dark:bg-[var(--atlas-bg-panel)] px-3 pt-2 pb-1.5 border-t border-black/[0.05] dark:border-white/[0.08]">
                               {/* Badges row */}
                               <div className="flex flex-wrap gap-1 mb-1.5">
                                 {plat && (
@@ -1409,7 +1409,7 @@ Không giải thích thêm.`;
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
-                        className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-72 bg-[#1a1f2b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-10"
+                        className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-72 bg-[var(--atlas-bg-panel)] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-10"
                       >
                         <p className="px-3 py-2 text-[9px] font-bold uppercase tracking-widest text-gray-400 border-b border-white/[0.06]">Re-render với cùng prompt + style</p>
                         <div className="max-h-64 overflow-y-auto">
@@ -1453,7 +1453,7 @@ Không giải thích thêm.`;
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: 'spring', damping: 30, stiffness: 400 }}
               onClick={e => e.stopPropagation()}
-              className="relative w-full max-w-lg bg-white dark:bg-[#1a1f2b] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+              className="relative w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
             >
               <div className="px-5 py-4 border-b border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -1556,7 +1556,7 @@ Không giải thích thêm.`;
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-md bg-white dark:bg-[#1a1f2b] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden"
+              className="w-full max-w-md bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden"
             >
               <div className="p-5">
                 <div className="flex items-center gap-2 mb-3">
@@ -1618,7 +1618,7 @@ Không giải thích thêm.`;
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-lg bg-white dark:bg-[#1a1f2b] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+              className="w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
             >
               <div className="px-5 py-4 border-b border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -1689,7 +1689,7 @@ Không giải thích thêm.`;
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 26, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
-              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#13171f] rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[var(--atlas-bg-panel)] rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
             >
               <div className="flex items-center justify-between px-5 pt-4 pb-2 shrink-0">
                 <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-white/20 mx-auto absolute left-1/2 -translate-x-1/2 top-3" />

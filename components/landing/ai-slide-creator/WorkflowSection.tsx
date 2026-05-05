@@ -43,7 +43,7 @@ const STEPS = [
 
 // ─── Step number badge ───────────────────────────────────────────────────────
 const StepNumberBadge: React.FC<{ n: number }> = ({ n }) => (
-  <div className="w-7 h-7 rounded-full bg-brand-blue text-white text-[11px] font-black flex items-center justify-center shadow-md shadow-brand-blue/30 shrink-0">
+  <div className="w-7 h-7 rounded-full bg-brand-blue text-white text-[11px] font-bold flex items-center justify-center shadow-md shadow-brand-blue/30 shrink-0">
     {n}
   </div>
 );
@@ -53,7 +53,7 @@ export const WorkflowSection: React.FC = () => (
     <div className="max-w-[1400px] mx-auto">
       <FadeInUp className="text-center mb-14">
         <SectionLabel>CÁCH HOẠT ĐỘNG</SectionLabel>
-        <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-3">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3">
           4 bước — từ ý tưởng đến slide hoàn chỉnh
         </h2>
         <p className="text-base text-slate-500 dark:text-white/40 max-w-xl mx-auto">

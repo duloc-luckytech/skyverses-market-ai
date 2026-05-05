@@ -27,10 +27,10 @@ export const DeveloperPortal: React.FC<DeveloperPortalProps> = ({ onApply }) => 
                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full"
                 >
                   <Code2 size={12} className="text-brand-blue" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/70">Developer Portal</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/70">Developer Portal</span>
                 </motion.div>
                 
-                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white leading-[1.1]">
                   Xây dựng trên{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-400">
                     nền tảng Skyverses

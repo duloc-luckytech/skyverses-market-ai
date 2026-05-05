@@ -289,7 +289,7 @@ const StatItem: React.FC<{ value: string; label: string; delay: number }> = ({ v
     transition={{ delay, duration: 0.5 }}
     className="text-center"
   >
-    <p className="text-2xl font-black text-emerald-400 leading-none">{value}</p>
+    <p className="text-2xl font-bold text-emerald-400 leading-none">{value}</p>
     <p className="text-[9px] text-white/35 font-medium mt-0.5 uppercase tracking-wide">{label}</p>
   </motion.div>
 );
@@ -342,7 +342,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
               </motion.div>
 
               {/* Heading */}
-              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black leading-[0.88] tracking-tight text-white">
+              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold leading-[0.88] tracking-tight text-white">
                 <motion.span
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.6 }}
                   className="block"

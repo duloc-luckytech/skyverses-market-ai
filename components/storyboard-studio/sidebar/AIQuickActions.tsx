@@ -54,7 +54,7 @@ export const AIQuickActions: React.FC<AIQuickActionsProps> = ({
   return (
     <div className="px-5 py-4 space-y-2.5">
       {/* Header */}
-      <p className="text-[10px] font-black uppercase tracking-widest text-white/50 flex items-center gap-1.5">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-white/50 flex items-center gap-1.5">
         <Sparkles size={12} />
         Thao tác nhanh
       </p>
@@ -76,7 +76,7 @@ export const AIQuickActions: React.FC<AIQuickActionsProps> = ({
             <span className="shrink-0">{action.icon}</span>
             <span className="flex-1 text-left">{action.label}</span>
             {action.cost !== null && action.cost > 0 && (
-              <span className="flex items-center gap-1 text-[9px] font-black tabular-nums opacity-70 shrink-0">
+              <span className="flex items-center gap-1 text-[9px] font-bold tabular-nums opacity-70 shrink-0">
                 <Coins size={9} />
                 {action.cost.toLocaleString()}
               </span>
@@ -92,7 +92,7 @@ export const AIQuickActions: React.FC<AIQuickActionsProps> = ({
       {totalCreditEstimate > 0 && (
         <div className="pt-1.5 flex items-center justify-between text-[10px] border-t border-white/8">
           <span className="text-white/25 font-bold uppercase tracking-widest">Tổng dự tính</span>
-          <span className="font-black tabular-nums text-amber-400/80">
+          <span className="font-bold tabular-nums text-amber-400/80">
             ~{totalCreditEstimate.toLocaleString()} CR
           </span>
         </div>

@@ -102,7 +102,7 @@ const SlideThumbnailList: React.FC<Props> = ({
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-black/[0.02] dark:bg-white/[0.02] border-r border-black/[0.06] dark:border-white/[0.08] w-[120px] shrink-0">
       {/* Header */}
-      <div className="sticky top-0 z-10 px-2 py-2.5 bg-white/80 dark:bg-[#13171f]/80 backdrop-blur border-b border-black/[0.05] dark:border-white/[0.08]">
+      <div className="sticky top-0 z-10 px-2 py-2.5 bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur border-b border-black/[0.05] dark:border-white/[0.08]">
         <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 text-center">
           Slides ({slides.length})
         </p>
@@ -143,7 +143,7 @@ const SlideThumbnailList: React.FC<Props> = ({
                 <div
                   className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all duration-200
                     ${isActive
-                      ? 'border-brand-blue shadow-[0_0_0_2px_rgba(0,144,255,0.25)] shadow-brand-blue/20'
+                      ? 'border-brand-blue shadow-[0_0_0_2px_rgba(112,54,240,0.25)] shadow-brand-blue/20'
                       : 'border-black/[0.08] dark:border-white/[0.06] hover:border-brand-blue/40'
                     }`}
                 >

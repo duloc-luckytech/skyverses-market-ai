@@ -25,7 +25,7 @@ function getPlatformMeta(platform: string) {
   for (const [key, val] of Object.entries(PLATFORM_META)) {
     if (platform.includes(key)) return { ...val, key };
   }
-  return { color: '#0090ff', dot: '#0090ff', key: 'Other' };
+  return { color: '#7036F0', dot: '#7036F0', key: 'Other' };
 }
 
 // ─── Data ─────────────────────────────────────────────────────
@@ -452,7 +452,7 @@ export const ShowcaseSection: React.FC = () => {
             <strong className="text-slate-700 dark:text-white/80">30 giây</strong>
           </p>
           <motion.button
-            whileHover={{ scale: 1.04, boxShadow: '0 8px 32px rgba(0,144,255,0.3)' }}
+            whileHover={{ scale: 1.04, boxShadow: '0 8px 32px rgba(112,54,240,0.3)' }}
             whileTap={{ scale: 0.97 }}
             className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-brand-blue to-blue-500 text-white text-[12px] font-bold rounded-full shadow-lg shadow-brand-blue/20 hover:brightness-110 transition-all"
           >

@@ -100,7 +100,7 @@ const SlideTextBlock = forwardRef<SlideTextBlockHandle, Props>(({
       {/* Selection border */}
       <div className={`absolute inset-0 rounded-lg pointer-events-none transition-all duration-150 ${
         isActive
-          ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(0,144,255,0.12)]'
+          ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(112,54,240,0.12)]'
           : 'ring-1 ring-transparent group-hover/block:ring-white/20 group-hover/block:ring-dashed'
       }`} />
 

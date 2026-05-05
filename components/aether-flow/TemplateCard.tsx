@@ -46,14 +46,14 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
         <div className="space-y-4">
           {/* Author Info */}
           <div className="flex items-center gap-2">
-             <span className="px-2 py-0.5 bg-black/60 backdrop-blur-md text-[8px] font-black text-indigo-400 dark:text-indigo-400 uppercase tracking-[0.3em] italic border border-white/10">
+             <span className="px-2 py-0.5 bg-black/60 backdrop-blur-md text-[8px] font-bold text-indigo-400 dark:text-indigo-400 uppercase tracking-[0.3em] italic border border-white/10">
                TÁC GIẢ: {tmpl.owner.name.toUpperCase()}
              </span>
           </div>
 
           {/* Title & Description */}
           <div className="space-y-1">
-            <h4 className="text-lg font-black uppercase italic tracking-tighter text-white leading-tight drop-shadow-md">
+            <h4 className="text-lg font-bold uppercase italic tracking-tighter text-white leading-tight drop-shadow-md">
               {tmpl.name}
             </h4>
             <p className="text-[9px] text-zinc-300 font-bold uppercase tracking-widest line-clamp-1 italic drop-shadow-sm">
@@ -65,7 +65,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
           <div className="flex gap-1 pt-2 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
             <button 
               onClick={() => onSelect(tmpl)}
-              className={`flex-grow py-3 text-[10px] font-black uppercase tracking-widest transition-all rounded-none shadow-xl ${
+              className={`flex-grow py-3 text-[10px] font-bold uppercase tracking-widest transition-all rounded-none shadow-xl ${
                 isActive 
                   ? 'bg-indigo-600 text-white' 
                   : 'bg-white text-black hover:bg-indigo-600 hover:text-white'
@@ -89,7 +89,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
          {isActive && (
             <div className="w-2 h-2 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)]"></div>
          )}
-         <div className="flex items-center gap-1.5 px-2 py-0.5 bg-black/60 backdrop-blur-md text-[7px] font-black text-white uppercase tracking-widest border border-white/10">
+         <div className="flex items-center gap-1.5 px-2 py-0.5 bg-black/60 backdrop-blur-md text-[7px] font-bold text-white uppercase tracking-widest border border-white/10">
             {tmpl.statistics.useCount} LƯỢT DÙNG
          </div>
       </div>

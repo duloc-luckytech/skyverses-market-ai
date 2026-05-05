@@ -121,7 +121,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
         const code = match?.[2] || '';
         
         return (
-          <div key={idx} className="my-4 rounded-xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] bg-[#f8f9fa] dark:bg-[#1a1f2b]">
+          <div key={idx} className="my-4 rounded-xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-panel)]">
             <div className="flex items-center justify-between px-4 py-2 bg-black/[0.02] dark:bg-white/[0.03] border-b border-black/[0.04] dark:border-white/[0.08]">
               <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-500 flex items-center gap-2">
                 <Terminal size={10} /> {lang}
@@ -159,7 +159,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
   return (
     <div className="fixed inset-0 z-[1000] flex overflow-hidden font-sans">
       {/* Glass background */}
-      <div className="absolute inset-0 bg-white/98 dark:bg-[#13171f]/98 backdrop-blur-2xl" />
+      <div className="absolute inset-0 bg-white/98 dark:bg-[var(--atlas-bg-panel)]/98 backdrop-blur-2xl" />
       
       {/* SIDEBAR OVERLAY FOR MOBILE */}
       <AnimatePresence>
@@ -179,7 +179,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
         transition={{ type: 'spring', damping: 26, stiffness: 250 }}
         className="fixed lg:relative top-0 left-0 h-full flex flex-col shrink-0 z-[150] lg:z-10 overflow-hidden"
       >
-        <div className="w-[280px] h-full flex flex-col bg-white/80 dark:bg-[#1a1f2b]/80 backdrop-blur-xl border-r border-black/[0.04] dark:border-white/[0.08]">
+        <div className="w-[280px] h-full flex flex-col bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-xl border-r border-black/[0.04] dark:border-white/[0.08]">
           {/* New Chat */}
           <div className="p-4">
             <button 
@@ -231,7 +231,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
       {/* MAIN CONTENT */}
       <main className="relative z-10 flex-grow flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="h-14 flex items-center justify-between px-4 md:px-6 shrink-0 z-40 border-b border-black/[0.04] dark:border-white/[0.08] bg-white/60 dark:bg-[#13171f]/60 backdrop-blur-xl">
+        <header className="h-14 flex items-center justify-between px-4 md:px-6 shrink-0 z-40 border-b border-black/[0.04] dark:border-white/[0.08] bg-white/60 dark:bg-[var(--atlas-bg-panel)]/60 backdrop-blur-xl">
            <div className="flex items-center gap-2">
               <button 
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)} 

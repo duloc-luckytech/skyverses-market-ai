@@ -38,7 +38,7 @@ const SIZES = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 80
 
 const TEXT_COLORS = [
   '#ffffff', '#f1f5f9', '#94a3b8', '#475569', '#1e293b', '#000000',
-  '#0090ff', '#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f97316',
+  '#7036F0', '#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f97316',
   '#eab308', '#22c55e', '#10b981', '#06b6d4',
 ];
 
@@ -53,7 +53,7 @@ const BG_FILL_COLORS = [
   'transparent',
   'rgba(0,0,0,0.25)', 'rgba(0,0,0,0.50)', 'rgba(0,0,0,0.75)', '#000000',
   'rgba(255,255,255,0.15)', 'rgba(255,255,255,0.40)', 'rgba(255,255,255,0.80)', '#ffffff',
-  '#0090ff', '#6366f1', '#8b5cf6', '#ec4899', '#22c55e', '#f97316', '#1e293b',
+  '#7036F0', '#6366f1', '#8b5cf6', '#ec4899', '#22c55e', '#f97316', '#1e293b',
 ];
 
 const LINE_HEIGHTS = [0.8, 1, 1.15, 1.4, 1.6, 2, 2.5];
@@ -199,7 +199,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
     <div
       data-slide-formatbar="true"
       onMouseDown={np}
-      className="flex flex-col gap-0 px-2 py-1.5 bg-white dark:bg-[#1a1f2b] border border-black/[0.07] dark:border-white/[0.1] rounded-xl shadow-2xl w-full"
+      className="flex flex-col gap-0 px-2 py-1.5 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.07] dark:border-white/[0.1] rounded-xl shadow-2xl w-full"
     >
       {/* ══ ROW 1: Text formatting ══════════════════════════════════════════════ */}
       <div className={`flex items-center gap-0.5 flex-wrap min-h-[30px] ${dimRow1}`}>
@@ -265,7 +265,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
           ><Palette size={11} /></button>
           {showTextColors && (
             <div data-slide-formatbar="true" onMouseDown={np}
-              className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 rounded-xl bg-white dark:bg-[#1a1f2b] border border-black/[0.07] dark:border-white/[0.1] shadow-xl grid grid-cols-8 gap-1 z-50"
+              className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 rounded-xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.07] dark:border-white/[0.1] shadow-xl grid grid-cols-8 gap-1 z-50"
             >
               {TEXT_COLORS.map(c => (
                 <button key={c} style={{ backgroundColor: c }}
@@ -286,7 +286,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
           ><Highlighter size={11} /></button>
           {showHighlights && (
             <div data-slide-formatbar="true" onMouseDown={np}
-              className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 rounded-xl bg-white dark:bg-[#1a1f2b] border border-black/[0.07] dark:border-white/[0.1] shadow-xl grid grid-cols-5 gap-1.5 z-50"
+              className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 p-2 rounded-xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.07] dark:border-white/[0.1] shadow-xl grid grid-cols-5 gap-1.5 z-50"
             >
               {HIGHLIGHT_COLORS.map(c => (
                 <button key={c}
@@ -343,7 +343,7 @@ const SlideFormatBar: React.FC<Props> = ({ activeRef, textEditing, block, onBloc
               </button>
               {showBgColors && (
                 <div data-slide-formatbar="true" onMouseDown={np}
-                  className="absolute bottom-full mb-2 left-0 p-2 rounded-xl bg-white dark:bg-[#1a1f2b] border border-black/[0.07] dark:border-white/[0.1] shadow-xl grid grid-cols-8 gap-1 z-50"
+                  className="absolute bottom-full mb-2 left-0 p-2 rounded-xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.07] dark:border-white/[0.1] shadow-xl grid grid-cols-8 gap-1 z-50"
                   style={{ minWidth: 196 }}
                 >
                   {BG_FILL_COLORS.map(c => (

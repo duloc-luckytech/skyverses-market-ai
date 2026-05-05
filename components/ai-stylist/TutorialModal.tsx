@@ -62,7 +62,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
       <motion.div 
         initial={{ scale: 0.9, y: 20, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
-        className="relative w-full max-w-5xl bg-white dark:bg-[#0a0d14] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col md:flex-row h-auto max-h-[90vh]"
+        className="relative w-full max-w-5xl bg-white dark:bg-[var(--atlas-bg-page)] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col md:flex-row h-auto max-h-[90vh]"
       >
         {/* Visual Panel */}
         <div className="w-full md:w-1/2 relative bg-slate-100 dark:bg-black overflow-hidden aspect-video md:aspect-auto">
@@ -84,7 +84,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
                 <div key={i} className={`h-1 rounded-full transition-all duration-500 ${i === currentStep ? 'w-12 bg-[#dfff1a]' : 'w-2 bg-white/30'}`} />
               ))}
             </div>
-            <p className="text-white text-[10px] font-black uppercase tracking-[0.4em] italic opacity-60">Visual Guide // {currentStep + 1}</p>
+            <p className="text-white text-[10px] font-bold uppercase tracking-[0.4em] italic opacity-60">Visual Guide // {currentStep + 1}</p>
           </div>
         </div>
 
@@ -95,11 +95,11 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
               <div className="p-3 bg-slate-100 dark:bg-white/5 rounded-2xl">
                 {step.icon}
               </div>
-              <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-brand-blue italic">Step 0{currentStep + 1}</h3>
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.4em] text-brand-blue italic">Step 0{currentStep + 1}</h3>
             </div>
             
             <div className="space-y-4">
-              <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic leading-none">{step.title}</h2>
+              <h2 className="text-3xl md:text-4xl font-bold uppercase tracking-tighter italic leading-none">{step.title}</h2>
               <p className="text-sm md:text-base text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight italic">
                 "{step.desc}"
               </p>
@@ -128,7 +128,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
 
             <button 
               onClick={onClose}
-              className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               Skip Introduction
             </button>

@@ -35,7 +35,7 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
   return (
     <div className="lg:col-span-4 space-y-8">
       {/* MAIN QUOTA CARD */}
-      <div className="p-8 bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 rounded-[2.5rem] space-y-8 shadow-2xl relative overflow-hidden group transition-all duration-500">
+      <div className="p-8 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-[2.5rem] space-y-8 shadow-2xl relative overflow-hidden group transition-all duration-500">
          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
             <Database size={160} />
          </div>
@@ -43,29 +43,29 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
          <div className="space-y-6 relative z-10">
             <div className="flex justify-between items-center">
                <div className="flex flex-col">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest italic">Gói</span>
-                  <span className={`text-sm font-black uppercase italic ${
+                  <span className="text-[10px] font-bold uppercase text-slate-400 tracking-widest italic">Gói</span>
+                  <span className={`text-sm font-bold uppercase italic ${
                     currentPlan.toLowerCase().includes('pro') ? 'text-indigo-600' : 'text-brand-blue'
                   }`}>{currentPlan}</span>
                </div>
                {apiKey?.isActive && (
                  <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center gap-2">
                     <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></div>
-                    <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest">Active</span>
+                    <span className="text-[8px] font-bold text-emerald-500 uppercase tracking-widest">Active</span>
                  </div>
                )}
             </div>
 
             <div className="space-y-4">
                <div className="flex items-baseline gap-2">
-                  <h3 className="text-5xl lg:text-6xl font-black italic tracking-tighter text-slate-900 dark:text-white">
+                  <h3 className="text-5xl lg:text-6xl font-bold italic tracking-tighter text-slate-900 dark:text-white">
                     {quotaRemaining.toLocaleString()}
                   </h3>
-                  <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Tokens Left</span>
+                  <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Tokens Left</span>
                </div>
 
                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-[8px] font-black uppercase text-gray-500 tracking-widest">
+                  <div className="flex justify-between items-center text-[8px] font-bold uppercase text-gray-500 tracking-widest">
                      <span>một lượt captcha = 1 token</span>
                      <span>{Math.round(usagePercentage)}% Used</span>
                   </div>
@@ -83,7 +83,7 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
             <div className="pt-2">
                <button 
                  onClick={scrollToPricing}
-                 className="w-full py-4 bg-slate-900 dark:bg-white text-white dark:text-black rounded-xl text-center text-[10px] font-black uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group"
+                 className="w-full py-4 bg-slate-900 dark:bg-white text-white dark:text-black rounded-xl text-center text-[10px] font-bold uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group"
                >
                   <Zap size={14} fill="currentColor" className="group-hover:rotate-12 transition-transform" />
                   Nạp thêm Token
@@ -98,7 +98,7 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
             <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-500 shadow-inner">
                <ShieldAlert size={18} />
             </div>
-            <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Thông số kỹ thuật API</h4>
+            <h4 className="text-[11px] font-bold uppercase tracking-widest text-slate-900 dark:text-white">Thông số kỹ thuật API</h4>
          </div>
          
          <div className="space-y-3">
@@ -108,9 +108,9 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
                     <div className={`${s.color} opacity-70 group-hover:opacity-100 transition-opacity`}>
                        {s.i}
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-widest">{s.l}</span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest">{s.l}</span>
                  </div>
-                 <span className={`text-[10px] font-mono font-black italic group-hover:scale-105 transition-transform ${s.color}`}>
+                 <span className={`text-[10px] font-mono font-bold italic group-hover:scale-105 transition-transform ${s.color}`}>
                    {s.v}
                  </span>
               </div>
@@ -120,7 +120,7 @@ export const QuotaCard: React.FC<QuotaCardProps> = ({ accountData }) => {
          <div className="pt-4 flex flex-col gap-2">
             <div className="flex items-center gap-2 px-3 py-1.5 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/5">
                <div className="w-1 h-1 rounded-full bg-brand-blue animate-pulse"></div>
-               <span className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">Telemetry Link: Synchronized</span>
+               <span className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em]">Telemetry Link: Synchronized</span>
             </div>
          </div>
       </div>

@@ -22,7 +22,7 @@ export const GroupNode = ({ data }: any) => {
         <div className="flex items-center gap-3">
           <div className="w-1.5 h-6 rounded-full" style={{ backgroundColor: color }}></div>
           <h3 
-            className="font-black uppercase italic tracking-tighter opacity-60 group-hover:opacity-100 transition-opacity"
+            className="font-bold uppercase italic tracking-tighter opacity-60 group-hover:opacity-100 transition-opacity"
             style={{ 
               color: color,
               fontSize: `${Math.max(14, fontSize * 0.9)}px`,

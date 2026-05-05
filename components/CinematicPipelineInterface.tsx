@@ -193,11 +193,11 @@ const CinematicPipelineInterface = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white font-mono">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white font-mono">
 
-      <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[#0a0d14] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar">
+      <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[var(--atlas-bg-page)] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar">
          <div className="p-8 border-b border-black/10 dark:border-white/5">
-            <h3 className="text-[10px] font-black uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
+            <h3 className="text-[10px] font-bold uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
                <Film className="w-4 h-4" /> Pipeline_Ops
             </h3>
          </div>
@@ -219,8 +219,8 @@ const CinematicPipelineInterface = () => {
                   {step.icon}
                 </div>
                 <div className="text-left">
-                   <p className="text-[8px] font-black opacity-40 uppercase">Stage_0{idx+1}</p>
-                   <p className="text-[10px] font-black uppercase tracking-widest">{step.label}</p>
+                   <p className="text-[8px] font-bold opacity-40 uppercase">Stage_0{idx+1}</p>
+                   <p className="text-[10px] font-bold uppercase tracking-widest">{step.label}</p>
                 </div>
                 {activeStage === step.id && <ChevronRight className="ml-auto w-4 h-4" />}
               </button>
@@ -230,15 +230,15 @@ const CinematicPipelineInterface = () => {
             <div className="p-4 bg-brand-blue/5 border border-brand-blue/20 space-y-3">
                <div className="flex items-center gap-3 text-brand-blue">
                   <ShieldCheck size={14} />
-                  <span className="text-[9px] font-black uppercase tracking-widest">Pipeline_Encrypted</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest">Pipeline_Encrypted</span>
                </div>
                <p className="text-[7px] font-bold text-gray-500 uppercase leading-relaxed italic">Identity locked at kernel level.</p>
             </div>
          </div>
       </div>
 
-      <div className="flex-grow flex flex-col bg-white dark:bg-[#0a0d14] relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #0090ff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="flex-grow flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #7036F0 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
         <div className="flex-grow overflow-y-auto p-8 lg:p-12 relative z-10 no-scrollbar">
            <div className="max-w-4xl mx-auto space-y-12 pb-40">
@@ -246,14 +246,14 @@ const CinematicPipelineInterface = () => {
                  <div className="flex items-center gap-4">
                     <Bot className="w-8 h-8 text-brand-blue" />
                     <div className="space-y-0.5">
-                       <span className="text-[14px] font-black uppercase tracking-[0.4em] text-black dark:text-white">ACA-V2_Director</span>
+                       <span className="text-[14px] font-bold uppercase tracking-[0.4em] text-black dark:text-white">ACA-V2_Director</span>
                        <p className="text-[9px] font-bold text-brand-blue uppercase tracking-widest">{activeStage}</p>
                     </div>
                  </div>
                  <div className="flex gap-4">
                     <div className="flex items-center gap-2 px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-sm border border-brand-blue/20 shadow-lg">
                        <Activity size={10} className="animate-pulse text-brand-blue" />
-                       <span className="text-[8px] font-black uppercase tracking-widest">Pipeline_Sync: ACTIVE</span>
+                       <span className="text-[8px] font-bold uppercase tracking-widest">Pipeline_Sync: ACTIVE</span>
                     </div>
                  </div>
               </div>
@@ -266,15 +266,15 @@ const CinematicPipelineInterface = () => {
                              <div className="aspect-[3/4] bg-black border border-white/10 relative group overflow-hidden">
                                 <img src={data.characterProfile.visualUrl} className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
-                                <div className="absolute bottom-6 left-6 text-[10px] font-black uppercase text-white tracking-widest">Locked_Identity_v1.0</div>
+                                <div className="absolute bottom-6 left-6 text-[10px] font-bold uppercase text-white tracking-widest">Locked_Identity_v1.0</div>
                              </div>
                              <div className="space-y-8 flex flex-col justify-center">
                                 <div className="space-y-2">
-                                   <label className="text-[10px] font-black uppercase text-gray-500">Designation</label>
-                                   <p className="text-3xl font-black text-brand-blue">{data.characterProfile.name}</p>
+                                   <label className="text-[10px] font-bold uppercase text-gray-500">Designation</label>
+                                   <p className="text-3xl font-bold text-brand-blue">{data.characterProfile.name}</p>
                                 </div>
                                 <div className="space-y-2">
-                                   <label className="text-[10px] font-black uppercase text-gray-500">Archetype</label>
+                                   <label className="text-[10px] font-bold uppercase text-gray-500">Archetype</label>
                                    <p className="text-xl font-bold uppercase">{data.characterProfile.role}</p>
                                 </div>
                                 <button onClick={nextStage} className="btn-sky-primary py-5 px-10 text-[10px] w-fit">Proceed_to_Motion</button>
@@ -283,7 +283,7 @@ const CinematicPipelineInterface = () => {
                        ) : (
                           <div className="text-center space-y-8">
                              <User className="w-20 h-20 mx-auto text-gray-200 dark:text-gray-800" />
-                             <button onClick={runFoundation} disabled={isBusy} className="bg-brand-blue text-white px-12 py-5 text-[11px] font-black uppercase tracking-[0.4em] hover:bg-black transition-all">
+                             <button onClick={runFoundation} disabled={isBusy} className="bg-brand-blue text-white px-12 py-5 text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-black transition-all">
                                 {isBusy ? <Loader2 className="animate-spin w-5 h-5 mx-auto" /> : 'Lock_Initial_Identity'}
                              </button>
                           </div>
@@ -297,7 +297,7 @@ const CinematicPipelineInterface = () => {
                           <div className="space-y-4">
                              {data.animationBlueprint.map((line, i) => (
                                 <div key={i} className="p-6 border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] flex items-center gap-6">
-                                   <div className="w-8 h-8 rounded-full bg-brand-blue/10 flex items-center justify-center text-[10px] font-black text-brand-blue">0{i+1}</div>
+                                   <div className="w-8 h-8 rounded-full bg-brand-blue/10 flex items-center justify-center text-[10px] font-bold text-brand-blue">0{i+1}</div>
                                    <p className="text-xs font-bold uppercase tracking-tight text-gray-600 dark:text-gray-400">{line}</p>
                                    <CheckCircle2 className="ml-auto w-4 h-4 text-green-500" />
                                 </div>
@@ -305,7 +305,7 @@ const CinematicPipelineInterface = () => {
                              <button onClick={nextStage} className="mt-10 btn-sky-primary py-5 px-10 text-[10px]">Initialize_Asset_Synthesis</button>
                           </div>
                        ) : (
-                          <button onClick={runAnimPlan} disabled={isBusy} className="bg-brand-blue text-white px-12 py-5 text-[11px] font-black uppercase tracking-[0.4em] hover:bg-black transition-all">
+                          <button onClick={runAnimPlan} disabled={isBusy} className="bg-brand-blue text-white px-12 py-5 text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-black transition-all">
                              {isBusy ? <Loader2 className="animate-spin w-5 h-5 mx-auto" /> : 'Compile_Motion_Logic'}
                           </button>
                        )}
@@ -320,17 +320,17 @@ const CinematicPipelineInterface = () => {
                                 <div key={asset.id} className="relative group border border-black/10 dark:border-white/5 bg-black/[0.02] overflow-hidden rounded-sm transition-all hover:border-brand-blue/30">
                                    <div className="aspect-video bg-black flex items-center justify-center relative">
                                       <video src={asset.url} autoPlay loop muted className="w-full h-full object-cover" />
-                                      <div className="absolute top-4 left-4 bg-black/60 px-2 py-0.5 text-[8px] font-black text-white uppercase border border-white/10">{asset.label}</div>
+                                      <div className="absolute top-4 left-4 bg-black/60 px-2 py-0.5 text-[8px] font-bold text-white uppercase border border-white/10">{asset.label}</div>
                                    </div>
                                 </div>
                              ))}
                              <div className="flex flex-col justify-center items-start gap-4">
-                                <button onClick={runCharMotion} disabled={isBusy} className="text-[10px] font-black uppercase text-gray-500 hover:text-brand-blue transition-colors flex items-center gap-2"><RefreshCw size={14} /> Regenerate_Variant</button>
+                                <button onClick={runCharMotion} disabled={isBusy} className="text-[10px] font-bold uppercase text-gray-500 hover:text-brand-blue transition-colors flex items-center gap-2"><RefreshCw size={14} /> Regenerate_Variant</button>
                                 <button onClick={nextStage} className="btn-sky-primary py-5 px-10 text-[10px]">Approve_Motion_Set</button>
                              </div>
                           </div>
                        ) : (
-                          <button onClick={runCharMotion} disabled={isBusy} className="bg-brand-blue text-white px-12 py-5 text-[11px] font-black uppercase tracking-[0.4em] hover:bg-black transition-all">
+                          <button onClick={runCharMotion} disabled={isBusy} className="bg-brand-blue text-white px-12 py-5 text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-black transition-all">
                              {isBusy ? <Loader2 className="animate-spin w-5 h-5 mx-auto" /> : 'Synthesize_Motion_Assets'}
                           </button>
                        )}
@@ -344,7 +344,7 @@ const CinematicPipelineInterface = () => {
                              {data.cutsceneScript.map((shot, i) => (
                                 <div key={i} className="p-8 border-l-4 border-brand-blue bg-gray-50 dark:bg-white/[0.02] space-y-4">
                                    <div className="flex justify-between items-center">
-                                      <span className="text-[10px] font-black uppercase text-brand-blue">Director_Shot_0{i+1}</span>
+                                      <span className="text-[10px] font-bold uppercase text-brand-blue">Director_Shot_0{i+1}</span>
                                       <Camera size={14} className="text-gray-300" />
                                    </div>
                                    <p className="text-sm font-bold leading-relaxed text-black dark:text-white uppercase tracking-tighter">{shot}</p>
@@ -353,7 +353,7 @@ const CinematicPipelineInterface = () => {
                              <button onClick={nextStage} className="btn-sky-primary py-5 px-10 text-[10px]">Render_Cinematic_Sequence</button>
                           </div>
                        ) : (
-                          <button onClick={runCutscenePlan} disabled={isBusy} className="bg-brand-blue text-white px-12 py-5 text-[11px] font-black uppercase tracking-[0.4em] hover:bg-black transition-all">
+                          <button onClick={runCutscenePlan} disabled={isBusy} className="bg-brand-blue text-white px-12 py-5 text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-black transition-all">
                              {isBusy ? <Loader2 className="animate-spin w-5 h-5 mx-auto" /> : 'Direct_Cutscene_Logic'}
                           </button>
                        )}
@@ -366,17 +366,17 @@ const CinematicPipelineInterface = () => {
                           <div className="space-y-10">
                              <div className="aspect-video bg-black border-4 border-brand-blue/20 relative shadow-2xl">
                                 <video src={data.finalScenes[0].url} autoPlay loop muted className="w-full h-full object-cover" />
-                                <div className="absolute top-6 left-6 flex items-center gap-3 bg-black/60 px-4 py-2 text-[10px] font-black text-white uppercase tracking-widest border border-white/10 backdrop-blur-md">
+                                <div className="absolute top-6 left-6 flex items-center gap-3 bg-black/60 px-4 py-2 text-[10px] font-bold text-white uppercase tracking-widest border border-white/10 backdrop-blur-md">
                                    <Sparkles className="text-brand-blue w-4 h-4" /> Final_Render_Alpha
                                 </div>
                              </div>
                              <div className="flex justify-center gap-6">
                                 <button onClick={runSceneGen} className="p-5 border border-black/10 dark:border-white/10 text-gray-500 hover:text-brand-blue transition-colors"><RefreshCw size={20} /></button>
-                                <button onClick={nextStage} className="btn-sky-primary py-5 px-20 text-[11px] font-black uppercase tracking-[0.4em]">Initialize_Final_Cut</button>
+                                <button onClick={nextStage} className="btn-sky-primary py-5 px-20 text-[11px] font-bold uppercase tracking-[0.4em]">Initialize_Final_Cut</button>
                              </div>
                           </div>
                        ) : (
-                          <button onClick={runSceneGen} disabled={isBusy} className="bg-brand-blue text-white px-12 py-5 text-[11px] font-black uppercase tracking-[0.4em] hover:bg-black transition-all">
+                          <button onClick={runSceneGen} disabled={isBusy} className="bg-brand-blue text-white px-12 py-5 text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-black transition-all">
                              {isBusy ? <Loader2 className="animate-spin w-5 h-5 mx-auto" /> : 'Execute_Scene_Synthesis'}
                           </button>
                        )}
@@ -387,14 +387,14 @@ const CinematicPipelineInterface = () => {
                     <div className="w-full space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-1000">
                        <div className="text-center space-y-6">
                           <CheckCircle2 className="w-20 h-20 mx-auto text-green-500" />
-                          <h4 className="text-2xl font-black uppercase tracking-widest text-black dark:text-white">Production_Complete</h4>
+                          <h4 className="text-2xl font-bold uppercase tracking-widest text-black dark:text-white">Production_Complete</h4>
                           <p className="text-[10px] text-gray-500 uppercase tracking-[0.4em]">Cutscene Ready for Engine Integration</p>
                        </div>
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <button className="bg-brand-blue text-white py-6 px-10 text-[11px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black transition-all">
+                          <button className="bg-brand-blue text-white py-6 px-10 text-[11px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black transition-all">
                              <Download size={18} /> Export_All_Assets
                           </button>
-                          <button className="border border-black/10 dark:border-white/10 py-6 px-10 text-[11px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-brand-blue hover:text-white transition-all">
+                          <button className="border border-black/10 dark:border-white/10 py-6 px-10 text-[11px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-brand-blue hover:text-white transition-all">
                              <Share2 size={18} /> Share_Preview_Link
                           </button>
                        </div>
@@ -404,13 +404,13 @@ const CinematicPipelineInterface = () => {
            </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#fafafa] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[var(--atlas-bg-panel-hover)] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
            <div className="hidden lg:flex flex-col gap-3">
               <div className="flex items-center gap-6">
                  {['FOUNDATION', 'MOTION', 'SCRIPT', 'RENDER', 'DONE'].map((step, i) => (
                     <div key={step} className="flex items-center gap-3">
                        <div className={`w-2 h-2 rounded-full ${activeStage === step ? 'bg-brand-blue animate-pulse' : 'bg-gray-200 dark:bg-gray-800'}`}></div>
-                       <span className={`text-[8px] font-black uppercase tracking-widest ${activeStage === step ? 'text-brand-blue' : 'text-gray-400'}`}>{step}</span>
+                       <span className={`text-[8px] font-bold uppercase tracking-widest ${activeStage === step ? 'text-brand-blue' : 'text-gray-400'}`}>{step}</span>
                     </div>
                  ))}
               </div>
@@ -425,16 +425,16 @@ const CinematicPipelineInterface = () => {
               </button>
               <div className="h-10 w-[1px] bg-black/10 dark:border-white/10 mx-2"></div>
               <div className="flex flex-col items-end gap-1">
-                 <span className="text-[8px] font-black uppercase text-gray-400">Project_Status</span>
-                 <span className="text-[10px] font-black text-brand-blue uppercase tracking-widest animate-pulse">Waiting_For_Director</span>
+                 <span className="text-[8px] font-bold uppercase text-gray-400">Project_Status</span>
+                 <span className="text-[10px] font-bold text-brand-blue uppercase tracking-widest animate-pulse">Waiting_For_Director</span>
               </div>
            </div>
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#0a0d14] border-l border-black/10 dark:border-white/5 overflow-hidden">
+      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Activity className="w-4 h-4 text-brand-blue" /> Director_Log
             </h3>
          </div>
@@ -442,12 +442,12 @@ const CinematicPipelineInterface = () => {
             {logs.length === 0 ? (
                <div className="py-24 text-center opacity-10">
                   <Activity className="w-10 h-10 mx-auto mb-4" />
-                  <p className="text-[9px] font-black uppercase tracking-widest italic">Awaiting Telemetry</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest italic">Awaiting Telemetry</p>
                </div>
             ) : (
                logs.map((log, i) => (
                   <div key={i} className="space-y-2 animate-in fade-in slide-in-from-right-4 duration-500">
-                     <div className="flex justify-between items-center text-[7px] font-black uppercase text-gray-400">
+                     <div className="flex justify-between items-center text-[7px] font-bold uppercase text-gray-400">
                         <span className={`px-2 py-0.5 rounded-sm ${log.type === 'THINK' ? 'bg-brand-blue/10 text-brand-blue' : 'bg-black/5 dark:bg-white/5'}`}>{log.type}</span>
                         <span>{log.t}</span>
                      </div>
@@ -461,7 +461,7 @@ const CinematicPipelineInterface = () => {
             {isBusy && (
                <div className="flex items-center gap-4 text-brand-blue animate-pulse">
                   <div className="w-1.5 h-1.5 rounded-full bg-brand-blue"></div>
-                  <span className="text-[9px] font-black uppercase">Thinking...</span>
+                  <span className="text-[9px] font-bold uppercase">Thinking...</span>
                </div>
             )}
          </div>

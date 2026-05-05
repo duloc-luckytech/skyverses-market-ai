@@ -191,10 +191,10 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const processingCount = tasks.filter(t => t.status === 'processing').length;
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] text-black dark:text-white font-sans overflow-hidden relative selection:bg-yellow-500/30 transition-colors duration-500">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] text-black dark:text-white font-sans overflow-hidden relative selection:bg-yellow-500/30 transition-colors duration-500">
       
       {/* 1. CONTROL TERMINAL (LEFT) */}
-      <aside className="w-full lg:w-[380px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[#fcfcfd] dark:bg-[#0a0d14] z-[100] shadow-2xl overflow-hidden transition-colors">
+      <aside className="w-full lg:w-[380px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] z-[100] shadow-2xl overflow-hidden transition-colors">
          <div className="p-8 space-y-10 overflow-y-auto no-scrollbar flex-grow">
             <header className="flex justify-between items-center">
                <div className="flex items-center gap-3">
@@ -202,7 +202,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                      <Crown size={18} />
                   </div>
                   <div className="space-y-0.5">
-                     <h2 className="text-lg font-black uppercase tracking-tighter italic leading-none">Kinetic</h2>
+                     <h2 className="text-lg font-bold uppercase tracking-tighter italic leading-none">Kinetic</h2>
                      <p className="text-[7px] text-yellow-600 dark:text-yellow-500 font-bold uppercase tracking-[0.3em]">STUDIO v3.1</p>
                   </div>
                </div>
@@ -213,7 +213,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
             {/* CREATIVE DIRECTIVE */}
             <section className="space-y-4">
-               <label className="text-[9px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.3em] flex items-center gap-3">
+               <label className="text-[9px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.3em] flex items-center gap-3">
                   <Wand2 size={12} className="text-yellow-500" /> {t('studio.directives')}
                </label>
                <textarea 
@@ -228,14 +228,14 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             <section className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
-                     <label className="text-[8px] font-black uppercase text-gray-400">Resolution</label>
-                     <select value={resolution} onChange={(e) => setResolution(e.target.value as any)} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-2 text-[9px] font-black uppercase outline-none">
+                     <label className="text-[8px] font-bold uppercase text-gray-400">Resolution</label>
+                     <select value={resolution} onChange={(e) => setResolution(e.target.value as any)} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-2 text-[9px] font-bold uppercase outline-none">
                         <option value="720p">720p</option>
                         <option value="1080p">1080p</option>
                      </select>
                   </div>
                   <div className="space-y-3">
-                     <label className="text-[8px] font-black uppercase text-gray-400">Aspect</label>
+                     <label className="text-[8px] font-bold uppercase text-gray-400">Aspect</label>
                      <div className="flex gap-1">
                         <button onClick={() => setAspectRatio('16:9')} className={`flex-grow p-2 border rounded-sm ${aspectRatio === '16:9' ? 'border-yellow-500 text-yellow-600' : 'border-black/5 text-gray-400'}`}><MonitorIcon size={12} className="mx-auto"/></button>
                         <button onClick={() => setAspectRatio('9:16')} className={`flex-grow p-2 border rounded-sm ${aspectRatio === '9:16' ? 'border-yellow-500 text-yellow-600' : 'border-black/5 text-gray-400'}`}><Smartphone size={12} className="mx-auto"/></button>
@@ -245,13 +245,13 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
                {/* DURATION SELECTOR */}
                <div className="space-y-3 pt-2">
-                  <label className="text-[8px] font-black uppercase text-gray-400">{t('studio.duration')}</label>
+                  <label className="text-[8px] font-bold uppercase text-gray-400">{t('studio.duration')}</label>
                   <div className="flex gap-1">
                      {[4, 6, 8].map((s) => (
                         <button 
                           key={s}
                           onClick={() => setSelectedDuration(s)}
-                          className={`flex-grow py-2 text-[9px] font-black border rounded-sm transition-all ${selectedDuration === s ? 'border-yellow-500 text-yellow-600 bg-yellow-500/5' : 'border-black/5 text-gray-400'}`}
+                          className={`flex-grow py-2 text-[9px] font-bold border rounded-sm transition-all ${selectedDuration === s ? 'border-yellow-500 text-yellow-600 bg-yellow-500/5' : 'border-black/5 text-gray-400'}`}
                         >
                            {s}s
                         </button>
@@ -262,7 +262,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
             {/* KEYFRAMES */}
             <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/5">
-               <label className="text-[9px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.3em]">{t('studio.frames')}</label>
+               <label className="text-[9px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.3em]">{t('studio.frames')}</label>
                <div onClick={() => firstInputRef.current?.click()} className={`aspect-video border-2 border-dashed flex items-center justify-center cursor-pointer rounded-sm overflow-hidden ${firstFrame ? 'border-yellow-500' : 'border-black/10 dark:border-white/5'}`}>
                   {firstFrame ? <img src={firstFrame} className="w-full h-full object-cover" /> : <Upload size={18} className="text-gray-300" />}
                   <input type="file" ref={firstInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'FIRST')} />
@@ -281,7 +281,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
             {/* TRAJECTORY SELECTOR */}
             <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/5">
-               <label className="text-[9px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.3em]">Trajectory</label>
+               <label className="text-[9px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.3em]">Trajectory</label>
                <div className="grid grid-cols-1 gap-2">
                   {TRAJECTORIES.map(tr => (
                     <button 
@@ -290,7 +290,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       className={`p-3 border text-left flex justify-between items-center transition-all rounded-sm ${activeTrajectory.id === tr.id ? 'border-yellow-500 bg-yellow-500/5' : 'border-black/5 dark:border-white/5 opacity-60'}`}
                     >
                        <div>
-                          <p className="text-[10px] font-black uppercase">{tr.name}</p>
+                          <p className="text-[10px] font-bold uppercase">{tr.name}</p>
                           <p className="text-[7px] text-gray-400 uppercase italic">{(tr.desc as any)[lang] || tr.desc.en}</p>
                        </div>
                        {activeTrajectory.id === tr.id && <Check size={12} className="text-yellow-600" />}
@@ -301,7 +301,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
             {/* RECENT JOBS */}
             <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/5">
-               <label className="text-[9px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em] flex items-center justify-between">
+               <label className="text-[9px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em] flex items-center justify-between">
                   <span>{t('studio.recent')}</span>
                   {processingCount > 0 && <span className="text-yellow-600 animate-pulse">{processingCount} active</span>}
                </label>
@@ -319,7 +319,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                             {task.status === 'processing' ? <Loader2 size={12} className="animate-spin text-yellow-500" /> : task.videoUrl ? <Film size={12} className="text-white" /> : <AlertCircle size={12} className="text-red-500" />}
                          </div>
                          <div className="flex-grow text-left overflow-hidden">
-                            <p className="text-[9px] font-black uppercase truncate">{task.prompt}</p>
+                            <p className="text-[9px] font-bold uppercase truncate">{task.prompt}</p>
                             <div className="flex justify-between text-[7px] text-gray-400 uppercase">
                                <span>{task.trajectory} // {task.duration}s</span>
                                <span>{task.timestamp}</span>
@@ -341,12 +341,12 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </aside>
 
       {/* 2. PRODUCTION HUB (CENTER) */}
-      <main className="flex-grow flex flex-col bg-[#f0f1f3] dark:bg-[#0a0d14] relative overflow-hidden transition-colors duration-500">
+      <main className="flex-grow flex flex-col bg-[#f0f1f3] dark:bg-[var(--atlas-bg-page)] relative overflow-hidden transition-colors duration-500">
          
          <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-50 pointer-events-none">
             <div className="px-3 py-1.5 bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 flex items-center gap-2 pointer-events-auto">
                <div className={`w-1.5 h-1.5 rounded-full ${processingCount > 0 ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'}`}></div>
-               <span className="text-[8px] font-black uppercase tracking-widest opacity-60">{t('studio.status.idle')}: {processingCount > 0 ? t('studio.status.rendering') : t('studio.status.idle')}</span>
+               <span className="text-[8px] font-bold uppercase tracking-widest opacity-60">{t('studio.status.idle')}: {processingCount > 0 ? t('studio.status.rendering') : t('studio.status.idle')}</span>
             </div>
          </div>
 
@@ -360,7 +360,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                      {activeTask.status === 'processing' ? (
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-3xl space-y-6">
                            <Loader2 size={60} className="text-yellow-500 animate-spin" strokeWidth={1.5} />
-                           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white animate-pulse">Synthesizing Job #{activeTask.id.slice(-4)}</p>
+                           <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-white animate-pulse">Synthesizing Job #{activeTask.id.slice(-4)}</p>
                         </div>
                      ) : activeTask.videoUrl ? (
                         <video key={activeTask.videoUrl} src={activeTask.videoUrl} autoPlay loop muted className="w-full h-full object-cover" />
@@ -373,10 +373,10 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                      {activeTask.status === 'completed' && (
                         <div className="absolute bottom-6 left-6 space-y-2 pointer-events-none">
                            <div className="flex gap-2">
-                             <span className="text-[7px] font-black uppercase bg-yellow-500 text-black px-2 py-1 shadow-lg tracking-widest italic">ULTRA MASTER</span>
-                             <span className="text-[7px] font-black uppercase bg-black text-white px-2 py-1 shadow-lg tracking-widest">{activeTask.duration.toFixed(1)}s</span>
+                             <span className="text-[7px] font-bold uppercase bg-yellow-500 text-black px-2 py-1 shadow-lg tracking-widest italic">ULTRA MASTER</span>
+                             <span className="text-[7px] font-bold uppercase bg-black text-white px-2 py-1 shadow-lg tracking-widest">{activeTask.duration.toFixed(1)}s</span>
                            </div>
-                           <h2 className="text-2xl font-black uppercase text-white tracking-tighter italic">{activeTask.prompt}</h2>
+                           <h2 className="text-2xl font-bold uppercase text-white tracking-tighter italic">{activeTask.prompt}</h2>
                         </div>
                      )}
 
@@ -394,19 +394,19 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                ) : (
                   <div className="text-center opacity-10 space-y-6">
                      <MonitorPlay size={80} strokeWidth={1} />
-                     <p className="text-xs font-black uppercase tracking-[0.8em]">{t('studio.status.idle')}</p>
+                     <p className="text-xs font-bold uppercase tracking-[0.8em]">{t('studio.status.idle')}</p>
                   </div>
                )}
             </AnimatePresence>
          </div>
 
          {/* PRODUCTION HUD (BOTTOM) */}
-         <div className="h-32 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#0a0d14] px-8 lg:px-12 flex items-center justify-between z-40 transition-colors">
+         <div className="h-32 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-page)] px-8 lg:px-12 flex items-center justify-between z-40 transition-colors">
             <div className="flex items-center gap-10">
                <div className="hidden md:flex flex-col gap-2">
-                  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Master Output</span>
+                  <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Master Output</span>
                   <div className="flex items-center gap-3">
-                     <span className="text-[11px] font-black text-yellow-600 dark:text-yellow-500 uppercase italic">{resolution} HD</span>
+                     <span className="text-[11px] font-bold text-yellow-600 dark:text-yellow-500 uppercase italic">{resolution} HD</span>
                      <div className="h-3 w-px bg-black/10"></div>
                      <span className="text-[9px] font-bold text-gray-400">{activeTask?.duration.toFixed(1) || selectedDuration.toFixed(1)}s Native v3.1</span>
                   </div>
@@ -421,7 +421,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     className="h-16 px-10 border border-yellow-500 text-yellow-600 dark:text-yellow-500 flex flex-col items-center justify-center gap-1 hover:bg-yellow-500 hover:text-black transition-all rounded-sm italic group"
                   >
                      <FastForward size={20} className="group-hover:translate-x-1 transition-transform" />
-                     <span className="text-[7px] font-black uppercase tracking-widest">{t('studio.extend')}</span>
+                     <span className="text-[7px] font-bold uppercase tracking-widest">{t('studio.extend')}</span>
                   </button>
                )}
                <button 
@@ -430,7 +430,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                  className={`group h-16 px-12 lg:px-24 flex items-center justify-center gap-3 transition-all relative overflow-hidden rounded-sm shadow-2xl ${firstFrame ? 'bg-yellow-500 text-black hover:scale-105 active:scale-95' : 'bg-black/5 dark:bg-white/5 text-gray-400'}`}
                >
                   <Zap size={18} className={processingCount > 0 ? 'animate-pulse' : ''} fill="currentColor" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em]">{t('studio.render')}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.4em]">{t('studio.render')}</span>
                   <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                </button>
             </div>

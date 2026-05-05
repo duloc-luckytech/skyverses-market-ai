@@ -150,12 +150,12 @@ const SceneBlock: React.FC<SceneBlockProps> = ({
           </div>
 
           {/* Scene number */}
-          <span className="text-[9px] font-black text-white/80 uppercase tracking-widest shrink-0">
+          <span className="text-[9px] font-bold text-white/80 uppercase tracking-widest shrink-0">
             #{scene.order.toString().padStart(2, '0')}
           </span>
 
           {/* Shot type badge */}
-          <span className={`text-[7px] font-black uppercase px-1.5 py-0.5 rounded-full border shrink-0 ${SHOT_TYPE_COLORS[shot]}`}>
+          <span className={`text-[7px] font-bold uppercase px-1.5 py-0.5 rounded-full border shrink-0 ${SHOT_TYPE_COLORS[shot]}`}>
             {SHOT_TYPE_LABELS[shot]}
           </span>
 
@@ -397,7 +397,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
     return (
       <div className="flex items-center justify-center py-20 gap-3 text-slate-400 dark:text-gray-400">
         <Loader2 size={20} className="animate-spin text-brand-blue" />
-        <span className="text-[11px] font-black uppercase tracking-widest">Đang phân tích...</span>
+        <span className="text-[11px] font-bold uppercase tracking-widest">Đang phân tích...</span>
       </div>
     );
   }
@@ -408,7 +408,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
           <Film size={28} className="text-slate-300 dark:text-white/35" />
         </div>
-        <p className="text-[11px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
+        <p className="text-[11px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45">
           Chưa có phân cảnh để hiển thị timeline
         </p>
       </div>
@@ -430,7 +430,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[#0a0d14] overflow-hidden shadow-sm"
+      className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden shadow-sm"
     >
       {/* ── Transport controls ─────────────────────────────────── */}
       <div className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
@@ -456,7 +456,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
           <RefreshCw size={11} />
         </button>
 
-        <div className="ml-auto flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
+        <div className="ml-auto flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45">
           <span>{scenes.length} cảnh</span>
           <span>·</span>
           <span>{fmtTime(totalDuration)} tổng</span>
@@ -475,7 +475,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
             className="flex items-center justify-center border-b border-slate-200 dark:border-white/8"
             style={{ height: RULER_HEIGHT }}
           >
-            <span className="text-[8px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
+            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45">
               Time
             </span>
           </div>
@@ -484,7 +484,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
             className="flex items-center justify-center"
             style={{ height: TRACK_HEIGHT }}
           >
-            <div className="-rotate-90 whitespace-nowrap text-[8px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
+            <div className="-rotate-90 whitespace-nowrap text-[8px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45">
               Scenes
             </div>
           </div>
@@ -493,7 +493,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
             className="flex items-center justify-center border-t border-slate-200 dark:border-white/8"
             style={{ height: 32 }}
           >
-            <div className="-rotate-90 whitespace-nowrap text-[8px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
+            <div className="-rotate-90 whitespace-nowrap text-[8px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45">
               Chars
             </div>
           </div>
@@ -596,11 +596,11 @@ const TimelineView: React.FC<TimelineViewProps> = ({
             className="flex items-center gap-3 px-4 py-2 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.01]"
           >
             <ChevronRight size={12} className="text-brand-blue shrink-0" />
-            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 shrink-0">
+            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 shrink-0">
               Cảnh #{scenes[activeSceneIndex].order.toString().padStart(2, '0')}
             </span>
             <span
-              className={`text-[7px] font-black uppercase px-2 py-0.5 rounded-full border shrink-0 ${SHOT_TYPE_COLORS[scenes[activeSceneIndex].shotType ?? 'WIDE']}`}
+              className={`text-[7px] font-bold uppercase px-2 py-0.5 rounded-full border shrink-0 ${SHOT_TYPE_COLORS[scenes[activeSceneIndex].shotType ?? 'WIDE']}`}
             >
               {SHOT_TYPE_LABELS[scenes[activeSceneIndex].shotType ?? 'WIDE']}
             </span>

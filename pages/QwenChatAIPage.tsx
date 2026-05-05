@@ -129,7 +129,7 @@ const QwenChatAIPage: React.FC = () => {
   });
 
   return (
-    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 overflow-x-hidden pt-16 transition-colors duration-300">
+    <div className="bg-white dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 overflow-x-hidden pt-16 transition-colors duration-300">
 
       {/* ═══════════ HERO SECTION ═══════════ */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-16 relative overflow-hidden">
@@ -292,7 +292,7 @@ const QwenChatAIPage: React.FC = () => {
               {/* Floating badge left */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }}
-                className="absolute -left-3 top-[28%] px-3 py-2 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
+                className="absolute -left-3 top-[28%] px-3 py-2 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
               >
                 <div className="w-6 h-6 rounded-md bg-emerald-500/10 text-emerald-500 flex items-center justify-center"><Shield size={12} /></div>
                 <div>
@@ -304,7 +304,7 @@ const QwenChatAIPage: React.FC = () => {
               {/* Floating badge right */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1 }}
-                className="absolute -right-3 bottom-[22%] px-3 py-2 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
+                className="absolute -right-3 bottom-[22%] px-3 py-2 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
               >
                 <div className="w-6 h-6 rounded-md bg-purple-500/10 text-purple-500 flex items-center justify-center"><Zap size={12} /></div>
                 <div>
@@ -394,7 +394,7 @@ const QwenChatAIPage: React.FC = () => {
             {/* Left: Code block */}
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               <div className="rounded-2xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] shadow-xl">
-                <div className="bg-slate-100 dark:bg-[#13171f] px-4 py-2.5 flex items-center gap-2 border-b border-black/[0.04] dark:border-white/[0.04]">
+                <div className="bg-slate-100 dark:bg-[var(--atlas-bg-panel)] px-4 py-2.5 flex items-center gap-2 border-b border-black/[0.04] dark:border-white/[0.04]">
                   <div className="flex gap-1.5">
                     <div className="w-2 h-2 rounded-full bg-red-400" />
                     <div className="w-2 h-2 rounded-full bg-amber-400" />

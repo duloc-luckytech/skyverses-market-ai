@@ -76,7 +76,7 @@ const ProductCaptchaToken = () => {
   ];
 
   return (
-    <div className="pt-20 bg-[#fcfcfd] dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-indigo-500/30 overflow-x-hidden transition-colors duration-500">
+    <div className="pt-20 bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-indigo-500/30 overflow-x-hidden transition-colors duration-500">
 
       {/* ═══════════ HERO ═══════════ */}
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12 pt-6">
@@ -135,10 +135,10 @@ const ProductCaptchaToken = () => {
           viewport={{ once: true }}
           className="text-center mb-14"
         >
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/8 border border-indigo-500/15 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-indigo-500 dark:text-indigo-400 mb-4">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/8 border border-indigo-500/15 rounded-full text-[9px] font-bold uppercase tracking-[0.3em] text-indigo-500 dark:text-indigo-400 mb-4">
             <Sparkles size={10} /> Tại sao chọn chúng tôi
           </span>
-          <h2 className="text-3xl md:text-4xl font-black tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
             Giải pháp Captcha <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">toàn diện</span>
           </h2>
         </motion.div>
@@ -194,11 +194,11 @@ const ProductCaptchaToken = () => {
               viewport={{ once: true }}
               className="max-w-2xl mx-auto space-y-8"
             >
-              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-indigo-400">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-[9px] font-bold uppercase tracking-[0.3em] text-indigo-400">
                 <Cpu size={10} /> Sẵn sàng tích hợp
               </span>
 
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.1]">
                 Tự động hoá
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">

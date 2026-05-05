@@ -66,7 +66,7 @@ const StatBox = ({ label, val, icon, color = 'text-brand-blue' }: any) => (
       {icon && <span className={`${color} opacity-60`}>{icon}</span>}
       <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">{label}</p>
     </div>
-    <p className="text-xl font-black tracking-tight">{val}</p>
+    <p className="text-xl font-bold tracking-tight">{val}</p>
   </div>
 );
 
@@ -193,7 +193,7 @@ export const ComputeTab = ({ logic }: any) => {
           </div>
           <div>
             <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{t('settings.compute.balance_label')}</p>
-            <h3 className="text-3xl font-black tracking-tight text-white">{logic.credits.toLocaleString()} <span className="text-sm font-bold text-white/40">credits</span></h3>
+            <h3 className="text-3xl font-bold tracking-tight text-white">{logic.credits.toLocaleString()} <span className="text-sm font-bold text-white/40">credits</span></h3>
           </div>
         </div>
         <Link to="/credits" className="bg-brand-blue text-white px-6 py-3 rounded-xl text-xs font-bold hover:brightness-110 transition-all flex items-center gap-2 shadow-md">
@@ -517,13 +517,13 @@ export const ReferralsTab = ({ logic }: any) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="p-5 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('settings.referrals.friends_invited')}</p>
-          <h4 className="text-3xl font-black text-brand-blue tracking-tight">
+          <h4 className="text-3xl font-bold text-brand-blue tracking-tight">
             {logic.referralLoading ? '—' : logic.referralTotal}
           </h4>
         </div>
         <div className="p-5 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('settings.referrals.code')}</p>
-          <h4 className="text-3xl font-black text-purple-500 tracking-tight font-mono">
+          <h4 className="text-3xl font-bold text-purple-500 tracking-tight font-mono">
             {referralCode || '—'}
           </h4>
         </div>

@@ -79,7 +79,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({ id, cdnUrl, label, desc, in
 
           {/* Bottom title overlay */}
           <div className="absolute bottom-3 left-3 right-3">
-            <h3 className="text-sm font-black text-white leading-tight drop-shadow">{label}</h3>
+            <h3 className="text-sm font-bold text-white leading-tight drop-shadow">{label}</h3>
             {meta.subtitle && (
               <p className="text-[9px] text-white/60 mt-0.5">{meta.subtitle}</p>
             )}
@@ -133,7 +133,7 @@ export const ShowcaseSection: React.FC = () => (
       {/* Header */}
       <FadeInUp className="text-center mb-12">
         <SectionLabel>SHOWCASE</SectionLabel>
-        <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-3">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3">
           Slide từ mọi ngành — tạo bởi AI
         </h2>
         <p className="text-base text-slate-500 dark:text-white/40 max-w-lg mx-auto">

@@ -17,14 +17,14 @@ export const AppsHero: React.FC = () => {
           className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full"
         >
           <Blocks size={14} className="text-brand-blue" />
-          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">App Ecosystem</span>
+          <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-brand-blue">App Ecosystem</span>
         </motion.div>
         
         <motion.h1 
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
           transition={{ delay: 0.1 }}
-          className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05]"
+          className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]"
         >
           Hệ sinh thái{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">

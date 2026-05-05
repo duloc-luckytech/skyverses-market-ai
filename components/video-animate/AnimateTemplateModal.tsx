@@ -71,7 +71,7 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
     >
       <motion.div 
         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-        className="bg-white dark:bg-[#13171f] border border-white/10 rounded-[2.5rem] w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden shadow-3xl"
+        className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-white/10 rounded-[2.5rem] w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden shadow-3xl"
       >
         {/* Header */}
         <div className="p-8 border-b border-black/5 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-slate-50 dark:bg-black/40 shrink-0">
@@ -80,7 +80,7 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
               <LayoutGrid size={24} />
             </div>
             <div className="space-y-0.5">
-              <h2 className="text-xl font-black uppercase tracking-tight italic text-slate-900 dark:text-white leading-none">Thư viện Template</h2>
+              <h2 className="text-xl font-bold uppercase tracking-tight italic text-slate-900 dark:text-white leading-none">Thư viện Template</h2>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none">Khám phá các mẫu chuyển động công nghiệp</p>
             </div>
           </div>
@@ -89,13 +89,13 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
           <div className="flex bg-slate-200 dark:bg-white/5 p-1 rounded-xl border border-black/5 dark:border-white/10 shadow-inner">
              <button 
                onClick={() => setFilterMode('MOTION')}
-               className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 transition-all ${filterMode === 'MOTION' ? 'bg-white dark:bg-[#13171f] text-cyan-500 shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
+               className={`px-6 py-2 rounded-lg text-[10px] font-bold uppercase flex items-center gap-2 transition-all ${filterMode === 'MOTION' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-cyan-500 shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
              >
                 <Move size={12} /> Motion
              </button>
              <button 
                onClick={() => setFilterMode('SWAP')}
-               className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase flex items-center gap-2 transition-all ${filterMode === 'SWAP' ? 'bg-white dark:bg-[#13171f] text-purple-500 shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
+               className={`px-6 py-2 rounded-lg text-[10px] font-bold uppercase flex items-center gap-2 transition-all ${filterMode === 'SWAP' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-purple-500 shadow-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
              >
                 <User size={12} /> Swap
              </button>
@@ -121,7 +121,7 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
                   >
                     <div className="grid grid-cols-2 gap-4 mb-8">
                       <div className="space-y-3">
-                        <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest ml-1 italic flex items-center gap-2">
+                        <p className="text-[8px] font-bold uppercase text-gray-400 tracking-widest ml-1 italic flex items-center gap-2">
                           <ImageIcon size={10} /> {tmpl.type === 'MOTION' ? 'Input Image' : 'Input Video'}
                         </p>
                         <div className="aspect-[3/4] bg-black rounded-2xl overflow-hidden border border-white/5 shadow-lg group-hover:scale-[1.02] transition-transform duration-500">
@@ -133,7 +133,7 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
                         </div>
                       </div>
                       <div className="space-y-3">
-                        <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest ml-1 italic flex items-center gap-2">
+                        <p className="text-[8px] font-bold uppercase text-gray-400 tracking-widest ml-1 italic flex items-center gap-2">
                           <Film size={10} /> {tmpl.type === 'MOTION' ? 'Ref Video' : 'Input Image'}
                         </p>
                         <div className="aspect-[3/4] bg-black rounded-2xl overflow-hidden border border-white/5 shadow-lg relative group-hover:scale-[1.02] transition-transform duration-500">
@@ -153,7 +153,7 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
                     
                     <div className="space-y-6">
                       <div className="space-y-3">
-                        <p className="text-[8px] font-black uppercase text-brand-blue tracking-[0.3em] ml-1 italic flex items-center gap-2">
+                        <p className="text-[8px] font-bold uppercase text-brand-blue tracking-[0.3em] ml-1 italic flex items-center gap-2">
                           <LayoutGrid size={10} /> Cinematic Sample Output
                         </p>
                         <div className="aspect-video bg-black rounded-[1.5rem] overflow-hidden border border-brand-blue/20 shadow-xl group-hover:scale-[1.02] transition-transform duration-500">
@@ -163,15 +163,15 @@ export const AnimateTemplateModal: React.FC<AnimateTemplateModalProps> = ({
 
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-lg font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">{tmpl.name}</h4>
-                          <span className={`px-3 py-1 bg-brand-blue/10 text-brand-blue text-[8px] font-black uppercase rounded-full border border-brand-blue/20 ${tmpl.type === 'SWAP' ? 'text-purple-500 border-purple-500/30' : ''}`}>
+                          <h4 className="text-lg font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">{tmpl.name}</h4>
+                          <span className={`px-3 py-1 bg-brand-blue/10 text-brand-blue text-[8px] font-bold uppercase rounded-full border border-brand-blue/20 ${tmpl.type === 'SWAP' ? 'text-purple-500 border-purple-500/30' : ''}`}>
                             {tmpl.tag}
                           </span>
                         </div>
                         <p className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed italic">"{tmpl.desc}"</p>
                         <button 
                           onClick={() => onApply(tmpl)}
-                          className="w-full py-5 bg-slate-900 dark:bg-white text-white dark:text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-brand-blue dark:hover:bg-purple-600 dark:hover:text-white transition-all shadow-xl active:scale-95 group/btn overflow-hidden relative"
+                          className="w-full py-5 bg-slate-900 dark:bg-white text-white dark:text-black rounded-2xl text-[10px] font-bold uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-brand-blue dark:hover:bg-purple-600 dark:hover:text-white transition-all shadow-xl active:scale-95 group/btn overflow-hidden relative"
                         >
                           <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
                           <Check size={16} strokeWidth={4} className="relative z-10" /> <span className="relative z-10">Sử dụng Template</span>

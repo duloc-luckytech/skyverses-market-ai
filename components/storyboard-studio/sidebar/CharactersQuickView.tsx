@@ -25,7 +25,7 @@ export const CharactersQuickView: React.FC<CharactersQuickViewProps> = ({ assets
       {/* Section header */}
       <button
         onClick={onNavigateToAssets}
-        className="w-full flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white transition-colors group"
+        className="w-full flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors group"
       >
         <span className="flex items-center gap-1.5">
           <Users size={12} />
@@ -68,7 +68,7 @@ export const CharactersQuickView: React.FC<CharactersQuickViewProps> = ({ assets
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               onClick={onNavigateToAssets}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-brand-blue/15 hover:bg-brand-blue/25 border border-brand-blue/25 hover:border-brand-blue/40 text-brand-blue text-[9px] font-black uppercase tracking-widest transition-all"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-brand-blue/15 hover:bg-brand-blue/25 border border-brand-blue/25 hover:border-brand-blue/40 text-brand-blue text-[9px] font-bold uppercase tracking-widest transition-all"
             >
               <UserPlus size={10} />
               Thêm nhân vật
@@ -90,7 +90,7 @@ export const CharactersQuickView: React.FC<CharactersQuickViewProps> = ({ assets
                 {asset.url ? (
                   <img src={asset.url} alt={asset.name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="w-full h-full flex items-center justify-center text-white/30 text-[9px] font-black">
+                  <span className="w-full h-full flex items-center justify-center text-white/30 text-[9px] font-bold">
                     {asset.name[0]?.toUpperCase()}
                   </span>
                 )}

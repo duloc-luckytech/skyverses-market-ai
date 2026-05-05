@@ -232,7 +232,7 @@ const FavoritesPage = () => {
   ];
 
   return (
-    <div className="relative min-h-screen bg-[#fcfcfd] dark:bg-[#0a0d14] overflow-hidden font-sans transition-colors duration-500 pt-28 md:pt-32 pb-40">
+    <div className="relative min-h-screen bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] overflow-hidden font-sans transition-colors duration-500 pt-28 md:pt-32 pb-40">
 
       {/* Background Ambience */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -249,7 +249,7 @@ const FavoritesPage = () => {
           </Link>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div className="space-y-3">
-              <h1 className="text-4xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
+              <h1 className="text-4xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">
                 Thư viện <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">Lưu trữ</span>
               </h1>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-lg leading-relaxed">
@@ -471,7 +471,7 @@ const ImageCard = ({ asset, onFullscreen, onEdit, onDownload, onDelete }: {
   onDownload: () => void;
   onDelete: () => void;
 }) => (
-  <div className="relative group aspect-[3/4] bg-white dark:bg-[#13171f] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden hover:shadow-xl hover:border-brand-blue/15 transition-all duration-500">
+  <div className="relative group aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.04] dark:border-white/[0.04] rounded-xl overflow-hidden hover:shadow-xl hover:border-brand-blue/15 transition-all duration-500">
     <img src={asset.imageUrl} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105" alt="" loading="lazy" />
     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 

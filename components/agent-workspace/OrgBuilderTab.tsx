@@ -102,7 +102,7 @@ const OrgNodeCard: React.FC<{
         />
 
         {/* Body */}
-        <div className="px-3 py-2.5 bg-white dark:bg-[#1a1f2b] border-t-0">
+        <div className="px-3 py-2.5 bg-white dark:bg-[var(--atlas-bg-panel)] border-t-0">
           {/* Header row */}
           <div className="flex items-center gap-2 mb-2">
             <div
@@ -263,7 +263,7 @@ const ActivationModal: React.FC<{
         exit={{ scale: 0.92, y: 20 }}
         transition={{ type: 'spring', stiffness: 340, damping: 28 }}
         onClick={e => e.stopPropagation()}
-        className="w-full max-w-2xl bg-[#0a0a0c] rounded-3xl border border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="w-full max-w-2xl bg-[var(--atlas-bg-page)] rounded-3xl border border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
@@ -272,7 +272,7 @@ const ActivationModal: React.FC<{
               <Network size={16} className="text-brand-blue" />
             </div>
             <div>
-              <p className="text-[13px] font-black text-white">{orgName} — Activation</p>
+              <p className="text-[13px] font-bold text-white">{orgName} — Activation</p>
               <p className="text-[10px] text-white/30 truncate max-w-[300px]">{mission}</p>
             </div>
           </div>
@@ -676,7 +676,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
         nodeId: n.id,
         agentName: agent?.name ?? 'Agent',
         agentEmoji: agent?.emoji ?? '🤖',
-        agentColor: agent?.color ?? '#0090ff',
+        agentColor: agent?.color ?? '#7036F0',
         delegatedTask: '',
         output: '',
         status: 'pending',
@@ -892,7 +892,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
         <input
           value={config.orgName}
           onChange={e => updateMeta({ orgName: e.target.value })}
-          className="text-[13px] font-black text-slate-800 dark:text-white bg-transparent border-none outline-none w-[180px] truncate"
+          className="text-[13px] font-bold text-slate-800 dark:text-white bg-transparent border-none outline-none w-[180px] truncate"
           placeholder="Organization name"
         />
         <div className="w-px h-4 bg-black/[0.08] dark:bg-white/[0.08]" />
@@ -985,7 +985,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
       <div className="flex flex-1 overflow-hidden min-h-0">
 
         {/* ── Canvas ── */}
-        <div ref={canvasWrapRef} className="flex-1 overflow-auto bg-slate-50 dark:bg-[#0a0d14]">
+        <div ref={canvasWrapRef} className="flex-1 overflow-auto bg-slate-50 dark:bg-[var(--atlas-bg-page)]">
           {/* Zoom hint */}
           {zoom !== 1 && (
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 px-2.5 py-1 rounded-full bg-black/60 text-white/60 text-[9px] font-bold pointer-events-none">
@@ -1049,11 +1049,11 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 280, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-              className="w-[260px] shrink-0 border-l border-black/[0.05] dark:border-white/[0.04] bg-white dark:bg-[#13171f] flex flex-col overflow-hidden"
+              className="w-[260px] shrink-0 border-l border-black/[0.05] dark:border-white/[0.04] bg-white dark:bg-[var(--atlas-bg-panel)] flex flex-col overflow-hidden"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.05] dark:border-white/[0.04]">
-                <p className="text-[10px] font-black uppercase text-slate-400 dark:text-white/30 tracking-widest">Node Settings</p>
+                <p className="text-[10px] font-bold uppercase text-slate-400 dark:text-white/30 tracking-widest">Node Settings</p>
                 <button onClick={() => setSelectedNodeId(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors">
                   <X size={13} className="text-slate-400" />
                 </button>
@@ -1167,7 +1167,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
             exit={{ scale: 0.93, y: 16 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             onClick={e => e.stopPropagation()}
-            className="w-full max-w-[480px] bg-white dark:bg-[#1a1f2b] rounded-3xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
+            className="w-full max-w-[480px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-3xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
           >
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">
@@ -1175,7 +1175,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
                   <Sparkles size={18} className="text-white" />
                 </div>
                 <div>
-                  <p className="text-[14px] font-black text-slate-800 dark:text-white">Activate Organization</p>
+                  <p className="text-[14px] font-bold text-slate-800 dark:text-white">Activate Organization</p>
                   <p className="text-[10px] text-slate-400">{config.orgName} · {config.nodes.filter(n => n.agentId).length} agents ready · parallel execution</p>
                 </div>
               </div>

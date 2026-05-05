@@ -90,7 +90,7 @@ const HeroSection = () => {
         </motion.div>
 
         <motion.h1 variants={fadeUp} custom={1}
-          className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.9] mb-8"
+          className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.9] mb-8"
         >
           We Are{' '}
           <span className="bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
@@ -140,7 +140,7 @@ const StatsSection = () => {
             className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center hover:border-violet-500/30 hover:bg-violet-500/5 transition-all duration-500"
           >
             <div className="text-violet-400 flex justify-center mb-3 opacity-60 group-hover:opacity-100 transition-opacity">{s.icon}</div>
-            <div className="text-3xl md:text-4xl font-black bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
+            <div className="text-3xl md:text-4xl font-bold bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
             <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-widest">{s.label}</div>
           </motion.div>
         ))}
@@ -160,7 +160,7 @@ const ProductsSection = () => {
     <section ref={ref} className="py-24 px-6 max-w-7xl mx-auto">
       <motion.div initial="hidden" animate={isInView ? "visible" : "hidden"} variants={staggerContainer}>
         <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-black mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">
             One Platform, <span className="text-violet-400">Every Medium</span>
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
@@ -207,7 +207,7 @@ const ValuesSection = () => {
       <div className="max-w-6xl mx-auto">
         <motion.div initial="hidden" animate={isInView ? "visible" : "hidden"} variants={staggerContainer}>
           <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
               What Drives <span className="text-blue-400">Us</span>
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">Our core principles shape every feature, every pixel, every model we deploy.</p>
@@ -247,7 +247,7 @@ const TechSection = () => {
       <div className="max-w-4xl mx-auto">
         <motion.div initial="hidden" animate={isInView ? "visible" : "hidden"} variants={staggerContainer}>
           <motion.div variants={fadeUp} custom={0} className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-black mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
               Built With <span className="text-cyan-400">Modern Tech</span>
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">Enterprise-grade infrastructure powering creative AI at scale.</p>
@@ -289,7 +289,7 @@ const CTASection = () => {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-gradient-to-b from-violet-500/20 to-transparent blur-3xl pointer-events-none" />
 
           <motion.div variants={fadeUp} custom={0} className="relative z-10">
-            <h2 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
+            <h2 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Ready to
               <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent"> Create?</span>
             </h2>

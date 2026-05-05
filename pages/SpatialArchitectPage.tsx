@@ -185,7 +185,7 @@ const SpatialArchitectPage: React.FC = () => {
 
   if (logic.isStudioOpen) {
     return (
-      <div className="fixed inset-0 z-[600] bg-[#0a0a0c] animate-in fade-in duration-500">
+      <div className="fixed inset-0 z-[600] bg-[var(--atlas-bg-page)] animate-in fade-in duration-500">
         <Art3DWorkspace onClose={() => logic.setIsStudioOpen(false)} logic={logic} />
       </div>
     );
@@ -222,7 +222,7 @@ const SpatialArchitectPage: React.FC = () => {
           </motion.div>
 
           <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 1, ease: [0.22, 1, 0.36, 1] as const }}
-            className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.85]">
+            className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.85]">
             <span className="text-white/90">SPATIAL</span>
             <br />
             <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(16,185,129,0.3)]">
@@ -239,7 +239,7 @@ const SpatialArchitectPage: React.FC = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }}
             className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <button onClick={() => logic.setIsStudioOpen(true)}
-              className="group relative bg-emerald-500 text-black px-10 py-5 rounded-xl font-black text-sm tracking-wide shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.5)] hover:scale-[1.03] transition-all flex items-center gap-3 overflow-hidden">
+              className="group relative bg-emerald-500 text-black px-10 py-5 rounded-xl font-bold text-sm tracking-wide shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.5)] hover:scale-[1.03] transition-all flex items-center gap-3 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" />
               <span className="relative z-10 flex items-center gap-3">
                 <Box size={18} />
@@ -280,7 +280,7 @@ const SpatialArchitectPage: React.FC = () => {
             <div className="inline-flex items-center gap-2 text-[10px] font-mono text-emerald-500/50 uppercase tracking-widest">
               <Box size={12} className="animate-spin" style={{ animationDuration: '8s' }} /> INTERACTIVE_3D_VIEWER
             </div>
-            <h2 className="text-4xl lg:text-6xl font-black tracking-tight">
+            <h2 className="text-4xl lg:text-6xl font-bold tracking-tight">
               Live 3D <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Models</span>
             </h2>
             <p className="text-sm text-white/30 font-mono max-w-lg mx-auto">
@@ -346,7 +346,7 @@ const SpatialArchitectPage: React.FC = () => {
             <div className="inline-flex items-center gap-2 text-[10px] font-mono text-emerald-500/50 uppercase tracking-widest">
               <Hexagon size={12} /> RENDER_GALLERY_v4
             </div>
-            <h2 className="text-4xl lg:text-6xl font-black tracking-tight">
+            <h2 className="text-4xl lg:text-6xl font-bold tracking-tight">
               AI <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Renders</span>
             </h2>
             <p className="text-sm text-white/30 font-mono max-w-md mx-auto">
@@ -367,7 +367,7 @@ const SpatialArchitectPage: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-center space-y-4 mb-20">
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">
               Engine <span className="text-emerald-400">Capabilities</span>
             </h2>
           </motion.div>
@@ -408,7 +408,7 @@ const SpatialArchitectPage: React.FC = () => {
             <div className="inline-flex items-center gap-2 text-[10px] font-mono text-emerald-500/50 uppercase tracking-widest">
               <RotateCcw size={12} /> PIPELINE_FLOW
             </div>
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">
               Từ prompt đến <span className="text-emerald-400">mesh 3D</span>
             </h2>
           </motion.div>
@@ -454,7 +454,7 @@ const SpatialArchitectPage: React.FC = () => {
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
               className="text-center space-y-2">
-              <div className="text-3xl lg:text-4xl font-black bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">{stat.value}</div>
+              <div className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">{stat.value}</div>
               <div className="text-[10px] font-mono text-white/25 uppercase tracking-wider">{stat.label}</div>
             </motion.div>
           ))}
@@ -472,7 +472,7 @@ const SpatialArchitectPage: React.FC = () => {
             <div className="w-20 h-20 rounded-2xl bg-emerald-500/[0.08] border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
               <Box size={32} />
             </div>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tight leading-[0.9]">
+            <h2 className="text-5xl md:text-7xl font-bold tracking-tight leading-[0.9]">
               FORGE THE
               <br />
               <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">SPATIAL</span>
@@ -485,7 +485,7 @@ const SpatialArchitectPage: React.FC = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             transition={{ delay: 0.2 }}>
             <button onClick={() => logic.setIsStudioOpen(true)}
-              className="group relative bg-emerald-500 text-black px-16 py-6 rounded-xl text-sm font-black tracking-wider shadow-[0_0_60px_rgba(16,185,129,0.3)] hover:shadow-[0_0_100px_rgba(16,185,129,0.5)] hover:scale-[1.05] transition-all inline-flex items-center gap-3 overflow-hidden mx-auto">
+              className="group relative bg-emerald-500 text-black px-16 py-6 rounded-xl text-sm font-bold tracking-wider shadow-[0_0_60px_rgba(16,185,129,0.3)] hover:shadow-[0_0_100px_rgba(16,185,129,0.5)] hover:scale-[1.05] transition-all inline-flex items-center gap-3 overflow-hidden mx-auto">
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
               <span className="relative z-10 flex items-center gap-3">
                 <Sparkles size={18} />

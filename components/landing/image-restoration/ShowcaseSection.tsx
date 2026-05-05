@@ -115,7 +115,7 @@ const RestoreCard: React.FC<{ item: RestoreItem; onExpand: (item: RestoreItem) =
               className={`w-full h-full object-cover transition-all duration-500 ${hover ? 'scale-[1.03]' : ''} grayscale brightness-75`}
             />
             <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur rounded-full">
-              <span className="text-[8px] font-black uppercase tracking-widest text-red-400">Trước</span>
+              <span className="text-[8px] font-bold uppercase tracking-widest text-red-400">Trước</span>
             </div>
           </div>
           {/* After */}
@@ -126,7 +126,7 @@ const RestoreCard: React.FC<{ item: RestoreItem; onExpand: (item: RestoreItem) =
               className={`w-full h-full object-cover transition-all duration-500 ${hover ? 'scale-[1.03]' : ''}`}
             />
             <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full" style={{ background: catColor + 'cc' }}>
-              <span className="text-[8px] font-black uppercase tracking-widest text-white">Sau</span>
+              <span className="text-[8px] font-bold uppercase tracking-widest text-white">Sau</span>
             </div>
           </div>
           {/* Center divider */}
@@ -192,7 +192,7 @@ const Lightbox: React.FC<{ item: RestoreItem | null; onClose: () => void }> = ({
             <div className="relative overflow-hidden">
               <img src={item.before} alt="before" className="w-full h-full object-cover grayscale brightness-75" />
               <div className="absolute top-3 left-3 px-2 py-0.5 bg-black/60 backdrop-blur rounded-full">
-                <span className="text-[9px] font-black uppercase tracking-widest text-red-400">Trước</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-red-400">Trước</span>
               </div>
             </div>
             <div className="relative overflow-hidden">
@@ -201,7 +201,7 @@ const Lightbox: React.FC<{ item: RestoreItem | null; onClose: () => void }> = ({
                 className="absolute top-3 right-3 px-2 py-0.5 rounded-full"
                 style={{ background: (CAT_COLORS[item.category] ?? '#6366f1') + 'cc' }}
               >
-                <span className="text-[9px] font-black uppercase tracking-widest text-white">Đã phục chế</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-white">Đã phục chế</span>
               </div>
             </div>
           </div>

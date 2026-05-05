@@ -163,10 +163,10 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
   const processingCount = takes.filter(t => t.status === 'processing').length;
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] text-black dark:text-white font-sans overflow-hidden relative selection:bg-yellow-500/30 transition-colors">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] text-black dark:text-white font-sans overflow-hidden relative selection:bg-yellow-500/30 transition-colors">
 
       {/* 1. ARCHITECT TERMINAL (LEFT) */}
-      <aside className="w-full lg:w-[420px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[#fcfcfd] dark:bg-[#0a0d14] z-[100] shadow-2xl overflow-hidden">
+      <aside className="w-full lg:w-[420px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] z-[100] shadow-2xl overflow-hidden">
          <div className="p-8 space-y-10 overflow-y-auto no-scrollbar flex-grow">
             <header className="flex justify-between items-center">
                <div className="flex items-center gap-4">
@@ -174,7 +174,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                      <Radio size={20} />
                   </div>
                   <div className="space-y-0.5">
-                     <h2 className="text-xl font-black uppercase tracking-tighter italic leading-none">Architect</h2>
+                     <h2 className="text-xl font-bold uppercase tracking-tighter italic leading-none">Architect</h2>
                      <p className="text-[8px] text-yellow-600 dark:text-yellow-500 font-bold uppercase tracking-[0.4em]">ULTRA_ELITE v7.4</p>
                   </div>
                </div>
@@ -185,7 +185,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
             {/* CREATIVE INTENT */}
             <section className="space-y-4">
-               <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em] flex items-center gap-3">
+               <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em] flex items-center gap-3">
                   <Wand2 size={14} className="text-yellow-500" /> Narrative Intent
                </label>
                <textarea
@@ -198,13 +198,13 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
             {/* CINEMATOGRAPHY */}
             <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/5">
-               <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em]">Cinematography</label>
+               <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em]">Cinematography</label>
                <div className="grid grid-cols-2 gap-2">
                   {SHOT_TYPES.map(shot => (
                     <button
                       key={shot.id}
                       onClick={() => setActiveShot(shot)}
-                      className={`flex items-center gap-3 p-3 border text-[10px] font-black uppercase transition-all rounded-sm ${activeShot.id === shot.id ? 'border-yellow-500 bg-yellow-500/5 text-yellow-600' : 'border-black/5 dark:border-white/5 text-gray-400'}`}
+                      className={`flex items-center gap-3 p-3 border text-[10px] font-bold uppercase transition-all rounded-sm ${activeShot.id === shot.id ? 'border-yellow-500 bg-yellow-500/5 text-yellow-600' : 'border-black/5 dark:border-white/5 text-gray-400'}`}
                     >
                        {shot.icon} {shot.name}
                     </button>
@@ -215,11 +215,11 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
             {/* LIGHTING & ATMOSPHERE */}
             <section className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em]">Atmospheric Logic</label>
+                  <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em]">Atmospheric Logic</label>
                   <select
                     value={activeLighting.id}
                     onChange={(e) => setActiveLighting(LIGHTING_MODES.find(l => l.id === e.target.value)!)}
-                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 text-[11px] font-black uppercase outline-none focus:border-yellow-500"
+                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 text-[11px] font-bold uppercase outline-none focus:border-yellow-500"
                   >
                      {LIGHTING_MODES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                   </select>
@@ -227,14 +227,14 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
                <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-3">
-                     <div className="flex justify-between text-[9px] font-black uppercase text-gray-400">
+                     <div className="flex justify-between text-[9px] font-bold uppercase text-gray-400">
                         <span className="flex items-center gap-2"><Wind size={10}/> Fog Density</span>
                         <span className="text-yellow-500">{fogDensity}%</span>
                      </div>
                      <input type="range" min="0" max="100" value={fogDensity} onChange={(e) => setFogDensity(parseInt(e.target.value))} className="w-full h-1 bg-black/10 dark:bg-white/5 appearance-none rounded-full accent-yellow-500" />
                   </div>
                   <div className="space-y-3">
-                     <div className="flex justify-between text-[9px] font-black uppercase text-gray-400">
+                     <div className="flex justify-between text-[9px] font-bold uppercase text-gray-400">
                         <span className="flex items-center gap-2"><Clock size={10}/> Time Scale</span>
                         <span className="text-yellow-500">{timeScale}x</span>
                      </div>
@@ -245,7 +245,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
             {/* REFERENCE DNA */}
             <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/5">
-               <label className="text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em]">Visual DNA</label>
+               <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em]">Visual DNA</label>
                <div onClick={() => fileInputRef.current?.click()} className={`aspect-video border-2 border-dashed flex items-center justify-center cursor-pointer rounded-sm overflow-hidden transition-all ${refImage ? 'border-yellow-500' : 'border-black/10 dark:border-white/5 hover:border-yellow-500/50'}`}>
                   {refImage ? <img src={refImage} className="w-full h-full object-cover" /> : <Upload size={24} className="text-gray-300" />}
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
@@ -254,7 +254,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
          </div>
 
          <div className="h-32 border-t border-black/5 dark:border-white/5 p-6 bg-gray-50 dark:bg-black mt-auto flex flex-col gap-2 shrink-0">
-            <span className="text-[9px] font-black uppercase text-gray-400 italic">Production_Telemetry</span>
+            <span className="text-[9px] font-bold uppercase text-gray-400 italic">Production_Telemetry</span>
             <div className="flex-grow overflow-hidden font-mono text-[10px] text-gray-400">
                {logs.map((log, i) => <p key={i}>{log}</p>)}
             </div>
@@ -262,12 +262,12 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
       </aside>
 
       {/* 2. PRODUCTION HUB (CENTER) */}
-      <main className="flex-grow flex flex-col bg-[#f0f1f3] dark:bg-[#0a0d14] relative overflow-hidden">
+      <main className="flex-grow flex flex-col bg-[#f0f1f3] dark:bg-[var(--atlas-bg-page)] relative overflow-hidden">
 
          <div className="absolute top-8 left-8 right-8 flex justify-between items-start z-50 pointer-events-none">
             <div className="px-5 py-2.5 bg-white/60 dark:bg-black/60 backdrop-blur-xl border border-black/10 dark:border-white/10 flex items-center gap-3 pointer-events-auto">
                <div className={`w-2 h-2 rounded-full ${processingCount > 0 ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'}`}></div>
-               <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Status: {processingCount > 0 ? 'Synthesizing_Take' : 'Node_Standby'}</span>
+               <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Status: {processingCount > 0 ? 'Synthesizing_Take' : 'Node_Standby'}</span>
             </div>
          </div>
 
@@ -285,8 +285,8 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                               <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-500/50 animate-pulse" size={40} />
                            </div>
                            <div className="text-center space-y-3">
-                              <p className="text-[14px] font-black uppercase tracking-[1em] text-white animate-pulse">Rendering_Sequence</p>
-                              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-yellow-500/50">H100_Cluster_042 // {activeTake.meta.shot}</p>
+                              <p className="text-[14px] font-bold uppercase tracking-[1em] text-white animate-pulse">Rendering_Sequence</p>
+                              <p className="text-[9px] font-bold uppercase tracking-[0.4em] text-yellow-500/50">H100_Cluster_042 // {activeTake.meta.shot}</p>
                            </div>
                         </div>
                      ) : activeTake.url ? (
@@ -301,10 +301,10 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                         <>
                            <div className="absolute bottom-8 left-8 space-y-4 pointer-events-none">
                               <div className="flex gap-2">
-                                <span className="text-[9px] font-black uppercase bg-yellow-500 text-black px-4 py-1.5 shadow-lg tracking-widest italic">PRODUCTION MASTER</span>
-                                <span className="text-[9px] font-black uppercase bg-black text-white px-4 py-1.5 shadow-lg tracking-widest">1080P // 24FPS</span>
+                                <span className="text-[9px] font-bold uppercase bg-yellow-500 text-black px-4 py-1.5 shadow-lg tracking-widest italic">PRODUCTION MASTER</span>
+                                <span className="text-[9px] font-bold uppercase bg-black text-white px-4 py-1.5 shadow-lg tracking-widest">1080P // 24FPS</span>
                               </div>
-                              <h2 className="text-4xl font-black uppercase text-white tracking-tighter italic leading-none">{activeTake.directive}</h2>
+                              <h2 className="text-4xl font-bold uppercase text-white tracking-tighter italic leading-none">{activeTake.directive}</h2>
                            </div>
 
                            <div className="absolute top-8 right-8 flex flex-col gap-4 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
@@ -321,19 +321,19 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                ) : (
                   <div className="text-center opacity-10 space-y-10">
                      <MonitorPlay size={120} strokeWidth={0.5} />
-                     <p className="text-xl font-black uppercase tracking-[1em]">Director_Offline</p>
+                     <p className="text-xl font-bold uppercase tracking-[1em]">Director_Offline</p>
                   </div>
                )}
             </AnimatePresence>
          </div>
 
          {/* PRODUCTION HUD (BOTTOM) */}
-         <div className="h-40 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#0a0d14] px-10 lg:px-16 flex items-center justify-between z-40 transition-colors shadow-2xl shrink-0">
+         <div className="h-40 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-page)] px-10 lg:px-16 flex items-center justify-between z-40 transition-colors shadow-2xl shrink-0">
             <div className="flex items-center gap-16">
                <div className="hidden md:flex flex-col gap-4">
                   <div className="flex items-center gap-3">
                      <HistoryIcon size={18} className="text-gray-400" />
-                     <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">Takes_History</span>
+                     <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Takes_History</span>
                   </div>
                   <div className="flex gap-4">
                      {takes.slice(0, 5).map(t => (
@@ -355,7 +355,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                     className="h-24 px-12 border border-yellow-500 text-yellow-600 dark:text-yellow-500 flex flex-col items-center justify-center gap-2 hover:bg-yellow-500 hover:text-black transition-all rounded-sm italic group shadow-xl"
                   >
                      <FastForward size={28} className="group-hover:translate-x-2 transition-transform" />
-                     <span className="text-[9px] font-black uppercase tracking-widest">Extend +7s</span>
+                     <span className="text-[9px] font-bold uppercase tracking-widest">Extend +7s</span>
                   </button>
                )}
                <button
@@ -364,7 +364,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                  className={`group h-24 px-24 lg:px-48 flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden rounded-sm shadow-[0_20px_80px_rgba(234,179,8,0.2)] ${directive.trim() || refImage ? 'bg-yellow-500 text-black hover:scale-105 active:scale-95' : 'bg-black/5 dark:bg-white/5 text-gray-400'}`}
                >
                   <Zap size={28} className={processingCount > 0 ? 'animate-pulse' : 'group-hover:rotate-12 transition-transform'} fill="currentColor" />
-                  <span className="text-[11px] font-black uppercase tracking-[0.6em]">{processingCount > 0 ? 'Synthesizing' : 'Launch Master Render'}</span>
+                  <span className="text-[11px] font-bold uppercase tracking-[0.6em]">{processingCount > 0 ? 'Synthesizing' : 'Launch Master Render'}</span>
                   <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                </button>
             </div>

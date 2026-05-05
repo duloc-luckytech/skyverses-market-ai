@@ -86,7 +86,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
         ${props.isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
         w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
-        bg-white dark:bg-[#13171f] border-r border-black/[0.06] dark:border-white/[0.08]
+        bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-black/[0.06] dark:border-white/[0.08]
         flex flex-col transition-transform duration-300
       `}>
 

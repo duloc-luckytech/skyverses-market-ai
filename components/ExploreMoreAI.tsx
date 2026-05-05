@@ -35,7 +35,7 @@ const ExploreMoreAI: React.FC = () => {
                   <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/60">Enterprise Solutions</span>
                 </div>
                 
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] text-white">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-white">
                   Biến ý tưởng thành{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-400">
                     sản phẩm AI thực tế

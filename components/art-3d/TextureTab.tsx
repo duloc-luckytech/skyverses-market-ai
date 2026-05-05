@@ -44,7 +44,7 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
         <div className={isActive ? 'text-brand-blue' : 'text-gray-500'}>
           {icon}
         </div>
-        <span className="text-xs font-black uppercase tracking-widest">{label}</span>
+        <span className="text-xs font-bold uppercase tracking-widest">{label}</span>
       </div>
       <ChevronDown size={16} className={`transition-transform duration-300 ${isActive ? 'rotate-180' : ''}`} />
     </button>
@@ -74,7 +74,7 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
                   <div className="w-4 h-0.5 bg-gray-400"></div>
                   <div className="w-4 h-0.5 bg-gray-400"></div>
                </div>
-               <h3 className="text-[13px] font-black uppercase tracking-tight text-white">3D Model Texture Generator</h3>
+               <h3 className="text-[13px] font-bold uppercase tracking-tight text-white">3D Model Texture Generator</h3>
             </div>
 
             <div className="bg-[#1c1c1f] border border-brand-blue/30 rounded-[2.5rem] p-4 space-y-6">
@@ -105,7 +105,7 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
               </div>
               <button className="w-full p-4 bg-[#1c1c1f] border border-white/5 rounded-2xl flex items-center justify-between group hover:border-brand-blue/30 transition-all">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center text-[10px] font-black text-gray-700">N/A</div>
+                  <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center text-[10px] font-bold text-gray-700">N/A</div>
                   <span className="text-sm font-bold text-gray-400 group-hover:text-white">None</span>
                 </div>
                 <ChevronRight size={18} className="text-gray-600" />
@@ -138,12 +138,12 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
           >
             <div className="flex items-center gap-3 px-1">
                <Edit3 size={18} className="text-brand-blue" />
-               <h3 className="text-[13px] font-black uppercase tracking-tight text-white">Magic Brush</h3>
+               <h3 className="text-[13px] font-bold uppercase tracking-tight text-white">Magic Brush</h3>
             </div>
             
             <div className="flex bg-black/40 p-1.5 rounded-2xl border border-white/5">
-              <button onClick={() => setBrushMode('GEN')} className={`flex-grow py-2.5 text-[11px] font-black uppercase rounded-xl transition-all ${brushMode === 'GEN' ? 'bg-[#3b3d45] text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}>Gen Mode</button>
-              <button onClick={() => setBrushMode('PAINT')} className={`flex-grow py-2.5 text-[11px] font-black uppercase rounded-xl transition-all ${brushMode === 'PAINT' ? 'bg-[#3b3d45] text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}>Paint Mode</button>
+              <button onClick={() => setBrushMode('GEN')} className={`flex-grow py-2.5 text-[11px] font-bold uppercase rounded-xl transition-all ${brushMode === 'GEN' ? 'bg-[#3b3d45] text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}>Gen Mode</button>
+              <button onClick={() => setBrushMode('PAINT')} className={`flex-grow py-2.5 text-[11px] font-bold uppercase rounded-xl transition-all ${brushMode === 'PAINT' ? 'bg-[#3b3d45] text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}>Paint Mode</button>
             </div>
 
             <div className="space-y-4">
@@ -174,10 +174,10 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
             </div>
 
             <button className="w-full py-5 bg-[#3b3d45] border border-white/5 rounded-full flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] transition-all">
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 italic">Generate Preview</span>
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 italic">Generate Preview</span>
               <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
                 <Zap size={12} className="text-gray-500" fill="currentColor" />
-                <span className="text-[11px] font-black italic text-gray-500">5</span>
+                <span className="text-[11px] font-bold italic text-gray-500">5</span>
               </div>
             </button>
           </motion.div>
@@ -190,7 +190,7 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
           >
             <div className="flex items-center gap-3 px-1">
                <Maximize size={18} className="text-brand-blue" />
-               <h3 className="text-[13px] font-black uppercase tracking-tight text-white">Texture Upscale</h3>
+               <h3 className="text-[13px] font-bold uppercase tracking-tight text-white">Texture Upscale</h3>
             </div>
 
             <div className="aspect-square rounded-3xl overflow-hidden relative border border-white/5 bg-black">
@@ -213,14 +213,14 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
                  <button className="w-full py-5 bg-[#3b3d45] border border-white/5 rounded-full flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] transition-all">
                    <div className="flex items-center gap-2 text-white">
                       <Crown size={14} fill="currentColor" className="text-yellow-500" />
-                      <span className="text-xs font-black uppercase tracking-[0.2em] italic">Upscale Now</span>
+                      <span className="text-xs font-bold uppercase tracking-[0.2em] italic">Upscale Now</span>
                    </div>
                    <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
                      <Zap size={12} className="text-gray-500" fill="currentColor" />
-                     <span className="text-[11px] font-black italic text-gray-500">10</span>
+                     <span className="text-[11px] font-bold italic text-gray-500">10</span>
                    </div>
                  </button>
-                 <div className="absolute -top-3 -right-2 bg-pink-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase italic shadow-xl">Free 0/1</div>
+                 <div className="absolute -top-3 -right-2 bg-pink-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase italic shadow-xl">Free 0/1</div>
                </div>
             </div>
           </motion.div>
@@ -233,7 +233,7 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
           >
             <div className="flex items-center gap-3 px-1">
                <Contrast size={18} className="text-brand-blue" />
-               <h3 className="text-[13px] font-black uppercase tracking-tight text-white">PBR Generator</h3>
+               <h3 className="text-[13px] font-bold uppercase tracking-tight text-white">PBR Generator</h3>
             </div>
 
             <div className="aspect-square rounded-3xl overflow-hidden relative border border-white/5 bg-black">
@@ -250,10 +250,10 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
             </p>
 
             <button className="w-full py-5 bg-[#3b3d45] border border-white/5 rounded-full flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] transition-all">
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 italic">Generate PBR</span>
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 italic">Generate PBR</span>
               <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
                 <Zap size={12} className="text-gray-500" fill="currentColor" />
-                <span className="text-[11px] font-black italic text-gray-500">5</span>
+                <span className="text-[11px] font-bold italic text-gray-500">5</span>
               </div>
             </button>
           </motion.div>

@@ -10,7 +10,7 @@ const MODES = [
     badge: 'Text → Image',
     desc: 'Biến prompt thành ảnh đẹp — chọn trong 22+ AI models từ Midjourney, Imagen 4, Stable Diffusion đến FLUX và nhiều hơn nữa.',
     highlights: ['22+ AI Models', 'Tất cả tỷ lệ', 'Style tùy chọn'],
-    color: '#0090ff',
+    color: '#7036F0',
     thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/dbd0c88d-b47e-47d0-0309-d0fa43d7ee00/public',
   },
   {

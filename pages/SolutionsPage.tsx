@@ -235,7 +235,7 @@ const SolutionsPage = () => {
             <Wand2 size={14} /> Creative Toolkit
           </motion.div>
 
-          <motion.h1 variants={fadeUp} custom={1} className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.95] mb-6">
+          <motion.h1 variants={fadeUp} custom={1} className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.95] mb-6">
             Every AI Tool You{' '}
             <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
               Need
@@ -324,7 +324,7 @@ const SolutionsPage = () => {
           <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-blue-950/80 via-slate-900/80 to-violet-950/80 backdrop-blur-xl p-12 md:p-16 text-center">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[150px] bg-gradient-to-b from-blue-500/20 to-transparent blur-3xl pointer-events-none" />
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-5xl font-black mb-5">
+              <h2 className="text-3xl md:text-5xl font-bold mb-5">
                 Start with <span className="text-violet-400">Free Credits</span>
               </h2>
               <p className="text-gray-400 max-w-lg mx-auto mb-8">
