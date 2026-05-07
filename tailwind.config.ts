@@ -62,6 +62,13 @@ export default {
           codeBg: '#1E1E1E',
           codeHeader: '#2D2D2D',
           codeText: '#00C2A5',
+          // Dark navy for CTA + footer (atlas signature)
+          navy: '#0D0D1A',
+          navyDeep: '#08080F',
+          navySoft: '#1A1A2E',
+          // Pale page bg (atlas left-side wash)
+          paleBlue: '#EBF4FB',
+          palePurple: '#F4F0FF',
         },
       },
       fontFamily: {

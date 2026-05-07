@@ -89,7 +89,7 @@ const SolutionDetail = () => {
   ];
 
   return (
-    <div className="pt-20 bg-black min-h-screen">
+    <div className="pt-20 bg-atlas-navy min-h-screen">
       <DemoModal 
         isOpen={isDemoOpen} 
         onClose={() => setIsDemoOpen(false)} 
@@ -123,18 +123,18 @@ const SolutionDetail = () => {
 
               <div className="absolute bottom-8 right-8">
                 {isAuthenticated ? (
-                  <button 
+                  <button
                     onClick={handleDemoOpen}
-                    className="bg-brand-blue text-white px-10 py-5 font-bold text-xs uppercase tracking-[0.2em] flex items-center gap-6 hover:bg-white hover:text-black transition-all shadow-2xl"
+                    className="bg-atlas-cta text-white px-8 py-4 rounded font-semibold text-xs uppercase tracking-[0.2em] flex items-center gap-4 hover:shadow-atlas-glow hover:-translate-y-0.5 active:scale-[.98] transition-all"
                   >
-                    INITIALIZE LAB <Sparkles className="w-5 h-5" />
+                    INITIALIZE LAB <Sparkles className="w-4 h-4" />
                   </button>
                 ) : (
-                  <button 
+                  <button
                     onClick={login}
-                    className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 py-5 font-bold text-xs uppercase tracking-[0.2em] flex items-center gap-6 hover:bg-white hover:text-black transition-all shadow-2xl"
+                    className="bg-white/10 backdrop-blur-md text-white border border-white/25 px-8 py-4 rounded font-semibold text-xs uppercase tracking-[0.2em] flex items-center gap-4 hover:bg-white/20 hover:border-white/40 transition-all"
                   >
-                    SIGN IN TO USE <Lock className="w-5 h-5" />
+                    SIGN IN TO USE <Lock className="w-4 h-4" />
                   </button>
                 )}
               </div>
@@ -169,9 +169,9 @@ const SolutionDetail = () => {
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                 <span className="text-[9px] font-bold mono text-green-500 uppercase tracking-[0.2em]">Operational</span>
               </div>
-              <h1 className="text-5xl font-bold uppercase tracking-tighter leading-none text-white">{solution.name[lang]}</h1>
-              <p className="text-xl font-light text-gray-400 leading-relaxed italic">
-                "{solution.description[lang]}"
+              <h1 className="text-[2.5rem] md:text-[3rem] font-bold tracking-[-0.02em] leading-[1.05] text-white">{solution.name[lang]}</h1>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">
+                {solution.description[lang]}
               </p>
             </div>
 

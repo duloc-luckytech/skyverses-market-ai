@@ -107,13 +107,16 @@ const CreditsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] text-black dark:text-white pt-24 pb-32 transition-colors duration-500 overflow-x-hidden selection:bg-brand-blue/30">
+    <div className="min-h-screen bg-[var(--atlas-bg-page)] text-[var(--atlas-text-primary)] pt-24 pb-32 transition-colors duration-500 overflow-x-hidden selection:bg-atlas-purple/30">
       
-      {/* ── Ambient Background ── */}
+      {/* Atlas pale wash + decorative blobs */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-30%] left-[50%] -translate-x-1/2 w-[1400px] h-[700px] bg-gradient-to-b from-brand-blue/[0.03] to-transparent dark:from-brand-blue/[0.06] rounded-full blur-[150px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[800px] h-[800px] bg-gradient-to-tl from-violet-500/[0.02] to-transparent dark:from-violet-500/[0.04] rounded-full blur-[150px]" />
-        <div className="absolute top-[40%] left-[-10%] w-[500px] h-[500px] bg-gradient-to-r from-emerald-500/[0.02] to-transparent dark:from-emerald-500/[0.03] rounded-full blur-[120px]" />
+        <div className="absolute inset-0 dark:opacity-0 transition-opacity"
+          style={{ background: 'linear-gradient(180deg, #EBF4FB 0%, #F4F0FF 60%, #FFFFFF 100%)' }} />
+        <div className="absolute top-[-20%] left-[40%] w-[640px] h-[640px] rounded-full opacity-50 blur-3xl"
+          style={{ background: 'radial-gradient(circle at center, rgba(112,54,240,.30) 0%, rgba(112,54,240,0) 70%)' }} />
+        <div className="absolute bottom-[10%] right-[-10%] w-[480px] h-[480px] rounded-full opacity-30 blur-3xl"
+          style={{ background: 'radial-gradient(circle at center, rgba(254,108,17,.20) 0%, rgba(254,108,17,0) 70%)' }} />
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
@@ -127,35 +130,17 @@ const CreditsPage = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-20 max-w-3xl mx-auto"
         >
-          {/* Badge */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.08] rounded-full mb-8 shadow-sm"
-          >
-            <div className="w-5 h-5 rounded-full bg-brand-blue/15 flex items-center justify-center">
-              <Zap size={10} className="text-brand-blue" fill="currentColor" />
-            </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-500 dark:text-gray-400">Universal Credits System</span>
-          </motion.div>
-          
-          <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-[-0.03em] leading-[1.08] mb-6">
+          {/* Atlas eyebrow + headline pattern */}
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-atlas-orangeBright mb-3">
+            GIÁ CẢ
+          </p>
+
+          <h1 className="text-[2rem] md:text-[3rem] lg:text-[3.5rem] font-bold tracking-[-0.02em] leading-[1.05] mb-5">
             Một loại Credit,{' '}
-            <span className="relative">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-violet-500 to-fuchsia-500">
-                vô hạn sáng tạo
-              </span>
-              <motion.div 
-                className="absolute -bottom-1 left-0 right-0 h-[3px] rounded-full bg-gradient-to-r from-brand-blue via-violet-500 to-fuchsia-500 opacity-30"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 0.6, duration: 0.8 }}
-              />
-            </span>
+            <span className="atlas-text-gradient">vô hạn sáng tạo</span>
           </h1>
-          
-          <p className="text-base md:text-lg text-slate-400 dark:text-gray-500 leading-relaxed max-w-2xl mx-auto mb-10">
+
+          <p className="text-base md:text-lg text-[var(--atlas-text-secondary)] leading-relaxed max-w-2xl mx-auto mb-10">
             Không subscription, không lock-in. Mua Credits theo nhu cầu và sử dụng cho hơn 30 công cụ AI — Video, Image, Voice, Music và hơn thế nữa.
           </p>
 

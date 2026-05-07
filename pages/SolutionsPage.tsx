@@ -216,7 +216,7 @@ const SolutionsPage = () => {
     : SOLUTIONS.filter(s => s.category === activeFilter);
 
   return (
-    <div className="bg-[#050507] min-h-screen text-white font-sans overflow-x-hidden pt-16">
+    <div className="bg-atlas-navy min-h-screen text-white font-sans overflow-x-hidden pt-16">
 
       {/* ── HERO ── */}
       <section ref={heroRef} className="relative py-28 px-6 overflow-hidden">
@@ -229,20 +229,18 @@ const SolutionsPage = () => {
           variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
           className="max-w-4xl mx-auto text-center relative z-10"
         >
-          <motion.div variants={fadeUp} custom={0}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-8"
+          <motion.p variants={fadeUp} custom={0}
+            className="text-sm font-bold uppercase tracking-[0.18em] text-atlas-orangeBright mb-4"
           >
-            <Wand2 size={14} /> Creative Toolkit
-          </motion.div>
+            SOLUTIONS
+          </motion.p>
 
-          <motion.h1 variants={fadeUp} custom={1} className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.95] mb-6">
+          <motion.h1 variants={fadeUp} custom={1} className="text-[2rem] md:text-[3.5rem] lg:text-[4.5rem] font-bold tracking-[-0.02em] leading-[1.05] mb-6">
             Every AI Tool You{' '}
-            <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
-              Need
-            </span>
+            <span className="atlas-text-gradient">Need</span>
           </motion.h1>
 
-          <motion.p variants={fadeUp} custom={2} className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed mb-10">
+          <motion.p variants={fadeUp} custom={2} className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed mb-10">
             {SOLUTIONS.length} professional AI tools, one platform. Generate videos, images, music, voices, and more —
             all powered by the latest AI models.
           </motion.p>
@@ -253,10 +251,10 @@ const SolutionsPage = () => {
               <button
                 key={f.key}
                 onClick={() => setActiveFilter(f.key)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all border ${
                   activeFilter === f.key
-                    ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/25'
-                    : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10'
+                    ? 'bg-atlas-cta text-white border-atlas-purple shadow-atlas-glow'
+                    : 'bg-white/8 text-white/70 border-white/15 hover:bg-white/15 hover:border-white/30 hover:text-white'
                 }`}
               >
                 {f.icon} {f.label}

@@ -208,21 +208,20 @@ const ModelsPage: React.FC = () => {
   }, [models, search, activeCat, activeServer]);
 
   return (
-    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-white dark:bg-[var(--atlas-bg-page)] text-black dark:text-white transition-colors duration-300">
+    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-[var(--atlas-bg-page)] text-[var(--atlas-text-primary)] transition-colors duration-300">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12">
-        
-        {/* ═══════ HERO ═══════ */}
-        <div className="mb-8 md:mb-10 space-y-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/[0.06] border border-brand-blue/10 rounded-full">
-              <Cpu size={13} className="text-brand-blue" />
-              <span className="text-[11px] font-semibold text-brand-blue">{models.length} Models Available</span>
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-              AI <span className="bg-gradient-to-r from-brand-blue to-blue-400 bg-clip-text text-transparent">Models</span>
+
+        {/* ═══════ ATLAS HERO ═══════ */}
+        <div className="mb-10 md:mb-14 space-y-5">
+          <div className="space-y-3">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-atlas-orangeBright">
+              MODELS
+            </p>
+            <h1 className="text-[2rem] md:text-[2.75rem] lg:text-[3.25rem] font-bold tracking-[-0.02em] leading-[1.05]">
+              AI <span className="atlas-text-gradient">Models</span>
             </h1>
-            <p className="text-sm text-slate-400 dark:text-gray-500 max-w-lg">
-              Khám phá bộ sưu tập model AI mạnh mẽ cho sản xuất hình ảnh, video, nhạc và giọng nói.
+            <p className="text-base md:text-lg text-[var(--atlas-text-secondary)] max-w-2xl leading-relaxed">
+              Khám phá bộ sưu tập {models.length}+ model AI hàng đầu thế giới — Veo3, Kling, Sora, Midjourney, Flux, GPT-4o, Gemini, Claude — cho sản xuất hình ảnh, video, nhạc và giọng nói.
             </p>
           </div>
 

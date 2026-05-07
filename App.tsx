@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, Suspense, useCallback } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -220,8 +220,8 @@ const App: React.FC = () => {
                       <Route path="/favorites" element={<FavoritesPage />} />
                       <Route path="/referral" element={<ReferralPage />} />
                       <Route path="/policy" element={<PolicyPage />} />
-                      
-                      
+
+
 
                       <Route path="/product/background-removal-ai" element={<BackgroundRemovalAI />} />
                       <Route path="/product/social-banner-ai" element={<SocialBannerAI />} />
@@ -230,7 +230,7 @@ const App: React.FC = () => {
                       <Route path="/product/nocode-export" element={<NoCodeExportPage />} />
                       <Route path="/product/qwen-chat-ai" element={<QwenChatAIPage />} />
                       <Route path="/product/ai-slide-creator" element={<AISlideCreatorPage />} />
-                      
+
                       {/* CÁC TUYẾN ĐƯỜNG SỰ KIỆN HỢP NHẤT */}
                       <Route path="/product/ai-birthday-generator" element={<EventStudioPage type="birthday" />} />
                       <Route path="/product/ai-wedding-generator" element={<EventStudioPage type="wedding" />} />
@@ -265,7 +265,7 @@ const App: React.FC = () => {
                       <Route path="/product/paperclip-ai-agents" element={<PaperclipAIAgents />} />
 
                       <Route path="/product/:slug" element={<SolutionDetail />} />
-                      
+
                       <Route path="/use-cases" element={<UseCasesPage />} />
                       <Route path="/pricing" element={<PricingPage />} />
                       <Route path="/booking" element={<BookingPage />} />

@@ -205,7 +205,7 @@ const ExplorerPage = () => {
   const canGenerate = useMemo(() => selectedItems.length > 0 && selectedItems.every(i => i.status !== 'processing' && i.status !== 'done'), [selectedItems]);
 
   return (
-    <div className="pt-20 md:pt-28 pb-32 bg-white dark:bg-[var(--atlas-bg-page)] min-h-screen text-black dark:text-white transition-colors duration-300">
+    <div className="pt-20 md:pt-28 pb-32 bg-[var(--atlas-bg-page)] min-h-screen text-[var(--atlas-text-primary)] transition-colors duration-300">
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12">
         
         {/* ═══════ HERO HEADER ═══════ */}
@@ -235,19 +235,22 @@ const ExplorerPage = () => {
                   {/* Left — Text + Filters */}
                   <div className="lg:col-span-3 space-y-5">
                     <div className="space-y-3">
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/[0.06] dark:bg-brand-blue/[0.1] border border-brand-blue/10 rounded-full">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[11px] font-semibold text-brand-blue">Live Gallery</span>
-                        {items.length > 0 && (
-                          <span className="text-[11px] text-brand-blue/60 font-medium">· {items.length}+ tác phẩm</span>
-                        )}
-                      </div>
-                      <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]">
-                        Khám phá{' '}<span className="bg-gradient-to-r from-brand-blue to-blue-400 bg-clip-text text-transparent">thế giới AI</span>
+                      <p className="text-sm font-bold uppercase tracking-[0.18em] text-atlas-orangeBright mb-1">
+                        EXPLORER
+                      </p>
+                      <h1 className="text-[2rem] md:text-[2.75rem] lg:text-[3.25rem] font-bold tracking-[-0.02em] leading-[1.05]">
+                        Khám phá{' '}<span className="atlas-text-gradient">thế giới AI</span>
                       </h1>
-                      <p className="text-sm md:text-[15px] text-slate-400 dark:text-gray-500 leading-relaxed max-w-md">
+                      <p className="text-base text-[var(--atlas-text-secondary)] leading-relaxed max-w-md">
                         {t('explorer.subtitle')}
                       </p>
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-atlas-purple/[0.08] border border-atlas-purple/20 rounded-full mt-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[11px] font-semibold text-atlas-purple">Live Gallery</span>
+                        {items.length > 0 && (
+                          <span className="text-[11px] text-atlas-purple/70 font-medium">· {items.length}+ tác phẩm</span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Filter Pills */}

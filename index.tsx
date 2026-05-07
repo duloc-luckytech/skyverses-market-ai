@@ -10,8 +10,14 @@ if (!rootElement) {
 }
 
 const root = ReactDOM.createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+try {
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+} catch (err) {
+  // Show crash info instead of silent white page
+  rootElement.innerHTML = `<div style="padding:60px 20px;font-family:monospace;background:#1a1a2e;color:#ef4444;min-height:100vh"><h1>React Mount Error</h1><pre style="white-space:pre-wrap;color:#ffa">${String(err)}</pre></div>`;
+  console.error('[MOUNT ERROR]', err);
+}

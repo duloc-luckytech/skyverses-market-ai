@@ -22,10 +22,10 @@ const PricingPage = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-[#050507] flex items-center justify-center text-white">
+    <div className="min-h-screen bg-atlas-navy flex items-center justify-center text-white">
       <div className="text-center">
-        <div className="animate-spin w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full mx-auto mb-4" />
-        <p className="text-gray-400 text-sm">Redirecting to Credits...</p>
+        <div className="animate-spin w-8 h-8 border-2 border-atlas-purple border-t-transparent rounded-full mx-auto mb-4" />
+        <p className="text-white/60 text-sm">Redirecting to Pricing...</p>
       </div>
     </div>
   );

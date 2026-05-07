@@ -235,7 +235,7 @@ const LoginPage = () => {
   // RENDER
   // ═══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden relative" style={{ background: '#08080c' }}>
+    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden relative bg-atlas-navy">
 
       {/* ═══ CUSTOM STYLES ═══ */}
       <style>{`

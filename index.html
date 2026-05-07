@@ -257,6 +257,17 @@
       </div>
     </noscript>
     
+    <script>
+      // Catch module evaluation errors that crash before React mounts
+      window.addEventListener('error', function(e) {
+        var r = document.getElementById('root');
+        if (r && !r.hasChildNodes()) {
+          r.innerHTML = '<div style="padding:60px 20px;font-family:monospace;background:#1a1a2e;color:#ef4444;min-height:100vh">'
+            + '<h1>JS Error (pre-mount)</h1>'
+            + '<pre style="white-space:pre-wrap;color:#ffa">' + (e.message || e) + '\n' + (e.filename || '') + ':' + (e.lineno || '') + '</pre></div>';
+        }
+      });
+    </script>
     <script type="module" src="/index.tsx"></script>
 
     <script>

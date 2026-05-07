@@ -1152,21 +1152,31 @@ const MarketsPage: React.FC = () => {
   );
 
   return (
-    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-white dark:bg-[var(--atlas-bg-page)] text-black dark:text-white transition-colors duration-300">
-      <div className="max-w-[1500px] mx-auto px-4 md:px-6 lg:px-10">
+    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-[var(--atlas-bg-page)] text-[var(--atlas-text-primary)] transition-colors duration-300">
+      {/* Atlas pale wash background (light) */}
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-100 dark:opacity-0 transition-opacity"
+        style={{ background: 'linear-gradient(180deg, #EBF4FB 0%, #F4F0FF 60%, #FFFFFF 100%)' }} />
 
-        {/* ═══════ HEADER ═══════ */}
-        <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-3">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              Kho công cụ{' '}<span className="bg-gradient-to-r from-brand-blue to-blue-400 bg-clip-text text-transparent">AI sáng tạo</span>
+      <div className="relative z-10 max-w-[1500px] mx-auto px-4 md:px-6 lg:px-10">
+
+        {/* ═══════ ATLAS HERO STRIP ═══════ */}
+        <div className="mb-10 md:mb-14 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div className="max-w-2xl">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-atlas-orangeBright mb-3">
+              Marketplace
+            </p>
+            <h1 className="text-[2rem] md:text-[2.75rem] font-bold tracking-[-0.02em] leading-[1.1]">
+              Kho công cụ{' '}
+              <span className="atlas-text-gradient">AI sáng tạo</span>
             </h1>
-            <p className="text-[12px] text-slate-400 dark:text-gray-500 mt-1">30+ ứng dụng &middot; 50+ model &middot; tiết kiệm ~70%</p>
+            <p className="mt-3 text-base text-[var(--atlas-text-secondary)] leading-relaxed">
+              30+ ứng dụng AI · 50+ model hàng đầu · tiết kiệm ~70% so với mua lẻ. Một tài khoản, một số dư credits cho tất cả.
+            </p>
           </div>
           <button onClick={() => setMobileSidebar(true)}
-            className="lg:hidden flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-[13px] font-medium text-slate-600 dark:text-gray-300 w-fit">
+            className="lg:hidden inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--atlas-bg-panel)] border border-[var(--atlas-border)] rounded-lg text-[13px] font-semibold text-[var(--atlas-text-primary)] w-fit hover:border-atlas-purple hover:text-atlas-purple transition-all">
             <SlidersHorizontal size={15} /> Bộ lọc
-            {activeFilterCount > 0 && <span className="w-5 h-5 bg-brand-blue text-white text-[10px] font-bold rounded-full flex items-center justify-center">{activeFilterCount}</span>}
+            {activeFilterCount > 0 && <span className="w-5 h-5 bg-atlas-cta text-white text-[10px] font-bold rounded-full flex items-center justify-center">{activeFilterCount}</span>}
           </button>
         </div>
 
