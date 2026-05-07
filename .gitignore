@@ -41,3 +41,4 @@ skyverses-backend/**/service-account.json
 cms/.env
 !.env.production
 !cms/.env.production
+landing-clone/

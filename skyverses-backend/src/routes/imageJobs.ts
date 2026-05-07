@@ -418,7 +418,7 @@ router.get("/pending/fxlab", async (req, res) => {
       recaptchaToken: { $exists: false },
     })
       .sort({ createdAt: 1 })
-      .limit(5)
+      .limit(20)
       .select({
         _id: 1,
         type: 1,

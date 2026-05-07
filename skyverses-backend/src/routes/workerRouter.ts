@@ -506,7 +506,7 @@ export function createWorkerRouter(provider: string) {
 
         const pendingImages = await ImageJob.find(imageFilter)
           .sort({ createdAt: 1 })
-          .limit(5)
+          .limit(20)
           .lean();
 
         for (const job of pendingImages) {
@@ -558,7 +558,7 @@ export function createWorkerRouter(provider: string) {
 
         const pendingVideos = await VideoJob.find(videoFilter)
           .sort({ createdAt: 1 })
-          .limit(5)
+          .limit(20)
           .lean();
 
         for (const job of pendingVideos) {
@@ -631,7 +631,7 @@ export function createWorkerRouter(provider: string) {
 
         const pendingEdits = await EditImageJob.find(editFilter)
           .sort({ createdAt: 1 })
-          .limit(5)
+          .limit(20)
           .lean();
 
         for (const job of pendingEdits) {
@@ -844,7 +844,7 @@ export function createWorkerRouter(provider: string) {
   router.get("/image/upload-tasks", async (req, res) => {
     try {
       const owner = req.query.owner?.toString() || null;
-      const limit = Math.min(parseInt(req.query.limit as string) || 5, 20);
+      const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
       const typeFilter = req.query.type?.toString();
 
       // ── DELEGATE: edit-image tasks ────────────────────────────────────────
