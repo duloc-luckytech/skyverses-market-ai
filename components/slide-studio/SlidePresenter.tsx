@@ -65,7 +65,7 @@ const PresenterSlide: React.FC<{ slide: Slide; idx: number; total: number }> = (
       ) : (
         /* Legacy fallback */
         <div className={`absolute inset-0 flex flex-col items-center justify-center text-center px-12 ${textClass} select-none`}>
-          <div className="text-4xl font-black mb-4 drop-shadow-lg"
+          <div className="text-4xl font-bold mb-4 drop-shadow-lg"
             dangerouslySetInnerHTML={{ __html: slide.titleHtml || slide.title }} />
           <div className="text-xl drop-shadow whitespace-pre-line"
             dangerouslySetInnerHTML={{ __html: slide.bodyHtml || slide.body }} />

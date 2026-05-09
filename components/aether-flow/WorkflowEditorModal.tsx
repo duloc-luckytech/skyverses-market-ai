@@ -83,7 +83,7 @@ const EditorContent: React.FC<{
           >
             <Background variant={BackgroundVariant.Dots} color="#1c1c22" gap={24} size={1} />
             <Controls position="bottom-left" className="bg-[#1a1b23] border-white/5 p-1 rounded-xl" />
-            <MiniMap position="bottom-right" className="bg-[#1a1b23] border border-white/10 rounded-2xl" nodeColor="#0090ff" maskColor="rgba(0,0,0,0.7)" />
+            <MiniMap position="bottom-right" className="bg-[#1a1b23] border border-white/10 rounded-2xl" nodeColor="#D4A017" maskColor="rgba(0,0,0,0.7)" />
           </ReactFlow>
 
           <EditorHUD />

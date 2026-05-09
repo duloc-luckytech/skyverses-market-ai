@@ -19,8 +19,8 @@ interface RestoreItem {
 // ─── Data ─────────────────────────────────────────────────────
 const CAT_COLORS: Record<string, string> = {
   'Portrait': '#10b981',
-  'Wedding': '#8b5cf6',
-  'Colorize': '#f59e0b',
+  'Wedding': '#D4B85A',
+  'Colorize': '#E5C767',
   'Landscape': '#3b82f6',
   'Memorial': '#ef4444',
 };
@@ -89,7 +89,7 @@ const ITEMS: RestoreItem[] = [
 // ─── Compact Before/After card ────────────────────────────────
 const RestoreCard: React.FC<{ item: RestoreItem; onExpand: (item: RestoreItem) => void }> = ({ item, onExpand }) => {
   const [hover, setHover] = useState(false);
-  const catColor = CAT_COLORS[item.category] ?? '#6366f1';
+  const catColor = CAT_COLORS[item.category] ?? '#D4B85A';
 
   return (
     <div
@@ -115,7 +115,7 @@ const RestoreCard: React.FC<{ item: RestoreItem; onExpand: (item: RestoreItem) =
               className={`w-full h-full object-cover transition-all duration-500 ${hover ? 'scale-[1.03]' : ''} grayscale brightness-75`}
             />
             <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur rounded-full">
-              <span className="text-[8px] font-black uppercase tracking-widest text-red-400">Trước</span>
+              <span className="text-[8px] font-bold uppercase tracking-widest text-red-400">Trước</span>
             </div>
           </div>
           {/* After */}
@@ -126,7 +126,7 @@ const RestoreCard: React.FC<{ item: RestoreItem; onExpand: (item: RestoreItem) =
               className={`w-full h-full object-cover transition-all duration-500 ${hover ? 'scale-[1.03]' : ''}`}
             />
             <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full" style={{ background: catColor + 'cc' }}>
-              <span className="text-[8px] font-black uppercase tracking-widest text-white">Sau</span>
+              <span className="text-[8px] font-bold uppercase tracking-widest text-white">Sau</span>
             </div>
           </div>
           {/* Center divider */}
@@ -179,7 +179,7 @@ const Lightbox: React.FC<{ item: RestoreItem | null; onClose: () => void }> = ({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="relative max-w-4xl w-full bg-white dark:bg-[#0c0c0e] rounded-2xl overflow-hidden shadow-2xl"
+          className="relative max-w-4xl w-full bg-white dark:bg-[#0c0c0e] rounded-xl overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           <button
@@ -192,16 +192,16 @@ const Lightbox: React.FC<{ item: RestoreItem | null; onClose: () => void }> = ({
             <div className="relative overflow-hidden">
               <img src={item.before} alt="before" className="w-full h-full object-cover grayscale brightness-75" />
               <div className="absolute top-3 left-3 px-2 py-0.5 bg-black/60 backdrop-blur rounded-full">
-                <span className="text-[9px] font-black uppercase tracking-widest text-red-400">Trước</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-red-400">Trước</span>
               </div>
             </div>
             <div className="relative overflow-hidden">
               <img src={item.after} alt="after" className="w-full h-full object-cover" />
               <div
                 className="absolute top-3 right-3 px-2 py-0.5 rounded-full"
-                style={{ background: (CAT_COLORS[item.category] ?? '#6366f1') + 'cc' }}
+                style={{ background: (CAT_COLORS[item.category] ?? '#D4B85A') + 'cc' }}
               >
-                <span className="text-[9px] font-black uppercase tracking-widest text-white">Đã phục chế</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-white">Đã phục chế</span>
               </div>
             </div>
           </div>

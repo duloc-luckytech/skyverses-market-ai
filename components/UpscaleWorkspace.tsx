@@ -420,10 +420,10 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
   // ═══ RENDER ═══
 
   return (
-    <div className="h-full w-full flex flex-col bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300 relative">
+    <div className="h-full w-full flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300 relative">
 
       {/* ═══ HEADER ═══ */}
-      <header className="h-14 md:h-16 px-4 md:px-6 flex items-center justify-between shrink-0 z-[120] bg-white/80 dark:bg-[#0a0d14]/80 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06] sticky top-0">
+      <header className="h-14 md:h-16 px-4 md:px-6 flex items-center justify-between shrink-0 z-[120] bg-white/80 dark:bg-[var(--atlas-bg-page)]/80 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06] sticky top-0">
         <div className="flex items-center gap-2 md:gap-3">
           {/* Add button */}
           <div className="relative" ref={addMenuRef}>
@@ -447,7 +447,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
-                  className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-[#13171f] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-xl overflow-hidden p-1.5 z-[130]"
+                  className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-xl overflow-hidden p-1.5 z-[130]"
                 >
                   <button
                     onClick={() => fileInputRef.current?.click()}
@@ -764,7 +764,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
               </div>
             </div>
 
-            <div className="flex-grow relative overflow-hidden bg-slate-100 dark:bg-[#0a0d14] flex items-center justify-center p-4 md:p-10">
+            <div className="flex-grow relative overflow-hidden bg-slate-100 dark:bg-[var(--atlas-bg-page)] flex items-center justify-center p-4 md:p-10">
               <div className="relative w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
                 <img src={comparisonJob.original} className="absolute inset-0 w-full h-full object-contain select-none" alt="Original" />
 
@@ -834,7 +834,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
             <motion.div
               initial={{ scale: 0.95, y: 10 }}
               animate={{ scale: 1, y: 0 }}
-              className="max-w-sm w-full bg-white dark:bg-[#13171f] p-8 border border-black/[0.06] dark:border-white/[0.08] rounded-2xl text-center space-y-6 shadow-2xl"
+              className="max-w-sm w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-8 border border-black/[0.06] dark:border-white/[0.08] rounded-2xl text-center space-y-6 shadow-2xl"
             >
               <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500">
                 <Coins size={28} />

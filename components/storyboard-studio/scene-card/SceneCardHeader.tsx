@@ -85,11 +85,11 @@ export const SceneCardHeader: React.FC<SceneCardHeaderProps> = ({
           onKeyDown={handleRenameKey}
           onClick={e => e.stopPropagation()}
           placeholder={`#${sceneIndex + 1}`}
-          className="shrink-0 w-20 h-5 px-1.5 rounded-full bg-brand-blue/20 border border-brand-blue/50 text-brand-blue text-[8px] font-black leading-none outline-none text-center"
+          className="shrink-0 w-20 h-5 px-1.5 rounded-full bg-brand-blue/20 border border-brand-blue/50 text-brand-blue text-[8px] font-bold leading-none outline-none text-center"
         />
       ) : (
         <span
-          className={`shrink-0 inline-flex items-center justify-center min-w-[28px] h-5 px-1.5 rounded-full bg-brand-blue/90 text-white text-[8px] font-black tabular-nums leading-none shadow-sm ${onRename ? 'cursor-pointer hover:bg-brand-blue transition-colors' : ''}`}
+          className={`shrink-0 inline-flex items-center justify-center min-w-[28px] h-5 px-1.5 rounded-full bg-brand-blue/90 text-white text-[8px] font-bold tabular-nums leading-none shadow-sm ${onRename ? 'cursor-pointer hover:bg-brand-blue transition-colors' : ''}`}
           onDoubleClick={onRename ? startRename : undefined}
           title={onRename ? (title || `Cảnh ${sceneIndex + 1}`) + ' — click đúp để đổi tên' : undefined}
         >
@@ -120,7 +120,7 @@ export const SceneCardHeader: React.FC<SceneCardHeaderProps> = ({
       {/* Status badge — màu theo trạng thái */}
       <div className="relative shrink-0">
         <div
-          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full border text-[7px] font-black uppercase tracking-widest leading-none cursor-default ${badge} ${isError ? 'cursor-help' : ''}`}
+          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full border text-[7px] font-bold uppercase tracking-widest leading-none cursor-default ${badge} ${isError ? 'cursor-help' : ''}`}
           title={isError ? errorText : label}
           onMouseEnter={() => isError && setShowErrorTooltip(true)}
           onMouseLeave={() => setShowErrorTooltip(false)}
@@ -150,7 +150,7 @@ export const SceneCardHeader: React.FC<SceneCardHeaderProps> = ({
                 <div className="flex items-start gap-2">
                   <AlertCircle size={11} className="text-rose-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-[8px] font-black uppercase tracking-widest text-rose-400 mb-1 leading-none">Chi tiết lỗi</p>
+                    <p className="text-[8px] font-bold uppercase tracking-widest text-rose-400 mb-1 leading-none">Chi tiết lỗi</p>
                     <p className="text-[10px] text-rose-200/80 leading-snug break-words">{errorText}</p>
                   </div>
                 </div>

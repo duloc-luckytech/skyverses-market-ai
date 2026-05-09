@@ -25,31 +25,31 @@ const DEMOS = [
 export const AnimateViewport: React.FC<Props> = ({ mode }) => {
   return (
     <div className="w-full max-w-[480px] flex flex-col h-full gap-8 overflow-y-auto no-scrollbar pb-32">
-      <div className="bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-10 space-y-10 shadow-2xl transition-all">
+      <div className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-10 space-y-10 shadow-2xl transition-all">
         <div className="flex items-center gap-6">
           <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center shadow-xl transition-colors duration-500 ${mode === 'MOTION' ? 'bg-cyan-500 shadow-cyan-500/20' : 'bg-purple-600 shadow-purple-500/20'}`}>
             <Sparkles size={32} className="text-white dark:text-black" />
           </div>
           <div className="space-y-0.5">
-            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Production Intel</h3>
+            <h3 className="text-2xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Production Intel</h3>
             <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest italic leading-none">Industrial_Engine_Active</p>
           </div>
         </div>
 
         <div className="space-y-4">
-          <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-cyan-500 italic flex items-center gap-3">
+          <h4 className="text-[11px] font-bold uppercase tracking-[0.4em] text-cyan-500 italic flex items-center gap-3">
             <Layers size={14} /> Capabilities
           </h4>
           <p className="text-[13px] text-slate-600 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight italic border-l border-slate-200 dark:border-white/10 pl-6">
             Giải pháp chuyên biệt cho Agency & Studios. 
-            Sử dụng mỏ neo <span className="text-cyan-500 font-black">Identity Lock</span> để duy trì đặc điểm nhân vật 100% trong quá trình diễn hoạt phức tạp. 
+            Sử dụng mỏ neo <span className="text-cyan-500 font-bold">Identity Lock</span> để duy trì đặc điểm nhân vật 100% trong quá trình diễn hoạt phức tạp. 
             Khử nhiễu và làm mượt chuyển động bằng AI nội bộ.
           </p>
         </div>
 
         <div className="space-y-6 pt-6 border-t border-slate-100 dark:border-white/5 transition-colors">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-[0.4em]">
+            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-[0.4em]">
               <LayoutGrid size={14} /> Production Showcase
             </div>
             <span className="text-[8px] font-bold text-cyan-500 uppercase opacity-50 tracking-[0.2em]">Validated Takes</span>
@@ -67,7 +67,7 @@ export const AnimateViewport: React.FC<Props> = ({ mode }) => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
                 <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1 rounded-md text-[9px] font-black uppercase text-white shadow-2xl ${demo.color}`}>
+                  <span className={`px-3 py-1 rounded-md text-[9px] font-bold uppercase text-white shadow-2xl ${demo.color}`}>
                     {demo.label}
                   </span>
                 </div>
@@ -88,7 +88,7 @@ export const AnimateViewport: React.FC<Props> = ({ mode }) => {
                 <Activity size={24} />
               </div>
               <div className="text-left space-y-0.5">
-                <p className="text-[12px] font-black uppercase italic tracking-widest text-slate-800 dark:text-white leading-none">Motion Transfer</p>
+                <p className="text-[12px] font-bold uppercase italic tracking-widest text-slate-800 dark:text-white leading-none">Motion Transfer</p>
                 <p className="text-[9px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-tight">Tái cấu trúc chuyển động tham chiếu</p>
               </div>
             </div>
@@ -101,7 +101,7 @@ export const AnimateViewport: React.FC<Props> = ({ mode }) => {
                 <UserCircle size={24} />
               </div>
               <div className="text-left space-y-0.5">
-                <p className="text-[12px] font-black uppercase italic tracking-widest text-slate-800 dark:text-white leading-none">Identity Swap Pro</p>
+                <p className="text-[12px] font-bold uppercase italic tracking-widest text-slate-800 dark:text-white leading-none">Identity Swap Pro</p>
                 <p className="text-[9px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-tight">Thay thế chân dung chất lượng cao</p>
               </div>
             </div>
@@ -113,7 +113,7 @@ export const AnimateViewport: React.FC<Props> = ({ mode }) => {
       <div className="p-8 bg-brand-blue/5 border border-brand-blue/10 rounded-[2rem] space-y-4">
         <div className="flex items-center gap-3 text-brand-blue">
           <Info size={18} />
-          <span className="text-[10px] font-black uppercase tracking-[0.3em]">Hỗ trợ kỹ thuật</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Hỗ trợ kỹ thuật</span>
         </div>
         <p className="text-[11px] text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase italic">
           Gặp khó khăn? Liên hệ Node_Admin tại <span className="text-brand-blue underline cursor-pointer">support@skyverses.com</span> để được tối ưu hóa tham số riêng.

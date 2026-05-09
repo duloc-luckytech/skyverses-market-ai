@@ -35,13 +35,13 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
             initial={{ scale: 0.9, y: 20 }} 
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
-            className="max-w-xl w-full bg-white dark:bg-[#1a1f2b] p-10 border border-slate-200 dark:border-white/10 rounded-[2rem] space-y-8 shadow-3xl transition-colors"
+            className="max-w-xl w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-10 border border-slate-200 dark:border-white/10 rounded-[2rem] space-y-8 shadow-3xl transition-colors"
           >
             <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-brand-blue/10 rounded-full flex items-center justify-center mx-auto text-brand-blue shadow-[0_0_30px_rgba(0,144,255,0.2)]">
+              <div className="w-16 h-16 bg-brand-blue/10 rounded-full flex items-center justify-center mx-auto text-brand-blue shadow-[0_0_30px_rgba(201, 168, 76,0.2)]">
                 <ShieldCheck size={32} />
               </div>
-              <h3 className="text-2xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Xác thực tài nguyên</h3>
+              <h3 className="text-2xl font-bold uppercase tracking-tighter italic text-slate-900 dark:text-white">Xác thực tài nguyên</h3>
               <p className="text-sm text-slate-500 dark:text-gray-400 font-medium uppercase tracking-tight">
                 Vui lòng chọn phương thức thanh toán tài nguyên cho chu trình này. Lựa chọn của bạn sẽ được ghi nhớ.
               </p>
@@ -57,7 +57,7 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
                   <Coins size={24} fill="currentColor" />
                 </div>
                 <div className="text-center">
-                  <p className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Dùng Credits</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-slate-900 dark:text-white">Dùng Credits</p>
                   <p className="text-[9px] text-slate-400 dark:text-gray-500 font-bold uppercase mt-1">Chi phí: {totalCost} CR</p>
                 </div>
               </button>
@@ -72,7 +72,7 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
                   <Key size={24} />
                 </div>
                 <div className="text-center">
-                  <p className={`text-[11px] font-black uppercase tracking-widest ${hasPersonalKey ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>
+                  <p className={`text-[11px] font-bold uppercase tracking-widest ${hasPersonalKey ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>
                     {hasPersonalKey ? 'Dùng API Key' : 'Key chưa thiết lập'}
                   </p>
                   <p className="text-[9px] text-slate-400 dark:text-gray-500 font-bold uppercase mt-1">Free (Dùng Key của bạn)</p>
@@ -81,7 +81,7 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
             </div>
 
             <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex flex-col items-center gap-4">
-              <div className="flex items-center justify-center gap-6 text-[8px] font-black text-slate-300 dark:text-gray-700 uppercase tracking-widest">
+              <div className="flex items-center justify-center gap-6 text-[8px] font-bold text-slate-300 dark:text-gray-700 uppercase tracking-widest">
                 <span className="flex items-center gap-2"><Lock size={10}/> Zero Knowledge</span>
                 <span className="flex items-center gap-2"><Key size={10}/> BYOK Ready</span>
               </div>
@@ -89,7 +89,7 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
               {!hasPersonalKey && (
                 <button 
                   onClick={() => navigate('/settings')} 
-                  className="flex items-center gap-2 text-[10px] font-black text-brand-blue uppercase hover:underline"
+                  className="flex items-center gap-2 text-[10px] font-bold text-brand-blue uppercase hover:underline"
                 >
                   Thiết lập API Key ngay <ExternalLink size={10} />
                 </button>
@@ -98,7 +98,7 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
             
             <button 
               onClick={onClose}
-              className="w-full py-4 text-[10px] font-black uppercase text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="w-full py-4 text-[10px] font-bold uppercase text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               Hủy bỏ
             </button>

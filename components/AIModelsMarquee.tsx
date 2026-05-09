@@ -39,7 +39,7 @@ const AIModelsMarquee: React.FC = () => {
             <div className="w-6 h-6 md:w-8 md:h-8 mr-3 md:mr-4 bg-white dark:bg-white/10 rounded-lg p-1 md:p-1.5 border border-black/5 dark:border-white/10 flex items-center justify-center shadow-sm">
                <img src={model.logoUrl} alt={model.name} loading="lazy" className="w-full h-full object-contain" />
             </div>
-            <span className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-gray-400 group-hover:text-brand-blue transition-colors">
+            <span className="text-[9px] md:text-[11px] font-bold uppercase tracking-[0.3em] text-slate-500 dark:text-gray-400 group-hover:text-brand-blue transition-colors">
               {model.name}
             </span>
             <div className="ml-6 md:ml-12 w-1 md:w-1.5 h-1 md:h-1.5 bg-brand-blue/20 rounded-full"></div>

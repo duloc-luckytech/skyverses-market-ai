@@ -127,7 +127,7 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset, onEdit, onView, onDelete, 
         {asset.status === 'processing' ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
             <Loader2 size={20} className="animate-spin text-brand-blue/50" />
-            <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45">
+            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45">
               Processing...
             </span>
           </div>
@@ -143,7 +143,7 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset, onEdit, onView, onDelete, 
             {asset.type === 'CHARACTER' && <User size={28} />}
             {asset.type === 'LOCATION'  && <MapPin size={28} />}
             {asset.type === 'OBJECT'    && <Package size={28} />}
-            <span className="text-[9px] font-black uppercase tracking-widest">No image</span>
+            <span className="text-[9px] font-bold uppercase tracking-widest">No image</span>
           </div>
         )}
 
@@ -217,7 +217,7 @@ const AddCard: React.FC<{ onAdd: () => void; label: string }> = ({ onAdd, label 
     <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 group-hover:bg-brand-blue/10 flex items-center justify-center transition-all">
       <Plus size={18} className="text-slate-300 dark:text-white/45 group-hover:text-brand-blue transition-colors" />
     </div>
-    <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-white/45 group-hover:text-brand-blue transition-colors">
+    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45 group-hover:text-brand-blue transition-colors">
       {label}
     </span>
   </motion.button>
@@ -252,7 +252,7 @@ const UrlUploadPanel: React.FC<UrlUploadProps> = ({ panelId, onAddUrl }) => {
     <div className="relative">
       <button
         onClick={() => setOpen(v => !v)}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40 hover:border-brand-blue/30 hover:text-brand-blue transition-all"
+        className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/8 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-white/40 hover:border-brand-blue/30 hover:text-brand-blue transition-all"
       >
         <Link2 size={12} /> Thêm từ URL
       </button>
@@ -264,10 +264,10 @@ const UrlUploadPanel: React.FC<UrlUploadProps> = ({ panelId, onAddUrl }) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 top-full mt-2 z-20 w-80 p-4 rounded-2xl bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 shadow-xl shadow-black/20"
+            className="absolute left-0 top-full mt-2 z-20 w-80 p-4 rounded-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 shadow-xl shadow-black/20"
           >
             <div className="space-y-3">
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">
                 Thêm tài nguyên từ URL
               </p>
               <input
@@ -289,7 +289,7 @@ const UrlUploadPanel: React.FC<UrlUploadProps> = ({ panelId, onAddUrl }) => {
                 <button
                   onClick={handleSubmit}
                   disabled={!url.trim()}
-                  className="flex-1 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-black uppercase tracking-widest hover:brightness-110 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  className="flex-1 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-bold uppercase tracking-widest hover:brightness-110 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 >
                   Thêm
                 </button>
@@ -361,7 +361,7 @@ const DragDropZone: React.FC<DragDropZoneProps> = ({ onDrop, assetType }) => {
         <Upload size={20} />
       </div>
       <div>
-        <p className={`text-[11px] font-black uppercase tracking-widest transition-colors ${isDragging ? 'text-brand-blue' : 'text-slate-400 dark:text-gray-400'}`}>
+        <p className={`text-[11px] font-bold uppercase tracking-widest transition-colors ${isDragging ? 'text-brand-blue' : 'text-slate-400 dark:text-gray-400'}`}>
           {isDragging ? 'Thả để upload' : 'Kéo thả ảnh vào đây'}
         </p>
         <p className="text-[9px] text-slate-300 dark:text-white/35 mt-0.5">
@@ -434,7 +434,7 @@ const AssetPanel: React.FC<AssetPanelProps> = ({
         {/* Add button */}
         <button
           onClick={onAdd}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-md shadow-brand-blue/20"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-bold uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-md shadow-brand-blue/20"
         >
           <Plus size={12} /> Thêm mới
         </button>
@@ -570,7 +570,7 @@ const SfxPanel: React.FC = () => {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all ${
                 activeCategory === cat
                   ? 'bg-brand-blue text-white shadow-md'
                   : 'text-slate-400 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white/60'
@@ -650,7 +650,7 @@ const SfxPanel: React.FC = () => {
 
       {/* Upload custom SFX */}
       <div className="rounded-2xl border border-slate-200 dark:border-white/8 p-4 space-y-3">
-        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
+        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
           <Upload size={10} /> Upload SFX tùy chỉnh
         </p>
         <div className="flex gap-2">
@@ -670,7 +670,7 @@ const SfxPanel: React.FC = () => {
           <button
             onClick={handleAddCustom}
             disabled={!urlInput.trim()}
-            className="px-4 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-black uppercase tracking-widest hover:brightness-110 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-md shadow-brand-blue/20"
+            className="px-4 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-bold uppercase tracking-widest hover:brightness-110 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-md shadow-brand-blue/20"
           >
             <Plus size={12} />
           </button>
@@ -744,14 +744,14 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex-1 min-h-0 flex flex-col p-5 lg:p-10 overflow-y-auto no-scrollbar bg-[#fafafa] dark:bg-[#0a0d14] transition-colors duration-500"
+      className="flex-1 min-h-0 flex flex-col p-5 lg:p-10 overflow-y-auto no-scrollbar bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] transition-colors duration-500"
     >
       <div className="max-w-6xl mx-auto w-full space-y-8 pb-32 lg:pb-10">
 
         {/* ── Header ─────────────────────────────────────────────── */}
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl lg:text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">
+            <h2 className="text-2xl lg:text-3xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">
               Thư viện tài nguyên
             </h2>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-1.5">
@@ -760,7 +760,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
           </div>
           <button
             onClick={() => addAsset(activePanel === 'SFX' ? 'CHARACTER' : (activePanel as AssetType))}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-blue text-white text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-brand-blue/20"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-blue text-white text-[10px] font-bold uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-brand-blue/20"
           >
             <Sparkles size={13} /> Tạo tài nguyên
           </button>
@@ -774,7 +774,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
               <button
                 key={panel.id}
                 onClick={() => setActivePanel(panel.id)}
-                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
+                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${
                   activePanel === panel.id
                     ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-brand-blue/20'
                     : 'border-slate-200 dark:border-white/8 text-slate-500 dark:text-white/40 hover:border-brand-blue/30 hover:text-brand-blue bg-white dark:bg-transparent'
@@ -783,7 +783,7 @@ export const AssetsTab: React.FC<AssetsTabProps> = ({
                 {panel.icon}
                 {panel.label}
                 {count > 0 && (
-                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center ${
+                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center ${
                     activePanel === panel.id ? 'bg-white/20' : 'bg-slate-100 dark:bg-white/10'
                   }`}>
                     {count}

@@ -57,8 +57,8 @@ export const PaymentHistoryTab: React.FC = () => {
 
   const sourceColors: Record<string, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
     'bank_transfer': { label: 'Bank', color: '#10b981', bg: '#10b98112', icon: <Banknote size={11} /> },
-    'crypto': { label: 'Crypto', color: '#f59e0b', bg: '#f59e0b12', icon: <Bitcoin size={11} /> },
-    'admin': { label: 'Admin', color: '#8b5cf6', bg: '#8b5cf612', icon: <User size={11} /> },
+    'crypto': { label: 'Crypto', color: '#E5C767', bg: '#E5C76712', icon: <Bitcoin size={11} /> },
+    'admin': { label: 'Admin', color: '#D4B85A', bg: '#D4B85A12', icon: <User size={11} /> },
   };
 
   return (

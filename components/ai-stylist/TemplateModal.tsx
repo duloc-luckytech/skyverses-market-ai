@@ -88,7 +88,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="relative w-full max-w-4xl bg-white dark:bg-[#0a0d14] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col max-h-[85vh]"
+        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-page)] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col max-h-[85vh]"
       >
         <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
@@ -96,7 +96,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
                 <LayoutGrid size={24} />
              </div>
              <div className="space-y-0.5">
-                <h2 className="text-xl font-black uppercase tracking-tight italic text-slate-900 dark:text-white">Thư viện Phong cách</h2>
+                <h2 className="text-xl font-bold uppercase tracking-tight italic text-slate-900 dark:text-white">Thư viện Phong cách</h2>
                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Gợi ý phối đồ & Bối cảnh</p>
              </div>
           </div>
@@ -116,15 +116,15 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
                       <img src={tmpl.image} className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                       <div className="absolute bottom-4 left-6">
-                         <span className="text-[9px] font-black uppercase text-[#dfff1a] tracking-widest mb-1 block">Style Template</span>
-                         <h4 className="text-xl font-black uppercase italic tracking-tighter text-white">{tmpl.name}</h4>
+                         <span className="text-[9px] font-bold uppercase text-[#dfff1a] tracking-widest mb-1 block">Style Template</span>
+                         <h4 className="text-xl font-bold uppercase italic tracking-tighter text-white">{tmpl.name}</h4>
                       </div>
                    </div>
                    <div className="p-6 space-y-4">
                       <p className="text-xs text-gray-500 font-medium leading-relaxed">"{tmpl.desc}"</p>
                       <button 
                         onClick={() => onApply(tmpl.config)}
-                        className="w-full py-4 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:brightness-110 transition-all"
+                        className="w-full py-4 bg-brand-blue text-white rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-3 hover:brightness-110 transition-all"
                       >
                          <Wand2 size={14} /> Sử dụng mẫu này
                       </button>

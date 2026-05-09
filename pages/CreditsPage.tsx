@@ -107,13 +107,16 @@ const CreditsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#0a0d14] text-black dark:text-white pt-24 pb-32 transition-colors duration-500 overflow-x-hidden selection:bg-brand-blue/30">
+    <div className="min-h-screen bg-[var(--atlas-bg-page)] text-[var(--atlas-text-primary)] pt-24 pb-32 transition-colors duration-500 overflow-x-hidden selection:bg-atlas-purple/30">
       
-      {/* ── Ambient Background ── */}
+      {/* Atlas pale wash + decorative blobs */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-30%] left-[50%] -translate-x-1/2 w-[1400px] h-[700px] bg-gradient-to-b from-brand-blue/[0.03] to-transparent dark:from-brand-blue/[0.06] rounded-full blur-[150px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[800px] h-[800px] bg-gradient-to-tl from-violet-500/[0.02] to-transparent dark:from-violet-500/[0.04] rounded-full blur-[150px]" />
-        <div className="absolute top-[40%] left-[-10%] w-[500px] h-[500px] bg-gradient-to-r from-emerald-500/[0.02] to-transparent dark:from-emerald-500/[0.03] rounded-full blur-[120px]" />
+        <div className="absolute inset-0 dark:opacity-0 transition-opacity"
+          style={{ background: 'linear-gradient(180deg, #EBF4FB 0%, #F4F0FF 60%, #FFFFFF 100%)' }} />
+        <div className="absolute top-[-20%] left-[40%] w-[640px] h-[640px] rounded-full opacity-50 blur-3xl"
+          style={{ background: 'radial-gradient(circle at center, rgba(212,160,23,.30) 0%, rgba(212,160,23,0) 70%)' }} />
+        <div className="absolute bottom-[10%] right-[-10%] w-[480px] h-[480px] rounded-full opacity-30 blur-3xl"
+          style={{ background: 'radial-gradient(circle at center, rgba(230,180,34,.20) 0%, rgba(230,180,34,0) 70%)' }} />
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
@@ -127,35 +130,17 @@ const CreditsPage = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-20 max-w-3xl mx-auto"
         >
-          {/* Badge */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.08] rounded-full mb-8 shadow-sm"
-          >
-            <div className="w-5 h-5 rounded-full bg-brand-blue/15 flex items-center justify-center">
-              <Zap size={10} className="text-brand-blue" fill="currentColor" />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-500 dark:text-gray-400">Universal Credits System</span>
-          </motion.div>
-          
-          <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-black tracking-[-0.03em] leading-[1.08] mb-6">
+          {/* Atlas eyebrow + headline pattern */}
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-atlas-orangeBright mb-3">
+            GIÁ CẢ
+          </p>
+
+          <h1 className="text-[2rem] md:text-[3rem] lg:text-[3.5rem] font-bold tracking-[-0.02em] leading-[1.05] mb-5">
             Một loại Credit,{' '}
-            <span className="relative">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-violet-500 to-fuchsia-500">
-                vô hạn sáng tạo
-              </span>
-              <motion.div 
-                className="absolute -bottom-1 left-0 right-0 h-[3px] rounded-full bg-gradient-to-r from-brand-blue via-violet-500 to-fuchsia-500 opacity-30"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 0.6, duration: 0.8 }}
-              />
-            </span>
+            <span className="atlas-text-gradient">vô hạn sáng tạo</span>
           </h1>
-          
-          <p className="text-base md:text-lg text-slate-400 dark:text-gray-500 leading-relaxed max-w-2xl mx-auto mb-10">
+
+          <p className="text-base md:text-lg text-[var(--atlas-text-secondary)] leading-relaxed max-w-2xl mx-auto mb-10">
             Không subscription, không lock-in. Mua Credits theo nhu cầu và sử dụng cho hơn 30 công cụ AI — Video, Image, Voice, Music và hơn thế nữa.
           </p>
 
@@ -172,7 +157,7 @@ const CreditsPage = () => {
               </div>
               <div className="text-left">
                 <p className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-[0.2em]">Số dư hiện tại</p>
-                <p className="text-xl font-black text-brand-blue">{(credits || 0).toLocaleString()} <span className="text-xs font-bold text-slate-400">credits</span></p>
+                <p className="text-xl font-bold text-brand-blue">{(credits || 0).toLocaleString()} <span className="text-xs font-bold text-slate-400">credits</span></p>
               </div>
             </motion.div>
           )}
@@ -199,8 +184,8 @@ const CreditsPage = () => {
           className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-20 max-w-4xl mx-auto"
         >
           {[
-            { icon: <CreditCard size={20} />, num: '01', title: 'Chọn gói Credits', desc: 'Mua gói phù hợp nhu cầu. Gói lớn = giá tốt hơn.', color: '#0090ff' },
-            { icon: <Wand2 size={20} />, num: '02', title: 'Tạo nội dung AI', desc: 'Dùng Credits cho bất kỳ công cụ AI nào — không giới hạn.', color: '#8b5cf6' },
+            { icon: <CreditCard size={20} />, num: '01', title: 'Chọn gói Credits', desc: 'Mua gói phù hợp nhu cầu. Gói lớn = giá tốt hơn.', color: '#D4A017' },
+            { icon: <Wand2 size={20} />, num: '02', title: 'Tạo nội dung AI', desc: 'Dùng Credits cho bất kỳ công cụ AI nào — không giới hạn.', color: '#C4960C' },
             { icon: <Infinity size={20} />, num: '03', title: 'Không hết hạn', desc: 'Credits còn mãi mãi. Nạp thêm bất cứ lúc nào.', color: '#10b981' },
           ].map((step, idx) => (
             <motion.div 
@@ -216,7 +201,7 @@ const CreditsPage = () => {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: step.color }}>{step.num}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: step.color }}>{step.num}</span>
                   <h4 className="text-sm font-bold text-slate-900 dark:text-white">{step.title}</h4>
                 </div>
                 <p className="text-xs text-slate-400 dark:text-gray-500 leading-relaxed">{step.desc}</p>
@@ -230,7 +215,7 @@ const CreditsPage = () => {
         ════════════════════════════════════════════ */}
         <section className="mb-24">
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight mb-3">Chọn gói phù hợp</h2>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">Chọn gói phù hợp</h2>
             <p className="text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto">Mỗi gói được thiết kế để phù hợp với nhu cầu sáng tạo khác nhau</p>
           </motion.div>
 
@@ -242,7 +227,7 @@ const CreditsPage = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
               {packages.map((pack, packIdx) => {
-                const accent = pack.theme?.accentColor || '#0090ff';
+                const accent = pack.theme?.accentColor || '#D4A017';
                 const gradFrom = pack.theme?.gradientFrom || '#0f172a';
                 const gradTo = pack.theme?.gradientTo || '#020617';
                 const total = getTotal(pack);
@@ -263,7 +248,7 @@ const CreditsPage = () => {
                       isHighlight 
                         ? 'shadow-xl z-10 lg:scale-[1.03]' 
                         : 'shadow-sm hover:shadow-lg'
-                    } bg-white dark:bg-[#0a0d14]`}
+                    } bg-white dark:bg-[var(--atlas-bg-page)]`}
                     style={{ 
                       borderColor: isHighlight ? `${accent}40` : isHovered ? `${accent}25` : 'rgba(0,0,0,0.06)',
                       ...(isHighlight ? { boxShadow: `0 20px 60px ${accent}12` } : {})
@@ -276,13 +261,13 @@ const CreditsPage = () => {
                     {pack.popular && (
                       <div className="flex items-center justify-center gap-2 py-2.5" style={{ backgroundColor: accent }}>
                         <Crown size={12} fill="white" className="text-white" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white">Phổ biến nhất</span>
+                        <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white">Phổ biến nhất</span>
                       </div>
                     )}
                     {pack.ribbon?.text && !pack.popular && (
                       <div className="flex items-center justify-center gap-2 py-2" style={{ backgroundColor: pack.ribbon.color || accent, color: '#000' }}>
                         <span className="text-sm">{pack.ribbon.icon}</span>
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">{pack.ribbon.text}</span>
+                        <span className="text-[9px] font-bold uppercase tracking-[0.2em]">{pack.ribbon.text}</span>
                       </div>
                     )}
 
@@ -290,9 +275,9 @@ const CreditsPage = () => {
                       {/* Name + Badge */}
                       <div className="mb-5">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">{pack.name}</h3>
+                          <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{pack.name}</h3>
                           {pack.badge && (
-                            <span className="text-[8px] font-black uppercase px-2 py-1 rounded-md border tracking-wider" style={{ backgroundColor: `${accent}12`, color: accent, borderColor: `${accent}20` }}>
+                            <span className="text-[8px] font-bold uppercase px-2 py-1 rounded-md border tracking-wider" style={{ backgroundColor: `${accent}12`, color: accent, borderColor: `${accent}20` }}>
                               {pack.badge}
                             </span>
                           )}
@@ -310,14 +295,14 @@ const CreditsPage = () => {
                           )}
                         </div>
                         <div className="flex items-baseline gap-1.5">
-                          <span className="text-3xl md:text-[2.5rem] font-black tracking-tight" style={{ color: accent }}>{formatVND(pack.price)}</span>
+                          <span className="text-3xl md:text-[2.5rem] font-bold tracking-tight" style={{ color: accent }}>{formatVND(pack.price)}</span>
                           <span className="text-base font-bold text-slate-300 dark:text-gray-600">₫</span>
                         </div>
                         <p className="text-[10px] text-slate-400 dark:text-gray-500 mt-1.5 font-medium">
                           ≈ ${pack.price} · {pricePerCredit}₫/1K credits
                         </p>
                         {pack.discountPercent && pack.discountPercent > 0 && (
-                          <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[9px] font-black rounded-md border border-emerald-500/15">
+                          <span className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[9px] font-bold rounded-md border border-emerald-500/15">
                             <TrendingUp size={10} /> Tiết kiệm {pack.discountPercent}%
                           </span>
                         )}
@@ -329,7 +314,7 @@ const CreditsPage = () => {
                           <Sparkles size={16} style={{ color: accent }} fill="currentColor" />
                         </div>
                         <div>
-                          <p className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
+                          <p className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
                             {total.toLocaleString()} <span className="text-xs font-bold text-slate-400">credits</span>
                           </p>
                           {(pack.bonusPercent || 0) > 0 && (
@@ -345,7 +330,7 @@ const CreditsPage = () => {
                         onClick={() => handleUpgradeClick(pack)}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.97 }}
-                        className="w-full py-4 rounded-xl text-[11px] font-black uppercase tracking-[0.15em] transition-all shadow-sm hover:shadow-lg flex items-center justify-center gap-2"
+                        className="w-full py-4 rounded-xl text-[11px] font-bold uppercase tracking-[0.15em] transition-all shadow-sm hover:shadow-lg flex items-center justify-center gap-2"
                         style={{ 
                           backgroundColor: accent, 
                           color: '#fff',
@@ -374,7 +359,7 @@ const CreditsPage = () => {
                                   {feat.label}
                                 </p>
                                 {feat.highlight && feat.enabled && (
-                                  <span className="inline-block mt-1 text-[7px] font-black px-1.5 py-0.5 rounded border uppercase tracking-wider" style={{ backgroundColor: `${accent}10`, color: accent, borderColor: `${accent}20` }}>
+                                  <span className="inline-block mt-1 text-[7px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider" style={{ backgroundColor: `${accent}10`, color: accent, borderColor: `${accent}20` }}>
                                     Đặc biệt
                                   </span>
                                 )}
@@ -389,7 +374,7 @@ const CreditsPage = () => {
                         <div className="mt-5 pt-5 border-t border-black/[0.04] dark:border-white/[0.04]">
                           <div className="flex items-center gap-1.5 mb-3">
                             <Infinity size={12} style={{ color: accent }} />
-                            <p className="text-[9px] font-black uppercase tracking-[0.25em]" style={{ color: accent }}>Unlimited Access</p>
+                            <p className="text-[9px] font-bold uppercase tracking-[0.25em]" style={{ color: accent }}>Unlimited Access</p>
                           </div>
 
                           {/* Image models */}
@@ -441,7 +426,7 @@ const CreditsPage = () => {
                                     <Check size={11} style={{ color: accent }} strokeWidth={3} />
                                     <span className="text-[10px] font-bold text-slate-700 dark:text-gray-300">{model.label}</span>
                                   </div>
-                                  <span className="text-[7px] font-black uppercase px-1.5 py-0.5 rounded text-white" style={{ backgroundColor: accent }}>
+                                  <span className="text-[7px] font-bold uppercase px-1.5 py-0.5 rounded text-white" style={{ backgroundColor: accent }}>
                                     {model.badge || '∞'}
                                   </span>
                                 </div>
@@ -463,7 +448,7 @@ const CreditsPage = () => {
         ════════════════════════════════════════════ */}
         <section className="mb-24">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight mb-3">
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
               Dùng cho <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-violet-500">mọi công cụ AI</span>
             </h2>
             <p className="text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto">Một loại credit — hơn 30 sản phẩm AI</p>
@@ -473,10 +458,10 @@ const CreditsPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 max-w-5xl mx-auto mb-10">
             {[
               { icon: <Video size={22} />, name: 'Video AI', range: '600 – 2,000', avgCost: 1500, color: '#ef4444' },
-              { icon: <ImageIcon size={22} />, name: 'Image AI', range: '80 – 1,500', avgCost: 150, color: '#0090ff' },
-              { icon: <Mic size={22} />, name: 'Voice AI', range: '500 – 2,000', avgCost: 500, color: '#f59e0b' },
+              { icon: <ImageIcon size={22} />, name: 'Image AI', range: '80 – 1,500', avgCost: 150, color: '#D4A017' },
+              { icon: <Mic size={22} />, name: 'Voice AI', range: '500 – 2,000', avgCost: 500, color: '#D4A017' },
               { icon: <Music size={22} />, name: 'Music AI', range: '1,000 – 5,000', avgCost: 1000, color: '#ec4899' },
-              { icon: <Wand2 size={22} />, name: 'Upscale', range: '100 – 500', avgCost: 100, color: '#8b5cf6' },
+              { icon: <Wand2 size={22} />, name: 'Upscale', range: '100 – 500', avgCost: 100, color: '#C4960C' },
               { icon: <Cpu size={22} />, name: 'Workflow', range: '500 – 5,000', avgCost: 500, color: '#10b981' },
             ].map((tool, idx) => (
               <motion.div
@@ -510,20 +495,20 @@ const CreditsPage = () => {
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-black/[0.05] dark:border-white/[0.05]">
-                    <th className="text-left px-5 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px]">Công cụ</th>
-                    <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
+                    <th className="text-left px-5 py-4 font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px]">Công cụ</th>
+                    <th className="px-4 py-4 font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
                       <span className="text-slate-800 dark:text-white">Starter</span><br />
                       <span className="font-bold text-brand-blue normal-case tracking-normal">75,000 cr</span>
                     </th>
-                    <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
+                    <th className="px-4 py-4 font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
                       <span className="text-slate-800 dark:text-white">Creator</span><br />
                       <span className="font-bold text-violet-500 normal-case tracking-normal">~258,750 cr</span>
                     </th>
-                    <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
+                    <th className="px-4 py-4 font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
                       <span className="text-slate-800 dark:text-white">Pro</span><br />
                       <span className="font-bold text-fuchsia-500 normal-case tracking-normal">~625,000 cr</span>
                     </th>
-                    <th className="px-4 py-4 font-black text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
+                    <th className="px-4 py-4 font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
                       <span className="text-slate-800 dark:text-white">Ultimate</span><br />
                       <span className="font-bold text-amber-500 normal-case tracking-normal">~1,400,000 cr</span>
                     </th>
@@ -532,7 +517,7 @@ const CreditsPage = () => {
                 <tbody>
                   {[
                     {
-                      icon: <ImageIcon size={13} />, name: 'Image AI', color: '#0090ff',
+                      icon: <ImageIcon size={13} />, name: 'Image AI', color: '#D4A017',
                       note: 'avg ~150 cr/ảnh',
                       avg: 150,
                     },
@@ -542,7 +527,7 @@ const CreditsPage = () => {
                       avg: 1500,
                     },
                     {
-                      icon: <Mic size={13} />, name: 'Voice AI', color: '#f59e0b',
+                      icon: <Mic size={13} />, name: 'Voice AI', color: '#D4A017',
                       note: 'avg ~500 cr/bản',
                       avg: 500,
                     },
@@ -552,13 +537,13 @@ const CreditsPage = () => {
                       avg: 1000,
                     },
                     {
-                      icon: <Wand2 size={13} />, name: 'Upscale', color: '#8b5cf6',
+                      icon: <Wand2 size={13} />, name: 'Upscale', color: '#C4960C',
                       note: 'avg ~100 cr/ảnh',
                       avg: 100,
                     },
                   ].map((row, i) => {
                     const counts = [75000, 258750, 625000, 1400000].map(cr => Math.floor(cr / row.avg));
-                    const colors = ['#0090ff', '#8b5cf6', '#ec4899', '#f59e0b'];
+                    const colors = ['#D4A017', '#C4960C', '#ec4899', '#D4A017'];
                     return (
                       <tr key={row.name} className={`border-b border-black/[0.03] dark:border-white/[0.03] last:border-0 ${i % 2 === 0 ? '' : 'bg-slate-50/50 dark:bg-white/[0.01]'}`}>
                         <td className="px-5 py-4">
@@ -574,7 +559,7 @@ const CreditsPage = () => {
                         </td>
                         {counts.map((count, ci) => (
                           <td key={ci} className="px-4 py-4 text-center">
-                            <span className="text-sm font-black" style={{ color: colors[ci] }}>
+                            <span className="text-sm font-bold" style={{ color: colors[ci] }}>
                               ~{count >= 1000 ? `${(count / 1000).toFixed(count % 1000 === 0 ? 0 : 1)}K` : count}
                             </span>
                             <p className="text-[9px] text-slate-400 dark:text-gray-500 mt-0.5">lần</p>
@@ -619,7 +604,7 @@ const CreditsPage = () => {
         ════════════════════════════════════════════ */}
         <section className="max-w-3xl mx-auto mb-20">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight mb-3">Câu hỏi thường gặp</h2>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">Câu hỏi thường gặp</h2>
             <p className="text-sm text-slate-400 dark:text-gray-500">Mọi thứ bạn cần biết về hệ thống Credits</p>
           </motion.div>
 
@@ -677,13 +662,13 @@ const CreditsPage = () => {
           <div className="w-14 h-14 rounded-2xl bg-brand-blue/10 flex items-center justify-center mx-auto mb-6">
             <Flame size={24} className="text-brand-blue" />
           </div>
-          <h3 className="text-xl md:text-2xl font-black tracking-tight mb-3">Sẵn sàng bắt đầu?</h3>
+          <h3 className="text-xl md:text-2xl font-bold tracking-tight mb-3">Sẵn sàng bắt đầu?</h3>
           <p className="text-sm text-slate-400 dark:text-gray-500 max-w-md mx-auto mb-8">
             Chọn gói Credits phù hợp và bắt đầu sáng tạo với AI ngay hôm nay
           </p>
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-brand-blue text-white rounded-xl text-[11px] font-black uppercase tracking-[0.15em] shadow-lg shadow-brand-blue/20 hover:brightness-110 active:scale-[0.97] transition-all"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-brand-blue text-white rounded-xl text-[11px] font-bold uppercase tracking-[0.15em] shadow-lg shadow-brand-blue/20 hover:brightness-110 active:scale-[0.97] transition-all"
           >
             <Zap size={14} fill="currentColor" /> Xem bảng giá
           </button>

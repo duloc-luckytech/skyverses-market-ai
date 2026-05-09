@@ -233,7 +233,7 @@ export const GradientMesh: React.FC<GradientMeshProps> = ({
         className="absolute inset-0 opacity-[0.018]"
         style={{
           backgroundImage:
-            'linear-gradient(rgba(0,144,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(0,144,255,0.4) 1px, transparent 1px)',
+            'linear-gradient(rgba(201, 168, 76,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(201, 168, 76,0.4) 1px, transparent 1px)',
           backgroundSize: '80px 80px',
         }}
       />
@@ -266,7 +266,7 @@ export const HoverCard: React.FC<HoverCardProps> = ({ children, className, glowO
   <motion.div
     whileHover={
       glowOnHover
-        ? { y: -4, borderColor: 'rgba(0,144,255,0.25)', boxShadow: '0 8px 32px rgba(0,144,255,0.12)' }
+        ? { y: -4, borderColor: 'rgba(201, 168, 76,0.25)', boxShadow: '0 8px 32px rgba(201, 168, 76,0.12)' }
         : { y: -3 }
     }
     transition={{ duration: 0.25, ease: 'easeOut' }}
@@ -298,7 +298,7 @@ export const TimelineConnector: React.FC<TimelineConnectorProps> = ({
       <svg ref={ref} className={`w-px h-full ${className ?? ''}`} viewBox="0 0 1 100" preserveAspectRatio="none">
         <motion.line
           x1="0.5" y1="0" x2="0.5" y2="100"
-          stroke="rgba(0,144,255,0.2)"
+          stroke="rgba(201, 168, 76,0.2)"
           strokeWidth="1"
           strokeDasharray="100"
           initial={{ strokeDashoffset: 100 }}
@@ -313,7 +313,7 @@ export const TimelineConnector: React.FC<TimelineConnectorProps> = ({
     <svg ref={ref} className={`w-full h-px ${className ?? ''}`} viewBox="0 0 100 1" preserveAspectRatio="none">
       <motion.line
         x1="0" y1="0.5" x2="100" y2="0.5"
-        stroke="rgba(0,144,255,0.2)"
+        stroke="rgba(201, 168, 76,0.2)"
         strokeWidth="1"
         strokeDasharray="100"
         initial={{ strokeDashoffset: 100 }}

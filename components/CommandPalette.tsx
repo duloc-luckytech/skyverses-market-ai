@@ -127,7 +127,7 @@ const CommandPalette: React.FC = () => {
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
             className="fixed top-[12vh] left-1/2 -translate-x-1/2 w-full max-w-2xl z-[501] px-4"
           >
-            <div className="bg-white dark:bg-[#0a0d14] rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
+            <div className="bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
               
               {/* Search input */}
               <div className="flex items-center gap-3 px-5 h-16 border-b border-black/[0.04] dark:border-white/[0.04]">

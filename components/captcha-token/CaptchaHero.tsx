@@ -39,7 +39,7 @@ export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTa
           <div className="space-y-7">
             {/* Badge */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-indigo-400">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-[9px] font-bold uppercase tracking-[0.3em] text-indigo-400">
                 <ShieldCheck size={11} />
                 API Service
               </span>
@@ -47,7 +47,7 @@ export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTa
 
             {/* Title */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.1]">
                 Captcha Token
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">
@@ -83,7 +83,7 @@ export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTa
                     {s.icon}
                   </div>
                   <div>
-                    <span className="block text-lg font-black text-white">{s.value}</span>
+                    <span className="block text-lg font-bold text-white">{s.value}</span>
                     <span className="text-[9px] font-bold text-white/25 uppercase tracking-[0.2em]">{s.label}</span>
                   </div>
                 </div>

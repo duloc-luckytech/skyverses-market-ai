@@ -68,7 +68,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
             className="fixed inset-0 z-[901] flex items-center justify-center px-4 pointer-events-none"
           >
             <div
-              className="relative w-full max-w-[780px] bg-white dark:bg-[#13171f] rounded-3xl overflow-hidden shadow-2xl shadow-black/30 border border-black/[0.06] dark:border-white/[0.06] pointer-events-auto"
+              className="relative w-full max-w-[780px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-3xl overflow-hidden shadow-2xl shadow-black/30 border border-black/[0.06] dark:border-white/[0.06] pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
@@ -95,7 +95,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
 
                   {/* Category tag */}
                   <div className="absolute top-4 left-4">
-                    <span className="px-2.5 py-1 bg-brand-blue/90 backdrop-blur-sm text-white text-[8px] font-black uppercase tracking-[0.25em] rounded-md">
+                    <span className="px-2.5 py-1 bg-brand-blue/90 backdrop-blur-sm text-white text-[8px] font-bold uppercase tracking-[0.25em] rounded-md">
                       {sol.category[currentLang]}
                     </span>
                   </div>
@@ -103,13 +103,13 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
                   {/* Price bottom left */}
                   <div className="absolute bottom-4 left-4">
                     {sol.isFree ? (
-                      <span className="px-3 py-1.5 bg-emerald-500/20 backdrop-blur-sm border border-emerald-500/40 text-emerald-400 text-[9px] font-black uppercase tracking-widest rounded-lg">
+                      <span className="px-3 py-1.5 bg-emerald-500/20 backdrop-blur-sm border border-emerald-500/40 text-emerald-400 text-[9px] font-bold uppercase tracking-widest rounded-lg">
                         FREE
                       </span>
                     ) : (
                       <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg">
                         <Zap size={11} className="text-brand-blue" fill="currentColor" />
-                        <span className="text-sm font-black text-white">{sol.priceCredits}</span>
+                        <span className="text-sm font-bold text-white">{sol.priceCredits}</span>
                         <span className="text-[8px] text-white/50 font-bold">credits</span>
                       </div>
                     )}
@@ -134,13 +134,13 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full">
                       <Sparkles size={10} className="text-brand-blue" />
-                      <span className="text-[8px] font-black uppercase tracking-[0.3em] text-brand-blue">Quick View</span>
+                      <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-brand-blue">Quick View</span>
                     </div>
                   </div>
 
                   {/* Title */}
                   <div>
-                    <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-brand-blue italic leading-tight mb-2">
+                    <h2 className="text-xl md:text-2xl font-bold uppercase tracking-tight text-brand-blue italic leading-tight mb-2">
                       {sol.name[currentLang]}
                     </h2>
                     <p className="text-[12px] md:text-[13px] text-slate-500 dark:text-white/50 leading-relaxed italic">
@@ -162,7 +162,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
                       <span className="text-[11px] font-bold">{fakeStats.likes}</span>
                     </button>
                     {sol.complexity && (
-                      <span className="px-2 py-0.5 bg-purple-500/10 border border-purple-500/20 text-purple-500 text-[8px] font-black uppercase tracking-wider rounded-sm">
+                      <span className="px-2 py-0.5 bg-purple-500/10 border border-purple-500/20 text-purple-500 text-[8px] font-bold uppercase tracking-wider rounded-sm">
                         {sol.complexity}
                       </span>
                     )}
@@ -186,7 +186,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
                   {/* Platforms */}
                   {sol.platforms && sol.platforms.length > 0 && (
                     <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Platform:</span>
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Platform:</span>
                       <div className="flex gap-1.5">
                         {sol.platforms.map((p) => (
                           <span

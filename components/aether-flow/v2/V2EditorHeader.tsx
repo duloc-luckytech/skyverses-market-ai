@@ -26,7 +26,7 @@ export const V2EditorHeader: React.FC<V2EditorHeaderProps> = ({ template, onClos
   );
 
   return (
-    <div className="h-16 border-b border-black/10 dark:border-white/10 flex items-center justify-between px-6 bg-white dark:bg-[#13171f] shrink-0 z-50 transition-colors shadow-sm">
+    <div className="h-16 border-b border-black/10 dark:border-white/10 flex items-center justify-between px-6 bg-white dark:bg-[var(--atlas-bg-panel)] shrink-0 z-50 transition-colors shadow-sm">
       {/* LEFT: Branding & Template Info */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-3">
@@ -34,9 +34,9 @@ export const V2EditorHeader: React.FC<V2EditorHeaderProps> = ({ template, onClos
               <Workflow size={20} />
             </div>
            <div className="hidden sm:block space-y-1">
-              <h2 className="text-[12px] font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-none italic">Biên tập quy trình</h2>
+              <h2 className="text-[12px] font-bold uppercase tracking-tighter text-slate-900 dark:text-white leading-none italic">Biên tập quy trình</h2>
               <div className="flex items-center gap-3">
-                <p className="text-[9px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest leading-none truncate max-w-[150px]">
+                <p className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest leading-none truncate max-w-[150px]">
                   {template?.name || 'TỰ THIẾT KẾ'}
                 </p>
                 {template?.templateId && (
@@ -56,7 +56,7 @@ export const V2EditorHeader: React.FC<V2EditorHeaderProps> = ({ template, onClos
       <div className="flex items-center gap-1 bg-slate-50 dark:bg-black/20 p-1 border border-black/5 dark:border-white/5 rounded-xl">
         <button className="flex items-center gap-2 px-4 py-2 bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 transition-all rounded-lg mr-2 group">
           <DownloadIcon size={16} className="text-slate-500 dark:text-white group-hover:text-indigo-500 transition-colors" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white">Download</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-700 dark:text-white">Download</span>
         </button>
 
         <IconButton icon={Upload} />
@@ -67,7 +67,7 @@ export const V2EditorHeader: React.FC<V2EditorHeaderProps> = ({ template, onClos
         <div className="relative group px-2">
           <button className="flex items-center gap-1 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
             <Languages size={18} />
-            <span className="text-[9px] font-black bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded-sm">EN</span>
+            <span className="text-[9px] font-bold bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded-sm">EN</span>
           </button>
         </div>
 

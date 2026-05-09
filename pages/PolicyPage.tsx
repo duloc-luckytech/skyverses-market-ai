@@ -13,18 +13,18 @@ const PolicyCard = ({ number, title, icon, content, isAlert = false }: any) => (
     whileHover={{ y: -5 }}
     className={`p-8 border rounded-[2rem] space-y-6 transition-all shadow-sm ${
       isAlert 
-      ? 'border-red-500/20 bg-red-50 dark:bg-[#13171f]' 
-      : 'border-slate-200 dark:border-white/5 bg-white dark:bg-[#13171f]'
+      ? 'border-red-500/20 bg-red-50 dark:bg-[var(--atlas-bg-panel)]' 
+      : 'border-slate-200 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)]'
     }`}
   >
     <div className="flex justify-between items-start">
       <div className={`p-3 rounded-xl ${isAlert ? 'bg-red-500/20 text-red-500' : 'bg-brand-blue/10 text-brand-blue'}`}>
         {icon}
       </div>
-      <span className="text-4xl font-black italic opacity-5 text-slate-900 dark:text-white">{number}</span>
+      <span className="text-4xl font-bold italic opacity-5 text-slate-900 dark:text-white">{number}</span>
     </div>
     <div className="space-y-3">
-      <h3 className="text-xl font-black uppercase italic text-slate-900 dark:text-white tracking-tight">
+      <h3 className="text-xl font-bold uppercase italic text-slate-900 dark:text-white tracking-tight">
         <span className={`${isAlert ? 'text-red-500' : 'text-brand-blue'} mr-2`}>{number}.</span> {title}
       </h3>
       <div className="text-sm text-slate-600 dark:text-gray-400 font-medium leading-relaxed">
@@ -59,12 +59,12 @@ const PolicyPage = () => {
         <section className="text-center space-y-8 max-w-4xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-            className="w-20 h-20 bg-brand-blue/10 border border-brand-blue/20 rounded-full flex items-center justify-center mx-auto text-brand-blue shadow-[0_0_50px_rgba(0,144,255,0.2)]"
+            className="w-20 h-20 bg-brand-blue/10 border border-brand-blue/20 rounded-full flex items-center justify-center mx-auto text-brand-blue shadow-[0_0_50px_rgba(201, 168, 76,0.2)]"
           >
             <Scale size={40} />
           </motion.div>
           <div className="space-y-4">
-            <h1 className="text-4xl lg:text-7xl font-black uppercase tracking-tighter italic leading-none">
+            <h1 className="text-4xl lg:text-7xl font-bold uppercase tracking-tighter italic leading-none">
               {t('policy.title')}
             </h1>
             <p className="text-slate-500 dark:text-gray-400 text-lg lg:text-xl font-medium max-w-3xl mx-auto leading-relaxed italic">
@@ -127,12 +127,12 @@ const PolicyPage = () => {
         </section>
 
         {/* Updates Section */}
-        <section className="bg-slate-50 dark:bg-[#13171f] border border-slate-200 dark:border-white/5 p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+        <section className="bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/5 p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform duration-700">
               <RefreshCcw size={120} className="text-slate-900 dark:text-white" />
            </div>
            <div className="relative z-10 space-y-4">
-              <h3 className="text-2xl font-black uppercase italic tracking-tight text-slate-900 dark:text-white">{t('policy.updates.title')}</h3>
+              <h3 className="text-2xl font-bold uppercase italic tracking-tight text-slate-900 dark:text-white">{t('policy.updates.title')}</h3>
               <p className="text-slate-500 dark:text-gray-400 font-medium leading-relaxed max-w-3xl">
                  {t('policy.updates.content')}
               </p>

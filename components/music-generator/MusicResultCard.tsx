@@ -23,7 +23,7 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
   const isDone = status === 'done';
 
   return (
-    <div className={`bg-white dark:bg-[#1a1f2b] border-2 rounded-3xl p-6 space-y-6 transition-all duration-500 group shadow-xl relative overflow-hidden ${
+    <div className={`bg-white dark:bg-[var(--atlas-bg-panel)] border-2 rounded-3xl p-6 space-y-6 transition-all duration-500 group shadow-xl relative overflow-hidden ${
       isDone ? 'border-brand-blue/20 dark:border-brand-blue/30' : 'border-black/5 dark:border-white/5'
     } ${status === 'error' ? 'opacity-60' : ''}`}>
       
@@ -36,12 +36,12 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
         {status === 'processing' ? (
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="w-12 h-12 text-brand-blue animate-spin" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue animate-pulse">Rendering...</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-blue animate-pulse">Rendering...</span>
           </div>
         ) : status === 'error' ? (
           <div className="flex flex-col items-center gap-2 text-red-500/50">
             <AlertCircle size={48} />
-            <span className="text-[10px] font-black uppercase tracking-widest">Lỗi tạo nhạc</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest">Lỗi tạo nhạc</span>
           </div>
         ) : (
           <>
@@ -55,7 +55,7 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
                     key={i} 
                     animate={{ height: [10, 40, 10] }} 
                     transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }} 
-                    className="w-1 bg-brand-blue rounded-full shadow-[0_0_10px_#0090ff]" 
+                    className="w-1 bg-brand-blue rounded-full shadow-[0_0_10px_#D4A017]" 
                   />
                 ))}
               </div>
@@ -77,7 +77,7 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
                 onClick={onPlay}
                 className={`relative w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
                   isDone 
-                  ? 'bg-brand-blue text-white scale-100 shadow-[0_0_25px_rgba(0,144,255,0.6)] hover:scale-110' 
+                  ? 'bg-brand-blue text-white scale-100 shadow-[0_0_25px_rgba(212,160,23,0.6)] hover:scale-110' 
                   : 'bg-white/20 text-white scale-90'
                 }`}
               >
@@ -97,8 +97,8 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
       
       <div className="space-y-2 relative z-10">
         <div className="flex justify-between items-start">
-          <h4 className="text-lg font-black uppercase italic tracking-tighter text-slate-900 dark:text-white group-hover:text-brand-blue transition-colors truncate pr-4">{name}</h4>
-          <p className="text-[8px] font-black text-slate-400 dark:text-gray-600 uppercase mt-1 shrink-0">{timestamp}</p>
+          <h4 className="text-lg font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white group-hover:text-brand-blue transition-colors truncate pr-4">{name}</h4>
+          <p className="text-[8px] font-bold text-slate-400 dark:text-gray-600 uppercase mt-1 shrink-0">{timestamp}</p>
         </div>
         <p className="text-[10px] text-slate-500 dark:text-gray-500 font-bold uppercase truncate leading-relaxed">"{desc}"</p>
       </div>
@@ -125,7 +125,7 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
         <button 
           onClick={onDownload}
           disabled={!isDone}
-          className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm flex items-center gap-2 ${
+          className={`px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm flex items-center gap-2 ${
             isDone 
             ? 'bg-brand-blue/10 dark:bg-white/5 hover:bg-brand-blue text-brand-blue dark:text-gray-400 hover:text-white' 
             : 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/20 cursor-not-allowed'

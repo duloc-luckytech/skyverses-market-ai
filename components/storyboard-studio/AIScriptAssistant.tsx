@@ -309,7 +309,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
   const canInteract = !!script.trim() && !isProcessing;
 
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[#0a0d14] overflow-hidden shadow-sm">
+    <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden shadow-sm">
 
       {/* ── Header toggle ──────────────────────────────────────── */}
       <button
@@ -320,7 +320,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
           <div className="w-6 h-6 rounded-lg bg-brand-blue/10 flex items-center justify-center shrink-0">
             <Bot size={13} className="text-brand-blue" />
           </div>
-          <span className="text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-white">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-slate-700 dark:text-white">
             AI Script Assistant
           </span>
           <span className="text-[9px] bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded-full font-bold tracking-wide">
@@ -355,7 +355,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shrink-0 border-b-2 transition-all ${
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap shrink-0 border-b-2 transition-all ${
                     activeTab === tab.id
                       ? 'border-brand-blue text-brand-blue'
                       : 'border-transparent text-slate-400 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white/60'
@@ -505,7 +505,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                         whileTap={{ scale: 0.97 }}
                         onClick={handleSuggestNext}
                         disabled={isSuggesting || !canInteract}
-                        className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-brand-blue to-indigo-600 text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-brand-blue/20 hover:brightness-110 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-brand-blue to-indigo-600 text-white text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/20 hover:brightness-110 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         {isSuggesting
                           ? <><Loader2 size={14} className="animate-spin" /> Đang phân tích...</>
@@ -523,7 +523,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                       <AnimatePresence>
                         {suggestions.length > 0 && (
                           <div className="space-y-2.5">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
                               <Sparkles size={10} className="text-brand-blue" />
                               3 gợi ý tiếp theo
                             </p>
@@ -536,7 +536,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                                 className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 transition-all group"
                               >
                                 {/* Scene number */}
-                                <div className="w-6 h-6 rounded-full bg-brand-blue/10 text-brand-blue flex items-center justify-center text-[9px] font-black shrink-0 mt-0.5">
+                                <div className="w-6 h-6 rounded-full bg-brand-blue/10 text-brand-blue flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">
                                   {scenes.length + i + 1}
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -569,7 +569,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                     <div className="space-y-3.5">
                       {/* Director selector */}
                       <div className="space-y-1.5">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">
                           Chọn phong cách đạo diễn
                         </p>
                         <div className="grid grid-cols-2 gap-1.5">
@@ -583,7 +583,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                                   : 'border-slate-100 dark:border-white/5 text-slate-500 dark:text-white/40 hover:border-brand-blue/20 hover:text-slate-700 dark:hover:text-white/60'
                               }`}
                             >
-                              <p className="text-[10px] font-black leading-none mb-0.5">{d.label}</p>
+                              <p className="text-[10px] font-bold leading-none mb-0.5">{d.label}</p>
                               <p className="text-[8px] opacity-60 leading-tight">{d.desc}</p>
                             </button>
                           ))}
@@ -595,7 +595,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                         whileTap={{ scale: 0.97 }}
                         onClick={handleRewrite}
                         disabled={isRewriting || !canInteract}
-                        className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-brand-blue text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-purple-600/20 hover:brightness-110 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-brand-blue text-white text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-purple-600/20 hover:brightness-110 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         {isRewriting
                           ? <><Loader2 size={14} className="animate-spin" /> Đang viết lại...</>
@@ -611,7 +611,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                             animate={{ opacity: 1, y: 0 }}
                             className="space-y-2"
                           >
-                            <p className="text-[9px] font-black uppercase tracking-widest text-purple-400 flex items-center gap-1.5">
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-purple-400 flex items-center gap-1.5">
                               <Sparkles size={9} /> Preview — {DIRECTORS.find(d => d.id === selectedDirector)?.label} Style
                             </p>
                             <textarea
@@ -624,7 +624,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => { onScriptUpdate(rewritePreview); setRewritePreview(''); }}
-                                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-md shadow-brand-blue/20"
+                                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-brand-blue text-white text-[10px] font-bold uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-md shadow-brand-blue/20"
                                 >
                                   <Check size={12} /> Apply to Script
                                 </button>
@@ -651,7 +651,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                         whileTap={{ scale: 0.97 }}
                         onClick={handleAnalyzeStats}
                         disabled={isAnalyzing || !canInteract}
-                        className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-brand-blue text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-emerald-600/20 hover:brightness-110 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-brand-blue text-white text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-emerald-600/20 hover:brightness-110 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         {isAnalyzing
                           ? <><Loader2 size={14} className="animate-spin" /> Đang phân tích...</>
@@ -681,7 +681,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                                   transition={{ delay: i * 0.06 }}
                                   className="rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-100 dark:border-white/5 px-3 py-2.5"
                                 >
-                                  <p className={`text-sm font-black tabular-nums leading-none ${stat.accent}`}>{stat.value}</p>
+                                  <p className={`text-sm font-bold tabular-nums leading-none ${stat.accent}`}>{stat.value}</p>
                                   <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-1">{stat.label}</p>
                                 </motion.div>
                               ))}
@@ -690,13 +690,13 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                             {/* Genre & Characters */}
                             <div className="space-y-2">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400">Genre:</span>
+                                <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">Genre:</span>
                                 <span className="text-[10px] font-bold bg-brand-blue/10 text-brand-blue px-2.5 py-0.5 rounded-full border border-brand-blue/20">{stats.genre}</span>
                               </div>
 
                               {stats.characters.length > 0 && (
                                 <div className="flex items-start gap-2 flex-wrap">
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-0.5 shrink-0">Characters:</span>
+                                  <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-0.5 shrink-0">Characters:</span>
                                   <div className="flex flex-wrap gap-1">
                                     {stats.characters.map(c => (
                                       <span key={c} className="text-[9px] font-bold bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/20">{c}</span>
@@ -707,7 +707,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
 
                               {stats.locations.length > 0 && (
                                 <div className="flex items-start gap-2 flex-wrap">
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-0.5 shrink-0">Locations:</span>
+                                  <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-0.5 shrink-0">Locations:</span>
                                   <div className="flex flex-wrap gap-1">
                                     {stats.locations.map(l => (
                                       <span key={l} className="text-[9px] font-bold bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">{l}</span>

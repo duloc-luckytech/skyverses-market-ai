@@ -43,7 +43,7 @@ const VoiceStudio = () => {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 text-white">
         <AlertCircle size={48} className="text-red-500" />
-        <h2 className="text-xl font-black uppercase tracking-widest">Node Not Found</h2>
+        <h2 className="text-xl font-bold uppercase tracking-widest">Node Not Found</h2>
         <Link to="/" className="text-brand-blue underline uppercase text-xs">Back to Market</Link>
       </div>
     );
@@ -74,11 +74,11 @@ const VoiceStudio = () => {
             transition={{ duration: 0.8 }}
             className="lg:col-span-6 space-y-10"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ff4b3a]/10 border border-[#ff4b3a]/20 text-[#ff4b3a] text-[10px] font-black uppercase tracking-[0.3em] italic">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ff4b3a]/10 border border-[#ff4b3a]/20 text-[#ff4b3a] text-[10px] font-bold uppercase tracking-[0.3em] italic">
               <Sparkles size={14} /> The All-in-One Voice Ecosystem
             </div>
             
-            <h1 className="text-6xl lg:text-[120px] font-black leading-[0.85] tracking-tighter italic uppercase">
+            <h1 className="text-6xl lg:text-[120px] font-bold leading-[0.85] tracking-tighter italic uppercase">
               Voice Your <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff4b3a] via-orange-400 to-purple-500">
                 Vision.
@@ -92,11 +92,11 @@ const VoiceStudio = () => {
             <div className="flex flex-col sm:flex-row gap-6 pt-4">
               <button 
                 onClick={() => setIsStudioOpen(true)}
-                className="bg-[#ff4b3a] text-white px-12 py-6 rounded-sm text-xs font-black uppercase tracking-[0.4em] shadow-[0_20px_50px_rgba(255,75,58,0.3)] hover:scale-105 active:scale-[0.95] transition-all flex items-center justify-center gap-4 group"
+                className="bg-[#ff4b3a] text-white px-12 py-6 rounded-sm text-xs font-bold uppercase tracking-[0.4em] shadow-[0_20px_50px_rgba(255,75,58,0.3)] hover:scale-105 active:scale-[0.95] transition-all flex items-center justify-center gap-4 group"
               >
                 Launch Voice Studio <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-white/10 rounded-sm text-xs font-black uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
+              <button className="px-12 py-6 border border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
                 View Use Cases <ChevronRight size={16} />
               </button>
             </div>
@@ -108,7 +108,7 @@ const VoiceStudio = () => {
             transition={{ duration: 1, delay: 0.2 }}
             className="lg:col-span-6 relative"
           >
-            <div className="relative aspect-video bg-[#0a0a0c] border border-white/5 rounded-xl p-4 shadow-3xl overflow-hidden group ring-1 ring-white/10">
+            <div className="relative aspect-video bg-[var(--atlas-bg-page)] border border-white/5 rounded-xl p-4 shadow-3xl overflow-hidden group ring-1 ring-white/10">
                <div className="absolute inset-0 bg-gradient-to-tr from-[#ff4b3a]/10 to-transparent"></div>
                <div className="h-full w-full bg-[#050505] rounded-lg border border-white/5 flex overflow-hidden">
                   <div className="w-1/3 border-r border-white/5 p-4 space-y-6 hidden md:block">
@@ -134,8 +134,8 @@ const VoiceStudio = () => {
                      </div>
                      <div className="flex justify-between items-end">
                         <div className="space-y-1">
-                           <p className="text-[8px] font-black text-[#ff4b3a] uppercase tracking-widest italic leading-none mb-1">Acoustic_Engine_v4.2</p>
-                           <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">Identity Mastery.</h3>
+                           <p className="text-[8px] font-bold text-[#ff4b3a] uppercase tracking-widest italic leading-none mb-1">Acoustic_Engine_v4.2</p>
+                           <h3 className="text-xl font-bold italic uppercase tracking-tighter text-white">Identity Mastery.</h3>
                         </div>
                         <div className="w-12 h-12 rounded-full bg-[#ff4b3a] flex items-center justify-center shadow-2xl">
                            <Play size={20} fill="white" className="ml-1" />
@@ -152,7 +152,7 @@ const VoiceStudio = () => {
       <section className="py-40 border-t border-white/5 bg-black">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 text-center space-y-24">
            <div className="space-y-6 max-w-2xl mx-auto">
-              <h2 className="text-5xl lg:text-7xl font-black uppercase italic tracking-tighter leading-none">Investment <br /><span className="text-[#ff4b3a]">Tiers.</span></h2>
+              <h2 className="text-5xl lg:text-7xl font-bold uppercase italic tracking-tighter leading-none">Investment <br /><span className="text-[#ff4b3a]">Tiers.</span></h2>
               <p className="text-gray-500 font-bold uppercase text-[10px] tracking-[0.5em] italic">Choose your compute node capability</p>
            </div>
            
@@ -160,25 +160,25 @@ const VoiceStudio = () => {
               {PRICING_TIERS.map((tier) => (
                 <div key={tier.name} className={`p-12 bg-[#08080a] border-2 rounded-[2.5rem] flex flex-col justify-between transition-all duration-500 group relative overflow-hidden ${tier.popular ? 'border-[#ff4b3a] shadow-[0_30px_100px_rgba(255,75,58,0.1)] scale-105 z-10' : 'border-white/5 opacity-80 hover:opacity-100 hover:border-white/10'}`}>
                    {tier.popular && (
-                      <div className="absolute top-0 right-0 bg-[#ff4b3a] text-white px-6 py-2 text-[8px] font-black uppercase tracking-widest rounded-bl-2xl shadow-xl">MOST POPULAR</div>
+                      <div className="absolute top-0 right-0 bg-[#ff4b3a] text-white px-6 py-2 text-[8px] font-bold uppercase tracking-widest rounded-bl-2xl shadow-xl">MOST POPULAR</div>
                    )}
                    <div className="space-y-10 text-left">
                       <div className="space-y-1">
-                         <p className="text-[10px] font-black uppercase text-gray-500 tracking-[0.3em]">{tier.name}</p>
-                         <h4 className="text-5xl font-black italic tracking-tighter text-white">{tier.price}</h4>
+                         <p className="text-[10px] font-bold uppercase text-gray-500 tracking-[0.3em]">{tier.name}</p>
+                         <h4 className="text-5xl font-bold italic tracking-tighter text-white">{tier.price}</h4>
                       </div>
                       <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
-                         <p className="text-[8px] font-black uppercase text-gray-500 mb-1">Monthly Power</p>
+                         <p className="text-[8px] font-bold uppercase text-gray-500 mb-1">Monthly Power</p>
                          <div className="flex items-center gap-2">
                             <Zap size={14} className="text-[#ff4b3a]" fill="currentColor" />
-                            <span className="text-lg font-black italic">{tier.credits} <span className="text-[10px] not-italic opacity-40">CR</span></span>
+                            <span className="text-lg font-bold italic">{tier.credits} <span className="text-[10px] not-italic opacity-40">CR</span></span>
                          </div>
                       </div>
                       <div className="space-y-4 pt-4 border-t border-white/5">
                          {tier.features.map(f => (
                             <div key={f} className="flex items-center gap-4">
                                <CheckCircle2 size={16} className="text-[#ff4b3a] shrink-0" />
-                               <span className="text-[11px] font-black uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">{f}</span>
+                               <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">{f}</span>
                             </div>
                          ))}
                       </div>
@@ -186,7 +186,7 @@ const VoiceStudio = () => {
                    <div className="mt-16">
                       <button 
                         onClick={() => setIsStudioOpen(true)}
-                        className={`w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-xl active:scale-95 ${tier.popular ? 'bg-[#ff4b3a] text-white' : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white hover:text-black'}`}
+                        className={`w-full py-5 rounded-2xl text-[10px] font-bold uppercase tracking-[0.4em] transition-all shadow-xl active:scale-95 ${tier.popular ? 'bg-[#ff4b3a] text-white' : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white hover:text-black'}`}
                       >
                          Initialize Plan
                       </button>
@@ -199,29 +199,29 @@ const VoiceStudio = () => {
 
       {/* --- SECTION 3: FINAL CTA --- */}
       <section className="py-60 text-center relative overflow-hidden bg-white text-black border-t border-white/5 transition-colors">
-        <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-black text-black leading-none tracking-tighter select-none italic">
+        <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-bold text-black leading-none tracking-tighter select-none italic">
           VOICE VOICE VOICE VOICE
         </div>
         <div className="max-w-4xl mx-auto space-y-16 relative z-10">
-           <h2 className="text-7xl lg:text-[140px] font-black uppercase tracking-tighter leading-[0.8] italic">Start <br /> <span className="text-[#ff4b3a]">Building.</span></h2>
+           <h2 className="text-7xl lg:text-[140px] font-bold uppercase tracking-tighter leading-[0.8] italic">Start <br /> <span className="text-[#ff4b3a]">Building.</span></h2>
            <div className="space-y-10 pt-10">
             <button 
               onClick={() => setIsStudioOpen(true)}
-              className="bg-black text-white px-24 py-8 rounded-sm text-sm font-black uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(0,0,0,0.1)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group"
+              className="bg-black text-white px-24 py-8 rounded-sm text-sm font-bold uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(0,0,0,0.1)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group"
             >
               Launch Studio Node <Zap size={24} fill="currentColor" />
             </button>
-            <p className="text-gray-500 font-black uppercase tracking-[0.5em] text-[10px] italic">Universal Credit Ready • Enterprise Privacy • Instant Export</p>
+            <p className="text-gray-500 font-bold uppercase tracking-[0.5em] text-[10px] italic">Universal Credit Ready • Enterprise Privacy • Instant Export</p>
           </div>
         </div>
       </section>
 
       {/* --- FOOTER --- */}
       <footer className="py-20 border-t border-white/5 bg-black transition-colors duration-500">
-        <div className="max-w-[1600px] mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-black uppercase tracking-widest text-gray-500">
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-bold uppercase tracking-widest text-gray-500">
            <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-4">
-                 <span className="text-white text-lg tracking-tighter italic font-black uppercase">AI VOICE STUDIO</span>
+                 <span className="text-white text-lg tracking-tighter italic font-bold uppercase">AI VOICE STUDIO</span>
               </div>
               <p className="max-w-xs text-center md:text-left opacity-50 font-bold leading-relaxed">Industrial-grade acoustic synthesis for creative studios. Powered by Skyverses neural network.</p>
            </div>

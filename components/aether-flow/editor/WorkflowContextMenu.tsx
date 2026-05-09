@@ -50,7 +50,7 @@ export const WorkflowContextMenu: React.FC<WorkflowContextMenuProps> = ({ x, y, 
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       style={{ top: y, left: x }}
-      className="fixed z-[600] w-64 bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-[#444] rounded-lg shadow-2xl py-1.5 overflow-hidden backdrop-blur-md"
+      className="fixed z-[600] w-64 bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-[#444] rounded-lg shadow-2xl py-1.5 overflow-hidden backdrop-blur-md"
     >
       <MenuItem label="Bản đồ quy trình" icon={<MapIcon size={14} />} shortcut="(Shift+m)" />
       <MenuItem label="Dọn dẹp bộ nhớ đồ họa" icon={<Rocket size={14} />} shortcut="(Shift+r)" />

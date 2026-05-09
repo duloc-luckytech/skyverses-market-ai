@@ -102,7 +102,7 @@ const SlideToolbar: React.FC<Props> = ({
                 exit={{ opacity: 0, y: -6, scale: 0.97 }}
                 transition={{ duration: 0.14 }}
                 style={{ position: 'fixed', top: layoutPos.top, left: layoutPos.left, zIndex: 99999 }}
-                className="bg-white dark:bg-[#13171f] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl overflow-hidden min-w-[120px]"
+                className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl overflow-hidden min-w-[120px]"
               >
                 {LAYOUT_OPTIONS.map(opt => (
                   <button

@@ -58,7 +58,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 50, scale: 0.96 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="w-full sm:max-w-lg bg-white dark:bg-[#1a1f2b] rounded-t-3xl sm:rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl flex flex-col overflow-hidden max-h-[92dvh]"
+        className="w-full sm:max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] rounded-t-3xl sm:rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl flex flex-col overflow-hidden max-h-[92dvh]"
       >
         {/* Header */}
         <div className="px-6 pt-6 pb-4 shrink-0">

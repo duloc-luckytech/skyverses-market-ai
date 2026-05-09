@@ -2,12 +2,12 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Menu, X, Moon, Sun, ChevronRight, Languages, LogOut,
+  Menu, X, ChevronRight, Languages, LogOut,
   User, Settings,
   Zap, ArrowRight, BarChart3,
   ChevronDown, Bookmark, Loader2, Sparkles,
   Database, HelpCircle, Users, Gift, Plus, Crown,
-  Search, Command
+  Search, Coins
 } from 'lucide-react';
 
 import { AnimatePresence, motion } from 'framer-motion';
@@ -18,6 +18,7 @@ import { Language } from '../types';
 const CreditPurchaseModal = lazy(() => import('./CreditPurchaseModal'));
 const UpgradeModal = lazy(() => import('./UpgradeModal').then(m => ({ default: m.UpgradeModal })));
 import { creditsApi } from '../apis/credits';
+import { skytokenApi } from '../apis/skytoken';
 import { useSearch } from '../context/SearchContext';
 
 const DEFAULT_AVATAR = "https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png";
@@ -33,7 +34,7 @@ const FlagIcon = ({ code, className = "w-5 h-3.5" }: { code: string; className?:
   );
 };
 
-const DropdownLink = ({
+const UserMenuLink = ({
   to, icon, label, onClick, external = false
 }: {
   to: string; icon: React.ReactNode | null; label: string; onClick: () => void; external?: boolean;
@@ -61,11 +62,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const [isClaimingDaily, setIsClaimingDaily] = useState(false);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [sktBalance, setSktBalance] = useState(0);
 
   const location = useLocation();
   const navigate = useNavigate();
   const { lang, setLang, t } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const { user, logout, isAuthenticated, credits, claimWelcomeCredits, refreshUserInfo, isPro } = useAuth();
   const search = useSearch();
 
@@ -73,11 +75,24 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const userRef = useRef<HTMLDivElement>(null);
   const exploreRef = useRef<HTMLDivElement>(null);
 
+  const [pastHero, setPastHero] = useState(false);
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 20);
+      setPastHero(y > window.innerHeight * 0.7);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    setPastHero(window.scrollY > window.innerHeight * 0.7);
+  }, [location.pathname]);
+
+  // On home hero: glassmorphism dark overlay. Otherwise: frosted light/dark bar.
+  const overHero = location.pathname === '/' && !pastHero;
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -96,6 +111,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [search]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      skytokenApi.getBalance().then(r => setSktBalance(r.skyTokenBalance || 0)).catch(() => {});
+    }
+  }, [isAuthenticated]);
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -117,407 +138,486 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
     finally { setIsClaimingDaily(false); }
   };
 
-  const navLinks = [
-    { name: t('nav.browse'), path: '/market' },
-    ...(isAuthenticated ? [{ name: 'Create', path: '/apps' }] : []),
-  ];
-
   const languages: { code: Language; name: string }[] = [
     { code: 'en', name: 'EN' }, { code: 'vi', name: 'VI' }, { code: 'ko', name: 'KO' }, { code: 'ja', name: 'JA' }
   ];
 
   const logoUrl = "/assets/skyverses-logo.png";
-
   const isActive = (path: string) => location.pathname === path;
+
+  /* ═══ Atlas-style nav link classes ═══ */
+  const navLinkCls = (active: boolean) => {
+    if (overHero) {
+      return `uppercase text-[14px] font-normal tracking-wide transition-colors ${active ? 'text-white' : 'text-[#faf7f8] hover:text-white'}`;
+    }
+    return `uppercase text-[14px] font-normal tracking-wide transition-colors ${active ? 'text-[#B8963F]' : 'text-[#1a2330] dark:text-[#faf7f8] hover:text-[#B8963F] dark:hover:text-[#C9A84C]'}`;
+  };
 
   return (
     <>
-      {/* Top accent line */}
-      <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-blue/40 to-transparent z-[160]"></div>
+      {/* ═══ NAVBAR — Atlas Cloud glassmorphism ═══ */}
+      <nav
+        aria-label="Main navigation"
+        className="fixed w-full z-[150] top-0 transition-all duration-300"
+        style={{
+          height: 48,
+          backgroundColor: overHero
+            ? 'rgba(27,27,29,0.4)'
+            : theme === 'dark'
+              ? scrolled ? 'rgba(15,20,30,0.85)' : 'rgba(15,20,30,0.6)'
+              : scrolled ? 'rgba(245,245,247,0.8)' : 'rgba(245,245,247,0.6)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderBottom: overHero ? 'none' : theme === 'dark' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.04)',
+        }}
+      >
+        <div className="h-full flex items-center" style={{ maxWidth: 1300, margin: '0 auto', padding: '0 40px' }}>
 
-      <nav aria-label="Main navigation" className={`fixed w-full z-[150] top-0 transition-all duration-300 ${
-        scrolled 
-          ? 'h-14 bg-white/95 dark:bg-[#0a0d14]/95 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.08] shadow-sm shadow-black/[0.03] dark:shadow-black/20' 
-          : 'h-16 bg-white/50 dark:bg-transparent backdrop-blur-sm'
-      }`}>
-        <div className="max-w-[1440px] mx-auto px-4 lg:px-8 h-full">
-          <div className="flex items-center h-full">
+          {/* Logo */}
+          <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2 shrink-0">
+            <img src={logoUrl} alt="Logo" className={`w-7 h-7 object-contain transition-all ${overHero || theme === 'dark' ? 'brightness-0 invert' : ''}`} style={!overHero && theme !== 'dark' ? { filter: 'brightness(0) saturate(100%) invert(63%) sepia(50%) saturate(500%) hue-rotate(10deg) brightness(90%)' } : undefined} />
+            <span
+              className="text-[15px] font-bold tracking-tight transition-colors"
+              style={{ color: overHero ? '#faf7f8' : theme === 'dark' ? '#faf7f8' : '#B8963F' }}
+            >
+              Skyverses
+            </span>
+          </Link>
 
-            {/* Logo */}
-            <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2 shrink-0 mr-8">
-              <img src={logoUrl} alt="Logo" className="w-7 h-7 object-contain" />
-              <span className="text-base font-black tracking-tight text-black dark:text-white">Skyverses</span>
+          {/* Nav Links — Desktop (Atlas: uppercase, 14px, weight 400, spaced 40px) */}
+          <div className="hidden md:flex items-center" style={{ marginLeft: 40, gap: 32 }}>
+            {/* APPS */}
+            <Link to="/markets" className={navLinkCls(location.pathname.startsWith('/markets') || location.pathname === '/models')}>
+              Apps
             </Link>
 
-            {/* Nav Links — Desktop */}
-            <div className="hidden md:flex items-center gap-0.5">
-
-              {/* Home */}
-              <Link to="/" className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive('/') ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}>
-                Home
-              </Link>
-
-              {/* Marketplace */}
-              <Link to="/markets"
-                className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${
-                  location.pathname.startsWith('/markets')
-                    ? 'text-brand-blue bg-brand-blue/[0.06]'
-                    : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
-                }`}
+            {/* EXPLORE — dropdown */}
+            <div className="relative" ref={exploreRef}>
+              <button
+                onClick={() => setShowExploreMenu(!showExploreMenu)}
+                onMouseEnter={() => setShowExploreMenu(true)}
+                aria-expanded={showExploreMenu}
+                aria-haspopup="true"
+                className={`${navLinkCls(location.pathname.startsWith('/explorer') || location.pathname.startsWith('/use-cases') || location.pathname.startsWith('/solutions'))} flex items-center gap-1`}
               >
-                Marketplace
-              </Link>
-
-              {/* Explore Dropdown — group: Discover */}
-              <div className="relative" ref={exploreRef}>
-                <button
-                  onClick={() => setShowExploreMenu(!showExploreMenu)}
-                  onMouseEnter={() => setShowExploreMenu(true)}
-                  aria-expanded={showExploreMenu}
-                  aria-haspopup="true"
-                  className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all flex items-center gap-1 ${
-                    location.pathname.startsWith('/explorer') || location.pathname === '/models'
-                      ? 'text-brand-blue bg-brand-blue/[0.06]'
-                      : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
-                  }`}
-                >
-                  Explore
-                  <ChevronDown size={11} className={`transition-transform duration-200 ${showExploreMenu ? 'rotate-180' : ''}`} />
-                </button>
-                <AnimatePresence>
-                  {showExploreMenu && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
-                      transition={{ duration: 0.12 }}
-                      onMouseLeave={() => setShowExploreMenu(false)}
-                      className="absolute top-full left-0 mt-1 w-52 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl p-2 z-[200]"
-                      role="menu"
-                    >
-                      {/* Group: Discover */}
-                      <p className="text-[9px] font-black tracking-[0.15em] uppercase text-slate-400 px-2 pb-1.5 pt-0.5">Discover</p>
-                      <DropdownLink to="/explorer" icon={null} label="Explorer Gallery" onClick={() => setShowExploreMenu(false)} />
-                      <DropdownLink to="/models" icon={null} label="AI Models" onClick={() => setShowExploreMenu(false)} />
+                Explore
+                <ChevronDown size={11} className={`transition-transform duration-200 ${showExploreMenu ? 'rotate-180' : ''}`} />
+              </button>
+              <AnimatePresence>
+                {showExploreMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
+                    transition={{ duration: 0.15 }}
+                    onMouseLeave={() => setShowExploreMenu(false)}
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-[200]"
+                    style={{
+                      width: 520,
+                      background: '#0f141e',
+                      borderRadius: 12,
+                      padding: '20px 24px',
+                      boxShadow: '0 20px 40px rgba(0,0,0,.4)',
+                      border: '1px solid rgba(201,168,76,0.15)',
+                    }}
+                    role="menu"
+                  >
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-1">
+                      <DropdownNavLink to="/explorer" label="Explorer Gallery" desc="Browse AI-generated artworks" onClick={() => setShowExploreMenu(false)} />
+                      <DropdownNavLink to="/use-cases" label="Use Cases" desc="Real-world AI applications" onClick={() => setShowExploreMenu(false)} />
+                      <DropdownNavLink to="/solutions" label="Solutions" desc="Industry-specific tools" onClick={() => setShowExploreMenu(false)} />
+                      <DropdownNavLink to="/models" label="AI Models" desc="Explore all available models" onClick={() => setShowExploreMenu(false)} />
+                      <DropdownNavLink to="/booking" label="Enterprise" desc="Custom AI solutions for teams" onClick={() => setShowExploreMenu(false)} />
                       {isAuthenticated && (
-                        <>
-                          <div className="h-px bg-black/[0.04] dark:bg-white/[0.04] mx-1 my-1.5" />
-                          <DropdownLink to="/apps" icon={null} label="My Workspace" onClick={() => setShowExploreMenu(false)} />
-                        </>
+                        <DropdownNavLink to="/apps" label="My Workspace" desc="Your creative dashboard" onClick={() => setShowExploreMenu(false)} />
                       )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Insights */}
-              <a href="https://insights.skyverses.com" target="_blank" rel="noopener noreferrer"
-                className="px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
-                Insights
-              </a>
-
-              {/* Create (authenticated only) */}
-              {isAuthenticated && (
-                <Link to="/apps"
-                  className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${isActive('/apps') ? 'text-brand-blue bg-brand-blue/[0.06]' : 'text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}>
-                  Create
-                </Link>
-              )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
+            {/* PROMPTS */}
+            <Link to="/prompt-market" className={navLinkCls(location.pathname.startsWith('/prompt-market'))}>
+              Prompts
+            </Link>
 
-            {/* Spacer */}
-            <div className="flex-1" />
+            {/* PRICING */}
+            <Link to="/credits" className={navLinkCls(isActive('/credits') || isActive('/pricing'))}>
+              Pricing
+            </Link>
+          </div>
 
-            {/* Search Trigger — Desktop */}
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* ═══ Right side actions ═══ */}
+          <div className="flex items-center gap-2">
+
+            {/* Authenticated inline actions */}
+            {isAuthenticated && (
+              <>
+                {/* Daily Claim */}
+                <AnimatePresence>
+                  {user?.canDailyClaim && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      onClick={handleClaimDaily}
+                      disabled={isClaimingDaily}
+                      className="hidden lg:flex items-center gap-1.5 px-2.5 h-8 rounded text-xs font-medium transition-all"
+                      style={{
+                        background: 'rgba(201,168,76,0.1)',
+                        border: '1px solid rgba(201,168,76,0.25)',
+                        color: '#C9A84C',
+                      }}
+                    >
+                      {isClaimingDaily ? <Loader2 size={13} className="animate-spin" /> : <Gift size={13} />}
+                      <span className="text-[11px]">{t('header.daily_gift')}</span>
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+
+                {/* Welcome Claim */}
+                {user && !user.claimWelcomeCredit && (
+                  <button
+                    onClick={handleClaim}
+                    disabled={isClaiming}
+                    className="hidden sm:flex items-center gap-1.5 px-2.5 h-8 rounded text-[11px] font-medium transition-all"
+                    style={{
+                      background: 'rgba(201,168,76,0.1)',
+                      border: '1px solid rgba(201,168,76,0.25)',
+                      color: '#C9A84C',
+                    }}
+                  >
+                    {isClaiming ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                    Claim +1000
+                  </button>
+                )}
+
+                {/* Credits — Desktop */}
+                <Link
+                  to="/credits"
+                  className="hidden md:flex items-center gap-1.5 px-2.5 h-8 rounded transition-all"
+                  style={{
+                    background: overHero ? 'rgba(255,255,255,0.1)' : theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                    border: overHero ? '1px solid rgba(255,255,255,0.15)' : theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.06)',
+                  }}
+                >
+                  <Sparkles size={12} style={{ color: '#C9A84C' }} fill="currentColor" />
+                  <span className="text-[12px] font-bold" style={{ color: overHero ? '#faf7f8' : theme === 'dark' ? '#faf7f8' : '#1a2330' }}>{(credits || 0).toLocaleString()}</span>
+                </Link>
+
+                {/* PRO Badge */}
+                {isPro && (
+                  <div
+                    className="hidden md:flex items-center gap-1 px-2.5 h-7 rounded text-[10px] font-bold uppercase tracking-widest"
+                    style={{ background: 'rgba(201, 168, 76,0.1)', border: '1px solid rgba(201, 168, 76,0.25)', color: '#B8963F' }}
+                  >
+                    <Crown size={11} /> PRO
+                  </div>
+                )}
+
+                {/* Credits — Mobile */}
+                <button
+                  onClick={() => setIsPurchaseModalOpen(true)}
+                  className="md:hidden flex items-center gap-1.5 px-3 h-8 rounded text-[11px] font-bold active:scale-95 transition-all"
+                  style={{ background: '#B8963F', color: '#faf7f8' }}
+                >
+                  <Sparkles size={11} fill="currentColor" />
+                  {(credits || 0).toLocaleString()}
+                  <Plus size={11} />
+                </button>
+              </>
+            )}
+
+            {/* Search — Desktop (icon only) */}
             <button
               onClick={() => search.open()}
               aria-label="Search (⌘K)"
-              className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05] rounded-lg hover:border-brand-blue/20 transition-all group mr-2"
+              className="hidden md:flex w-8 h-8 items-center justify-center rounded transition-all"
+              style={{
+                color: overHero || theme === 'dark' ? 'rgba(250,247,248,0.7)' : 'rgba(26,35,48,0.5)',
+              }}
             >
-              <Search size={13} className="text-slate-300 dark:text-gray-600 group-hover:text-brand-blue transition-colors" />
-              <span className="text-[11px] text-slate-300 dark:text-gray-600 w-16">{t('header.search')}</span>
-              <kbd className="text-[9px] font-medium text-slate-300 dark:text-gray-600 bg-white dark:bg-white/5 px-1 py-0.5 rounded border border-black/[0.04] dark:border-white/[0.06] flex items-center gap-0.5">
-                <Command size={8} />K
-              </kbd>
+              <Search size={16} />
             </button>
 
-            {/* Right Actions */}
-            <div className="flex items-center gap-1.5">
-
-              {/* Authenticated Actions */}
-              {isAuthenticated && (
-                <>
-                  {/* Daily Claim */}
-                  <AnimatePresence>
-                    {user?.canDailyClaim && (
-                      <motion.button
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        onClick={handleClaimDaily}
-                        disabled={isClaimingDaily}
-                        className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-lg text-xs font-bold hover:bg-amber-500/15 transition-all"
-                      >
-                        {isClaimingDaily ? <Loader2 size={13} className="animate-spin" /> : <Gift size={13} />}
-                        <span className="text-[11px]">{t('header.daily_gift')}</span>
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Welcome Claim */}
-                  {user && !user.claimWelcomeCredit && (
-                    <button
-                      onClick={handleClaim}
-                      disabled={isClaiming}
-                      className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-600 border border-amber-500/20 rounded-lg text-[11px] font-bold hover:bg-amber-500/15 transition-all"
-                    >
-                      {isClaiming ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                      Claim +1000
-                    </button>
-                  )}
-
-                  {/* Credits — Desktop */}
-                  <Link
-                    to="/credits"
-                    className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05] rounded-lg hover:border-brand-blue/20 transition-all"
-                  >
-                    <Sparkles size={12} className="text-brand-blue" fill="currentColor" />
-                    <span className="text-[12px] font-bold text-slate-700 dark:text-white">{(credits || 0).toLocaleString()}</span>
-                  </Link>
-
-                  {/* PRO Badge / Upgrade CTA — Desktop */}
-                  {isPro ? (
-                    <div className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-brand-blue/15 to-purple-500/15 border border-brand-blue/30 text-[10px] font-black uppercase tracking-widest text-brand-blue">
-                      <Crown size={11} /> PRO
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setIsUpgradeModalOpen(true)}
-                      className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:bg-amber-500/15 transition-all"
-                    >
-                      <Zap size={11} /> Upgrade
-                    </button>
-                  )}
-
-                  {/* Credits — Mobile */}
-                  <button
-                    onClick={() => setIsPurchaseModalOpen(true)}
-                    className="md:hidden flex items-center gap-1.5 px-3 py-1.5 bg-brand-blue text-white rounded-lg text-[11px] font-bold active:scale-95 transition-all"
-                  >
-                    <Sparkles size={11} fill="currentColor" />
-                    {(credits || 0).toLocaleString()}
-                    <Plus size={11} />
-                  </button>
-                </>
-              )}
-
-              {/* Theme Toggle */}
-              <button onClick={toggleTheme} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} className="hidden md:flex w-8 h-8 items-center justify-center text-slate-400 dark:text-gray-500 hover:text-brand-blue hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all">
-                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            {/* Language Switcher — Desktop (icon only) */}
+            <div className="hidden md:block relative" ref={langRef}>
+              <button
+                onClick={() => setShowDesktopLang(!showDesktopLang)}
+                aria-label="Change language"
+                aria-expanded={showDesktopLang}
+                aria-haspopup="true"
+                className="w-8 h-8 flex items-center justify-center rounded transition-all"
+                style={{
+                  color: overHero || theme === 'dark' ? 'rgba(250,247,248,0.7)' : 'rgba(26,35,48,0.5)',
+                }}
+              >
+                <Languages size={16} />
               </button>
+              <AnimatePresence>
+                {showDesktopLang && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
+                    className="absolute top-full mt-1 right-0 w-20 overflow-hidden z-[200]"
+                    style={{
+                      background: theme === 'dark' ? '#1a2330' : '#fff',
+                      border: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
+                      borderRadius: 8,
+                      boxShadow: '0 8px 24px rgba(0,0,0,.12)',
+                    }}
+                  >
+                    {languages.map((l) => (
+                      <button key={l.code} onClick={() => { setLang(l.code); setShowDesktopLang(false); localStorage.setItem('skyverses_lang_detected', '1'); }}
+                        className="w-full flex items-center justify-center py-2.5 transition-all hover:bg-[rgba(201, 168, 76,0.06)]"
+                        style={{ background: lang === l.code ? 'rgba(201, 168, 76,0.08)' : 'transparent' }}
+                      >
+                        <FlagIcon code={l.code} />
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
-              {/* Language Switcher — Desktop */}
-              <div className="hidden md:block relative" ref={langRef}>
-                <button onClick={() => setShowDesktopLang(!showDesktopLang)} aria-label="Change language" aria-expanded={showDesktopLang} aria-haspopup="true" className="flex items-center gap-1 w-8 h-8 justify-center text-slate-400 hover:text-brand-blue hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all">
-                  <FlagIcon code={lang} className="w-5 h-3.5" />
+            {/* Theme Toggle — hidden */}
+
+            {/* User Menu / Contact + Login */}
+            {isAuthenticated ? (
+              <div className="relative" ref={userRef}>
+                <button onClick={() => setShowUserMenu(!showUserMenu)} aria-label="User menu" aria-expanded={showUserMenu} aria-haspopup="true" className="flex items-center gap-1 ml-1">
+                  <img
+                    src={user?.avatar || user?.picture || DEFAULT_AVATAR}
+                    onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR; }}
+                    className="w-8 h-8 rounded object-cover transition-all"
+                    style={{ border: '1px solid rgba(0,0,0,0.06)' }}
+                    alt="Avatar"
+                  />
                 </button>
                 <AnimatePresence>
-                  {showDesktopLang && (
+                  {showUserMenu && (
                     <motion.div
-                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
-                      className="absolute top-full mt-1 right-0 w-20 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] shadow-xl rounded-xl overflow-hidden z-[200]"
+                      initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                      transition={{ duration: 0.12 }}
+                      className="absolute top-full mt-1 right-0 w-64 overflow-hidden z-[200]"
+                      style={{
+                        background: theme === 'dark' ? '#1a2330' : '#fff',
+                        border: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
+                        borderRadius: 12,
+                        boxShadow: '0 20px 40px rgba(0,0,0,.15)',
+                      }}
                     >
-                      {languages.map((l) => (
-                        <button key={l.code} onClick={() => { setLang(l.code); setShowDesktopLang(false); localStorage.setItem('skyverses_lang_detected', '1'); }}
-                          className={`w-full flex items-center justify-center py-2.5 transition-all ${lang === l.code ? 'bg-brand-blue/8' : 'hover:bg-black/[0.03] dark:hover:bg-white/[0.04]'}`}
+                      {/* User Info */}
+                      <div className="px-3 pt-3 pb-2">
+                        <div className="flex items-center gap-2.5 mb-2.5">
+                          <img
+                            src={user?.avatar || user?.picture || DEFAULT_AVATAR}
+                            onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR; }}
+                            className="w-9 h-9 rounded object-cover"
+                            style={{ border: '1px solid rgba(0,0,0,0.04)' }}
+                            alt="Avatar"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold truncate" style={{ color: theme === 'dark' ? '#faf7f8' : '#1a2330' }}>{user?.name || 'User'}</p>
+                            <p className="text-[11px] truncate" style={{ color: theme === 'dark' ? 'rgba(250,247,248,0.5)' : 'rgba(26,35,48,0.5)' }}>{user?.email}</p>
+                          </div>
+                        </div>
+                        {/* Credits card */}
+                        <div
+                          className="flex items-center justify-between p-2 rounded"
+                          style={{ background: theme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', border: theme === 'dark' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.04)' }}
                         >
-                          <FlagIcon code={l.code} />
+                          <div className="flex items-center gap-1.5">
+                            <Sparkles size={13} style={{ color: '#B8963F' }} fill="currentColor" />
+                            <span className="text-xs font-bold" style={{ color: theme === 'dark' ? '#faf7f8' : '#1a2330' }}>{(credits || 0).toLocaleString()}</span>
+                          </div>
+                          <button
+                            onClick={() => { setIsPurchaseModalOpen(true); setShowUserMenu(false); }}
+                            className="text-[10px] font-bold hover:underline flex items-center gap-0.5"
+                            style={{ color: '#B8963F' }}
+                          >
+                            <Plus size={10} /> {t('header.topup')}
+                          </button>
+                        </div>
+
+                        {/* Plan badge */}
+                        {isPro ? (
+                          <div
+                            className="mt-1.5 flex items-center gap-1.5 px-2 py-1.5 rounded"
+                            style={{ background: 'rgba(201, 168, 76,0.08)', border: '1px solid rgba(201, 168, 76,0.15)' }}
+                          >
+                            <Crown size={11} style={{ color: '#B8963F' }} />
+                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#B8963F' }}>Pro Member</span>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => { setIsUpgradeModalOpen(true); setShowUserMenu(false); }}
+                            className="mt-1.5 w-full flex items-center justify-center gap-1.5 px-2 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest transition-all hover:opacity-80"
+                            style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.15)', color: '#C9A84C' }}
+                          >
+                            <Zap size={11} /> Nâng cấp lên Pro
+                          </button>
+                        )}
+                      </div>
+
+                      <div style={{ height: 1, background: 'rgba(0,0,0,0.04)' }} />
+
+                      {/* Menu Items */}
+                      <div className="p-1.5 space-y-0.5">
+                        <UserMenuLink to="/settings" icon={<User size={15} />} label={t('user.menu.profile')} onClick={() => setShowUserMenu(false)} />
+                        <UserMenuLink to="/referral" icon={<Users size={15} />} label={t('user.menu.referral')} onClick={() => setShowUserMenu(false)} />
+                        <UserMenuLink to="/favorites" icon={<Bookmark size={15} />} label={t('user.menu.favorites')} onClick={() => setShowUserMenu(false)} />
+                        <UserMenuLink to="/prompt-market/my-purchases" icon={<Database size={15} />} label="My Prompts" onClick={() => setShowUserMenu(false)} />
+                        <UserMenuLink to="/prompt-market/sell" icon={<Coins size={15} />} label="Sell Prompts" onClick={() => setShowUserMenu(false)} />
+                        <UserMenuLink to="/usage" icon={<BarChart3 size={15} />} label={t('user.menu.usage')} onClick={() => setShowUserMenu(false)} />
+                        <UserMenuLink to="/settings" icon={<Settings size={15} />} label={t('user.menu.settings')} onClick={() => setShowUserMenu(false)} />
+                        <div style={{ height: 1, background: 'rgba(0,0,0,0.04)', margin: '2px 8px' }} />
+                        <UserMenuLink to="https://skyverses.com/support" external icon={<HelpCircle size={15} />} label={t('user.menu.support')} onClick={() => setShowUserMenu(false)} />
+                      </div>
+
+                      {/* Logout */}
+                      <div className="p-1.5 pt-0">
+                        <button
+                          onClick={() => { logout(); setShowUserMenu(false); }}
+                          className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium rounded transition-all"
+                          style={{ color: '#CE2301' }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(206,35,1,0.04)'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <LogOut size={15} /> {t('user.menu.signout')}
                         </button>
-                      ))}
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
+            ) : (
+              <>
+                {/* Contact — Atlas bordered button */}
+                <Link
+                  to="/booking"
+                  className="hidden md:flex items-center justify-center uppercase text-[14px] font-normal tracking-wide rounded transition-all hover:opacity-80"
+                  style={{
+                    height: 32,
+                    padding: '0 18px',
+                    color: overHero ? '#E5C767' : '#B8963F',
+                    border: overHero ? '1px solid rgba(201,168,76,0.4)' : '1px solid rgba(184,150,63,0.3)',
+                    background: 'transparent',
+                  }}
+                >
+                  Contact
+                </Link>
 
-              {/* User Menu / Login */}
-              {isAuthenticated ? (
-                <div className="relative" ref={userRef}>
-                  <button onClick={() => setShowUserMenu(!showUserMenu)} aria-label="User menu" aria-expanded={showUserMenu} aria-haspopup="true" className="flex items-center gap-1 ml-1">
-                    <img 
-                      src={user?.avatar || user?.picture || DEFAULT_AVATAR} 
-                      onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR; }}
-                      className="w-8 h-8 rounded-lg border border-black/[0.06] dark:border-white/[0.06] object-cover hover:border-brand-blue/30 transition-all" 
-                      alt="Avatar" 
-                    />
-                  </button>
-                  <AnimatePresence>
-                    {showUserMenu && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 6, scale: 0.97 }} 
-                        animate={{ opacity: 1, y: 0, scale: 1 }} 
-                        exit={{ opacity: 0, y: 6, scale: 0.97 }}
-                        transition={{ duration: 0.12 }}
-                        className="absolute top-full mt-1 right-0 w-64 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] shadow-2xl rounded-xl overflow-hidden z-[200]"
-                      >
-                        {/* User Info */}
-                        <div className="px-3 pt-3 pb-2">
-                          <div className="flex items-center gap-2.5 mb-2.5">
-                            <img 
-                              src={user?.avatar || user?.picture || DEFAULT_AVATAR}
-                              onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR; }}
-                              className="w-9 h-9 rounded-lg border border-black/[0.04] dark:border-white/[0.06] object-cover"
-                              alt="Avatar"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user?.name || 'User'}</p>
-                              <p className="text-[11px] text-slate-400 dark:text-gray-500 truncate">{user?.email}</p>
-                            </div>
-                          </div>
-                          {/* Credits card */}
-                          <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-lg">
-                            <div className="flex items-center gap-1.5">
-                              <Sparkles size={13} className="text-brand-blue" fill="currentColor" />
-                              <span className="text-xs font-bold text-slate-700 dark:text-gray-200">{(credits || 0).toLocaleString()}</span>
-                            </div>
-                            <button
-                              onClick={() => { setIsPurchaseModalOpen(true); setShowUserMenu(false); }}
-                              className="text-[10px] font-bold text-brand-blue hover:underline flex items-center gap-0.5"
-                            >
-                              <Plus size={10} /> {t('header.topup')}
-                            </button>
-                          </div>
-
-                          {/* Plan badge */}
-                          {isPro ? (
-                            <div className="mt-1.5 flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-gradient-to-r from-brand-blue/10 to-purple-500/10 border border-brand-blue/20">
-                              <Crown size={11} className="text-brand-blue" />
-                              <span className="text-[10px] font-black uppercase tracking-widest text-brand-blue">Pro Member</span>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() => { setIsUpgradeModalOpen(true); setShowUserMenu(false); }}
-                              className="mt-1.5 w-full flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-amber-500/8 border border-amber-500/15 text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:bg-amber-500/12 transition-all"
-                            >
-                              <Zap size={11} /> Nâng cấp lên Pro
-                            </button>
-                          )}
-                        </div>
-
-                        {/* Divider */}
-                        <div className="h-px bg-black/[0.04] dark:bg-white/[0.04]" />
-
-                        {/* Menu Items */}
-                        <div className="p-1.5 space-y-0.5">
-                          <DropdownLink to="/settings" icon={<User size={15} />} label={t('user.menu.profile')} onClick={() => setShowUserMenu(false)} />
-                          <DropdownLink to="/referral" icon={<Users size={15} />} label={t('user.menu.referral')} onClick={() => setShowUserMenu(false)} />
-                          <DropdownLink to="/favorites" icon={<Bookmark size={15} />} label={t('user.menu.favorites')} onClick={() => setShowUserMenu(false)} />
-                          <DropdownLink to="/usage" icon={<BarChart3 size={15} />} label={t('user.menu.usage')} onClick={() => setShowUserMenu(false)} />
-                          <DropdownLink to="/settings" icon={<Settings size={15} />} label={t('user.menu.settings')} onClick={() => setShowUserMenu(false)} />
-                          <div className="h-px bg-black/[0.04] dark:bg-white/[0.04] mx-2 my-0.5" />
-                          <DropdownLink to="https://skyverses.com/support" external icon={<HelpCircle size={15} />} label={t('user.menu.support')} onClick={() => setShowUserMenu(false)} />
-                        </div>
-
-                        {/* Logout */}
-                        <div className="p-1.5 pt-0">
-                          <button onClick={() => { logout(); setShowUserMenu(false); }} className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/5 transition-all rounded-lg">
-                            <LogOut size={15} /> {t('user.menu.signout')}
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ) : (
-                <Link to="/login" className="hidden md:flex items-center px-4 py-1.5 text-[13px] font-semibold text-slate-600 dark:text-gray-300 hover:text-brand-blue border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 rounded-lg transition-all">
+                {/* Login — Atlas solid purple button */}
+                <Link
+                  to="/login"
+                  className="hidden md:flex items-center justify-center uppercase text-[14px] font-medium tracking-wide rounded transition-all hover:opacity-90"
+                  style={{
+                    height: 32,
+                    padding: '0 18px',
+                    background: '#B8963F',
+                    color: '#faf7f8',
+                  }}
+                >
                   {t('nav.login')}
                 </Link>
-              )}
+              </>
+            )}
 
-              {/* CTA — Desktop */}
-              <Link to="/booking" className="hidden md:flex items-center px-4 py-1.5 bg-brand-blue text-white text-[13px] font-semibold rounded-lg hover:brightness-110 transition-all shadow-sm shadow-brand-blue/20 ml-1">
-                {t('nav.deploy')}
-              </Link>
-
-              {/* Mobile Menu Toggle */}
-              <button onClick={() => setIsOpen(true)} aria-label="Open menu" className="md:hidden w-8 h-8 flex items-center justify-center text-slate-600 dark:text-gray-300 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] rounded-lg transition-all ml-1">
-                <Menu size={20} />
-              </button>
-            </div>
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setIsOpen(true)}
+              aria-label="Open menu"
+              className="md:hidden w-8 h-8 flex items-center justify-center rounded transition-all ml-1"
+              style={{ color: overHero || theme === 'dark' ? '#faf7f8' : '#1a2330' }}
+            >
+              <Menu size={20} />
+            </button>
           </div>
         </div>
       </nav>
 
       {/* ═══════════ MOBILE DRAWER ═══════════ */}
       <div className={`fixed inset-0 z-[500] transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} role="dialog" aria-modal="true" aria-label="Navigation menu">
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
-        <div className={`absolute top-0 right-0 h-full w-[85%] max-w-sm bg-white dark:bg-[#13171f] shadow-2xl transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} onClick={() => setIsOpen(false)} />
+        <div
+          className={`absolute top-0 right-0 h-full w-[85%] max-w-sm shadow-2xl transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          style={{ background: '#fff' }}
+        >
           <div className="flex flex-col h-full">
             {/* Drawer Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.08]">
+            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
               <div className="flex items-center gap-2">
                 <img src={logoUrl} alt="Logo" className="w-6 h-6 object-contain" />
-                <span className="text-sm font-bold text-slate-900 dark:text-white">Skyverses</span>
+                <span className="text-sm font-bold" style={{ color: '#1a2330' }}>Skyverses</span>
               </div>
-              <button onClick={() => setIsOpen(false)} aria-label="Close menu" className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-red-500 rounded-lg transition-all">
+              <button onClick={() => setIsOpen(false)} aria-label="Close menu" className="w-8 h-8 flex items-center justify-center rounded transition-all" style={{ color: 'rgba(26,35,48,0.4)' }}>
                 <X size={18} />
               </button>
             </div>
 
             {/* Drawer Content */}
             <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6 no-scrollbar">
-              {/* Nav Links */}
               <div className="space-y-1">
-                <Link to="/" onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between px-3 py-3 rounded-xl transition-all ${isActive('/') ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
-                >
-                  <span className="text-sm font-bold">Home</span>
-                  <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
-                </Link>
-
-                <Link to="/markets" onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between px-3 py-3 rounded-xl transition-all ${isActive('/markets') ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
-                >
-                  <span className="text-sm font-bold">Marketplace</span>
-                  <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
-                </Link>
-
-                {/* Discover group */}
-                <div className="px-3 py-2">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Discover</p>
-                  <div className="pl-2 space-y-1">
-                    <Link to="/explorer" onClick={() => setIsOpen(false)} className={`flex items-center justify-between py-2 text-sm font-medium ${isActive('/explorer') ? 'text-brand-blue' : 'text-slate-600 dark:text-gray-300'}`}>
-                      Explorer Gallery <ArrowRight size={14} className="text-slate-300" />
-                    </Link>
-                    <Link to="/models" onClick={() => setIsOpen(false)} className={`flex items-center justify-between py-2 text-sm font-medium ${isActive('/models') ? 'text-brand-blue' : 'text-slate-600 dark:text-gray-300'}`}>
-                      AI Models <ArrowRight size={14} className="text-slate-300" />
-                    </Link>
-                  </div>
-                </div>
+                {[
+                  { label: 'Home', to: '/' },
+                  { label: 'Models', to: '/markets' },
+                  { label: 'Explorer', to: '/explorer' },
+                  { label: 'Use Cases', to: '/use-cases' },
+                  { label: 'Prompts', to: '/prompt-market' },
+                  { label: 'Pricing', to: '/credits' },
+                  { label: 'Enterprise', to: '/booking' },
+                ].map(link => (
+                  <Link key={link.to} to={link.to} onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-between px-3 py-3 rounded-lg transition-all"
+                    style={{
+                      color: isActive(link.to) ? '#B8963F' : '#1a2330',
+                      background: isActive(link.to) ? 'rgba(201, 168, 76,0.06)' : 'transparent',
+                    }}
+                  >
+                    <span className="text-sm font-bold uppercase tracking-wide">{link.label}</span>
+                    <ChevronRight size={16} style={{ color: 'rgba(26,35,48,0.3)' }} />
+                  </Link>
+                ))}
 
                 <a href="https://insights.skyverses.com" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between px-3 py-3 rounded-xl transition-all text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]">
-                  <span className="text-sm font-bold">Insights</span>
-                  <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
+                  className="flex items-center justify-between px-3 py-3 rounded-lg transition-all"
+                  style={{ color: '#1a2330' }}
+                >
+                  <span className="text-sm font-bold uppercase tracking-wide">Developer</span>
+                  <ChevronRight size={16} style={{ color: 'rgba(26,35,48,0.3)' }} />
                 </a>
 
                 {isAuthenticated && (
                   <Link to="/apps" onClick={() => setIsOpen(false)}
-                    className={`flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold transition-all ${isActive('/apps') ? 'bg-brand-blue/[0.06] text-brand-blue' : 'text-slate-700 dark:text-gray-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'}`}
+                    className="flex items-center justify-between px-3 py-3 rounded-lg transition-all"
+                    style={{
+                      color: isActive('/apps') ? '#B8963F' : '#1a2330',
+                      background: isActive('/apps') ? 'rgba(201, 168, 76,0.06)' : 'transparent',
+                    }}
                   >
-                    Create <ChevronRight size={16} className="text-slate-300 dark:text-gray-600" />
+                    <span className="text-sm font-bold uppercase tracking-wide">Create</span>
+                    <ChevronRight size={16} style={{ color: 'rgba(26,35,48,0.3)' }} />
                   </Link>
                 )}
               </div>
 
-
               {/* Language */}
               <div className="space-y-2">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 px-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 px-1" style={{ color: 'rgba(26,35,48,0.4)' }}>
                   <Languages size={12} /> {t('nav.lang_settings')}
                 </span>
                 <div className="grid grid-cols-4 gap-1.5">
                   {languages.map((l) => (
                     <button key={l.code} onClick={() => { setLang(l.code); localStorage.setItem('skyverses_lang_detected', '1'); }}
-                      className={`py-2.5 flex items-center justify-center rounded-lg border transition-all ${lang === l.code ? 'bg-brand-blue/10 border-brand-blue/30' : 'bg-slate-50 dark:bg-white/[0.03] border-transparent hover:border-brand-blue/20'}`}
+                      className="py-2.5 flex items-center justify-center rounded transition-all"
+                      style={{
+                        background: lang === l.code ? 'rgba(201, 168, 76,0.08)' : 'rgba(0,0,0,0.03)',
+                        border: lang === l.code ? '1px solid rgba(201, 168, 76,0.25)' : '1px solid transparent',
+                      }}
                     >
                       <FlagIcon code={l.code} />
                     </button>
@@ -526,23 +626,30 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               </div>
 
               {!isAuthenticated && (
-                <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full py-3 bg-brand-blue text-white text-center rounded-xl text-sm font-bold shadow-lg shadow-brand-blue/20">
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full py-3 text-center rounded text-sm font-bold uppercase tracking-wide transition-all"
+                  style={{ background: '#B8963F', color: '#faf7f8' }}
+                >
                   {t('nav.login')}
                 </Link>
               )}
             </div>
 
             {/* Drawer Footer */}
-            <div className="px-5 py-4 border-t border-black/[0.04] dark:border-white/[0.08] space-y-3">
+            <div className="px-5 py-4 space-y-3" style={{ borderTop: '1px solid rgba(0,0,0,0.06)' }}>
               <div className="flex items-center gap-2">
-                <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-slate-400 shrink-0">
-                  {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-                </button>
-                <Link to="/booking" onClick={() => setIsOpen(false)} className="flex-1 flex items-center justify-center py-2.5 bg-brand-blue text-white rounded-xl text-sm font-bold">
-                  {t('nav.deploy')}
+                <Link
+                  to="/booking"
+                  onClick={() => setIsOpen(false)}
+                  className="flex-1 flex items-center justify-center py-2.5 rounded text-sm font-bold uppercase tracking-wide transition-all"
+                  style={{ background: '#B8963F', color: '#faf7f8' }}
+                >
+                  Contact
                 </Link>
               </div>
-              <p className="text-[9px] text-slate-300 dark:text-gray-700 text-center">© 2025 Skyverses Market</p>
+              <p className="text-[9px] text-center" style={{ color: 'rgba(26,35,48,0.3)' }}>© 2026 Skyverses</p>
             </div>
           </div>
         </div>
@@ -562,5 +669,25 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
     </>
   );
 };
+
+/* ═══ Atlas-style dropdown nav link (purple bg) ═══ */
+const DropdownNavLink: React.FC<{
+  to: string;
+  label: string;
+  desc: string;
+  onClick: () => void;
+}> = ({ to, label, desc, onClick }) => (
+  <Link
+    to={to}
+    onClick={onClick}
+    className="block px-3 py-2.5 rounded-lg transition-all"
+    style={{ color: '#faf7f8' }}
+    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(201,168,76,0.1)'}
+    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+  >
+    <span className="block text-[14px] font-medium" style={{ color: '#faf7f8' }}>{label}</span>
+    <span className="block text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>{desc}</span>
+  </Link>
+);
 
 export default Header;

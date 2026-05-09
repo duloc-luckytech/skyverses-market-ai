@@ -84,38 +84,39 @@ Submitted via Skyverses Booking Portal.
   ];
 
   return (
-    <main className="min-h-screen bg-[#fafafa] dark:bg-[#0a0d14] text-slate-900 dark:text-white transition-colors duration-500 pt-28 pb-32">
-      
-      {/* Background */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-20%] left-[30%] w-[800px] h-[500px] bg-brand-blue/[0.03] dark:bg-brand-blue/[0.06] rounded-full blur-[120px]" />
-        <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-purple-500/[0.02] dark:bg-purple-500/[0.04] rounded-full blur-[120px]" />
+    <main className="min-h-screen bg-[var(--atlas-bg-page)] text-[var(--atlas-text-primary)] transition-colors duration-500 pt-28 pb-32">
+
+      {/* Atlas pale wash + decorative blobs */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute inset-0 dark:opacity-0 transition-opacity"
+          style={{ background: 'linear-gradient(180deg, #EBF4FB 0%, #F4F0FF 60%, #FFFFFF 100%)' }} />
+        <div className="absolute top-[-15%] left-[35%] w-[600px] h-[600px] rounded-full opacity-40 blur-3xl"
+          style={{ background: 'radial-gradient(circle at center, rgba(201, 168, 76,.30) 0%, rgba(201, 168, 76,0) 70%)' }} />
+        <div className="absolute bottom-[15%] right-[5%] w-[400px] h-[400px] rounded-full opacity-25 blur-3xl"
+          style={{ background: 'radial-gradient(circle at center, rgba(229, 199, 103,.18) 0%, rgba(229, 199, 103,0) 70%)' }} />
       </div>
 
       <div className="max-w-[1300px] mx-auto px-4 md:px-8 relative z-10">
 
-        {/* ═══════════════ HERO ═══════════════ */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }} 
+        {/* ═══════════════ ATLAS HERO ═══════════════ */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16 max-w-3xl mx-auto"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full mb-6">
-            <Rocket size={14} className="text-brand-blue" />
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">Custom Solutions</span>
-          </div>
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-atlas-orangeBright mb-3">
+            ENTERPRISE
+          </p>
 
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.1] mb-5">
+          <h1 className="text-[2rem] md:text-[3rem] lg:text-[3.5rem] font-bold tracking-[-0.02em] leading-[1.05] mb-5">
             {t('booking.title.1')}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">
-              {t('booking.title.2')}
-            </span>
+            <span className="atlas-text-gradient">{t('booking.title.2')}</span>
           </h1>
-          
-          <p className="text-base text-slate-400 dark:text-gray-500 leading-relaxed max-w-xl mx-auto mb-3">
+
+          <p className="text-base md:text-lg text-[var(--atlas-text-secondary)] leading-relaxed max-w-xl mx-auto mb-3">
             {t('booking.intro')}
           </p>
-          <p className="text-xs text-slate-300 dark:text-gray-600 font-medium">
+          <p className="text-xs text-[var(--atlas-text-muted)] font-medium">
             {t('booking.partner')}
           </p>
         </motion.div>
@@ -162,7 +163,7 @@ Submitted via Skyverses Booking Portal.
                   const parts = step.split('—');
                   return (
                     <div key={i} className="flex items-start gap-3">
-                      <div className="w-7 h-7 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center shrink-0 text-xs font-black mt-0.5">
+                      <div className="w-7 h-7 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
                         {i + 1}
                       </div>
                       <div>
@@ -195,7 +196,7 @@ Submitted via Skyverses Booking Portal.
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.3 }}
-            className="lg:col-span-3 bg-white dark:bg-[#0a0d14] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl"
+            className="lg:col-span-3 bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl"
           >
             {/* Form Header */}
             <div className="px-6 md:px-8 py-6 border-b border-black/[0.04] dark:border-white/[0.04]">

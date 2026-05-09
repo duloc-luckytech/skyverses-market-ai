@@ -159,7 +159,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
           {(!config.coupleMode || sourceImages.length < 2) && (
             <div className="aspect-square rounded-xl border-2 border-dashed border-slate-200 dark:border-white/[0.06] flex items-center justify-center group relative overflow-hidden transition-all hover:border-slate-300 dark:hover:border-white/10 bg-slate-50/50 dark:bg-white/[0.01]">
               <Plus size={18} className="text-slate-300 dark:text-slate-600 group-hover:opacity-0 transition-opacity" />
-              <div className="absolute inset-0 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-[#13171f]">
+              <div className="absolute inset-0 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-[var(--atlas-bg-panel)]">
                 <button onClick={onUpload} className={`flex-1 flex items-center justify-center hover:bg-${config.accentColor}-500/10 text-${config.accentColor}-500 border-b border-black/[0.04] dark:border-white/[0.08] transition-colors`} title="Tải ảnh">
                   <Upload size={14} />
                 </button>
@@ -362,7 +362,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
                 <History size={9} /> {promptHistory.length}
               </button>
               {showHistory && promptHistory.length > 0 && (
-                <div className="absolute right-0 top-full mt-1 w-56 max-h-40 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl z-50 overflow-y-auto no-scrollbar">
+                <div className="absolute right-0 top-full mt-1 w-56 max-h-40 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl z-50 overflow-y-auto no-scrollbar">
                   {promptHistory.map((h, i) => (
                     <button
                       key={i}

@@ -113,9 +113,9 @@ const CreditUsagePage: React.FC = () => {
   const breakdowns = useMemo(() => {
     const total = Object.values(stats.sourceBreakdown).reduce((a, b) => a + b, 0) || 1;
     const colors: Record<string, { color: string; icon: React.ReactNode }> = {
-      'Video AI': { color: '#8b5cf6', icon: <Video size={14}/> },
-      'Image AI': { color: '#0090ff', icon: <ImageIcon size={14}/> },
-      'Voice AI': { color: '#f59e0b', icon: <Mic size={14}/> },
+      'Video AI': { color: '#C4960C', icon: <Video size={14}/> },
+      'Image AI': { color: '#D4A017', icon: <ImageIcon size={14}/> },
+      'Voice AI': { color: '#D4A017', icon: <Mic size={14}/> },
       'Music AI': { color: '#ec4899', icon: <Music size={14}/> },
       'Khác': { color: '#64748b', icon: <Wand2 size={14}/> },
     };
@@ -145,27 +145,27 @@ const CreditUsagePage: React.FC = () => {
   const typeConfig: Record<string, { label: string; color: string; bg: string }> = {
     'TOP_UP': { label: 'Nạp tiền', color: '#10b981', bg: '#10b98112' },
     'CONSUME': { label: 'Sử dụng', color: '#ef4444', bg: '#ef444412' },
-    'FREE_IMAGE': { label: 'Ảnh Free', color: '#8b5cf6', bg: '#8b5cf612' },
-    'REFUND': { label: 'Hoàn trả', color: '#f59e0b', bg: '#f59e0b12' },
-    'ADMIN_ADJUST': { label: 'Điều chỉnh', color: '#8b5cf6', bg: '#8b5cf612' },
-    'WELCOME': { label: 'Welcome', color: '#0090ff', bg: '#0090ff12' },
+    'FREE_IMAGE': { label: 'Ảnh Free', color: '#C4960C', bg: '#C4960C12' },
+    'REFUND': { label: 'Hoàn trả', color: '#D4A017', bg: '#D4A01712' },
+    'ADMIN_ADJUST': { label: 'Điều chỉnh', color: '#C4960C', bg: '#C4960C12' },
+    'WELCOME': { label: 'Welcome', color: '#D4A017', bg: '#D4A01712' },
     'DAILY': { label: 'Daily', color: '#06b6d4', bg: '#06b6d412' },
-    'EVENT_BONUS': { label: 'Event Bonus', color: '#f59e0b', bg: '#f59e0b12' },
+    'EVENT_BONUS': { label: 'Event Bonus', color: '#D4A017', bg: '#D4A01712' },
     'REFERRAL': { label: 'Giới thiệu', color: '#ec4899', bg: '#ec489912' },
   };
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fafafa] dark:bg-[#0a0d14] px-6">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] px-6">
         <div className="text-center space-y-8 max-w-md">
           <div className="w-20 h-20 bg-brand-blue/10 rounded-2xl flex items-center justify-center mx-auto text-brand-blue">
             <Lock size={36} />
           </div>
           <div className="space-y-3">
-            <h2 className="text-2xl font-black tracking-tight">Đăng nhập để xem</h2>
+            <h2 className="text-2xl font-bold tracking-tight">Đăng nhập để xem</h2>
             <p className="text-sm text-slate-400 dark:text-gray-500">Đăng nhập để theo dõi chi tiết lịch sử sử dụng Credits.</p>
           </div>
-          <button onClick={login} className="px-8 py-4 bg-brand-blue text-white rounded-xl text-xs font-black uppercase tracking-widest hover:brightness-110 active:scale-[0.97] transition-all shadow-lg shadow-brand-blue/20">
+          <button onClick={login} className="px-8 py-4 bg-brand-blue text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:brightness-110 active:scale-[0.97] transition-all shadow-lg shadow-brand-blue/20">
             Đăng nhập
           </button>
         </div>
@@ -176,7 +176,7 @@ const CreditUsagePage: React.FC = () => {
   const totalPages = Math.ceil(total / LIMIT);
 
   return (
-    <div className="pt-28 pb-32 bg-[#fafafa] dark:bg-[#0a0d14] min-h-screen transition-colors duration-500 selection:bg-brand-blue/30 overflow-x-hidden">
+    <div className="pt-28 pb-32 bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] min-h-screen transition-colors duration-500 selection:bg-brand-blue/30 overflow-x-hidden">
       
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -198,9 +198,9 @@ const CreditUsagePage: React.FC = () => {
                 <div className="w-4 h-4 rounded-full bg-brand-blue/15 flex items-center justify-center">
                   <BarChart3 size={9} className="text-brand-blue" />
                 </div>
-                <span className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-500 dark:text-gray-400">Usage Dashboard</span>
+                <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-slate-500 dark:text-gray-400">Usage Dashboard</span>
               </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.03em] leading-[1.1]">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-[-0.03em] leading-[1.1]">
                 Lịch sử <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-violet-500">sử dụng</span>
               </h1>
               <p className="text-sm text-slate-400 dark:text-gray-500 max-w-lg">
@@ -234,14 +234,14 @@ const CreditUsagePage: React.FC = () => {
             value={credits.toLocaleString()}
             unit="CR"
             icon={<Sparkles size={18} fill="currentColor" />}
-            color="#0090ff"
+            color="#D4A017"
           />
           <StatCard
             label="Ảnh free còn lại"
             value={freeImageRemaining.toLocaleString()}
             unit="ảnh"
             icon={<ImageIcon size={18} />}
-            color="#8b5cf6"
+            color="#C4960C"
           />
           <StatCard
             label="Đã dùng hôm nay"
@@ -255,7 +255,7 @@ const CreditUsagePage: React.FC = () => {
             value={stats.monthSpent.toLocaleString()}
             unit="CR"
             icon={<TrendingUp size={18} />}
-            color="#f59e0b"
+            color="#D4A017"
           />
         </motion.section>
 
@@ -275,7 +275,7 @@ const CreditUsagePage: React.FC = () => {
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">Gói hiện tại</h3>
             </div>
             <div className="flex-grow flex flex-col items-center justify-center text-center py-4">
-              <p className={`text-3xl font-black uppercase tracking-tight mb-2 ${
+              <p className={`text-3xl font-bold uppercase tracking-tight mb-2 ${
                 (myPlan || user?.plan)
                   ? 'text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500'
                   : 'text-slate-300 dark:text-gray-600'
@@ -303,7 +303,7 @@ const CreditUsagePage: React.FC = () => {
                 <p className="text-[11px] text-slate-400 dark:text-gray-500">Chưa mua gói nào</p>
               )}
             </div>
-            <Link to="/credits" className="mt-4 inline-flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-sm">
+            <Link to="/credits" className="mt-4 inline-flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:brightness-110 transition-all shadow-sm">
               <Package size={12} /> Nâng cấp gói
             </Link>
           </div>
@@ -343,7 +343,7 @@ const CreditUsagePage: React.FC = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-black text-emerald-500 tabular-nums">{(p.amount || 0).toLocaleString()}<span className="text-[9px] text-slate-400 ml-1">₫</span></p>
+                      <p className="text-sm font-bold text-emerald-500 tabular-nums">{(p.amount || 0).toLocaleString()}<span className="text-[9px] text-slate-400 ml-1">₫</span></p>
                       <p className="text-[8px] font-bold text-emerald-500/60 uppercase">Thành công</p>
                     </div>
                   </div>
@@ -384,7 +384,7 @@ const CreditUsagePage: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-[10px] font-bold text-slate-400">{b.credits.toLocaleString()} CR</span>
-                        <span className="text-xs font-black" style={{ color: b.color }}>{b.percentage}%</span>
+                        <span className="text-xs font-bold" style={{ color: b.color }}>{b.percentage}%</span>
                       </div>
                     </div>
                     <div className="h-1.5 w-full bg-black/[0.03] dark:bg-white/[0.04] rounded-full overflow-hidden">
@@ -411,7 +411,7 @@ const CreditUsagePage: React.FC = () => {
                   <div>
                     <p className="text-xs font-bold text-amber-700 dark:text-amber-400 mb-1">Số dư thấp</p>
                     <p className="text-[11px] text-amber-600/70 dark:text-amber-500/60 leading-relaxed">Nạp thêm Credits để tiếp tục sử dụng.</p>
-                    <Link to="/credits" className="inline-flex items-center gap-1.5 mt-2 text-[10px] font-black text-amber-600 hover:underline uppercase tracking-wider">
+                    <Link to="/credits" className="inline-flex items-center gap-1.5 mt-2 text-[10px] font-bold text-amber-600 hover:underline uppercase tracking-wider">
                       Nạp ngay <ArrowRight size={10} />
                     </Link>
                   </div>
@@ -424,11 +424,11 @@ const CreditUsagePage: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Số dư</p>
-                    <p className="text-2xl font-black text-brand-blue tracking-tight">{credits.toLocaleString()} <span className="text-xs font-bold text-slate-400">CR</span></p>
+                    <p className="text-2xl font-bold text-brand-blue tracking-tight">{credits.toLocaleString()} <span className="text-xs font-bold text-slate-400">CR</span></p>
                   </div>
                 </div>
                 <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-relaxed mb-4">Credits không hết hạn. Mua thêm bất cứ khi nào bạn cần.</p>
-                <Link to="/credits" className="inline-flex items-center justify-center gap-2 w-full py-3 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-sm">
+                <Link to="/credits" className="inline-flex items-center justify-center gap-2 w-full py-3 bg-brand-blue text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:brightness-110 transition-all shadow-sm">
                   <Zap size={12} fill="currentColor" /> Mua thêm Credits
                 </Link>
               </div>
@@ -443,7 +443,7 @@ const CreditUsagePage: React.FC = () => {
           transition={{ delay: 0.3 }}
           className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4"
         >
-          <h3 className="text-lg font-black tracking-tight shrink-0">
+          <h3 className="text-lg font-bold tracking-tight shrink-0">
             Chi tiết giao dịch <span className="text-slate-300 dark:text-gray-600 text-sm font-bold">({total})</span>
           </h3>
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
@@ -500,7 +500,7 @@ const CreditUsagePage: React.FC = () => {
           ) : (
             <>
               {/* Table header */}
-              <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3.5 text-[8px] font-black uppercase tracking-[0.25em] text-slate-400 dark:text-gray-600 border-b border-black/[0.03] dark:border-white/[0.03] bg-slate-50/50 dark:bg-white/[0.01]">
+              <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3.5 text-[8px] font-bold uppercase tracking-[0.25em] text-slate-400 dark:text-gray-600 border-b border-black/[0.03] dark:border-white/[0.03] bg-slate-50/50 dark:bg-white/[0.01]">
                 <div className="col-span-2">Loại</div>
                 <div className="col-span-2 text-right">Số lượng</div>
                 <div className="col-span-2 text-right">Số dư sau</div>
@@ -519,7 +519,7 @@ const CreditUsagePage: React.FC = () => {
                   <div key={tx._id} className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 px-6 py-3.5 border-b border-black/[0.02] dark:border-white/[0.02] hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors items-center">
                     {/* Type */}
                     <div className="col-span-2">
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider" style={{ backgroundColor: cfg.bg, color: cfg.color }}>
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider" style={{ backgroundColor: cfg.bg, color: cfg.color }}>
                         {isPositive ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
                         {cfg.label}
                       </span>
@@ -527,10 +527,10 @@ const CreditUsagePage: React.FC = () => {
                     {/* Amount */}
                     <div className="col-span-2 text-right">
                       {tx.type === 'FREE_IMAGE' ? (
-                        <span className="text-sm font-black text-violet-500">Miễn phí</span>
+                        <span className="text-sm font-bold text-violet-500">Miễn phí</span>
                       ) : (
                         <>
-                          <span className={`text-sm font-black tabular-nums ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+                          <span className={`text-sm font-bold tabular-nums ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
                             {isPositive ? '+' : ''}{tx.amount.toLocaleString()}
                           </span>
                           <span className="text-[9px] text-slate-400 ml-1">CR</span>
@@ -627,7 +627,7 @@ const StatCard = ({ label, value, unit, icon, color }: { label: string; value: s
     </div>
     <p className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-1">{label}</p>
     <div className="flex items-baseline gap-1.5">
-      <span className="text-2xl font-black tracking-tight text-slate-900 dark:text-white tabular-nums">{value}</span>
+      <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white tabular-nums">{value}</span>
       <span className="text-[10px] font-bold" style={{ color }}>{unit}</span>
     </div>
   </div>

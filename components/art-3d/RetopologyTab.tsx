@@ -54,7 +54,7 @@ export const RetopologyTab: React.FC<RetopologyTabProps> = ({ variants }) => {
         <div className="flex items-center gap-2">
           <Crown size={16} className="text-yellow-500" fill="currentColor" />
           <span className="text-[13px] font-bold text-white">Smart Low Poly</span>
-          <span className="px-1.5 py-0.5 bg-[#ff2d55] text-white text-[10px] font-black rounded-lg leading-none">v2</span>
+          <span className="px-1.5 py-0.5 bg-[#ff2d55] text-white text-[10px] font-bold rounded-lg leading-none">v2</span>
           <HelpCircle size={16} className="text-gray-500" />
         </div>
         <button 
@@ -94,10 +94,10 @@ export const RetopologyTab: React.FC<RetopologyTabProps> = ({ variants }) => {
       {/* Action Button */}
       <div className="pb-4">
         <button className="w-full py-4 px-6 bg-[#1c1d22] border border-white/5 rounded-full flex items-center justify-center gap-3 group hover:bg-[#25272d] transition-all shadow-xl active:scale-[0.98]">
-          <span className="text-xs font-black uppercase tracking-widest text-gray-500 italic">Retopology</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-gray-500 italic">Retopology</span>
           <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
             <Zap size={12} className="text-gray-500" fill="currentColor" />
-            <span className="text-[11px] font-black italic text-gray-500">10</span>
+            <span className="text-[11px] font-bold italic text-gray-500">10</span>
           </div>
         </button>
       </div>

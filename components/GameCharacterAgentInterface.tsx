@@ -132,11 +132,11 @@ const GameCharacterAgentInterface = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white font-mono">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white font-mono">
 
-      <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[#0a0d14] border-r border-black/10 dark:border-white/5 p-8 space-y-10">
+      <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[var(--atlas-bg-page)] border-r border-black/10 dark:border-white/5 p-8 space-y-10">
          <div className="space-y-6">
-            <label className="text-[10px] font-black uppercase text-emerald-500 tracking-[0.4em] flex items-center gap-3">
+            <label className="text-[10px] font-bold uppercase text-emerald-500 tracking-[0.4em] flex items-center gap-3">
                <Swords className="w-4 h-4" /> Production_Brief
             </label>
             <div className="relative group">
@@ -152,11 +152,11 @@ const GameCharacterAgentInterface = () => {
          </div>
 
          <div className="space-y-6 pt-6 border-t border-black/10 dark:border-white/5">
-            <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.4em]">Archetype_Constraints</label>
+            <label className="text-[10px] font-bold uppercase text-gray-500 tracking-[0.4em]">Archetype_Constraints</label>
             <div className="space-y-4">
                <div className="space-y-2">
-                  <span className="text-[8px] font-black uppercase text-gray-400">Target Role</span>
-                  <select value={role} onChange={e => setRole(e.target.value)} className="w-full bg-white dark:bg-black border border-black/10 dark:border-white/10 p-2.5 text-[10px] font-black uppercase outline-none focus:border-emerald-500">
+                  <span className="text-[8px] font-bold uppercase text-gray-400">Target Role</span>
+                  <select value={role} onChange={e => setRole(e.target.value)} className="w-full bg-white dark:bg-black border border-black/10 dark:border-white/10 p-2.5 text-[10px] font-bold uppercase outline-none focus:border-emerald-500">
                      <option>Hero</option>
                      <option>NPC</option>
                      <option>Enemy</option>
@@ -164,8 +164,8 @@ const GameCharacterAgentInterface = () => {
                   </select>
                </div>
                <div className="space-y-2">
-                  <span className="text-[8px] font-black uppercase text-gray-400">Art Direction</span>
-                  <select value={style} onChange={e => setStyle(e.target.value)} className="w-full bg-white dark:bg-black border border-black/10 dark:border-white/10 p-2.5 text-[10px] font-black uppercase outline-none focus:border-emerald-500">
+                  <span className="text-[8px] font-bold uppercase text-gray-400">Art Direction</span>
+                  <select value={style} onChange={e => setStyle(e.target.value)} className="w-full bg-white dark:bg-black border border-black/10 dark:border-white/10 p-2.5 text-[10px] font-bold uppercase outline-none focus:border-emerald-500">
                      <option>Stylized 3D</option>
                      <option>2D Illustration</option>
                      <option>Pixel Art</option>
@@ -179,14 +179,14 @@ const GameCharacterAgentInterface = () => {
             <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 space-y-3">
                <div className="flex items-center gap-3 text-emerald-500">
                   <ShieldCheck size={14} />
-                  <span className="text-[9px] font-black uppercase tracking-widest">Game_Ready_Active</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest">Game_Ready_Active</span>
                </div>
                <p className="text-[7px] font-bold text-gray-500 uppercase leading-relaxed">Agent will prioritize silhouette readability and lighting consistency for engine use.</p>
             </div>
          </div>
       </div>
 
-      <div className="flex-grow flex flex-col bg-white dark:bg-[#0a0d14] relative overflow-hidden">
+      <div className="flex-grow flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #10b981 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
         <div className="flex-grow overflow-y-auto p-8 lg:p-12 relative z-10 no-scrollbar">
@@ -196,7 +196,7 @@ const GameCharacterAgentInterface = () => {
                     <div className="flex items-center gap-3">
                        <Bot className="w-6 h-6 text-emerald-500" />
                        <div className="space-y-0.5">
-                          <span className="text-[11px] font-black uppercase tracking-[0.4em] text-black dark:text-white">ACA-1_Architect</span>
+                          <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-black dark:text-white">ACA-1_Architect</span>
                           <p className="text-[8px] font-bold text-emerald-500 uppercase tracking-widest">{loopState}</p>
                        </div>
                     </div>
@@ -204,7 +204,7 @@ const GameCharacterAgentInterface = () => {
                  <div className="flex gap-4">
                     <div className="flex items-center gap-2 px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-sm border border-emerald-500/20 shadow-lg">
                        <Activity size={10} className="animate-pulse text-emerald-500" />
-                       <span className="text-[8px] font-black uppercase tracking-widest">Logic_Link: STABLE</span>
+                       <span className="text-[8px] font-bold uppercase tracking-widest">Logic_Link: STABLE</span>
                     </div>
                  </div>
               </div>
@@ -212,7 +212,7 @@ const GameCharacterAgentInterface = () => {
               {assets.length === 0 ? (
                  <div className="py-48 text-center opacity-10 space-y-8 flex flex-col items-center">
                     <LayoutGrid size={80} />
-                    <p className="text-sm font-black uppercase tracking-[0.8em]">Awaiting_Asset_Pipeline</p>
+                    <p className="text-sm font-bold uppercase tracking-[0.8em]">Awaiting_Asset_Pipeline</p>
                  </div>
               ) : (
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in zoom-in-95 duration-500">
@@ -226,8 +226,8 @@ const GameCharacterAgentInterface = () => {
                              )}
 
                              <div className="absolute top-4 left-4 flex flex-col gap-2">
-                                <span className="bg-black/60 backdrop-blur-md px-2 py-0.5 text-[8px] font-black text-white uppercase border border-white/10">ASSET_0{idx+1}</span>
-                                {asset.readabilityScore > 0 && <span className="bg-emerald-500 px-2 py-0.5 text-[8px] font-black text-white uppercase">READABILITY: {asset.readabilityScore}%</span>}
+                                <span className="bg-black/60 backdrop-blur-md px-2 py-0.5 text-[8px] font-bold text-white uppercase border border-white/10">ASSET_0{idx+1}</span>
+                                {asset.readabilityScore > 0 && <span className="bg-emerald-500 px-2 py-0.5 text-[8px] font-bold text-white uppercase">READABILITY: {asset.readabilityScore}%</span>}
                              </div>
                           </div>
                           <div className="p-4 bg-white dark:bg-black/40 border-t border-black/10 dark:border-white/5">
@@ -241,13 +241,13 @@ const GameCharacterAgentInterface = () => {
            </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#fafafa] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[var(--atlas-bg-panel-hover)] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
            <div className="hidden lg:flex flex-col gap-3">
               <div className="flex items-center gap-6">
                  {['ANALYZE', 'PLAN', 'GENERATE', 'REVIEW', 'DONE'].map((step, i) => (
                     <div key={step} className="flex items-center gap-3">
                        <div className={`w-2 h-2 rounded-full ${loopState === step ? 'bg-emerald-500 animate-pulse' : assets.some(a => a.status === 'success') && i < 3 ? 'bg-emerald-800' : 'bg-gray-200 dark:bg-gray-800'}`}></div>
-                       <span className={`text-[8px] font-black uppercase tracking-widest ${loopState === step ? 'text-emerald-500' : 'text-gray-400'}`}>{step}</span>
+                       <span className={`text-[8px] font-bold uppercase tracking-widest ${loopState === step ? 'text-emerald-500' : 'text-gray-400'}`}>{step}</span>
                     </div>
                  ))}
               </div>
@@ -262,7 +262,7 @@ const GameCharacterAgentInterface = () => {
               </button>
               <button
                 onClick={startAgent} disabled={isBusy || !brief.trim()}
-                className="flex-grow lg:flex-none bg-emerald-500 text-black px-16 py-6 text-[11px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-2xl active:scale-[0.98] disabled:opacity-20 rounded-sm"
+                className="flex-grow lg:flex-none bg-emerald-500 text-black px-16 py-6 text-[11px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-2xl active:scale-[0.98] disabled:opacity-20 rounded-sm"
               >
                 {isBusy ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap size={11} fill="currentColor" />}
                 INITIALIZE_PIPELINE
@@ -271,9 +271,9 @@ const GameCharacterAgentInterface = () => {
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#0a0d14] border-l border-black/10 dark:border-white/5 overflow-hidden">
+      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Terminal className="w-4 h-4 text-emerald-500" /> Decision_Log
             </h3>
          </div>
@@ -281,12 +281,12 @@ const GameCharacterAgentInterface = () => {
             {logs.length === 0 ? (
                <div className="py-24 text-center opacity-10">
                   <Cpu className="w-10 h-10 mx-auto mb-4" />
-                  <p className="text-[9px] font-black uppercase tracking-widest italic">Awaiting Telemetry</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest italic">Awaiting Telemetry</p>
                </div>
             ) : (
                logs.map((log, i) => (
                   <div key={i} className="space-y-2 animate-in fade-in slide-in-from-right-4 duration-500">
-                     <div className="flex justify-between items-center text-[7px] font-black uppercase text-gray-400">
+                     <div className="flex justify-between items-center text-[7px] font-bold uppercase text-gray-400">
                         <span className={`px-2 py-0.5 rounded-sm ${log.type === 'PLAN' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-black/5 dark:bg-white/5'}`}>{log.type}</span>
                         <span>{log.timestamp}</span>
                      </div>
@@ -300,7 +300,7 @@ const GameCharacterAgentInterface = () => {
          </div>
 
          <div className="p-8 border-t border-black/5 dark:border-white/5 bg-gray-50 dark:bg-black/40">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-3">
                <HistoryIcon className="w-4 h-4 text-emerald-500" /> Session_Vault
             </h3>
             <div className="h-20 w-full bg-black/5 dark:bg-white/5 rounded-sm animate-pulse"></div>

@@ -16,7 +16,7 @@ export interface GlobalBrandKit {
 }
 
 const DEFAULT_KIT: GlobalBrandKit = {
-  colors: ['#0090FF', '#6366F1', '#F59E0B', '#0F172A'],
+  colors: ['#0090FF', '#D4B85A', '#E5C767', '#0F172A'],
 };
 
 /** Load global brand kit từ localStorage. Trả về DEFAULT_KIT nếu chưa có. */

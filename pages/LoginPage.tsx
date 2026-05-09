@@ -188,7 +188,7 @@ const LoginPage = () => {
         }`}
         style={{
           background: isSelected
-            ? 'linear-gradient(135deg, rgba(0,144,255,0.08), rgba(0,144,255,0.02))'
+            ? 'linear-gradient(135deg, rgba(212,160,23,0.08), rgba(212,160,23,0.02))'
             : 'linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
           backdropFilter: 'blur(12px)',
         }}
@@ -235,7 +235,7 @@ const LoginPage = () => {
   // RENDER
   // ═══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden relative" style={{ background: '#08080c' }}>
+    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden relative bg-atlas-navy">
 
       {/* ═══ CUSTOM STYLES ═══ */}
       <style>{`
@@ -254,9 +254,9 @@ const LoginPage = () => {
           100% { transform: scale(1.08); }
         }
         @keyframes pulseRing {
-          0% { box-shadow: 0 0 0 0 rgba(0,144,255,0.4); }
-          70% { box-shadow: 0 0 0 12px rgba(0,144,255,0); }
-          100% { box-shadow: 0 0 0 0 rgba(0,144,255,0); }
+          0% { box-shadow: 0 0 0 0 rgba(212,160,23,0.4); }
+          70% { box-shadow: 0 0 0 12px rgba(212,160,23,0); }
+          100% { box-shadow: 0 0 0 0 rgba(212,160,23,0); }
         }
         .login-mesh-1 { animation: meshFloat 20s ease-in-out infinite; }
         .login-mesh-2 { animation: meshFloat 25s ease-in-out infinite reverse; }
@@ -266,9 +266,9 @@ const LoginPage = () => {
       {/* ═══ ANIMATED MESH GRADIENTS (Background) ═══ */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="login-mesh-1 absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full opacity-30"
-          style={{ background: 'radial-gradient(circle, rgba(0,144,255,0.15) 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(circle, rgba(212,160,23,0.15) 0%, transparent 70%)' }} />
         <div className="login-mesh-2 absolute -bottom-20 right-[20%] w-[500px] h-[500px] rounded-full opacity-25"
-          style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(circle, rgba(212,160,23,0.12) 0%, transparent 70%)' }} />
         <div className="login-mesh-3 absolute top-[30%] right-[-10%] w-[400px] h-[400px] rounded-full opacity-20"
           style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 70%)' }} />
       </div>
@@ -278,7 +278,7 @@ const LoginPage = () => {
         <div className="lg:hidden fixed top-0 left-0 right-0 h-1 z-[100]" style={{ background: 'rgba(255,255,255,0.03)' }}>
           <motion.div
             className="h-full rounded-r-full"
-            style={{ background: 'linear-gradient(90deg, #0090ff, #7c3aed)' }}
+            style={{ background: 'linear-gradient(90deg, #D4A017, #D4A017)' }}
             animate={{ width: `${(onboardingStep / TOTAL_STEPS) * 100}%` }}
             transition={{ type: 'spring', damping: 20 }}
           />
@@ -357,9 +357,9 @@ const LoginPage = () => {
                       >
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-[0.2em]"
                           style={{
-                            background: 'linear-gradient(90deg, rgba(0,144,255,0.12), rgba(139,92,246,0.08))',
-                            border: '1px solid rgba(0,144,255,0.2)',
-                            color: '#0090ff'
+                            background: 'linear-gradient(90deg, rgba(212,160,23,0.12), rgba(212,160,23,0.08))',
+                            border: '1px solid rgba(212,160,23,0.2)',
+                            color: '#D4A017'
                           }}
                         >
                           <Sparkles size={10} fill="currentColor" />
@@ -400,7 +400,7 @@ const LoginPage = () => {
                     transition={{ delay: 0.3 }}
                     className="relative overflow-hidden rounded-2xl p-4"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(251,191,36,0.06), rgba(139,92,246,0.04))',
+                      background: 'linear-gradient(135deg, rgba(251,191,36,0.06), rgba(212,160,23,0.04))',
                       border: '1px solid rgba(251,191,36,0.15)',
                     }}
                   >
@@ -445,8 +445,8 @@ const LoginPage = () => {
                         boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
                       }}
                       onMouseEnter={e => {
-                        (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,144,255,0.3)';
-                        (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 24px rgba(0,144,255,0.1)';
+                        (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(212,160,23,0.3)';
+                        (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 24px rgba(212,160,23,0.1)';
                       }}
                       onMouseLeave={e => {
                         (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.1)';
@@ -525,7 +525,7 @@ const LoginPage = () => {
                         >
                           <motion.div
                             className="h-full rounded-full"
-                            style={{ background: 'linear-gradient(90deg, #0090ff, #7c3aed)' }}
+                            style={{ background: 'linear-gradient(90deg, #D4A017, #D4A017)' }}
                             initial={{ width: 0 }}
                             animate={{ width: s <= onboardingStep ? '100%' : '0%' }}
                             transition={{ duration: 0.5, delay: s <= onboardingStep ? (s - 1) * 0.1 : 0 }}
@@ -571,9 +571,9 @@ const LoginPage = () => {
                     style={{
                       background: isNextDisabled()
                         ? 'rgba(255,255,255,0.05)'
-                        : 'linear-gradient(135deg, #0090ff, #0070cc)',
+                        : 'linear-gradient(135deg, #D4A017, #0070cc)',
                       color: 'white',
-                      boxShadow: isNextDisabled() ? 'none' : '0 8px 32px rgba(0,144,255,0.25)',
+                      boxShadow: isNextDisabled() ? 'none' : '0 8px 32px rgba(212,160,23,0.25)',
                     }}
                   >
                     {isSubmitting && <Loader2 size={16} className="animate-spin" />}
@@ -675,7 +675,7 @@ const LoginPage = () => {
                 Sáng tạo
                 <br />
                 <span style={{
-                  background: 'linear-gradient(90deg, #0090ff, #7c3aed, #ec4899)',
+                  background: 'linear-gradient(90deg, #D4A017, #D4A017, #ec4899)',
                   backgroundSize: '200% auto',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -720,7 +720,7 @@ const LoginPage = () => {
                   className="h-1.5 rounded-full transition-all duration-500"
                   style={{
                     background: i === loginImageIndex
-                      ? 'linear-gradient(90deg, #0090ff, #7c3aed)'
+                      ? 'linear-gradient(90deg, #D4A017, #D4A017)'
                       : 'rgba(255,255,255,0.1)',
                   }}
                 />
@@ -750,12 +750,12 @@ const LoginPage = () => {
                 <motion.div
                   className="absolute -inset-4 rounded-2xl"
                   style={{
-                    border: '2px solid rgba(0,144,255,0.15)',
+                    border: '2px solid rgba(212,160,23,0.15)',
                     animation: 'pulseRing 2s ease-in-out infinite',
                   }}
                 />
                 <div className="absolute -inset-8 rounded-[2rem] opacity-20"
-                  style={{ background: 'radial-gradient(circle, rgba(0,144,255,0.3) 0%, transparent 70%)' }} />
+                  style={{ background: 'radial-gradient(circle, rgba(212,160,23,0.3) 0%, transparent 70%)' }} />
               </div>
               <div className="flex flex-col items-center gap-3">
                 <div className="flex items-center gap-2">

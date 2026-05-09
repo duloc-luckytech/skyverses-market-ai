@@ -31,8 +31,8 @@ interface SidebarControlsProps {
 }
 
 export const SidebarControls: React.FC<SidebarControlsProps> = ({ s, fileInputRef }) => {
-  const labelStyle = "text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-2 flex items-center gap-2 px-1";
-  const selectStyle = "w-full bg-slate-50 dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-lg p-3 text-xs font-bold text-slate-800 dark:text-white outline-none focus:border-purple-500/50 transition-all appearance-none cursor-pointer shadow-sm";
+  const labelStyle = "text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-2 flex items-center gap-2 px-1";
+  const selectStyle = "w-full bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-lg p-3 text-xs font-bold text-slate-800 dark:text-white outline-none focus:border-purple-500/50 transition-all appearance-none cursor-pointer shadow-sm";
 
   return (
     <div className="p-8 space-y-10">
@@ -43,7 +43,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ s, fileInputRe
             <div className="w-10 h-10 bg-purple-600/10 dark:bg-purple-600/20 border border-purple-500/20 dark:border-purple-500/30 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-sm">
               <Home size={22} />
             </div>
-            <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">BẤT ĐỘNG SẢN AI</h2>
+            <h2 className="text-2xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">BẤT ĐỘNG SẢN AI</h2>
           </div>
           <p className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest pl-1">Thiết kế & Kiến trúc ảo</p>
         </div>
@@ -54,7 +54,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ s, fileInputRe
           >
             <motion.div animate={{ x: s.faceLock ? 24 : 2 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-lg" />
           </div>
-          <span className="text-[7px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest">FACE LOCK</span>
+          <span className="text-[7px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest">FACE LOCK</span>
         </div>
       </div>
 
@@ -70,7 +70,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ s, fileInputRe
         ) : (
           <>
             <CloudUpload size={32} className="text-purple-500/50 group-hover:scale-110 transition-transform" />
-            <span className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest text-center px-4">TẢI LÊN ẢNH HIỆN TRẠNG</span>
+            <span className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest text-center px-4">TẢI LÊN ẢNH HIỆN TRẠNG</span>
           </>
         )}
         <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={s.handleUpload} />
@@ -127,13 +127,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ s, fileInputRe
       <div className="space-y-4">
         <div className="flex justify-between items-center px-1">
           <label className={labelStyle}><Activity size={12}/> YÊU CẦU BỔ SUNG</label>
-          <button className="flex items-center gap-1 text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest hover:brightness-125 transition-all">
+          <button className="flex items-center gap-1 text-[9px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest hover:brightness-125 transition-all">
             <Lightbulb size={12} /> Gợi ý
           </button>
         </div>
         <textarea 
           value={s.extraPrompt} onChange={e => s.setExtraPrompt(e.target.value)}
-          className="w-full h-32 bg-slate-50 dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-xl p-4 text-[13px] font-medium focus:border-purple-500/50 outline-none transition-all resize-none text-slate-700 dark:text-gray-300 placeholder:text-slate-300 dark:placeholder:text-gray-700 shadow-inner" 
+          className="w-full h-32 bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-xl p-4 text-[13px] font-medium focus:border-purple-500/50 outline-none transition-all resize-none text-slate-700 dark:text-gray-300 placeholder:text-slate-300 dark:placeholder:text-gray-700 shadow-inner" 
           placeholder="Nhập thêm yêu cầu đặc biệt..."
         />
       </div>

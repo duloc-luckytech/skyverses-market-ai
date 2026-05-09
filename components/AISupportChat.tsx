@@ -6,8 +6,10 @@ import {
   Loader2, ChevronDown, User as UserIcon,
   Sparkles, Paperclip, Maximize2,
   MessageCircle, Copy, Terminal, Download, LogIn, RotateCcw, Trash2, AlertTriangle,
-  WifiOff, History, Plus, ChevronRight
+  WifiOff, History, Plus, ChevronRight,
+  Gift, Headphones, FileText
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import FullChatModal from './FullChatModal';
@@ -64,6 +66,8 @@ const AISupportChat: React.FC = () => {
   const [typingMsgId, setTypingMsgId] = useState<string | null>(null);
   const [typingText, setTypingText] = useState('');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showInviteCard, setShowInviteCard] = useState(false);
+  const [inviteSlide, setInviteSlide] = useState(0);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [suggestedFollowUps, setSuggestedFollowUps] = useState<string[]>([]);
   const typingRef = useRef<{ fullText: string; index: number; timer: ReturnType<typeof setTimeout> | null }>({ fullText: '', index: 0, timer: null });
@@ -417,7 +421,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
         const lang = match?.[1] || 'code';
         const code = match?.[2] || '';
         return (
-          <div key={idx} className="my-2 rounded-lg overflow-hidden border border-black/[0.06] dark:border-white/[0.06] bg-[#f8f9fa] dark:bg-[#1a1f2b]">
+          <div key={idx} className="my-2 rounded-lg overflow-hidden border border-black/[0.06] dark:border-white/[0.06] bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-panel)]">
             <div className="flex items-center justify-between px-3 py-1.5 bg-black/[0.02] dark:bg-white/[0.03] border-b border-black/[0.04] dark:border-white/[0.04]">
               <span className="text-[8px] font-bold uppercase text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
                 <Terminal size={9} /> {lang}
@@ -447,6 +451,22 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
     });
   };
 
+  // ═══ Invite card slides ═══
+  const INVITE_SLIDES = [
+    { title: 'Share Skyverses', subtitle: 'Invite a Friend · Earn $5', cta: 'Invite & Earn $5', to: '/referral' },
+    { title: 'Free 99 Images', subtitle: 'Sign up and get 99 AI images free', cta: 'Start Creating', to: '/product/ai-image-generator' },
+    { title: 'AI Video Studio', subtitle: 'Create stunning videos with 10+ models', cta: 'Try Video AI', to: '/product/ai-video-generator' },
+  ];
+
+  // Auto-rotate invite slides
+  useEffect(() => {
+    if (!showInviteCard) return;
+    const timer = setInterval(() => {
+      setInviteSlide(prev => (prev + 1) % INVITE_SLIDES.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [showInviteCard]);
+
   const QUICK_PROMPTS = [
     { emoji: '💡', text: 'Tư vấn chọn model AI phù hợp nhu cầu' },
     { emoji: '🎬', text: 'Hướng dẫn tạo video AI chất lượng cao' },
@@ -456,51 +476,176 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
 
   return (
     <>
-      {/* ═══════════ FAB BUTTON ═══════════ */}
-      <div className="fixed bottom-[5.5rem] right-[1.65rem] z-[600]">
-        <motion.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Support Assistant"
-          className={`relative w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-            isOpen 
-              ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-2xl rotate-90' 
-              : 'bg-white dark:bg-[#13171f] text-brand-blue shadow-xl hover:shadow-2xl'
-          }`}
-        >
-          {/* Animated border ring */}
-          {!isOpen && (
-            <>
-              <div className="absolute -inset-[3px] rounded-2xl animate-[ai-orbit_3s_linear_infinite]" style={{
-                background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, #0090ff 300deg, #a855f7 330deg, transparent 360deg)',
-                mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-                WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-              }} />
-              <div className="absolute inset-0 rounded-2xl bg-brand-blue/10 blur-lg animate-pulse" />
-            </>
+      {/* ═══════════ FLOATING DOCK (vertical icon stack) ═══════════ */}
+      <div className="fixed bottom-6 right-5 z-[600] flex flex-col items-center gap-2.5">
+        {/* Gift / Referral — toggles invite card */}
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
+          <button
+            onClick={() => { setShowInviteCard(v => !v); setIsOpen(false); }}
+            className={`group relative w-11 h-11 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl border transition-all duration-200 hover:scale-105 active:scale-95 ${
+              showInviteCard
+                ? 'bg-[#7036F0] border-[#7036F0] text-white'
+                : 'bg-white dark:bg-[#1a1a1e] border-black/[0.06] dark:border-white/[0.08]'
+            }`}
+            title="Referral & Rewards"
+          >
+            <Gift size={17} className={showInviteCard ? 'text-white' : 'text-[#7036F0]'} />
+            <span className="pointer-events-none absolute right-full mr-2.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold whitespace-nowrap bg-slate-900 text-white dark:bg-white dark:text-slate-900 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+              Referral
+            </span>
+          </button>
+        </motion.div>
+
+        {/* ═══ Invite Card Popup ═══ */}
+        <AnimatePresence>
+          {showInviteCard && (
+            <motion.div
+              initial={{ opacity: 0, x: 30, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 30, scale: 0.9 }}
+              transition={{ type: 'spring', damping: 22, stiffness: 300 }}
+              className="absolute right-[3.5rem] top-0 w-[280px] rounded-2xl overflow-hidden shadow-2xl"
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowInviteCard(false)}
+                className="absolute top-2.5 right-2.5 z-20 w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white/80 hover:text-white hover:bg-white/30 transition-all"
+              >
+                <X size={12} />
+              </button>
+
+              {/* Slide content */}
+              <div className="relative overflow-hidden">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={inviteSlide}
+                    initial={{ opacity: 0, x: 40 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -40 }}
+                    transition={{ duration: 0.3 }}
+                    className="relative px-5 pt-6 pb-5"
+                    style={{
+                      background: 'linear-gradient(135deg, #7036F0 0%, #9333EA 40%, #7C3AED 100%)',
+                    }}
+                  >
+                    {/* Confetti decorations */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                      <div className="absolute top-3 left-6 w-2 h-2 bg-yellow-300/60 rounded-sm rotate-12" />
+                      <div className="absolute top-8 right-12 w-1.5 h-1.5 bg-pink-300/50 rounded-full" />
+                      <div className="absolute bottom-4 left-10 w-1 h-3 bg-green-300/40 rounded-full rotate-45" />
+                      <div className="absolute top-5 left-[45%] w-1.5 h-1.5 bg-blue-300/50 rounded-sm -rotate-12" />
+                      <div className="absolute bottom-6 right-8 w-2 h-1 bg-orange-300/40 rounded-full rotate-[30deg]" />
+                      <div className="absolute top-12 left-3 w-1 h-1 bg-cyan-300/50 rounded-full" />
+                      <div className="absolute bottom-3 left-[55%] w-1.5 h-1 bg-red-300/40 rounded-sm rotate-[60deg]" />
+                    </div>
+
+                    {/* Text */}
+                    <h4 className="relative z-10 text-[18px] font-extrabold text-white leading-tight tracking-tight">
+                      {INVITE_SLIDES[inviteSlide].title}
+                    </h4>
+                    <p className="relative z-10 text-[13px] text-white/80 font-medium mt-1.5">
+                      {INVITE_SLIDES[inviteSlide].subtitle}
+                    </p>
+
+                    {/* CTA */}
+                    <Link
+                      to={INVITE_SLIDES[inviteSlide].to}
+                      onClick={() => setShowInviteCard(false)}
+                      className="relative z-10 inline-flex items-center gap-1.5 mt-4 text-[13px] font-bold text-white hover:underline underline-offset-2 transition-all"
+                    >
+                      {INVITE_SLIDES[inviteSlide].cta}
+                      <ChevronRight size={14} />
+                    </Link>
+
+                    {/* Dot indicators */}
+                    <div className="relative z-10 flex items-center gap-1.5 mt-4">
+                      {INVITE_SLIDES.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setInviteSlide(i)}
+                          className={`rounded-full transition-all duration-300 ${
+                            i === inviteSlide
+                              ? 'w-5 h-2 bg-white'
+                              : 'w-2 h-2 bg-white/40 hover:bg-white/60'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </motion.div>
           )}
-          {/* Border */}
-          <div className={`absolute inset-0 rounded-2xl border ${isOpen ? 'border-transparent' : 'border-black/[0.06] dark:border-white/[0.08]'}`} />
-          <div className="relative z-10">
+        </AnimatePresence>
+
+        {/* Discord */}
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}>
+          <a
+            href="https://discord.gg/skyverses"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative w-11 h-11 rounded-xl flex items-center justify-center bg-white dark:bg-[#1a1a1e] shadow-lg hover:shadow-xl border border-black/[0.06] dark:border-white/[0.08] transition-all duration-200 hover:scale-105 active:scale-95"
+            title="Discord"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-[17px] h-[17px] text-[#5865F2] group-hover:text-[#7289DA] transition-colors">
+              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+            </svg>
+            <span className="pointer-events-none absolute right-full mr-2.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold whitespace-nowrap bg-slate-900 text-white dark:bg-white dark:text-slate-900 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+              Discord
+            </span>
+          </a>
+        </motion.div>
+
+        {/* Support Chat (main FAB) */}
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+          <motion.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            onClick={() => { setIsOpen(!isOpen); setShowInviteCard(false); }}
+            aria-label="Support Assistant"
+            className={`group relative w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 ${
+              isOpen
+                ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-2xl'
+                : 'bg-white dark:bg-[#1a1a1e] shadow-lg hover:shadow-xl border border-black/[0.06] dark:border-white/[0.08]'
+            }`}
+            title="AI Support"
+          >
             <AnimatePresence mode="wait">
               {isOpen ? (
                 <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                  <X size={18} />
+                  <X size={17} />
                 </motion.div>
               ) : (
                 <motion.div key="open" initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.5, opacity: 0 }} transition={{ duration: 0.15 }}>
-                  <Bot size={18} />
+                  <Headphones size={17} className="text-brand-blue" />
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
-          {/* Notification dot */}
-          {!isOpen && messages.length === 0 && (
-            <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-brand-blue rounded-full border-2 border-white dark:border-[#161618] animate-pulse" />
-          )}
-        </motion.button>
-        <style>{`@keyframes ai-orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+            {/* Notification dot */}
+            {!isOpen && messages.length === 0 && (
+              <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-[#1a1a1e] animate-pulse" />
+            )}
+            <span className="pointer-events-none absolute right-full mr-2.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold whitespace-nowrap bg-slate-900 text-white dark:bg-white dark:text-slate-900 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+              Support
+            </span>
+          </motion.button>
+        </motion.div>
+
+        {/* Docs */}
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
+          <a
+            href="https://insights.skyverses.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative w-11 h-11 rounded-xl flex items-center justify-center bg-white dark:bg-[#1a1a1e] shadow-lg hover:shadow-xl border border-black/[0.06] dark:border-white/[0.08] transition-all duration-200 hover:scale-105 active:scale-95"
+            title="Documentation"
+          >
+            <FileText size={17} className="text-slate-500 dark:text-gray-400 group-hover:text-brand-blue transition-colors" />
+            <span className="pointer-events-none absolute right-full mr-2.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold whitespace-nowrap bg-slate-900 text-white dark:bg-white dark:text-slate-900 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+              Docs
+            </span>
+          </a>
+        </motion.div>
       </div>
 
       {/* ═══════════ MINI CHAT MODAL ═══════════ */}
@@ -522,10 +667,10 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-              className="fixed bottom-[9rem] right-6 md:right-8 w-[calc(100vw-3rem)] md:w-[420px] h-[560px] max-h-[75dvh] flex flex-col overflow-hidden z-[700] rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_80px_rgba(0,0,0,0.5)]"
+              className="fixed bottom-6 right-[4.5rem] md:right-[4.75rem] w-[calc(100vw-5.5rem)] md:w-[420px] h-[560px] max-h-[75dvh] flex flex-col overflow-hidden z-[700] rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_80px_rgba(0,0,0,0.5)]"
             >
             {/* Glass background */}
-            <div className="absolute inset-0 bg-white/95 dark:bg-[#13171f]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] rounded-2xl" />
+            <div className="absolute inset-0 bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] rounded-2xl" />
 
             {/* ─── HEADER ─── */}
             <div className="relative z-10 px-5 py-4 flex items-center justify-between shrink-0 border-b border-black/[0.04] dark:border-white/[0.04]">
@@ -887,7 +1032,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-[#13171f] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-[320px] shadow-2xl text-center space-y-4"
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-[320px] shadow-2xl text-center space-y-4"
             >
               <div className="w-12 h-12 mx-auto rounded-xl bg-red-500/10 flex items-center justify-center">
                 <AlertTriangle size={22} className="text-red-500" />

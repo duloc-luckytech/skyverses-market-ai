@@ -65,7 +65,7 @@ const FormatCard: React.FC<{
     <div className="flex items-start gap-3">
       <span className="text-2xl leading-none mt-0.5">{opt.emoji}</span>
       <div className="flex-grow min-w-0">
-        <p className={`text-xs font-black leading-none truncate ${isSelected ? 'text-brand-blue' : 'text-slate-800 dark:text-white'}`}>
+        <p className={`text-xs font-bold leading-none truncate ${isSelected ? 'text-brand-blue' : 'text-slate-800 dark:text-white'}`}>
           {opt.label}
         </p>
         <p className="text-[9px] text-slate-400 dark:text-gray-500 mt-1 leading-snug">{opt.desc}</p>
@@ -95,8 +95,8 @@ const StyleCard: React.FC<{
   >
     {/* Gradient preview swatch */}
     <div className={`h-12 w-full bg-gradient-to-br ${opt.gradient} dark:${opt.dark}`} />
-    <div className="bg-white dark:bg-[#13171f] px-3 py-2.5 flex items-center justify-between">
-      <span className={`text-[10px] font-black truncate ${isSelected ? 'text-brand-blue' : 'text-slate-700 dark:text-white'}`}>
+    <div className="bg-white dark:bg-[var(--atlas-bg-panel)] px-3 py-2.5 flex items-center justify-between">
+      <span className={`text-[10px] font-bold truncate ${isSelected ? 'text-brand-blue' : 'text-slate-700 dark:text-white'}`}>
         {opt.label}
       </span>
       {isSelected && <Check size={11} strokeWidth={3.5} className="text-brand-blue shrink-0 ml-1" />}
@@ -150,7 +150,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 30 }}
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-            className="relative w-full max-w-4xl bg-[#fafafa] dark:bg-[#1a1f2b] rounded-[2rem] overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.45)] flex flex-col max-h-[90vh] border border-black/8 dark:border-white/8"
+            className="relative w-full max-w-4xl bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-panel)] rounded-[2rem] overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.45)] flex flex-col max-h-[90vh] border border-black/8 dark:border-white/8"
           >
             {/* Header */}
             <div className="px-7 py-6 border-b border-black/5 dark:border-white/5 bg-white/60 dark:bg-black/20 shrink-0 flex items-center justify-between">
@@ -160,7 +160,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
                   <Palette size={24} className="relative z-10" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">
+                  <h3 className="text-xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">
                     Aesthetic Profile
                   </h3>
                   <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest mt-1 italic">
@@ -184,7 +184,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
               <section>
                 <div className="flex items-center gap-2.5 mb-5">
                   <Layout size={15} className="text-brand-blue" />
-                  <h4 className="text-xs font-black uppercase tracking-[0.3em] text-slate-800 dark:text-white">Loại hình / Format</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-slate-800 dark:text-white">Loại hình / Format</h4>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {FORMAT_OPTIONS.map((opt) => (
@@ -202,7 +202,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
               <section>
                 <div className="flex items-center gap-2.5 mb-5">
                   <Palette size={15} className="text-purple-500" />
-                  <h4 className="text-xs font-black uppercase tracking-[0.3em] text-slate-800 dark:text-white">Phong cách / Style</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-slate-800 dark:text-white">Phong cách / Style</h4>
                 </div>
                 <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
                   {STYLE_OPTIONS.map((opt) => (
@@ -220,7 +220,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
               <section>
                 <div className="flex items-center gap-2.5 mb-4">
                   <Camera size={15} className="text-emerald-500" />
-                  <h4 className="text-xs font-black uppercase tracking-[0.3em] text-slate-800 dark:text-white">Bối cảnh văn hóa / World Building</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-slate-800 dark:text-white">Bối cảnh văn hóa / World Building</h4>
                 </div>
                 {/* Preset chips */}
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -228,7 +228,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
                     <button
                       key={p.val}
                       onClick={() => handleChange('culture', settings.culture === p.val ? '' : p.val)}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-[10px] font-black border transition-all ${
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-[10px] font-bold border transition-all ${
                         settings.culture === p.val
                           ? 'bg-brand-blue text-white border-brand-blue shadow-md'
                           : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/8 text-slate-500 dark:text-gray-400 hover:border-brand-blue/40 hover:text-brand-blue dark:hover:text-white'
@@ -252,7 +252,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
               <section>
                 <button
                   onClick={() => setShowAdvanced((v) => !v)}
-                  className="flex items-center gap-2.5 text-xs font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-500 hover:text-brand-blue transition-colors"
+                  className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-500 hover:text-brand-blue transition-colors"
                 >
                   <ChevronRight size={14} className={`transition-transform ${showAdvanced ? 'rotate-90' : ''}`} />
                   Nâng cao — Bối cảnh, Camera, Âm thanh
@@ -270,7 +270,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
                       <div className="space-y-6 pt-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
+                            <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
                               <Layout size={11} className="text-brand-blue" /> Bối cảnh / Background
                             </label>
                             <textarea
@@ -281,7 +281,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
                             />
                           </div>
                           <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
+                            <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
                               <Camera size={11} className="text-brand-blue" /> Camera & Cinematic
                             </label>
                             <textarea
@@ -295,7 +295,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
+                            <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
                               <Music size={11} className="text-emerald-500" /> Âm nhạc (BGM)
                             </label>
                             <input
@@ -306,7 +306,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
                             />
                           </div>
                           <div className="space-y-2">
-                            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
+                            <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-400 tracking-[0.3em] flex items-center gap-1.5">
                               <Mic size={11} className="text-emerald-500" /> Lời bình (Voice Over)
                             </label>
                             <input
@@ -327,7 +327,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
               <div className="p-5 bg-brand-blue/5 border border-brand-blue/10 dark:border-brand-blue/15 rounded-2xl flex gap-4 items-start">
                 <Zap className="text-brand-blue shrink-0 mt-0.5" size={16} />
                 <div className="space-y-1">
-                  <p className="text-[10px] text-slate-800 dark:text-slate-300 font-black uppercase tracking-tight italic">AI Archetype Sync Active</p>
+                  <p className="text-[10px] text-slate-800 dark:text-slate-300 font-bold uppercase tracking-tight italic">AI Archetype Sync Active</p>
                   <p className="text-[10px] text-slate-500 dark:text-gray-400 font-medium leading-relaxed">
                     Có thể để trống mọi trường để AI tự phân tích kịch bản và đề xuất aesthetic tối ưu nhất cho từng phân cảnh.
                   </p>
@@ -339,13 +339,13 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
             <div className="px-7 py-5 border-t border-black/5 dark:border-white/5 bg-white/60 dark:bg-black/30 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5 text-brand-blue opacity-70">
                 <ShieldCheck size={15} />
-                <span className="text-[9px] font-black uppercase tracking-widest">Aesthetic Protocol Synchronized</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest">Aesthetic Protocol Synchronized</span>
               </div>
               <button
                 onClick={handleSave}
                 disabled={isSaving || saveSuccess}
                 aria-label="Xác nhận và lưu Aesthetic Profile"
-                className="px-10 py-3.5 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-brand-blue/25 hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 disabled:opacity-80"
+                className="px-10 py-3.5 bg-brand-blue text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] shadow-lg shadow-brand-blue/25 hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 disabled:opacity-80"
               >
                 {isSaving && <Loader2 size={13} className="animate-spin" />}
                 {saveSuccess && <Check size={13} strokeWidth={3.5} />}

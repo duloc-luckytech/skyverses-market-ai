@@ -77,7 +77,7 @@ export const FAQSection: React.FC = () => {
       <div className="max-w-[800px] mx-auto">
         <FadeInUp className="text-center mb-12">
           <SectionLabel>CÂU HỎI THƯỜNG GẶP</SectionLabel>
-          <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-3">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3">
             Bạn cần biết gì?
           </h2>
           <p className="text-base text-slate-500 dark:text-white/40">
@@ -86,7 +86,7 @@ export const FAQSection: React.FC = () => {
         </FadeInUp>
 
         <FadeInUp delay={0.08}>
-          <div className="bg-white dark:bg-[#111] rounded-2xl border border-black/[0.06] dark:border-white/[0.04] px-6 divide-y divide-black/[0.04] dark:divide-white/[0.03]">
+          <div className="bg-white dark:bg-[#111] rounded-xl border border-black/[0.06] dark:border-white/[0.04] px-6 divide-y divide-black/[0.04] dark:divide-white/[0.03]">
             {FAQS.map((faq, i) => (
               <FAQItem
                 key={i}

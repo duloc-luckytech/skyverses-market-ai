@@ -5,14 +5,29 @@ import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { API_BASE_URL, getHeaders } from '../apis/config';
 import { creditsApi, CreditTransaction } from '../apis/credits';
+import { skytokenApi } from '../apis/skytoken';
+import { promptMarketApi } from '../apis/prompt-market';
 
-export type SettingTab = 'profile' | 'compute' | 'cloud' | 'keys' | 'referrals' | 'security' | 'billing';
+export type SettingTab = 'profile' | 'wallet' | 'compute' | 'keys' | 'referrals' | 'security' | 'billing';
 
 export interface ModelKeys {
   gemini: string;
   openai: string;
   anthropic: string;
   midjourney: string;
+}
+
+export interface SellerEarnings {
+  totalSales: number;
+  totalEarned: number;
+  recentSales: Array<{
+    _id: string;
+    pricePaid: number;
+    sellerReceived: number;
+    buyerId: { _id: string; name: string; avatar?: string };
+    promptSetId: { _id: string; title: { en: string }; slug: string };
+    createdAt: string;
+  }>;
 }
 
 const STORAGE_KEY = 'skyverses_model_vault';
@@ -32,9 +47,50 @@ export const useSettingsLogic = () => {
   const [profileName, setProfileName] = useState('');
   const [profileFields, setProfileFields] = useState<Record<string, string>>({});
 
+  // ── Seller profile fields ──
+  const [sellerBio, setSellerBio] = useState('');
+  const [sellerSocialLinks, setSellerSocialLinks] = useState<{ website: string; twitter: string; github: string }>({
+    website: '', twitter: '', github: '',
+  });
+
   useEffect(() => {
     if (user?.name) setProfileName(user.name);
-  }, [user?.name]);
+    if (user?.bio) setSellerBio(user.bio);
+    if (user?.socialLinks) {
+      setSellerSocialLinks({
+        website: user.socialLinks.website || '',
+        twitter: user.socialLinks.twitter || '',
+        github: user.socialLinks.github || '',
+      });
+    }
+  }, [user?.name, user?.bio, user?.socialLinks]);
+
+  // ── Wallet: SKT balance + seller earnings ──
+  const [sktBalance, setSktBalance] = useState(0);
+  const [sktLoading, setSktLoading] = useState(false);
+  const [sellerEarnings, setSellerEarnings] = useState<SellerEarnings>({
+    totalSales: 0, totalEarned: 0, recentSales: [],
+  });
+  const [sktHistory, setSktHistory] = useState<Array<{ _id: string; type: string; amount: number; note?: string; createdAt: string; balanceAfter?: number }>>([]);
+
+  const fetchWalletData = useCallback(async () => {
+    setSktLoading(true);
+    try {
+      const [balRes, earningsRes, histRes] = await Promise.all([
+        skytokenApi.getBalance(),
+        promptMarketApi.getMyEarnings(),
+        skytokenApi.getHistory(1, 30),
+      ]);
+      setSktBalance(balRes.skyTokenBalance || 0);
+      setSellerEarnings(earningsRes);
+      setSktHistory(histRes.data || []);
+    } catch { /* keep defaults */ }
+    setSktLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'wallet' && user) fetchWalletData();
+  }, [activeTab, user, fetchWalletData]);
 
   // ── Model keys from localStorage ──
   useEffect(() => {
@@ -123,14 +179,17 @@ export const useSettingsLogic = () => {
   const handleSaveProfile = async () => {
     setIsSaving(true);
     try {
-      const payload: any = {};
-      // Name is special — backend uses firstName/lastName but we also allow name
+      const payload: Record<string, unknown> = {};
       if (profileFields.firstName !== undefined) payload.firstName = profileFields.firstName;
       if (profileFields.lastName !== undefined) payload.lastName = profileFields.lastName;
       if (profileFields.phone !== undefined) payload.phone = profileFields.phone;
       if (profileFields.gender !== undefined) payload.gender = profileFields.gender;
       if (profileFields.birthYear !== undefined) payload.birthYear = profileFields.birthYear;
       if (profileFields.province !== undefined) payload.province = profileFields.province;
+
+      // Seller profile fields
+      payload.bio = sellerBio;
+      payload.socialLinks = sellerSocialLinks;
 
       if (Object.keys(payload).length > 0) {
         await fetch(`${API_BASE_URL}/user/update-profile`, {
@@ -151,10 +210,14 @@ export const useSettingsLogic = () => {
     isSaving,
     profileName, setProfileName,
     profileFields, setProfileFields,
+    sellerBio, setSellerBio,
+    sellerSocialLinks, setSellerSocialLinks,
     handleSaveProfile,
     modelKeys, setModelKeys, handleSaveKeys, handleResetKeys,
     referralFriends, referralTotal, referralLoading, fetchReferralFriends,
     creditHistory, creditHistoryLoading,
     purchaseHistory,
+    // Wallet
+    sktBalance, sktLoading, sellerEarnings, sktHistory, fetchWalletData,
   };
 };

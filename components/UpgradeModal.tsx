@@ -138,7 +138,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose, fea
                   <Crown size={16} className="text-brand-blue" />
                 </div>
                 <div>
-                  <h2 className="text-[15px] font-black uppercase italic tracking-tight text-white">Nâng cấp lên Pro</h2>
+                  <h2 className="text-[15px] font-bold uppercase italic tracking-tight text-white">Nâng cấp lên Pro</h2>
                   {featureHint && FEATURE_LABELS[featureHint] && (
                     <p className="text-[10px] text-white/40 font-medium">
                       <Lock size={9} className="inline mr-1" />
@@ -167,7 +167,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose, fea
                 >
                   {/* PRO recommended badge */}
                   {plan.highlight && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-brand-blue rounded-full text-[9px] font-black uppercase tracking-widest text-white whitespace-nowrap">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-brand-blue rounded-full text-[9px] font-bold uppercase tracking-widest text-white whitespace-nowrap">
                       ✦ Khuyên dùng
                     </div>
                   )}
@@ -178,9 +178,9 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose, fea
                       {plan.icon}
                     </span>
                     <div>
-                      <p className="text-[11px] font-black uppercase tracking-widest text-white/90">{plan.name}</p>
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-white/90">{plan.name}</p>
                       <p className="text-xs text-white/40 font-medium leading-none mt-0.5">
-                        <span className="text-lg font-black text-white">{plan.price}</span>{plan.period}
+                        <span className="text-lg font-bold text-white">{plan.price}</span>{plan.period}
                       </p>
                     </div>
                   </div>
@@ -209,7 +209,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose, fea
                           href={plan.cta}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all
+                          className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all
                             border border-purple-500/30 text-purple-300 hover:bg-purple-500/10`}
                         >
                           {plan.ctaLabel}
@@ -218,7 +218,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose, fea
                         <Link
                           to={plan.cta}
                           onClick={onClose}
-                          className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all
+                          className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all
                             ${plan.highlight
                               ? 'bg-brand-blue hover:bg-brand-blue/90 text-white shadow-lg shadow-brand-blue/30'
                               : 'border border-white/10 text-white/60 hover:bg-white/5'
@@ -228,7 +228,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose, fea
                         </Link>
                       )
                     ) : (
-                      <div className="w-full flex items-center justify-center py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest border border-white/5 text-white/20 cursor-default">
+                      <div className="w-full flex items-center justify-center py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest border border-white/5 text-white/20 cursor-default">
                         {plan.ctaLabel}
                       </div>
                     )}

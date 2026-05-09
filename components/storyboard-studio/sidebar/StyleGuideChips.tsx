@@ -25,7 +25,7 @@ export const StyleGuideChips: React.FC<StyleGuideChipsProps> = ({
       {/* Header */}
       <button
         onClick={onOpenAestheticModal}
-        className="w-full flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white transition-colors group"
+        className="w-full flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors group"
       >
         <span className="flex items-center gap-1.5">
           <Palette size={12} />

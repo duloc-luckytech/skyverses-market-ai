@@ -238,11 +238,11 @@ const AUPX1Studio = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white font-mono selection:bg-brand-blue/30">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white font-mono selection:bg-brand-blue/30">
 
-      <div className="w-full lg:w-[340px] shrink-0 flex flex-col bg-[#f9f9fb] dark:bg-[#0a0d14] border-r border-black/5 dark:border-white/5 overflow-y-auto no-scrollbar relative z-20">
+      <div className="w-full lg:w-[340px] shrink-0 flex flex-col bg-[#f9f9fb] dark:bg-[var(--atlas-bg-page)] border-r border-black/5 dark:border-white/5 overflow-y-auto no-scrollbar relative z-20">
          <div className="p-8 border-b border-black/5 dark:border-white/5 space-y-2 bg-gradient-to-b from-brand-blue/10 to-transparent">
-            <h3 className="text-[11px] font-black uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
+            <h3 className="text-[11px] font-bold uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
                <Workflow className="w-4 h-4" /> AUP-X1_Studio
             </h3>
             <p className="text-[8px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">Multi-Domain Infrastructure</p>
@@ -250,7 +250,7 @@ const AUPX1Studio = () => {
 
          <div className="p-6 space-y-8">
             <div className="space-y-4">
-               <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 tracking-widest flex items-center gap-2">
+               <label className="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-400 tracking-widest flex items-center gap-2">
                  <Globe size={12} className="text-brand-blue" /> Domain_Adapter
                </label>
                <div className="grid grid-cols-2 gap-2">
@@ -266,14 +266,14 @@ const AUPX1Studio = () => {
                       className={`flex items-center gap-3 p-3 border transition-all rounded-sm ${activeDomain === d.id ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/5 text-gray-400'}`}
                     >
                       {d.icon}
-                      <span className="text-[8px] font-black">{d.id.split('_')[0]}</span>
+                      <span className="text-[8px] font-bold">{d.id.split('_')[0]}</span>
                     </button>
                   ))}
                </div>
             </div>
 
             <div className="space-y-2">
-               <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-400 tracking-widest">Pipeline_Control</label>
+               <label className="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-400 tracking-widest">Pipeline_Control</label>
                {[
                  { id: 'ID_CORE', label: 'Identity_Core', icon: <User size={14} /> },
                  { id: 'ASSET_SYSTEM', label: 'Asset_System', icon: <Database size={14} /> },
@@ -289,7 +289,7 @@ const AUPX1Studio = () => {
                  >
                    <div className="flex items-center gap-3">
                       <span className="text-gray-400 group-hover:text-brand-blue">{s.icon}</span>
-                      <span className="text-[10px] font-black uppercase tracking-widest">{s.label}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">{s.label}</span>
                    </div>
                    {stageProgress[s.id as PipelineStage] && <CheckCircle2 size={14} className="text-emerald-500" />}
                  </button>
@@ -301,14 +301,14 @@ const AUPX1Studio = () => {
             <div className="p-4 bg-brand-blue/5 border border-brand-blue/20 space-y-3 rounded-sm">
                <div className="flex items-center gap-2 text-brand-blue">
                   <ShieldCheck size={14} />
-                  <span className="text-[9px] font-black uppercase">Infrastructure_Safe</span>
+                  <span className="text-[9px] font-bold uppercase">Infrastructure_Safe</span>
                </div>
                <p className="text-[7px] font-bold text-gray-500 uppercase leading-relaxed">Multi-Agent orchestration kernel active.</p>
             </div>
          </div>
       </div>
 
-      <div className="flex-grow flex flex-col relative bg-white dark:bg-[#0a0d14] overflow-hidden">
+      <div className="flex-grow flex flex-col relative bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden">
         <div className="flex-grow overflow-y-auto p-12 no-scrollbar flex flex-col items-center justify-center">
            <AnimatePresence mode="wait">
               {activeStage === 'ADAPTER_RENDER' ? (
@@ -318,7 +318,7 @@ const AUPX1Studio = () => {
                    ) : (
                       <div className="absolute inset-0 flex flex-col items-center justify-center space-y-6">
                          <Loader2 className={`w-12 h-12 text-brand-blue ${isBusy ? 'animate-spin' : ''}`} />
-                         <p className="text-[10px] font-black uppercase tracking-widest animate-pulse">Synthesizing {activeDomain} Render...</p>
+                         <p className="text-[10px] font-bold uppercase tracking-widest animate-pulse">Synthesizing {activeDomain} Render...</p>
                       </div>
                    )}
                 </motion.div>
@@ -329,41 +329,41 @@ const AUPX1Studio = () => {
                    ) : (
                       <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
                          <User size={64} className="text-gray-800" />
-                         <p className="text-[10px] font-black uppercase tracking-widest opacity-20">Identity_Base_Empty</p>
+                         <p className="text-[10px] font-bold uppercase tracking-widest opacity-20">Identity_Base_Empty</p>
                       </div>
                    )}
                 </motion.div>
               ) : (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-6 opacity-20">
                    <Box size={80} />
-                   <p className="text-[12px] font-black uppercase tracking-widest">{activeStage} Active</p>
+                   <p className="text-[12px] font-bold uppercase tracking-widest">{activeStage} Active</p>
                 </motion.div>
               )}
            </AnimatePresence>
         </div>
 
-        <div className="h-32 border-t border-black/10 dark:border-white/5 bg-[#fafafa] dark:bg-black p-6 flex items-center justify-between z-10 shadow-2xl">
+        <div className="h-32 border-t border-black/10 dark:border-white/5 bg-[var(--atlas-bg-panel-hover)] dark:bg-black p-6 flex items-center justify-between z-10 shadow-2xl">
            <div className="flex gap-4">
-              {activeStage === 'ID_CORE' && <button onClick={runIdentity} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-black uppercase tracking-widest">Initialize ID</button>}
-              {activeStage === 'ASSET_SYSTEM' && <button onClick={runAssetSystem} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-black uppercase tracking-widest">Orchestrate Assets</button>}
-              {activeStage === 'MOTION_INTEL' && <button onClick={runMotionIntel} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-black uppercase tracking-widest">Synthesize Logic</button>}
-              {activeStage === 'SCENE_DESIGN' && <button onClick={runSceneDesign} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-black uppercase tracking-widest">Draft Scene</button>}
-              {activeStage === 'ADAPTER_RENDER' && <button onClick={runAdapterRender} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-black uppercase tracking-widest">Render Domain</button>}
+              {activeStage === 'ID_CORE' && <button onClick={runIdentity} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-bold uppercase tracking-widest">Initialize ID</button>}
+              {activeStage === 'ASSET_SYSTEM' && <button onClick={runAssetSystem} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-bold uppercase tracking-widest">Orchestrate Assets</button>}
+              {activeStage === 'MOTION_INTEL' && <button onClick={runMotionIntel} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-bold uppercase tracking-widest">Synthesize Logic</button>}
+              {activeStage === 'SCENE_DESIGN' && <button onClick={runSceneDesign} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-bold uppercase tracking-widest">Draft Scene</button>}
+              {activeStage === 'ADAPTER_RENDER' && <button onClick={runAdapterRender} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-bold uppercase tracking-widest">Render Domain</button>}
 
               {activeStage !== 'MASTER_COMP' && (
-                <button onClick={() => approveStage(activeStage)} className="px-10 py-4 border border-black/10 dark:border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all">Approve & Next</button>
+                <button onClick={() => approveStage(activeStage)} className="px-10 py-4 border border-black/10 dark:border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all">Approve & Next</button>
               )}
            </div>
 
            <div className="flex items-center gap-6">
-              <button onClick={bypassToMaster} className="text-[10px] font-black uppercase text-gray-400 hover:text-brand-blue transition-colors">Bypass to Master</button>
+              <button onClick={bypassToMaster} className="text-[10px] font-bold uppercase text-gray-400 hover:text-brand-blue transition-colors">Bypass to Master</button>
            </div>
         </div>
       </div>
 
-      <aside className="hidden xl:flex w-[320px] shrink-0 flex-col bg-[#fdfdfd] dark:bg-[#0a0d14] border-l border-black/10 dark:border-white/5 overflow-hidden">
+      <aside className="hidden xl:flex w-[320px] shrink-0 flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Activity className="w-4 h-4 text-brand-blue" /> Studio_Logs
             </h3>
          </div>

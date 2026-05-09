@@ -9,7 +9,7 @@ export const V2SubHeaderToolbar: React.FC = () => {
   const IconButton = ({ icon: Icon, label, active = false }: any) => (
     <button className={`p-2.5 rounded-lg transition-all flex items-center gap-2 group ${active ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
       <Icon size={18} />
-      {label && <span className="text-[11px] font-black uppercase tracking-widest">{label}</span>}
+      {label && <span className="text-[11px] font-bold uppercase tracking-widest">{label}</span>}
     </button>
   );
 
@@ -18,7 +18,7 @@ export const V2SubHeaderToolbar: React.FC = () => {
       <div className="flex items-center gap-2">
         {/* Nút Download chính */}
         <button className="flex items-center gap-3 px-4 py-2 bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 transition-all rounded-md mr-4 group">
-          <span className="text-[11px] font-black uppercase tracking-widest text-slate-700 dark:text-white">Download</span>
+          <span className="text-[11px] font-bold uppercase tracking-widest text-slate-700 dark:text-white">Download</span>
         </button>
 
         {/* Các icon thao tác cloud & system */}
@@ -28,7 +28,7 @@ export const V2SubHeaderToolbar: React.FC = () => {
         <div className="relative group">
           <button className="p-2 text-slate-400 hover:text-white flex items-center gap-1 border border-transparent hover:border-white/10 rounded-lg transition-all">
             <Languages size={18} />
-            <span className="text-[9px] font-black bg-white/10 px-1 rounded-sm">En</span>
+            <span className="text-[9px] font-bold bg-white/10 px-1 rounded-sm">En</span>
           </button>
         </div>
 

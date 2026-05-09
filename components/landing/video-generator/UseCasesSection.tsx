@@ -20,7 +20,7 @@ export const UseCasesSection: React.FC = () => (
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {FEATURES.map(f => (
-          <div key={f.title} className="p-4 bg-black/[0.01] dark:bg-white/[0.015] border border-black/[0.06] dark:border-white/[0.04] rounded-2xl space-y-2.5 group hover:border-indigo-500/20 transition-all">
+          <div key={f.title} className="p-4 bg-black/[0.01] dark:bg-white/[0.015] border border-black/[0.06] dark:border-white/[0.04] rounded-xl space-y-2.5 group hover:border-indigo-500/20 transition-all">
             <div className="w-8 h-8 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-500 dark:text-indigo-400 group-hover:scale-110 transition-transform">{f.icon}</div>
             <h4 className="text-[11px] font-semibold">{f.title}</h4>
             <p className="text-[9px] text-slate-500 dark:text-[#555] font-medium leading-relaxed">{f.desc}</p>

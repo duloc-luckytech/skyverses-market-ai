@@ -1,266 +1,252 @@
-
 import React, { useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Twitter, Linkedin, Mail, Github, Facebook,
-  Zap, ArrowRight, Globe2, Sparkles, MessageCircle, Send
+  Twitter, Linkedin, Mail, Github, MessageCircle, Send,
+  Sparkles, Zap,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
+/**
+ * Footer — Black + Gold + White premium footer.
+ * 5-column grid: PRODUCTS | MODELS | RESOURCES | COMPANY | FOLLOW US
+ * Gold accent bar at bottom.
+ */
+
 const Footer: React.FC = () => {
-  const logoUrl = "/assets/skyverses-logo.png";
+  const logoUrl = '/assets/skyverses-logo.png';
   const { t } = useLanguage();
 
-  // Prefetch route chunks on hover
   const prefetched = useRef(new Set<string>());
   const handleLinkHover = useCallback((to: string) => {
     if (prefetched.current.has(to)) return;
     prefetched.current.add(to);
-    // Prefetch the SolutionDetail page (handles /product/* routes)
     if (to.startsWith('/product/')) {
       import('../pages/SolutionDetail').catch(() => {});
     }
   }, []);
 
+  const socials = [
+    { icon: <Linkedin size={14} />, href: 'https://linkedin.com/', label: 'LinkedIn' },
+    { icon: <Send size={14} />, href: 'https://t.me/nhomhotrokythuat', label: 'Telegram' },
+    { icon: <Twitter size={14} />, href: 'https://twitter.com/', label: 'X' },
+    { icon: <Github size={14} />, href: 'https://github.com/', label: 'Github' },
+    { icon: <Mail size={14} />, href: 'mailto:support@skyverses.com', label: 'Email' },
+  ];
+
   return (
-    <footer aria-label="Site footer" className="relative bg-[#fafbfc] dark:bg-[#0a0d14] border-t border-black/[0.04] dark:border-white/[0.04] transition-colors duration-500 overflow-hidden">
-      {/* ═══ Background Effects ═══ */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute bottom-[-30%] right-[-10%] w-[700px] h-[700px] bg-brand-blue/[0.03] dark:bg-brand-blue/[0.05] rounded-full blur-[180px]" />
-        <div className="absolute top-[-20%] left-[-5%] w-[400px] h-[400px] bg-purple-500/[0.02] dark:bg-purple-500/[0.04] rounded-full blur-[120px]" />
-        <div className="absolute inset-0 opacity-[0.01] dark:opacity-[0.02]" style={{ backgroundImage: 'linear-gradient(rgba(0,144,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,144,255,0.3) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
-      </div>
-
-      {/* ═══ Newsletter / CTA Banner — Desktop only ═══ */}
-      <div className="relative z-10 max-w-[1600px] mx-auto px-6 lg:px-12 hidden md:block">
-        <div className="relative -mt-px py-10 md:py-14">
-          <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#0a0e1a] via-[#0c1225] to-[#0a0e1a] dark:from-[#080a14] dark:via-[#0a0e1e] dark:to-[#080a14] p-8 md:p-12 border border-white/[0.04]">
-            <div className="absolute top-0 right-[20%] w-[400px] h-[300px] bg-brand-blue/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-0 left-[10%] w-[300px] h-[200px] bg-purple-500/8 rounded-full blur-[100px] pointer-events-none" />
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-brand-blue/10 border border-brand-blue/20 flex items-center justify-center shrink-0">
-                  <Sparkles size={22} className="text-brand-blue" />
-                </div>
-                <div>
-                  <h3 className="text-lg md:text-xl font-black text-white tracking-tight">{t('footer.cta_title')}</h3>
-                  <p className="text-[12px] text-white/40 mt-0.5">{t('footer.cta_desc')}</p>
-                </div>
-              </div>
-              <Link to="/login" className="group shrink-0 inline-flex items-center gap-3 bg-white text-black px-7 py-3.5 rounded-xl text-sm font-bold hover:shadow-2xl hover:shadow-white/10 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300">
-                {t('footer.cta_btn')}
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ═══ Main Footer Content ═══ */}
-      <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-6 lg:px-12 pt-6 md:pt-8 pb-6 md:pb-8">
-        
-        {/* ═══ MOBILE: Compact footer ═══ */}
-        <div className="md:hidden space-y-5">
-          {/* Brand + Social row */}
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2 group">
-              <img src={logoUrl} alt="Logo" className="w-7 h-7 object-contain" />
-              <div className="flex flex-col">
-                <span className="text-sm font-black tracking-tighter uppercase italic text-slate-900 dark:text-white">Skyverses</span>
-                <span className="text-[6px] font-black tracking-[0.4em] uppercase text-brand-blue">AI Market</span>
-              </div>
-            </Link>
-            <div className="flex items-center gap-1.5">
-              {[
-                { icon: <Facebook size={13} />, href: 'https://skyverses.com/', label: 'Facebook' },
-                { icon: <Send size={13} />, href: 'https://t.me/nhomhotrokythuat', label: 'Telegram', accent: true },
-                { icon: <MessageCircle size={13} />, href: 'https://zalo.me/g/brzhpkvbxtnvicdtgpkv', label: 'Zalo', accent: true },
-                { icon: <Mail size={13} />, href: 'mailto:support@skyverses.com', label: 'Email' },
-              ].map(social => (
-                <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" title={social.label}
-                  className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
-                    (social as any).accent
-                      ? 'bg-[#2AABEE]/10 text-[#2AABEE]'
-                      : 'bg-slate-100 dark:bg-white/[0.04] text-slate-400 dark:text-gray-500'
-                  }`}>
-                  {social.icon}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Compact links — 2 columns */}
-          <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-            {[
-              { label: t('footer.ai_products'), to: '/apps' },
-              { label: 'Credits & Pricing', to: '/credits' },
-              { label: 'Explorer', to: '/explorer' },
-              { label: 'Referral', to: '/referral' },
-              { label: 'Terms & Policy', to: '/policy' },
-              { label: t('footer.contact_us'), href: 'https://skyverses.com/contact' },
-            ].map(link => (
-              'to' in link ? (
-                <Link key={link.label} to={link.to!} className="text-[11px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors">
-                  {link.label}
-                </Link>
-              ) : (
-                <a key={link.label} href={(link as any).href} target="_blank" rel="noopener noreferrer" className="text-[11px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors">
-                  {link.label}
-                </a>
-              )
+    <footer
+      aria-label="Site footer"
+      className="relative overflow-hidden"
+      style={{ backgroundColor: '#0a0f1a' }}
+    >
+      {/* ═══ MOBILE compact ═══ */}
+      <div className="md:hidden px-5 py-10 space-y-8">
+        {/* Logo + socials */}
+        <div className="flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <img src={logoUrl} alt="Skyverses" className="w-7 h-7 object-contain brightness-0 invert" />
+            <span className="text-base font-bold tracking-tight" style={{ color: '#faf7f8' }}>Skyverses</span>
+          </Link>
+          <div className="flex items-center gap-1.5">
+            {socials.slice(0, 4).map(s => (
+              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" title={s.label}
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:scale-105"
+                style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.15)', color: '#C9A84C' }}>
+                {s.icon}
+              </a>
             ))}
           </div>
-
-          {/* Mobile CTA */}
-          <Link to="/login" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-slate-900 dark:bg-white/5 border border-black/5 dark:border-white/10 text-white text-xs font-bold">
-            <Sparkles size={12} className="text-brand-blue" />
-            {t('footer.mobile_cta')}
-          </Link>
-
-          {/* Copyright */}
-          <p className="text-center text-[9px] font-medium text-slate-400 dark:text-gray-600">
-            © 2026 Skyverses. All rights reserved.
-          </p>
         </div>
 
-        {/* ═══ DESKTOP: Full footer ═══ */}
-        <div className="hidden md:block">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mb-16">
-            {/* Brand Column */}
-            <div className="lg:col-span-4 space-y-6">
-              <Link to="/" className="flex items-center gap-3 group">
-                <img src={logoUrl} alt="Logo" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-300" />
-                <div className="flex flex-col">
-                  <span className="text-xl font-black tracking-tighter uppercase italic text-slate-900 dark:text-white transition-colors">Skyverses</span>
-                  <span className="text-[8px] font-black tracking-[0.5em] uppercase text-brand-blue">AI Market</span>
-                </div>
+        {/* Links grid */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-[12px]">
+          {[
+            { label: t('footer.ai_products') || 'AI Products', to: '/apps' },
+            { label: 'Credits & Pricing', to: '/credits' },
+            { label: 'Explorer', to: '/explorer' },
+            { label: 'Referral', to: '/referral' },
+            { label: 'Terms & Policy', to: '/policy' },
+            { label: t('footer.contact_us') || 'Contact', href: 'https://skyverses.com/contact' },
+          ].map(link => (
+            'to' in link ? (
+              <Link key={link.label} to={link.to!} className="transition-colors hover:text-[#C9A84C]" style={{ color: 'rgba(250,247,248,0.7)' }}>
+                {link.label}
               </Link>
-              <p className="text-[13px] text-slate-500 dark:text-gray-400 leading-relaxed max-w-sm">
-                {t('footer.description')}
-              </p>
-              <div className="flex items-center gap-2">
-                {[
-                  { icon: <Facebook size={16} />, href: 'https://skyverses.com/', label: 'Facebook' },
-                  { icon: <Twitter size={16} />, href: 'https://twitter.com/', label: 'Twitter' },
-                  { icon: <Linkedin size={16} />, href: 'https://linkedin.com/', label: 'LinkedIn' },
-                  { icon: <Github size={16} />, href: 'https://github.com/', label: 'GitHub' },
-                  { icon: <Mail size={16} />, href: 'mailto:support@skyverses.com', label: 'Email' },
-                  { icon: <Send size={16} />, href: 'https://t.me/nhomhotrokythuat', label: 'Telegram', accent: true },
-                ].map(social => (
-                  <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" title={social.label}
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 ${
-                      (social as any).accent
-                        ? 'bg-[#2AABEE]/10 border border-[#2AABEE]/20 text-[#2AABEE] hover:bg-[#2AABEE] hover:border-[#2AABEE] hover:text-white hover:shadow-lg hover:shadow-[#2AABEE]/20'
-                        : 'bg-slate-100 dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.04] text-slate-400 dark:text-gray-500 hover:bg-brand-blue hover:border-brand-blue hover:text-white hover:shadow-lg hover:shadow-brand-blue/20'
-                    }`}>
-                    {social.icon}
-                  </a>
-                ))}
-              </div>
-            </div>
+            ) : (
+              <a key={link.label} href={(link as any).href} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-[#C9A84C]" style={{ color: 'rgba(250,247,248,0.7)' }}>
+                {link.label}
+              </a>
+            )
+          ))}
+        </div>
 
-            {/* Links Columns */}
-            <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8 lg:gap-10">
-              <div className="space-y-5">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white">{t('footer.products')}</h4>
-                <ul className="space-y-3">
-                  {[
-                    { label: 'AI Video Studio', to: '/product/ai-video-generator' },
-                    { label: 'AI Image Studio', to: '/product/ai-image-generator' },
-                    { label: 'AI Voice Studio', to: '/product/voice-design-ai' },
-                    { label: 'AI Music Studio', to: '/product/ai-music-generator' },
-                    { label: 'All Products', to: '/apps' },
-                  ].map(link => (
-                    <li key={link.label}>
-                      <Link to={link.to} onMouseEnter={() => handleLinkHover(link.to)} className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
-                        <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-gray-600 group-hover:bg-brand-blue group-hover:scale-150 transition-all duration-300" />
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="space-y-5">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white">{t('footer.about_title')}</h4>
-                <ul className="space-y-3">
-                  {[
-                    { label: t('footer.team'), to: '/about' },
-                    { label: 'Solutions', to: '/solutions' },
-                    { label: 'Use Cases', to: '/use-cases' },
-                    { label: t('footer.library'), to: '/explorer' },
-                  ].map(link => (
-                    <li key={link.label}>
-                      <Link to={link.to} className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
-                        <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-gray-600 group-hover:bg-brand-blue group-hover:scale-150 transition-all duration-300" />
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="space-y-5">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white">{t('footer.support_title')}</h4>
-                <ul className="space-y-3">
-                  {[
-                    { label: t('footer.contact'), href: 'https://skyverses.com/contact' },
-                    { label: t('footer.center'), href: 'https://skyverses.com/support' },
-                    { label: t('footer.partners'), href: 'https://skyverses.com/partners' },
-                  ].map(link => (
-                    <li key={link.label}>
-                      <a href={link.href} target="_blank" rel="noopener noreferrer" className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
-                        <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-gray-600 group-hover:bg-brand-blue group-hover:scale-150 transition-all duration-300" />
-                        {link.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-                <div className="pt-2 space-y-2">
-                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-600">{t('footer.tech_support')}</p>
-                  <a href="https://t.me/nhomhotrokythuat" target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#2AABEE]/[0.06] border border-[#2AABEE]/15 hover:border-[#2AABEE]/40 hover:bg-[#2AABEE]/10 transition-all group">
-                    <Send size={14} className="text-[#2AABEE] group-hover:scale-110 transition-transform" />
-                    <span className="text-[11px] font-semibold text-[#2AABEE]">Telegram Support</span>
-                  </a>
-                  <a href="https://zalo.me/g/brzhpkvbxtnvicdtgpkv" target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#0068FF]/[0.06] border border-[#0068FF]/15 hover:border-[#0068FF]/40 hover:bg-[#0068FF]/10 transition-all group">
-                    <MessageCircle size={14} className="text-[#0068FF] group-hover:scale-110 transition-transform" />
-                    <span className="text-[11px] font-semibold text-[#0068FF]">Zalo Support</span>
-                  </a>
-                </div>
-              </div>
-              <div className="space-y-5">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white">Legal</h4>
-                <ul className="space-y-3">
-                  {[
-                    { label: 'Terms of Service', to: '/policy' },
-                    { label: 'Privacy Policy', to: '/policy' },
-                    { label: 'Credits & Pricing', to: '/credits' },
-                    { label: 'Referral', to: '/referral' },
-                  ].map(link => (
-                    <li key={link.label}>
-                      <Link to={link.to} className="text-[12px] font-medium text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-colors duration-200 flex items-center gap-1.5 group">
-                        <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-gray-600 group-hover:bg-brand-blue group-hover:scale-150 transition-all duration-300" />
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        {/* Bottom */}
+        <div className="pt-4 flex items-center justify-between text-[10px]" style={{ borderTop: '1px solid rgba(201,168,76,0.12)', color: 'rgba(250,247,248,0.4)' }}>
+          <span>© 2026 Skyverses</span>
+        </div>
+      </div>
+
+      {/* ═══ DESKTOP — 5-column grid ═══ */}
+      <div className="hidden md:block">
+        <div className="max-w-[1440px] mx-auto" style={{ padding: '52px 64px 0' }}>
+          {/* Top row: Logo + Trust badges */}
+          <div className="flex items-start justify-between mb-12">
+            <div>
+              <Link to="/" className="flex items-center gap-2.5 group mb-4">
+                <img src={logoUrl} alt="Skyverses" className="w-9 h-9 object-contain brightness-0 invert" />
+                <span className="text-lg font-bold tracking-tight" style={{ color: '#faf7f8' }}>Skyverses</span>
+              </Link>
+              <p className="text-[13px] max-w-xs leading-relaxed" style={{ color: 'rgba(250,247,248,0.4)' }}>
+                AI-powered creative platform for image, video, 3D, and content generation.
+              </p>
             </div>
           </div>
 
-          {/* Bottom Bar */}
-          <div className="pt-8 border-t border-black/[0.04] dark:border-white/[0.04]">
-            <div className="flex justify-center items-center">
-              <p className="text-[10px] font-medium text-slate-400 dark:text-gray-600 tracking-wide">
-                © 2026 Skyverses. All rights reserved.
-              </p>
+          {/* Separator */}
+          <div style={{ height: 1, background: 'rgba(201,168,76,0.12)' }} className="mb-10" />
+
+          {/* 5-column links */}
+          <div className="grid grid-cols-5 gap-10 lg:gap-20">
+            {/* PRODUCTS */}
+            <FooterCol title="Products">
+              <FooterLink to="/product/ai-image-generator" onHover={handleLinkHover}>Image Models</FooterLink>
+              <FooterLink to="/product/ai-video-generator" onHover={handleLinkHover}>Video Models</FooterLink>
+              <FooterLink to="/product/qwen-chat-ai" onHover={handleLinkHover}>LLMs</FooterLink>
+            </FooterCol>
+
+            {/* MODELS */}
+            <FooterCol title="Models">
+              <FooterLink to="/product/ai-video-generator" onHover={handleLinkHover}>Seedance 2.0</FooterLink>
+              <FooterLink to="/product/ai-video-generator" onHover={handleLinkHover}>Kling 3.0</FooterLink>
+              <FooterLink to="/product/ai-image-generator" onHover={handleLinkHover}>GPT Image 2</FooterLink>
+              <FooterLink to="/product/ai-image-generator" onHover={handleLinkHover}>Midjourney</FooterLink>
+              <FooterLink to="/product/qwen-chat-ai" onHover={handleLinkHover}>DeepSeek</FooterLink>
+              <FooterLink to="/models">Explore More</FooterLink>
+            </FooterCol>
+
+            {/* RESOURCES */}
+            <FooterCol title="Resources">
+              <FooterLink to="/credits">Pricing</FooterLink>
+              <FooterExt href="https://insights.skyverses.com">Docs</FooterExt>
+              <FooterLink to="/explorer">Explorer Gallery</FooterLink>
+              <FooterLink to="/use-cases">Use Cases</FooterLink>
+              <FooterLink to="/referral">Referral</FooterLink>
+            </FooterCol>
+
+            {/* COMPANY */}
+            <FooterCol title="Company">
+              <FooterLink to="/about">About Us</FooterLink>
+              <FooterLink to="/booking">Contact</FooterLink>
+              <FooterLink to="/policy">Privacy & Terms</FooterLink>
+              <FooterExt href="https://skyverses.com/support">Support</FooterExt>
+            </FooterCol>
+
+            {/* FOLLOW US */}
+            <FooterCol title="Follow Us">
+              {socials.map(s => (
+                <li key={s.label}>
+                  <a
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2.5 text-sm transition-all group"
+                  >
+                    <span
+                      className="w-7 h-7 rounded-md flex items-center justify-center transition-all group-hover:scale-105"
+                      style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.15)', color: '#C9A84C' }}
+                    >
+                      {s.icon}
+                    </span>
+                    <span style={{ color: 'rgba(250,247,248,0.7)' }} className="group-hover:text-[#C9A84C] transition-colors">
+                      {s.label}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </FooterCol>
+          </div>
+
+          {/* Bottom strip */}
+          <div className="mt-12 py-6 flex items-center justify-between text-sm" style={{ borderTop: '1px solid rgba(201,168,76,0.12)' }}>
+            <span style={{ color: 'rgba(250,247,248,0.5)' }}>© 2026 Skyverses</span>
+            <div className="flex items-center gap-2 text-[13px]">
+              <Link to="/policy" className="transition-colors hover:text-[#C9A84C]" style={{ color: 'rgba(250,247,248,0.5)' }}>Privacy & Terms</Link>
+              <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
+              <Link to="/policy" className="transition-colors hover:text-[#C9A84C]" style={{ color: 'rgba(250,247,248,0.5)' }}>Acceptable Use</Link>
+              <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
+              <Link to="/policy" className="transition-colors hover:text-[#C9A84C]" style={{ color: 'rgba(250,247,248,0.5)' }}>Data Deletion Policy</Link>
             </div>
           </div>
         </div>
+
+        {/* ═══ GOLD ACCENT BAR ═══ */}
+        <div className="relative w-full h-[2px] overflow-hidden">
+          <div
+            className="absolute top-0 left-0 h-full"
+            style={{
+              width: '200%',
+              background: `linear-gradient(90deg,
+                #C9A84C 0%, #B8963F 25%,
+                #E5C767 40%, #C9A84C 50%,
+                #B8963F 65%, #E5C767 80%,
+                #C9A84C 100%)`,
+              animation: 'goldSlide 8s linear infinite',
+            }}
+          />
+        </div>
+        <style>{`
+          @keyframes goldSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+        `}</style>
       </div>
     </footer>
   );
 };
+
+/* ─────────── Sub-components ─────────── */
+const FooterCol: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+  <div>
+    <h4
+      className="text-[11px] font-bold uppercase tracking-widest mb-5"
+      style={{ color: '#C9A84C' }}
+    >
+      {title}
+    </h4>
+    <ul className="space-y-3">{children}</ul>
+  </div>
+);
+
+const FooterLink: React.FC<{
+  to: string;
+  children: React.ReactNode;
+  onHover?: (to: string) => void;
+}> = ({ to, children, onHover }) => (
+  <li>
+    <Link
+      to={to}
+      onMouseEnter={onHover ? () => onHover(to) : undefined}
+      className="text-sm transition-colors hover:text-[#C9A84C]"
+      style={{ color: 'rgba(250,247,248,0.7)' }}
+    >
+      {children}
+    </Link>
+  </li>
+);
+
+const FooterExt: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => (
+  <li>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-sm transition-colors hover:text-[#C9A84C]"
+      style={{ color: 'rgba(250,247,248,0.7)' }}
+    >
+      {children}
+    </a>
+  </li>
+);
 
 export default Footer;

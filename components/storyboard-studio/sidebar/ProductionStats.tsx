@@ -64,16 +64,16 @@ export const ProductionStats: React.FC<ProductionStatsProps> = ({
     <div className="px-5 py-4 border-b border-white/8 space-y-2.5">
       {/* Header + tier badge */}
       <div className="flex items-center justify-between">
-        <p className="text-[10px] font-black uppercase tracking-widest text-white/50 flex items-center gap-1.5">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-white/50 flex items-center gap-1.5">
           <BarChart3 size={12} />
           Thống kê sản xuất
         </p>
         {isPro ? (
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-brand-blue/15 to-purple-500/15 border border-brand-blue/25 text-[8px] font-black uppercase tracking-wider text-brand-blue">
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-brand-blue/15 to-purple-500/15 border border-brand-blue/25 text-[8px] font-bold uppercase tracking-wider text-brand-blue">
             <Crown size={9} /> PRO
           </div>
         ) : (
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[8px] font-black uppercase tracking-wider text-white/30">
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[8px] font-bold uppercase tracking-wider text-white/30">
             <Zap size={9} /> Free
           </div>
         )}
@@ -89,7 +89,7 @@ export const ProductionStats: React.FC<ProductionStatsProps> = ({
             transition={{ delay: i * 0.06 }}
             className="rounded-xl bg-white/[0.04] border border-white/8 px-3 py-2.5 space-y-0.5"
           >
-            <p className={`text-sm font-black tabular-nums leading-none ${stat.accent}`}>
+            <p className={`text-sm font-bold tabular-nums leading-none ${stat.accent}`}>
               {stat.value}
             </p>
             <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 leading-none mt-1">
@@ -108,10 +108,10 @@ export const ProductionStats: React.FC<ProductionStatsProps> = ({
           className="space-y-1.5"
         >
           <div className="flex items-center justify-between">
-            <p className="text-[9px] font-black uppercase tracking-widest text-white/30">
+            <p className="text-[9px] font-bold uppercase tracking-widest text-white/30">
               Cảnh đã dùng
             </p>
-            <p className={`text-[9px] font-black tabular-nums ${quotaUsed >= FREE_SCENE_LIMIT ? 'text-red-400' : 'text-white/50'}`}>
+            <p className={`text-[9px] font-bold tabular-nums ${quotaUsed >= FREE_SCENE_LIMIT ? 'text-red-400' : 'text-white/50'}`}>
               {quotaUsed}/{FREE_SCENE_LIMIT}
             </p>
           </div>

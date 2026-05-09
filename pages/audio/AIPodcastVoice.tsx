@@ -100,7 +100,7 @@ const HeroSection: React.FC<{ onStart: () => void }> = ({ onStart }) => (
       </motion.div>
       <motion.h1
         initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.6 }}
-        className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight"
+        className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight"
       >
         Tạo <span className="bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500 bg-clip-text text-transparent">Podcast AI</span><br />
         bằng giọng người Việt
@@ -135,7 +135,7 @@ const HeroSection: React.FC<{ onStart: () => void }> = ({ onStart }) => (
       >
         {STATS.map(s => (
           <div key={s.label} className="rounded-2xl bg-white/60 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] backdrop-blur p-4">
-            <p className="text-2xl lg:text-3xl font-black bg-gradient-to-br from-brand-blue to-purple-500 bg-clip-text text-transparent">{s.num}</p>
+            <p className="text-2xl lg:text-3xl font-bold bg-gradient-to-br from-brand-blue to-purple-500 bg-clip-text text-transparent">{s.num}</p>
             <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-1 font-semibold">{s.label}</p>
           </div>
         ))}
@@ -153,13 +153,13 @@ const PreviewSection: React.FC = () => {
     { speaker: '◆ Người dẫn truyện', text: 'Trong một ngôi làng nhỏ giữa núi rừng Tây Bắc, có một người thợ rèn.', tone: 'Kể chuyện' },
   ];
   return (
-    <section className="py-16 px-4 bg-slate-50 dark:bg-[#13171f]">
+    <section className="py-16 px-4 bg-slate-50 dark:bg-[var(--atlas-bg-panel)]">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-center text-2xl lg:text-3xl font-black text-slate-900 dark:text-white">Nghe thử các giọng đọc</h2>
+        <h2 className="text-center text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">Nghe thử các giọng đọc</h2>
         <p className="text-center text-[12px] text-slate-500 dark:text-gray-400 mt-2 mb-8">Mỗi giọng có tone & accent riêng — chọn người dẫn phù hợp nội dung tập</p>
         <div className="space-y-3">
           {samples.map((s, i) => (
-            <div key={i} className="flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-[#0a0d14] border border-slate-200 dark:border-white/[0.08]">
+            <div key={i} className="flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/[0.08]">
               <button
                 onClick={() => setPlaying(p => p === i ? null : i)}
                 className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-blue to-purple-500 text-white flex items-center justify-center hover:brightness-110 shrink-0"
@@ -193,7 +193,7 @@ const FeaturesSection: React.FC = () => (
   <section id="features" className="py-20 px-4">
     <div className="max-w-6xl mx-auto">
       <div className="text-center mb-12">
-        <h2 className="text-2xl lg:text-4xl font-black text-slate-900 dark:text-white">6 tính năng <span className="text-brand-blue">PRO</span> sẵn sàng</h2>
+        <h2 className="text-2xl lg:text-4xl font-bold text-slate-900 dark:text-white">6 tính năng <span className="text-brand-blue">PRO</span> sẵn sàng</h2>
         <p className="text-[13px] text-slate-500 dark:text-gray-400 mt-3 max-w-xl mx-auto">Đầy đủ workflow cho creator chuyên nghiệp — từ kịch bản đến file MP3 hoàn chỉnh</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -204,12 +204,12 @@ const FeaturesSection: React.FC = () => (
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.05 }}
             viewport={{ once: true }}
-            className="rounded-2xl bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/[0.08] p-5 hover:border-brand-blue/40 hover:shadow-lg transition-all"
+            className="rounded-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.08] p-5 hover:border-brand-blue/40 hover:shadow-lg transition-all"
           >
             <div className={`w-10 h-10 rounded-xl ${f.bg} flex items-center justify-center mb-3`}>
               <f.icon size={18} className={f.color} />
             </div>
-            <h3 className="text-[14px] font-black text-slate-800 dark:text-white">{f.title}</h3>
+            <h3 className="text-[14px] font-bold text-slate-800 dark:text-white">{f.title}</h3>
             <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-1.5 leading-relaxed">{f.desc}</p>
           </motion.div>
         ))}
@@ -219,14 +219,14 @@ const FeaturesSection: React.FC = () => (
 );
 
 const WorkflowSection: React.FC = () => (
-  <section className="py-20 px-4 bg-slate-50 dark:bg-[#13171f]">
+  <section className="py-20 px-4 bg-slate-50 dark:bg-[var(--atlas-bg-panel)]">
     <div className="max-w-6xl mx-auto">
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[11px] font-bold mb-4">
             <Sparkles size={11} /> Workflow studio
           </div>
-          <h2 className="text-2xl lg:text-4xl font-black text-slate-900 dark:text-white">Từ outline tới file podcast</h2>
+          <h2 className="text-2xl lg:text-4xl font-bold text-slate-900 dark:text-white">Từ outline tới file podcast</h2>
         </div>
         <p className="text-[13px] text-slate-500 dark:text-gray-400 max-w-md leading-relaxed">
           Bộ visual mô phỏng đúng ba bước chính của workspace: dựng kịch bản, mix giọng, rồi xuất audio hoàn chỉnh.
@@ -241,7 +241,7 @@ const WorkflowSection: React.FC = () => (
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: i * 0.08 }}
             viewport={{ once: true }}
-            className="overflow-hidden rounded-lg bg-white dark:bg-[#0a0d14] border border-slate-200 dark:border-white/[0.08] shadow-sm hover:border-brand-blue/40 hover:shadow-xl hover:shadow-brand-blue/10 transition-all"
+            className="overflow-hidden rounded-lg bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/[0.08] shadow-sm hover:border-brand-blue/40 hover:shadow-xl hover:shadow-brand-blue/10 transition-all"
           >
             <div className="aspect-[16/10] overflow-hidden bg-slate-900">
               <img
@@ -255,8 +255,8 @@ const WorkflowSection: React.FC = () => (
               <div className="w-9 h-9 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center mb-4">
                 <step.icon size={17} />
               </div>
-              <p className="text-[11px] font-black uppercase tracking-widest text-brand-blue mb-2">Bước 0{i + 1}</p>
-              <h3 className="text-[15px] font-black text-slate-900 dark:text-white">{step.title}</h3>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-brand-blue mb-2">Bước 0{i + 1}</p>
+              <h3 className="text-[15px] font-bold text-slate-900 dark:text-white">{step.title}</h3>
               <p className="text-[12px] text-slate-500 dark:text-gray-400 leading-relaxed mt-2">{step.desc}</p>
             </div>
           </motion.article>
@@ -270,14 +270,14 @@ const UseCasesSection: React.FC = () => (
   <section className="py-20 px-4 bg-gradient-to-b from-transparent via-slate-50 to-transparent dark:via-[#13171f]">
     <div className="max-w-5xl mx-auto">
       <div className="text-center mb-10">
-        <h2 className="text-2xl lg:text-4xl font-black text-slate-900 dark:text-white">Dùng cho mọi kiểu nội dung</h2>
+        <h2 className="text-2xl lg:text-4xl font-bold text-slate-900 dark:text-white">Dùng cho mọi kiểu nội dung</h2>
         <p className="text-[13px] text-slate-500 dark:text-gray-400 mt-3">Từ podcast hàng tuần tới audiobook dài tập</p>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {USE_CASES.map(uc => (
-          <div key={uc.title} className="rounded-xl bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/[0.08] p-4 hover:scale-[1.02] hover:border-brand-blue/30 transition-all">
+          <div key={uc.title} className="rounded-xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.08] p-4 hover:scale-[1.02] hover:border-brand-blue/30 transition-all">
             <span className="text-2xl">{uc.emoji}</span>
-            <h4 className="text-[12px] font-black text-slate-800 dark:text-white mt-2">{uc.title}</h4>
+            <h4 className="text-[12px] font-bold text-slate-800 dark:text-white mt-2">{uc.title}</h4>
             <p className="text-[10px] text-slate-500 dark:text-gray-400 mt-1 leading-relaxed">{uc.desc}</p>
           </div>
         ))}
@@ -291,11 +291,11 @@ const FAQSection: React.FC = () => {
   return (
     <section className="py-20 px-4">
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-center text-2xl lg:text-4xl font-black text-slate-900 dark:text-white mb-2">Câu hỏi thường gặp</h2>
+        <h2 className="text-center text-2xl lg:text-4xl font-bold text-slate-900 dark:text-white mb-2">Câu hỏi thường gặp</h2>
         <p className="text-center text-[12px] text-slate-500 dark:text-gray-400 mb-10">Còn thắc mắc? Liên hệ team Skyverses qua chat support</p>
         <div className="space-y-2">
           {FAQS.map((f, i) => (
-            <div key={i} className="rounded-2xl bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/[0.08] overflow-hidden">
+            <div key={i} className="rounded-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.08] overflow-hidden">
               <button
                 onClick={() => setOpen(o => o === i ? null : i)}
                 className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors"
@@ -319,7 +319,7 @@ const FinalCTA: React.FC<{ onStart: () => void }> = ({ onStart }) => (
     <div className="max-w-4xl mx-auto rounded-[2rem] p-10 lg:p-14 text-center bg-gradient-to-br from-brand-blue via-purple-500 to-pink-500 relative overflow-hidden">
       <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
       <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
-      <h2 className="relative text-2xl lg:text-4xl font-black text-white">Sẵn sàng làm podcast đầu tiên?</h2>
+      <h2 className="relative text-2xl lg:text-4xl font-bold text-white">Sẵn sàng làm podcast đầu tiên?</h2>
       <p className="relative text-[13px] text-white/85 mt-3 max-w-md mx-auto">5 phút setup. Tập đầu free. Không cần thẻ tín dụng.</p>
       <button
         onClick={onStart}
@@ -345,13 +345,13 @@ const AIPodcastVoice: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   if (open) return (
-    <div className="fixed inset-0 z-[500] bg-white dark:bg-[#0a0d14] animate-in fade-in duration-500">
+    <div className="fixed inset-0 z-[500] bg-white dark:bg-[var(--atlas-bg-page)] animate-in fade-in duration-500">
       <PodcastVoiceWorkspace onClose={() => setOpen(false)} />
     </div>
   );
 
   return (
-    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
+    <div className="bg-white dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans overflow-x-hidden pt-16 transition-colors duration-300">
       <HeroSection onStart={() => setOpen(true)} />
       <PreviewSection />
       <FeaturesSection />

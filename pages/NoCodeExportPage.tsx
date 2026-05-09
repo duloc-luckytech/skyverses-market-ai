@@ -70,7 +70,7 @@ const NoCodeExportPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="pt-20 bg-[#fcfcfd] dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden transition-colors duration-500">
+    <div className="pt-20 bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden transition-colors duration-500">
 
       {/* ═══════════ HERO SECTION ═══════════ */}
       <section className="relative overflow-hidden">
@@ -93,7 +93,7 @@ const NoCodeExportPage: React.FC = () => {
               <div className="flex items-center gap-3">
                 <span className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full">
                   <Sparkles size={12} className="text-brand-blue" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">New Product</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-brand-blue">New Product</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/8 border border-emerald-500/15 rounded-full">
                   <Star size={10} className="text-emerald-500" fill="currentColor" />
@@ -103,7 +103,7 @@ const NoCodeExportPage: React.FC = () => {
 
               {/* Title */}
               <div className="space-y-4">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05]">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
                   Export Any{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-cyan-400">
                     Website
@@ -151,7 +151,7 @@ const NoCodeExportPage: React.FC = () => {
                   { value: '100+', label: 'Formats' },
                 ].map((stat, i) => (
                   <div key={i} className="text-center">
-                    <p className="text-lg font-black text-brand-blue">{stat.value}</p>
+                    <p className="text-lg font-bold text-brand-blue">{stat.value}</p>
                     <p className="text-[9px] font-bold text-slate-400 dark:text-gray-600 uppercase tracking-wider">{stat.label}</p>
                   </div>
                 ))}
@@ -167,7 +167,7 @@ const NoCodeExportPage: React.FC = () => {
             >
               <div className="relative rounded-2xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] shadow-2xl shadow-black/10 dark:shadow-black/40">
                 {/* Browser chrome */}
-                <div className="bg-slate-100 dark:bg-[#13171f] px-4 py-3 flex items-center gap-2 border-b border-black/[0.04] dark:border-white/[0.04]">
+                <div className="bg-slate-100 dark:bg-[var(--atlas-bg-panel)] px-4 py-3 flex items-center gap-2 border-b border-black/[0.04] dark:border-white/[0.04]">
                   <div className="flex gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
@@ -191,7 +191,7 @@ const NoCodeExportPage: React.FC = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.8 }}
-                className="absolute -left-4 top-[30%] px-3 py-2 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
+                className="absolute -left-4 top-[30%] px-3 py-2 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
               >
                 <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
                   <CheckCircle size={14} />
@@ -206,7 +206,7 @@ const NoCodeExportPage: React.FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1 }}
-                className="absolute -right-4 bottom-[20%] px-3 py-2 bg-white dark:bg-[#1a1f2b] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
+                className="absolute -right-4 bottom-[20%] px-3 py-2 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-lg flex items-center gap-2"
               >
                 <div className="w-7 h-7 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center">
                   <GitBranch size={14} />
@@ -230,10 +230,10 @@ const NoCodeExportPage: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-blue/8 border border-brand-blue/15 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue mb-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-blue/8 border border-brand-blue/15 rounded-full text-[9px] font-bold uppercase tracking-[0.3em] text-brand-blue mb-4">
               <Terminal size={10} /> Cách hoạt động
             </span>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
               Chỉ <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">4 bước</span> đơn giản
             </h2>
           </motion.div>
@@ -250,7 +250,7 @@ const NoCodeExportPage: React.FC = () => {
               >
                 <div className="p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/20 hover:shadow-xl hover:shadow-brand-blue/5 transition-all h-full">
                   {/* Step number */}
-                  <span className="text-[48px] font-black text-slate-100 dark:text-white/[0.03] leading-none absolute top-4 right-5 select-none">{item.step}</span>
+                  <span className="text-[48px] font-bold text-slate-100 dark:text-white/[0.03] leading-none absolute top-4 right-5 select-none">{item.step}</span>
                   
                   <div className="relative z-10 space-y-4">
                     <div className="w-12 h-12 rounded-xl bg-brand-blue/10 text-brand-blue flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -282,10 +282,10 @@ const NoCodeExportPage: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/8 border border-purple-500/15 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-purple-500 mb-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/8 border border-purple-500/15 rounded-full text-[9px] font-bold uppercase tracking-[0.3em] text-purple-500 mb-4">
               <Sparkles size={10} /> Tính năng
             </span>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
               Công cụ export <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-brand-blue">mạnh mẽ</span>
             </h2>
             <p className="text-sm text-slate-400 dark:text-gray-500 mt-3 max-w-lg mx-auto">
@@ -324,10 +324,10 @@ const NoCodeExportPage: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/8 border border-cyan-500/15 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-cyan-500 mb-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/8 border border-cyan-500/15 rounded-full text-[9px] font-bold uppercase tracking-[0.3em] text-cyan-500 mb-4">
               <Package size={10} /> Use Cases
             </span>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
               Sử dụng cho <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-brand-blue">mọi mục đích</span>
             </h2>
           </motion.div>
@@ -376,11 +376,11 @@ const NoCodeExportPage: React.FC = () => {
                 viewport={{ once: true }}
                 className="max-w-2xl mx-auto space-y-8"
               >
-                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-brand-blue/10 border border-brand-blue/20 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-blue-400">
+                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-brand-blue/10 border border-brand-blue/20 rounded-full text-[9px] font-bold uppercase tracking-[0.3em] text-blue-400">
                   <Rocket size={10} /> Sẵn sàng export
                 </span>
 
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.1]">
                   Export website
                   <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-400 to-cyan-400">

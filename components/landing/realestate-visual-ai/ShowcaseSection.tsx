@@ -19,8 +19,8 @@ interface REItem {
 // ─── Data ─────────────────────────────────────────────────────
 const CAT_COLORS: Record<string, string> = {
   'Exterior Render': '#10b981',
-  'Interior Staging': '#8b5cf6',
-  'Phối cảnh tổng thể': '#f59e0b',
+  'Interior Staging': '#D4B85A',
+  'Phối cảnh tổng thể': '#E5C767',
   'Marketing BĐS': '#3b82f6',
   'Before / After': '#ef4444',
 };
@@ -183,7 +183,7 @@ const RECard: React.FC<{
 
   return (
     <motion.div
-      className={`relative overflow-hidden rounded-2xl cursor-pointer group ${colSpan} ${rowSpan}`}
+      className={`relative overflow-hidden rounded-xl cursor-pointer group ${colSpan} ${rowSpan}`}
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
@@ -196,7 +196,7 @@ const RECard: React.FC<{
     >
       {/* Glow ring */}
       <motion.div
-        className="absolute inset-0 rounded-2xl pointer-events-none z-20"
+        className="absolute inset-0 rounded-xl pointer-events-none z-20"
         animate={{
           boxShadow: hov
             ? `inset 0 0 0 1.5px ${color}80, 0 16px 48px ${color}20`
@@ -314,7 +314,7 @@ const Lightbox: React.FC<{ item: REItem; onClose: () => void }> = ({ item, onClo
         </button>
 
         {/* Image */}
-        <div className="rounded-2xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
+        <div className="rounded-xl overflow-hidden ring-1 ring-white/10">
           <img src={item.url} alt={item.label} className="w-full h-auto max-h-[65vh] object-contain bg-black/60" />
         </div>
 
@@ -323,7 +323,7 @@ const Lightbox: React.FC<{ item: REItem; onClose: () => void }> = ({ item, onClo
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.08 }}
-          className="mt-3 flex items-start gap-4 px-5 py-4 rounded-2xl bg-white/[0.05] backdrop-blur-xl ring-1 ring-white/[0.07]"
+          className="mt-3 flex items-start gap-4 px-5 py-4 rounded-xl bg-white/[0.05] backdrop-blur-xl ring-1 ring-white/[0.07]"
         >
           <div
             className="mt-0.5 shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"

@@ -32,8 +32,8 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const selectedModel = availableModels.find(m => m._id === selectedModelId);
 
-  const labelClass = "text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-[0.2em] mb-2 flex items-center gap-2 px-1 italic";
-  const triggerClass = "w-full bg-slate-50 dark:bg-[#13171f] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-black uppercase outline-none flex items-center justify-between transition-all cursor-pointer text-slate-800 dark:text-white shadow-sm disabled:opacity-50 hover:border-brand-blue/50";
+  const labelClass = "text-[9px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-[0.2em] mb-2 flex items-center gap-2 px-1 italic";
+  const triggerClass = "w-full bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-[10px] font-bold uppercase outline-none flex items-center justify-between transition-all cursor-pointer text-slate-800 dark:text-white shadow-sm disabled:opacity-50 hover:border-brand-blue/50";
 
   return (
     <>
@@ -44,7 +44,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
               disabled={disabled}
               value={selectedEngine}
               onChange={(e) => onEngineChange(e.target.value)}
-              className="appearance-none bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 pl-2.5 pr-7 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-tight outline-none focus:border-brand-blue transition-all cursor-pointer text-slate-700 dark:text-white"
+              className="appearance-none bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 pl-2.5 pr-7 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight outline-none focus:border-brand-blue transition-all cursor-pointer text-slate-700 dark:text-white"
             >
               <option value="fxlab">FxLab</option>
               <option value="gommo">Gommo</option>
@@ -57,7 +57,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
           <button
             disabled={disabled}
             onClick={() => setIsModalOpen(true)}
-            className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all hover:border-brand-blue text-slate-700 dark:text-white flex items-center gap-2"
+            className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight transition-all hover:border-brand-blue text-slate-700 dark:text-white flex items-center gap-2"
           >
             {selectedModel?.name || 'Chọn Model'}
             <ChevronDown size={10} className="text-slate-400" />
@@ -96,11 +96,11 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
             <div className="p-4 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></div>
-                <span className="text-[9px] font-black uppercase text-gray-500 tracking-widest">Node Status: Optimal</span>
+                <span className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">Node Status: Optimal</span>
               </div>
               <div className="flex items-center gap-2 text-orange-500">
                 <Zap size={12} fill="currentColor" />
-                <span className="text-[11px] font-black italic">{currentCost} CR / Action</span>
+                <span className="text-[11px] font-bold italic">{currentCost} CR / Action</span>
               </div>
             </div>
           )}

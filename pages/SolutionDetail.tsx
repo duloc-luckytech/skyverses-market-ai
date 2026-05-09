@@ -64,7 +64,7 @@ const SolutionDetail = () => {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-6">
         <Loader2 className="w-12 h-12 text-brand-blue animate-spin" />
-        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-500 animate-pulse">Syncing Node Manifest...</span>
+        <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-gray-500 animate-pulse">Syncing Node Manifest...</span>
       </div>
     );
   }
@@ -89,7 +89,7 @@ const SolutionDetail = () => {
   ];
 
   return (
-    <div className="pt-20 bg-black min-h-screen">
+    <div className="pt-20 bg-atlas-navy min-h-screen">
       <DemoModal 
         isOpen={isDemoOpen} 
         onClose={() => setIsDemoOpen(false)} 
@@ -116,25 +116,25 @@ const SolutionDetail = () => {
               <div className="absolute top-8 left-8 flex items-center gap-3">
                  <div className="bg-brand-blue w-1 h-16"></div>
                  <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-brand-blue">Vision_Cluster_v7</p>
-                    <p className="text-3xl font-black uppercase text-white tracking-tighter">CORE_ENGINE_NODE</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-brand-blue">Vision_Cluster_v7</p>
+                    <p className="text-3xl font-bold uppercase text-white tracking-tighter">CORE_ENGINE_NODE</p>
                  </div>
               </div>
 
               <div className="absolute bottom-8 right-8">
                 {isAuthenticated ? (
-                  <button 
+                  <button
                     onClick={handleDemoOpen}
-                    className="bg-brand-blue text-white px-10 py-5 font-black text-xs uppercase tracking-[0.2em] flex items-center gap-6 hover:bg-white hover:text-black transition-all shadow-2xl"
+                    className="bg-atlas-cta text-white px-8 py-4 rounded font-semibold text-xs uppercase tracking-[0.2em] flex items-center gap-4 hover:shadow-atlas-glow hover:-translate-y-0.5 active:scale-[.98] transition-all"
                   >
-                    INITIALIZE LAB <Sparkles className="w-5 h-5" />
+                    INITIALIZE LAB <Sparkles className="w-4 h-4" />
                   </button>
                 ) : (
-                  <button 
+                  <button
                     onClick={login}
-                    className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 py-5 font-black text-xs uppercase tracking-[0.2em] flex items-center gap-6 hover:bg-white hover:text-black transition-all shadow-2xl"
+                    className="bg-white/10 backdrop-blur-md text-white border border-white/25 px-8 py-4 rounded font-semibold text-xs uppercase tracking-[0.2em] flex items-center gap-4 hover:bg-white/20 hover:border-white/40 transition-all"
                   >
-                    SIGN IN TO USE <Lock className="w-5 h-5" />
+                    SIGN IN TO USE <Lock className="w-4 h-4" />
                   </button>
                 )}
               </div>
@@ -165,13 +165,13 @@ const SolutionDetail = () => {
           <div className="lg:col-span-4 space-y-12">
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <span className="px-3 py-1 border border-white/20 rounded-sm text-[9px] font-black mono text-gray-400 uppercase tracking-[0.2em]">{solution.category[lang]}</span>
+                <span className="px-3 py-1 border border-white/20 rounded-sm text-[9px] font-bold mono text-gray-400 uppercase tracking-[0.2em]">{solution.category[lang]}</span>
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span className="text-[9px] font-black mono text-green-500 uppercase tracking-[0.2em]">Operational</span>
+                <span className="text-[9px] font-bold mono text-green-500 uppercase tracking-[0.2em]">Operational</span>
               </div>
-              <h1 className="text-5xl font-black uppercase tracking-tighter leading-none text-white">{solution.name[lang]}</h1>
-              <p className="text-xl font-light text-gray-400 leading-relaxed italic">
-                "{solution.description[lang]}"
+              <h1 className="text-[2.5rem] md:text-[3rem] font-bold tracking-[-0.02em] leading-[1.05] text-white">{solution.name[lang]}</h1>
+              <p className="text-base md:text-lg text-white/70 leading-relaxed">
+                {solution.description[lang]}
               </p>
             </div>
 
@@ -179,7 +179,7 @@ const SolutionDetail = () => {
               {specs.map((spec) => (
                 <div key={spec.label} className="bg-black p-5 flex justify-between items-center group hover:bg-white/5 transition-colors">
                   <span className="mono text-[10px] text-gray-500 uppercase group-hover:text-gray-300 transition-colors">{spec.label}</span>
-                  <span className="mono text-[11px] font-black text-white">{spec.value}</span>
+                  <span className="mono text-[11px] font-bold text-white">{spec.value}</span>
                 </div>
               ))}
             </div>
@@ -187,7 +187,7 @@ const SolutionDetail = () => {
             <div className="p-8 border border-brand-blue/20 bg-brand-blue/5 space-y-4 text-white">
                <div className="flex items-center gap-3 text-brand-blue">
                   <ShieldCheck className="w-5 h-5" />
-                  <span className="text-[11px] font-black uppercase tracking-widest">Enterprise_Encryption_Active</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest">Enterprise_Encryption_Active</span>
                </div>
                <p className="text-xs text-gray-400 leading-relaxed font-medium">
                  All data generated within this node is encrypted via AES-256. Authentication is managed via secure Google SSO protocol.
@@ -202,7 +202,7 @@ const SolutionDetail = () => {
             <div className="lg:col-span-4 space-y-10">
               <div className="space-y-4">
                  <Terminal className="w-12 h-12 text-brand-blue" />
-                 <h2 className="text-5xl font-black uppercase tracking-tighter leading-none">System <br /> Logic Gate.</h2>
+                 <h2 className="text-5xl font-bold uppercase tracking-tighter leading-none">System <br /> Logic Gate.</h2>
               </div>
               <p className="text-gray-500 mono text-xs leading-loose uppercase tracking-widest">
                 Comprehensive technical overview of {solution.id}. 
@@ -220,7 +220,7 @@ const SolutionDetail = () => {
                       <Cpu className="w-6 h-6 text-white group-hover:text-black" />
                     </div>
                     <div className="space-y-4">
-                      <h4 className="text-xl font-black uppercase group-hover:text-black">{title}</h4>
+                      <h4 className="text-xl font-bold uppercase group-hover:text-black">{title}</h4>
                       <p className="text-gray-500 group-hover:text-black/80 text-sm mono leading-relaxed">
                         {desc || ''}
                       </p>
@@ -234,7 +234,7 @@ const SolutionDetail = () => {
 
         {/* Final Professional CTA */}
         <section className="py-40 text-center space-y-12 border-t border-white/10 text-white">
-          <h2 className="text-6xl md:text-9xl font-black uppercase tracking-tighter leading-none">
+          <h2 className="text-6xl md:text-9xl font-bold uppercase tracking-tighter leading-none">
             Ready to <br /> <span className="text-brand-blue italic">Synchronize?</span>
           </h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-8">

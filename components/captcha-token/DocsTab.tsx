@@ -241,7 +241,7 @@ console.log(data);`;
       exit={{ opacity: 0, x: -20 }} 
       className="space-y-10 pb-32"
     >
-      <div className="p-8 lg:p-12 bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-16 relative overflow-hidden transition-colors">
+      <div className="p-8 lg:p-12 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-16 relative overflow-hidden transition-colors">
          <div className="absolute top-0 right-0 p-12 opacity-[0.02] dark:opacity-[0.05] pointer-events-none">
             <Terminal size={320} />
          </div>
@@ -250,7 +250,7 @@ console.log(data);`;
             <div className="space-y-2">
                <div className="flex items-center gap-3">
                   <div className="w-2 h-6 bg-indigo-600 rounded-full"></div>
-                  <h3 className="text-3xl lg:text-4xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">API Reference</h3>
+                  <h3 className="text-3xl lg:text-4xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">API Reference</h3>
                </div>
                <p className="text-sm text-gray-500 font-medium max-w-xl italic leading-relaxed">
                  Tích hợp giải pháp giải mã Captcha vào ứng dụng của bạn chỉ với 2 bước kịch bản.
@@ -260,13 +260,13 @@ console.log(data);`;
             <div className="flex bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/10 shrink-0">
                <button 
                  onClick={() => { setDocEndpoint('REQUEST'); setLiveResponse(null); pollingRef.current = false; setIsRunning(false); }}
-                 className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docEndpoint === 'REQUEST' ? 'bg-white dark:bg-[#13171f] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
+                 className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${docEndpoint === 'REQUEST' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
                >
                  1. REQUEST TOKEN
                </button>
                <button 
                  onClick={() => { setDocEndpoint('POLL'); setLiveResponse(null); pollingRef.current = false; setIsRunning(false); }}
-                 className={`px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${docEndpoint === 'POLL' ? 'bg-white dark:bg-[#13171f] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
+                 className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${docEndpoint === 'POLL' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
                >
                  2. POLL RESULT
                </button>
@@ -278,14 +278,14 @@ console.log(data);`;
                <div className="space-y-8">
                   <div className="flex items-center gap-3">
                     <Activity size={16} className="text-indigo-600" />
-                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-gray-500">Parameters Specification</h4>
+                    <h4 className="text-[11px] font-bold uppercase tracking-[0.4em] text-slate-400 dark:text-gray-500">Parameters Specification</h4>
                   </div>
                   
                   <div className="space-y-10">
                      {docEndpoint === 'REQUEST' ? (
                        <div className="space-y-3 animate-in fade-in slide-in-from-left-2">
                           <div className="flex justify-between items-center px-1">
-                             <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest flex items-center gap-2">
+                             <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest flex items-center gap-2">
                                action <span className="text-rose-500">*</span>
                              </label>
                              <span className="text-[8px] font-bold text-indigo-600 uppercase bg-indigo-600/10 px-1.5 py-0.5 rounded">Enum[String]</span>
@@ -294,7 +294,7 @@ console.log(data);`;
                              <select 
                                value={action}
                                onChange={(e) => setAction(e.target.value as CaptchaAction)}
-                               className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-xs font-black uppercase italic outline-none focus:border-indigo-500/40 appearance-none cursor-pointer text-slate-800 dark:text-white shadow-inner transition-all"
+                               className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-xs font-bold uppercase italic outline-none focus:border-indigo-500/40 appearance-none cursor-pointer text-slate-800 dark:text-white shadow-inner transition-all"
                              >
                                 <option value="VIDEO">VIDEO (Veo3)</option>
                              </select>
@@ -305,7 +305,7 @@ console.log(data);`;
                      ) : (
                        <div className="space-y-3 animate-in fade-in slide-in-from-left-2">
                           <div className="flex justify-between items-center px-1">
-                             <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest flex items-center gap-2">
+                             <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest flex items-center gap-2">
                                jobId <span className="text-rose-500">*</span>
                              </label>
                              <span className="text-[8px] font-bold text-indigo-600 uppercase bg-indigo-600/10 px-1.5 py-0.5 rounded">URL_PARAM</span>
@@ -328,7 +328,7 @@ console.log(data);`;
 
                      <div className="space-y-3">
                         <div className="flex justify-between items-center px-1">
-                           <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest flex items-center gap-2">
+                           <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest flex items-center gap-2">
                              apiKey <span className="text-rose-500">*</span>
                            </label>
                            <span className="text-[8px] font-bold text-purple-500 uppercase bg-purple-500/10 px-1.5 py-0.5 rounded">Auth Header</span>
@@ -355,7 +355,7 @@ console.log(data);`;
                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="flex items-center gap-3">
                      <Code2 size={16} className="text-indigo-500" />
-                     <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 flex items-center gap-3 italic leading-none">
+                     <h4 className="text-[11px] font-bold uppercase tracking-[0.4em] text-slate-400 flex items-center gap-3 italic leading-none">
                        {docEndpoint === 'REQUEST' ? 'POST /captcha/request' : 'GET /captcha/result/:jobId'}
                      </h4>
                   </div>
@@ -365,7 +365,7 @@ console.log(data);`;
                        <button 
                          key={lang}
                          onClick={() => setActiveLang(lang)}
-                         className={`px-5 py-2.5 text-[9px] font-black uppercase tracking-widest transition-all rounded-lg ${activeLang === lang ? 'bg-white dark:bg-[#13171f] text-indigo-600 shadow-xl' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
+                         className={`px-5 py-2.5 text-[9px] font-bold uppercase tracking-widest transition-all rounded-lg ${activeLang === lang ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-indigo-600 shadow-xl' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
                        >
                          {lang}
                        </button>
@@ -375,7 +375,7 @@ console.log(data);`;
 
                <div className="relative group">
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <pre className="p-8 bg-[#0a0a0c] rounded-[2.5rem] border border-white/5 text-[12px] font-mono text-indigo-400/90 overflow-x-auto shadow-2xl leading-relaxed min-h-[220px] no-scrollbar">
+                  <pre className="p-8 bg-[var(--atlas-bg-page)] rounded-[2.5rem] border border-white/5 text-[12px] font-mono text-indigo-400/90 overflow-x-auto shadow-2xl leading-relaxed min-h-[220px] no-scrollbar">
                      <AnimatePresence mode="wait">
                        <motion.code
                          key={activeLang + action + displayApiKey + docEndpoint + testJobId}
@@ -392,7 +392,7 @@ console.log(data);`;
                   <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
                     <button 
                       onClick={handleRunRequest}
-                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl transition-all active:scale-95 ${
+                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-xl transition-all active:scale-95 ${
                         isRunning 
                           ? 'bg-rose-600 text-white shadow-rose-500/20' 
                           : 'bg-indigo-600 text-white shadow-indigo-600/20 hover:scale-105'
@@ -423,28 +423,28 @@ console.log(data);`;
                   <div className="flex justify-between items-center border-b border-black/5 dark:border-white/5 pb-5">
                     <div className="flex items-center gap-3">
                        <Server size={16} className={liveResponse ? "text-indigo-500" : "text-emerald-500"} />
-                       <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 flex items-center gap-3 italic leading-none">
+                       <h4 className="text-[11px] font-bold uppercase tracking-[0.4em] text-slate-400 flex items-center gap-3 italic leading-none">
                          {liveResponse ? "Output Stream" : "Response Manifest (Schema)"}
                        </h4>
                     </div>
                     <div className="flex gap-4">
                       {isRunning && (
                         <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/10 rounded-full border border-indigo-500/20">
-                           <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_8px_#6366f1]"></div>
-                           <span className="text-[8px] font-black uppercase text-indigo-500 tracking-widest">Polling Node active (5s cycle)</span>
+                           <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_8px_#D4B85A]"></div>
+                           <span className="text-[8px] font-bold uppercase text-indigo-500 tracking-widest">Polling Node active (5s cycle)</span>
                         </div>
                       )}
                       {liveResponse?.captchaToken && (
                         <button 
                           onClick={() => handleCopy(liveResponse.captchaToken, 'Captcha Token')}
-                          className="px-4 py-1 bg-emerald-500 text-white rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg hover:brightness-110 active:scale-95 transition-all animate-in zoom-in duration-300"
+                          className="px-4 py-1 bg-emerald-500 text-white rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg hover:brightness-110 active:scale-95 transition-all animate-in zoom-in duration-300"
                         >
                            <Check size={12} strokeWidth={3} /> COPY_CAPTCHA_TOKEN
                         </button>
                       )}
                       <button 
                         onClick={() => handleCopy(liveResponse ? JSON.stringify(liveResponse, null, 4) : responseSchemaExample, 'JSON Response')} 
-                        className="text-[9px] font-black uppercase text-emerald-500 hover:underline tracking-widest italic flex items-center gap-2 transition-all"
+                        className="text-[9px] font-bold uppercase text-emerald-500 hover:underline tracking-widest italic flex items-center gap-2 transition-all"
                       >
                          <Copy size={12} /> COPY_JSON
                       </button>
@@ -460,7 +460,7 @@ console.log(data);`;
                           className="absolute inset-0 z-20 bg-white/60 dark:bg-black/60 backdrop-blur-md flex flex-col items-center justify-center gap-4 rounded-[2.5rem]"
                         >
                            <Loader2 size={32} className="text-indigo-600 animate-spin" />
-                           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600 animate-pulse italic">Đang truy vấn dữ liệu theo chu kỳ 5 giây...</p>
+                           <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-indigo-600 animate-pulse italic">Đang truy vấn dữ liệu theo chu kỳ 5 giây...</p>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -470,7 +470,7 @@ console.log(data);`;
                     </pre>
                     
                     {isRunning && liveResponse && !liveResponse.captchaToken && (
-                      <div className="absolute bottom-6 right-8 flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-slate-500 italic animate-pulse">
+                      <div className="absolute bottom-6 right-8 flex items-center gap-2 text-[8px] font-bold uppercase tracking-widest text-slate-500 italic animate-pulse">
                          Retrying in 5 seconds...
                       </div>
                     )}

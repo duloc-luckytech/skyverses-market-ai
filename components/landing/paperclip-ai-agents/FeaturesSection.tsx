@@ -99,7 +99,7 @@ export const FeaturesSection: React.FC = () => {
                 <div
                   className="h-1 w-full flex-none"
                   style={{
-                    background: 'linear-gradient(90deg, #0090ff 0%, #3b82f6 100%)',
+                    background: 'linear-gradient(90deg, #D4A017 0%, #3b82f6 100%)',
                     opacity: 0.6,
                   }}
                 />

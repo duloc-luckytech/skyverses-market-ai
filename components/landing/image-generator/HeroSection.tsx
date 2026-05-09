@@ -149,7 +149,7 @@ const IdleMosaic: React.FC<{ images?: string[] }> = ({ images = [] }) => (
       <motion.div
         animate={{ scale: [1, 1.04, 1] }}
         transition={{ duration: 3, repeat: Infinity }}
-        className="flex flex-col items-center gap-2 bg-white/90 dark:bg-black/75 backdrop-blur-xl px-5 py-3.5 rounded-2xl border border-white/50 dark:border-white/10 shadow-xl"
+        className="flex flex-col items-center gap-2 bg-white/90 dark:bg-black/75 backdrop-blur-xl px-5 py-3.5 rounded-xl border border-white/50 dark:border-white/10"
       >
         <motion.div
           animate={{ rotate: [0, 12, -12, 0] }}
@@ -276,7 +276,7 @@ const QuickGenWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio }
   };
 
   return (
-    <div className="rounded-3xl overflow-hidden border border-black/[0.06] dark:border-white/[0.07] bg-white dark:bg-[#0f0f0f] shadow-[0_24px_64px_-16px_rgba(0,0,0,0.14)] dark:shadow-[0_24px_64px_-16px_rgba(0,0,0,0.5)]">
+    <div className="rounded-xl overflow-hidden border border-black/[0.06] dark:border-white/[0.07] bg-white dark:bg-[#0f0f0f]">
 
       {/* ── Top bar ── */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.05]">

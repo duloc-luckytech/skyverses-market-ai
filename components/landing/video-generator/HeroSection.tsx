@@ -107,7 +107,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
             ) : (
               <div className="grid grid-cols-2 gap-3 animate-scroll-v">
                 {[...videos, ...videos].map((v, i) => (
-                  <div key={`${v._id}-${i}`} className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-black border border-black/[0.06] dark:border-white/[0.04] group">
+                  <div key={`${v._id}-${i}`} className="relative aspect-[3/4] rounded-xl overflow-hidden bg-slate-100 dark:bg-black border border-black/[0.06] dark:border-white/[0.04] group">
                     <video src={v.mediaUrl} autoPlay loop muted playsInline className="w-full h-full object-cover opacity-60 dark:opacity-40 group-hover:opacity-90 dark:group-hover:opacity-70 group-hover:scale-105 transition-all duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 dark:from-black/80 via-transparent to-transparent" />
                     <div className="absolute bottom-3 left-3 right-3">

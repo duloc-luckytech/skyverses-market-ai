@@ -198,7 +198,7 @@ const ProductCharacterSync = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 transition-colors duration-500">
+    <div className="bg-white dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 transition-colors duration-500">
 
       {/* ═══ HERO ═══ */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -234,7 +234,7 @@ const ProductCharacterSync = () => {
             <Fingerprint size={13} /> Identity Persistence Engine
           </motion.div>
 
-          <motion.h1 {...fadeUp(0.1)} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.9] text-white drop-shadow-2xl">
+          <motion.h1 {...fadeUp(0.1)} className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.9] text-white drop-shadow-2xl">
             Nhất quán nhân vật
             <br />
             <span className="bg-gradient-to-r from-purple-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
@@ -290,7 +290,7 @@ const ProductCharacterSync = () => {
         <div className="max-w-5xl mx-auto px-6 lg:px-12 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
           {STATS.map((s, i) => (
             <motion.div key={i} {...fadeIn(i * 0.08)} className="text-center">
-              <p className="text-3xl lg:text-4xl font-black bg-gradient-to-r from-purple-500 to-violet-500 bg-clip-text text-transparent">{s.value}</p>
+              <p className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-500 to-violet-500 bg-clip-text text-transparent">{s.value}</p>
               <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-500 mt-1 uppercase tracking-wider">{s.label}</p>
             </motion.div>
           ))}
@@ -306,7 +306,7 @@ const ProductCharacterSync = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase tracking-wider">
               ⚠ Vấn đề phổ biến
             </div>
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Vì sao nhất quán nhân vật{' '}
               <span className="text-red-400">rất khó</span> với AI?
             </h2>
@@ -350,7 +350,7 @@ const ProductCharacterSync = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-500 text-[10px] font-bold uppercase tracking-wider">
               <Sparkles size={12} /> Giải pháp
             </div>
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Character Sync <span className="text-purple-500">giải quyết</span>
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-lg mx-auto">
@@ -397,7 +397,7 @@ const ProductCharacterSync = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-500 text-[10px] font-bold uppercase tracking-wider">
               <Zap size={12} /> Quy trình
             </div>
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Chỉ <span className="text-purple-500">4 bước</span> để có nhân vật nhất quán
             </h2>
           </motion.div>
@@ -443,7 +443,7 @@ const ProductCharacterSync = () => {
                   </div>
                   <div>
                     <span className="text-[10px] font-bold text-purple-500 uppercase tracking-widest block mb-1">Bước {WORKFLOW[activeStep].step}</span>
-                    <h3 className="text-2xl font-black text-slate-800 dark:text-white">{WORKFLOW[activeStep].title}</h3>
+                    <h3 className="text-2xl font-bold text-slate-800 dark:text-white">{WORKFLOW[activeStep].title}</h3>
                   </div>
                 </div>
                 <p className="text-base text-slate-500 dark:text-slate-400 leading-relaxed">{WORKFLOW[activeStep].desc}</p>
@@ -471,7 +471,7 @@ const ProductCharacterSync = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-bold uppercase tracking-wider">
               <Shield size={12} /> So sánh
             </div>
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Vượt trội <span className="text-purple-500">hoàn toàn</span>
             </h2>
           </motion.div>
@@ -516,7 +516,7 @@ const ProductCharacterSync = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-500 text-[10px] font-bold uppercase tracking-wider">
               <Sparkles size={12} /> Ứng dụng
             </div>
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Dùng được cho <span className="text-purple-500">mọi dự án</span>
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
@@ -557,7 +557,7 @@ const ProductCharacterSync = () => {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[10px] font-bold uppercase tracking-wider">
               <Star size={12} className="fill-amber-500" /> Đánh giá
             </div>
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Creators <span className="text-purple-500">tin dùng</span>
             </h2>
           </motion.div>
@@ -596,12 +596,12 @@ const ProductCharacterSync = () => {
       </section>
 
       {/* ═══ CTA ═══ */}
-      <section className="py-40 text-center relative overflow-hidden bg-white dark:bg-[#0a0d14] transition-colors">
+      <section className="py-40 text-center relative overflow-hidden bg-white dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] bg-gradient-to-r from-purple-500/6 via-violet-500/8 to-fuchsia-500/6 rounded-full blur-[150px] pointer-events-none" />
 
         <div className="max-w-3xl mx-auto space-y-10 relative z-10 px-6">
           <motion.div {...fadeUp()} className="space-y-6">
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.95] text-slate-900 dark:text-white">
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.95] text-slate-900 dark:text-white">
               Xây dựng thế giới
               <br />
               <span className="bg-gradient-to-r from-purple-500 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent">

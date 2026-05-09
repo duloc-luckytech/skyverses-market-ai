@@ -43,7 +43,7 @@ const SlidePromptBar: React.FC<Props> = ({
   };
 
   return (
-    <div className="shrink-0 px-3 py-2 bg-white dark:bg-[#13171f] border-t-2 border-black/[0.07] dark:border-white/[0.1]">
+    <div className="shrink-0 px-3 py-2 bg-white dark:bg-[var(--atlas-bg-panel)] border-t-2 border-black/[0.07] dark:border-white/[0.1]">
 
       {/* ── Inner framed row ── */}
       <div className="flex items-center gap-2 rounded-xl border border-black/[0.1] dark:border-white/[0.1] bg-slate-50 dark:bg-white/[0.04] shadow-sm px-3 h-10 focus-within:border-brand-blue/50 focus-within:ring-2 focus-within:ring-brand-blue/10 transition-all">

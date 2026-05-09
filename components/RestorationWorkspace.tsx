@@ -83,7 +83,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
   return (
     <div
-      className="h-full w-full flex flex-col bg-slate-50 dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300 relative"
+      className="h-full w-full flex flex-col bg-slate-50 dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300 relative"
       onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDropHandler}
     >
       {/* ─── Sub-workspaces ─── */}
@@ -106,9 +106,9 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[9998] bg-emerald-500/10 backdrop-blur-md flex items-center justify-center pointer-events-none"
           >
-            <div className="bg-white dark:bg-[#13171f] p-12 rounded-3xl border-2 border-dashed border-emerald-500 shadow-2xl text-center space-y-4">
+            <div className="bg-white dark:bg-[var(--atlas-bg-panel)] p-12 rounded-3xl border-2 border-dashed border-emerald-500 shadow-2xl text-center space-y-4">
               <Upload size={48} className="text-emerald-500 mx-auto" />
-              <p className="text-lg font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Thả ảnh vào đây</p>
+              <p className="text-lg font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Thả ảnh vào đây</p>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hỗ trợ nhiều ảnh cùng lúc</p>
             </div>
           </motion.div>
@@ -154,7 +154,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         {/* ═══ LEFT SIDEBAR ═══ */}
         <section className={`
           fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[340px] xl:w-[360px]
-          bg-white dark:bg-[#13171f] border-t lg:border-t-0 lg:border-r border-slate-200/80 dark:border-white/[0.08]
+          bg-white dark:bg-[var(--atlas-bg-panel)] border-t lg:border-t-0 lg:border-r border-slate-200/80 dark:border-white/[0.08]
           flex flex-col z-[150] lg:z-50 transition-all duration-300
           ${isMobileExpanded ? 'h-[92dvh] rounded-t-2xl shadow-2xl' : 'h-14 lg:h-full lg:rounded-none'}
         `}>
@@ -183,7 +183,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           </div>
 
           {/* Desktop Header */}
-          <header className="hidden lg:flex h-14 border-b border-slate-200/80 dark:border-white/[0.08] bg-white/90 dark:bg-[#13171f]/90 backdrop-blur-lg items-center justify-between px-4 shrink-0">
+          <header className="hidden lg:flex h-14 border-b border-slate-200/80 dark:border-white/[0.08] bg-white/90 dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur-lg items-center justify-between px-4 shrink-0">
             <div className="flex items-center gap-2.5">
               <button
                 onClick={onClose}
@@ -198,7 +198,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             </div>
             <div className="flex items-center gap-1 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-500/20">
               <Zap size={10} className="text-emerald-500" fill="currentColor" />
-              <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Miễn phí</span>
+              <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Miễn phí</span>
             </div>
           </header>
 
@@ -274,7 +274,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                           : 'border-transparent hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:border-slate-100 dark:hover:border-white/[0.06]'
                       }`}
                     >
-                      <div className={`w-6 h-6 rounded-lg shrink-0 flex items-center justify-center text-[9px] font-black transition-colors ${
+                      <div className={`w-6 h-6 rounded-lg shrink-0 flex items-center justify-center text-[9px] font-bold transition-colors ${
                         isSelected
                           ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
                           : 'bg-slate-100 dark:bg-white/[0.04] text-slate-400 dark:text-slate-600 border border-slate-200 dark:border-white/[0.06]'
@@ -403,7 +403,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           </div>
 
           {/* ─── Footer: Generate ─── */}
-          <div className={`shrink-0 border-t border-slate-200/80 dark:border-white/[0.08] bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg px-4 py-3 space-y-2.5 ${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+          <div className={`shrink-0 border-t border-slate-200/80 dark:border-white/[0.08] bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-lg px-4 py-3 space-y-2.5 ${!isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
             <div className="p-3 bg-emerald-50/80 dark:bg-emerald-500/[0.04] border border-emerald-100 dark:border-emerald-500/10 rounded-xl flex items-start gap-2.5">
               <ShieldCheck size={14} className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div>
@@ -427,7 +427,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         </section>
 
         {/* ═══ RIGHT VIEWPORT ═══ */}
-        <aside className="flex-grow h-full flex flex-col bg-slate-50 dark:bg-[#0a0d14] transition-colors relative">
+        <aside className="flex-grow h-full flex flex-col bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors relative">
           <RestorationViewport
             activeJob={activeJob}
             onApplyTemplate={handleApplyTemplate}

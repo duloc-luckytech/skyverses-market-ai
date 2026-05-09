@@ -70,15 +70,15 @@ export const CharacterEditModal: React.FC<CharacterEditModalProps> = ({
             </div>
             
             <div className="space-y-3 flex-grow">
-              <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest">HÌNH ẢNH</label>
+              <label className="text-[10px] font-bold uppercase text-gray-500 tracking-widest">HÌNH ẢNH</label>
               <div className="flex flex-col gap-2">
                 <button 
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#25272b] hover:bg-[#2d2f35] rounded-lg text-[10px] font-black uppercase tracking-widest text-brand-blue border border-brand-blue/20 transition-all"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#25272b] hover:bg-[#2d2f35] rounded-lg text-[10px] font-bold uppercase tracking-widest text-brand-blue border border-brand-blue/20 transition-all"
                 >
                   <Upload size={14} /> Tải lên
                 </button>
-                <button className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#25272b] hover:bg-[#2d2f35] rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 border border-white/5 transition-all">
+                <button className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#25272b] hover:bg-[#2d2f35] rounded-lg text-[10px] font-bold uppercase tracking-widest text-gray-400 border border-white/5 transition-all">
                   <Folder size={14} /> Chọn từ Album
                 </button>
               </div>
@@ -88,7 +88,7 @@ export const CharacterEditModal: React.FC<CharacterEditModalProps> = ({
 
           {/* TÊN */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest">TÊN</label>
+            <label className="text-[10px] font-bold uppercase text-gray-500 tracking-widest">TÊN</label>
             <input 
               value={asset.name}
               onChange={(e) => updateAsset({ name: e.target.value })}
@@ -99,7 +99,7 @@ export const CharacterEditModal: React.FC<CharacterEditModalProps> = ({
 
           {/* LOẠI */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest">LOẠI</label>
+            <label className="text-[10px] font-bold uppercase text-gray-500 tracking-widest">LOẠI</label>
             <div className="flex gap-2 p-1 bg-black/40 rounded-xl w-fit">
               {[
                 { id: 'CHARACTER', label: 'Nhân vật' },
@@ -109,7 +109,7 @@ export const CharacterEditModal: React.FC<CharacterEditModalProps> = ({
                 <button 
                   key={type.id}
                   onClick={() => updateAsset({ type: type.id as AssetType })}
-                  className={`px-6 py-2 text-[10px] font-black uppercase rounded-lg transition-all ${asset.type === type.id ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shadow-lg' : 'text-gray-500 hover:text-white'}`}
+                  className={`px-6 py-2 text-[10px] font-bold uppercase rounded-lg transition-all ${asset.type === type.id ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shadow-lg' : 'text-gray-500 hover:text-white'}`}
                 >
                   {type.label}
                 </button>
@@ -119,7 +119,7 @@ export const CharacterEditModal: React.FC<CharacterEditModalProps> = ({
 
           {/* MÔ TẢ */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest">MÔ TẢ</label>
+            <label className="text-[10px] font-bold uppercase text-gray-500 tracking-widest">MÔ TẢ</label>
             <textarea 
               value={asset.description}
               onChange={(e) => updateAsset({ description: e.target.value })}
@@ -130,7 +130,7 @@ export const CharacterEditModal: React.FC<CharacterEditModalProps> = ({
 
           {/* PROMPT TẠO ẢNH */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">PROMPT TẠO ẢNH (TÙY CHỌN)</label>
+            <label className="text-[10px] font-bold uppercase text-gray-400 tracking-widest">PROMPT TẠO ẢNH (TÙY CHỌN)</label>
             <textarea 
               value={asset.designPrompt}
               onChange={(e) => updateAsset({ designPrompt: e.target.value })}
@@ -145,20 +145,20 @@ export const CharacterEditModal: React.FC<CharacterEditModalProps> = ({
         <div className="p-6 border-t border-white/5 flex items-center justify-between bg-black/20 shrink-0">
           <button 
             onClick={() => onDelete(asset.id)}
-            className="text-[12px] font-black uppercase text-red-500 hover:brightness-125 transition-all"
+            className="text-[12px] font-bold uppercase text-red-500 hover:brightness-125 transition-all"
           >
             Xóa
           </button>
           <div className="flex gap-4">
             <button 
               onClick={onClose}
-              className="px-6 py-2.5 text-[12px] font-black uppercase text-gray-400 hover:text-white transition-all"
+              className="px-6 py-2.5 text-[12px] font-bold uppercase text-gray-400 hover:text-white transition-all"
             >
               Hủy
             </button>
             <button 
               onClick={() => onSave(asset)}
-              className="px-8 py-2.5 bg-[#00a870] text-white rounded-xl text-[12px] font-black uppercase flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-emerald-900/20"
+              className="px-8 py-2.5 bg-[#00a870] text-white rounded-xl text-[12px] font-bold uppercase flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-emerald-900/20"
             >
               <Check size={18} strokeWidth={4} /> Lưu
             </button>

@@ -21,10 +21,10 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
           initial={{ height: 0, opacity: 0 }} 
           animate={{ height: 'auto', opacity: 1 }} 
           exit={{ height: 0, opacity: 0 }}
-          className="overflow-hidden bg-slate-100 dark:bg-[#1a1f2b] border-b border-black/5 dark:border-indigo-500/20 p-6 space-y-4 shadow-inner dark:shadow-none"
+          className="overflow-hidden bg-slate-100 dark:bg-[var(--atlas-bg-panel)] border-b border-black/5 dark:border-indigo-500/20 p-6 space-y-4 shadow-inner dark:shadow-none"
         >
           <div className="space-y-2">
-            <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest flex items-center gap-2">
+            <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest flex items-center gap-2">
               <Key size={12} className="text-indigo-600 dark:text-indigo-400" /> RunningHub API Key
             </label>
             <div className="relative">

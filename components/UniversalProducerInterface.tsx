@@ -166,11 +166,11 @@ const UniversalProducerInterface = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white font-mono">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white font-mono">
 
-      <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[#0a0d14] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar">
+      <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[var(--atlas-bg-page)] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar">
          <div className="p-8 border-b border-black/10 dark:border-white/5 space-y-2">
-            <h3 className="text-[10px] font-black uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
+            <h3 className="text-[10px] font-bold uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
                <Globe className="w-4 h-4" /> Global_Uplink
             </h3>
             <p className="text-[7px] text-gray-400 font-bold uppercase tracking-widest italic">AUP-X1 Synthetic Studio</p>
@@ -178,7 +178,7 @@ const UniversalProducerInterface = () => {
 
          <div className="p-6 space-y-8">
             <div className="space-y-4">
-               <label className="text-[8px] font-black uppercase text-gray-500 tracking-widest">Active_Domain</label>
+               <label className="text-[8px] font-bold uppercase text-gray-500 tracking-widest">Active_Domain</label>
                <div className="grid grid-cols-2 gap-2">
                   {[
                     { id: 'GAME', icon: <Gamepad size={12} /> },
@@ -192,14 +192,14 @@ const UniversalProducerInterface = () => {
                       className={`flex items-center gap-3 p-3 border transition-all rounded-sm ${activeDomain === d.id ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/5 text-gray-400'}`}
                     >
                       {d.icon}
-                      <span className="text-[8px] font-black">{d.id.split('_')[0]}</span>
+                      <span className="text-[8px] font-bold">{d.id.split('_')[0]}</span>
                     </button>
                   ))}
                </div>
             </div>
 
             <div className="space-y-2">
-               <label className="text-[8px] font-black uppercase text-gray-500 tracking-widest">Pipeline_Sequence</label>
+               <label className="text-[8px] font-bold uppercase text-gray-500 tracking-widest">Pipeline_Sequence</label>
                {[
                  { id: 'IDENTITY', label: 'Character_Core', step: '01' },
                  { id: 'ASSETS', label: 'Asset_Library', step: '02' },
@@ -214,8 +214,8 @@ const UniversalProducerInterface = () => {
                    className={`w-full flex items-center justify-between p-4 border transition-all rounded-sm group ${activeStage === s.id ? 'bg-black dark:bg-white text-white dark:text-black' : 'bg-transparent border-black/5 dark:border-white/5 text-gray-400'}`}
                  >
                    <div className="flex flex-col items-start">
-                      <span className="text-[7px] opacity-40 font-black">PHASE_{s.step}</span>
-                      <span className="text-[9px] font-black uppercase tracking-widest">{s.label}</span>
+                      <span className="text-[7px] opacity-40 font-bold">PHASE_{s.step}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-widest">{s.label}</span>
                    </div>
                    {activeStage === s.id && <ChevronRight size={14} className="animate-pulse" />}
                  </button>
@@ -227,15 +227,15 @@ const UniversalProducerInterface = () => {
             <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 space-y-2">
                <div className="flex items-center gap-2 text-emerald-500">
                   <ShieldCheck size={12} />
-                  <span className="text-[8px] font-black uppercase tracking-widest">Safe_Render_Node</span>
+                  <span className="text-[8px] font-bold uppercase tracking-widest">Safe_Render_Node</span>
                </div>
                <p className="text-[7px] text-gray-500 font-bold uppercase leading-relaxed">Identity pinned to H100 VPC cluster.</p>
             </div>
          </div>
       </div>
 
-      <div className="flex-grow flex flex-col bg-white dark:bg-[#0a0d14] relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #0090ff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="flex-grow flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #D4A017 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
         <div className="flex-grow overflow-y-auto p-8 lg:p-12 relative z-10 no-scrollbar pb-40">
            <div className="max-w-5xl mx-auto space-y-12">
@@ -243,14 +243,14 @@ const UniversalProducerInterface = () => {
                  <div className="flex items-center gap-4">
                     <BrainCircuit className="w-8 h-8 text-brand-blue" />
                     <div className="space-y-0.5">
-                       <span className="text-[14px] font-black uppercase tracking-[0.4em] text-black dark:text-white">AUP-X1_Orchestrator</span>
+                       <span className="text-[14px] font-bold uppercase tracking-[0.4em] text-black dark:text-white">AUP-X1_Orchestrator</span>
                        <p className="text-[9px] font-bold text-brand-blue uppercase tracking-widest">Active_Phase: {activeStage}</p>
                     </div>
                  </div>
                  <div className="flex gap-4">
                     <div className="flex items-center gap-3 px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-sm border border-brand-blue/20 shadow-lg">
                        <Activity size={10} className="animate-pulse text-brand-blue" />
-                       <span className="text-[8px] font-black uppercase tracking-widest">Cluster_Sync: 12ms</span>
+                       <span className="text-[8px] font-bold uppercase tracking-widest">Cluster_Sync: 12ms</span>
                     </div>
                  </div>
               </div>
@@ -264,7 +264,7 @@ const UniversalProducerInterface = () => {
                           ) : (
                              <div className="w-full h-full flex flex-col items-center justify-center text-gray-800 space-y-6">
                                 <User size={64} />
-                                <p className="text-[10px] font-black uppercase tracking-[0.6em]">DNA_AWAITING</p>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.6em]">DNA_AWAITING</p>
                              </div>
                           )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
@@ -272,11 +272,11 @@ const UniversalProducerInterface = () => {
                        <div className="flex flex-col justify-center space-y-10">
                           <div className="space-y-6">
                              <div className="space-y-1">
-                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Character_Designation</label>
-                                <p className="text-4xl font-black text-brand-blue italic">{characterDna.name}</p>
+                                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Character_Designation</label>
+                                <p className="text-4xl font-bold text-brand-blue italic">{characterDna.name}</p>
                              </div>
                              <div className="space-y-1">
-                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Archetype_Profile</label>
+                                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Archetype_Profile</label>
                                 <p className="text-xl font-bold uppercase">{characterDna.role}</p>
                              </div>
                           </div>
@@ -296,10 +296,10 @@ const UniversalProducerInterface = () => {
                           ) : (
                              <div className="w-full h-full flex flex-col items-center justify-center text-gray-800 space-y-6">
                                 <MonitorPlay size={80} />
-                                <p className="text-[14px] font-black uppercase tracking-[0.8em]">Viewport_Standby</p>
+                                <p className="text-[14px] font-bold uppercase tracking-[0.8em]">Viewport_Standby</p>
                              </div>
                           )}
-                          <div className="absolute top-6 left-6 px-4 py-2 bg-brand-blue text-white text-[9px] font-black uppercase tracking-widest shadow-xl border border-white/20 backdrop-blur-md">
+                          <div className="absolute top-6 left-6 px-4 py-2 bg-brand-blue text-white text-[9px] font-bold uppercase tracking-widest shadow-xl border border-white/20 backdrop-blur-md">
                              ADAPTER_{activeDomain}_ACTIVE
                           </div>
                        </div>
@@ -320,7 +320,7 @@ const UniversalProducerInterface = () => {
                  {activeStage !== 'IDENTITY' && activeStage !== 'DOMAIN_RENDER' && (
                     <div className="text-center space-y-8 opacity-40">
                        <Box size={80} className="mx-auto text-gray-400" />
-                       <p className="text-[12px] font-black uppercase tracking-[0.8em]">Stage_Logic_Loading...</p>
+                       <p className="text-[12px] font-bold uppercase tracking-[0.8em]">Stage_Logic_Loading...</p>
                        <button onClick={() => runStage(activeStage)} disabled={isBusy} className="btn-sky-secondary py-4 px-12 text-[10px]">Manual_Trigger_Alpha</button>
                     </div>
                  )}
@@ -328,22 +328,22 @@ const UniversalProducerInterface = () => {
            </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#fafafa] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[var(--atlas-bg-panel-hover)] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
            <div className="hidden lg:flex items-center gap-12">
               <div className="flex items-center gap-6">
                  {['IDENTITY', 'ASSETS', 'MOTION', 'DOMAIN', 'MASTER'].map((step, i) => (
                     <div key={step} className="flex items-center gap-3">
                        <div className={`w-2 h-2 rounded-full ${activeStage === step ? 'bg-brand-blue animate-pulse' : 'bg-gray-200 dark:bg-gray-800'}`}></div>
-                       <span className={`text-[8px] font-black uppercase tracking-widest ${activeStage === step ? 'text-brand-blue' : 'text-gray-400'}`}>{step}</span>
+                       <span className={`text-[8px] font-bold uppercase tracking-widest ${activeStage === step ? 'text-brand-blue' : 'text-gray-400'}`}>{step}</span>
                     </div>
                  ))}
               </div>
               <div className="h-10 w-px bg-black/5 dark:bg-white/5 mx-4"></div>
               <div className="space-y-1">
-                 <p className="text-[7px] font-black text-gray-400 uppercase tracking-widest">System_Security</p>
+                 <p className="text-[7px] font-bold text-gray-400 uppercase tracking-widest">System_Security</p>
                  <div className="flex items-center gap-2 text-green-500">
                     <ShieldCheck size={10} />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Private_Node_Stable</span>
+                    <span className="text-[8px] font-bold uppercase tracking-widest">Private_Node_Stable</span>
                  </div>
               </div>
            </div>
@@ -356,7 +356,7 @@ const UniversalProducerInterface = () => {
                 <Trash2 size={20} />
               </button>
               <button
-                className="flex-grow lg:flex-none bg-brand-blue text-white px-16 py-6 text-[11px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black transition-all shadow-2xl active:scale-[0.98] rounded-sm"
+                className="flex-grow lg:flex-none bg-brand-blue text-white px-16 py-6 text-[11px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black transition-all shadow-2xl active:scale-[0.98] rounded-sm"
               >
                 EXPORT_UNIVERSAL_MANIFEST <Download size={16} />
               </button>
@@ -364,9 +364,9 @@ const UniversalProducerInterface = () => {
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[#0a0d14] border-l border-black/10 dark:border-white/5 overflow-hidden">
+      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-hidden">
          <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Activity className="w-4 h-4 text-brand-blue" /> Orchestration_Log
             </h3>
          </div>
@@ -374,12 +374,12 @@ const UniversalProducerInterface = () => {
             {logs.length === 0 ? (
                <div className="py-24 text-center opacity-10">
                   <Cpu className="w-10 h-10 mx-auto mb-4" />
-                  <p className="text-[9px] font-black uppercase tracking-widest italic">Awaiting Agent Uplink</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest italic">Awaiting Agent Uplink</p>
                </div>
             ) : (
                logs.map((log, i) => (
                   <div key={i} className="space-y-2 animate-in fade-in slide-in-from-right-4 duration-500">
-                     <div className="flex justify-between items-center text-[7px] font-black uppercase text-gray-400">
+                     <div className="flex justify-between items-center text-[7px] font-bold uppercase text-gray-400">
                         <span className={`px-2 py-0.5 rounded-sm bg-black/5 dark:bg-white/5 ${log.agent === 'DIRECTOR' ? 'text-brand-blue' : 'text-gray-500'}`}>{log.agent}</span>
                         <span>{log.t}</span>
                      </div>
@@ -393,7 +393,7 @@ const UniversalProducerInterface = () => {
             {isBusy && (
                <div className="flex items-center gap-4 text-brand-blue animate-pulse">
                   <div className="w-1.5 h-1.5 rounded-full bg-brand-blue"></div>
-                  <span className="text-[9px] font-black uppercase">Agents reasoning...</span>
+                  <span className="text-[9px] font-bold uppercase">Agents reasoning...</span>
                </div>
             )}
          </div>

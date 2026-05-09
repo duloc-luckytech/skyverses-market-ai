@@ -65,7 +65,7 @@ export const FeaturesSection: React.FC = () => (
     <div className="max-w-[1400px] mx-auto">
       <FadeInUp className="text-center mb-14">
         <SectionLabel>TÍNH NĂNG</SectionLabel>
-        <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-3">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3">
           Tất cả trong một workspace
         </h2>
         <p className="text-base text-slate-500 dark:text-white/40 max-w-lg mx-auto">

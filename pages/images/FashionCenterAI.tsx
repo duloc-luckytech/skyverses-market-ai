@@ -39,7 +39,7 @@ const FashionCenterAI = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-pink-500/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-white dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-pink-500/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* 1. HERO SECTION */}
       <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 py-20 relative">
@@ -52,13 +52,13 @@ const FashionCenterAI = () => {
           <div className="lg:col-span-6 space-y-10">
             <motion.div 
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-3 px-4 py-2 bg-pink-500/10 border border-pink-500/20 rounded-full text-pink-600 dark:text-pink-400 text-[10px] font-black uppercase tracking-[0.3em] italic"
+              className="inline-flex items-center gap-3 px-4 py-2 bg-pink-500/10 border border-pink-500/20 rounded-full text-pink-600 dark:text-pink-400 text-[10px] font-bold uppercase tracking-[0.3em] italic"
             >
               <Sparkles size={14} /> AI Fashion Revolution
             </motion.div>
             
             <div className="space-y-8">
-              <h1 className="text-6xl lg:text-[110px] font-black leading-[0.85] tracking-tighter italic uppercase text-slate-900 dark:text-white">
+              <h1 className="text-6xl lg:text-[110px] font-bold leading-[0.85] tracking-tighter italic uppercase text-slate-900 dark:text-white">
                 Create <span className="text-pink-500">Fashion</span> <br />
                 Without Photoshoots.
               </h1>
@@ -70,18 +70,18 @@ const FashionCenterAI = () => {
             <div className="flex flex-col sm:flex-row gap-6 pt-4">
               <button 
                 onClick={() => setIsStudioOpen(true)}
-                className="bg-pink-600 text-white px-12 py-6 rounded-sm text-[12px] font-black uppercase tracking-[0.4em] shadow-[0_20px_50px_rgba(219,39,119,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-6 group"
+                className="bg-pink-600 text-white px-12 py-6 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] shadow-[0_20px_50px_rgba(219,39,119,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-6 group"
               >
                 Start Fashion Studio <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-[12px] font-black uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/50 dark:bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
+              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/50 dark:bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
                 Watch Demo <Play size={16} fill="currentColor" />
               </button>
             </div>
           </div>
 
           <div className="lg:col-span-6 relative">
-             <div className="aspect-[3/4] bg-white dark:bg-[#0a0d14] border border-slate-200 dark:border-white/5 rounded-sm p-6 shadow-3xl overflow-hidden group transition-colors">
+             <div className="aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-sm p-6 shadow-3xl overflow-hidden group transition-colors">
                 <div className="flex h-full gap-6">
                    {/* Left Panel Simulator */}
                    <div className="w-1/3 h-full border-r border-slate-100 dark:border-white/5 pr-6 space-y-6 opacity-40 group-hover:opacity-100 transition-opacity">
@@ -102,8 +102,8 @@ const FashionCenterAI = () => {
                       <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 transition-all duration-1000" alt="Fashion Mock" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-40 dark:opacity-80"></div>
                       <div className="absolute bottom-8 left-8">
-                         <h3 className="text-4xl font-black italic uppercase tracking-tighter leading-none text-white">VIRTUAL TRY-ON</h3>
-                         <p className="text-[10px] font-black text-pink-400 dark:text-pink-500 uppercase tracking-[0.4em] mt-2 italic">Neural_Fitting_v4.2</p>
+                         <h3 className="text-4xl font-bold italic uppercase tracking-tighter leading-none text-white">VIRTUAL TRY-ON</h3>
+                         <p className="text-[10px] font-bold text-pink-400 dark:text-pink-500 uppercase tracking-[0.4em] mt-2 italic">Neural_Fitting_v4.2</p>
                       </div>
                       <div className="absolute top-6 right-6"><Scan className="text-pink-500 animate-pulse" size={32} /></div>
                    </div>
@@ -114,8 +114,8 @@ const FashionCenterAI = () => {
                 <div className="flex items-center gap-4">
                    <div className="p-3 bg-pink-500/10 rounded-full text-pink-600"><Crown size={24}/></div>
                    <div className="space-y-0.5">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">Resolution_Output</p>
-                      <p className="text-xl font-black uppercase italic">Ultra HD 4K</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">Resolution_Output</p>
+                      <p className="text-xl font-bold uppercase italic">Ultra HD 4K</p>
                    </div>
                 </div>
              </div>
@@ -124,11 +124,11 @@ const FashionCenterAI = () => {
       </section>
 
       {/* 2. HOW IT WORKS */}
-      <section className="py-40 border-y border-slate-100 dark:border-white/5 relative bg-slate-50 dark:bg-[#0a0d14] transition-colors">
+      <section className="py-40 border-y border-slate-100 dark:border-white/5 relative bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
-             <h2 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white">Automated Fashion Flow</h2>
-             <p className="text-slate-400 dark:text-gray-500 uppercase text-[11px] font-black tracking-[1em] italic">Concept → Synthesis → Result</p>
+             <h2 className="text-4xl lg:text-6xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">Automated Fashion Flow</h2>
+             <p className="text-slate-400 dark:text-gray-500 uppercase text-[11px] font-bold tracking-[1em] italic">Concept → Synthesis → Result</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -138,11 +138,11 @@ const FashionCenterAI = () => {
               { s: '03', t: 'Generate Results', d: 'AI maps the fabric textures and drape onto the model with realistic physics.', i: <Sparkles /> }
             ].map((step, i) => (
               <div key={i} className="p-12 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-sm relative group hover:border-pink-500/30 transition-all shadow-sm">
-                <div className="absolute top-6 right-10 text-6xl font-black italic text-slate-900/[0.03] dark:text-white/[0.03] group-hover:text-pink-500/10 transition-colors">{step.s}</div>
+                <div className="absolute top-6 right-10 text-6xl font-bold italic text-slate-900/[0.03] dark:text-white/[0.03] group-hover:text-pink-500/10 transition-colors">{step.s}</div>
                 <div className="w-16 h-16 bg-pink-500/5 dark:bg-pink-500/10 border border-pink-500/10 dark:border-pink-500/20 flex items-center justify-center text-pink-600 dark:text-pink-500 mb-10 rounded-sm group-hover:scale-110 transition-transform">
                    {React.cloneElement(step.i as React.ReactElement<any>, { size: 32 })}
                 </div>
-                <h4 className="text-2xl font-black uppercase italic tracking-tight mb-4 text-slate-900 dark:text-white">{step.t}</h4>
+                <h4 className="text-2xl font-bold uppercase italic tracking-tight mb-4 text-slate-900 dark:text-white">{step.t}</h4>
                 <p className="text-slate-500 dark:text-gray-400 leading-relaxed font-bold uppercase text-xs tracking-widest leading-loose">"{step.d}"</p>
               </div>
             ))}
@@ -151,7 +151,7 @@ const FashionCenterAI = () => {
       </section>
 
       {/* 3. CORE FEATURES */}
-      <section className="py-40 bg-white dark:bg-[#0a0d14] transition-colors">
+      <section className="py-40 bg-white dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-100 dark:bg-white/5 border border-slate-100 dark:border-white/5 shadow-3xl">
               {[
@@ -164,12 +164,12 @@ const FashionCenterAI = () => {
                 { t: 'Batch Processing', i: <Layers />, d: 'Generate entire catalog variants in a single workflow.' },
                 { t: 'IP Protection', i: <ShieldCheck />, d: 'Your proprietary designs are secure and never used for training.' }
               ].map((f, i) => (
-                <div key={i} className="p-12 bg-white dark:bg-[#0a0d14] space-y-6 hover:bg-pink-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
+                <div key={i} className="p-12 bg-white dark:bg-[var(--atlas-bg-page)] space-y-6 hover:bg-pink-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
                    <div className="w-12 h-12 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:text-pink-500 transition-colors rounded-sm shadow-sm dark:shadow-none">
                       {React.cloneElement(f.i as React.ReactElement<any>, { size: 20 })}
                    </div>
                    <div className="space-y-2">
-                      <h4 className="text-lg font-black uppercase tracking-widest italic text-slate-900 dark:text-white">{f.t}</h4>
+                      <h4 className="text-lg font-bold uppercase tracking-widest italic text-slate-900 dark:text-white">{f.t}</h4>
                       <p className="text-[11px] text-slate-500 dark:text-gray-500 font-bold uppercase leading-relaxed tracking-tighter leading-loose">"{f.d}"</p>
                    </div>
                 </div>
@@ -184,7 +184,7 @@ const FashionCenterAI = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
              <div className="space-y-12">
                 <div className="space-y-6">
-                   <h2 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter italic leading-none text-slate-900 dark:text-white">Studio-Like <br /><span className="text-pink-500">Orchestration.</span></h2>
+                   <h2 className="text-5xl lg:text-7xl font-bold uppercase tracking-tighter italic leading-none text-slate-900 dark:text-white">Studio-Like <br /><span className="text-pink-500">Orchestration.</span></h2>
                    <p className="text-xl text-slate-500 dark:text-gray-400 font-medium">Professional controls for professional results. The power of a full production team in your browser.</p>
                 </div>
                 <div className="grid gap-6">
@@ -196,7 +196,7 @@ const FashionCenterAI = () => {
                      <div key={item.t} className="flex items-start gap-6 p-6 border border-slate-200 dark:border-white/5 bg-white dark:bg-white/[0.02] rounded-sm group hover:border-pink-500/30 transition-all shadow-sm">
                         <CheckCircle2 size={24} className="text-pink-500 shrink-0" />
                         <div className="space-y-1">
-                           <h5 className="font-black uppercase tracking-widest text-sm text-slate-800 dark:text-white">{item.t}</h5>
+                           <h5 className="font-bold uppercase tracking-widest text-sm text-slate-800 dark:text-white">{item.t}</h5>
                            <p className="text-xs text-slate-500 dark:text-gray-500 uppercase font-bold tracking-tight">{item.d}</p>
                         </div>
                      </div>
@@ -206,15 +206,15 @@ const FashionCenterAI = () => {
              
              <div className="relative">
                 <div className="absolute inset-0 bg-pink-500/5 blur-[120px] rounded-full animate-pulse"></div>
-                <div className="relative bg-white dark:bg-[#0a0d14] border border-slate-200 dark:border-white/10 p-12 rounded-sm shadow-3xl space-y-10 group overflow-hidden">
+                <div className="relative bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/10 p-12 rounded-sm shadow-3xl space-y-10 group overflow-hidden">
                    <div className="flex justify-between items-center border-b border-slate-100 dark:border-white/5 pb-6">
-                      <span className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-[0.4em]">Engine_Inspector</span>
+                      <span className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-[0.4em]">Engine_Inspector</span>
                       <Settings2 size={16} className="text-pink-600 dark:text-pink-500" />
                    </div>
                    <div className="space-y-8">
                       {['Fabric Fidelity', 'Model Alignment', 'Lighting Match'].map(l => (
                         <div key={l} className="space-y-3">
-                           <div className="flex justify-between text-[8px] font-black uppercase text-slate-400 dark:text-gray-500"><span>{l}</span><span>94%</span></div>
+                           <div className="flex justify-between text-[8px] font-bold uppercase text-slate-400 dark:text-gray-500"><span>{l}</span><span>94%</span></div>
                            <div className="h-1 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-pink-500 w-[94%]"></div></div>
                         </div>
                       ))}
@@ -232,11 +232,11 @@ const FashionCenterAI = () => {
       </section>
 
       {/* 5. USE CASES */}
-      <section className="py-40 bg-slate-50 dark:bg-[#0a0d14] transition-colors">
+      <section className="py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
          <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-24">
            <div className="flex flex-col md:flex-row justify-between items-end gap-8">
               <div className="space-y-4">
-                 <h2 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Fashion Every <br /><span className="text-pink-500">Deployment.</span></h2>
+                 <h2 className="text-5xl lg:text-7xl font-bold uppercase tracking-tighter italic text-slate-900 dark:text-white">Fashion Every <br /><span className="text-pink-500">Deployment.</span></h2>
               </div>
               <p className="text-slate-400 dark:text-gray-500 font-bold uppercase text-xs tracking-widest max-w-xs text-right italic">"From catalog production to social hype — scaled in seconds."</p>
            </div>
@@ -254,8 +254,8 @@ const FashionCenterAI = () => {
                    <img src={item.img} className="w-full h-full object-cover grayscale opacity-60 dark:opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-105" alt={item.t} />
                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-10 flex flex-col justify-end">
                       <div className="space-y-4 translate-y-4 group-hover:translate-y-0 transition-transform">
-                         <h4 className="text-3xl font-black uppercase italic tracking-tighter text-white">{item.t}</h4>
-                         <p className="text-[10px] text-pink-400 dark:text-pink-500 font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">"{item.d}"</p>
+                         <h4 className="text-3xl font-bold uppercase italic tracking-tighter text-white">{item.t}</h4>
+                         <p className="text-[10px] text-pink-400 dark:text-pink-500 font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">"{item.d}"</p>
                       </div>
                    </div>
                 </div>
@@ -266,29 +266,29 @@ const FashionCenterAI = () => {
 
       {/* 6. FINAL CTA */}
       <section className="py-60 text-center relative overflow-hidden border-t border-slate-100 dark:border-white/5 bg-white dark:bg-black transition-colors">
-        <div className="absolute inset-0 z-0 opacity-5 dark:opacity-10 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-black text-slate-900 dark:text-pink-600 leading-none tracking-tighter select-none italic">
+        <div className="absolute inset-0 z-0 opacity-5 dark:opacity-10 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-bold text-slate-900 dark:text-pink-600 leading-none tracking-tighter select-none italic">
           FASHION FASHION FASHION FASHION
         </div>
         <div className="max-w-4xl mx-auto space-y-16 relative z-10">
-          <h2 className="text-8xl lg:text-[150px] font-black uppercase tracking-tighter leading-[0.8] italic text-slate-900 dark:text-white">Ship the <br /> <span className="text-pink-500">Visuals.</span></h2>
+          <h2 className="text-8xl lg:text-[150px] font-bold uppercase tracking-tighter leading-[0.8] italic text-slate-900 dark:text-white">Ship the <br /> <span className="text-pink-500">Visuals.</span></h2>
           <div className="space-y-10 pt-10">
             <button 
               onClick={() => setIsStudioOpen(true)}
-              className="bg-pink-600 text-white px-24 py-8 rounded-sm text-sm font-black uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(219,39,119,0.4)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group"
+              className="bg-pink-600 text-white px-24 py-8 rounded-sm text-sm font-bold uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(219,39,119,0.4)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group"
             >
               Launch Fashion Studio <Zap size={24} fill="currentColor" />
             </button>
-            <p className="text-slate-500 dark:text-gray-500 font-black uppercase tracking-[0.5em] text-[10px] italic">Universal Credit Ready • Enterprise Privacy • Instant Export</p>
+            <p className="text-slate-500 dark:text-gray-500 font-bold uppercase tracking-[0.5em] text-[10px] italic">Universal Credit Ready • Enterprise Privacy • Instant Export</p>
           </div>
         </div>
       </section>
 
       {/* 7. FOOTER */}
-      <footer className="py-20 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#0a0d14] transition-colors">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">
+      <footer className="py-20 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">
            <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-4">
-                 <span className="text-slate-900 dark:text-white text-lg tracking-tighter italic font-black">FASHION CENTER AI</span>
+                 <span className="text-slate-900 dark:text-white text-lg tracking-tighter italic font-bold">FASHION CENTER AI</span>
               </div>
               <p className="max-w-xs text-center md:text-left opacity-50 font-bold">Industrial-grade fashion asset production. Virtual try-on and high-fidelity visual synthesis.</p>
            </div>

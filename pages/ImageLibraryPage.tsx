@@ -217,12 +217,12 @@ const ImageLibraryPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fcfcfd] dark:bg-[#0a0d14] text-black dark:text-white pt-24 pb-48 transition-colors duration-500">
+    <div className="min-h-screen bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] text-black dark:text-white pt-24 pb-48 transition-colors duration-500">
 
       <div className="max-w-[1800px] mx-auto px-6 lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-[#13171f] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm p-6 lg:p-8 space-y-8"
+          className="bg-white dark:bg-[var(--atlas-bg-panel)] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm p-6 lg:p-8 space-y-8"
         >
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-4">
@@ -230,7 +230,7 @@ const ImageLibraryPage: React.FC = () => {
                 <ImageIcon size={24} />
               </div>
               <div className="space-y-0.5">
-                <h1 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight italic">Cloud Registry</h1>
+                <h1 className="text-xl font-bold text-slate-800 dark:text-white uppercase tracking-tight italic">Cloud Registry</h1>
                 <p className="text-[10px] font-bold text-slate-400 dark:text-gray-600 uppercase tracking-[0.3em]">{assets.length} objects synced</p>
               </div>
             </div>
@@ -259,7 +259,7 @@ const ImageLibraryPage: React.FC = () => {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className={`px-8 rounded-2xl font-black uppercase text-[11px] tracking-widest transition-all shadow-lg flex items-center gap-3 ${isUploading ? 'bg-gray-200 dark:bg-white/10 text-gray-400' : 'bg-brand-blue text-white hover:brightness-110 active:scale-95 shadow-brand-blue/20'}`}
+              className={`px-8 rounded-2xl font-bold uppercase text-[11px] tracking-widest transition-all shadow-lg flex items-center gap-3 ${isUploading ? 'bg-gray-200 dark:bg-white/10 text-gray-400' : 'bg-brand-blue text-white hover:brightness-110 active:scale-95 shadow-brand-blue/20'}`}
             >
               {isUploading ? <Loader2 size={18} className="animate-spin" /> : <CloudUpload size={18} />}
               <span className="hidden sm:inline">{isUploading ? 'Syncing' : 'Upload GCS'}</span>
@@ -281,7 +281,7 @@ const ImageLibraryPage: React.FC = () => {
                    <div className="bg-brand-blue/10 p-2.5 rounded-xl text-brand-blue">
                      <Calendar size={20} />
                    </div>
-                   <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight italic">
+                   <h3 className="text-xl font-bold text-slate-800 dark:text-white uppercase tracking-tight italic">
                      {label} <span className="ml-3 text-slate-300 dark:text-gray-700 font-bold">({items.length})</span>
                    </h3>
                    <div className="h-px flex-grow bg-slate-100 dark:bg-white/5"></div>
@@ -293,15 +293,15 @@ const ImageLibraryPage: React.FC = () => {
                       key={item.id}
                       layout
                       initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                      className="break-inside-avoid relative rounded-[2.5rem] overflow-hidden border-2 border-transparent bg-white dark:bg-[#13171f] shadow-sm hover:shadow-2xl transition-all duration-500 group cursor-pointer"
+                      className="break-inside-avoid relative rounded-[2.5rem] overflow-hidden border-2 border-transparent bg-white dark:bg-[var(--atlas-bg-panel)] shadow-sm hover:shadow-2xl transition-all duration-500 group cursor-pointer"
                     >
                        <img src={item.url} className="w-full h-auto object-cover transition-all duration-[3s] group-hover:scale-110" alt="" />
 
                        <div className="absolute bottom-6 left-6 right-6 flex flex-wrap gap-2.5 z-20">
-                          <div className="px-3.5 py-1.5 bg-brand-blue text-white text-[9px] font-black uppercase rounded-full shadow-lg">
+                          <div className="px-3.5 py-1.5 bg-brand-blue text-white text-[9px] font-bold uppercase rounded-full shadow-lg">
                             {item.id.startsWith('gen') ? 'AI_GENERATED' : 'UPLINK_OBJECT'}
                           </div>
-                          <div className="px-3.5 py-1.5 bg-white/90 dark:bg-black/80 backdrop-blur-md text-slate-800 dark:text-white text-[9px] font-black rounded-full shadow-lg flex items-center gap-2">
+                          <div className="px-3.5 py-1.5 bg-white/90 dark:bg-black/80 backdrop-blur-md text-slate-800 dark:text-white text-[9px] font-bold rounded-full shadow-lg flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                             {item.bucket}
                           </div>
@@ -309,11 +309,11 @@ const ImageLibraryPage: React.FC = () => {
 
                        <div className="absolute bottom-16 left-6 flex flex-wrap gap-2 z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
                           {[item.size, item.type.split('/')[1].toUpperCase()].map(tag => (
-                            <div key={tag} className="px-3 py-1 bg-black/60 backdrop-blur-md text-white text-[8px] font-black uppercase rounded-lg border border-white/10">
+                            <div key={tag} className="px-3 py-1 bg-black/60 backdrop-blur-md text-white text-[8px] font-bold uppercase rounded-lg border border-white/10">
                                {tag}
                             </div>
                           ))}
-                          <div className="px-3 py-1 bg-emerald-600/60 backdrop-blur-md text-white text-[8px] font-black uppercase rounded-lg border border-white/10 flex items-center gap-2">
+                          <div className="px-3 py-1 bg-emerald-600/60 backdrop-blur-md text-white text-[8px] font-bold uppercase rounded-lg border border-white/10 flex items-center gap-2">
                              <LinkIcon size={10} /> Cloud Link Verified
                           </div>
                        </div>
@@ -345,7 +345,7 @@ const ImageLibraryPage: React.FC = () => {
                   <FileSearch size={48} />
                </div>
                <div className="space-y-2">
-                 <p className="text-xl font-black uppercase tracking-[0.5em]">Registry Empty</p>
+                 <p className="text-xl font-bold uppercase tracking-[0.5em]">Registry Empty</p>
                  <p className="text-sm font-bold uppercase tracking-widest">Sử dụng thanh công cụ bên dưới hoặc nút Upload để bắt đầu.</p>
                </div>
             </div>
@@ -357,7 +357,7 @@ const ImageLibraryPage: React.FC = () => {
       <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-4xl px-6 z-[200]">
         <motion.div
           initial={{ y: 100 }} animate={{ y: 0 }}
-          className="bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 rounded-[3rem] shadow-[0_40px_120px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] p-3 flex items-center gap-4 transition-all hover:scale-[1.01]"
+          className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-[3rem] shadow-[0_40px_120px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] p-3 flex items-center gap-4 transition-all hover:scale-[1.01]"
         >
           <div className="flex-grow relative flex items-center">
             <input
@@ -375,7 +375,7 @@ const ImageLibraryPage: React.FC = () => {
                <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-white shadow-sm">
                  <Zap size={10} fill="currentColor" />
                </div>
-               <span className="text-sm font-black text-yellow-600 dark:text-yellow-500">{credits.toLocaleString()}</span>
+               <span className="text-sm font-bold text-yellow-600 dark:text-yellow-500">{credits.toLocaleString()}</span>
             </div>
 
             <button

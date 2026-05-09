@@ -32,7 +32,7 @@ const SolutionCardComponent: React.FC<SolutionCardProps> = ({
       role="article"
       aria-label={sol.name?.[currentLang] || sol.name?.en || 'Product'}
       tabIndex={0}
-      className={`flex-shrink-0 snap-start group relative flex flex-col bg-white dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/40 dark:hover:border-brand-blue/30 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-brand-blue/5 rounded-2xl overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/50 ${
+      className={`flex-shrink-0 snap-start group relative flex flex-col bg-[var(--atlas-bg-panel)] border border-[var(--atlas-border)] hover:border-atlas-purple/40 transition-all duration-300 ease-atlas hover:shadow-atlas-glow-soft hover:-translate-y-1 rounded-atlas-card overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-atlas-purple/50 ${
         isGrid ? 'w-full' : 'w-[280px] md:w-[320px] xl:w-[360px]'
       }`}
     >
@@ -55,47 +55,58 @@ const SolutionCardComponent: React.FC<SolutionCardProps> = ({
               aria-label="Quick view"
             >
               <Eye size={13} className="text-white" />
-              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white">Quick View</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white">Quick View</span>
             </button>
           )}
 
-          {/* Detail Button */}
+          {/* Detail Button — Atlas gradient */}
           <button
             onClick={(e) => { e.stopPropagation(); onClick(sol.slug); }}
-            className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue/80 hover:bg-brand-blue backdrop-blur-lg border border-brand-blue/40 hover:border-brand-blue rounded-full transition-all duration-300 shadow-2xl shadow-brand-blue/30 scale-90 group-hover:scale-100 translate-y-2 group-hover:translate-y-0"
+            className="flex items-center gap-2 px-4 py-2.5 bg-atlas-cta backdrop-blur-lg rounded-full transition-all duration-300 shadow-atlas-glow scale-90 group-hover:scale-100 translate-y-2 group-hover:translate-y-0"
             style={{ transitionDelay: '100ms' }}
             aria-label="View detail"
           >
-            <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white">Detail</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white">Detail</span>
             <ArrowRight size={12} className="text-white" />
           </button>
         </div>
 
         {/* Favorite bookmark */}
-        <button 
-          onClick={(e) => onToggleFavorite(e, sol.id)} 
-          className={`absolute top-2 right-2 md:top-4 md:right-4 p-1.5 md:p-2.5 bg-black/60 backdrop-blur-md rounded-full border transition-all z-30 shadow-xl ${isFavorited ? 'text-brand-blue border-brand-blue/50' : 'text-white/40 border-white/10 hover:text-brand-blue'}`}
+        <button
+          onClick={(e) => onToggleFavorite(e, sol.id)}
+          className={`absolute top-2 right-2 md:top-4 md:right-4 p-1.5 md:p-2.5 bg-black/40 backdrop-blur-md rounded-full border transition-all z-30 ${isFavorited ? 'text-white border-atlas-purple/60 bg-atlas-purple/80' : 'text-white/60 border-white/15 hover:text-white hover:border-white/30'}`}
         >
           <Bookmark fill="currentColor" className="w-3.5 h-3.5 md:w-[18px] md:h-[18px]" />
         </button>
 
         {/* Category badge */}
         <div className="absolute top-2 left-2 md:top-4 md:left-4">
-          <span className="bg-black/90 backdrop-blur-md text-white border border-white/20 px-1.5 md:px-3 py-0.5 md:py-1 text-[7px] md:text-[9px] font-black uppercase tracking-widest rounded-sm">{sol.category[currentLang]}</span>
+          <span className="bg-black/70 backdrop-blur-md text-white border border-white/15 px-1.5 md:px-3 py-0.5 md:py-1 text-[7px] md:text-[10px] font-semibold uppercase tracking-widest rounded">{sol.category[currentLang]}</span>
         </div>
       </div>
 
-      <div className="p-3 md:p-6 flex-grow flex flex-col gap-3 md:gap-6 bg-white dark:bg-[#13171f]">
-        <div className="space-y-2 md:space-y-4">
-          <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter text-brand-blue italic transition-colors flex-grow pr-2 truncate">{sol.name[currentLang]}</h3>
-          <p className="text-black/60 dark:text-white/50 text-[9px] md:text-[12px] leading-relaxed font-medium italic tracking-tight line-clamp-2 md:line-clamp-3">"{sol.description[currentLang]}"</p>
+      <div className="p-4 md:p-6 flex-grow flex flex-col gap-3 md:gap-5 bg-[var(--atlas-bg-panel)]">
+        <div className="space-y-2">
+          <h3 className="text-sm md:text-lg font-bold tracking-tight text-[var(--atlas-text-primary)] flex-grow pr-2 truncate">{sol.name[currentLang]}</h3>
+          <p className="text-[var(--atlas-text-secondary)] text-[11px] md:text-sm leading-relaxed line-clamp-2 md:line-clamp-3">{sol.description[currentLang]}</p>
         </div>
-        <div className="mt-auto pt-4 flex justify-between items-center border-t border-black/5 dark:border-white/5">
-           <div className="flex items-center gap-3 md:gap-4">
-              <div className="flex items-center gap-1 md:gap-1.5 opacity-40 group-hover:opacity-80 transition-opacity"><Users size={12} /><span className="text-[8px] font-black text-gray-500">{stats.users}</span></div>
-              <button onClick={(e) => onToggleLike(e, targetId)} className={`flex items-center gap-1 md:gap-1.5 transition-all ${isLiked ? 'text-red-500 opacity-100' : 'opacity-40 group-hover:opacity-80 text-gray-500'}`}><Heart size={12} fill="currentColor" /><span className="text-[8px] font-black">{stats.likes}</span></button>
-           </div>
-           <div>{sol.isFree ? <span className="px-1.5 md:px-2 py-0.5 md:py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[6px] md:text-[9px] font-black uppercase tracking-widest rounded-sm">FREE</span> : <div className="flex items-center gap-1 pl-1 pr-2 py-0.5 md:py-1 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-full"><div className="w-3.5 h-3.5 md:w-5 md:h-5 rounded-full bg-brand-blue flex items-center justify-center text-white"><Zap fill="currentColor" className="w-2 h-2 md:w-2.5 md:h-2.5" /></div><span className="text-[8px] md:text-[11px] font-black italic text-black dark:text-white leading-none">{sol.priceCredits}</span></div>}</div>
+        <div className="mt-auto pt-3 flex justify-between items-center border-t border-[var(--atlas-border)]">
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="flex items-center gap-1 md:gap-1.5 text-[var(--atlas-text-muted)]"><Users size={12} /><span className="text-[10px] font-semibold">{stats.users}</span></div>
+            <button onClick={(e) => onToggleLike(e, targetId)} className={`flex items-center gap-1 md:gap-1.5 transition-all ${isLiked ? 'text-red-500' : 'text-[var(--atlas-text-muted)] hover:text-red-500'}`}><Heart size={12} fill="currentColor" /><span className="text-[10px] font-semibold">{stats.likes}</span></button>
+          </div>
+          <div>
+            {sol.isFree ? (
+              <span className="px-2 py-0.5 bg-atlas-success/10 border border-atlas-success/30 text-atlas-success text-[10px] font-bold uppercase tracking-wider rounded">FREE</span>
+            ) : (
+              <div className="flex items-center gap-1.5 pl-1 pr-2 py-1 bg-atlas-purple/8 border border-atlas-purple/20 rounded-full">
+                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-atlas-cta flex items-center justify-center text-white">
+                  <Zap fill="currentColor" className="w-2.5 h-2.5" />
+                </div>
+                <span className="text-[10px] md:text-xs font-bold text-atlas-purple leading-none">{sol.priceCredits}</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

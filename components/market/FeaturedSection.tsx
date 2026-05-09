@@ -49,8 +49,8 @@ const FeaturedSectionComponent: React.FC<FeaturedSectionProps> = ({
                   {/* Overlay info on active card */}
                   {offset === 0 && (
                     <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-                      <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">{sol.category[currentLang]}</span>
-                      <h3 className="text-base md:text-xl font-black text-white uppercase tracking-tight italic mt-1">{sol.name[currentLang]}</h3>
+                      <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] text-brand-blue">{sol.category[currentLang]}</span>
+                      <h3 className="text-base md:text-xl font-bold text-white uppercase tracking-tight italic mt-1">{sol.name[currentLang]}</h3>
                     </div>
                   )}
                 </motion.div>
@@ -68,10 +68,10 @@ const FeaturedSectionComponent: React.FC<FeaturedSectionProps> = ({
           ))}
         </div>
         <div className="flex gap-2">
-          <button onClick={() => onNavigate(solutions[index].slug)} className="inline-flex items-center gap-2 bg-brand-blue text-white px-5 py-2.5 rounded-full text-[9px] font-black uppercase tracking-[0.15em] shadow-lg shadow-brand-blue/20 hover:scale-105 active:scale-95 transition-all">
+          <button onClick={() => onNavigate(solutions[index].slug)} className="inline-flex items-center gap-2 bg-brand-blue text-white px-5 py-2.5 rounded-full text-[9px] font-bold uppercase tracking-[0.15em] shadow-lg shadow-brand-blue/20 hover:scale-105 active:scale-95 transition-all">
             Explore <Wand2 size={12} fill="currentColor" />
           </button>
-          <button onClick={onOpenDemo} className="inline-flex items-center gap-2 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-5 py-2.5 rounded-full text-[9px] font-black uppercase tracking-[0.15em] hover:bg-slate-50 transition-all">
+          <button onClick={onOpenDemo} className="inline-flex items-center gap-2 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-5 py-2.5 rounded-full text-[9px] font-bold uppercase tracking-[0.15em] hover:bg-slate-50 transition-all">
             Demo <MonitorPlay size={12} />
           </button>
         </div>

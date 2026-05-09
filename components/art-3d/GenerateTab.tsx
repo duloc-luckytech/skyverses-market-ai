@@ -44,7 +44,7 @@ export const GenerateTab: React.FC<GenerateTabProps> = ({ variants }) => {
             <Upload size={24} />
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-black text-white uppercase tracking-tight">Upload</p>
+            <p className="text-sm font-bold text-white uppercase tracking-tight">Upload</p>
             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">JPG, PNG, WEBP Size ≤ 5MB</p>
           </div>
           
@@ -80,7 +80,7 @@ export const GenerateTab: React.FC<GenerateTabProps> = ({ variants }) => {
             >
               <Crown size={14} fill="currentColor" className="text-yellow-400" />
               Ultra
-              <div className="absolute -top-3 -right-2 bg-pink-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase italic">Trial 0/1</div>
+              <div className="absolute -top-3 -right-2 bg-pink-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase italic">Trial 0/1</div>
             </button>
             <button 
               onClick={() => setQuality('Standard')}
@@ -136,15 +136,15 @@ export const GenerateTab: React.FC<GenerateTabProps> = ({ variants }) => {
 
       {/* Footer Section */}
       <div className="mt-auto space-y-6 pt-10 pb-4">
-        <button className="w-full flex items-center justify-center gap-2 text-[11px] font-black uppercase text-red-500 tracking-widest group">
+        <button className="w-full flex items-center justify-center gap-2 text-[11px] font-bold uppercase text-red-500 tracking-widest group">
           <Flame size={14} fill="currentColor" className="animate-pulse" />
           v3.0 (Fast & Detailed)
           <ChevronUp size={14} className="text-gray-600 group-hover:text-red-500 transition-colors" />
         </button>
 
-        <button className="w-full py-5 bg-[#FFE135] text-black rounded-full font-black uppercase text-xs tracking-[0.4em] shadow-[0_20px_60px_rgba(255,225,53,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4">
+        <button className="w-full py-5 bg-[#FFE135] text-black rounded-full font-bold uppercase text-xs tracking-[0.4em] shadow-[0_20px_60px_rgba(255,225,53,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4">
           Generate Model
-          <div className="flex items-center gap-1.5 px-3 py-1 bg-black rounded-full text-white text-[10px] font-black">
+          <div className="flex items-center gap-1.5 px-3 py-1 bg-black rounded-full text-white text-[10px] font-bold">
              <Zap size={10} fill="currentColor" className="text-yellow-400" />
              25
           </div>

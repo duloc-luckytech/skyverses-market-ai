@@ -89,21 +89,21 @@ const MotionCraftInterface = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] overflow-hidden text-black dark:text-white">
-      <div className="w-full lg:w-[350px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-gray-50 dark:bg-[#0a0d14] overflow-y-auto no-scrollbar p-6 space-y-8">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white">
+      <div className="w-full lg:w-[350px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-gray-50 dark:bg-[var(--atlas-bg-page)] overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
-          <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
+          <label className="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
             <Sliders size={12} className="text-brand-blue" /> Engine_Presets
           </label>
           <div className="p-4 bg-white dark:bg-white/[0.02] border border-black/5 dark:border-white/5 space-y-6 shadow-sm">
             <div className="space-y-2">
-              <label className="text-[7px] font-black uppercase text-gray-400 dark:text-gray-700">Camera_Motion</label>
+              <label className="text-[7px] font-bold uppercase text-gray-400 dark:text-gray-700">Camera_Motion</label>
               <div className="grid grid-cols-2 gap-2">
                 {['Orbit', 'Dolly', 'Pan', 'Zoom'].map(m => (
                   <button
                     key={m}
                     onClick={() => setMotionPreset(m)}
-                    className={`py-2.5 text-[9px] font-black uppercase border transition-all ${motionPreset === m ? 'bg-brand-blue border-brand-blue text-white' : 'border-black/5 dark:border-white/5 text-gray-400'}`}
+                    className={`py-2.5 text-[9px] font-bold uppercase border transition-all ${motionPreset === m ? 'bg-brand-blue border-brand-blue text-white' : 'border-black/5 dark:border-white/5 text-gray-400'}`}
                   >
                     {m}
                   </button>
@@ -114,7 +114,7 @@ const MotionCraftInterface = () => {
         </div>
 
         <div className="space-y-4">
-           <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em]">Reference_Frame</label>
+           <label className="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em]">Reference_Frame</label>
            <div
              onClick={() => fileInputRef.current?.click()}
              className="aspect-video border border-dashed border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/[0.02] flex flex-col items-center justify-center cursor-pointer group hover:border-brand-blue transition-all relative overflow-hidden"
@@ -124,7 +124,7 @@ const MotionCraftInterface = () => {
               ) : (
                 <>
                   <Upload size={20} className="text-gray-400 mb-2 group-hover:text-brand-blue transition-colors" />
-                  <span className="text-[8px] font-black uppercase text-gray-500">Initialize with Frame</span>
+                  <span className="text-[8px] font-bold uppercase text-gray-500">Initialize with Frame</span>
                 </>
               )}
               <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
@@ -132,7 +132,7 @@ const MotionCraftInterface = () => {
         </div>
       </div>
 
-      <div className="flex-grow flex flex-col bg-gray-100 dark:bg-[#0a0d14] relative overflow-hidden">
+      <div className="flex-grow flex flex-col bg-gray-100 dark:bg-[var(--atlas-bg-page)] relative overflow-hidden">
         <div className="flex-grow flex flex-col items-center justify-center p-6 relative">
           <div className={`w-full relative z-10 transition-all duration-700 ${aspectRatio === '9:16' ? 'max-w-xs aspect-[9/16]' : 'max-w-4xl aspect-video'}`}>
             <div className="w-full h-full bg-black border border-black/10 dark:border-white/10 relative overflow-hidden flex items-center justify-center group/view shadow-2xl">
@@ -141,14 +141,14 @@ const MotionCraftInterface = () => {
               ) : (
                 <div className="text-center opacity-10">
                    <MonitorPlay className="w-20 h-20 mx-auto mb-4" />
-                   <p className="text-[11px] font-black uppercase tracking-[0.6em]">Terminal_Standby</p>
+                   <p className="text-[11px] font-bold uppercase tracking-[0.6em]">Terminal_Standby</p>
                 </div>
               )}
 
               {isGenerating && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md z-20">
                    <Loader2 className="w-12 h-12 text-brand-blue animate-spin mb-4" />
-                   <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white animate-pulse">Accelerating_Synthesis...</p>
+                   <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white animate-pulse">Accelerating_Synthesis...</p>
                 </div>
               )}
             </div>
@@ -157,11 +157,11 @@ const MotionCraftInterface = () => {
 
         <div className="h-32 border-t border-black/10 dark:border-white/5 bg-white dark:bg-black p-4 flex gap-4 shrink-0 relative z-20">
           <div className="flex-grow flex flex-col gap-2">
-            <label className="text-[8px] font-black uppercase text-gray-400 dark:text-gray-700 tracking-[0.3em] flex items-center gap-2"><Zap size={12} className="text-brand-blue" /> Intent_Directive</label>
+            <label className="text-[8px] font-bold uppercase text-gray-400 dark:text-gray-700 tracking-[0.3em] flex items-center gap-2"><Zap size={12} className="text-brand-blue" /> Intent_Directive</label>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              className="flex-grow bg-black/5 dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-3 text-[11px] font-black uppercase text-black dark:text-white focus:outline-none focus:border-brand-blue/30 resize-none tracking-tight leading-relaxed"
+              className="flex-grow bg-black/5 dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-3 text-[11px] font-bold uppercase text-black dark:text-white focus:outline-none focus:border-brand-blue/30 resize-none tracking-tight leading-relaxed"
               placeholder="Describe motion..."
             />
           </div>
@@ -171,14 +171,14 @@ const MotionCraftInterface = () => {
             className="w-40 bg-brand-blue text-white flex flex-col items-center justify-center gap-2 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all group shadow-2xl active:scale-[0.98] disabled:opacity-20"
           >
             <Zap size={20} className="fill-current group-hover:scale-110 transition-transform" />
-            <span className="text-[8px] font-black uppercase tracking-[0.2em]">Generate</span>
+            <span className="text-[8px] font-bold uppercase tracking-[0.2em]">Generate</span>
           </button>
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[320px] shrink-0 flex flex-col bg-gray-50 dark:bg-[#0a0d14] border-l border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-6 space-y-8">
+      <div className="hidden xl:flex w-[320px] shrink-0 flex flex-col bg-gray-50 dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
-          <label className="text-[9px] font-black uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
+          <label className="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
             <HistoryIcon size={14} className="text-brand-blue" /> Velocity_Archives
           </label>
           <div className="space-y-4">

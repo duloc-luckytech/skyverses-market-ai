@@ -63,7 +63,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="relative w-full max-w-4xl bg-white dark:bg-[#0a0d14] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col max-h-[85vh]"
+        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-page)] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col max-h-[85vh]"
       >
         <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
@@ -71,7 +71,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
                 <Wand2 size={24} />
              </div>
              <div className="space-y-0.5">
-                <h2 className="text-xl font-black uppercase tracking-tight italic text-slate-900 dark:text-white">Thư viện Template</h2>
+                <h2 className="text-xl font-bold uppercase tracking-tight italic text-slate-900 dark:text-white">Thư viện Template</h2>
                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kịch bản & Nhân vật mẫu</p>
              </div>
           </div>
@@ -97,7 +97,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
                    </div>
                    <div className="space-y-4">
                       <div className="space-y-1">
-                         <h4 className="text-lg font-black uppercase tracking-tight italic text-slate-900 dark:text-white">{tmpl.name}</h4>
+                         <h4 className="text-lg font-bold uppercase tracking-tight italic text-slate-900 dark:text-white">{tmpl.name}</h4>
                          <p className="text-xs text-gray-500 font-medium leading-relaxed">{tmpl.desc}</p>
                       </div>
                       <div className="p-4 bg-white dark:bg-black rounded-xl border border-black/5 dark:border-white/5">
@@ -105,7 +105,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
                          <p className="text-[11px] font-bold italic text-slate-700 dark:text-gray-300 line-clamp-2">"{tmpl.prompt}"</p>
                       </div>
                       <div className="flex justify-end pt-2">
-                         <span className="text-[10px] font-black uppercase tracking-widest text-brand-blue group-hover:translate-x-2 transition-transform flex items-center gap-2">
+                         <span className="text-[10px] font-bold uppercase tracking-widest text-brand-blue group-hover:translate-x-2 transition-transform flex items-center gap-2">
                             Áp dụng ngay <ChevronRight size={14} />
                          </span>
                       </div>

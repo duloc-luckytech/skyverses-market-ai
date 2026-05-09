@@ -37,7 +37,7 @@
     <meta property="og:locale:alternate" content="ja_JP" />
 
     <!-- Mobile Theme -->
-    <meta name="theme-color" content="#0090ff" />
+    <meta name="theme-color" content="#7036F0" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
@@ -218,13 +218,28 @@
       ]
     }
     </script>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"></noscript>
-    <!-- Critical CSS: instant first paint -->
+    <!-- Atlas-style typography: Manrope (body), Plus Jakarta Sans (display), Fragment Mono (code) -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fragment+Mono&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fragment+Mono&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"></noscript>
+    <!-- Critical CSS: instant first paint (Atlas-style light theme) -->
     <style>
-      body{margin:0;overflow-x:hidden;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;background:#000;color:#fff}
-      .bg-grid{position:fixed;inset:0;background-image:linear-gradient(to right,rgba(255,255,255,.03) 1px,transparent 1px);background-size:12.5% 100%;z-index:1;pointer-events:none}
-      .matrix-container{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;opacity:.15}
+      :root{
+        --atlas-purple:#7036F0;--atlas-purple-hover:#5326B5;
+        --atlas-bg-page:#FFFFFF;--atlas-bg-panel:#FFFFFF;--atlas-bg-panel-hover:#F5F5F7;
+        --atlas-text-primary:#1A2330;--atlas-text-secondary:rgba(26,35,48,.6);
+        --atlas-border:#E5E7EB;
+        --total-navbar-height:60px;
+      }
+      html.dark{
+        --atlas-bg-page:#0D0D1A;--atlas-bg-panel:#1A1A2E;--atlas-bg-panel-hover:#2A2A3E;
+        --atlas-text-primary:#FFFFFF;--atlas-text-secondary:rgba(255,255,255,.7);
+        --atlas-border:rgba(255,255,255,.10);
+      }
+      body{margin:0;overflow-x:hidden;font-family:Manrope,Inter,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--atlas-bg-page);color:var(--atlas-text-primary);font-feature-settings:"cv11","ss01";-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+      .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(112,54,240,.04) 1px,transparent 0),linear-gradient(90deg,rgba(112,54,240,.04) 1px,transparent 0);background-size:50px 50px;z-index:1;pointer-events:none}
+      html.dark .bg-grid{background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 0),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 0)}
+      .matrix-container{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;opacity:.05}
+      html.dark .matrix-container{opacity:.12}
       #root{position:relative;z-index:10}
       .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}
     </style>
@@ -235,13 +250,24 @@
     <div class="matrix-container" id="matrix-container"></div>
     <div id="root" class="relative z-10"></div>
     <noscript>
-      <div style="text-align:center; padding:60px 20px; font-family:Inter,sans-serif;">
-        <h1 style="font-size:2rem; margin-bottom:16px;">Skyverses — Marketplace AI #1 Việt Nam</h1>
-        <p style="color:#666; max-width:600px; margin:0 auto; line-height:1.7;">30+ ứng dụng AI trong một nền tảng: tạo Video, Ảnh, Nhạc, Giọng nói &amp; Chat AI với Veo3, Grok, Kling, Gemini, GPT-4o, Midjourney. Tiết kiệm ~70% — Không cần thẻ quốc tế. Vui lòng bật JavaScript để sử dụng.</p>
-        <p style="margin-top:24px;"><a href="https://ai.skyverses.com" style="color:#0090ff; font-weight:bold;">skyverses.io</a></p>
+      <div style="text-align:center; padding:60px 20px; font-family:Manrope,Inter,sans-serif;">
+        <h1 style="font-size:2.5rem; margin-bottom:16px; letter-spacing:-0.02em; color:#1A2330;">Skyverses — Marketplace AI #1 Việt Nam</h1>
+        <p style="color:rgba(26,35,48,.6); max-width:600px; margin:0 auto; line-height:1.7;">30+ ứng dụng AI trong một nền tảng: tạo Video, Ảnh, Nhạc, Giọng nói &amp; Chat AI với Veo3, Grok, Kling, Gemini, GPT-4o, Midjourney. Tiết kiệm ~70% — Không cần thẻ quốc tế. Vui lòng bật JavaScript để sử dụng.</p>
+        <p style="margin-top:24px;"><a href="https://ai.skyverses.com" style="color:#7036F0; font-weight:bold;">skyverses.io</a></p>
       </div>
     </noscript>
     
+    <script>
+      // Catch module evaluation errors that crash before React mounts
+      window.addEventListener('error', function(e) {
+        var r = document.getElementById('root');
+        if (r && !r.hasChildNodes()) {
+          r.innerHTML = '<div style="padding:60px 20px;font-family:monospace;background:#1a1a2e;color:#ef4444;min-height:100vh">'
+            + '<h1>JS Error (pre-mount)</h1>'
+            + '<pre style="white-space:pre-wrap;color:#ffa">' + (e.message || e) + '\n' + (e.filename || '') + ':' + (e.lineno || '') + '</pre></div>';
+        }
+      });
+    </script>
     <script type="module" src="/index.tsx"></script>
 
     <script>

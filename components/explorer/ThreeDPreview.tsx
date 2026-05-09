@@ -125,13 +125,13 @@ const ThreeDPreview: React.FC<ThreeDPreviewProps> = ({ modelUrl }) => {
       {loading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-20">
           <Loader2 className="animate-spin text-brand-blue" size={40} />
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-blue animate-pulse italic">Đang nạp thực thể 3D...</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-blue animate-pulse italic">Đang nạp thực thể 3D...</span>
         </div>
       )}
       {error && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-20 text-red-500">
            <AlertTriangle size={32} />
-           <span className="text-xs font-black uppercase tracking-widest">{error}</span>
+           <span className="text-xs font-bold uppercase tracking-widest">{error}</span>
         </div>
       )}
       <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
@@ -140,12 +140,12 @@ const ThreeDPreview: React.FC<ThreeDPreviewProps> = ({ modelUrl }) => {
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/40 backdrop-blur-md px-5 py-2 rounded-full border border-white/10 pointer-events-none">
           <div className="flex items-center gap-2">
             <MousePointer2 size={12} className="text-brand-blue" />
-            <span className="text-[8px] font-black uppercase text-white/60 tracking-widest">Kéo để xoay</span>
+            <span className="text-[8px] font-bold uppercase text-white/60 tracking-widest">Kéo để xoay</span>
           </div>
           <div className="w-px h-3 bg-white/10"></div>
           <div className="flex items-center gap-2">
             <Box size={12} className="text-brand-blue" />
-            <span className="text-[8px] font-black uppercase text-white/60 tracking-widest">Mô hình tương tác</span>
+            <span className="text-[8px] font-bold uppercase text-white/60 tracking-widest">Mô hình tương tác</span>
           </div>
         </div>
       )}

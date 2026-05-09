@@ -82,13 +82,13 @@ class ErrorBoundary extends React.Component<
               <AlertTriangle
                 size={28}
                 style={{
-                  color: this.state.isChunkError ? '#f59e0b' : '#ef4444',
+                  color: this.state.isChunkError ? '#E5C767' : '#ef4444',
                 }}
               />
             </div>
 
             {/* Title */}
-            <h2 className="text-xl font-black tracking-tight text-white mb-3">
+            <h2 className="text-xl font-bold tracking-tight text-white mb-3">
               {this.state.isChunkError
                 ? 'Không thể tải trang'
                 : 'Đã xảy ra lỗi'}

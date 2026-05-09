@@ -27,7 +27,7 @@ const Toggle: React.FC<{ active: boolean, onChange: () => void }> = ({ active, o
 // Explicitly typed as React.FC to resolve "children is missing" errors in JSX usage
 // Each fix below addresses the error where JSX children were not correctly identified as the 'children' prop.
 const Card: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = "" }) => (
-  <div className={`bg-white dark:bg-[#0a0d14] border border-gray-200 dark:border-white/10 rounded-xl p-6 shadow-sm ${className}`}>
+  <div className={`bg-white dark:bg-[var(--atlas-bg-page)] border border-gray-200 dark:border-white/10 rounded-xl p-6 shadow-sm ${className}`}>
     {children}
   </div>
 );
@@ -94,9 +94,9 @@ const AudioToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[#0a0d14] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
+    <div className="h-full flex flex-col bg-[#F9FAFB] dark:bg-[var(--atlas-bg-page)] overflow-hidden text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300">
       {/* Header Overlay */}
-      <div className="bg-white dark:bg-[#0a0d14] border-b border-gray-200 dark:border-white/10 px-6 py-4 flex justify-between items-center shrink-0 z-50">
+      <div className="bg-white dark:bg-[var(--atlas-bg-page)] border-b border-gray-200 dark:border-white/10 px-6 py-4 flex justify-between items-center shrink-0 z-50">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400">
             <Mic2 size={18} />
@@ -136,7 +136,7 @@ const AudioToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 placeholder="https://anchor.fm/skyverses/episodes/AI-Future-e123"
                 className="w-full bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-lg p-4 text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all placeholder:text-gray-300 dark:placeholder:text-gray-700"
               />
-              <div className="absolute left-3 -top-2 bg-[#F9FAFB] dark:bg-[#0a0d14] px-1">
+              <div className="absolute left-3 -top-2 bg-[#F9FAFB] dark:bg-[var(--atlas-bg-page)] px-1">
                  <span className="text-[10px] text-gray-400 dark:text-gray-500 italic">💡 {t('av.url_hint')}</span>
               </div>
             </div>
@@ -268,7 +268,7 @@ const AudioToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           </Card>
 
           {/* Section 5: Music & Final */}
-          <div className="bg-white dark:bg-[#0a0d14] border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-[var(--atlas-bg-page)] border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
              <div className="p-5 flex items-center justify-between gap-4">
                 <h3 className="font-bold text-slate-700 dark:text-slate-200 shrink-0">{t('av.music')}</h3>
                 <div className="flex items-center gap-3 border border-gray-200 dark:border-white/10 rounded-lg p-2 flex-grow max-w-sm bg-white dark:bg-black">

@@ -123,12 +123,12 @@ export const ImageJobCard: React.FC<ImageJobCardProps> = ({
 
   // ─── Particle positions for loading animation ────────────────
   const particles = [
-    { x: '15%', y: '15%', color: '#0090ff', delay: 0 },
-    { x: '85%', y: '20%', color: '#8b5cf6', delay: 0.6 },
+    { x: '15%', y: '15%', color: '#D4A017', delay: 0 },
+    { x: '85%', y: '20%', color: '#C4960C', delay: 0.6 },
     { x: '12%', y: '80%', color: '#ec4899', delay: 1.2 },
     { x: '82%', y: '75%', color: '#06b6d4', delay: 1.8 },
     { x: '50%', y: '8%', color: '#10b981', delay: 0.4 },
-    { x: '92%', y: '50%', color: '#f59e0b', delay: 2.2 },
+    { x: '92%', y: '50%', color: '#D4A017', delay: 2.2 },
   ].slice(0, particleCount);
 
   // ─── Render ──────────────────────────────────────────────────
@@ -219,7 +219,7 @@ export const ImageJobCard: React.FC<ImageJobCardProps> = ({
                 className="absolute inset-0 rounded-xl"
                 style={{
                   background:
-                    'linear-gradient(90deg, transparent 0%, rgba(0,144,255,0.06) 50%, transparent 100%)',
+                    'linear-gradient(90deg, transparent 0%, rgba(212,160,23,0.06) 50%, transparent 100%)',
                   backgroundSize: '200% 100%',
                   animation: 'ijc-shimmer 1.8s linear infinite',
                 }}
@@ -253,7 +253,7 @@ export const ImageJobCard: React.FC<ImageJobCardProps> = ({
                 className="absolute inset-0 opacity-20"
                 style={{
                   backgroundImage:
-                    'linear-gradient(rgba(0,144,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(0,144,255,0.15) 1px, transparent 1px)',
+                    'linear-gradient(rgba(212,160,23,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(212,160,23,0.15) 1px, transparent 1px)',
                   backgroundSize: '24px 24px',
                   animation: 'ijc-grid-pan 3s linear infinite',
                 }}
@@ -264,7 +264,7 @@ export const ImageJobCard: React.FC<ImageJobCardProps> = ({
                 className="absolute left-0 right-0 h-[2px] pointer-events-none"
                 style={{
                   background:
-                    'linear-gradient(90deg, transparent, rgba(0,144,255,0.4), rgba(139,92,246,0.4), transparent)',
+                    'linear-gradient(90deg, transparent, rgba(212,160,23,0.4), rgba(212,160,23,0.4), transparent)',
                   animation: 'ijc-scan 2.5s ease-in-out infinite',
                   top: '0%',
                 }}
@@ -321,8 +321,8 @@ export const ImageJobCard: React.FC<ImageJobCardProps> = ({
                   <div
                     className={`relative z-10 w-full h-full rounded-xl flex items-center justify-center`}
                     style={{
-                      background: 'linear-gradient(135deg, rgba(0,144,255,0.2), rgba(139,92,246,0.15))',
-                      border: '1px solid rgba(0,144,255,0.25)',
+                      background: 'linear-gradient(135deg, rgba(212,160,23,0.2), rgba(212,160,23,0.15))',
+                      border: '1px solid rgba(212,160,23,0.25)',
                     }}
                   >
                     <Wand2

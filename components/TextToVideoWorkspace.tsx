@@ -121,10 +121,10 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   };
 
   return (
-    <div className={`flex flex-col lg:flex-row h-full w-full font-sans overflow-hidden relative transition-colors duration-700 ${tier === 'ULTRA' ? 'bg-[#050505] text-white' : 'bg-white text-black dark:bg-[#0a0d14] dark:text-white'}`}>
+    <div className={`flex flex-col lg:flex-row h-full w-full font-sans overflow-hidden relative transition-colors duration-700 ${tier === 'ULTRA' ? 'bg-[#050505] text-white' : 'bg-white text-black dark:bg-[var(--atlas-bg-page)] dark:text-white'}`}>
 
       {/* 1. STUDIO SIDEBAR */}
-      <aside className={`w-full lg:w-[450px] shrink-0 h-full flex flex-col border-r z-[60] overflow-y-auto no-scrollbar shadow-2xl transition-all duration-700 ${tier === 'ULTRA' ? 'bg-[#0a0a0c] border-white/5 shadow-yellow-500/5' : 'bg-[#fafafa] dark:bg-[#0a0d14] border-black/5 dark:border-white/5'}`}>
+      <aside className={`w-full lg:w-[450px] shrink-0 h-full flex flex-col border-r z-[60] overflow-y-auto no-scrollbar shadow-2xl transition-all duration-700 ${tier === 'ULTRA' ? 'bg-[var(--atlas-bg-page)] border-white/5 shadow-yellow-500/5' : 'bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] border-black/5 dark:border-white/5'}`}>
         <div className="p-8 lg:p-10 space-y-10 pb-40">
 
           {/* TIER SWITCHER */}
@@ -134,21 +134,21 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                    {tier === 'ULTRA' ? <Crown size={24} /> : <Rocket size={24} />}
                 </div>
                 <div className="space-y-0.5">
-                   <h3 className={`text-xs font-black uppercase tracking-[0.4em] transition-colors ${tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'}`}>Motion_Synth</h3>
-                   <p className="text-xl font-black uppercase tracking-tighter italic">Studio Console</p>
+                   <h3 className={`text-xs font-bold uppercase tracking-[0.4em] transition-colors ${tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'}`}>Motion_Synth</h3>
+                   <p className="text-xl font-bold uppercase tracking-tighter italic">Studio Console</p>
                 </div>
              </div>
 
              <div className="flex bg-black/5 dark:bg-white/5 p-1.5 rounded-sm border border-black/5 dark:border-white/10">
                 <button
                   onClick={() => { setTier('PRO'); setResolution('720p'); }}
-                  className={`flex-grow flex items-center justify-center gap-2 py-3 text-[9px] font-black uppercase transition-all rounded-sm ${tier === 'PRO' ? 'bg-white dark:bg-black text-brand-blue shadow-lg' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}
+                  className={`flex-grow flex items-center justify-center gap-2 py-3 text-[9px] font-bold uppercase transition-all rounded-sm ${tier === 'PRO' ? 'bg-white dark:bg-black text-brand-blue shadow-lg' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}
                 >
                    <Rocket size={12} /> PRO Tier
                 </button>
                 <button
                   onClick={() => setTier('ULTRA')}
-                  className={`flex-grow flex items-center justify-center gap-2 py-3 text-[9px] font-black uppercase transition-all rounded-sm ${tier === 'ULTRA' ? 'bg-yellow-500 text-black shadow-lg' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}
+                  className={`flex-grow flex items-center justify-center gap-2 py-3 text-[9px] font-bold uppercase transition-all rounded-sm ${tier === 'ULTRA' ? 'bg-yellow-500 text-black shadow-lg' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}
                 >
                    <Crown size={12} /> ULTRA PRO
                 </button>
@@ -161,7 +161,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                <button
                  key={tab}
                  onClick={() => setActiveTab(tab as any)}
-                 className={`flex-grow py-2.5 text-[8px] font-black uppercase transition-all rounded-sm ${activeTab === tab ? 'bg-white dark:bg-black shadow-md' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}
+                 className={`flex-grow py-2.5 text-[8px] font-bold uppercase transition-all rounded-sm ${activeTab === tab ? 'bg-white dark:bg-black shadow-md' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}
                >
                  {tab}
                </button>
@@ -172,7 +172,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             {activeTab === 'DIRECTIVES' && (
               <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                 <div className="space-y-4">
-                  <label className={`text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-3 ${tier === 'ULTRA' ? 'text-yellow-500/50' : 'text-gray-400'}`}>
+                  <label className={`text-[10px] font-bold uppercase tracking-[0.4em] flex items-center gap-3 ${tier === 'ULTRA' ? 'text-yellow-500/50' : 'text-gray-400'}`}>
                     <Terminal size={14} className={tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'} /> Semantic Intent
                   </label>
                   <textarea
@@ -189,10 +189,10 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <label className={`text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-3 ${tier === 'ULTRA' ? 'text-yellow-500/50' : 'text-gray-400'}`}>
+                    <label className={`text-[10px] font-bold uppercase tracking-[0.4em] flex items-center gap-3 ${tier === 'ULTRA' ? 'text-yellow-500/50' : 'text-gray-400'}`}>
                       <Fingerprint size={14} className={tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'} /> Identity Lock
                     </label>
-                    <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">
+                    <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
                        {references.length} / {tier === 'ULTRA' ? 3 : 1} Slots
                     </span>
                   </div>
@@ -209,7 +209,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                     {references.length < (tier === 'ULTRA' ? 3 : 1) && (
                       <button onClick={() => fileInputRef.current?.click()} className={`aspect-square border-2 border-dashed flex flex-col items-center justify-center gap-2 group transition-all rounded-sm ${tier === 'ULTRA' ? 'border-yellow-500/20 hover:border-yellow-500 hover:bg-yellow-500/5' : 'border-black/10 dark:border-white/10 hover:border-brand-blue'}`}>
                         <Plus className={tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'} />
-                        <span className="text-[7px] font-black uppercase text-gray-400">Add Asset</span>
+                        <span className="text-[7px] font-bold uppercase text-gray-400">Add Asset</span>
                       </button>
                     )}
                   </div>
@@ -224,35 +224,35 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             {activeTab === 'TECHNICAL' && (
               <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                 <div className="space-y-6">
-                  <label className={`text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-3 ${tier === 'ULTRA' ? 'text-yellow-500/50' : 'text-gray-400'}`}>
+                  <label className={`text-[10px] font-bold uppercase tracking-[0.4em] flex items-center gap-3 ${tier === 'ULTRA' ? 'text-yellow-500/50' : 'text-gray-400'}`}>
                      <Settings2 size={14} className={tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'} /> Output Node
                   </label>
                   <div className="space-y-6">
                      <div className="space-y-2">
-                        <span className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Target Resolution</span>
+                        <span className="text-[8px] font-bold uppercase text-gray-400 tracking-widest">Target Resolution</span>
                         <div className="grid grid-cols-2 gap-2">
                            <button
                              onClick={() => setResolution('720p')}
-                             className={`py-3 text-[10px] font-black uppercase border rounded-sm transition-all ${resolution === '720p' ? 'bg-black dark:bg-white text-white dark:text-black border-transparent shadow-xl' : 'border-black/5 dark:border-white/10 text-gray-400'}`}
+                             className={`py-3 text-[10px] font-bold uppercase border rounded-sm transition-all ${resolution === '720p' ? 'bg-black dark:bg-white text-white dark:text-black border-transparent shadow-xl' : 'border-black/5 dark:border-white/10 text-gray-400'}`}
                            >
                               720p Fast
                            </button>
                            <button
                              disabled={tier === 'PRO'}
                              onClick={() => setResolution('1080p')}
-                             className={`py-3 text-[10px] font-black uppercase border rounded-sm transition-all flex items-center justify-center gap-2 ${resolution === '1080p' ? 'bg-yellow-500 text-black border-transparent shadow-xl' : 'border-black/5 dark:border-white/10 text-gray-400'} ${tier === 'PRO' ? 'opacity-20 cursor-not-allowed' : ''}`}
+                             className={`py-3 text-[10px] font-bold uppercase border rounded-sm transition-all flex items-center justify-center gap-2 ${resolution === '1080p' ? 'bg-yellow-500 text-black border-transparent shadow-xl' : 'border-black/5 dark:border-white/10 text-gray-400'} ${tier === 'PRO' ? 'opacity-20 cursor-not-allowed' : ''}`}
                            >
                               1080p {tier === 'ULTRA' && <Crown size={10} />}
                            </button>
                         </div>
                      </div>
                      <div className="space-y-2">
-                        <span className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Aspect Ratio</span>
+                        <span className="text-[8px] font-bold uppercase text-gray-400 tracking-widest">Aspect Ratio</span>
                         <div className="grid grid-cols-2 gap-2">
                            {['16:9', '9:16'].map(ratio => (
                              <button
                                key={ratio} onClick={() => setAspectRatio(ratio as any)}
-                               className={`py-3 text-[10px] font-black uppercase border rounded-sm transition-all ${aspectRatio === ratio ? (tier === 'ULTRA' ? 'bg-yellow-500 text-black border-transparent' : 'bg-black dark:bg-white text-white dark:text-black border-transparent') : 'border-black/5 dark:border-white/10 text-gray-400'}`}
+                               className={`py-3 text-[10px] font-bold uppercase border rounded-sm transition-all ${aspectRatio === ratio ? (tier === 'ULTRA' ? 'bg-yellow-500 text-black border-transparent' : 'bg-black dark:bg-white text-white dark:text-black border-transparent') : 'border-black/5 dark:border-white/10 text-gray-400'}`}
                              >
                                 {ratio === '16:9' ? 'Landscape' : 'Portrait'}
                              </button>
@@ -265,7 +265,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                 <div className={`p-6 border rounded-sm space-y-3 transition-colors duration-700 ${tier === 'ULTRA' ? 'border-yellow-500/20 bg-yellow-500/5' : 'border-brand-blue/20 bg-brand-blue/5'}`}>
                    <div className="flex items-center gap-2">
                       <ShieldCheck size={14} className={tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'} />
-                      <span className={`text-[9px] font-black uppercase tracking-widest ${tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'}`}>{tier} Production Secure</span>
+                      <span className={`text-[9px] font-bold uppercase tracking-widest ${tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'}`}>{tier} Production Secure</span>
                    </div>
                    <p className="text-[8px] text-gray-500 font-bold uppercase leading-relaxed tracking-wider">
                      {tier === 'ULTRA' ? 'Running on H100 Cinematic Cluster Node. High-reasoning temporal gates active.' : 'Running on V100 Fast-Inference Node. Optimized for social delivery.'}
@@ -278,14 +278,14 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
       </aside>
 
       {/* 2. VIEWPORT & RENDERING */}
-      <main className="flex-grow flex flex-col bg-gray-50 dark:bg-[#0a0d14] relative overflow-hidden transition-colors">
+      <main className="flex-grow flex flex-col bg-gray-50 dark:bg-[var(--atlas-bg-page)] relative overflow-hidden transition-colors">
 
         {/* HUD HEADER */}
         <div className="h-16 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-30">
           <div className="flex items-center gap-6">
-            <span className={`text-[10px] font-black uppercase tracking-[0.4em] mono italic ${tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'}`}>VEO_DIRECTOR_{tier}</span>
+            <span className={`text-[10px] font-bold uppercase tracking-[0.4em] mono italic ${tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'}`}>VEO_DIRECTOR_{tier}</span>
             <div className="h-4 w-px bg-black/10 dark:border-white/10"></div>
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mono animate-pulse italic">{status}</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400 mono animate-pulse italic">{status}</span>
           </div>
           <button onClick={onClose} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
             <X size={24} />
@@ -301,7 +301,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                   <MonitorPlay size={48} />
                 </div>
                 <div className="space-y-4">
-                  <h4 className="text-xs font-black uppercase tracking-[0.4em] text-gray-400 italic">Stage Offline</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-[0.4em] text-gray-400 italic">Stage Offline</h4>
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed">
                      Orchestrate directives via the console. {tier} synthesis will engage upon ignition.
                   </p>
@@ -316,7 +316,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                   </div>
                 </div>
                 <div className="text-center space-y-4">
-                  <p className="text-[16px] font-black uppercase tracking-[0.8em] animate-pulse">Synthesizing Sequence</p>
+                  <p className="text-[16px] font-bold uppercase tracking-[0.8em] animate-pulse">Synthesizing Sequence</p>
                   <div className="flex gap-2 justify-center">
                      {Array.from({length: 4}).map((_, i) => (
                         <div key={i} className={`w-12 h-1 overflow-hidden rounded-full ${tier === 'ULTRA' ? 'bg-yellow-500/10' : 'bg-brand-blue/10'}`}>
@@ -324,7 +324,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                         </div>
                      ))}
                   </div>
-                  <p className="text-[8px] font-black text-gray-500 uppercase tracking-[0.3em] italic">H100_Cluster_{tier === 'ULTRA' ? 'Cinematic' : 'Fast'}_Inference</p>
+                  <p className="text-[8px] font-bold text-gray-500 uppercase tracking-[0.3em] italic">H100_Cluster_{tier === 'ULTRA' ? 'Cinematic' : 'Fast'}_Inference</p>
                 </div>
               </motion.div>
             ) : (
@@ -336,21 +336,21 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                 {/* Cinema Overlays */}
                 <div className="absolute top-8 left-8 flex items-center gap-6 text-white/20 pointer-events-none uppercase mono">
                    <div className="flex flex-col">
-                      <span className="text-[7px] font-black tracking-widest">FPS: 24_STABLE</span>
-                      <span className="text-[7px] font-black tracking-widest">BITRATE: 45MBPS</span>
+                      <span className="text-[7px] font-bold tracking-widest">FPS: 24_STABLE</span>
+                      <span className="text-[7px] font-bold tracking-widest">BITRATE: 45MBPS</span>
                    </div>
                    <div className="h-6 w-px bg-white/10"></div>
-                   <div className="text-[7px] font-black tracking-widest">{tier}_NODE_TAKE</div>
+                   <div className="text-[7px] font-bold tracking-widest">{tier}_NODE_TAKE</div>
                 </div>
 
                 <div className="absolute bottom-10 left-10 space-y-4">
                    <div className="flex gap-2">
-                      <span className={`text-[9px] font-black uppercase px-4 py-1.5 shadow-lg tracking-widest flex items-center gap-2 ${tier === 'ULTRA' ? 'bg-yellow-500 text-black' : 'bg-brand-blue text-white'}`}>
+                      <span className={`text-[9px] font-bold uppercase px-4 py-1.5 shadow-lg tracking-widest flex items-center gap-2 ${tier === 'ULTRA' ? 'bg-yellow-500 text-black' : 'bg-brand-blue text-white'}`}>
                          <Film size={10} /> {tier}_SYNTHESIS_MASTER
                       </span>
                    </div>
                    <div className="space-y-1">
-                      <h2 className="text-5xl font-black uppercase text-white tracking-tighter italic mono leading-none">TAKE_ALPHA</h2>
+                      <h2 className="text-5xl font-bold uppercase text-white tracking-tighter italic mono leading-none">TAKE_ALPHA</h2>
                       <p className="text-[10px] text-white/40 uppercase font-bold tracking-[0.3em]">{tier} // {resolution} // {aspectRatio}</p>
                    </div>
                 </div>
@@ -365,12 +365,12 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         </div>
 
         {/* HUD FOOTER: ACTIONS */}
-        <div className={`h-40 border-t p-8 lg:px-12 flex items-center justify-between z-40 transition-all duration-700 shadow-2xl shrink-0 ${tier === 'ULTRA' ? 'bg-[#080808] border-white/5' : 'bg-white dark:bg-[#0a0d14] border-black/5 dark:border-white/10'}`}>
+        <div className={`h-40 border-t p-8 lg:px-12 flex items-center justify-between z-40 transition-all duration-700 shadow-2xl shrink-0 ${tier === 'ULTRA' ? 'bg-[#080808] border-white/5' : 'bg-white dark:bg-[var(--atlas-bg-page)] border-black/5 dark:border-white/10'}`}>
            <div className="flex items-center gap-12">
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-gray-400">
                   <History size={14} />
-                  <p className="text-[9px] font-black uppercase tracking-widest mono italic">Session_Vault</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest mono italic">Session_Vault</p>
                 </div>
                 <div className="flex gap-3">
                    {history.map((take, idx) => (
@@ -397,7 +397,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                    className="h-24 px-12 lg:px-20 flex flex-col items-center justify-center gap-2 transition-all rounded-sm border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black group shadow-xl"
                  >
                     <FastForward size={24} className={isExtending ? 'animate-pulse' : 'group-hover:translate-x-1 transition-transform'} />
-                    <span className="text-[9px] font-black uppercase tracking-[0.4em]">Extend +7s</span>
+                    <span className="text-[9px] font-bold uppercase tracking-[0.4em]">Extend +7s</span>
                  </button>
               )}
 
@@ -407,7 +407,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                 className={`h-24 px-20 lg:px-48 flex flex-col items-center justify-center gap-2 transition-all rounded-sm relative overflow-hidden group shadow-2xl ${prompt.trim() ? (tier === 'ULTRA' ? 'bg-yellow-500 text-black hover:scale-105' : 'bg-brand-blue text-white hover:scale-105') : 'bg-gray-100 dark:bg-white/5 text-gray-300 dark:text-gray-800'}`}
               >
                  <Zap className={`w-8 h-8 ${isGenerating ? 'animate-pulse' : 'group-hover:rotate-12 transition-transform'}`} fill="currentColor" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.5em]">{isGenerating ? 'Synthesizing' : 'Initiate Synthesis'}</span>
+                 <span className="text-[10px] font-bold uppercase tracking-[0.5em]">{isGenerating ? 'Synthesizing' : 'Initiate Synthesis'}</span>
                  <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               </button>
            </div>
@@ -423,7 +423,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           animation: progress 2s infinite ease-in-out;
         }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 144, 255, 0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(201, 168, 76,0.2); border-radius: 10px; }
       `}</style>
     </div>
   );

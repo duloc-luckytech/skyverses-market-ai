@@ -184,9 +184,9 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[#0a0d14] text-black dark:text-white font-sans overflow-hidden relative">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] text-black dark:text-white font-sans overflow-hidden relative">
 
-      <aside className="w-full lg:w-[400px] shrink-0 h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[#fafafa] dark:bg-[#0a0d14] z-[60] overflow-y-auto no-scrollbar shadow-2xl">
+      <aside className="w-full lg:w-[400px] shrink-0 h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] z-[60] overflow-y-auto no-scrollbar shadow-2xl">
         <div className="p-8 lg:p-10 space-y-12 pb-40">
 
           <section className="space-y-6">
@@ -195,7 +195,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 <div className="w-10 h-10 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue">
                   <Users size={18} />
                 </div>
-                <h3 className="text-xs font-black tracking-widest uppercase italic">The Cast</h3>
+                <h3 className="text-xs font-bold tracking-widest uppercase italic">The Cast</h3>
               </div>
               <button onClick={() => castInputRef.current?.click()} className="p-2 border border-black/10 dark:border-white/10 rounded-full hover:bg-brand-blue hover:text-white transition-all">
                 <Plus size={14} />
@@ -211,7 +211,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 >
                   <img src={actor.img} className="w-full h-full object-cover" alt="" />
                   <div className="absolute bottom-0 inset-x-0 bg-black/60 py-1">
-                    <span className="text-[7px] font-black uppercase text-white">{actor.name}</span>
+                    <span className="text-[7px] font-bold uppercase text-white">{actor.name}</span>
                   </div>
                 </button>
               ))}
@@ -224,7 +224,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                   <MapPin size={18} />
                 </div>
-                <h3 className="text-xs font-black tracking-widest uppercase italic">Staging</h3>
+                <h3 className="text-xs font-bold tracking-widest uppercase italic">Staging</h3>
               </div>
               <button onClick={() => locInputRef.current?.click()} className="p-2 border border-black/10 dark:border-white/10 rounded-full hover:bg-emerald-500 hover:text-white transition-all">
                 <Upload size={14} />
@@ -235,12 +235,12 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
         </div>
       </aside>
 
-      <main className="flex-grow flex flex-col bg-gray-50 dark:bg-[#0a0d14] relative overflow-hidden">
+      <main className="flex-grow flex flex-col bg-gray-50 dark:bg-[var(--atlas-bg-page)] relative overflow-hidden">
         <div className="h-16 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-30">
           <div className="flex items-center gap-6">
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-blue mono italic">CAST BUILDER STUDIO</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-blue mono italic">CAST BUILDER STUDIO</span>
             <div className="h-4 w-px bg-black/10 dark:border-white/10"></div>
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mono animate-pulse">{status}</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400 mono animate-pulse">{status}</span>
           </div>
           <button onClick={onClose} className="p-2 text-gray-400 hover:text-brand-blue transition-colors">
             <X size={24} />
@@ -258,7 +258,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             ) : isRehearsing ? (
               <motion.div key="rehearsing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-10">
                 <Loader2 size={80} className="text-brand-blue animate-spin" />
-                <p className="text-[14px] font-black uppercase tracking-[0.8em] animate-pulse">Staging Scene</p>
+                <p className="text-[14px] font-bold uppercase tracking-[0.8em] animate-pulse">Staging Scene</p>
               </motion.div>
             ) : (
               <motion.div key="result" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="relative group max-w-5xl w-full aspect-video lg:aspect-[16/10] bg-black rounded-sm overflow-hidden shadow-2xl border border-white/5">
@@ -272,12 +272,12 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           </AnimatePresence>
         </div>
 
-        <div className="h-36 border-t border-black/5 dark:border-white/10 bg-white dark:bg-[#0a0d14] p-8 lg:px-12 flex items-center justify-between z-40">
+        <div className="h-36 border-t border-black/5 dark:border-white/10 bg-white dark:bg-[var(--atlas-bg-page)] p-8 lg:px-12 flex items-center justify-between z-40">
            <div className="flex items-center gap-12">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-gray-400">
                   <HistoryIcon size={14} className="text-gray-400" />
-                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mono">Archives</p>
+                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mono">Archives</p>
                 </div>
               </div>
            </div>
@@ -290,7 +290,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                    className={`h-20 px-12 lg:px-20 flex flex-col items-center justify-center gap-2 transition-all rounded-sm border ${resultScene ? 'border-brand-blue text-brand-blue bg-brand-blue/5' : 'border-black/10 dark:border-white/10 text-gray-400 hover:text-brand-blue'}`}
                  >
                     <Play size={24} className={isUnfolding ? 'animate-pulse' : 'fill-current'} />
-                    <span className="text-[9px] font-black uppercase tracking-[0.4em]">Unfold Scene</span>
+                    <span className="text-[9px] font-bold uppercase tracking-[0.4em]">Unfold Scene</span>
                  </button>
               )}
               <button
@@ -299,7 +299,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 className={`h-20 px-16 lg:px-32 flex flex-col items-center justify-center gap-2 transition-all rounded-sm shadow-2xl ${selectedActors.length > 0 ? 'bg-brand-blue text-white hover:scale-105' : 'bg-gray-100 dark:bg-white/5 text-gray-300'}`}
               >
                  <Camera size={24} className={isRehearsing ? 'animate-spin' : ''} />
-                 <span className="text-[9px] font-black uppercase tracking-[0.4em]">{isRehearsing ? 'Rendering' : 'Stage Scene'}</span>
+                 <span className="text-[9px] font-bold uppercase tracking-[0.4em]">{isRehearsing ? 'Rendering' : 'Stage Scene'}</span>
               </button>
            </div>
         </div>

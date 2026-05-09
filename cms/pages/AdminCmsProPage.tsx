@@ -8,7 +8,7 @@ import {
   Compass, Bot, Key, Zap, Inbox, Sparkles,
   ShieldCheck, ChevronLeft, ChevronRight,
   Sun, Moon, LogOut, Plus, CreditCard, FileText, Webhook, Cpu,
-  Search, LayoutGrid, Settings2, RefreshCw
+  Search, LayoutGrid, Settings2, RefreshCw, Megaphone
 } from 'lucide-react';
 
 import { marketApi } from '../apis/market';
@@ -41,8 +41,9 @@ const SubmissionsTab = React.lazy(async () => ({ default: (await import('../comp
 const AdminDepositTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/AdminDepositTab')).AdminDepositTab }));
 const BlogTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/BlogTab')).BlogTab }));
 const TasksPendingTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/TasksPendingTab')).TasksPendingTab }));
+const PromoBannersTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/PromoBannersTab')).PromoBannersTab }));
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'OLLAMA_SETTINGS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG' | 'TASKS_PENDING';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'OLLAMA_SETTINGS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG' | 'TASKS_PENDING' | 'PROMO_BANNERS';
 type AdminGroup = 'MAIN' | 'MARKET' | 'CONTENT' | 'FINANCE' | 'OPERATIONS' | 'INFRA' | 'SYSTEM';
 
 interface SidebarItem {
@@ -62,6 +63,7 @@ const sidebarItems: SidebarItem[] = [
   { id: 'SUBMISSIONS',     label: 'Submissions',     icon: <Inbox size={16} />,     group: 'MARKET',     description: 'Duyệt đề xuất sản phẩm' },
 
   { id: 'BLOG',            label: 'Blog CMS',        icon: <FileText size={16} />,  group: 'CONTENT',    description: 'Bài viết, SEO, publish' },
+  { id: 'PROMO_BANNERS',   label: 'Promo Banners',   icon: <Megaphone size={16} />, group: 'CONTENT',    description: 'Hero banners trang Marketplace' },
   { id: 'EXPLORER',        label: 'Explorer',        icon: <Compass size={16} />,   group: 'CONTENT',    description: 'Gallery công khai' },
 
   { id: 'PRICING',         label: 'Model Pricing',   icon: <DollarSign size={16} />, group: 'FINANCE',   description: 'Matrix credits theo model' },
@@ -464,6 +466,7 @@ const AdminCmsProPage = () => {
               {activeTab === 'ADMIN_DEPOSIT' && <AdminDepositTab key="admin_deposit" />}
               {activeTab === 'BLOG' && <BlogTab key="blog" />}
               {activeTab === 'TASKS_PENDING' && <TasksPendingTab key="tasks_pending" />}
+              {activeTab === 'PROMO_BANNERS' && <PromoBannersTab key="promo_banners" />}
               {activeTab === 'CLOUD' && (
                 <NodeRegistryTab
                   key={activeTab}

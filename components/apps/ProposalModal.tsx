@@ -44,7 +44,7 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({ isOpen, onClose })
         animate={{ scale: 1, opacity: 1, y: 0 }} 
         exit={{ scale: 0.96, opacity: 0, y: 10 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative w-full max-w-lg bg-white dark:bg-[#13171f] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl"
       >
         {/* Success State */}
         <AnimatePresence>
@@ -53,7 +53,7 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({ isOpen, onClose })
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 z-50 bg-white dark:bg-[#13171f] flex flex-col items-center justify-center gap-4"
+              className="absolute inset-0 z-50 bg-white dark:bg-[var(--atlas-bg-panel)] flex flex-col items-center justify-center gap-4"
             >
               <motion.div
                 initial={{ scale: 0 }}

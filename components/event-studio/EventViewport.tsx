@@ -107,7 +107,7 @@ export const EventViewport: React.FC<EventViewportProps> = ({
               initial={{ opacity: 0, scale: 0.97, y: 8 }} 
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative group max-w-3xl w-full aspect-[3/4] bg-white dark:bg-[#0a0d14] rounded-2xl overflow-hidden shadow-2xl border border-black/[0.06] dark:border-white/[0.06]"
+              className="relative group max-w-3xl w-full aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl overflow-hidden shadow-2xl border border-black/[0.06] dark:border-white/[0.06]"
             >
               {activeResult.status === 'processing' ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-black/60 backdrop-blur-sm z-20 gap-6">

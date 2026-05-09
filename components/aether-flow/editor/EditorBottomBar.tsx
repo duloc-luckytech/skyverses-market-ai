@@ -22,12 +22,12 @@ export const EditorBottomBar: React.FC<EditorBottomBarProps> = ({ onClose }) => 
     <div className="flex gap-4">
       <button 
         onClick={onClose}
-        className="px-8 py-3 border border-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+        className="px-8 py-3 border border-white/10 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all"
       >
          Đóng trình biên tập
       </button>
       <button 
-        className="px-10 py-3 bg-brand-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand-blue/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+        className="px-10 py-3 bg-brand-blue text-white rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-brand-blue/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
       >
          <Play size={14} fill="currentColor" /> Triển khai ngay
       </button>

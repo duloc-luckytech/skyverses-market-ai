@@ -179,25 +179,25 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex flex-col bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
+    <div className="fixed inset-0 z-[1000] flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
       
       {/* Header bar */}
       <div className="h-14 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-6 shrink-0 bg-white/40 dark:bg-black/40 backdrop-blur-md z-[160]">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-brand-blue dark:text-white italic">
+          <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-brand-blue dark:text-white italic">
              <span>Stylist Studio</span>
           </div>
           <div className="h-4 w-px bg-black/5 dark:bg-white/5 mx-2"></div>
           <div className="flex items-center gap-2">
             <button 
               onClick={() => s.setIsTemplateModalOpen(true)}
-              className="flex items-center gap-2 px-3 py-1 bg-purple-600/10 rounded-full text-[9px] font-black uppercase text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
+              className="flex items-center gap-2 px-3 py-1 bg-purple-600/10 rounded-full text-[9px] font-bold uppercase text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
             >
               <LayoutGrid size={12} /> Template
             </button>
             <button 
               onClick={s.openTutorial}
-              className="flex items-center gap-2 px-3 py-1 bg-brand-blue/10 rounded-full text-[9px] font-black uppercase text-brand-blue hover:bg-brand-blue hover:text-white transition-all"
+              className="flex items-center gap-2 px-3 py-1 bg-brand-blue/10 rounded-full text-[9px] font-bold uppercase text-brand-blue hover:bg-brand-blue hover:text-white transition-all"
             >
               <HelpCircle size={12} /> Hướng dẫn
             </button>
@@ -225,7 +225,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
         {/* SIDEBAR: Bottom sheet on mobile, left sidebar on desktop */}
         <aside 
-          className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[340px] bg-white dark:bg-[#0a0d14] border-t lg:border-t-0 lg:border-r border-black/5 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileSidebarExpanded ? 'h-[85dvh] rounded-t-[2.5rem]' : 'h-16 lg:h-full lg:rounded-none'}`}
+          className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[340px] bg-white dark:bg-[var(--atlas-bg-page)] border-t lg:border-t-0 lg:border-r border-black/5 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileSidebarExpanded ? 'h-[85dvh] rounded-t-[2.5rem]' : 'h-16 lg:h-full lg:rounded-none'}`}
         >
            {/* Mobile Handle Bar */}
            <div 
@@ -235,7 +235,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               <div className="w-10 h-1.5 bg-slate-300 dark:bg-white/10 rounded-full mb-2"></div>
               <div className="flex items-center gap-2">
                 <Shirt size={14} className="text-brand-blue" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400">
                   {isMobileSidebarExpanded ? 'Vuốt xuống để thu gọn' : 'Thiết lập phong cách'}
                 </span>
               </div>
@@ -251,13 +251,13 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     {(['Male', 'Female'] as const).map(g => (
                       <button 
                         key={g} onClick={() => s.setGender(g)}
-                        className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${s.gender === g ? 'bg-white dark:bg-[#2a2a2e] text-slate-900 dark:text-white shadow-xl' : 'text-gray-600 dark:text-gray-400 hover:text-slate-900'}`}
+                        className={`px-6 py-2 rounded-lg text-[10px] font-bold uppercase transition-all ${s.gender === g ? 'bg-white dark:bg-[#2a2a2e] text-slate-900 dark:text-white shadow-xl' : 'text-gray-600 dark:text-gray-400 hover:text-slate-900'}`}
                       >
                         {g}
                       </button>
                     ))}
                   </div>
-                  <button onClick={s.resetAll} className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors">Reset</button>
+                  <button onClick={s.resetAll} className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors">Reset</button>
               </div>
 
               <SelectedItems s={s} categoryData={allCategoryMap} />
@@ -274,7 +274,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         className="aspect-[3/4] rounded-lg border-2 border-dashed border-slate-300 dark:border-white/10 flex flex-col items-center justify-center gap-2 hover:border-brand-blue transition-all group"
                       >
                           {isUploadingItem === 'selectedOutfit' ? <Loader2 size={16} className="animate-spin text-brand-blue" /> : <Plus size={20} className="text-slate-400 group-hover:text-brand-blue" />}
-                          <span className="text-[8px] font-black uppercase text-slate-400">Tải lên</span>
+                          <span className="text-[8px] font-bold uppercase text-slate-400">Tải lên</span>
                       </button>
 
                       {getFullDataForCategory('selectedOutfit').map(o => (
@@ -365,9 +365,9 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         {getFullDataForCategory('pose').map(p => (
                           <button 
                             key={p.id} onClick={() => s.setSelectedPose(p.id)}
-                            className={`relative aspect-[3/4] bg-slate-200 dark:bg-[#1a1f2b] rounded-lg border-2 transition-all overflow-hidden group ${s.selectedPose === p.id ? 'border-[#dfff1a] ring-4 ring-[#dfff1a]/10' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                            className={`relative aspect-[3/4] bg-slate-200 dark:bg-[var(--atlas-bg-panel)] rounded-lg border-2 transition-all overflow-hidden group ${s.selectedPose === p.id ? 'border-[#dfff1a] ring-4 ring-[#dfff1a]/10' : 'border-transparent opacity-50 hover:opacity-100'}`}
                           >
-                              <div className="w-full h-full bg-slate-300 dark:bg-[#13171f] flex items-center justify-center relative">
+                              <div className="w-full h-full bg-slate-300 dark:bg-[var(--atlas-bg-panel)] flex items-center justify-center relative">
                                 <div className="w-full h-full bg-[radial-gradient(circle_at_40%_40%,_#fff_0%,_transparent_60%)] dark:bg-[radial-gradient(circle_at_40%_40%,_#333_0%,_transparent_60%)]"></div>
                                 <img src={p.url} className="absolute inset-0 w-full h-full object-contain p-2" alt="Pose" />
                               </div>
@@ -387,9 +387,9 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         </aside>
 
         {/* VIEWPORT: Main Display Area */}
-        <main className="flex-grow flex flex-col relative bg-slate-100 dark:bg-[#0a0d14] p-4 md:p-12 items-center justify-center transition-colors">
+        <main className="flex-grow flex flex-col relative bg-slate-100 dark:bg-[var(--atlas-bg-page)] p-4 md:p-12 items-center justify-center transition-colors">
            <div 
-             className={`w-full max-w-2xl aspect-[3/4] rounded-[2rem] md:rounded-[3.5rem] bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/5 shadow-[0_0_100px_rgba(0,0,0,0.05)] dark:shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center overflow-hidden relative transition-all ${s.hasResult ? 'border-none' : 'border-dashed border-slate-200 dark:border-white/10'}`}
+             className={`w-full max-w-2xl aspect-[3/4] rounded-[2rem] md:rounded-[3.5rem] bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 shadow-[0_0_100px_rgba(0,0,0,0.05)] dark:shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center overflow-hidden relative transition-all ${s.hasResult ? 'border-none' : 'border-dashed border-slate-200 dark:border-white/10'}`}
            >
               {s.isGenerating ? (
                 <div className="flex flex-col items-center gap-6">
@@ -399,7 +399,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                          <Sparkles size={24} className="text-[#dfff1a]/50 animate-pulse" />
                       </div>
                    </div>
-                   <p className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-800 dark:text-white animate-pulse">Styling Model...</p>
+                   <p className="text-[12px] font-bold uppercase tracking-[0.5em] text-slate-800 dark:text-white animate-pulse">Styling Model...</p>
                 </div>
               ) : s.hasResult && s.activeHistoryIndex !== null ? (
                 <motion.img 
@@ -427,7 +427,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       <Plus size={32} />
                    </div>
                    <div className="space-y-2">
-                      <p className="text-xl md:text-2xl font-black uppercase tracking-widest text-slate-700 dark:text-gray-300">Nhấn để tải lên <br className="hidden md:block" /> chân dung gốc</p>
+                      <p className="text-xl md:text-2xl font-bold uppercase tracking-widest text-slate-700 dark:text-gray-300">Nhấn để tải lên <br className="hidden md:block" /> chân dung gốc</p>
                       <p className="text-[8px] md:text-[10px] text-slate-400 dark:text-gray-600 font-bold uppercase tracking-[0.4em] italic">Full body, mặt rõ nét</p>
                    </div>
                 </div>
@@ -440,7 +440,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 >
                   <div className="bg-white/90 dark:bg-black/90 px-6 py-3 rounded-full border border-white/20 shadow-2xl flex items-center gap-3 transition-transform group-hover/overlay:scale-105">
                     <RefreshCcw size={16} className="text-brand-blue" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-white">Thay đổi hình ảnh</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-800 dark:text-white">Thay đổi hình ảnh</span>
                   </div>
                 </div>
               )}
@@ -476,7 +476,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 md:gap-3 w-full max-w-md">
                         <button 
                           onClick={() => s.useAsReference(s.history[s.activeHistoryIndex!])} 
-                          className="p-3.5 md:p-5 bg-white dark:bg-[#1a1f2b]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all group shrink-0"
+                          className="p-3.5 md:p-5 bg-white dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all group shrink-0"
                           title="Sử dụng làm ảnh mẫu gốc"
                         >
                            <UserCircle size={18} className="md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
@@ -484,19 +484,19 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         
                         <button 
                           onClick={handleEditClick} 
-                          className="p-3.5 md:p-5 bg-white dark:bg-[#1a1f2b]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all group shrink-0"
+                          className="p-3.5 md:p-5 bg-white dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all group shrink-0"
                           title="Chỉnh sửa ảnh chuyên sâu"
                         >
                            <Edit3 size={18} className="md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
                         </button>
 
-                        <button onClick={() => s.setHasResult(false)} className="flex-grow bg-slate-900 dark:bg-white text-white dark:text-black py-4 md:py-5 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest md:tracking-[0.4em] shadow-2xl hover:bg-brand-blue hover:text-white transition-all whitespace-nowrap">
+                        <button onClick={() => s.setHasResult(false)} className="flex-grow bg-slate-900 dark:bg-white text-white dark:text-black py-4 md:py-5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest md:tracking-[0.4em] shadow-2xl hover:bg-brand-blue hover:text-white transition-all whitespace-nowrap">
                             Thử mẫu mới
                         </button>
                         
                         <button 
                           onClick={() => s.history[s.activeHistoryIndex!] && handleDownload(s.history[s.activeHistoryIndex!])}
-                          className="p-3.5 md:p-5 bg-white dark:bg-[#1a1f2b]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all shrink-0"
+                          className="p-3.5 md:p-5 bg-white dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-slate-600 dark:text-white hover:bg-brand-blue hover:text-white transition-all shrink-0"
                           title="Tải xuống"
                         >
                           <Download size={18} className="md:w-5 md:h-5"/>
@@ -504,7 +504,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
                         <button 
                           onClick={handleDeleteClick}
-                          className="hidden sm:flex p-3.5 md:p-5 bg-white dark:bg-[#1a1f2b]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-red-400 hover:bg-red-500 hover:text-white transition-all shrink-0"
+                          className="hidden sm:flex p-3.5 md:p-5 bg-white dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-full text-red-400 hover:bg-red-500 hover:text-white transition-all shrink-0"
                           title="Xóa ảnh"
                         >
                           <Trash2 size={18} className="md:w-5 md:h-5"/>
@@ -520,7 +520,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     <div className="flex items-center gap-4 px-5 py-2 bg-white/80 dark:bg-black/60 backdrop-blur-md rounded-full border border-black/5 dark:border-white/10 shadow-xl">
                       <div className="flex items-center gap-3">
                          <div className="text-right">
-                           <p className={`text-[9px] md:text-[11px] font-black italic leading-none ${s.usagePreference === 'key' ? 'text-purple-500' : 'text-brand-blue'}`}>
+                           <p className={`text-[9px] md:text-[11px] font-bold italic leading-none ${s.usagePreference === 'key' ? 'text-purple-500' : 'text-brand-blue'}`}>
                              {s.usagePreference === 'key' ? 'PERSONAL KEY' : `${s.credits.toLocaleString()} CR`}
                            </p>
                          </div>
@@ -537,9 +537,9 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
                       onClick={handleGenerateClick}
                       disabled={s.isGenerating || !s.userPhoto}
-                      className="w-full sm:w-auto bg-[#dfff1a] text-black px-12 md:px-16 py-4 md:py-5 rounded-full text-[11px] md:text-xs font-black uppercase tracking-[0.3em] md:tracking-[0.4em] shadow-[0_15px_40px_rgba(223,255,26,0.3)] flex items-center justify-center gap-4 md:gap-6 hover:scale-105 active:scale-95 transition-all disabled:opacity-20"
+                      className="w-full sm:w-auto bg-[#dfff1a] text-black px-12 md:px-16 py-4 md:py-5 rounded-full text-[11px] md:text-xs font-bold uppercase tracking-[0.3em] md:tracking-[0.4em] shadow-[0_15px_40px_rgba(223,255,26,0.3)] flex items-center justify-center gap-4 md:gap-6 hover:scale-105 active:scale-95 transition-all disabled:opacity-20"
                     >
-                       {s.isGenerating ? <Loader2 size={18} className="animate-spin" /> : <>Generate <div className="hidden xs:flex items-center gap-1.5 ml-2 px-2.5 py-1 bg-black/10 rounded-full text-[9px] font-black italic"><Sparkles size={10} fill="currentColor" /> 100 credits</div></>}
+                       {s.isGenerating ? <Loader2 size={18} className="animate-spin" /> : <>Generate <div className="hidden xs:flex items-center gap-1.5 ml-2 px-2.5 py-1 bg-black/10 rounded-full text-[9px] font-bold italic"><Sparkles size={10} fill="currentColor" /> 100 credits</div></>}
                     </motion.button>
                   </div>
                 )}
@@ -580,15 +580,15 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       <AnimatePresence>
         {s.showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[#1a1f2b] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors">
               <div className="w-24 h-24 bg-orange-500/10 border border-orange-500/20 rounded-full flex items-center justify-center mx-auto text-orange-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]"><AlertTriangle size={48} /></div>
               <div className="space-y-4">
-                <h3 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3>
+                <h3 className="text-3xl font-bold uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3>
                 <p className="text-sm text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight">AI Styling requires **{s.GEN_COST} credits** per synthesis. <br />Your current node balance is too low.</p>
               </div>
               <div className="flex flex-col gap-4">
-                <Link to="/credits" className="bg-brand-blue text-white py-5 rounded-full text-[12px] font-black uppercase tracking-[0.4em] shadow-xl hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
-                <button onClick={() => s.setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest underline underline-offset-8 decoration-white/20">Để sau</button>
+                <Link to="/credits" className="bg-brand-blue text-white py-5 rounded-full text-[12px] font-bold uppercase tracking-[0.4em] shadow-xl hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
+                <button onClick={() => s.setShowLowCreditAlert(false)} className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest underline underline-offset-8 decoration-white/20">Để sau</button>
               </div>
             </motion.div>
           </motion.div>

@@ -162,9 +162,9 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   const errorCount = useMemo(() => results.filter(r => r.status === 'error').length, [results]);
 
   return (
-    <main className="flex-grow min-w-0 flex flex-col relative bg-slate-50 dark:bg-[#0a0d14] overflow-hidden">
+    <main className="flex-grow min-w-0 flex flex-col relative bg-slate-50 dark:bg-[var(--atlas-bg-page)] overflow-hidden">
       {/* ─── TOOLBAR ─── */}
-      <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/95 dark:bg-[#1a1f2b]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
+      <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
         <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
           <div className="flex items-center gap-1">
             {onClose && (
@@ -450,7 +450,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                             key={item._id || item.id}
                             ref={isLast ? lastItemRef : null}
                             onClick={() => onApplyExample(item)}
-                            className="break-inside-avoid relative overflow-hidden bg-white dark:bg-[#1a1f2b] group cursor-pointer border border-black/[0.06] dark:border-white/[0.08] transition-all duration-500 rounded-2xl hover:border-rose-500/20 shadow-sm dark:shadow-none"
+                            className="break-inside-avoid relative overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] group cursor-pointer border border-black/[0.06] dark:border-white/[0.08] transition-all duration-500 rounded-2xl hover:border-rose-500/20 shadow-sm dark:shadow-none"
                           >
                             <img
                               src={item.thumbnailUrl}

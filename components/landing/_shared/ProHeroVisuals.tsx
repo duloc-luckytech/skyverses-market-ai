@@ -231,7 +231,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative ${aspectRatio} w-full rounded-2xl overflow-hidden cursor-ew-resize select-none ${className ?? ''}`}
+      className={`relative ${aspectRatio} w-full rounded-xl overflow-hidden cursor-ew-resize select-none ${className ?? ''}`}
       onMouseMove={onMouseMove}
       onMouseUp={() => setIsDragging(false)}
       onMouseLeave={() => setIsDragging(false)}

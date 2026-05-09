@@ -46,9 +46,9 @@ const WORKSPACE_MAP: Record<string, React.LazyExoticComponent<React.ComponentTyp
 
 // ── Loading Spinner ──────────────────────────────────────────────────────────
 const WorkspaceLoader: React.FC = () => (
-  <div className="flex-1 flex flex-col items-center justify-center gap-4 bg-white dark:bg-[#0a0d14]">
+  <div className="flex-1 flex flex-col items-center justify-center gap-4 bg-white dark:bg-[var(--atlas-bg-page)]">
     <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
-    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 animate-pulse">
+    <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-400 animate-pulse">
       Initializing Workspace...
     </span>
   </div>
@@ -85,7 +85,7 @@ const ProductToolModal: React.FC<ProductToolModalProps> = ({ slug, onClose }) =>
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[800] flex flex-col bg-white dark:bg-[#0a0d14]"
+          className="fixed inset-0 z-[800] flex flex-col bg-white dark:bg-[var(--atlas-bg-page)]"
         >
           {!WorkspaceComponent ? (
             /* ── Fallback: no workspace matched ── */

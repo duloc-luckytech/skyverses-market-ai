@@ -15,20 +15,20 @@ export const ViewSettingsModal: React.FC<ViewSettingsModalProps> = ({ logic, onC
     >
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
-          <span className="text-[10px] font-black uppercase text-white tracking-widest">View Master</span>
+          <span className="text-[10px] font-bold uppercase text-white tracking-widest">View Master</span>
           <button onClick={onClose} className="text-gray-500 hover:text-red-500 transition-colors"><X size={14} /></button>
         </div>
         
         <div className="space-y-4">
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Shading Node</p>
           <div className="flex bg-black/40 p-1.5 rounded-xl border border-white/5">
-            <button onClick={() => logic.setShading('Flat')} className={`flex-grow py-2.5 text-[10px] font-black uppercase rounded-lg transition-all ${logic.shading === 'Flat' ? 'bg-[#3b3d45] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}>Flat</button>
-            <button onClick={() => logic.setShading('Smooth')} className={`flex-grow py-2.5 text-[10px] font-black uppercase rounded-lg transition-all ${logic.shading === 'Smooth' ? 'bg-[#3b3d45] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}>Smooth</button>
+            <button onClick={() => logic.setShading('Flat')} className={`flex-grow py-2.5 text-[10px] font-bold uppercase rounded-lg transition-all ${logic.shading === 'Flat' ? 'bg-[#3b3d45] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}>Flat</button>
+            <button onClick={() => logic.setShading('Smooth')} className={`flex-grow py-2.5 text-[10px] font-bold uppercase rounded-lg transition-all ${logic.shading === 'Smooth' ? 'bg-[#3b3d45] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}>Smooth</button>
           </div>
         </div>
 
         <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-white/5">
-          <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Material PBR</span>
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Material PBR</span>
           <button onClick={() => logic.setIsPBR(!logic.isPBR)} className={`w-12 h-6 rounded-full relative transition-colors ${logic.isPBR ? 'bg-purple-600' : 'bg-gray-600'}`}>
             <motion.div animate={{ x: logic.isPBR ? 24 : 2 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-lg" />
           </button>
@@ -36,14 +36,14 @@ export const ViewSettingsModal: React.FC<ViewSettingsModalProps> = ({ logic, onC
 
         <div className="space-y-6">
           <div className="space-y-3">
-            <div className="flex justify-between text-[10px] font-black uppercase">
+            <div className="flex justify-between text-[10px] font-bold uppercase">
               <span className="text-gray-500 tracking-widest">Metallic</span>
               <span className="text-white italic">{logic.metallic.toFixed(1)}</span>
             </div>
             <input type="range" min="0" max="1" step="0.1" value={logic.metallic} onChange={e => logic.setMetallic(parseFloat(e.target.value))} className="w-full h-1.5 bg-white/10 appearance-none rounded-full accent-purple-500 cursor-pointer" />
           </div>
           <div className="space-y-3">
-            <div className="flex justify-between text-[10px] font-black uppercase">
+            <div className="flex justify-between text-[10px] font-bold uppercase">
               <span className="text-gray-500 tracking-widest">Roughness</span>
               <span className="text-white italic">{logic.roughness.toFixed(1)}</span>
             </div>

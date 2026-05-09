@@ -15,7 +15,7 @@ export const RestorationControls: React.FC<Props> = ({
   selectedPresetId, onPresetChange, activeJob, onDownload, onEdit 
 }) => {
   return (
-    <aside className="w-20 md:w-[320px] border-l border-slate-100 dark:border-white/[0.04] flex flex-col shrink-0 bg-white dark:bg-[#0a0d14] transition-colors duration-500 overflow-y-auto no-scrollbar relative z-10">
+    <aside className="w-20 md:w-[320px] border-l border-slate-100 dark:border-white/[0.04] flex flex-col shrink-0 bg-white dark:bg-[var(--atlas-bg-page)] transition-colors duration-500 overflow-y-auto no-scrollbar relative z-10">
       
       {/* Section Header */}
       <div className="p-4 md:p-5 border-b border-slate-100 dark:border-white/[0.04]">
@@ -24,7 +24,7 @@ export const RestorationControls: React.FC<Props> = ({
             <Target size={15} />
           </div>
           <div className="hidden md:block">
-            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-800 dark:text-white/80">Kịch bản phục chế</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-800 dark:text-white/80">Kịch bản phục chế</p>
             <p className="text-[8px] font-bold text-slate-300 dark:text-gray-600 uppercase tracking-wider mt-0.5">Restoration Strategy</p>
           </div>
         </div>
@@ -46,14 +46,14 @@ export const RestorationControls: React.FC<Props> = ({
             >
               {window.innerWidth < 768 ? (
                 /* Mobile — show just index */
-                <span className={`text-[10px] font-black ${isSelected ? 'text-emerald-500' : 'text-slate-400'}`}>
+                <span className={`text-[10px] font-bold ${isSelected ? 'text-emerald-500' : 'text-slate-400'}`}>
                   {String(index + 1).padStart(2, '0')}
                 </span>
               ) : (
                 /* Desktop — full layout */
                 <div className="flex items-start gap-3">
                   {/* Number indicator */}
-                  <div className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-[9px] font-black transition-colors ${
+                  <div className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-[9px] font-bold transition-colors ${
                     isSelected 
                       ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' 
                       : 'bg-slate-50 dark:bg-white/[0.04] text-slate-300 dark:text-gray-600 border border-slate-100 dark:border-white/[0.06]'
@@ -62,7 +62,7 @@ export const RestorationControls: React.FC<Props> = ({
                   </div>
                   
                   <div className="flex-grow min-w-0 space-y-1">
-                    <p className={`text-[10px] font-black uppercase tracking-tight leading-snug ${
+                    <p className={`text-[10px] font-bold uppercase tracking-tight leading-snug ${
                       isSelected ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-gray-300'
                     }`}>
                       {preset.label}
@@ -87,14 +87,14 @@ export const RestorationControls: React.FC<Props> = ({
             <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
               <ShieldCheck size={14} />
             </div>
-            <span className="text-[9px] font-black uppercase tracking-[0.15em] text-emerald-700 dark:text-emerald-400">Neural Audit</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-emerald-700 dark:text-emerald-400">Neural Audit</span>
           </div>
           <p className="text-[9px] text-slate-500 dark:text-gray-500 font-medium leading-relaxed">
             Hệ thống giữ lại cấu trúc nguyên bản và chỉ tái tạo các pixel bị tổn thương. Dữ liệu được bảo mật trong VPC riêng.
           </p>
           <div className="flex gap-3 pt-1">
             {['E2E Encrypted', 'Auto-Delete'].map(tag => (
-              <span key={tag} className="text-[7px] font-black uppercase tracking-wider text-emerald-600/60 dark:text-emerald-400/50 bg-emerald-500/[0.06] px-2 py-0.5 rounded-md">
+              <span key={tag} className="text-[7px] font-bold uppercase tracking-wider text-emerald-600/60 dark:text-emerald-400/50 bg-emerald-500/[0.06] px-2 py-0.5 rounded-md">
                 {tag}
               </span>
             ))}

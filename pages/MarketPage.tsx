@@ -1,61 +1,271 @@
-
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, useScroll, useTransform, useInView, useSpring, AnimatePresence } from 'framer-motion';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { marketApi } from '../apis/market';
 import { systemConfigApi } from '../apis/config';
 import { Solution, HomeBlock, Language } from '../types';
 import {
-  X, SearchX, Search, Flame, Video, ImageIcon, LayoutGrid, Gift, Workflow,
-  Sparkles, LucideIcon, ArrowRight, ChevronRight, Play, Zap, Shield, Globe2, Cpu,
-  MousePointerClick, Wand2, Rocket, Megaphone, ShoppingBag, Clapperboard,
-  Building2, Shirt, GraduationCap, Brain, Wrench, Plug, CreditCard, RefreshCw,
-  MonitorPlay, Palette, UserCircle, Landmark, TrendingDown, Share2, UserPlus, Check, Users, Bookmark
+  X, SearchX, Search, ArrowRight, ChevronRight, ChevronDown, ChevronUp, Check,
+  Cpu, Boxes, Zap, ExternalLink, Shield, Sparkles, Quote,
+  ChevronLeft, Play, Globe, Server, Code2,
+  Maximize2, Eye, Heart,
 } from 'lucide-react';
 
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useSearch } from '../context/SearchContext';
-import AIModelsMarquee from '../components/AIModelsMarquee';
-import GlobalToolsBar from '../components/GlobalToolsBar';
-import { motion, AnimatePresence } from 'framer-motion';
 
 import { CardSkeleton } from '../components/market/MarketSkeleton';
-import { MarketSectionHeader } from '../components/market/MarketSectionHeader';
 import { SolutionCard } from '../components/market/SolutionCard';
 import ProductToolModal from '../components/market/ProductToolModal';
+import GlobalToolsBar from '../components/GlobalToolsBar';
+import AIModelsMarquee from '../components/AIModelsMarquee';
+import type { ShowcaseImage, ShowcaseVideo, ShowcaseAlbum } from '../src/constants/showcase-cdn';
+import type { Showcase3DModel } from '../src/constants/showcase-3d';
+import ExplorerDetailModal, { ExplorerItem } from '../components/ExplorerDetailModal';
+import LazySection from '../components/landing/LazySection';
+import LazyImage from '../components/landing/LazyImage';
+import LatestModelsSection from '../components/landing/LatestModelsSection';
+import { ShowcaseGallerySkeleton, EnterpriseSectionSkeleton, HomeBlockSkeleton, CTASkeleton, DevelopersSkeleton } from '../components/landing/LandingSectionSkeletons';
 
-const BLOCK_ICONS: Record<string, LucideIcon> = {
-  top_trending: Flame,
-  video_studio: Video,
-  image_studio: ImageIcon,
-  ai_agents: Workflow,
-  festivals: Gift,
-  others: LayoutGrid
+// Masonry height classes for visual variety in columns layout
+const SHOWCASE_HEIGHT = [
+  'h-[220px]', 'h-[260px]', 'h-[200px]', 'h-[280px]', 'h-[240px]',
+  'h-[260px]', 'h-[220px]', 'h-[280px]', 'h-[200px]', 'h-[240px]',
+];
+
+/* ═══════════════════════════════════════════════════════════════════
+ * ANIMATION PRIMITIVES
+ * ═══════════════════════════════════════════════════════════════════ */
+
+/** Fade-in-up on scroll into view */
+const FadeInUp: React.FC<{
+  children: React.ReactNode;
+  delay?: number;
+  duration?: number;
+  y?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}> = ({ children, delay = 0, duration = 0.7, y = 60, className, style }) => (
+  <motion.div
+    initial={{ opacity: 0, y }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-80px' }}
+    transition={{ duration, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+    className={className}
+    style={style}
+  >
+    {children}
+  </motion.div>
+);
+
+/** Scale-in reveal (for images/cards) */
+const ScaleIn: React.FC<{
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}> = ({ children, delay = 0, className, style }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.92 }}
+    whileInView={{ opacity: 1, scale: 1 }}
+    viewport={{ once: true, margin: '-60px' }}
+    transition={{ duration: 0.8, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+    className={className}
+    style={style}
+  >
+    {children}
+  </motion.div>
+);
+
+/** Stagger container — children animate in sequence */
+const StaggerContainer: React.FC<{
+  children: React.ReactNode;
+  stagger?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}> = ({ children, stagger = 0.1, className, style }) => (
+  <motion.div
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true, margin: '-60px' }}
+    variants={{
+      hidden: {},
+      visible: { transition: { staggerChildren: stagger } },
+    }}
+    className={className}
+    style={style}
+  >
+    {children}
+  </motion.div>
+);
+
+/** Individual stagger child */
+const StaggerItem: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}> = ({ children, className, style }) => (
+  <motion.div
+    variants={{
+      hidden: { opacity: 0, y: 40, scale: 0.95 },
+      visible: {
+        opacity: 1, y: 0, scale: 1,
+        transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+      },
+    }}
+    className={className}
+    style={style}
+  >
+    {children}
+  </motion.div>
+);
+
+/** Slide-in from left or right */
+const SlideIn: React.FC<{
+  children: React.ReactNode;
+  from?: 'left' | 'right';
+  delay?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}> = ({ children, from = 'left', delay = 0, className, style }) => (
+  <motion.div
+    initial={{ opacity: 0, x: from === 'left' ? -80 : 80 }}
+    whileInView={{ opacity: 1, x: 0 }}
+    viewport={{ once: true, margin: '-80px' }}
+    transition={{ duration: 0.8, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+    className={className}
+    style={style}
+  >
+    {children}
+  </motion.div>
+);
+
+/** Parallax wrapper — moves slower/faster relative to scroll */
+const ParallaxBox: React.FC<{
+  children: React.ReactNode;
+  speed?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}> = ({ children, speed = 0.3, className, style }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const y = useTransform(scrollYProgress, [0, 1], [speed * 100, -speed * 100]);
+  const smoothY = useSpring(y, { stiffness: 100, damping: 30 });
+  return (
+    <motion.div ref={ref} style={{ y: smoothY, ...style }} className={className}>
+      {children}
+    </motion.div>
+  );
 };
 
-/* ─── Animated Counter ─── */
-const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        let start = 0;
-        const step = Math.max(1, Math.floor(value / 40));
-        const timer = setInterval(() => {
-          start += step;
-          if (start >= value) { setCount(value); clearInterval(timer); }
-          else setCount(start);
-        }, 30);
-        observer.disconnect();
-      }
-    }, { threshold: 0.5 });
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [value]);
-  return <span ref={ref}>{count}{suffix}</span>;
+/** Blur text reveal — each word animates from blurred to sharp (word-level for perf) */
+const BlurTextReveal: React.FC<{
+  text: string;
+  as?: 'h2' | 'p' | 'span';
+  delay?: number;
+  charDelay?: number;
+  style?: React.CSSProperties;
+}> = ({ text, as: Tag = 'span', delay = 0, charDelay = 0.03, style }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+
+  const words = text.split(' ');
+  const wordDelay = charDelay * 4;
+
+  return (
+    <div ref={ref}>
+      <Tag style={{ display: 'flex', flexWrap: 'wrap', gap: '0 0.3em', margin: 0, ...style }}>
+        {words.map((word, wi) => (
+          <motion.span
+            key={wi}
+            initial={{ opacity: 0, filter: 'blur(10px)' }}
+            animate={isInView ? { opacity: 1, filter: 'blur(0px)' } : {}}
+            transition={{
+              duration: 0.5,
+              delay: delay + wi * wordDelay,
+              ease: [0.25, 0.46, 0.45, 0.94],
+            }}
+          >
+            {word}
+          </motion.span>
+        ))}
+      </Tag>
+    </div>
+  );
 };
+
+/** Section header animation — label + title blur-reveal + desc blur-reveal */
+const AnimatedSectionHeader: React.FC<{
+  label?: string;
+  title: string;
+  desc?: string;
+  children?: React.ReactNode;
+  style?: React.CSSProperties;
+}> = ({ label, title, desc, children, style }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 24, marginBottom: 56, width: '100%', ...style }}>
+    {label && (
+      <FadeInUp delay={0} y={20}>
+        <span style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 24, lineHeight: 1.366, color: '#C9A84C', margin: 0, textTransform: 'uppercase' as const }}>
+          {label}
+        </span>
+      </FadeInUp>
+    )}
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <BlurTextReveal
+        text={title}
+        as="h2"
+        delay={0.15}
+        charDelay={0.03}
+        style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 36, lineHeight: 1.366, letterSpacing: '-0.72px', color: '#1a2330' }}
+      />
+      {desc && (
+        <BlurTextReveal
+          text={desc}
+          as="p"
+          delay={0.4}
+          charDelay={0.008}
+          style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.366, color: '#1a2330', maxWidth: 552 }}
+        />
+      )}
+      {children && <FadeInUp delay={0.3}>{children}</FadeInUp>}
+    </div>
+  </div>
+);
+
+/* ── Static hover CSS — extracted outside component to avoid re-injection per render ── */
+const HOVER_STYLES = `
+.hov-card{transition:transform .35s cubic-bezier(.25,.46,.45,.94),box-shadow .35s ease,border-color .35s ease;border:1px solid transparent}
+.hov-card:hover{transform:translateY(-6px);box-shadow:0 16px 48px rgba(0,0,0,.08),0 4px 14px rgba(201,168,76,.12);border-color:rgba(201,168,76,.3)}
+.hov-img-wrap{overflow:hidden}
+.hov-img{transition:transform .6s cubic-bezier(.25,.46,.45,.94),filter .4s ease}
+.hov-img-wrap:hover .hov-img,.hov-img:hover{transform:scale(1.06);filter:brightness(1.06)}
+.hov-tab{transition:background .25s ease,color .25s ease,opacity .25s ease}
+.hov-tab:hover{background:rgba(26,35,48,.06)!important;opacity:.85!important}
+.hov-feature{transition:transform .3s ease,background .3s ease,box-shadow .3s ease;padding:14px 16px;margin:-14px -16px;border-radius:10px}
+.hov-feature:hover{background:rgba(201,168,76,.06);transform:translateX(6px);box-shadow:-4px 0 0 0 #C9A84C}
+.hov-testimonial{transition:transform .35s cubic-bezier(.25,.46,.45,.94),box-shadow .35s ease,border-color .35s ease;border:1px solid transparent}
+.hov-testimonial:hover{transform:translateY(-5px);box-shadow:0 12px 36px rgba(0,0,0,.06),0 2px 8px rgba(201,168,76,.1);border-color:rgba(201,168,76,.25)}
+.hov-btn-gold{transition:transform .25s ease,box-shadow .25s ease,filter .25s ease!important}
+.hov-btn-gold:hover{transform:translateY(-2px)!important;box-shadow:0 8px 24px rgba(201,168,76,.35)!important;filter:brightness(1.08)}
+.hov-btn-outline{transition:all .25s ease!important}
+.hov-btn-outline:hover{background:#1a2330!important;color:#fff!important;transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,35,48,.2)}
+.hov-btn-light{transition:all .25s ease!important}
+.hov-btn-light:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(235,244,251,.3);background:#fff!important}
+.hov-bullet{transition:transform .25s ease,color .25s ease}
+.hov-bullet:hover{transform:translateX(4px);color:#C9A84C!important}
+.hov-logo{transition:opacity .3s ease,transform .3s ease,filter .3s ease}
+.hov-logo:hover{opacity:1!important;transform:scale(1.15)}
+.hov-showcase-thumb{transition:transform .4s cubic-bezier(.25,.46,.45,.94),filter .3s ease,box-shadow .3s ease;border-radius:10px;overflow:hidden;cursor:pointer}
+.hov-showcase-thumb:hover{transform:scale(1.05);filter:brightness(1.1);box-shadow:0 8px 28px rgba(0,0,0,.35)}
+.hov-showcase-thumb:hover .showcase-play-icon{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.showcase-play-icon{opacity:0;transform:translate(-50%,-50%) scale(.7);transition:opacity .3s ease,transform .3s ease}
+`;
+
+/* ═══════════════════════════════════════════════════════════════════
+ * MarketPage — Clone 1:1 from atlascloud.ai
+ * ═══════════════════════════════════════════════════════════════════ */
 
 const MarketPage = () => {
   const { lang, t } = useLanguage();
@@ -63,56 +273,76 @@ const MarketPage = () => {
   const navigate = useNavigate();
 
   usePageMeta({
-    title: 'Skyverses — The AI Marketplace | Veo3, Seedance, Grok, Kling, Gemini, GPT & More',
-    description: 'The all-in-one AI Marketplace for Videos, Images, Music, Voice & Scripts. Powered by Veo3, Seedance, Grok, Kling, Gemini, GPT-4o, Midjourney, Flux and 50+ models. Custom AI solutions for Studios & Enterprises.',
-    keywords: 'marketplace AI Việt Nam, AI giá rẻ, dùng thử AI miễn phí, tạo video AI, tạo ảnh AI, Veo3, Kling, Sora, Seedance, Gemini, GPT-4o, Grok, Midjourney, Flux, Qwen, chat AI miễn phí, text to speech AI, AI music generator, xoá nền AI, upscale ảnh AI, AI agent workflow, giải pháp AI doanh nghiệp, enterprise AI, Skyverses, credits AI, AI không cần thẻ quốc tế, nền tảng AI all-in-one',
+    title: 'Skyverses — AI Tools Marketplace | Image, Video & Creative AI',
+    description: 'Access 50+ premium AI tools in one marketplace. Generate images, videos, music, voice cloning & more. Pay-per-use credits, no subscriptions required.',
     canonical: '/',
     jsonLd: {
       '@type': 'ItemList',
-      name: 'Top AI Products — Skyverses Marketplace',
-      description: '30+ công cụ AI hàng đầu: Video, Image, Voice, Music, Chat & Automation trong một nền tảng',
+      name: 'Top AI Tools — Skyverses Marketplace',
       url: 'https://ai.skyverses.com',
       numberOfItems: 12,
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'AI Video Generator (Veo3, Kling, Sora)', url: 'https://ai.skyverses.com/product/ai-video-generator' },
-        { '@type': 'ListItem', position: 2, name: 'AI Image Generator (Midjourney, Flux)', url: 'https://ai.skyverses.com/product/ai-image-generator' },
-        { '@type': 'ListItem', position: 3, name: 'AI Music Generator', url: 'https://ai.skyverses.com/product/ai-music-generator' },
-        { '@type': 'ListItem', position: 4, name: 'Text to Speech AI', url: 'https://ai.skyverses.com/product/text-to-speech' },
-        { '@type': 'ListItem', position: 5, name: 'Qwen Chat AI (GPT-4o, Gemini, Grok)', url: 'https://ai.skyverses.com/product/qwen-chat-ai' },
-        { '@type': 'ListItem', position: 6, name: 'Background Removal AI', url: 'https://ai.skyverses.com/product/background-removal-ai' },
-        { '@type': 'ListItem', position: 7, name: 'Image Upscale AI', url: 'https://ai.skyverses.com/product/image-upscale-ai' },
-        { '@type': 'ListItem', position: 8, name: 'AI Agent Workflow Automation', url: 'https://ai.skyverses.com/product/ai-agent-workflow' },
-        { '@type': 'ListItem', position: 9, name: 'Voice Design AI', url: 'https://ai.skyverses.com/product/voice-design-ai' },
-        { '@type': 'ListItem', position: 10, name: 'Poster & Marketing AI', url: 'https://ai.skyverses.com/product/poster-marketing-ai' },
-        { '@type': 'ListItem', position: 11, name: 'Real Estate AI', url: 'https://ai.skyverses.com/product/real-estate-ai' },
-        { '@type': 'ListItem', position: 12, name: 'Fashion Center AI', url: 'https://ai.skyverses.com/product/fashion-center-ai' },
-      ]
-    }
+    },
   });
 
+  /* ─────────── State ─────────── */
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [featuredSolutions, setFeaturedSolutions] = useState<Solution[]>([]);
   const [homeBlocks, setHomeBlocks] = useState<HomeBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
-  const { query, setQuery, primary, setPrimary, secondary, setSecondary, reset: resetSearch, open: openSearch } = useSearch();
+  const { query, primary, secondary, reset: resetSearch, open: openSearch } = useSearch();
   const [favorites, setFavorites] = useState<string[]>([]);
   const [likedItems, setLikedItems] = useState<string[]>([]);
-  const [isDemoOpen, setIsDemoOpen] = useState(false);
-  const [featuredIdx, setFeaturedIdx] = useState(0);
   const [toolModalSlug, setToolModalSlug] = useState<string | null>(null);
+  const [heroIdx, setHeroIdx] = useState(0);
+  const [heroSlideIdx, setHeroSlideIdx] = useState(0);
+  const [activeModelTab, setActiveModelTab] = useState(0);
+  const [activeBuildTab, setActiveBuildTab] = useState<'apis' | 'serverless' | 'compute'>('apis');
+  const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+  const [selectedShowcaseItem, setSelectedShowcaseItem] = useState<ExplorerItem | null>(null);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  const toggleGroup = useCallback((key: string) => setExpandedGroups(prev => ({ ...prev, [key]: !prev[key] })), []);
 
-  const scrollRefs = useRef<Record<string, React.RefObject<HTMLDivElement | null>>>({});
+  /* ─────────── Hero Video Slideshow ─────────── */
+  const heroVideos = useMemo(() => [
+    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/b799a9e9-cbe8-4425-b3dd-5115d89cec71.mp4', label: 'VEO 3.1', icon: '/assets/model-icons/google.svg' },
+    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/d69e53e6-0caa-4516-a715-1add43e1167b.mp4', label: 'Kling 3.0', icon: '/assets/model-icons/kling.svg' },
+    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/da5ed91e-0138-405f-a06f-8ed0491e0dd0.mp4', label: 'Nano Banana Pro', icon: '/assets/model-icons/google.svg' },
+    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/a57ad0e2-02f9-4e7e-ac38-cea5b489653b.mp4', label: 'Seedance 2.0', icon: '/assets/model-icons/bytedance.svg' },
+    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/0c6cd833-d2e3-41a1-bf88-a6d1b4a82060.mp4', label: 'WAN 2.5', icon: '/assets/model-icons/qwen.svg' },
+  ], []);
+  const heroSlideInterval = 8000;
+  const heroVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  const scroll = useCallback((key: string, direction: 'left' | 'right') => {
-    const el = scrollRefs.current[key]?.current;
-    if (el) {
-      const scrollAmount = el.offsetWidth * 0.85;
-      el.scrollTo({ left: el.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount), behavior: 'smooth' });
-    }
-  }, []);
+  /* ── Hero rotating keywords ── */
+  const heroRotatingWords = useMemo(() => [t('landing.hero.rotate1'), t('landing.hero.rotate2'), t('landing.hero.rotate3'), t('landing.hero.rotate4'), t('landing.hero.rotate5')], [t]);
+  const [heroWordIdx, setHeroWordIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setHeroWordIdx(prev => (prev + 1) % heroRotatingWords.length), 2800);
+    return () => clearInterval(t);
+  }, [heroRotatingWords.length]);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroSlideIdx(prev => (prev + 1) % heroVideos.length);
+    }, heroSlideInterval);
+    return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [heroSlideIdx, heroVideos.length]);
 
+  useEffect(() => {
+    heroVideoRefs.current.forEach((v, i) => {
+      if (!v) return;
+      if (i === heroSlideIdx) {
+        v.currentTime = 0;
+        v.play().catch(() => {});
+      } else {
+        v.pause();
+      }
+    });
+  }, [heroSlideIdx]);
+
+  /* ─────────── Data Fetching ─────────── */
   useEffect(() => {
     const handleResetSearch = () => resetSearch();
     window.addEventListener('resetMarketSearch', handleResetSearch);
@@ -124,17 +354,14 @@ const MarketPage = () => {
       try {
         const [configRes, featuredRes] = await Promise.all([
           systemConfigApi.getSystemConfig(),
-          marketApi.getRandomFeatured()
+          marketApi.getRandomFeatured(),
         ]);
         if (configRes?.success && configRes.data.marketHomeBlock) {
           const sortedBlocks = configRes.data.marketHomeBlock.sort((a, b) => a.order - b.order);
           setHomeBlocks(sortedBlocks);
-          sortedBlocks.forEach(block => {
-            if (!scrollRefs.current[block.key]) scrollRefs.current[block.key] = React.createRef<HTMLDivElement>();
-          });
         }
         if (featuredRes?.data) setFeaturedSolutions(featuredRes.data);
-      } catch (error) { console.error("Market Init Error:", error); }
+      } catch (error) { console.error('Market Init Error:', error); }
     };
     initData();
   }, []);
@@ -143,9 +370,13 @@ const MarketPage = () => {
     const fetchMarketItems = async () => {
       if (query) setIsSearching(true); else setLoading(true);
       try {
-        const res = await marketApi.getSolutions({ q: query.replace(/\+/g, ' ').trim() || undefined, category: primary !== 'ALL' ? primary : undefined, lang: lang as Language });
+        const res = await marketApi.getSolutions({
+          q: query.replace(/\+/g, ' ').trim() || undefined,
+          category: primary !== 'ALL' ? primary : undefined,
+          lang: lang as Language,
+        });
         if (res?.data) setSolutions(res.data.filter(s => s.isActive !== false));
-      } catch (error) { console.error("Market Data Sync Error:", error); }
+      } catch (error) { console.error('Market Data Sync Error:', error); }
       finally { setLoading(false); setIsSearching(false); }
     };
     const timer = setTimeout(fetchMarketItems, query ? 500 : 0);
@@ -157,46 +388,80 @@ const MarketPage = () => {
     if (saved) setFavorites(JSON.parse(saved));
   }, []);
 
-  // Featured auto-rotate
+  /* Hero carousel auto-rotate */
   useEffect(() => {
     if (featuredSolutions.length <= 1) return;
-    const interval = setInterval(() => setFeaturedIdx(p => (p + 1) % featuredSolutions.length), 5000);
-    return () => clearInterval(interval);
+    const id = setInterval(() => setHeroIdx(p => (p + 1) % Math.min(6, featuredSolutions.length)), 4000);
+    return () => clearInterval(id);
   }, [featuredSolutions]);
 
+  /* ─────────── Lazy-load showcase data (1166 lines deferred from initial bundle) ─────────── */
+  const [showcaseData, setShowcaseData] = useState<{
+    SHOWCASE_IMAGES: ShowcaseImage[];
+    SHOWCASE_VIDEOS: ShowcaseVideo[];
+    SHOWCASE_FASHION_IMAGES: ShowcaseImage[];
+    SHOWCASE_FASHION_VIDEOS: ShowcaseVideo[];
+    SHOWCASE_FASHION_ALBUMS: ShowcaseAlbum[];
+    SHOWCASE_3D_MODELS: Showcase3DModel[];
+  } | null>(null);
+
+  useEffect(() => {
+    // Delay import until after initial paint (requestIdleCallback or 1s timeout)
+    const id = typeof requestIdleCallback !== 'undefined'
+      ? requestIdleCallback(() => loadShowcase())
+      : setTimeout(() => loadShowcase(), 1000) as unknown as number;
+    async function loadShowcase() {
+      const [cdn, d3] = await Promise.all([
+        import('../src/constants/showcase-cdn'),
+        import('../src/constants/showcase-3d'),
+      ]);
+      setShowcaseData({
+        SHOWCASE_IMAGES: cdn.SHOWCASE_IMAGES,
+        SHOWCASE_VIDEOS: cdn.SHOWCASE_VIDEOS,
+        SHOWCASE_FASHION_IMAGES: cdn.SHOWCASE_FASHION_IMAGES,
+        SHOWCASE_FASHION_VIDEOS: cdn.SHOWCASE_FASHION_VIDEOS,
+        SHOWCASE_FASHION_ALBUMS: cdn.SHOWCASE_FASHION_ALBUMS,
+        SHOWCASE_3D_MODELS: d3.SHOWCASE_3D_MODELS,
+      });
+    }
+    return () => {
+      if (typeof cancelIdleCallback !== 'undefined') cancelIdleCallback(id);
+      else clearTimeout(id);
+    };
+  }, []);
+
+  // Convenience aliases (empty arrays as fallback while loading)
+  const SHOWCASE_IMAGES = showcaseData?.SHOWCASE_IMAGES ?? [];
+  const SHOWCASE_VIDEOS = showcaseData?.SHOWCASE_VIDEOS ?? [];
+  const SHOWCASE_FASHION_IMAGES = showcaseData?.SHOWCASE_FASHION_IMAGES ?? [];
+  const SHOWCASE_FASHION_VIDEOS = showcaseData?.SHOWCASE_FASHION_VIDEOS ?? [];
+  const SHOWCASE_FASHION_ALBUMS = showcaseData?.SHOWCASE_FASHION_ALBUMS ?? [];
+  const SHOWCASE_3D_MODELS = showcaseData?.SHOWCASE_3D_MODELS ?? [];
+
+  /* ─────────── Callbacks ─────────── */
   const toggleFavorite = useCallback((e: React.MouseEvent, id: string) => {
     e.preventDefault(); e.stopPropagation();
     setFavorites(prev => {
-      const newFavs = prev.includes(id) ? prev.filter(favId => favId !== id) : [...prev, id];
-      localStorage.setItem('skyverses_favorites', JSON.stringify(newFavs));
-      return newFavs;
+      const next = prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id];
+      localStorage.setItem('skyverses_favorites', JSON.stringify(next));
+      return next;
     });
   }, []);
-
   const toggleLike = useCallback((e: React.MouseEvent, id: string) => {
     e.preventDefault(); e.stopPropagation();
     setLikedItems(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   }, []);
-
   const getFakeStats = useCallback((id: string) => {
-    const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hash = id.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
     return {
       users: ((hash % 850 + 120) > 999 ? ((hash % 850 + 120) / 1000).toFixed(1) + 'k' : (hash % 850 + 120).toString()),
-      likes: ((hash % 400 + 45) > 999 ? ((hash % 400 + 45) / 1000).toFixed(1) + 'k' : (hash % 400 + 45).toString())
+      likes: ((hash % 400 + 45) > 999 ? ((hash % 400 + 45) / 1000).toFixed(1) + 'k' : (hash % 400 + 45).toString()),
     };
   }, []);
-
   const handleNavigate = useCallback((slug: string) => {
-    if (!isAuthenticated) navigate('/login');
-    else navigate(`/product/${slug}`);
+    if (!isAuthenticated) navigate('/login'); else navigate(`/product/${slug}`);
   }, [isAuthenticated, navigate]);
-
-  // Quick View → open tool workspace modal
-  const handleQuickView = useCallback((_e: React.MouseEvent, sol: Solution) => {
-    setToolModalSlug(sol.slug);
-  }, []);
-
-  // Prefetch product page chunk on hover for instant navigation
+  const handleQuickView = useCallback((_e: React.MouseEvent, sol: Solution) => setToolModalSlug(sol.slug), []);
   const prefetchedSlugs = useRef(new Set<string>());
   const handlePrefetchOnHover = useCallback((slug: string) => {
     if (prefetchedSlugs.current.has(slug)) return;
@@ -207,1282 +472,1982 @@ const MarketPage = () => {
   const filteredSolutions = useMemo(() => {
     return solutions.filter(sol => {
       if (secondary === 'ALL') return true;
-      return sol.tags?.some(t => t.toLowerCase() === secondary.toLowerCase()) ||
+      return sol.tags?.some(tg => tg.toLowerCase() === secondary.toLowerCase()) ||
         sol.id?.toLowerCase().includes(secondary.toLowerCase());
     });
   }, [solutions, secondary]);
 
-  const logoUrl = "/assets/skyverses-logo.png";
   const currentLang = lang as Language;
-  const activeFeatured = featuredSolutions[featuredIdx];
 
+  /* ─────────── Derived Data ─────────── */
+  const usableFeatured = useMemo(
+    () => featuredSolutions.filter(s => !!s.imageUrl && s.imageUrl.trim().length > 0).slice(0, 6),
+    [featuredSolutions]
+  );
+
+  /* Model categories for tab nav */
+  const modelCategories = useMemo(() => {
+    const cats: string[] = [];
+    featuredSolutions.forEach(s => {
+      const cat = s.category?.[currentLang] || s.category?.en || '';
+      if (cat && !cats.includes(cat)) cats.push(cat);
+    });
+    return cats.slice(0, 8);
+  }, [featuredSolutions, currentLang]);
+
+  /* Models for active tab */
+  const latestModels = useMemo(() => {
+    if (modelCategories.length === 0) return featuredSolutions.slice(0, 12);
+    const activeCat = modelCategories[activeModelTab] || modelCategories[0];
+    const filtered = featuredSolutions.filter(s => {
+      const cat = s.category?.[currentLang] || s.category?.en || '';
+      return cat === activeCat;
+    });
+    return filtered.length > 0 ? filtered.slice(0, 12) : featuredSolutions.slice(0, 12);
+  }, [featuredSolutions, modelCategories, activeModelTab, currentLang]);
+
+  /* Featured model series for deep-dive sections */
+  const modelSeries = useMemo(() => {
+    return featuredSolutions.filter(s => s.imageUrl).slice(0, 8);
+  }, [featuredSolutions]);
+
+  /* Sub-models helper */
+  const getSubModels = useCallback((sol: Solution) => {
+    if (sol.neuralStack && sol.neuralStack.length > 0) {
+      return sol.neuralStack.slice(0, 4).map((ns, i) => ({
+        name: `${ns.name} ${ns.version || ''}`.trim(),
+        capability: ns.capability?.[currentLang] || ns.capability?.en || '',
+        price: sol.priceCredits ? `$${(sol.priceCredits * 0.01 * (0.8 + i * 0.05)).toFixed(2)}` : 'Free',
+        originalPrice: sol.priceCredits ? `$${(sol.priceCredits * 0.01 * (1.2 + i * 0.05)).toFixed(2)}` : '',
+        image: sol.gallery?.[i] || sol.imageUrl,
+      }));
+    }
+    const modes = sol.tags?.slice(0, 4) || ['Text-to-Video', 'Image-to-Video', 'Video-to-Video', 'Upscale'];
+    return modes.map((tag, i) => ({
+      name: tag,
+      capability: '',
+      price: sol.isFree ? 'Free' : `$${((sol.priceCredits || 10) * 0.01).toFixed(2)}`,
+      originalPrice: sol.isFree ? '' : `$${((sol.priceCredits || 10) * 0.015).toFixed(2)}`,
+      image: sol.gallery?.[i] || sol.imageUrl,
+    }));
+  }, [currentLang]);
+
+  /* BUILD tabs data */
+  const buildTabs = useMemo(() => ({
+    apis: {
+      title: t('landing.build.image_title'),
+      desc: t('landing.build.image_desc'),
+      features: [
+        t('landing.build.image_f1'),
+        t('landing.build.image_f2'),
+        t('landing.build.image_f3'),
+        t('landing.build.image_f4'),
+        t('landing.build.image_f5'),
+      ],
+      cta: t('landing.build.image_cta'),
+      image: '/assets/homepage/gold-build-image-gen.webp',
+    },
+    serverless: {
+      title: t('landing.build.video_title'),
+      desc: t('landing.build.video_desc'),
+      features: [
+        t('landing.build.video_f1'),
+        t('landing.build.video_f2'),
+        t('landing.build.video_f3'),
+        t('landing.build.video_f4'),
+        t('landing.build.video_f5'),
+      ],
+      cta: t('landing.build.video_cta'),
+      image: '/assets/homepage/gold-build-video-gen.webp',
+    },
+    compute: {
+      title: t('landing.build.audio_title'),
+      desc: t('landing.build.audio_desc'),
+      features: [
+        t('landing.build.audio_f1'),
+        t('landing.build.audio_f2'),
+        t('landing.build.audio_f3'),
+        t('landing.build.audio_f4'),
+        t('landing.build.audio_f5'),
+      ],
+      cta: t('landing.build.audio_cta'),
+      image: '/assets/homepage/gold-build-audio-creative.webp',
+    },
+  }), [t]);
+
+  const activeBuildContent = buildTabs[activeBuildTab];
+
+  /* Enterprise offerings data */
+  const enterpriseOfferings = useMemo(() => [
+    {
+      title: t('landing.ent.card1_title'),
+      image: '/assets/homepage/gold-ent-build-app.webp',
+      bullets: [
+        t('landing.ent.card1_b1'),
+        t('landing.ent.card1_b2'),
+        t('landing.ent.card1_b3'),
+      ],
+    },
+    {
+      title: t('landing.ent.card2_title'),
+      image: '/assets/homepage/gold-ent-deploy.webp',
+      bullets: [
+        t('landing.ent.card2_b1'),
+        t('landing.ent.card2_b2'),
+        t('landing.ent.card2_b3'),
+      ],
+    },
+    {
+      title: t('landing.ent.card3_title'),
+      image: '/assets/homepage/gold-ent-maintain.webp',
+      bullets: [
+        t('landing.ent.card3_b1'),
+        t('landing.ent.card3_b2'),
+        t('landing.ent.card3_b3'),
+      ],
+    },
+    {
+      title: t('landing.ent.card4_title'),
+      image: '/assets/homepage/gold-ent-consult.webp',
+      bullets: [
+        t('landing.ent.card4_b1'),
+        t('landing.ent.card4_b2'),
+        t('landing.ent.card4_b3'),
+      ],
+    },
+  ], [t]);
+
+  /* ═══════════════════════════════════════════════════════════════════
+   * RENDER
+   * ═══════════════════════════════════════════════════════════════════ */
   return (
-    <div className="relative min-h-screen bg-[#fcfcfd] dark:bg-[#0a0d14] font-sans transition-colors duration-500">
-      {/* ═══ LIGHTWEIGHT BACKGROUND ═══ */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* Static gradient blobs — no animations, minimal blur */}
-        <div className="absolute top-[-10%] left-[40%] w-[600px] h-[400px] bg-brand-blue/[0.04] dark:bg-brand-blue/[0.06] rounded-full blur-[80px]" />
-        <div className="absolute top-[65%] left-[-5%] w-[350px] h-[350px] bg-purple-500/[0.03] dark:bg-purple-500/[0.04] rounded-full blur-[60px]" />
-        {/* Single subtle aurora — static */}
-        <div className="absolute top-[15%] left-0 right-0 h-[150px] bg-gradient-to-r from-transparent via-brand-blue/[0.04] to-transparent blur-[40px] rotate-[-4deg] opacity-40 dark:opacity-50" />
-        {/* Grid overlay */}
-        <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(0,144,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,144,255,0.3) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
-      </div>
-
-      <div className="relative z-10">
-        {/* ═══════════════════ HERO ═══════════════════ */}
-        {!query && (
-          <section className="pt-16 md:pt-32 pb-0 max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 relative">
-            {/* Lightweight floating particles — desktop only */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
-              {[0, 1, 2, 3].map(i => (
-                <div key={i} className={`absolute rounded-full ${i % 2 === 0 ? 'w-1.5 h-1.5 bg-brand-blue/30' : 'w-1 h-1 bg-purple-400/25'}`} style={{
-                  left: `${15 + i * 20}%`, top: `${20 + ((i * 17) % 50)}%`,
-                  animation: `float ${3 + i * 0.8}s ease-in-out infinite ${i * 0.5}s`
-                }} />
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 lg:gap-0 items-center min-h-0 md:min-h-[60vh] lg:min-h-[70vh]">
-              {/* Left: Content — stagger children */}
-              <div className="space-y-4 md:space-y-8 lg:pr-16">
-                {/* Badge */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                  className="hidden md:block"
-                >
-                  <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25">
-                    <div className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-blue">Skyverses AI Ecosystem</span>
-                  </div>
-                </motion.div>
-
-                {/* Headline */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                  className="space-y-3"
-                >
-                  <h1 className="text-[1.6rem] md:text-[3.5rem] lg:text-[4.2rem] font-black tracking-[-0.04em] leading-[1.1] md:leading-[1.05] text-slate-900 dark:text-white">
-                    {t('home.hero.title1')}{' '}
-                    <span className="relative inline-block">
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500 bg-[length:200%_auto] animate-[gradient_4s_ease_infinite]">
-                        {t('home.hero.title_highlight')}
-                      </span>
-                    </span>
-                    <br className="hidden md:block" />
-                    <span className="md:hidden"> </span>
-                    {t('home.hero.title2')}
-                  </h1>
-                  <motion.p
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6, duration: 0.8 }}
-                    className="text-[13px] md:text-lg text-slate-500 dark:text-gray-400 leading-relaxed max-w-xl"
-                  >
-                    {t('home.hero.subtitle')}
-                    <span className="hidden md:inline">{t('home.hero.subtitle2')}</span>
-                  </motion.p>
-                </motion.div>
-
-                {/* CTAs */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.5 }}
-                  className="flex flex-wrap gap-2 md:gap-3 pt-1 md:pt-2"
-                >
-                  <button
-                    onClick={() => navigate('/markets')}
-                    className="group relative inline-flex items-center gap-2 md:gap-3 bg-slate-900 dark:bg-white text-white dark:text-black px-5 py-3 md:px-7 md:py-4 rounded-xl md:rounded-2xl text-[13px] md:text-sm font-bold shadow-xl hover:shadow-2xl hover:shadow-brand-blue/20 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
-                    aria-label={t('home.hero.cta1')}
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-r from-brand-blue to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <span className="relative z-10 flex items-center gap-3 group-hover:text-white">
-                      {t('home.hero.cta1')}
-                      <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform duration-300" />
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => navigate('/markets')}
-                    className="inline-flex items-center gap-2 md:gap-3 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-5 py-3 md:px-7 md:py-4 rounded-xl md:rounded-2xl text-[13px] md:text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/10 hover:border-brand-blue/30 transition-all duration-300"
-                    aria-label={t('home.hero.cta2')}
-                  >
-                    <Play size={14} className="text-brand-blue" fill="currentColor" />
-                    {t('home.hero.cta2')}
-                  </button>
-                </motion.div>
-
-                {/* Stats — stagger in */}
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.7 }}
-                  className="flex items-center gap-6 md:gap-8 pt-2 md:pt-4"
-                >
-                  {[
-                    { value: 30, suffix: '+', label: 'AI Products' },
-                    { value: 50, suffix: '+', label: 'AI Models' },
-                    { value: 1000, suffix: '+', label: 'Users' },
-                  ].map((stat, si) => (
-                    <motion.div key={stat.label} className="text-center"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.9 + si * 0.15, type: 'spring', stiffness: 200 }}
-                    >
-                      <div className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                        <AnimatedNumber value={stat.value} suffix={stat.suffix} />
-                      </div>
-                      <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">{stat.label}</div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </div>
-
-              {/* Right: Vertical Scrolling Gallery — Desktop marquee / Mobile compact horizontal */}
-              {/* ═══ MOBILE: Trending Products Slide ═══ */}
-              <div className="md:hidden mt-3 -mx-4 px-4">
-                <div className="flex items-center gap-1.5 mb-2.5">
-                  <Zap size={10} className="text-orange-500" fill="currentColor" />
-                  <span className="text-[8px] font-black uppercase tracking-[0.25em] text-orange-500">Trending</span>
-                </div>
-                {featuredSolutions.length === 0 ? (
-                  <div className="flex gap-3 overflow-hidden">
-                    {[1,2,3].map(i => (
-                      <div key={i} className="flex-shrink-0 w-[280px] h-[200px] rounded-2xl bg-slate-100 dark:bg-white/[0.03] animate-pulse" />
-                    ))}
-                  </div>
-                ) : (
-                <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2">
-                  {featuredSolutions.slice(0, 8).map((sol, idx) => (
-                    <SolutionCard
-                      key={sol._id || sol.id}
-                      sol={sol}
-                      idx={idx}
-                      lang={lang}
-                      isLiked={likedItems.includes(sol._id || sol.id)}
-                      isFavorited={favorites.includes(sol.id)}
-                      onToggleFavorite={toggleFavorite}
-                      onToggleLike={toggleLike}
-                      onClick={handleNavigate}
-                      onHover={handlePrefetchOnHover}
-                      onQuickView={handleQuickView}
-                      stats={getFakeStats(sol._id || sol.id)}
-                    />
-                  ))}
-                  <div onClick={() => navigate('/markets')} className="flex-shrink-0 snap-start w-[140px] flex flex-col items-center justify-center bg-slate-50 dark:bg-[#0a0d14] border border-black/[0.08] dark:border-white/[0.08] rounded-xl cursor-pointer hover:border-brand-blue/40 transition-all p-4 text-center space-y-3">
-                    <div className="w-10 h-10 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue">
-                      <ArrowRight size={18} />
-                    </div>
-                    <div className="space-y-0.5">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-800 dark:text-white">{t('home.hero.view_all')}</p>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tight">{solutions.length} {t('home.grid.solutions')}</p>
-                    </div>
-                  </div>
-                </div>
-                )}
-              </div>
-
-              {/* ═══ DESKTOP: Hero Spotlight Showcase ═══ */}
-              <div className="relative hidden md:block">
-                <h2 className="sr-only">{t('home.hero.featured_sr')}</h2>
-                {/* Background ambient glow */}
-                <div className="absolute -inset-12 pointer-events-none">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[300px] bg-brand-blue/[0.06] rounded-full blur-[100px]" />
-                  <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-purple-500/[0.04] rounded-full blur-[80px]" />
-                </div>
-
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  className="relative"
-                >
-                  {/* Section label */}
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <motion.div
-                      initial={{ scale: 0, rotate: -90 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ delay: 0.5, type: 'spring', stiffness: 300, damping: 15 }}
-                      className="w-6 h-6 rounded-md bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-md shadow-orange-500/20"
-                    >
-                      <Zap size={12} className="text-white" fill="currentColor" />
-                    </motion.div>
-                    <motion.span
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.6, duration: 0.4 }}
-                      className="text-[9px] font-black uppercase tracking-[0.25em] text-orange-500/80"
-                    >Trending</motion.span>
-                    <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.7, duration: 0.6 }} className="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent ml-1 origin-left" />
-                  </div>
-
-                  {featuredSolutions.length === 0 ? (
-                    /* Skeleton */
-                    <div className="flex gap-3 h-[380px]">
-                      <div className="flex-[3] rounded-2xl bg-white/[0.03] animate-pulse" />
-                      <div className="flex-[2] flex flex-col gap-3">
-                        {[1,2,3].map(i => <div key={i} className="flex-1 rounded-xl bg-white/[0.03] animate-pulse" />)}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex gap-3 h-[380px] lg:h-[420px]">
-                      {/* ── SPOTLIGHT: Featured Card ── */}
-                      <motion.div
-                        initial={{ opacity: 0, x: -30, scale: 0.95 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                        whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
-                        onClick={() => handleNavigate(featuredSolutions[0]?.slug)}
-                        className="flex-[3] relative rounded-2xl overflow-hidden cursor-pointer group"
-                      >
-                        {/* Full image */}
-                        <img
-                          src={featuredSolutions[0]?.imageUrl}
-                          alt={featuredSolutions[0]?.name[lang as Language]}
-                          fetchPriority="high"
-                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
-                        />
-                        {/* Gradient overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
-
-                        {/* Category badge */}
-                        <div className="absolute top-4 left-4 z-10">
-                          <span className="px-2.5 py-1 bg-brand-blue/90 backdrop-blur-sm text-white text-[8px] font-black uppercase tracking-[0.2em] rounded-md">
-                            {featuredSolutions[0]?.category[lang as Language]}
-                          </span>
-                        </div>
-
-                        {/* Bookmark */}
-                        <button
-                          onClick={(e) => toggleFavorite(e, featuredSolutions[0]?.id)}
-                          className={`absolute top-4 right-4 p-2.5 bg-black/40 backdrop-blur-md rounded-full border transition-all z-10 ${favorites.includes(featuredSolutions[0]?.id) ? 'text-brand-blue border-brand-blue/50' : 'text-white/40 border-white/10 hover:text-brand-blue'}`}
-                        >
-                          <Bookmark fill="currentColor" size={16} />
-                        </button>
-
-                        {/* Bottom content overlay */}
-                        <div className="absolute bottom-0 left-0 right-0 p-5 lg:p-6 z-10">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-emerald-400/90">Featured</span>
-                          </div>
-                          <h3 className="text-lg lg:text-2xl font-black text-white tracking-tight leading-tight mb-2">
-                            {featuredSolutions[0]?.name[lang as Language]}
-                          </h3>
-                          <p className="text-[11px] lg:text-xs text-white/60 leading-relaxed line-clamp-2 max-w-xs mb-3">
-                            {featuredSolutions[0]?.description[lang as Language]}
-                          </p>
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-1.5 text-white/40">
-                              <Users size={11} />
-                              <span className="text-[9px] font-bold">{getFakeStats(featuredSolutions[0]?._id || featuredSolutions[0]?.id).users}</span>
-                            </div>
-                            {featuredSolutions[0]?.isFree ? (
-                              <span className="px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[8px] font-black uppercase tracking-widest rounded-sm">Free</span>
-                            ) : (
-                              <div className="flex items-center gap-1 px-2 py-0.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/10">
-                                <Zap size={9} className="text-brand-blue" fill="currentColor" />
-                                <span className="text-[9px] font-black text-white">{featuredSolutions[0]?.priceCredits}</span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* CTA shimmer on hover */}
-                          <div className="mt-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                            <div className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg flex items-center gap-2">
-                              <Sparkles size={11} className="text-brand-blue" fill="currentColor" />
-                              <span className="text-[9px] font-black text-white uppercase tracking-wider">{t('home.hero.explore_now')}</span>
-                              <ArrowRight size={11} className="text-white/60" />
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-
-                      {/* ── SIDE: 3 Compact Cards ── */}
-                      <div className="flex-[2] flex flex-col gap-3">
-                        {featuredSolutions.slice(1, 4).map((sol, idx) => (
-                          <motion.div
-                            key={sol._id || sol.id}
-                            initial={{ opacity: 0, x: 20, filter: 'blur(6px)' }}
-                            animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                            transition={{
-                              duration: 0.6,
-                              delay: 0.6 + idx * 0.15,
-                              ease: [0.22, 1, 0.36, 1]
-                            }}
-                            whileHover={{ x: -4, transition: { duration: 0.2 } }}
-                            onClick={() => handleNavigate(sol.slug)}
-                            className="flex-1 relative rounded-xl overflow-hidden cursor-pointer group bg-white dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30 transition-all duration-300 flex"
-                          >
-                            {/* Mini thumbnail */}
-                            <div className="w-[38%] relative overflow-hidden">
-                              <img
-                                src={sol.imageUrl}
-                                alt={sol.name[lang as Language]}
-                                loading="lazy"
-                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/5 dark:to-[#0a0a0c]/20" />
-                            </div>
-                            {/* Content */}
-                            <div className="flex-1 p-3 lg:p-4 flex flex-col justify-center gap-1.5">
-                              <span className="text-[7px] font-black uppercase tracking-[0.2em] text-brand-blue/60">{sol.category[lang as Language]}</span>
-                              <h3 className="text-[11px] lg:text-[13px] font-black text-slate-900 dark:text-white tracking-tight leading-snug line-clamp-1">
-                                {sol.name[lang as Language]}
-                              </h3>
-                              <div className="flex items-center gap-3 mt-auto">
-                                <div className="flex items-center gap-1 text-slate-400 dark:text-gray-600">
-                                  <Users size={9} />
-                                  <span className="text-[8px] font-bold">{getFakeStats(sol._id || sol.id).users}</span>
-                                </div>
-                                {sol.isFree ? (
-                                  <span className="text-[7px] font-black text-emerald-500 uppercase">Free</span>
-                                ) : (
-                                  <div className="flex items-center gap-0.5">
-                                    <Zap size={8} className="text-brand-blue" fill="currentColor" />
-                                    <span className="text-[9px] font-bold text-slate-600 dark:text-gray-300">{sol.priceCredits}</span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            {/* Hover arrow */}
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300">
-                              <ArrowRight size={14} className="text-brand-blue" />
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* View all */}
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.2, duration: 0.5 }}
-                    className="flex justify-end mt-3"
-                  >
-                    <button
-                      onClick={() => navigate('/markets')}
-                      className="group inline-flex items-center gap-2 px-4 py-2 text-[10px] font-bold text-slate-400 dark:text-gray-500 hover:text-brand-blue transition-all duration-300"
-                    >
-                      {t('home.hero.view_all_products')}
-                      <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform duration-300" />
-                    </button>
-                  </motion.div>
-                </motion.div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ═══════════════════ AI MODELS MARQUEE ═══════════════════ */}
-        <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 mt-4">
-          <AIModelsMarquee />
-        </div>
-
-        {/* ═══════════════════ TRUST PILLARS ═══════════════════ */}
-        {!query && (
-          <section className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 py-4 md:py-12">
-            {/* ═══ MOBILE: Horizontal scroll compact chips ═══ */}
-            <div className="md:hidden flex gap-2.5 overflow-x-auto no-scrollbar pb-2 -mx-4 px-4">
-              {[
-                { icon: <Zap size={14} />, stat: '0.5s', title: t('home.trust.fast'), color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/15' },
-                { icon: <TrendingDown size={14} />, stat: '~70%', title: t('home.trust.save'), color: 'text-rose-500', bg: 'bg-rose-500/10', border: 'border-rose-500/15' },
-                { icon: <Shield size={14} />, stat: '100%', title: t('home.trust.secure'), color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/15' },
-                { icon: <Globe2 size={14} />, stat: '4+', title: t('home.trust.lang'), color: 'text-brand-blue', bg: 'bg-brand-blue/10', border: 'border-brand-blue/15' },
-                { icon: <Cpu size={14} />, stat: '50+', title: 'AI Models', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/15' },
-              ].map((item) => (
-                <div key={item.title} className={`flex-shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-xl ${item.bg} border ${item.border} backdrop-blur-sm`}>
-                  <div className={`${item.color}`}>{item.icon}</div>
-                  <div className="flex items-center gap-1.5">
-                    <span className={`text-sm font-black ${item.color}`}>{item.stat}</span>
-                    <span className="text-[9px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">{item.title}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* ═══ DESKTOP: Original full trust pillars ═══ */}
-            <div className="hidden md:block relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-r from-slate-50 via-white to-slate-50 dark:from-[#0a0c12] dark:via-[#0c0e16] dark:to-[#0a0c12] border border-black/[0.04] dark:border-white/[0.04] p-8 md:p-12 lg:p-14">
-              <h2 className="sr-only">{t('home.trust.sr_title')}</h2>
-              <div className="relative z-10 grid grid-cols-2 lg:grid-cols-5 gap-6 md:gap-0">
-                {[
-                  { icon: <Zap size={24} />, stat: '0.5s', statLabel: 'Avg Response', title: t('home.trust.fast_title'), desc: t('home.trust.fast_desc'), color: 'text-amber-500', bg: 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/15 dark:to-orange-500/15', ring: 'ring-amber-500/20' },
-                  { icon: <TrendingDown size={24} />, stat: '~70%', statLabel: 'Save', title: t('home.trust.save_title'), desc: t('home.trust.save_desc'), color: 'text-rose-500', bg: 'bg-gradient-to-br from-rose-500/10 to-red-500/10 dark:from-rose-500/15 dark:to-red-500/15', ring: 'ring-rose-500/20' },
-                  { icon: <Shield size={24} />, stat: '100%', statLabel: 'Encrypted', title: t('home.trust.secure_title'), desc: t('home.trust.secure_desc'), color: 'text-emerald-500', bg: 'bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/15 dark:to-teal-500/15', ring: 'ring-emerald-500/20' },
-                  { icon: <Globe2 size={24} />, stat: '4+', statLabel: 'Languages', title: t('home.trust.lang_title'), desc: t('home.trust.lang_desc'), color: 'text-brand-blue', bg: 'bg-gradient-to-br from-brand-blue/10 to-cyan-500/10 dark:from-brand-blue/15 dark:to-cyan-500/15', ring: 'ring-brand-blue/20' },
-                  { icon: <Cpu size={24} />, stat: '50+', statLabel: 'AI Models', title: t('home.trust.ai_title'), desc: t('home.trust.ai_desc'), color: 'text-purple-500', bg: 'bg-gradient-to-br from-purple-500/10 to-pink-500/10 dark:from-purple-500/15 dark:to-pink-500/15', ring: 'ring-purple-500/20' },
-                ].map((item, idx, arr) => (
-                  <motion.div
-                    key={item.title}
-                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true, margin: '-50px' }}
-                    transition={{ delay: idx * 0.12, duration: 0.6, type: 'spring', stiffness: 120 }}
-                    whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                    className={`relative group text-center md:text-left px-4 md:px-6 ${idx < arr.length - 1 ? 'lg:border-r lg:border-black/[0.04] lg:dark:border-white/[0.04]' : ''}`}
-                  >
-                    <div className={`w-14 h-14 rounded-2xl ${item.bg} ${item.color} ring-1 ${item.ring} flex items-center justify-center mx-auto md:mx-0 mb-5 group-hover:scale-110 group-hover:shadow-xl group-hover:rotate-3 transition-all duration-500`}>
-                      {item.icon}
-                    </div>
-                    <div className="mb-3">
-                      <span className={`text-3xl md:text-4xl font-black tracking-tight ${item.color}`}>{item.stat}</span>
-                      <span className="block text-[8px] font-bold text-slate-400 dark:text-gray-600 uppercase tracking-[0.3em] mt-1">{item.statLabel}</span>
-                    </div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">{item.title}</h3>
-                    <p className="text-xs text-slate-400 dark:text-gray-500 leading-relaxed">{item.desc}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ═══════════════════ ACTIVE FILTER BAR ═══════════════════ */}
-
-        <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20">
-
-          {/* ═══════════════════ HOW IT WORKS ═══════════════════ */}
-          {!query && (
-            <section className="py-10 md:py-28">
-              <div className="text-center mb-6 md:mb-20">
-                <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full mb-3 md:mb-5">
-                    <Sparkles size={12} className="text-brand-blue" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">How It Works</span>
-                  </div>
-                  <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                    {t('home.hiw.title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">{t('home.hiw.title_highlight')}</span>
-                  </h2>
-                  <p className="text-xs md:text-base text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">{t('home.hiw.subtitle')}</p>
-                </motion.div>
-              </div>
-
-              <div className="relative">
-                <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-8 overflow-x-auto no-scrollbar pb-2 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory">
-                  {[
-                    { step: '01', title: t('home.hiw.step1_title'), desc: t('home.hiw.step1_desc'), image: '/assets/homepage/hiw-01-choose.webp', gradient: 'from-brand-blue/10 to-purple-500/10', border: 'hover:border-brand-blue/30' },
-                    { step: '02', title: t('home.hiw.step2_title'), desc: t('home.hiw.step2_desc'), image: '/assets/homepage/hiw-02-input.webp', gradient: 'from-purple-500/10 to-pink-500/10', border: 'hover:border-purple-500/30' },
-                    { step: '03', title: t('home.hiw.step3_title'), desc: t('home.hiw.step3_desc'), image: '/assets/homepage/hiw-03-result.webp', gradient: 'from-pink-500/10 to-amber-500/10', border: 'hover:border-pink-500/30' },
-                  ].map((item, idx) => (
-                    <motion.div
-                      key={item.step}
-                      initial={{ opacity: 0, y: 40, scale: 0.9 }}
-                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                      viewport={{ once: true, margin: '-50px' }}
-                      transition={{ delay: idx * 0.2, duration: 0.7, type: 'spring', stiffness: 100 }}
-                      whileHover={{ y: -8, transition: { duration: 0.4 } }}
-                      className={`relative flex-shrink-0 w-[260px] md:w-auto snap-start rounded-2xl md:rounded-3xl bg-gradient-to-br ${item.gradient} dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.05] dark:border-white/[0.05] ${item.border} transition-all duration-500 group overflow-hidden`}
-                    >
-                      {/* Image */}
-                      <div className="relative aspect-[16/9] overflow-hidden">
-                        <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                        <div className="absolute top-2 left-2 md:top-3 md:left-3">
-                          <span className="px-2 py-0.5 bg-brand-blue/20 backdrop-blur-sm border border-brand-blue/30 text-[8px] font-black text-brand-blue uppercase tracking-widest rounded-md">Step {item.step}</span>
-                        </div>
-                      </div>
-                      {/* Text */}
-                      <div className="p-4 md:p-6 space-y-1.5 md:space-y-3">
-                        <h3 className="text-sm md:text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
-                        <p className="text-[10px] md:text-sm text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-3 md:line-clamp-none">{item.desc}</p>
-                      </div>
-                      {idx < 2 && (
-                        <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white dark:bg-[#0a0d14] border border-black/[0.06] dark:border-white/[0.06] items-center justify-center shadow-lg">
-                          <ChevronRight size={14} className="text-brand-blue animate-[pulse_2s_ease-in-out_infinite]" />
-                        </div>
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </section>
-          )}
-
-          {(query || primary !== 'ALL') && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-3 py-4 mb-2"
-            >
-              <Search size={14} className="text-brand-blue shrink-0" />
-              <span className="text-xs font-medium text-slate-500 dark:text-gray-400">
-                {query && <>{t('home.filter.results_for')} "<span className="font-bold text-slate-900 dark:text-white">{query}</span>"</>}
-                {query && primary !== 'ALL' && t('home.filter.in')}
-                {primary !== 'ALL' && <span className="font-bold text-brand-blue">{primary}</span>}
-              </span>
-              <button
-                onClick={resetSearch}
-                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-white/5 rounded-lg text-[10px] font-bold text-slate-400 hover:text-red-500 transition-colors"
-              >
-                <X size={10} /> {t('home.filter.clear')}
+    <div className="relative min-h-screen bg-white text-gray-900 font-sans antialiased">
+      {/* ── Global hover styles (static, defined outside component) ── */}
+      <style>{HOVER_STYLES}</style>
+      <div className="relative">
+        {query ? (
+          /* ════════ SEARCH MODE ════════ */
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 md:pt-36 pb-20">
+            <div className="flex items-center gap-3 mb-8">
+              <Search size={18} className="text-[#C9A84C]" />
+              <h2 className="text-xl md:text-2xl font-bold tracking-tight">
+                {t('landing.search.results_for')} <span className="text-[#C9A84C]">"{query}"</span>
+              </h2>
+              <button onClick={resetSearch} className="ml-auto flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                <X size={14} /> {t('landing.search.clear')}
               </button>
-            </motion.div>
-          )}
-
-          {/* ═══════════════════ PRODUCT GRID ═══════════════════ */}
-          <div className="space-y-16 md:space-y-24 relative z-10 pt-8">
-            {(loading || isSearching) ? (
-              <div className="flex gap-4 md:gap-8 overflow-x-hidden">
-                {[1, 2, 3, 4, 5].map(i => <CardSkeleton key={i} />)}
+            </div>
+            {isSearching ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)}
               </div>
-            ) : filteredSolutions.length > 0 ? (
-              <>
-                {homeBlocks.filter(b => query ? true : b.key === 'top_trending').map((block) => {
-                  const blockSolutions = filteredSolutions.filter(s => s.homeBlocks?.includes(block.key));
-                  if (blockSolutions.length === 0) return null;
-
-                  const Icon = BLOCK_ICONS[block.key] || LayoutGrid;
-                  const currentLang = lang as Language;
-
-                  return (
-                    <section key={block.key} className="relative">
-                      <MarketSectionHeader
-                        icon={Icon}
-                        title={block.title[currentLang] || block.title.en}
-                        subtitle={block.subtitle[currentLang] || block.subtitle.en}
-                        count={blockSolutions.length}
-                        colorClass={block.key === 'top_trending' ? 'text-orange-500' : 'text-brand-blue'}
-                        onScrollLeft={() => scroll(block.key, 'left')}
-                        onScrollRight={() => scroll(block.key, 'right')}
-                        onSeeAll={() => navigate('/markets')}
-                      />
-                      <div ref={scrollRefs.current[block.key]} className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4 relative z-10">
-                        {blockSolutions.slice(0, block.limit || 8).map((sol, idx) => (
-                          <SolutionCard
-                            key={sol._id || sol.id} sol={sol} idx={idx} lang={lang}
-                            isLiked={likedItems.includes(sol._id || sol.id)}
-                            isFavorited={favorites.includes(sol.id)}
-                            onToggleFavorite={toggleFavorite}
-                            onToggleLike={toggleLike}
-                            onClick={handleNavigate}
-                            onHover={handlePrefetchOnHover}
-                            onQuickView={handleQuickView}
-                            stats={getFakeStats(sol._id || sol.id)}
-                          />
-                        ))}
-
-                        <div
-                          onClick={() => navigate('/markets')}
-                          className="flex-shrink-0 snap-start w-[180px] md:hidden flex flex-col items-center justify-center bg-slate-50 dark:bg-[#0a0d14] border border-black/[0.08] dark:border-white/[0.08] rounded-xl group cursor-pointer hover:border-brand-blue/40 transition-all p-6 text-center space-y-4"
-                        >
-                          <div className="w-12 h-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
-                            <ArrowRight size={24} />
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-800 dark:text-white">{t('home.hero.view_all')}</p>
-                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tight">{blockSolutions.length} {t('home.grid.solutions')}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </section>
-                  );
-                })}
-              </>
+            ) : filteredSolutions.length === 0 ? (
+              <div className="text-center py-24">
+                <SearchX size={56} className="mx-auto text-gray-300 mb-4" />
+                <p className="text-base text-gray-500">{t('landing.search.no_results')}</p>
+              </div>
             ) : (
-              <div className="py-40 text-center space-y-6 opacity-30">
-                <SearchX size={48} className="mx-auto mb-4" />
-                <p className="text-sm font-black uppercase tracking-widest">{t('market.search.no_matches')}</p>
-                <button onClick={() => { setQuery(''); setPrimary('ALL'); setSecondary('ALL'); }} className="text-[10px] font-black uppercase tracking-widest text-brand-blue hover:underline">{t('market.search.reset')}</button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {filteredSolutions.map((sol, idx) => (
+                  <SolutionCard
+                    key={sol._id || sol.id}
+                    sol={sol} idx={idx} lang={lang}
+                    isLiked={likedItems.includes(sol._id || sol.id)}
+                    isFavorited={favorites.includes(sol._id || sol.id)}
+                    onToggleFavorite={toggleFavorite} onToggleLike={toggleLike}
+                    onClick={handleNavigate} onHover={handlePrefetchOnHover}
+                    onQuickView={handleQuickView} stats={getFakeStats(sol._id || sol.id)} isGrid
+                  />
+                ))}
               </div>
             )}
-          </div>
-
-          {/* ═══════════════════ USE CASES BY INDUSTRY ═══════════════════ */}
-          {!query && (
-            <section className="py-8 md:py-24">
-              <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="text-center mb-6 md:mb-14">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/8 dark:bg-emerald-500/15 border border-emerald-500/15 dark:border-emerald-500/25 rounded-full mb-3 md:mb-5">
-                  <Globe2 size={12} className="text-emerald-500" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500">Use Cases</span>
-                </div>
-                <h2 className="text-xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                  {t('home.usecase.title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-brand-blue">{t('home.usecase.title_highlight')}</span>
-                </h2>
-                <p className="text-xs md:text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto hidden md:block">{t('home.usecase.subtitle')}</p>
-              </motion.div>
-
-              <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
-                {[
-                  { image: '/assets/homepage/uc-marketing.webp', industry: 'Marketing & Agency', desc: t('home.usecase.marketing_desc'), tools: ['Video AI', 'Image AI', 'Poster AI'], borderColor: 'hover:border-blue-500/30' },
-                  { image: '/assets/homepage/uc-ecommerce.webp', industry: 'E-commerce', desc: t('home.usecase.ecommerce_desc'), tools: ['Product Image', 'BG Removal', 'Upscale'], borderColor: 'hover:border-amber-500/30' },
-                  { image: '/assets/homepage/uc-creator.webp', industry: 'Content Creator', desc: t('home.usecase.creator_desc'), tools: ['Video AI', 'Music AI', 'Voice'], borderColor: 'hover:border-purple-500/30' },
-                  { image: '/assets/homepage/uc-realestate.webp', industry: t('home.usecase.realestate'), desc: t('home.usecase.realestate_desc'), tools: ['Real Estate AI', 'Image AI'], borderColor: 'hover:border-emerald-500/30' },
-                  { image: '/assets/homepage/uc-fashion.webp', industry: t('home.usecase.fashion'), desc: t('home.usecase.fashion_desc'), tools: ['Fashion AI', 'Stylist AI'], borderColor: 'hover:border-pink-500/30' },
-                  { image: '/assets/homepage/uc-education.webp', industry: t('home.usecase.education'), desc: t('home.usecase.education_desc'), tools: ['Voice AI', 'Video AI'], borderColor: 'hover:border-indigo-500/30' },
-                ].map((item, idx) => (
-                  <motion.div
-                    key={item.industry}
-                    initial={{ opacity: 0, y: 30, scale: 0.92 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ delay: idx * 0.1, duration: 0.6, type: 'spring', stiffness: 120 }}
-                    whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.35 } }}
-                    className={`flex-shrink-0 w-[220px] md:w-auto snap-start rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] ${item.borderColor} transition-all duration-500 group overflow-hidden`}
+          </section>
+        ) : (
+          <>
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 1: HERO / BANNER
+             * Atlas-style: dark bg (#1a2330), centered text, sale banner
+             * ═══════════════════════════════════════════════════════════ */}
+            <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-[#1a2330]">
+              {/* Background video slideshow — only render active + next for perf */}
+              {heroVideos.map((v, i) => {
+                const nextIdx = (heroSlideIdx + 1) % heroVideos.length;
+                if (i !== heroSlideIdx && i !== nextIdx) return null;
+                return (
+                  <div
+                    key={v.src}
+                    className="absolute inset-0 transition-opacity duration-1000 ease-in-out pointer-events-none"
+                    style={{ opacity: i === heroSlideIdx ? 1 : 0 }}
                   >
-                    {/* Image */}
-                    <div className="relative aspect-[16/9] overflow-hidden">
-                      <img src={item.image} alt={item.industry} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                    </div>
-                    {/* Text */}
-                    <div className="p-3 md:p-5 space-y-2 md:space-y-3">
-                      <h3 className="text-sm md:text-lg font-black text-slate-900 dark:text-white tracking-tight">{item.industry}</h3>
-                      <p className="text-[10px] md:text-xs text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-2 md:line-clamp-none">{item.desc}</p>
-                      <div className="flex flex-wrap gap-1 md:gap-1.5 pt-1">
-                        {item.tools.map(tool => (
-                          <span key={tool} className="px-2 py-0.5 md:px-2.5 md:py-1 bg-slate-100 dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.06] text-[7px] md:text-[9px] font-bold text-slate-500 dark:text-gray-400 rounded-md md:rounded-lg uppercase tracking-wider">{tool}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* ═══════════════════ TESTIMONIALS ═══════════════════ */}
-          {!query && (
-            <section className="py-8 md:py-24">
-              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-6 md:mb-14">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/8 dark:bg-amber-500/15 border border-amber-500/15 dark:border-amber-500/25 rounded-full mb-3 md:mb-5">
-                  <Sparkles size={12} className="text-amber-500" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">Testimonials</span>
-                </div>
-                <h2 className="text-xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                  {t('home.testimonial.title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">{t('home.testimonial.title_highlight')}</span>
-                </h2>
-              </motion.div>
-
-              <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-6 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
-                {[
-                  { name: 'Minh Tuấn', role: 'Content Creator', initials: 'MT', avatarBg: 'bg-brand-blue/10 text-brand-blue', quote: t('home.testimonial.t1_quote'), rating: 5 },
-                  { name: 'Thu Hà', role: 'Marketing Manager', initials: 'TH', avatarBg: 'bg-purple-500/10 text-purple-500', quote: t('home.testimonial.t2_quote'), rating: 5 },
-                  { name: 'David Nguyễn', role: 'E-commerce Owner', initials: 'DN', avatarBg: 'bg-emerald-500/10 text-emerald-500', quote: t('home.testimonial.t3_quote'), rating: 5 },
-                ].map((item, idx) => (
-                  <motion.div
-                    key={item.name}
-                    initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ delay: idx * 0.15, type: 'spring', stiffness: 120 }}
-                    whileHover={{ y: -5, scale: 1.02, transition: { duration: 0.3 } }}
-                    className="flex-shrink-0 w-[280px] md:w-auto snap-start p-5 md:p-8 rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-amber-500/20 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 group"
-                  >
-                    <div className="space-y-5">
-                      <div className="flex items-center gap-1">
-                        {[...Array(item.rating)].map((_, i) => (
-                          <motion.span key={i} className="text-amber-400 text-sm"
-                            initial={{ opacity: 0, scale: 0 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.3 + idx * 0.15 + i * 0.05, type: 'spring', stiffness: 300 }}
-                          >★</motion.span>
-                        ))}
-                      </div>
-                      <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed italic">"{item.quote}"</p>
-                      <div className="flex items-center gap-3 pt-2 border-t border-black/[0.04] dark:border-white/[0.04]">
-                        <div className={`relative w-10 h-10 rounded-full ${item.avatarBg} flex items-center justify-center text-sm font-black`}>
-                          {item.initials}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</p>
-                          <p className="text-[10px] font-medium text-slate-400 dark:text-gray-500 uppercase tracking-wider">{item.role}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* ═══════════════════ CREDITS & PAYMENT ═══════════════════ */}
-          {!query && (
-            <section className="py-6 md:py-20">
-              <div className="relative overflow-hidden rounded-2xl md:rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-5 md:p-14 lg:p-16">
-
-                <div className="relative z-10">
-                  {/* Header */}
-                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-6 md:mb-12">
-                    <div className="space-y-2 md:space-y-3">
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full">
-                        <Zap size={12} className="text-amber-400" fill="currentColor" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-400">Universal Credits</span>
-                      </div>
-                      <h2 className="text-xl md:text-4xl font-black tracking-tight text-white leading-[1.1]">
-                        {t('home.credits.title1')}{' '}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
-                          {t('home.credits.title_highlight')}
-                        </span>
-                      </h2>
-                      <p className="text-xs md:text-sm text-white/40 max-w-lg leading-relaxed hidden md:block">
-                        {t('home.credits.subtitle')}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => navigate(isAuthenticated ? '/credits' : '/pricing')}
-                      className="shrink-0 inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                    >
-                      <Zap size={14} fill="currentColor" />
-                      {isAuthenticated ? t('home.credits.topup') : t('home.credits.pricing')}
-                      <ArrowRight size={14} />
-                    </button>
+                    <video
+                      ref={el => { heroVideoRefs.current[i] = el; }}
+                      autoPlay={i === heroSlideIdx} muted loop playsInline
+                      preload={i === heroSlideIdx ? 'auto' : 'metadata'}
+                      className="absolute inset-0 w-full h-full object-cover opacity-70"
+                      src={v.src}
+                    />
                   </div>
+                );
+              })}
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-[#1a2330]/50 via-[#1a2330]/30 to-[#1a2330]/80 pointer-events-none" />
 
-                  {/* Credit Flow Steps — Image Cards */}
-                  <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-12 overflow-x-auto no-scrollbar -mx-5 px-5 md:mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory">
-                    {[
-                      { step: '01', title: t('home.credits.step1_title'), desc: t('home.credits.step1_desc'), image: '/assets/credits/step-01-buy.webp' },
-                      { step: '02', title: t('home.credits.step2_title'), desc: t('home.credits.step2_desc'), image: '/assets/credits/step-02-use.webp' },
-                      { step: '03', title: t('home.credits.step3_title'), desc: t('home.credits.step3_desc'), image: '/assets/credits/step-03-topup.webp' },
-                    ].map((item, idx) => (
-                      <motion.div
-                        key={item.step}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: idx * 0.15 }}
-                        className="relative flex-shrink-0 w-[260px] md:w-auto snap-start rounded-xl md:rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-amber-500/20 transition-all group overflow-hidden"
-                      >
-                        <div className="relative aspect-[16/9] overflow-hidden">
-                          <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                          <div className="absolute top-2 left-2 md:top-3 md:left-3">
-                            <span className="px-2 py-0.5 bg-amber-500/20 backdrop-blur-sm border border-amber-500/30 text-[8px] font-black text-amber-400 uppercase tracking-widest rounded-md">Step {item.step}</span>
+              <div className="relative max-w-[1300px] mx-auto px-5 md:px-8 py-32 md:py-40">
+                {/* Sale badge — cinematic drop-in */}
+                <motion.div
+                  initial={{ opacity: 0, y: -20, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className="flex items-center justify-center gap-3 mb-8"
+                >
+                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-[#E5C767] to-[#C9A84C] text-white text-[11px] font-bold rounded-full uppercase tracking-wide">
+                    <Zap size={11} /> {t('landing.badge')}
+                  </span>
+                  <span className="text-[#ebf4fb]/50 text-xs font-medium">
+                    {t('landing.badge_sub')}
+                  </span>
+                </motion.div>
+
+                {/* Hero Text — Cinematic entrance with rotating keyword */}
+                <div className="text-center max-w-4xl mx-auto mb-14">
+                  <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-[-0.03em] leading-[1.08] text-[#ebf4fb]">
+                    <BlurTextReveal text={t('landing.hero.line1')} as="span" delay={0.3} charDelay={0.035} style={{ justifyContent: 'center', fontSize: 'inherit', fontWeight: 'inherit', lineHeight: 'inherit' }} />
+                    <br className="hidden sm:block" />
+                    <BlurTextReveal text={t('landing.hero.line2')} as="span" delay={0.7} charDelay={0.035} style={{ justifyContent: 'center', display: 'inline-flex', fontSize: 'inherit', fontWeight: 'inherit', lineHeight: 'inherit' }} />
+                    {' '}
+                    <span className="inline-flex items-baseline overflow-hidden" style={{ height: '1.3em', verticalAlign: 'baseline' }}>
+                      <AnimatePresence mode="wait">
+                        <motion.span
+                          key={heroRotatingWords[heroWordIdx]}
+                          initial={{ y: '100%', opacity: 0 }}
+                          animate={{ y: '0%', opacity: 1 }}
+                          exit={{ y: '-100%', opacity: 0 }}
+                          transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                          className="inline-block bg-gradient-to-r from-[#E5C767] via-[#C9A84C] to-[#E5C767] bg-clip-text text-transparent"
+                        >
+                          {heroRotatingWords[heroWordIdx]}
+                        </motion.span>
+                      </AnimatePresence>
+                    </span>
+                  </h1>
+                  <motion.p
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className="mt-6 text-base md:text-lg text-[#ebf4fb]/50 max-w-2xl mx-auto leading-relaxed"
+                  >
+                    {t('landing.hero.subtitle')}
+                  </motion.p>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className="mt-8 flex flex-wrap items-center justify-center gap-4"
+                  >
+                    <button
+                      onClick={() => navigate(isAuthenticated ? '/apps' : '/login')}
+                      className="inline-flex items-center gap-2.5 bg-[#C9A84C] text-white px-8 py-3.5 rounded-lg text-sm font-semibold hover:bg-[#B8963F] shadow-lg shadow-[#C9A84C]/25 transition-all duration-200 hover:shadow-xl hover:shadow-[#C9A84C]/30 hover:-translate-y-0.5"
+                    >
+                      {t('landing.hero.cta1')} <ArrowRight size={15} />
+                    </button>
+                    <button
+                      onClick={() => navigate('/markets')}
+                      className="inline-flex items-center gap-2.5 bg-transparent text-[#ebf4fb] px-8 py-3.5 rounded-lg text-sm font-semibold border border-[#ebf4fb]/20 hover:border-[#ebf4fb]/40 hover:bg-white/5 transition-all duration-200 hover:-translate-y-0.5"
+                    >
+                      {t('landing.hero.cta2')}
+                    </button>
+                  </motion.div>
+                </div>
+
+                {/* Mega Sale Banner — slide up with scale */}
+                {usableFeatured.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 60, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.9, delay: 1.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className="relative rounded-xl overflow-hidden bg-[#ebf4fb]/[0.04] border border-[#ebf4fb]/[0.08] p-5 md:p-6 backdrop-blur-sm"
+                  >
+                    {/* Scrollable model cards — CSS animation instead of per-card motion */}
+                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 snap-x snap-mandatory">
+                      {usableFeatured.map((sol, i) => (
+                        <button
+                          key={sol._id || sol.id}
+                          onClick={() => handleNavigate(sol.slug)}
+                          className={`relative shrink-0 w-[180px] md:w-[220px] rounded-xl overflow-hidden transition-all duration-300 snap-start group animate-atlas-fade-in-up ${
+                            i === heroIdx ? 'ring-2 ring-[#C9A84C] scale-[1.02]' : 'ring-1 ring-[#ebf4fb]/10 hover:ring-[#ebf4fb]/30'
+                          }`}
+                          style={{ animationDelay: `${1.3 + i * 0.1}s`, animationFillMode: 'backwards' }}
+                        >
+                          <div className="aspect-[4/3] overflow-hidden">
+                            <img
+                              src={sol.imageUrl}
+                              alt={sol.name?.[currentLang] || ''}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                              loading={i < 3 ? 'eager' : 'lazy'}
+                            />
                           </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                          {!sol.isFree && (
+                            <div className="absolute top-2 right-2 px-2 py-0.5 bg-[#E5C767] text-white text-[10px] font-bold rounded-md shadow-lg">
+                              {i % 3 === 0 ? '40%' : i % 3 === 1 ? '20%' : '15%'} OFF
+                            </div>
+                          )}
+                          <div className="absolute bottom-0 inset-x-0 p-3 text-white text-left">
+                            <p className="text-xs font-bold truncate">{sol.name?.[currentLang]}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-[10px] text-white/50 line-through">
+                                ${((sol.priceCredits || 10) * 0.015).toFixed(2)}
+                              </span>
+                              <span className="text-[11px] font-bold text-emerald-400">
+                                ${((sol.priceCredits || 10) * 0.01).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Carousel thumbnail tabs — Atlas glass bar */}
+                <div className="mt-10 animate-atlas-fade-in-up" style={{ animationDelay: '1.4s', animationFillMode: 'backwards' }}>
+                  <div className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-white/[0.08] backdrop-blur-md border border-white/[0.08] overflow-x-auto no-scrollbar">
+                    {heroVideos.map((v, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setHeroSlideIdx(i)}
+                        className={`relative flex items-center gap-2.5 shrink-0 pl-1.5 pr-4 py-1.5 rounded-lg transition-all duration-300 ${
+                          i === heroSlideIdx
+                            ? 'bg-white/[0.10] ring-1 ring-[#C9A84C]/60'
+                            : 'hover:bg-white/[0.06]'
+                        }`}
+                      >
+                        {/* Model icon */}
+                        <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 bg-white/10 flex items-center justify-center p-1.5">
+                          <img
+                            src={v.icon}
+                            alt={v.label}
+                            className="w-full h-full object-contain"
+                          />
                         </div>
-                        <div className="p-3 md:p-5 space-y-1.5 md:space-y-2">
-                          <h3 className="text-sm md:text-base font-bold text-white">{item.title}</h3>
-                          <p className="text-[10px] md:text-xs text-white/35 leading-relaxed">{item.desc}</p>
-                        </div>
-                        {idx < 2 && (
-                          <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                            <ChevronRight size={16} className="text-white/10" />
+                        {/* Label */}
+                        <span className={`text-xs font-medium whitespace-nowrap transition-colors duration-200 ${
+                          i === heroSlideIdx ? 'text-white' : 'text-white/50'
+                        }`}>
+                          {v.label}
+                        </span>
+                        {/* Progress bar overlay at bottom */}
+                        {i === heroSlideIdx && (
+                          <div className="absolute bottom-0 left-0 right-0 h-[2px] rounded-b-lg overflow-hidden">
+                            <div
+                              className="h-full bg-[#C9A84C]"
+                              style={{ animation: `heroProgress ${heroSlideInterval}ms linear forwards` }}
+                            />
                           </div>
                         )}
-                      </motion.div>
+                      </button>
                     ))}
                   </div>
-
-                  {/* ─── Payment Methods (merged) ─── */}
-                  <div className="border-t border-white/[0.06] pt-6 md:pt-10">
-                    {/* Mobile: compact payment row */}
-                    <div
-                      className="md:hidden flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] cursor-pointer active:scale-[0.98] transition-all"
-                      onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
-                    >
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
-                          <Landmark size={16} />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold text-white truncate">{t('home.credits.payment_flexible')}</p>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <div className="flex items-center gap-1">
-                              <Landmark size={10} className="text-brand-blue" />
-                              <span className="text-[8px] font-bold text-white/40">Bank</span>
-                            </div>
-                            <div className="w-px h-2.5 bg-white/10" />
-                            <div className="flex items-center gap-1">
-                              <span className="text-[8px] font-bold text-emerald-400">USDT</span>
-                            </div>
-                            <div className="w-px h-2.5 bg-white/10" />
-                            <div className="flex items-center gap-1">
-                              <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                              <span className="text-[7px] font-bold text-emerald-400 uppercase">Auto</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <ArrowRight size={16} className="text-brand-blue shrink-0" />
-                    </div>
-
-                    {/* Desktop: payment cards */}
-                    <div className="hidden md:flex items-center gap-8">
-                      <div className="shrink-0 space-y-2">
-                        <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
-                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400">{t('home.credits.payment')}</span>
-                        </div>
-                        <p className="text-sm font-bold text-white/60 max-w-[160px] leading-relaxed">
-                          {t('home.credits.payment_desc')}
-                        </p>
-                      </div>
-
-                      <div className="flex-1 grid grid-cols-2 gap-4">
-                        <motion.div
-                          whileHover={{ y: -3, scale: 1.01 }}
-                          transition={{ duration: 0.25 }}
-                          onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
-                          className="group cursor-pointer p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-brand-blue/30 transition-all duration-300"
-                        >
-                          <div className="flex items-start gap-4">
-                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-blue/15 to-cyan-500/15 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform duration-300 shrink-0">
-                              <Landmark size={20} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-black text-white mb-1">{t('home.credits.bank')}</p>
-                              <p className="text-[10px] text-white/35 leading-relaxed">{t('home.credits.bank_desc')}</p>
-                              <div className="flex flex-wrap gap-1.5 mt-3">
-                                {['Vietcombank', 'Techcombank', 'MB Bank', 'BIDV'].map(b => (
-                                  <span key={b} className="px-2 py-0.5 bg-white/5 border border-white/[0.06] text-[8px] font-bold text-white/40 rounded-md">{b}</span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-white/[0.04]">
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">{t('home.credits.bank_time')}</span>
-                            </div>
-                            <ArrowRight size={14} className="text-white/20 group-hover:text-brand-blue group-hover:translate-x-1 transition-all duration-300" />
-                          </div>
-                        </motion.div>
-
-                        <motion.div
-                          whileHover={{ y: -3, scale: 1.01 }}
-                          transition={{ duration: 0.25 }}
-                          onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
-                          className="group cursor-pointer p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-amber-500/30 transition-all duration-300"
-                        >
-                          <div className="flex items-start gap-4">
-                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/15 to-orange-500/15 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform duration-300 shrink-0">
-                              <svg viewBox="0 0 32 32" fill="none" className="w-5 h-5">
-                                <circle cx="16" cy="16" r="16" fill="#26A17B" fillOpacity="0.12"/>
-                                <path d="M17.922 17.383v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003C9.85 17.17 7 16.42 7 15.5c0-.92 2.85-1.672 6.009-1.883v2.387c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.386C19.908 13.83 22.75 14.58 22.75 15.5c0 .92-2.842 1.67-6.828 1.883zM13.009 13.375v-2.127h-3.36V9h12.702v2.248h-3.36v2.124c3.514.26 6.009 1.17 6.009 2.251 0 1.08-2.495 1.99-6.009 2.25v4.03H13.01v-4.031c-3.514-.26-6.009-1.17-6.009-2.25 0-1.08 2.495-1.99 6.009-2.25z" fill="#26A17B"/>
-                              </svg>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-black text-white mb-1">Crypto USDT</p>
-                              <p className="text-[10px] text-white/35 leading-relaxed">BSC / ETH — MetaMask, Trust Wallet, Coinbase</p>
-                              <div className="flex flex-wrap gap-1.5 mt-3">
-                                {['BEP-20', 'ERC-20', 'MetaMask', 'WalletConnect'].map(b => (
-                                  <span key={b} className="px-2 py-0.5 bg-white/5 border border-white/[0.06] text-[8px] font-bold text-white/40 rounded-md">{b}</span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-white/[0.04]">
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                              <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wider">{t('home.credits.crypto_time')}</span>
-                            </div>
-                            <ArrowRight size={14} className="text-white/20 group-hover:text-amber-500 group-hover:translate-x-1 transition-all duration-300" />
-                          </div>
-                        </motion.div>
-                      </div>
-
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => navigate(isAuthenticated ? '/credits' : '/login')}
-                        className="group shrink-0 relative inline-flex flex-col items-center gap-1.5 px-6 py-4 rounded-2xl bg-gradient-to-br from-brand-blue to-purple-600 text-white shadow-xl shadow-brand-blue/20 hover:shadow-2xl hover:shadow-brand-blue/30 transition-all duration-300 overflow-hidden"
-                      >
-                        <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <Sparkles size={20} className="relative z-10" fill="currentColor" />
-                        <span className="relative z-10 text-xs font-black whitespace-nowrap">{t('home.credits.topup')}</span>
-                      </motion.button>
-                    </div>
-                  </div>
                 </div>
               </div>
+
+              {/* Hero progress bar keyframes */}
+              <style>{`
+                @keyframes heroProgress {
+                  from { width: 0%; }
+                  to   { width: 100%; }
+                }
+              `}</style>
             </section>
-          )}
 
-          {/* ═══════════════════ CUSTOM SOLUTIONS — Enterprise ═══════════════════ */}
-          {!query && (
-            <section className="py-6 md:py-24">
-              {/* ─── Section Header ─── */}
-              <motion.div initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="text-center mb-6 md:mb-14">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/8 dark:bg-amber-500/15 border border-amber-500/15 dark:border-amber-500/25 rounded-full mb-3 md:mb-5">
-                  <Cpu size={12} className="text-amber-500" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">Enterprise Solutions</span>
-                </div>
-                <h2 className="text-xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-2 md:mb-4">
-                  {t('home.enterprise.title1')}{' '}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500">
-                    {t('home.enterprise.title_highlight')}
-                  </span>
-                </h2>
-                <p className="text-xs md:text-sm text-slate-400 dark:text-gray-500 max-w-2xl mx-auto hidden md:block">
-                  {t('home.enterprise.subtitle')}
-                </p>
-              </motion.div>
+            {/* ═══════════════════════════════════════════════════════════
+             * HERO LOGO MARQUEE — AI provider logos (clone style)
+             * ═══════════════════════════════════════════════════════════ */}
+            <section className="w-full overflow-hidden border-b border-white/[0.06] bg-[#1a2330]">
+              <div className="py-5 md:py-6 relative">
+                {/* Fade edges */}
+                <div className="absolute inset-y-0 left-0 w-20 md:w-40 bg-gradient-to-r from-[#1a2330] to-transparent z-10 pointer-events-none" />
+                <div className="absolute inset-y-0 right-0 w-20 md:w-40 bg-gradient-to-l from-[#1a2330] to-transparent z-10 pointer-events-none" />
 
-              {/* ─── Image Service Cards — Horizontal scroll ─── */}
-              <div className="flex gap-3 md:gap-5 overflow-x-auto no-scrollbar -mx-4 px-4 md:-mx-0 md:px-0 pb-2 md:pb-0 snap-x snap-mandatory mb-6 md:mb-10">
-                {[
-                  { image: '/assets/homepage/ent-ai-strategy.webp', icon: <Brain size={18} />, accentColor: 'from-blue-500 to-cyan-500', borderHover: 'hover:border-blue-500/30', tagBg: 'bg-blue-500/20 border-blue-500/30 text-blue-400', title: t('home.enterprise.s1_title'), desc: t('home.enterprise.s1_desc'), tag: 'Strategy' },
-                  { image: '/assets/homepage/ent-custom-tools.webp', icon: <Wrench size={18} />, accentColor: 'from-purple-500 to-pink-500', borderHover: 'hover:border-purple-500/30', tagBg: 'bg-purple-500/20 border-purple-500/30 text-purple-400', title: t('home.enterprise.s2_title'), desc: t('home.enterprise.s2_desc'), tag: 'Development' },
-                  { image: '/assets/homepage/ent-api-integration.webp', icon: <Plug size={18} />, accentColor: 'from-emerald-500 to-teal-500', borderHover: 'hover:border-emerald-500/30', tagBg: 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400', title: 'API & Integration', desc: t('home.enterprise.s3_desc'), tag: 'Integration' },
-                  { image: '/assets/homepage/ent-deploy-scale.webp', icon: <Rocket size={18} />, accentColor: 'from-amber-500 to-orange-500', borderHover: 'hover:border-amber-500/30', tagBg: 'bg-amber-500/20 border-amber-500/30 text-amber-400', title: 'Deploy & Scale', desc: t('home.enterprise.s4_desc'), tag: 'Infrastructure' },
-                ].map((item, idx) => (
-                  <motion.div
-                    key={item.title}
-                    initial={{ opacity: 0, y: 30, scale: 0.92 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ delay: idx * 0.12, duration: 0.6, type: 'spring', stiffness: 120 }}
-                    whileHover={{ y: -6, transition: { duration: 0.35 } }}
-                    className={`flex-shrink-0 w-[280px] md:w-[320px] snap-start rounded-xl md:rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] ${item.borderHover} transition-all duration-500 group overflow-hidden`}
-                  >
-                    {/* Image with overlay */}
-                    <div className="relative aspect-[16/9] overflow-hidden">
-                      <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                      {/* Tag badge */}
-                      <div className="absolute top-2 left-2 md:top-3 md:left-3">
-                        <span className={`px-2 py-0.5 backdrop-blur-sm border text-[8px] font-black uppercase tracking-widest rounded-md ${item.tagBg}`}>{item.tag}</span>
-                      </div>
-                      {/* Icon in bottom-right of overlay */}
-                      <div className="absolute bottom-2.5 right-2.5 md:bottom-4 md:right-4">
-                        <div className={`w-9 h-9 md:w-11 md:h-11 rounded-xl bg-gradient-to-br ${item.accentColor} flex items-center justify-center text-white shadow-lg shadow-black/30 group-hover:scale-110 transition-transform duration-300`}>
-                          {item.icon}
-                        </div>
-                      </div>
-                    </div>
-                    {/* Text content */}
-                    <div className="p-3 md:p-5 space-y-1.5 md:space-y-2">
-                      <h3 className="text-sm md:text-base font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h3>
-                      <p className="text-[10px] md:text-xs text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-2 md:line-clamp-none">{item.desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* ─── CTA — amber/warm tone ─── */}
-              <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
-                <button
-                  onClick={() => navigate('/booking')}
-                  className="group inline-flex items-center gap-2 md:gap-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl text-xs md:text-sm font-bold shadow-lg shadow-amber-500/20 hover:shadow-2xl hover:shadow-amber-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all w-full sm:w-auto justify-center"
-                >
-                  <Building2 size={16} />
-                  {t('home.enterprise.cta')}
-                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                </button>
-                <a
-                  href="mailto:support@skyverses.com"
-                  className="inline-flex items-center gap-2 text-sm text-slate-400 dark:text-white/50 hover:text-slate-900 dark:hover:text-white transition-colors"
-                >
-                  <span className="text-[10px] font-bold uppercase tracking-wider">{t('home.enterprise.or_email')}</span>
-                  <span className="font-bold text-amber-500">support@skyverses.com</span>
-                </a>
-              </motion.div>
-
-              <p className="text-center text-[10px] font-medium text-slate-300 dark:text-white/20 mt-4 md:mt-6">{t('home.enterprise.footer')}</p>
-            </section>
-          )}
-
-          {/* ═══════════════════ INVITE FRIENDS & EARN ═══════════════════ */}
-          {!query && (
-            <section className="py-8 md:py-24 space-y-4 md:space-y-6">
-
-              {/* ═══ MOBILE: Compact referral card ═══ */}
-              <div className="md:hidden space-y-3">
-                {/* Main compact card */}
-                <div
-                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-blue/10 via-purple-500/10 to-pink-500/10 dark:from-brand-blue/5 dark:via-purple-500/5 dark:to-pink-500/5 border border-brand-blue/10 dark:border-white/[0.06] p-5 cursor-pointer active:scale-[0.98] transition-all"
-                  onClick={() => navigate(isAuthenticated ? '/referral' : '/pricing')}
-                >
-                  <div className="absolute -top-12 -right-12 w-40 h-40 bg-brand-blue/10 rounded-full blur-3xl pointer-events-none" />
-                  <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
-                  <div className="relative z-10 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue/10 dark:bg-brand-blue/15 border border-brand-blue/20 rounded-full">
-                        <Users size={10} className="text-brand-blue" />
-                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-blue">{t('home.referral.badge')}</span>
-                      </div>
-                      <ArrowRight size={16} className="text-brand-blue" />
-                    </div>
-
-                    <h2 className="text-lg font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-                      {t('home.referral.title_mobile1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">{t('home.referral.title_mobile_highlight')}</span>
-                    </h2>
-
-                    {/* Reward pills inline */}
-                    <div className="flex gap-2">
-                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[#13171f] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
-                        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-blue to-blue-600 flex items-center justify-center text-white shrink-0">
-                          <Zap size={16} fill="currentColor" />
-                        </div>
-                        <div>
-                          <p className="text-[8px] text-slate-400 font-medium">{t('home.referral.you_get')}</p>
-                          <p className="text-sm font-black text-slate-900 dark:text-white">+50 CR</p>
-                        </div>
-                      </div>
-                      <div className="flex-1 flex items-center gap-2.5 p-2.5 bg-white dark:bg-[#13171f] rounded-xl border border-black/[0.06] dark:border-white/[0.06] shadow-sm">
-                        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white shrink-0">
-                          <Gift size={16} />
-                        </div>
-                        <div>
-                          <p className="text-[8px] text-slate-400 font-medium">{t('home.referral.friend_gets')}</p>
-                          <p className="text-sm font-black text-slate-900 dark:text-white">+50 CR</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* CTA button */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); navigate(isAuthenticated ? '/referral' : '/pricing'); }}
-                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-blue to-purple-500 text-white py-3 rounded-xl text-[11px] font-bold shadow-lg shadow-brand-blue/15 active:scale-[0.97] transition-all"
-                    >
-                      <Gift size={13} />
-                      {isAuthenticated ? t('home.referral.cta_auth') : t('home.referral.cta_noauth')}
-                      <ArrowRight size={13} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Horizontal scroll benefit chips */}
-                <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1">
-                  {[
-                    { icon: <Zap size={12} fill="currentColor" />, text: t('home.referral.chip1'), color: 'text-brand-blue', bg: 'bg-brand-blue/10', border: 'border-brand-blue/15' },
-                    { icon: <CreditCard size={12} />, text: t('home.referral.chip2'), color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/15' },
-                    { icon: <Sparkles size={12} />, text: t('home.referral.chip3'), color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/15' },
-                    { icon: <Users size={12} />, text: t('home.referral.chip4'), color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/15' },
-                    { icon: <RefreshCw size={12} />, text: t('home.referral.chip5'), color: 'text-rose-500', bg: 'bg-rose-500/10', border: 'border-rose-500/15' },
-                  ].map((item) => (
-                    <div key={item.text} className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl ${item.bg} border ${item.border}`}>
-                      <span className={item.color}>{item.icon}</span>
-                      <span className="text-[9px] font-bold text-slate-600 dark:text-gray-400 whitespace-nowrap">{item.text}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Mini stats bar */}
-                <div className="flex items-center justify-center gap-5 py-2.5 px-4 bg-slate-50 dark:bg-white/[0.02] rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
-                  <div className="flex items-center gap-1.5">
-                    <Users size={11} className="text-brand-blue" />
-                    <span className="text-xs font-black text-slate-900 dark:text-white">2,847</span>
-                    <span className="text-[7px] font-bold text-slate-400 uppercase">{t('home.referral.stat_joined')}</span>
-                  </div>
-                  <div className="w-px h-4 bg-black/[0.06] dark:bg-white/[0.06]" />
-                  <div className="flex items-center gap-1.5">
-                    <Zap size={11} className="text-amber-500" fill="currentColor" />
-                    <span className="text-xs font-black text-brand-blue">142K</span>
-                    <span className="text-[7px] font-bold text-slate-400 uppercase">{t('home.referral.stat_given')}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* ═══ DESKTOP: Full referral section ═══ */}
-              {/* ─── MAIN REFERRAL BLOCK ─── */}
-              <div className="hidden md:block relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-blue/10 via-purple-500/10 to-pink-500/10 dark:from-brand-blue/5 dark:via-purple-500/5 dark:to-pink-500/5 border border-brand-blue/10 dark:border-white/[0.06]">
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute -top-20 -right-20 w-80 h-80 bg-brand-blue/10 rounded-full blur-3xl" />
-                  <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
-                </div>
-
-                <div className="relative z-10 p-16 flex flex-row items-center gap-16">
-                  <div className="flex-1 text-left space-y-6">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/10 dark:bg-brand-blue/15 border border-brand-blue/20 rounded-full">
-                      <Users size={12} className="text-brand-blue" />
-                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-brand-blue">{t('home.referral.badge')}</span>
-                    </div>
-                    <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.1]">
-                      {t('home.referral.title_desktop1')}{' '}
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-purple-500 to-pink-500">{t('home.referral.title_desktop_highlight')}</span>
-                    </h2>
-                    <p className="text-base text-slate-500 dark:text-gray-400 max-w-lg leading-relaxed">
-                      {t('home.referral.desktop_desc')}
-                    </p>
-                    <div className="flex flex-row gap-6 pt-2">
+                <div className="flex whitespace-nowrap hero-logo-marquee">
+                  {[0, 1].map(setIdx => (
+                    <div key={setIdx} className="flex shrink-0">
                       {[
-                        { num: '1', text: t('home.referral.step1'), icon: <Share2 size={16} /> },
-                        { num: '2', text: t('home.referral.step2'), icon: <UserPlus size={16} /> },
-                        { num: '3', text: t('home.referral.step3'), icon: <Gift size={16} /> },
-                      ].map((s) => (
-                        <div key={s.num} className="flex items-center gap-2.5 px-3 py-2 bg-white/50 dark:bg-white/[0.03] rounded-xl border border-black/[0.04] dark:border-white/[0.06]">
-                          <div className="w-7 h-7 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue shrink-0">{s.icon}</div>
-                          <span className="text-[11px] font-bold text-slate-700 dark:text-gray-300">{s.text}</span>
+                        { name: 'MINIMAX', file: 'minimax.svg' },
+                        { name: 'Moonshot AI', file: 'moonshot.svg' },
+                        { name: 'deepseek', file: 'deepseek.svg' },
+                        { name: 'Qwen & Wan', file: 'qwen.svg' },
+                        { name: 'ByteDance', file: 'bytedance.svg' },
+                        { name: 'LUMA AI', file: 'luma.svg' },
+                        { name: 'Z.ai', file: 'zai.svg' },
+                        { name: 'OpenAI', file: 'openai.svg' },
+                        { name: 'Google', file: 'google.svg' },
+                        { name: 'KLING', file: 'kling.svg' },
+                      ].map(logo => (
+                        <div key={`${setIdx}-${logo.name}`} className="flex items-center justify-center px-5 md:px-8">
+                          <img
+                            src={`/assets/landing-logos/${logo.file}`}
+                            alt={logo.name}
+                            loading="lazy"
+                            className="h-[14px] md:h-[20px] lg:h-[23px] w-auto object-contain opacity-50 hover:opacity-80 transition-opacity duration-300 brightness-0 invert"
+                          />
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-row gap-3 pt-2">
-                      <button
-                        onClick={() => navigate(isAuthenticated ? '/referral' : '/pricing')}
-                        className="inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-brand-blue to-purple-500 text-white px-7 py-3.5 rounded-xl text-xs font-bold shadow-lg shadow-brand-blue/20 hover:shadow-xl hover:shadow-brand-blue/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  ))}
+                </div>
+
+                <style>{`
+                  @keyframes heroLogoScroll {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                  }
+                  .hero-logo-marquee {
+                    animation: heroLogoScroll 30s linear infinite;
+                  }
+                  .hero-logo-marquee:hover {
+                    animation-play-state: paused;
+                  }
+                `}</style>
+              </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 2: TOOLS OVERVIEW — 2×3 Grid cards
+             * Tạo kịch bản, Tạo hình, Tạo video, Marketing, Công cụ khác, Explore All
+             * ═══════════════════════════════════════════════════════════ */}
+            <section style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', background: '#fff', padding: '80px 0 0', position: 'relative', zIndex: 2, boxSizing: 'border-box' }}>
+              <div style={{ padding: '0 64px', boxSizing: 'border-box' }}>
+                {/* Section header */}
+                <AnimatedSectionHeader
+                  label={t('landing.tools.label')}
+                  title={t('landing.tools.title')}
+                  desc={t('landing.tools.desc')}
+                  style={{ marginBottom: 40 }}
+                />
+
+                {/* Layout: Col1 (featured) + Col2 (2 rows × 3 cards) */}
+                <div style={{ display: 'flex', gap: 24, position: 'relative' }}>
+                  {/* Col 1 — Featured hero card, height determined by Col 2 */}
+                  <FadeInUp style={{ flex: '0 0 380px', display: 'flex', position: 'absolute', top: 0, bottom: 0, left: 0, width: 380 }}>
+                  <div
+                    className="hov-card group"
+                    onClick={() => navigate('/solutions')}
+                    style={{
+                      width: '100%', borderRadius: 16, overflow: 'hidden',
+                      boxSizing: 'border-box', cursor: 'pointer',
+                      border: '1px solid rgba(0,0,0,0.06)', background: '#0a0f1a',
+                      display: 'flex', flexDirection: 'column', position: 'relative',
+                    }}
+                  >
+                    <div className="hov-img-wrap" style={{ width: '100%', flex: '1 1 0', minHeight: 0, overflow: 'hidden' }}>
+                      <img src="/assets/homepage/gold-tools-hero.webp" alt="All-in-One AI Platform" className="hov-img" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} loading="lazy" />
+                    </div>
+                    <div style={{ padding: '24px 28px 28px', background: '#0a0f1a' }}>
+                      <span style={{ fontFamily: 'var(--font-mono, Fragment Mono, monospace)', fontWeight: 500, fontSize: 11, letterSpacing: '0.1em', color: '#C9A84C', textTransform: 'uppercase', marginBottom: 10, display: 'block' }}>
+                        {t('landing.tools.featured_badge')}
+                      </span>
+                      <h3 style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 22, lineHeight: 1.3, color: '#fff', margin: '0 0 10px' }}>
+                        {t('landing.tools.featured_title')}
+                      </h3>
+                      <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 14, lineHeight: 1.55, color: 'rgba(255,255,255,0.55)', margin: '0 0 16px' }}>
+                        {t('landing.tools.featured_desc')}
+                      </p>
+                      <span className="hov-btn-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 20px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: 13, fontWeight: 500 }}>
+                        {t('landing.tools.featured_cta')}
+                      </span>
+                    </div>
+                  </div>
+                  </FadeInUp>
+
+                  {/* Col 2 — 2 rows × 3 small cards (determines container height) */}
+                  <div style={{ flex: '1 1 auto', minWidth: 0, marginLeft: 404, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'auto auto', gap: 24 }}>
+                    {[
+                      {
+                        title: t('landing.tools.card1_title'),
+                        desc: t('landing.tools.card1_desc'),
+                        img: '/assets/homepage/gold-tools-script.webp',
+                        link: '/solutions',
+                      },
+                      {
+                        title: t('landing.tools.card2_title'),
+                        desc: t('landing.tools.card2_desc'),
+                        img: '/assets/homepage/gold-tools-image.webp',
+                        link: '/solutions',
+                      },
+                      {
+                        title: t('landing.tools.card3_title'),
+                        desc: t('landing.tools.card3_desc'),
+                        img: '/assets/homepage/gold-tools-video.webp',
+                        link: '/solutions',
+                      },
+                      {
+                        title: t('landing.tools.card4_title'),
+                        desc: t('landing.tools.card4_desc'),
+                        img: '/assets/homepage/gold-tools-marketing.webp',
+                        link: '/solutions',
+                      },
+                      {
+                        title: t('landing.tools.card5_title'),
+                        desc: t('landing.tools.card5_desc'),
+                        img: '/assets/homepage/gold-tools-upscale.webp',
+                        link: '/solutions',
+                      },
+                      {
+                        title: t('landing.tools.card6_title'),
+                        desc: t('landing.tools.card6_desc'),
+                        img: '/assets/homepage/gold-tools-3d.webp',
+                        link: '/solutions',
+                      },
+                    ].map((tool, idx) => (
+                      <FadeInUp key={tool.title} delay={idx * 0.06}>
+                      <div
+                        className="hov-card group"
+                        onClick={() => navigate(tool.link)}
+                        style={{
+                          background: '#fff', borderRadius: 16, overflow: 'hidden',
+                          boxSizing: 'border-box', cursor: 'pointer',
+                          border: '1px solid rgba(0,0,0,0.06)',
+                          display: 'flex', flexDirection: 'column', height: '100%',
+                        }}
                       >
-                        <Gift size={14} />
-                        {isAuthenticated ? t('home.referral.cta_auth') : t('home.referral.cta_noauth')}
-                        <ArrowRight size={14} />
+                        <div className="hov-img-wrap" style={{ width: '100%', aspectRatio: '16/10', overflow: 'hidden', background: '#1a2330', flexShrink: 0 }}>
+                          <img src={tool.img} alt={tool.title} className="hov-img" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} loading="lazy" />
+                        </div>
+                        <div style={{ padding: '14px 16px 16px', flex: '1 1 auto' }}>
+                          <h3 style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 15, lineHeight: 1.3, color: '#1a2330', margin: '0 0 4px' }}>
+                            {tool.title}
+                          </h3>
+                          <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 13, lineHeight: 1.5, color: '#9ca3af', margin: 0 }}>
+                            {tool.desc}
+                          </p>
+                        </div>
+                      </div>
+                      </FadeInUp>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 2.5: LATEST MODELS — Full-width slider, seeded data
+             * ═══════════════════════════════════════════════════════════ */}
+            <LazySection rootMargin="300px" minHeight={600} className="bg-[#0c1117]">
+            <LatestModelsSection activeTab={activeModelTab} setActiveTab={setActiveModelTab} navigate={navigate} />
+            </LazySection>
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 2B: MODEL SHOWCASE — Nano Banana Pro (35) & Veo3 (23)
+             * Character filter tabs + responsive grids
+             * ═══════════════════════════════════════════════════════════ */}
+            <LazySection skeleton={<><ShowcaseGallerySkeleton /><ShowcaseGallerySkeleton /><ShowcaseGallerySkeleton /><ShowcaseGallerySkeleton /></>} rootMargin="300px" minHeight={700} className="bg-[#0d0b08]">
+            <section style={{ padding: '0 0 60px', overflow: 'hidden' }}>
+              <div style={{ width: '100%', maxWidth: 1440, margin: '0 auto', boxSizing: 'border-box', padding: '0 64px' }}>
+                {/* ── Nano Banana Pro (Image Generation) ── */}
+                <div className={`relative bg-[#0d0b08] overflow-hidden transition-all duration-500 ${expandedGroups['banana'] ? '' : 'max-h-[700px]'}`} style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', padding: '40px max(24px, calc((100vw - 1312px) / 2))' }}>
+                  {/* Full background video */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <video src={SHOWCASE_VIDEOS[1]?.videoUrl} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-[#0d0b08]/80" />
+                  </div>
+                  {/* Warm amber glow accents */}
+                  <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(201,168,76,0.08)_0%,transparent_70%)] pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-600/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-600/10 to-transparent" />
+                  {!expandedGroups['banana'] && <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#0d0b08] via-[#0d0b08]/80 to-transparent z-20 pointer-events-none" />}
+                <FadeInUp delay={0.1}>
+                  <div className="relative z-10 flex flex-col md:flex-row gap-6 md:gap-8">
+                    {/* Left column — Group info */}
+                    <div className="md:w-1/4 shrink-0 flex flex-col gap-4 md:py-8">
+                      <h3 className="showcase-gold-title" style={{
+                        fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 800,
+                        fontSize: 28, margin: 0, letterSpacing: '0.02em', lineHeight: 1.2,
+                      }}>
+                        Nano Banana Pro
+                      </h3>
+                      <p className="text-[13px] text-white/50 leading-relaxed" style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)' }}>
+                        {t('landing.showcase.banana_desc')}
+                      </p>
+                      <button
+                        onClick={() => navigate('/solutions')}
+                        className="hov-btn-gold w-fit"
+                        style={{
+                          background: '#C9A84C', color: '#1a2330', border: 'none', borderRadius: 8,
+                          padding: '10px 20px', fontFamily: 'var(--font-manrope, Manrope, sans-serif)',
+                          fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                        }}
+                      >
+                        {t('landing.showcase.banana_cta')}
+                      </button>
+
+                      {/* Divider */}
+                      <div className="hidden md:block w-full h-px bg-white/[0.06] my-1" />
+
+                      {/* Stats */}
+                      <div className="hidden md:flex items-center gap-4 text-[12px] text-white/40" style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)' }}>
+                        <span><span className="text-white/70 font-semibold">{SHOWCASE_IMAGES.length}</span> {t('landing.showcase.images')}</span>
+                        <span>{t('landing.showcase.up_to')} <span className="text-white/70 font-semibold">4K</span></span>
+                      </div>
+
+                      {/* Feature tags */}
+                      <div className="hidden md:flex flex-wrap gap-1.5">
+                        {[t('landing.showcase.tag_photo'), t('landing.showcase.tag_text'), t('landing.showcase.tag_multi'), t('landing.showcase.tag_style')].map(tag => (
+                          <span key={tag} className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-white/[0.04] text-white/40 border border-white/[0.06]">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Mini preview grid */}
+                      <div className="hidden md:grid grid-cols-3 gap-1.5 mt-1">
+                        {SHOWCASE_IMAGES.slice(0, 6).map(item => (
+                          <div key={item.id} className="aspect-square rounded-lg overflow-hidden border border-white/[0.06]">
+                            <img src={item.img} alt="" className="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Right column — Cards grid */}
+                    <div className="flex-1 min-w-0">
+                    <div className="showcase-masonry">
+                      {SHOWCASE_IMAGES.map((item, idx) => {
+                        const heightClass = SHOWCASE_HEIGHT[idx % SHOWCASE_HEIGHT.length];
+                        return (
+                          <div
+                            key={item.id}
+                            className={`showcase-masonry-item relative overflow-hidden group cursor-pointer rounded-xl transition-all duration-300 bg-[#15120a] border border-amber-800/10 hover:border-amber-700/25 hover:shadow-lg hover:shadow-amber-900/10 ${heightClass}`}
+                            onClick={() => setSelectedShowcaseItem({
+                              id: item.id, title: item.product, description: item.name, type: 'image',
+                              thumbnailUrl: item.img, mediaUrl: item.img,
+                              model: 'google_image_gen_4_5', modelKey: 'Nano Banana Pro',
+                              engine: 'Google Imagen 4.5',
+                              resolution: item.ratio === '16:9' ? '1920 × 1080' : '1024 × 1024',
+                              tags: ['showcase', 'banana-pro', item.tag, item.character],
+                              categories: ['showcase', 'banana-pro'],
+                              createdAt: '2026-05-06',
+                              prompt: item.prompt,
+                            })}
+                          >
+                            {/* Image */}
+                            <div className="absolute inset-0 overflow-hidden">
+                              <img
+                                src={item.img}
+                                alt={item.name}
+                                loading="lazy"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                              {/* Hover gradient */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                              {/* Hover info */}
+                              <div className="absolute bottom-0 left-0 right-0 p-3 z-20 pointer-events-none opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                <p className="text-[11px] text-white/70 font-medium truncate mb-1">{item.product}</p>
+                              </div>
+                            </div>
+
+                            {/* Footer bar */}
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/30 to-transparent px-3 py-2.5 flex items-center justify-between z-20">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0" />
+                                <span className="text-[11px] font-medium text-white/70 truncate">{item.name}</span>
+                              </div>
+                              <button onClick={(e) => { e.stopPropagation(); setSelectedShowcaseItem({
+                                id: item.id, title: item.product, description: item.name, type: 'image',
+                                thumbnailUrl: item.img, mediaUrl: item.img,
+                                model: 'google_image_gen_4_5', modelKey: 'Nano Banana Pro',
+                                engine: 'Google Imagen 4.5',
+                                resolution: item.ratio === '16:9' ? '1920 × 1080' : '1024 × 1024',
+                                tags: ['showcase', 'banana-pro', item.tag, item.character],
+                                categories: ['showcase', 'banana-pro'],
+                                createdAt: '2026-05-06',
+                                prompt: item.prompt,
+                              }); }} className="p-1 text-white/50 hover:text-white transition-colors">
+                                <Maximize2 size={12} />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    </div>{/* end right column */}
+                  </div>
+                </FadeInUp>
+                  <button onClick={() => toggleGroup('banana')} className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold transition-all hover:scale-105" style={{ background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.3)', color: '#C9A84C', backdropFilter: 'blur(8px)' }}>
+                    {expandedGroups['banana'] ? <><ChevronUp size={14} /> {t('landing.showcase.collapse')}</> : <><ChevronDown size={14} /> {t('landing.showcase.load_more')}</>}
+                  </button>
+                </div>{/* end Nano Banana Pro frame */}
+
+                {/* ── Veo 3 (Video Generation) ── */}
+                <div className={`relative bg-[#080a14] overflow-hidden transition-all duration-500 ${expandedGroups['veo3'] ? '' : 'max-h-[700px]'}`} style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', padding: '40px max(24px, calc((100vw - 1312px) / 2))' }}>
+                  {/* Full background video */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <video src={SHOWCASE_VIDEOS[0]?.videoUrl} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-[#080a14]/80" />
+                  </div>
+                  {/* Blue glow accents */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[radial-gradient(ellipse,rgba(56,100,220,0.08)_0%,transparent_70%)] pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/10 to-transparent" />
+                  {!expandedGroups['veo3'] && <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#080a14] via-[#080a14]/80 to-transparent z-20 pointer-events-none" />}
+                <FadeInUp delay={0.2}>
+                  <div className="relative z-10 flex flex-col md:flex-row gap-6 md:gap-8">
+                    {/* Left column — Group info */}
+                    <div className="md:w-1/4 shrink-0 flex flex-col gap-4 md:py-8">
+                      <h3 className="showcase-gold-title" style={{
+                        fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 800,
+                        fontSize: 28, margin: 0, letterSpacing: '0.02em', lineHeight: 1.2,
+                      }}>
+                        Veo 3
+                      </h3>
+                      <p className="text-[13px] text-white/50 leading-relaxed" style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)' }}>
+                        {t('landing.showcase.veo3_desc')}
+                      </p>
+                      <button
+                        onClick={() => navigate('/solutions')}
+                        className="w-fit hover:opacity-90 transition-opacity"
+                        style={{
+                          background: 'linear-gradient(135deg, #3864dc, #5040c8)', color: '#fff', border: 'none', borderRadius: 8,
+                          padding: '10px 20px', fontFamily: 'var(--font-manrope, Manrope, sans-serif)',
+                          fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                        }}
+                      >
+                        {t('landing.showcase.veo3_cta')}
+                      </button>
+
+                      {/* Divider */}
+                      <div className="hidden md:block w-full h-px bg-white/[0.06] my-1" />
+
+                      {/* Stats */}
+                      <div className="hidden md:flex items-center gap-4 text-[12px] text-white/40" style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)' }}>
+                        <span><span className="text-white/70 font-semibold">{SHOWCASE_VIDEOS.length}</span> {t('landing.showcase.videos')}</span>
+                        <span><span className="text-white/70 font-semibold">1080p</span> HD</span>
+                      </div>
+
+                      {/* Feature tags */}
+                      <div className="hidden md:flex flex-wrap gap-1.5">
+                        {[t('landing.showcase.tag_t2v'), t('landing.showcase.tag_i2v'), t('landing.showcase.tag_cine'), t('landing.showcase.tag_audio')].map(tag => (
+                          <span key={tag} className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-blue-500/[0.06] text-blue-300/50 border border-blue-500/10">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Mini preview grid — video thumbnails */}
+                      <div className="hidden md:grid grid-cols-3 gap-1.5 mt-1">
+                        {SHOWCASE_VIDEOS.slice(0, 6).map(item => (
+                          <div key={item.id} className="aspect-video rounded-lg overflow-hidden border border-blue-800/15">
+                            <video src={item.videoUrl} poster={item.thumb} preload="metadata" muted playsInline className="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity duration-300" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Right column — Cards grid */}
+                    <div className="flex-1 min-w-0">
+                    <div className="showcase-masonry">
+                      {SHOWCASE_VIDEOS.map((item, idx) => {
+                        const heightClass = SHOWCASE_HEIGHT[idx % SHOWCASE_HEIGHT.length];
+                        return (
+                          <div
+                            key={item.id}
+                            className={`showcase-masonry-item relative overflow-hidden group cursor-pointer rounded-xl transition-all duration-300 bg-[#0a0e1a] border border-blue-800/10 hover:border-blue-600/25 hover:shadow-lg hover:shadow-blue-900/10 ${heightClass}`}
+                            onClick={() => setSelectedShowcaseItem({
+                              id: item.id, title: item.product, description: `${item.name} — ${item.mode}`, type: 'video',
+                              thumbnailUrl: item.videoUrl, mediaUrl: item.videoUrl,
+                              model: 'veo_3_generate', modelKey: 'Veo 3',
+                              engine: 'Google Veo 3',
+                              resolution: '1080p',
+                              tags: ['showcase', 'veo3', item.mode, item.character],
+                              categories: ['showcase', 'veo3'],
+                              createdAt: '2026-05-06',
+                              prompt: item.prompt,
+                              ...(item.mode === 'image-to-video' ? { meta: { referenceImage: item.thumb } } : {}),
+                            })}
+                          >
+                            {/* Video thumbnail — use <video> with preload to show first frame */}
+                            <div className="absolute inset-0 overflow-hidden">
+                              <video
+                                src={item.videoUrl}
+                                poster={item.thumb}
+                                preload="metadata"
+                                muted
+                                playsInline
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
+                                onMouseLeave={(e) => { const v = e.currentTarget as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
+                              />
+                              {/* Play icon overlay */}
+                              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div className="w-10 h-10 rounded-full bg-blue-500/80 flex items-center justify-center opacity-80 group-hover:opacity-0 transition-opacity duration-300">
+                                  <Play size={18} fill="#fff" color="#fff" />
+                                </div>
+                              </div>
+                              {/* Hover gradient */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                              {/* Hover info */}
+                              <div className="absolute bottom-0 left-0 right-0 p-3 z-20 pointer-events-none opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                <p className="text-[11px] text-white/70 font-medium truncate mb-1">{item.product}</p>
+                              </div>
+                            </div>
+
+                            {/* Footer bar */}
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/30 to-transparent px-3 py-2.5 flex items-center justify-between z-20">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                                <span className="text-[11px] font-medium text-white/70 truncate">{item.name}</span>
+                              </div>
+                              <button onClick={(e) => { e.stopPropagation(); setSelectedShowcaseItem({
+                                id: item.id, title: item.product, description: `${item.name} — ${item.mode}`, type: 'video',
+                                thumbnailUrl: item.videoUrl, mediaUrl: item.videoUrl,
+                                model: 'veo_3_generate', modelKey: 'Veo 3',
+                                engine: 'Google Veo 3',
+                                resolution: '1080p',
+                                tags: ['showcase', 'veo3', item.mode, item.character],
+                                categories: ['showcase', 'veo3'],
+                                createdAt: '2026-05-06',
+                                prompt: item.prompt,
+                                ...(item.mode === 'image-to-video' ? { meta: { referenceImage: item.thumb } } : {}),
+                              }); }} className="p-1 text-white/50 hover:text-white transition-colors">
+                                <Maximize2 size={12} />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    </div>{/* end right column */}
+                  </div>
+                </FadeInUp>
+                  <button onClick={() => toggleGroup('veo3')} className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold transition-all hover:scale-105" style={{ background: 'rgba(56,100,220,0.15)', border: '1px solid rgba(56,100,220,0.3)', color: '#6090e8', backdropFilter: 'blur(8px)' }}>
+                    {expandedGroups['veo3'] ? <><ChevronUp size={14} /> {t('landing.showcase.collapse')}</> : <><ChevronDown size={14} /> {t('landing.showcase.load_more')}</>}
+                  </button>
+                </div>{/* end Veo 3 frame */}
+
+                {/* ── Fashion Showcase (Mixed Image + Video) ── */}
+                <div className={`relative bg-[#0c0810] overflow-hidden transition-all duration-500 ${expandedGroups['fashion'] ? '' : 'max-h-[700px]'}`} style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', padding: '40px max(24px, calc((100vw - 1312px) / 2))' }}>
+                  {/* Full background video */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <video src={SHOWCASE_FASHION_VIDEOS.filter(v => v.videoUrl)[0]?.videoUrl} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-[#0c0810]/80" />
+                  </div>
+                  {/* Rose glow accents */}
+                  <div className="absolute top-0 left-0 w-[500px] h-[450px] bg-[radial-gradient(circle,rgba(180,80,120,0.07)_0%,transparent_70%)] pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-500/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-500/10 to-transparent" />
+                  {!expandedGroups['fashion'] && <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#0c0810] via-[#0c0810]/80 to-transparent z-20 pointer-events-none" />}
+                <FadeInUp delay={0.2}>
+                  <div className="relative z-10 flex flex-col md:flex-row gap-6 md:gap-8">
+                    {/* Left column — Group info */}
+                    <div className="md:w-1/4 shrink-0 flex flex-col gap-4 md:py-8">
+                      <h3 className="showcase-gold-title" style={{
+                        fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 800,
+                        fontSize: 28, margin: 0, letterSpacing: '0.02em', lineHeight: 1.2,
+                      }}>
+                        Fashion AI
+                      </h3>
+                      <p className="text-[13px] text-white/50 leading-relaxed" style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)' }}>
+                        {t('landing.showcase.fashion_desc')}
+                      </p>
+                      <button
+                        onClick={() => navigate('/solutions')}
+                        className="w-fit hover:opacity-90 transition-opacity"
+                        style={{
+                          background: 'linear-gradient(135deg, #b4507a, #8a4a6e)', color: '#fff', border: 'none', borderRadius: 8,
+                          padding: '10px 20px', fontFamily: 'var(--font-manrope, Manrope, sans-serif)',
+                          fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                        }}
+                      >
+                        {t('landing.showcase.fashion_cta')}
+                      </button>
+
+                      {/* Divider */}
+                      <div className="hidden md:block w-full h-px bg-white/[0.06] my-1" />
+
+                      {/* Stats */}
+                      <div className="hidden md:flex items-center gap-4 text-[12px] text-white/40" style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)' }}>
+                        <span><span className="text-white/70 font-semibold">{SHOWCASE_FASHION_ALBUMS.length}</span> {t('landing.showcase.albums')}</span>
+                        <span><span className="text-white/70 font-semibold">{SHOWCASE_FASHION_IMAGES.length}</span> {t('landing.showcase.photos')}</span>
+                        <span><span className="text-white/70 font-semibold">{SHOWCASE_FASHION_VIDEOS.filter(v => v.videoUrl).length}</span> {t('landing.showcase.videos')}</span>
+                      </div>
+
+                      {/* Feature tags */}
+                      <div className="hidden md:flex flex-wrap gap-1.5">
+                        {SHOWCASE_FASHION_ALBUMS.map(a => (
+                          <span key={a.id} className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-white/[0.04] text-white/40 border border-white/[0.06]">
+                            {a.subtitle.split(' — ')[1] || a.subtitle}
+                          </span>
+                        ))}
+                      </div>
+
+                    </div>
+
+                    {/* Right column — Album cards grid */}
+                    <div className="flex-1 min-w-0">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {(() => {
+                        // Interleave albums & videos: insert a video card after every 2 album cards
+                        const items: { type: 'album' | 'video'; data: any }[] = [];
+                        const vids = SHOWCASE_FASHION_VIDEOS.filter(v => v.videoUrl);
+                        let vi = 0;
+                        SHOWCASE_FASHION_ALBUMS.forEach((album, ai) => {
+                          items.push({ type: 'album', data: album });
+                          if ((ai + 1) % 2 === 0 && vi < vids.length) {
+                            items.push({ type: 'video', data: vids[vi++] });
+                          }
+                        });
+                        // Append remaining videos
+                        while (vi < vids.length) items.push({ type: 'video', data: vids[vi++] });
+
+                        return items.map(item => {
+                          if (item.type === 'album') {
+                            const album = item.data;
+                            return (
+                              <div
+                                key={album.id}
+                                className="relative overflow-hidden group/album cursor-pointer rounded-xl transition-all duration-300 bg-[#0f1720] border hover:shadow-lg h-[200px] md:h-[240px]"
+                                style={{ borderColor: `${album.color}30`, boxShadow: `0 0 0 0 ${album.color}00` }}
+                                onMouseEnter={e => { e.currentTarget.style.borderColor = `${album.color}80`; e.currentTarget.style.boxShadow = `0 4px 20px ${album.color}20`; }}
+                                onMouseLeave={e => { e.currentTarget.style.borderColor = `${album.color}30`; e.currentTarget.style.boxShadow = `0 0 0 0 ${album.color}00`; }}
+                                onClick={() => setSelectedShowcaseItem({
+                                  id: `fashion-album-${album.id}`,
+                                  title: album.name,
+                                  description: `${album.subtitle} · ${album.images.length} photos`,
+                                  type: 'image',
+                                  thumbnailUrl: album.cover,
+                                  mediaUrl: album.cover,
+                                  model: 'google_image_gen_4_5',
+                                  modelKey: 'Imagen 4.5',
+                                  engine: 'Google Imagen 4.5',
+                                  resolution: 'Mixed',
+                                  tags: ['showcase', 'fashion', album.id],
+                                  categories: ['showcase', 'fashion'],
+                                  createdAt: '2026-05-08',
+                                  prompt: album.images[0]?.prompt || '',
+                                })}
+                              >
+                                {/* 2×2 mosaic background */}
+                                <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-0.5">
+                                  {album.images.slice(0, 4).map((img: any) => (
+                                    <div key={img.id} className="overflow-hidden">
+                                      <img src={img.img} alt="" className="w-full h-full object-cover opacity-60 group-hover/album:opacity-80 group-hover/album:scale-105 transition-all duration-500" loading="lazy" />
+                                    </div>
+                                  ))}
+                                </div>
+                                {/* Dark overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 pointer-events-none" />
+                                {/* Album badge — top right */}
+                                <div className="absolute top-2 right-2 z-10 px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider" style={{ background: `${album.color}30`, border: `1px solid ${album.color}50`, color: album.color, backdropFilter: 'blur(8px)' }}>
+                                  {album.images.length} photos
+                                </div>
+                                {/* Bottom info */}
+                                <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+                                  <p className="text-[13px] font-bold text-white/90 truncate" style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', color: album.color }}>{album.name}</p>
+                                  <p className="text-[10px] text-white/50 mt-0.5 truncate">{album.subtitle}</p>
+                                </div>
+                              </div>
+                            );
+                          } else {
+                            const vid = item.data;
+                            return (
+                              <div
+                                key={vid.id}
+                                className="relative overflow-hidden group/vid cursor-pointer rounded-xl transition-all duration-300 bg-[#0f1720] border border-amber-500/20 hover:border-amber-500/60 hover:shadow-lg h-[200px] md:h-[240px]"
+                                onClick={() => setSelectedShowcaseItem({
+                                  id: `fashion-video-${vid.id}`,
+                                  title: vid.name,
+                                  description: vid.product,
+                                  type: 'video',
+                                  thumbnailUrl: vid.videoUrl,
+                                  mediaUrl: vid.videoUrl,
+                                  model: 'veo_3_generate',
+                                  modelKey: 'Veo 3',
+                                  engine: 'Google Veo 3',
+                                  resolution: '720p',
+                                  tags: ['showcase', 'fashion', 'video', vid.character],
+                                  categories: ['showcase', 'fashion'],
+                                  createdAt: '2026-05-08',
+                                  prompt: vid.prompt,
+                                })}
+                              >
+                                {/* Video preview */}
+                                <video
+                                  src={vid.videoUrl}
+                                  muted
+                                  loop
+                                  playsInline
+                                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover/vid:opacity-90 transition-opacity duration-500"
+                                  onMouseEnter={e => (e.target as HTMLVideoElement).play()}
+                                  onMouseLeave={e => { const v = e.target as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
+                                />
+                                {/* Dark overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10 pointer-events-none" />
+                                {/* Video badge — top right */}
+                                <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-amber-500/20 border border-amber-500/40 text-amber-400" style={{ backdropFilter: 'blur(8px)' }}>
+                                  <Play size={8} fill="currentColor" /> Video
+                                </div>
+                                {/* Bottom info */}
+                                <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+                                  <p className="text-[13px] font-bold text-amber-400 truncate" style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)' }}>{vid.name}</p>
+                                  <p className="text-[10px] text-white/50 mt-0.5 truncate">{vid.product}</p>
+                                </div>
+                              </div>
+                            );
+                          }
+                        });
+                      })()}
+                    </div>
+                    </div>{/* end right column */}
+                  </div>
+                </FadeInUp>
+                  <button onClick={() => toggleGroup('fashion')} className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold transition-all hover:scale-105" style={{ background: 'rgba(180,80,122,0.15)', border: '1px solid rgba(180,80,122,0.3)', color: '#d48aab', backdropFilter: 'blur(8px)' }}>
+                    {expandedGroups['fashion'] ? <><ChevronUp size={14} /> {t('landing.showcase.collapse')}</> : <><ChevronDown size={14} /> {t('landing.showcase.load_more')}</>}
+                  </button>
+                </div>{/* end Fashion Showcase frame */}
+
+                {/* ── 3D Model Showcase ── */}
+                <div className={`relative bg-[#0a0c0e] overflow-hidden transition-all duration-500 ${expandedGroups['3d'] ? '' : 'max-h-[700px]'}`} style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', padding: '40px max(24px, calc((100vw - 1312px) / 2))' }}>
+                  {/* Background video — random 3D model turntable */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <video src={(() => { const vids = SHOWCASE_3D_MODELS.filter(m => m.videoUrl); return vids[Math.floor(Math.random() * vids.length)]?.videoUrl || ''; })()} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-[#0a0c0e]/85" />
+                  </div>
+                  {/* Subtle teal glow */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[radial-gradient(ellipse,rgba(0,200,180,0.06)_0%,transparent_70%)] pointer-events-none" />
+                  <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-[radial-gradient(circle,rgba(0,140,200,0.04)_0%,transparent_70%)] pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-500/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-500/10 to-transparent" />
+                  {!expandedGroups['3d'] && <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#0a0c0e] via-[#0a0c0e]/80 to-transparent z-10 pointer-events-none" />}
+                <FadeInUp delay={0.2}>
+                  <div className="relative z-10 flex flex-col md:flex-row gap-6 md:gap-8">
+                    {/* Left column — Section info */}
+                    <div className="md:w-1/4 shrink-0 flex flex-col gap-4 md:py-8">
+                      <h3 className="showcase-gold-title" style={{
+                        fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 800,
+                        fontSize: 28, margin: 0, letterSpacing: '0.02em', lineHeight: 1.2,
+                      }}>
+                        3D Models
+                      </h3>
+                      <p className="text-[13px] text-white/50 leading-relaxed" style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)' }}>
+                        {t('landing.showcase.3d_desc')}
+                      </p>
+                      <button
+                        onClick={() => navigate('/solutions')}
+                        className="w-fit hover:opacity-90 transition-opacity"
+                        style={{
+                          background: 'linear-gradient(135deg, #00c8b4, #0088cc)', color: '#fff', border: 'none', borderRadius: 8,
+                          padding: '10px 20px', fontFamily: 'var(--font-manrope, Manrope, sans-serif)',
+                          fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                        }}
+                      >
+                        {t('landing.showcase.3d_cta')}
+                      </button>
+
+                      <div className="hidden md:block w-full h-px bg-white/[0.06] my-1" />
+
+                      <div className="hidden md:flex items-center gap-4 text-[12px] text-white/40" style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)' }}>
+                        <span><span className="text-white/70 font-semibold">{SHOWCASE_3D_MODELS.length}</span> {t('landing.showcase.models')}</span>
+                        <span><span className="text-white/70 font-semibold">PBR</span> ready</span>
+                      </div>
+
+                      <div className="hidden md:flex flex-wrap gap-1.5">
+                        {[t('landing.showcase.3d_tag1'), t('landing.showcase.3d_tag2'), t('landing.showcase.3d_tag3'), t('landing.showcase.3d_tag4'), t('landing.showcase.3d_tag5')].map(tag => (
+                          <span key={tag} className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-teal-500/[0.06] text-teal-300/50 border border-teal-500/10">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Mini preview grid */}
+                      <div className="hidden md:grid grid-cols-3 gap-1.5 mt-1">
+                        {SHOWCASE_3D_MODELS.slice(0, 6).map(item => (
+                          <div key={item.id} className="aspect-square rounded-lg overflow-hidden border border-teal-800/15 bg-[#1a1c1e]">
+                            <img src={item.thumb} alt={item.name} className="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Right column — 3D Model Cards grid */}
+                    <div className="flex-1 min-w-0">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                      {SHOWCASE_3D_MODELS.map((item) => (
+                        <div
+                          key={item.id}
+                          className="relative group/card cursor-pointer rounded-xl overflow-hidden bg-[#1a1c1e] border border-white/[0.04] hover:border-teal-500/20 transition-all duration-300 hover:shadow-lg hover:shadow-teal-900/10"
+                          onMouseEnter={(e) => {
+                            const v = e.currentTarget.querySelector('video') as HTMLVideoElement | null;
+                            if (!v) return;
+                            if (!v.src && v.dataset.src) {
+                              v.src = v.dataset.src;
+                              v.load();
+                              v.onloadeddata = () => { v.currentTime = 0; v.play().catch(() => {}); };
+                            } else {
+                              v.currentTime = 0;
+                              v.play().catch(() => {});
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            const v = e.currentTarget.querySelector('video') as HTMLVideoElement | null;
+                            if (!v) return;
+                            v.pause();
+                            v.currentTime = 0;
+                            v.onloadeddata = null;
+                          }}
+                          onClick={() => setSelectedShowcaseItem({
+                            id: item.id, title: item.name, description: `${item.creator} — ${item.category}`, type: 'video',
+                            thumbnailUrl: item.thumb, mediaUrl: item.videoUrl,
+                            model: '3d_model', modelKey: '3D Model',
+                            engine: item.software || 'ZBrush',
+                            resolution: item.polyCount || 'N/A',
+                            tags: ['showcase', '3d', ...item.tags],
+                            categories: ['showcase', '3d'],
+                            createdAt: '2026-05-08',
+                            prompt: `${item.name} by ${item.creator}. ${item.polyCount} polys. Made with ${item.software}.`,
+                          })}
+                        >
+                          {/* Thumbnail / Video container */}
+                          <div className="relative aspect-[3/4] overflow-hidden bg-[#141618]">
+                            {/* Static thumbnail */}
+                            <img
+                              src={item.thumb}
+                              alt={item.name}
+                              className="absolute inset-0 w-full h-full object-cover group-hover/card:opacity-0 transition-opacity duration-300"
+                              loading="lazy"
+                            />
+                            {/* Video on hover */}
+                            {item.videoUrl && (
+                            <video
+                              data-src={item.videoUrl}
+                              poster={item.thumb}
+                              preload="none"
+                              muted
+                              loop
+                              playsInline
+                              className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none"
+                            />
+                            )}
+
+                            {/* Pause/Play icon — top left */}
+                            <div className="absolute top-2 left-2 z-10">
+                              <div className="w-6 h-6 rounded bg-black/50 flex items-center justify-center backdrop-blur-sm opacity-60 group-hover/card:opacity-90 transition-opacity">
+                                <Play size={10} fill="#fff" color="#fff" className="group-hover/card:hidden" />
+                                <div className="hidden group-hover/card:flex items-center gap-0.5">
+                                  <div className="w-[3px] h-[10px] bg-white rounded-sm" />
+                                  <div className="w-[3px] h-[10px] bg-white rounded-sm" />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Featured star — top right */}
+                            {item.featured && (
+                              <div className="absolute top-2 right-2 z-10">
+                                <Sparkles size={14} className="text-amber-400 drop-shadow-lg" />
+                              </div>
+                            )}
+
+                            {/* Hover gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#1a1c1e] via-transparent to-transparent opacity-60 pointer-events-none" />
+                          </div>
+
+                          {/* Footer — Creator info + likes */}
+                          <div className="px-2.5 py-2 flex items-center gap-2 bg-[#1a1c1e]">
+                            <img
+                              src={item.creatorAvatar}
+                              alt={item.creator}
+                              className="w-5 h-5 rounded-full shrink-0 border border-white/10"
+                              loading="lazy"
+                            />
+                            <span className="text-[11px] text-white/70 font-medium truncate flex-1" style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)' }}>
+                              {item.creator}
+                            </span>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <Heart size={10} className="text-red-400/70" />
+                              <span className="text-[10px] text-white/50 font-medium">{item.likes}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    </div>{/* end right column */}
+                  </div>
+                </FadeInUp>
+                  <button onClick={() => toggleGroup('3d')} className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold transition-all hover:scale-105" style={{ background: 'rgba(0,200,180,0.15)', border: '1px solid rgba(0,200,180,0.3)', color: '#5ce0d0', backdropFilter: 'blur(8px)' }}>
+                    {expandedGroups['3d'] ? <><ChevronUp size={14} /> {t('landing.showcase.collapse')}</> : <><ChevronDown size={14} /> {t('landing.showcase.load_more')}</>}
+                  </button>
+                </div>{/* end 3D Model Showcase frame */}
+
+              </div>
+
+              {/* Showcase modal */}
+              <ExplorerDetailModal
+                item={selectedShowcaseItem}
+                onClose={() => setSelectedShowcaseItem(null)}
+                albumItems={(() => {
+                  const albumMatch = selectedShowcaseItem?.id?.match(/^fashion-album-(.+)$/);
+                  if (!albumMatch) return undefined;
+                  const album = SHOWCASE_FASHION_ALBUMS.find(a => a.id === albumMatch[1]);
+                  if (!album) return undefined;
+                  return album.images.map(img => ({
+                    id: img.id,
+                    title: img.product,
+                    description: `${album.name} — ${img.name}`,
+                    type: 'image' as const,
+                    thumbnailUrl: img.img,
+                    mediaUrl: img.img,
+                    model: 'google_image_gen_4_5',
+                    modelKey: 'Imagen 4.5',
+                    engine: 'Google Imagen 4.5',
+                    resolution: img.ratio === '16:9' ? '1920 × 1080' : img.ratio === '9:16' ? '1080 × 1920' : '1024 × 1024',
+                    tags: ['showcase', 'fashion', img.tag, img.character],
+                    categories: ['showcase', 'fashion'],
+                    createdAt: '2026-05-08',
+                    prompt: img.prompt,
+                  }));
+                })()}
+              />
+
+              {/* Showcase masonry CSS — columns layout for zigzag/dense packing */}
+              <style>{`
+                .showcase-masonry {
+                  columns: 2;
+                  column-gap: 6px;
+                }
+                .showcase-masonry-item {
+                  break-inside: avoid;
+                  margin-bottom: 6px;
+                }
+                @media (min-width: 640px) { .showcase-masonry { columns: 3; } }
+                @media (min-width: 768px) { .showcase-masonry { columns: 3; } }
+                @media (min-width: 1024px) { .showcase-masonry { columns: 4; } }
+
+                /* Gold shimmer title */
+                .showcase-gold-title {
+                  background: linear-gradient(
+                    90deg,
+                    #C9A84C 0%,
+                    #F5E6A3 25%,
+                    #C9A84C 50%,
+                    #A8862A 75%,
+                    #C9A84C 100%
+                  );
+                  background-size: 200% 100%;
+                  -webkit-background-clip: text;
+                  background-clip: text;
+                  -webkit-text-fill-color: transparent;
+                  animation: showcase-gold-shimmer 3s ease-in-out infinite;
+                }
+                @keyframes showcase-gold-shimmer {
+                  0% { background-position: 100% 50%; }
+                  50% { background-position: 0% 50%; }
+                  100% { background-position: 100% 50%; }
+                }
+              `}</style>
+            </section>
+            </LazySection>
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTIONS 3-7: TEMPORARILY HIDDEN (sẽ bổ sung sau)
+             * ═══════════════════════════════════════════════════════════ */}
+            {false && (<>
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 3: FEATURED MODEL DEEP DIVES
+             * Repeating: 2-col (text + image), alternating sides
+             * Sub-model grid below with pricing (strikethrough + sale)
+             * ═══════════════════════════════════════════════════════════ */}
+            <section style={{ padding: '40px 0 80px' }}>
+              <div style={{ width: '100%', maxWidth: 1300, margin: '0 auto', boxSizing: 'border-box' }}>
+                {/* Atlas section header */}
+                <AnimatedSectionHeader
+                  label={t('landing.featured.label')}
+                  title={t('landing.featured.title')}
+                  desc={t('landing.featured.desc')}
+                />
+
+                {/* Cards — Atlas CreatorPaths 2-col grid */}
+                <StaggerContainer stagger={0.15} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, width: '100%' }}>
+                  {modelSeries.map((sol) => {
+                    const subModels = getSubModels(sol);
+                    return (
+                      <StaggerItem key={sol._id || sol.id}>
+                      <div
+                        className="hov-card"
+                        style={{ background: '#fff', borderRadius: 4, padding: 24, display: 'flex', flexDirection: 'column', gap: 20, boxSizing: 'border-box', overflow: 'hidden', height: '100%' }}
+                      >
+                        {/* Card title */}
+                        <h3 style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 36, lineHeight: 1.366, letterSpacing: '-0.02em', color: '#1a2330', margin: 0 }}>
+                          {sol.name?.[currentLang]}
+                        </h3>
+
+                        {/* Card image */}
+                        <div className="hov-img-wrap" style={{ position: 'relative', width: '100%', aspectRatio: '605/338', borderRadius: 4, overflow: 'hidden', background: '#fff' }}>
+                          <img
+                            src={sol.imageUrl}
+                            alt={sol.name?.[currentLang] || ''}
+                            className="hov-img"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                            loading="lazy"
+                          />
+                        </div>
+
+                        {/* Description */}
+                        <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.5, color: '#1a2330', margin: 0, flex: '1 1' }}>
+                          {sol.description?.[currentLang]}
+                        </p>
+
+                        {/* Sub-models as bullet list */}
+                        {subModels.length > 0 && (
+                          <ul style={{ display: 'flex', flexDirection: 'column', gap: 16, listStyle: 'none', padding: 0, margin: 0 }}>
+                            {subModels.map((sub, si) => (
+                              <li key={si} style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1a2330', flexShrink: 0 }} />
+                                <span style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 16, lineHeight: 1.366, color: '#1a2330' }}>
+                                  {sub.name}
+                                </span>
+                                {sub.originalPrice && (
+                                  <span style={{ fontSize: 12, color: 'rgba(26,35,48,0.5)', textDecoration: 'line-through', marginLeft: 'auto' }}>{sub.originalPrice}</span>
+                                )}
+                                <span style={{ fontSize: 14, fontWeight: 700, color: '#C9A84C', marginLeft: sub.originalPrice ? 4 : 'auto' }}>{sub.price}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+
+                        {/* CTA button — Atlas outlined */}
+                        <button
+                          onClick={() => handleNavigate(sol.slug)}
+                          style={{
+                            alignSelf: 'flex-start', height: 36, padding: '8px 20px', borderRadius: 4,
+                            border: '1px solid #1a2330', background: 'transparent',
+                            fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.366,
+                            color: '#1a2330', cursor: 'pointer', marginTop: 4,
+                            display: 'inline-flex', justifyContent: 'center', alignItems: 'center',
+                          }}
+                          className="hov-btn-outline"
+                        >
+                          Explore
+                        </button>
+                      </div>
+                      </StaggerItem>
+                    );
+                  })}
+                </StaggerContainer>
+              </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 4: BUILD — "From idea to scale, in one touch"
+             * Light bg, tab nav (APIs / Serverless / Compute)
+             * 2-col: checklist left, image right
+             * ═══════════════════════════════════════════════════════════ */}
+            <section style={{ padding: '40px 0 80px', position: 'relative', zIndex: 2 }}>
+              <div style={{ width: '100%', maxWidth: 1300, margin: '0 auto', boxSizing: 'border-box' }}>
+                {/* Atlas section header */}
+                <AnimatedSectionHeader
+                  label={t('landing.tools.label')}
+                  title={t('landing.tools.title')}
+                  desc={t('landing.tools.desc')}
+                />
+
+                {/* Atlas underline tab bar */}
+                <FadeInUp delay={0.2}>
+                <div style={{ position: 'relative', display: 'flex', flexDirection: 'row', alignItems: 'stretch', gap: 48, borderBottom: '1px solid rgba(26,35,48,0.5)', marginBottom: 20 }}>
+                  {(['apis', 'serverless', 'compute'] as const).map(tab => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveBuildTab(tab)}
+                      style={{
+                        fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 600, fontSize: 16, lineHeight: '1.366em',
+                        color: '#1a2330', background: 'transparent', border: 'none', cursor: 'pointer',
+                        padding: '0 0 12px', position: 'relative', whiteSpace: 'nowrap',
+                        opacity: activeBuildTab === tab ? 1 : 0.5,
+                        borderBottom: activeBuildTab === tab ? '2px solid #1a2330' : '2px solid transparent',
+                        marginBottom: -1,
+                      }}
+                      className="hov-tab"
+                    >
+                      {tab === 'apis' ? t('landing.build.tab_image') : tab === 'serverless' ? t('landing.build.tab_video') : t('landing.build.tab_audio')}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Atlas BuildStack card — 3-col grid */}
+                <div style={{
+                  background: '#fff', borderRadius: 4, padding: '26px 34px',
+                  display: 'grid', gridTemplateColumns: '325px 1fr 450px', alignItems: 'stretch', gap: 24,
+                  boxSizing: 'border-box', position: 'relative', height: 331,
+                }}>
+                  {/* Left col */}
+                  <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                    <h3 style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 600, fontSize: 16, lineHeight: 1.375, color: '#1a2330', margin: 0 }}>
+                      {activeBuildContent.title}
+                    </h3>
+                    <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 600, fontSize: 14, lineHeight: 1.5, color: 'rgba(26,35,48,0.5)', margin: '12px 0 0' }}>
+                      {activeBuildContent.desc}
+                    </p>
+                    <a
+                      onClick={() => navigate('/booking')}
+                      style={{
+                        marginTop: 'auto', paddingTop: 8, display: 'inline-flex', alignItems: 'center', gap: 8,
+                        fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.366,
+                        color: '#C9A84C', textDecoration: 'none', cursor: 'pointer', alignSelf: 'flex-start',
+                      }}
+                      className="hover:text-[#B8963F] transition-colors"
+                    >
+                      {activeBuildContent.cta} →
+                    </a>
+                  </div>
+
+                  {/* Mid col — bullet list */}
+                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', gap: 12, minWidth: 0 }}>
+                    <span style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 600, fontSize: 14, lineHeight: 1.5, color: 'rgba(26,35,48,0.5)', margin: '4px 0 0' }}>
+                      Features
+                    </span>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {activeBuildContent.features.map(f => (
+                        <li key={f} style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                          <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#1a2330', opacity: 0.5, flexShrink: 0, transform: 'translateY(-3px)' }} />
+                          <span style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 600, fontSize: 14, lineHeight: 1.5, color: '#1a2330', opacity: 0.5 }}>
+                            {f}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Right col — image */}
+                  <div className="hov-img-wrap" style={{ position: 'relative', width: '100%', height: '100%', borderRadius: 4, overflow: 'hidden', background: '#d9d9d9' }}>
+                    <img
+                      src={activeBuildContent.image}
+                      alt={activeBuildContent.title}
+                      className="hov-img"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+                </FadeInUp>
+              </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 5: CREATE — 2-col cards (Develop | Create)
+             * ═══════════════════════════════════════════════════════════ */}
+            <section style={{ padding: '40px 0 80px', position: 'relative', zIndex: 2 }}>
+              <div style={{ width: '100%', maxWidth: 1300, margin: '0 auto', boxSizing: 'border-box' }}>
+                <AnimatedSectionHeader
+                  label={t('landing.create.label')}
+                  title={t('landing.create.title')}
+                  desc={t('landing.create.desc')}
+                />
+
+                {/* Atlas 2-col card grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, width: '100%' }}>
+                  {/* Develop Card */}
+                  <SlideIn from="left">
+                  <div className="hov-card" style={{ background: '#fff', borderRadius: 4, padding: 24, display: 'flex', flexDirection: 'column', gap: 20, boxSizing: 'border-box', overflow: 'hidden', height: '100%' }}>
+                    <h3 style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 36, lineHeight: '1.366em', letterSpacing: '-0.02em', color: '#1a2330', margin: 0 }}>
+                      {t('landing.create.pro_title')}
+                    </h3>
+                    <div className="hov-img-wrap" style={{ position: 'relative', width: '100%', aspectRatio: '605/338', borderRadius: 4, overflow: 'hidden', background: '#fff' }}>
+                      <img src="/assets/homepage/gold-create-professionals.webp" alt={t('landing.create.pro_title')} className="hov-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                    </div>
+                    <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.5, color: '#1a2330', margin: 0, flex: '1 1' }}>
+                      {t('landing.create.pro_desc')}
+                    </p>
+                    <ul style={{ display: 'flex', flexDirection: 'column', gap: 16, listStyle: 'none', padding: 0, margin: 0 }}>
+                      {[t('landing.create.pro_b1'), t('landing.create.pro_b2'), t('landing.create.pro_b3')].map(b => (
+                        <li key={b} style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1a2330', flexShrink: 0 }} />
+                          <span style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 16, lineHeight: '1.366em', color: '#1a2330' }}>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      onClick={() => navigate('/booking')}
+                      style={{
+                        alignSelf: 'flex-start', height: 36, padding: '8px 20px', borderRadius: 4,
+                        border: '1px solid #1a2330', background: 'transparent',
+                        fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.366,
+                        color: '#1a2330', cursor: 'pointer', marginTop: 4,
+                        display: 'inline-flex', justifyContent: 'center', alignItems: 'center',
+                      }}
+                      className="hov-btn-outline"
+                    >
+                      {t('landing.create.pro_cta')}
+                    </button>
+                  </div>
+                  </SlideIn>
+
+                  {/* Create Card */}
+                  <SlideIn from="right">
+                  <div className="hov-card" style={{ background: '#fff', borderRadius: 4, padding: 24, display: 'flex', flexDirection: 'column', gap: 20, boxSizing: 'border-box', overflow: 'hidden', height: '100%' }}>
+                    <h3 style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 36, lineHeight: '1.366em', letterSpacing: '-0.02em', color: '#1a2330', margin: 0 }}>
+                      {t('landing.create.creator_title')}
+                    </h3>
+                    <div className="hov-img-wrap" style={{ position: 'relative', width: '100%', aspectRatio: '605/338', borderRadius: 4, overflow: 'hidden', background: '#fff' }}>
+                      <img src="/assets/homepage/gold-create-creators.webp" alt={t('landing.create.creator_title')} className="hov-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                    </div>
+                    <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.5, color: '#1a2330', margin: 0, flex: '1 1' }}>
+                      {t('landing.create.creator_desc')}
+                    </p>
+                    <ul style={{ display: 'flex', flexDirection: 'column', gap: 16, listStyle: 'none', padding: 0, margin: 0 }}>
+                      {[t('landing.create.creator_b1'), t('landing.create.creator_b2'), t('landing.create.creator_b3')].map(b => (
+                        <li key={b} style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1a2330', flexShrink: 0 }} />
+                          <span style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 16, lineHeight: '1.366em', color: '#1a2330' }}>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      onClick={() => navigate('/markets')}
+                      style={{
+                        alignSelf: 'flex-start', height: 36, padding: '8px 20px', borderRadius: 4,
+                        border: '1px solid #1a2330', background: 'transparent',
+                        fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.366,
+                        color: '#1a2330', cursor: 'pointer', marginTop: 4,
+                        display: 'inline-flex', justifyContent: 'center', alignItems: 'center',
+                      }}
+                      className="hov-btn-outline"
+                    >
+                      {t('landing.why.explore_all')}
+                    </button>
+                  </div>
+                  </SlideIn>
+                </div>
+              </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 6: WHY SKYVERSES — 4-col feature grid
+             * ═══════════════════════════════════════════════════════════ */}
+            <section style={{ width: '100%', background: '#fff', padding: '88px 0 72px', position: 'relative', zIndex: 2, boxSizing: 'border-box' }}>
+              <div style={{ width: '100%', maxWidth: 1300, margin: '0 auto', boxSizing: 'border-box' }}>
+                <AnimatedSectionHeader
+                  label={t('landing.why.label')}
+                  title={t('landing.why.title')}
+                  desc={t('landing.why.desc')}
+                />
+
+                {/* Content: hero image + feature list */}
+                <div style={{ display: 'flex', flexDirection: 'row', gap: 48, alignItems: 'stretch', width: '100%' }}>
+                  {/* Hero image */}
+                  <SlideIn from="left">
+                  <div className="hov-img-wrap" style={{ flex: '1 1', minWidth: 0, borderRadius: 4, overflow: 'hidden', position: 'relative', aspectRatio: '920/514', background: '#fff' }}>
+                    <img
+                      src="/assets/homepage/gold-why-skyverses-hero.webp"
+                      alt="Why Skyverses"
+                      className="hov-img"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      loading="lazy"
+                    />
+                  </div>
+                  </SlideIn>
+
+                  {/* Feature list */}
+                  <SlideIn from="right">
+                  <ul style={{ flex: '0 0 322px', listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 32 }}>
+                    {[
+                      { title: t('landing.why.f1_title'), desc: t('landing.why.f1_desc'), icon: '/assets/homepage/gold-feature-all-in-one.webp' },
+                      { title: t('landing.why.f2_title'), desc: t('landing.why.f2_desc'), icon: '/assets/homepage/gold-feature-pay-per-use.webp' },
+                      { title: t('landing.why.f3_title'), desc: t('landing.why.f3_desc'), icon: '/assets/homepage/gold-feature-latest-models.webp' },
+                      { title: t('landing.why.f4_title'), desc: t('landing.why.f4_desc'), icon: '/assets/homepage/gold-feature-lightning-fast.webp' },
+                    ].map((it) => (
+                      <li key={it.title} className="hov-feature" style={{ display: 'flex', flexDirection: 'column', cursor: 'default' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 16, minHeight: 27 }}>
+                          <img src={it.icon} alt={it.title} style={{ flex: '0 0 auto', width: 36, height: 36, borderRadius: 6, objectFit: 'cover' }} loading="lazy" />
+                          <span style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 20, lineHeight: 1.366, color: '#1a2330', margin: 0 }}>
+                            {it.title}
+                          </span>
+                        </div>
+                        <hr style={{ display: 'block', width: '100%', height: 0, border: 0, borderTop: '1px solid #1a2330', margin: '12px 0', flexShrink: 0 }} />
+                        <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 14, lineHeight: 1.366, color: 'rgba(26,35,48,0.6)', margin: 0 }}>
+                          {it.desc}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                  </SlideIn>
+                </div>
+              </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 7: ENTERPRISE SCALE — 3-col cards
+             * ═══════════════════════════════════════════════════════════ */}
+            <section style={{ width: '100%', background: '#fff', padding: '72px 0 96px', position: 'relative', zIndex: 2, boxSizing: 'border-box' }}>
+              <div style={{ width: '100%', maxWidth: 1300, margin: '0 auto', boxSizing: 'border-box' }}>
+                <AnimatedSectionHeader
+                  label={t('landing.teams.label')}
+                  title={t('landing.teams.title')}
+                  desc={t('landing.teams.desc')}
+                />
+                {/* Action buttons */}
+                <FadeInUp delay={0.2}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 24, marginBottom: 56, width: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', gap: 20, marginTop: 10 }}>
+                      <button
+                        onClick={() => navigate('/booking')}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          minWidth: 147, height: 36, padding: '8px 20px', borderRadius: 4,
+                          background: '#C9A84C', color: '#ebf4fb', border: '1px solid transparent',
+                          fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 500, fontSize: 16, lineHeight: 1.366,
+                          textDecoration: 'none', boxSizing: 'border-box', cursor: 'pointer',
+                        }}
+                        className="hov-btn-gold"
+                      >
+                        {t('landing.teams.contact')}
+                      </button>
+                      <button
+                        onClick={() => navigate('/about')}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          minWidth: 147, height: 36, padding: '8px 20px', borderRadius: 4,
+                          background: 'transparent', color: '#1a2330', border: '1px solid #1a2330',
+                          fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 500, fontSize: 16, lineHeight: 1.366,
+                          textDecoration: 'none', boxSizing: 'border-box', cursor: 'pointer',
+                        }}
+                        className="hov-btn-outline"
+                      >
+                        {t('landing.teams.learn')}
+                      </button>
+                    </div>
+                </div>
+                </FadeInUp>
+
+                {/* Top 2-col cards */}
+                <StaggerContainer stagger={0.15} className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                  {[
+                    {
+                      title: t('landing.teams.fresh_title'),
+                      img: '/assets/homepage/gold-ent-always-fresh.webp',
+                      bullets: [t('landing.teams.fresh_b1'), t('landing.teams.fresh_b2'), t('landing.teams.fresh_b3')],
+                    },
+                    {
+                      title: t('landing.teams.ready_title'),
+                      img: '/assets/homepage/gold-ent-team-ready.webp',
+                      bullets: [t('landing.teams.ready_b1'), t('landing.teams.ready_b2'), t('landing.teams.ready_b3')],
+                    },
+                  ].map((card) => (
+                    <StaggerItem key={card.title}>
+                    <div className="hov-card" style={{ background: '#fff', borderRadius: 4, padding: '40px 30px 56px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 32, height: '100%' }}>
+                      <h3 style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 40, lineHeight: 1.366, color: '#1a2330', margin: 0 }}>
+                        {card.title}
+                      </h3>
+                      <div className="hov-img-wrap" style={{ width: '100%', aspectRatio: '591/330', borderRadius: 4, overflow: 'hidden', background: '#fff' }}>
+                        <img src={card.img} alt={card.title} className="hov-img" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} loading="lazy" />
+                      </div>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                        {card.bullets.map(b => (
+                          <li key={b} style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
+                            <span style={{ flex: '0 0 auto', width: 8, height: 8, background: '#1a2330', marginTop: 8 }} />
+                            <span style={{ flex: '1 1 auto', fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 20, lineHeight: 1.366, color: '#1a2330' }}>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+
+                {/* Wide card — row layout */}
+                <FadeInUp delay={0.2}>
+                <div className="hov-card" style={{ background: '#fff', borderRadius: 4, padding: '64px 30px 56px', boxSizing: 'border-box', display: 'flex', flexDirection: 'row', gap: 48, alignItems: 'flex-start' }}>
+                  <SlideIn from="left">
+                  <div style={{ flex: '0 0 auto', width: 438, maxWidth: '100%', display: 'flex', flexDirection: 'column', gap: 50 }}>
+                    <h3 style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 40, lineHeight: 1.366, color: '#1a2330', margin: 0 }}>
+                      {t('landing.teams.vol_title')}
+                    </h3>
+                    <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.5, color: '#1a2330', margin: 0 }}>
+                      {t('landing.teams.vol_desc')}
+                    </p>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                      {[t('landing.teams.vol_b1'), t('landing.teams.vol_b2'), t('landing.teams.vol_b3')].map(b => (
+                        <li key={b} style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
+                          <span style={{ flex: '0 0 auto', width: 8, height: 8, background: '#1a2330', marginTop: 8 }} />
+                          <span style={{ flex: '1 1 auto', fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 20, lineHeight: 1.366, color: '#1a2330' }}>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  </SlideIn>
+                  <SlideIn from="right">
+                  <div className="hov-img-wrap" style={{ flex: '1 1 auto', minWidth: 0, aspectRatio: '789/440', borderRadius: 4, overflow: 'hidden', background: '#fff' }}>
+                    <img src="/assets/homepage/gold-ent-volume-pricing.webp" alt="Ultra-high Throughput" className="hov-img" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} loading="lazy" />
+                  </div>
+                  </SlideIn>
+                </div>
+                </FadeInUp>
+              </div>
+            </section>
+            </>)}
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 8: ENTERPRISE — Giải pháp AI cho doanh nghiệp
+             * ═══════════════════════════════════════════════════════════ */}
+            <LazySection skeleton={<EnterpriseSectionSkeleton />} rootMargin="300px" minHeight={600}>
+            <section style={{ width: '100%', background: '#fff', padding: '72px 0 96px', position: 'relative', zIndex: 2, boxSizing: 'border-box' }}>
+              <div style={{ width: '100%', maxWidth: 1300, margin: '0 auto', boxSizing: 'border-box' }}>
+                <AnimatedSectionHeader
+                  label={t('landing.ent.label')}
+                  title={t('landing.ent.title')}
+                  desc={t('landing.ent.desc')}
+                />
+                {/* Action buttons */}
+                <FadeInUp delay={0.2}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 24, marginBottom: 56, width: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', gap: 20, marginTop: 10 }}>
+                      <button
+                        onClick={() => navigate('/booking')}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          minWidth: 147, height: 36, padding: '8px 20px', borderRadius: 4,
+                          background: '#C9A84C', color: '#ebf4fb', border: '1px solid transparent',
+                          fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 500, fontSize: 16, lineHeight: 1.366,
+                          textDecoration: 'none', boxSizing: 'border-box', cursor: 'pointer',
+                        }}
+                        className="hov-btn-gold"
+                      >
+                        {t('landing.ent.cta1')}
+                      </button>
+                      <button
+                        onClick={() => navigate('/about')}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          minWidth: 147, height: 36, padding: '8px 20px', borderRadius: 4,
+                          background: 'transparent', color: '#1a2330', border: '1px solid #1a2330',
+                          fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 500, fontSize: 16, lineHeight: 1.366,
+                          textDecoration: 'none', boxSizing: 'border-box', cursor: 'pointer',
+                        }}
+                        className="hov-btn-outline"
+                      >
+                        {t('landing.ent.cta2')}
+                      </button>
+                    </div>
+                </div>
+                </FadeInUp>
+
+                {/* Top 2-col cards */}
+                <StaggerContainer stagger={0.15} className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                  {enterpriseOfferings.slice(0, 2).map((card) => (
+                    <StaggerItem key={card.title}>
+                    <div className="hov-card" style={{ background: '#fff', borderRadius: 4, padding: '40px 30px 56px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 32, height: '100%' }}>
+                      <h3 style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 40, lineHeight: 1.366, color: '#1a2330', margin: 0 }}>
+                        {card.title}
+                      </h3>
+                      <LazyImage src={card.image} alt={card.title} className="hov-img-wrap" style={{ width: '100%', aspectRatio: '591/330', borderRadius: 4, overflow: 'hidden', background: '#fff' }} />
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                        {card.bullets.map(b => (
+                          <li key={b} style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
+                            <span style={{ flex: '0 0 auto', width: 8, height: 8, background: '#1a2330', marginTop: 8 }} />
+                            <span style={{ flex: '1 1 auto', fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 20, lineHeight: 1.366, color: '#1a2330' }}>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+
+                {/* Bottom 2-col cards */}
+                <StaggerContainer stagger={0.15} className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  {enterpriseOfferings.slice(2, 4).map((card) => (
+                    <StaggerItem key={card.title}>
+                    <div className="hov-card" style={{ background: '#fff', borderRadius: 4, padding: '40px 30px 56px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 32, height: '100%' }}>
+                      <h3 style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 40, lineHeight: 1.366, color: '#1a2330', margin: 0 }}>
+                        {card.title}
+                      </h3>
+                      <LazyImage src={card.image} alt={card.title} className="hov-img-wrap" style={{ width: '100%', aspectRatio: '591/330', borderRadius: 4, overflow: 'hidden', background: '#fff' }} />
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                        {card.bullets.map(b => (
+                          <li key={b} style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
+                            <span style={{ flex: '0 0 auto', width: 8, height: 8, background: '#1a2330', marginTop: 8 }} />
+                            <span style={{ flex: '1 1 auto', fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 20, lineHeight: 1.366, color: '#1a2330' }}>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+              </div>
+            </section>
+            </LazySection>
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 8.6: HOMEBLOCKS (CMS-driven)
+             * ═══════════════════════════════════════════════════════════ */}
+            <LazySection skeleton={<HomeBlockSkeleton />} rootMargin="300px" minHeight={400}>
+            {homeBlocks.map((block, blockIdx) => {
+              const blockSols = solutions.filter(s => s.homeBlocks?.includes(block.key));
+              if (blockSols.length === 0 && !loading) return null;
+              return (
+                <FadeInUp key={block.key} delay={blockIdx * 0.1}>
+                <section className="py-14 md:py-20 bg-white">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-end justify-between mb-8">
+                      <div>
+                        <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900">
+                          {block.title?.[currentLang] || block.title?.en}
+                        </h3>
+                        {block.subtitle && (
+                          <p className="mt-2 text-sm md:text-base text-gray-500">
+                            {block.subtitle[currentLang] || block.subtitle.en}
+                          </p>
+                        )}
+                      </div>
+                      <button onClick={() => navigate('/markets')} className="hidden md:inline-flex items-center gap-1.5 text-sm font-semibold text-[#C9A84C] hover:gap-2.5 transition-all">
+                        View All <ArrowRight size={14} />
+                      </button>
+                    </div>
+                    <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+                      {loading
+                        ? Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)
+                        : blockSols.slice(0, block.limit || 8).map((sol, idx) => (
+                          <SolutionCard
+                            key={sol._id || sol.id}
+                            sol={sol} idx={idx} lang={lang}
+                            isLiked={likedItems.includes(sol._id || sol.id)}
+                            isFavorited={favorites.includes(sol._id || sol.id)}
+                            onToggleFavorite={toggleFavorite} onToggleLike={toggleLike}
+                            onClick={handleNavigate} onHover={handlePrefetchOnHover}
+                            onQuickView={handleQuickView} stats={getFakeStats(sol._id || sol.id)}
+                          />
+                        ))}
+                    </div>
+                  </div>
+                </section>
+                </FadeInUp>
+              );
+            })}
+            </LazySection>
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 9: TO THE DEVELOPERS
+             * Philosophy section — centered long-form text
+             * ═══════════════════════════════════════════════════════════ */}
+            <LazySection skeleton={<DevelopersSkeleton />} rootMargin="300px" minHeight={500}>
+            <section style={{ width: '100%', background: '#fff', padding: '88px 0 72px', position: 'relative', zIndex: 2, boxSizing: 'border-box' }}>
+              <div style={{ width: '100%', maxWidth: 1300, margin: '0 auto', boxSizing: 'border-box' }}>
+                <AnimatedSectionHeader
+                  label={t('landing.creators.label')}
+                  title={t('landing.creators.title')}
+                />
+
+                {/* Content: 2-col — text + image */}
+                <div style={{ display: 'flex', flexDirection: 'row', gap: 48, alignItems: 'stretch', width: '100%' }}>
+                  {/* Text column */}
+                  <SlideIn from="left">
+                  <div style={{ flex: '0 0 auto', width: 438, maxWidth: '100%', display: 'flex', flexDirection: 'column', gap: 24 }}>
+                    <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.5, color: '#1a2330', margin: 0 }}>
+                      {t('landing.creators.p1')}
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.5, color: '#1a2330', margin: 0 }}>
+                      {t('landing.creators.p2')}
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.5, color: '#1a2330', margin: 0 }}>
+                      {t('landing.creators.p3')}
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 600, fontSize: 16, lineHeight: 1.5, color: '#1a2330', margin: 0 }}>
+                      {t('landing.creators.p4')}
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 16, lineHeight: 1.5, color: '#C9A84C', margin: 0 }}>
+                      {t('landing.creators.p5')}
+                    </p>
+                    {/* Action buttons */}
+                    <div style={{ display: 'flex', flexDirection: 'row', gap: 20, marginTop: 10 }}>
+                      <button
+                        onClick={() => navigate('/markets')}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          minWidth: 147, height: 36, padding: '8px 20px', borderRadius: 4,
+                          background: '#C9A84C', color: '#ebf4fb', border: '1px solid transparent',
+                          fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 500, fontSize: 16, lineHeight: 1.366,
+                          cursor: 'pointer',
+                        }}
+                        className="hov-btn-gold"
+                      >
+                        {t('landing.creators.cta1')}
+                      </button>
+                      <button
+                        onClick={() => navigate(isAuthenticated ? '/apps' : '/login')}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          minWidth: 147, height: 36, padding: '8px 20px', borderRadius: 4,
+                          background: 'transparent', color: '#1a2330', border: '1px solid #1a2330',
+                          fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 500, fontSize: 16, lineHeight: 1.366,
+                          cursor: 'pointer',
+                        }}
+                        className="hov-btn-outline"
+                      >
+                        {isAuthenticated ? t('landing.creators.cta2_auth') : t('landing.creators.cta2_noauth')}
                       </button>
                     </div>
                   </div>
-                  <div className="flex-shrink-0 w-[340px] lg:w-[400px]">
-                    <div className="space-y-3">
-                      {[
-                        { label: t('home.referral.you_get'), amount: '+50 Credits', color: 'from-brand-blue to-blue-600', icon: <Zap size={18} fill="currentColor" /> },
-                        { label: t('home.referral.friend_gets'), amount: '+50 Credits', color: 'from-purple-500 to-pink-500', icon: <Gift size={18} /> },
-                      ].map((reward, idx) => (
-                        <motion.div
-                          key={idx}
-                          initial={{ opacity: 0, x: 30 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: 0.2 + idx * 0.15, type: 'spring', stiffness: 120 }}
-                          className="flex items-center gap-4 p-5 bg-white dark:bg-[#13171f] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl"
-                        >
-                          <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${reward.color} flex items-center justify-center text-white shadow-lg shrink-0`}>
-                            {reward.icon}
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-xs text-slate-400 dark:text-gray-500 font-medium">{reward.label}</p>
-                            <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{reward.amount}</p>
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                            <Check size={16} className="text-emerald-500" />
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                    <div className="flex items-center justify-center gap-6 mt-6 py-3 px-4 bg-white/50 dark:bg-white/[0.02] rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
-                      <div className="text-center">
-                        <p className="text-xl font-black text-slate-900 dark:text-white">2,847</p>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{t('home.referral.stat_participants')}</p>
-                      </div>
-                      <div className="w-px h-8 bg-black/[0.06] dark:bg-white/[0.06]" />
-                      <div className="text-center">
-                        <p className="text-xl font-black text-brand-blue">142K</p>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{t('home.referral.stat_credits_given')}</p>
-                      </div>
-                    </div>
-                  </div>
+                  </SlideIn>
+                  {/* Image column */}
+                  <SlideIn from="right">
+                  <LazyImage
+                    src="/assets/homepage/gold-creators-hero.webp"
+                    alt="To the developers"
+                    className="hov-img-wrap"
+                    style={{ flex: '1 1 auto', minWidth: 0, aspectRatio: '789/440', borderRadius: 4, overflow: 'hidden', background: '#fff' }}
+                  />
+                  </SlideIn>
                 </div>
               </div>
-
-              {/* ─── 5% COMMISSION TEASER ─── */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="hidden md:block relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0c0e18] via-[#0e1225] to-[#120c20] border border-white/[0.06] p-10"
-              >
-                {/* Glow effects */}
-                <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-amber-500/8 rounded-full blur-[100px] pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-[180px] h-[180px] bg-purple-500/8 rounded-full blur-[80px] pointer-events-none" />
-
-                <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center gap-6 lg:gap-10">
-                  <div className="flex-1 space-y-4">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/15 border border-amber-500/25 rounded-full">
-                        <Rocket size={11} className="text-amber-400" />
-                        <span className="text-[8px] font-black uppercase tracking-widest text-amber-400">Coming Q2 2026</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
-                        <CreditCard size={10} className="text-white/40" />
-                        <span className="text-[8px] font-bold uppercase tracking-widest text-white/40">Passive Income</span>
-                      </div>
-                    </div>
-                    <h3 className="text-2xl font-black tracking-tight text-white leading-tight">
-                      {t('home.referral.commission_title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">{t('home.referral.commission_highlight')}</span>{t('home.referral.commission_title2')}
-                    </h3>
-                    <p className="text-sm text-white/40 max-w-lg leading-relaxed">
-                      {t('home.referral.commission_desc')}
-                    </p>
-
-                    {/* Feature pills */}
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        { icon: <CreditCard size={11} />, text: t('home.referral.comm_chip1') },
-                        { icon: <RefreshCw size={11} />, text: t('home.referral.comm_chip2') },
-                        { icon: <Users size={11} />, text: t('home.referral.comm_chip3') },
-                      ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 border border-white/[0.06] rounded-lg">
-                          <span className="text-amber-400">{item.icon}</span>
-                          <span className="text-[9px] font-bold text-white/50">{item.text}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Earn Example Card */}
-                  <div className="shrink-0 w-full lg:w-auto">
-                    <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5 space-y-3">
-                      <p className="text-[9px] font-black text-white/30 uppercase tracking-widest">{t('home.referral.example_title')}</p>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2.5 px-3 py-2 bg-white/[0.03] rounded-xl border border-white/[0.05]">
-                          <Users size={13} className="text-brand-blue shrink-0" />
-                          <span className="text-[11px] font-medium text-white/60">{t('home.referral.example_friends')}</span>
-                        </div>
-                        <div className="flex items-center justify-center">
-                          <ChevronRight size={12} className="text-white/15 rotate-90" />
-                        </div>
-                        <div className="flex items-center gap-2.5 px-3 py-2 bg-white/[0.03] rounded-xl border border-white/[0.05]">
-                          <CreditCard size={13} className="text-purple-400 shrink-0" />
-                          <span className="text-[11px] font-medium text-white/60">{t('home.referral.example_each')}</span>
-                        </div>
-                        <div className="flex items-center justify-center">
-                          <ChevronRight size={12} className="text-white/15 rotate-90" />
-                        </div>
-                        <div className="flex items-center gap-2.5 px-3 py-2.5 bg-amber-500/10 rounded-xl border border-amber-500/20">
-                          <Zap size={14} className="text-amber-400 shrink-0" fill="currentColor" />
-                          <span className="text-[12px] font-black text-amber-400">{t('home.referral.example_earn')}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-
             </section>
-          )}
-        </div>
+            </LazySection>
+
+            {/* ═══════════════════════════════════════════════════════════
+             * SECTION 10: ENTERPRISE CTA — light gradient
+             * ═══════════════════════════════════════════════════════════ */}
+            <LazySection skeleton={<CTASkeleton />} rootMargin="200px" minHeight={200}>
+            <section style={{ width: '100%', background: '#1a2330', padding: '78px 0', position: 'relative', zIndex: 2, boxSizing: 'border-box', borderBottom: '1px solid rgba(235,244,251,0.2)', overflow: 'hidden' }}>
+              {/* Background image */}
+              <img
+                src="/assets/homepage/gold-enterprise-cta-bg.webp"
+                alt=""
+                aria-hidden="true"
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.25, pointerEvents: 'none' }}
+              />
+              <FadeInUp>
+              <div style={{ width: '100%', maxWidth: 1300, margin: '0 auto', padding: '0 40px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 32, position: 'relative' }}>
+                <BlurTextReveal
+                  text={t('landing.cta.heading')}
+                  as="h2"
+                  delay={0.1}
+                  charDelay={0.02}
+                  style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 36, lineHeight: 1.366, letterSpacing: '-0.72px', color: '#ebf4fb', justifyContent: 'center' }}
+                />
+                <button
+                  onClick={() => navigate('/booking')}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    height: 36, minWidth: 140, padding: '8px 20px', borderRadius: 4,
+                    background: '#ebf4fb', color: '#1a2330', border: 'none',
+                    fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 16, lineHeight: 1.366,
+                    textDecoration: 'none', boxSizing: 'border-box', cursor: 'pointer', whiteSpace: 'nowrap',
+                  }}
+                  className="hov-btn-light"
+                >
+                  {t('landing.cta.button')}
+                </button>
+              </div>
+              </FadeInUp>
+            </section>
+            </LazySection>
+          </>
+        )}
       </div>
 
       <GlobalToolsBar />
-
-      {/* ═══ Demo Modal ═══ */}
-      <AnimatePresence>
-        {isDemoOpen && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/90 backdrop-blur-2xl" onClick={() => setIsDemoOpen(false)} />
-            <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} className="relative w-full max-w-5xl bg-[#0a0a0c] border border-white/10 rounded-[2rem] overflow-hidden shadow-3xl aspect-video flex flex-col">
-              <div className="absolute top-6 right-6 z-50"><button onClick={() => setIsDemoOpen(false)} className="p-2 bg-black/40 hover:bg-red-500 rounded-full text-white transition-colors"><X size={24} /></button></div>
-              <div className="flex-grow relative flex items-center justify-center overflow-hidden bg-black">
-                <div className="text-center space-y-8 z-10 p-12">
-                  <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }} className="relative"><div className="absolute inset-0 bg-brand-blue blur-[80px] opacity-20 rounded-full animate-pulse"></div><img src={logoUrl} className="w-32 h-32 md:w-48 md:h-48 object-contain mx-auto relative drop-shadow-[0_0_30px_rgba(0,144,255,0.2)]" alt="Skyverses Logo" /></motion.div>
-                  <div className="space-y-2"><h3 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white">Coming <span className="text-brand-blue">Soon.</span></h3></div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      <style>{`
-        @keyframes gradient {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); opacity: 0.3; }
-          50% { transform: translateY(-15px); opacity: 0.7; }
-        }
-        @keyframes marqueeUp {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(-50%); }
-        }
-        @keyframes marqueeDown {
-          0% { transform: translateY(-50%); }
-          100% { transform: translateY(0); }
-        }
-      `}</style>
-
-      {/* ── Product Tool Modal (workspace launched from card) ── */}
-      <ProductToolModal
-        slug={toolModalSlug}
-        onClose={() => setToolModalSlug(null)}
-      />
+      {toolModalSlug && (
+        <ProductToolModal slug={toolModalSlug} onClose={() => setToolModalSlug(null)} />
+      )}
     </div>
   );
 };

@@ -22,7 +22,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, o
         <div className="flex items-center gap-4">
           {/* Project name breadcrumb */}
           {projectName && (
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/30 italic max-w-[160px] truncate hidden xl:block">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/30 italic max-w-[160px] truncate hidden xl:block">
               {projectName}
             </span>
           )}
@@ -31,7 +31,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, o
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-brand-blue text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-brand-blue text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}
             >
               {React.cloneElement(tab.icon as React.ReactElement<LucideProps>, { size: 14 })} {tab.label}
             </button>
@@ -46,7 +46,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, o
       <div className="lg:hidden h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 bg-black/40 backdrop-blur-md z-[160]">
         <div className="flex items-center gap-2">
           <LayoutPanelLeft size={16} className="text-brand-blue" />
-          <span className="text-[10px] font-black uppercase tracking-widest italic">Studio Pro</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest italic">Studio Pro</span>
         </div>
         <button onClick={onClose} className="p-2 text-gray-400">
           <X size={24} />
@@ -54,7 +54,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, o
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#13171f]/90 backdrop-blur-xl border-t border-white/8 flex items-center justify-around z-[200] px-4">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-[var(--atlas-bg-panel)]/90 backdrop-blur-xl border-t border-white/8 flex items-center justify-around z-[200] px-4">
         {tabs.map(tab => (
           <button
             key={tab.id}

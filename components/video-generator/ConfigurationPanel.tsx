@@ -54,7 +54,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
   ].filter(Boolean).join(' · ');
 
   return (
-    <div className={`shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+    <div className={`shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-lg ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
       <div className="px-4 py-3 space-y-2.5">
 
         {/* ─── COLLAPSIBLE HEADER ─── */}

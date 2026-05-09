@@ -40,7 +40,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
   const activeResult = s.activeResultId ? s.results.find(r => r.id === s.activeResultId) || null : null;
 
   return (
-    <div className="h-full w-full flex bg-[#fcfcfd] dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden transition-all duration-500 relative">
+    <div className="h-full w-full flex bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-all duration-500 relative">
       <div className="flex-grow flex flex-col-reverse lg:flex-row overflow-hidden relative h-full">
         
         {/* Mobile Backdrop */}
@@ -55,7 +55,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
         </AnimatePresence>
 
         {/* ═══ SIDEBAR ═══ */}
-        <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[370px] shrink-0 bg-white dark:bg-[#0a0d14] border-t lg:border-t-0 lg:border-r border-black/[0.06] dark:border-white/[0.08] flex flex-col z-[150] lg:z-50 shadow-2xl lg:shadow-none transition-all duration-500 ease-in-out ${s.isMobileExpanded ? 'h-[92dvh] rounded-t-[2rem]' : 'h-[150px] lg:h-full lg:rounded-none'}`}>
+        <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[370px] shrink-0 bg-white dark:bg-[var(--atlas-bg-page)] border-t lg:border-t-0 lg:border-r border-black/[0.06] dark:border-white/[0.08] flex flex-col z-[150] lg:z-50 shadow-2xl lg:shadow-none transition-all duration-500 ease-in-out ${s.isMobileExpanded ? 'h-[92dvh] rounded-t-[2rem]' : 'h-[150px] lg:h-full lg:rounded-none'}`}>
           <MobileGeneratorBar 
             isExpanded={s.isMobileExpanded} 
             setIsExpanded={s.setIsMobileExpanded}
@@ -174,7 +174,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
         </aside>
 
         {/* ═══ VIEWPORT ═══ */}
-        <main className="flex-grow flex flex-col relative bg-[#f8f9fb] dark:bg-[#0a0d14] transition-colors duration-500 overflow-hidden h-full">
+        <main className="flex-grow flex flex-col relative bg-[#f8f9fb] dark:bg-[var(--atlas-bg-page)] transition-colors duration-500 overflow-hidden h-full">
           {/* Header */}
           <div className="h-14 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between px-6 bg-white/80 dark:bg-black/40 backdrop-blur-xl z-40 shrink-0">
             <div className="flex items-center gap-3">
@@ -402,7 +402,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
       <AnimatePresence>
         {s.showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-            <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} className="max-w-sm w-full bg-white dark:bg-[#1a1f2b] p-10 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl text-center space-y-6 shadow-2xl">
+            <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} className="max-w-sm w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-10 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl text-center space-y-6 shadow-2xl">
               <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mx-auto text-amber-500">
                 <AlertTriangle size={36} />
               </div>
@@ -478,7 +478,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
           >
             <motion.div 
               initial={{ scale: 0.9 }} animate={{ scale: 1 }}
-              className="bg-white dark:bg-[#1a1f2b] p-8 rounded-2xl border border-black/[0.06] dark:border-white/[0.06] text-center space-y-4 max-w-xs w-full shadow-2xl"
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] p-8 rounded-2xl border border-black/[0.06] dark:border-white/[0.06] text-center space-y-4 max-w-xs w-full shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
               <QrCode size={28} className="mx-auto text-brand-blue" />

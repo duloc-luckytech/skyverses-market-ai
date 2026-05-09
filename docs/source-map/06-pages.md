@@ -30,6 +30,14 @@
 | `SpatialArchitectPage.tsx` | 3D spatial product, `LIVE_3D_MODELS` |
 | `NoCodeExportPage.tsx` | NoCode export landing |
 | `QwenChatAIPage.tsx` | Qwen chat product |
+| `PromptDetailPage.tsx` | Single prompt-set detail — `/prompt-market/:slug`; fetches by slug, shows prompts, opens `PromptPurchaseModal` |
+| `PromptSellPage.tsx` | Seller dashboard — `/prompt-market/sell`; listings table, earnings summary cards, recent sales tab; auth-gated |
+| `PromptCreatePage.tsx` | Create new prompt set — `/prompt-market/sell/new`; multi-section form (basic info, pricing, preview, prompts+variables), calls `promptMarketApi.create()`, auth-gated |
+| `PromptEditPage.tsx` | Edit prompt set — `/prompt-market/sell/edit/:id`; loads existing data, same form as create, calls `promptMarketApi.update()` |
+| `MyPromptPurchasesPage.tsx` | Buyer's purchased prompts — `/prompt-market/my-purchases`; expandable cards, lazy detail load, copy-to-clipboard |
+| `PromptWishlistPage.tsx` | Wishlist — `/prompt-market/wishlist`; grid of saved prompts, remove, auth gate, pagination |
+| `PromptSellerProfilePage.tsx` | Seller profile — `/prompt-market/seller/:sellerId`; avatar, badges, stats, follow, listings tabs |
+| ~~`SkyTokenPage.tsx`~~ | Removed — merged into Settings > Wallet tab |
 
 ## Product (top-level)
 

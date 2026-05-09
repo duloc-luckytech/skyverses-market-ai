@@ -21,8 +21,8 @@ const TABS: { id: DrawerTab; label: string }[] = [
 
 const ROLE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   admin: { label: 'Admin', color: '#ef4444', bg: '#ef444415' },
-  master: { label: 'Master', color: '#f59e0b', bg: '#f59e0b15' },
-  sub: { label: 'Sub Agent', color: '#8b5cf6', bg: '#8b5cf615' },
+  master: { label: 'Master', color: '#E5C767', bg: '#E5C76715' },
+  sub: { label: 'Sub Agent', color: '#D4B85A', bg: '#D4B85A15' },
   user: { label: 'User', color: '#64748b', bg: '#64748b15' },
 };
 
@@ -30,11 +30,11 @@ const PLAN_CONFIG: Record<string, { color: string; bg: string }> = {
   enterprise: { color: '#a855f7', bg: '#a855f715' },
   studio: { color: '#0090ff', bg: '#0090ff15' },
   creator: { color: '#10b981', bg: '#10b98115' },
-  starter: { color: '#f59e0b', bg: '#f59e0b15' },
+  starter: { color: '#E5C767', bg: '#E5C76715' },
   basic: { color: '#64748b', bg: '#64748b15' },
   BASIC: { color: '#64748b', bg: '#64748b15' },
-  pro: { color: '#6366f1', bg: '#6366f115' },
-  PRO: { color: '#6366f1', bg: '#6366f115' },
+  pro: { color: '#D4B85A', bg: '#D4B85A15' },
+  PRO: { color: '#D4B85A', bg: '#D4B85A15' },
   ultimate: { color: '#d946ef', bg: '#d946ef15' },
   ULTIMATE: { color: '#d946ef', bg: '#d946ef15' },
 };
@@ -42,9 +42,9 @@ const PLAN_CONFIG: Record<string, { color: string; bg: string }> = {
 const TX_TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   TOP_UP: { label: 'Nạp', color: '#10b981', bg: '#10b98112' },
   CONSUME: { label: 'Dùng', color: '#ef4444', bg: '#ef444412' },
-  REFUND: { label: 'Hoàn', color: '#f59e0b', bg: '#f59e0b12' },
-  ADMIN_ADJUST: { label: 'Admin', color: '#8b5cf6', bg: '#8b5cf612' },
-  BONUS: { label: 'Bonus', color: '#8b5cf6', bg: '#8b5cf612' },
+  REFUND: { label: 'Hoàn', color: '#E5C767', bg: '#E5C76712' },
+  ADMIN_ADJUST: { label: 'Admin', color: '#D4B85A', bg: '#D4B85A12' },
+  BONUS: { label: 'Bonus', color: '#D4B85A', bg: '#D4B85A12' },
   WELCOME: { label: 'Welcome', color: '#0090ff', bg: '#0090ff12' },
   DAILY: { label: 'Daily', color: '#06b6d4', bg: '#06b6d412' },
   REFERRAL: { label: 'Ref', color: '#ec4899', bg: '#ec489912' },

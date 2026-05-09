@@ -9,7 +9,7 @@ interface ShortcutsModalProps {
 }
 
 const KBD: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <kbd className="inline-flex items-center justify-center min-w-[1.6rem] h-6 px-1.5 rounded-md bg-white dark:bg-white/[0.08] border border-slate-200 dark:border-white/[0.12] text-[10px] font-black text-slate-600 dark:text-white shadow-sm font-mono">
+  <kbd className="inline-flex items-center justify-center min-w-[1.6rem] h-6 px-1.5 rounded-md bg-white dark:bg-white/[0.08] border border-slate-200 dark:border-white/[0.12] text-[10px] font-bold text-slate-600 dark:text-white shadow-sm font-mono">
     {children}
   </kbd>
 );
@@ -30,7 +30,7 @@ const Row: React.FC<{ keys: React.ReactNode[]; label: string; category?: boolean
 
 const Divider: React.FC<{ label: string }> = ({ label }) => (
   <div className="flex items-center gap-2 py-1.5 mt-1">
-    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400">{label}</span>
+    <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400">{label}</span>
     <div className="flex-1 h-px bg-slate-100 dark:bg-white/[0.05]" />
   </div>
 );
@@ -52,7 +52,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
             exit={{ scale: 0.94, opacity: 0, y: 8 }}
             transition={{ type: 'spring', stiffness: 380, damping: 28 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#13171f] border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+            className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
@@ -61,7 +61,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
                   <Keyboard size={14} className="text-brand-blue" />
                 </div>
                 <div>
-                  <p className="text-[12px] font-black uppercase tracking-widest text-slate-800 dark:text-white">Phím tắt</p>
+                  <p className="text-[12px] font-bold uppercase tracking-widest text-slate-800 dark:text-white">Phím tắt</p>
                   <p className="text-[9px] text-slate-400 dark:text-gray-400 font-medium">Storyboard Studio</p>
                 </div>
               </div>

@@ -5,69 +5,293 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ═══ Custom Styles (from index.html <style>) ═══ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   Atlas-style design tokens (CSS variables) — single source of truth.
+   Reference: atlascloud.ai design system. Light theme primary, dark via .dark.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
+:root {
+  /* Brand (gold + black) */
+  --atlas-purple: #C9A84C;
+  --atlas-purple-hover: #B8963F;
+  --atlas-purple-soft: #D4B85A;
+  --atlas-indigo: #D4B85A;
+  --atlas-indigo-hover: #B8963F;
+  --atlas-deep: #8B7635;
+
+  /* Surfaces (light) */
+  --atlas-bg-page: #FFFFFF;
+  --atlas-bg-panel: #FFFFFF;
+  --atlas-bg-panel-hover: #F5F5F7;
+  --atlas-bg-card: #FAF7F8;
+  --atlas-bg-soft: #FBF8F0;
+
+  /* Text (light) */
+  --atlas-text-primary: #0A0A0A;
+  --atlas-text-secondary: rgba(10, 10, 10, 0.6);
+  --atlas-text-muted: rgba(10, 10, 10, 0.45);
+
+  /* Borders */
+  --atlas-border: #E5E7EB;
+  --atlas-border-soft: #E8DDB8;
+  --atlas-border-strong: rgba(10, 10, 10, 0.12);
+
+  /* Accent */
+  --atlas-orange: #C9A84C;
+  --atlas-orange-bright: #E5C767;
+
+  /* Status */
+  --atlas-success: #01CE0F;
+  --atlas-info: #0186CE;
+  --atlas-warning: #CE7C01;
+  --atlas-error: #CE2301;
+
+  /* Layout */
+  --atlas-navbar-height: 60px;
+  --atlas-radius: 4px;
+  --atlas-radius-card: 8px;
+
+  /* Easing */
+  --atlas-ease: cubic-bezier(.22, 1, .36, 1);
+  --atlas-spring: cubic-bezier(.34, 1.56, .64, 1);
+}
+
+html.dark {
+  --atlas-bg-page: #0A0A0A;
+  --atlas-bg-panel: #111111;
+  --atlas-bg-panel-hover: #1A1A1A;
+  --atlas-bg-card: #111111;
+  --atlas-bg-soft: rgba(201, 168, 76, 0.06);
+
+  --atlas-text-primary: #FFFFFF;
+  --atlas-text-secondary: rgba(255, 255, 255, 0.7);
+  --atlas-text-muted: rgba(255, 255, 255, 0.5);
+
+  --atlas-border: rgba(255, 255, 255, 0.10);
+  --atlas-border-soft: rgba(201, 168, 76, 0.30);
+  --atlas-border-strong: rgba(255, 255, 255, 0.18);
+}
+
+/* ═══ Base body ═══ */
 body {
-  transition: background-color 0.5s ease, color 0.5s ease;
-  background-color: #ffffff;
-  color: #000000;
+  transition: background-color 0.4s var(--atlas-ease), color 0.4s var(--atlas-ease);
+  background-color: var(--atlas-bg-page);
+  color: var(--atlas-text-primary);
   margin: 0;
   overflow-x: hidden;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.dark body {
-  background-color: #000000;
-  color: #ffffff;
+/* Headings — Atlas tight tracking */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.01em;
+  font-weight: 600;
 }
 
-/* Grid Background */
+h1, .h1 { font-size: 2rem; line-height: 1.3; }
+h2, .h2 { font-size: 1.5rem; line-height: 1.3; }
+h3, .h3 { font-size: 1.25rem; line-height: 1.3; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Atlas component utilities — used directly via className
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* Primary CTA button — Atlas purple gradient */
+  .atlas-btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded font-semibold text-sm transition-all duration-200 ease-out;
+    background: linear-gradient(135deg, #C9A84C 0%, #B8963F 100%);
+    color: #FFFFFF;
+    line-height: 1;
+  }
+  .atlas-btn:hover {
+    background: linear-gradient(135deg, #B8963F 0%, #8B7635 100%);
+    box-shadow: 0 6px 16px rgba(201, 168, 76, .35), 0 4px 12px rgba(201, 168, 76, .40);
+    transform: translateY(-1px);
+  }
+  .atlas-btn:active { transform: scale(.98); }
+  .atlas-btn-lg { @apply px-5 py-3 text-base; }
+  .atlas-btn-sm { @apply px-3 py-2 text-xs; }
+  .atlas-btn-pill { border-radius: 9999px; }
+
+  /* Outline / secondary button */
+  .atlas-btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded font-semibold text-sm transition-all duration-200 ease-out;
+    background: transparent;
+    color: var(--atlas-text-primary);
+    border: 1px solid var(--atlas-border);
+    line-height: 1;
+  }
+  .atlas-btn-outline:hover {
+    border-color: var(--atlas-purple);
+    color: var(--atlas-purple);
+    background: rgba(201, 168, 76, .04);
+  }
+
+  /* Ghost / link-style button */
+  .atlas-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-2 rounded font-medium text-sm transition-colors duration-150;
+    color: var(--atlas-text-primary);
+  }
+  .atlas-btn-ghost:hover {
+    background: var(--atlas-bg-panel-hover);
+    color: var(--atlas-purple);
+  }
+
+  /* Card — Atlas style (8px radius, soft border, hover lift) */
+  .atlas-card {
+    background: var(--atlas-bg-panel);
+    border: 1px solid var(--atlas-border);
+    border-radius: var(--atlas-radius-card);
+    transition: all 0.3s var(--atlas-ease);
+  }
+  .atlas-card-hover:hover {
+    box-shadow: 0 8px 24px rgba(201, 168, 76, .20);
+    border-color: var(--atlas-border-soft);
+    transform: translateY(-2px);
+  }
+
+  /* Glass / blur surface */
+  .atlas-glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--atlas-border);
+  }
+  html.dark .atlas-glass {
+    background: rgba(17, 17, 17, 0.7);
+  }
+
+  /* Section container */
+  .atlas-container {
+    @apply mx-auto px-5 md:px-8;
+    max-width: 1200px;
+  }
+  .atlas-container-wide {
+    @apply mx-auto px-5 md:px-8;
+    max-width: 1300px;
+  }
+
+  /* Section spacing */
+  .atlas-section {
+    @apply py-12 md:py-20;
+  }
+
+  /* Pill / badge */
+  .atlas-pill {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full;
+    background: rgba(201, 168, 76, .08);
+    color: var(--atlas-purple);
+    border: 1px solid rgba(201, 168, 76, .20);
+  }
+  html.dark .atlas-pill {
+    background: rgba(201, 168, 76, .12);
+    color: #E5C767;
+  }
+
+  /* Gradient heading text */
+  .atlas-text-gradient {
+    background: linear-gradient(135deg, #0A0A0A 0%, #C9A84C 50%, #E5C767 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  html.dark .atlas-text-gradient {
+    background: linear-gradient(135deg, #FFFFFF 0%, #E5C767 50%, #C9A84C 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Sticky nav blur (header) */
+  .atlas-nav {
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    background: rgba(255, 255, 255, 0.72);
+    border-bottom: 1px solid var(--atlas-border);
+  }
+  html.dark .atlas-nav {
+    background: rgba(10, 10, 10, 0.72);
+  }
+
+  /* Soft surface (e.g. for muted cards) */
+  .atlas-surface-soft {
+    background: var(--atlas-bg-panel-hover);
+    border-radius: var(--atlas-radius-card);
+  }
+
+  /* Code block surface (technical / API docs) */
+  .atlas-code {
+    background: #1E1E1E;
+    border-radius: var(--atlas-radius);
+    color: #00C2A5;
+    font-family: 'Fragment Mono', 'JetBrains Mono', monospace;
+  }
+}
+
+/* ═══ Background patterns ═══ */
 .bg-grid {
   position: fixed;
   inset: 0;
-  background-image: linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px);
-  background-size: 12.5% 100%;
+  background-image:
+    linear-gradient(rgba(201, 168, 76, 0.04) 1px, transparent 0),
+    linear-gradient(90deg, rgba(201, 168, 76, 0.04) 1px, transparent 0);
+  background-size: 50px 50px;
   z-index: 1;
   pointer-events: none;
 }
 .dark .bg-grid {
-  background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 0);
 }
 
-/* Matrix Container */
+/* Matrix container — kept but soft in light mode */
 .matrix-container {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-  opacity: 0.05;
+  opacity: 0.04;
 }
 .dark .matrix-container {
-  opacity: 0.15;
+  opacity: 0.12;
 }
 .matrix-column {
   position: absolute;
   top: -100px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  line-height: 1.2;
-  font-weight: 800;
-  color: #000;
+  font-family: 'Fragment Mono', 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--atlas-purple);
   white-space: pre;
   user-select: none;
   display: flex;
   flex-direction: column;
+  opacity: 0.4;
 }
 .dark .matrix-column {
   color: #fff;
+  opacity: 1;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 4px; }
+/* ═══ Scrollbar — Atlas thin purple ═══ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #ccc; }
-.dark ::-webkit-scrollbar-thumb { background: #333; }
+::-webkit-scrollbar-thumb {
+  background: rgba(201, 168, 76, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(201, 168, 76, 0.4); }
+.dark ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); }
+.dark ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
 
 /* Hide scrollbar utility */
 .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -80,18 +304,46 @@ body {
   }
 }
 
-/* React Flow Styles */
+/* ═══ Selection ═══ */
+::selection {
+  background: rgba(201, 168, 76, 0.2);
+  color: var(--atlas-text-primary);
+}
+
+/* ═══ React Flow ═══ */
 .xyflow__node {
-  border-radius: 8px;
-  font-family: 'Inter', sans-serif;
+  border-radius: var(--atlas-radius-card);
+  font-family: 'Manrope', 'Inter', sans-serif;
 }
 .xyflow__handle {
   width: 8px;
   height: 8px;
-  background: #0090ff;
+  background: var(--atlas-purple);
   border: 2px solid #fff;
 }
 .xyflow__edge-path {
-  stroke: #0090ff;
+  stroke: var(--atlas-purple);
   stroke-width: 2;
+}
+
+/* ═══ Atlas keyframes (also exposed via tailwind animation:) ═══ */
+@keyframes atlasFadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes atlasFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes atlasGradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Stagger reveal helper — apply with [style="--i:N"] */
+.atlas-stagger > * {
+  opacity: 0;
+  animation: atlasFadeInUp .6s var(--atlas-ease) forwards;
+  animation-delay: calc(30ms * var(--i, 0));
 }

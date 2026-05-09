@@ -68,18 +68,18 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
   }, [isFetchingServer, hasMoreServer, onLoadMoreServer]);
 
   return (
-    <aside className="hidden xl:flex w-[340px] shrink-0 border-l border-slate-200 dark:border-white/5 bg-white dark:bg-[#13171f] flex flex-col overflow-hidden z-50 transition-all duration-500 shadow-2xl">
+    <aside className="hidden xl:flex w-[340px] shrink-0 border-l border-slate-200 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)] flex flex-col overflow-hidden z-50 transition-all duration-500 shadow-2xl">
       {/* Tab Selector Header */}
       <div className="h-14 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20 p-1 flex">
         <button
           onClick={() => setActiveTab('MY_HISTORY')}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'MY_HISTORY' ? 'bg-white dark:bg-[#13171f] text-rose-500 shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
+          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'MY_HISTORY' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-rose-500 shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
         >
           <HistoryIcon size={14} /> Lịch sử
         </button>
         <button
           onClick={() => setActiveTab('COMMUNITY')}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'COMMUNITY' ? 'bg-white dark:bg-[#13171f] text-rose-500 shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
+          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'COMMUNITY' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-rose-500 shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
         >
           <Sparkles size={14} /> Cộng đồng
         </button>
@@ -100,7 +100,7 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 px-1">
                     <div className="w-1 h-3 bg-rose-500"></div>
-                    <span className="text-[9px] font-black uppercase text-gray-500 tracking-widest">Phiên hiện tại</span>
+                    <span className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">Phiên hiện tại</span>
                   </div>
                   <div className="space-y-4">
                     {results.map((res) => (
@@ -124,13 +124,13 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center gap-2 px-1">
                   <div className="w-1 h-3 bg-purple-500"></div>
-                  <span className="text-[9px] font-black uppercase text-gray-500 tracking-widest">Đã lưu trên Cloud</span>
+                  <span className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">Đã lưu trên Cloud</span>
                 </div>
 
                 {serverResults.length === 0 && !isFetchingServer ? (
                   <div className="py-10 text-center opacity-20">
                     <Database size={32} className="mx-auto mb-3" />
-                    <p className="text-[10px] font-black uppercase">Chưa có kịch bản cũ</p>
+                    <p className="text-[10px] font-bold uppercase">Chưa có kịch bản cũ</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -167,13 +167,13 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
             >
               <div className="flex items-center gap-2 px-1">
                 <div className="w-1 h-3 bg-rose-500"></div>
-                <span className="text-[9px] font-black uppercase text-gray-500 tracking-widest">Khám phá ý tưởng</span>
+                <span className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">Khám phá ý tưởng</span>
               </div>
 
               {loadingExplorer ? (
                 <div className="py-10 flex flex-col items-center justify-center gap-3 opacity-40">
                   <Loader2 className="animate-spin text-rose-500" size={20} />
-                  <p className="text-[8px] font-black uppercase tracking-widest">Syncing Nodes...</p>
+                  <p className="text-[8px] font-bold uppercase tracking-widest">Syncing Nodes...</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -186,13 +186,13 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
                           onClick={() => onUsePrompt(item.prompt)}
                           className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
                         >
-                          <div className="bg-rose-500 text-white px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl scale-90 group-hover:scale-100 transition-transform flex items-center gap-2">
+                          <div className="bg-rose-500 text-white px-5 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-2xl scale-90 group-hover:scale-100 transition-transform flex items-center gap-2">
                             <Wand2 size={12} /> Sử dụng Prompt
                           </div>
                         </button>
                       </div>
                       <div className="p-3 space-y-1">
-                        <p className="text-[9px] font-black text-slate-800 dark:text-white/80 uppercase truncate italic leading-tight">"{item.title}"</p>
+                        <p className="text-[9px] font-bold text-slate-800 dark:text-white/80 uppercase truncate italic leading-tight">"{item.title}"</p>
                         <p className="text-[7px] text-gray-400 font-bold uppercase tracking-widest">Verified Synthesis</p>
                       </div>
                     </div>
@@ -207,7 +207,7 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
       {/* System Footer */}
       <div className="p-4 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/20 shrink-0">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-[8px] font-black uppercase text-gray-400 italic">
+          <div className="flex items-center gap-3 text-[8px] font-bold uppercase text-gray-400 italic">
             <Database size={10} />
             <span>{activeTab === 'MY_HISTORY' ? 'User Ledger Synchronized' : 'Global Registry Active'}</span>
           </div>

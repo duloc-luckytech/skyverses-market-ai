@@ -41,7 +41,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
           </FadeInUp>
 
           <FadeInUp delay={0.1}>
-            <h1 className="text-5xl sm:text-6xl lg:text-[72px] xl:text-[82px] font-black leading-[0.9] tracking-tighter text-slate-900 dark:text-white">
+            <h1 className="text-5xl sm:text-6xl lg:text-[72px] xl:text-[82px] font-bold leading-[0.9] tracking-tighter text-slate-900 dark:text-white">
               Hồi sinh<br />
               <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
                 Ký ức
@@ -114,7 +114,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
           className="lg:col-span-7 relative order-1 lg:order-2"
         >
           {/* Browser chrome */}
-          <div className="rounded-2xl overflow-hidden shadow-2xl dark:shadow-[0_20px_80px_rgba(0,0,0,0.7)] border border-slate-200 dark:border-white/[0.06]">
+          <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-white/[0.06]">
             {/* Top bar */}
             <div className="flex items-center gap-2 px-4 py-3 bg-slate-100 dark:bg-[#111] border-b border-slate-200/80 dark:border-white/[0.05]">
               <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />

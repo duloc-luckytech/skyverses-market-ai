@@ -363,12 +363,12 @@ export const Viewport: React.FC<ViewportProps> = ({
               <Activity className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/30 animate-pulse" size={24} />
             </div>
             <div className="space-y-2 text-center">
-              <h3 className="text-sm font-black uppercase tracking-[0.4em] text-white animate-pulse">Syncing Mesh Lattice</h3>
+              <h3 className="text-sm font-bold uppercase tracking-[0.4em] text-white animate-pulse">Syncing Mesh Lattice</h3>
               <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden mx-auto">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${loadProgress}%` }}
-                  className="h-full bg-brand-blue shadow-[0_0_15px_rgba(0,144,255,0.8)]"
+                  className="h-full bg-brand-blue shadow-[0_0_15px_rgba(201, 168, 76,0.8)]"
                 />
               </div>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{loadProgress}% Complete</p>
@@ -391,12 +391,12 @@ export const Viewport: React.FC<ViewportProps> = ({
                    <AlertCircle size={32} />
                 </div>
                 <div className="space-y-2">
-                   <h4 className="text-xl font-black uppercase tracking-tight text-white">Lỗi nạp mô hình</h4>
+                   <h4 className="text-xl font-bold uppercase tracking-tight text-white">Lỗi nạp mô hình</h4>
                    <p className="text-sm text-gray-400 leading-relaxed">{loadError}</p>
                 </div>
                 <button 
                   onClick={() => setLoadError(null)}
-                  className="w-full py-4 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+                  className="w-full py-4 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all"
                 >
                    Đóng thông báo
                 </button>
@@ -430,7 +430,7 @@ export const Viewport: React.FC<ViewportProps> = ({
             exit={{ opacity: 0, x: -20 }}
             className="absolute top-6 left-6 text-left font-mono text-[10px] text-gray-500 space-y-1 p-5 bg-black/40 backdrop-blur-xl rounded-2xl border border-white/5 shadow-2xl z-30 pointer-events-none"
           >
-            <p className="flex justify-between gap-8 text-brand-blue font-black tracking-widest uppercase italic">Topology_Monitor</p>
+            <p className="flex justify-between gap-8 text-brand-blue font-bold tracking-widest uppercase italic">Topology_Monitor</p>
             <p className="flex justify-between gap-8 pt-2">Topology: <span className="text-brand-blue">Triangle</span></p>
             <p className="flex justify-between gap-8">Faces: <span className="text-white">{topologyStats.faces.toLocaleString()}</span></p>
             <p className="flex justify-between gap-8">Vertices: <span className="text-white">{topologyStats.vertices.toLocaleString()}</span></p>

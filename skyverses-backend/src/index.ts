@@ -51,6 +51,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
     /* ------------------------------ Static ------------------------------ */
     app.use("/final", express.static("outputs"));
+    app.use("/uploads", express.static("uploads"));
 
     /* ------------------------------ Jobs ------------------------------ */
     if (process.env.NODE_ENV === "production") {

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Terminal, Copy, Check } from 'lucide-react';
+import { Terminal, Copy, Check, ImageIcon } from 'lucide-react';
 
 interface ContentInfoProps {
   title: string;
   description?: string;
   prompt?: string;
+  referenceImage?: string;
 }
 
-const ContentInfo: React.FC<ContentInfoProps> = ({ title, description, prompt }) => {
+const ContentInfo: React.FC<ContentInfoProps> = ({ title, description, prompt, referenceImage }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopyPrompt = () => {
@@ -31,6 +32,19 @@ const ContentInfo: React.FC<ContentInfoProps> = ({ title, description, prompt })
         )}
       </div>
 
+      {/* Reference Image Section */}
+      {referenceImage && (
+        <div className="rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] overflow-hidden">
+          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-black/[0.04] dark:border-white/[0.04]">
+            <ImageIcon size={13} className="text-brand-blue" />
+            <span className="text-[12px] font-medium text-slate-500 dark:text-gray-400">Reference Image</span>
+          </div>
+          <div className="p-3">
+            <img src={referenceImage} alt="Reference input" className="w-full rounded-lg object-cover max-h-[200px]" />
+          </div>
+        </div>
+      )}
+
       {/* Prompt Section */}
       {prompt && (
         <div className="rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] overflow-hidden">
@@ -39,11 +53,11 @@ const ContentInfo: React.FC<ContentInfoProps> = ({ title, description, prompt })
               <Terminal size={13} className="text-brand-blue" />
               <span className="text-[12px] font-medium text-slate-500 dark:text-gray-400">Prompt</span>
             </div>
-            <button 
+            <button
               onClick={handleCopyPrompt}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
-                isCopied 
-                ? 'bg-emerald-500/10 text-emerald-600' 
+                isCopied
+                ? 'bg-emerald-500/10 text-emerald-600'
                 : 'text-slate-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-slate-600 dark:hover:text-white'
               }`}
             >

@@ -25,8 +25,8 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
     (params: any) => setEdges((eds) => addEdge({
       ...params,
       animated: true,
-      style: { stroke: '#6366f1', strokeWidth: 2 },
-      markerEnd: { type: MarkerType.ArrowClosed, color: '#6366f1' }
+      style: { stroke: '#D4B85A', strokeWidth: 2 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: '#D4B85A' }
     }, eds)),
     [setEdges]
   );
@@ -175,8 +175,8 @@ export const useWorkflowEditorV2 = (template: WorkflowTemplate | null) => {
                 sourceHandle: String(fromOut),
                 targetHandle: targetHandle,
                 animated: true,
-                style: { stroke: '#6366f1', strokeWidth: 2 },
-                markerEnd: { type: MarkerType.ArrowClosed, color: '#6366f1' }
+                style: { stroke: '#D4B85A', strokeWidth: 2 },
+                markerEnd: { type: MarkerType.ArrowClosed, color: '#D4B85A' }
               });
             });
           }

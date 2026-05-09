@@ -117,12 +117,12 @@ const VideoAnimateAI: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-[#0a0d14] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-indigo-500/30 transition-colors duration-500">
+    <div className="bg-white dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-indigo-500/30 transition-colors duration-500">
 
       <AnimatePresence>
         {isWorkspaceOpen && (
           <motion.div initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }}
-            className="fixed inset-0 z-[1000] bg-white dark:bg-[#0a0d14]">
+            className="fixed inset-0 z-[1000] bg-white dark:bg-[var(--atlas-bg-page)]">
             <VideoAnimateWorkspace onClose={() => setIsWorkspaceOpen(false)} />
           </motion.div>
         )}
@@ -146,7 +146,7 @@ const VideoAnimateAI: React.FC = () => {
             <Video size={14} /> AI Video Animation Studio
           </motion.div>
 
-          <motion.h1 {...fadeUp(0.1)} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95]">
+          <motion.h1 {...fadeUp(0.1)} className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.95]">
             Diễn hoạt video
             <br />
             <span className="bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent">bằng AI chuyên sâu</span>
@@ -179,7 +179,7 @@ const VideoAnimateAI: React.FC = () => {
         </div>
 
         {/* Hero video carousel */}
-        <motion.div {...fadeUp(0.5)} className="relative max-w-5xl mx-auto mt-16 w-full border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[#13171f] rounded-2xl shadow-[0_40px_100px_rgba(0,0,0,0.08)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.4)] overflow-hidden">
+        <motion.div {...fadeUp(0.5)} className="relative max-w-5xl mx-auto mt-16 w-full border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl shadow-[0_40px_100px_rgba(0,0,0,0.08)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.4)] overflow-hidden">
           <div className="h-10 border-b border-slate-100 dark:border-white/[0.08] bg-slate-50/80 dark:bg-white/[0.02] flex items-center px-4 gap-2">
             <div className="flex gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-red-400/60" />
@@ -200,7 +200,7 @@ const VideoAnimateAI: React.FC = () => {
               <span className="text-[9px] font-bold uppercase text-white tracking-wider">{HERO_VIDEOS[currentSlide].tag}</span>
             </div>
             <div className="absolute bottom-6 left-6 z-10">
-              <h3 className="text-2xl lg:text-3xl font-black text-white leading-tight">{HERO_VIDEOS[currentSlide].title}</h3>
+              <h3 className="text-2xl lg:text-3xl font-bold text-white leading-tight">{HERO_VIDEOS[currentSlide].title}</h3>
             </div>
             {/* Slide indicators */}
             <div className="absolute bottom-4 right-4 flex gap-1.5 z-10">
@@ -223,7 +223,7 @@ const VideoAnimateAI: React.FC = () => {
       <section className="py-32 border-t border-slate-100 dark:border-white/[0.03] bg-slate-50/50 dark:bg-black/20 transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <motion.div {...fadeUp()} className="text-center space-y-4 mb-20">
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Công nghệ <span className="text-indigo-500">diễn hoạt</span>
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-lg mx-auto">
@@ -252,7 +252,7 @@ const VideoAnimateAI: React.FC = () => {
       <section id="showcases" className="py-32 border-t border-slate-100 dark:border-white/[0.03] transition-colors">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
           <motion.div {...fadeUp()} className="text-center space-y-4 mb-24">
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Thư viện <span className="text-indigo-500">giải pháp</span>
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-lg mx-auto">
@@ -283,7 +283,7 @@ const VideoAnimateAI: React.FC = () => {
                     <div className="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500">
                       {React.cloneElement(item.icon as React.ReactElement<any>, { size: 20 })}
                     </div>
-                    <h3 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 dark:text-white">{item.title}</h3>
+                    <h3 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">{item.title}</h3>
                   </div>
                   <h4 className="text-lg font-bold text-indigo-600 dark:text-indigo-400">{item.headline}</h4>
                   <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{item.desc}</p>
@@ -310,7 +310,7 @@ const VideoAnimateAI: React.FC = () => {
       <section className="py-32 border-t border-slate-100 dark:border-white/[0.03] bg-slate-50/50 dark:bg-black/20 transition-colors">
         <div className="max-w-5xl mx-auto px-6 lg:px-12">
           <motion.div {...fadeUp()} className="text-center space-y-4 mb-20">
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Quy trình <span className="text-indigo-500">đơn giản</span>
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Chỉ 4 bước để tạo video chuyên nghiệp</p>
@@ -338,7 +338,7 @@ const VideoAnimateAI: React.FC = () => {
       <section className="py-32 border-t border-slate-100 dark:border-white/[0.03] transition-colors">
         <div className="max-w-6xl mx-auto px-6 lg:px-12">
           <motion.div {...fadeUp()} className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Ứng dụng <span className="text-indigo-500">đa ngành</span>
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Từ quảng cáo đến thời trang — Video AI phục vụ mọi lĩnh vực.</p>
@@ -358,11 +358,11 @@ const VideoAnimateAI: React.FC = () => {
       </section>
 
       {/* ═══ CTA ═══ */}
-      <section className="py-40 text-center relative overflow-hidden border-t border-slate-100 dark:border-white/[0.03] bg-white dark:bg-[#0a0d14] transition-colors">
+      <section className="py-40 text-center relative overflow-hidden border-t border-slate-100 dark:border-white/[0.03] bg-white dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-indigo-500/5 to-violet-500/5 rounded-full blur-[150px] pointer-events-none" />
         <div className="max-w-3xl mx-auto space-y-10 relative z-10 px-6">
           <motion.div {...fadeUp()} className="space-y-6">
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.95] text-slate-900 dark:text-white">
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.95] text-slate-900 dark:text-white">
               Bắt đầu <br />
               <span className="text-indigo-500">diễn hoạt ngay</span>
             </h2>

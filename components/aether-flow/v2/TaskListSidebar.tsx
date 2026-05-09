@@ -66,14 +66,14 @@ export const TaskListSidebar: React.FC<{ isOpen: boolean; onClose: () => void }>
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
-      className="w-[400px] h-full bg-white dark:bg-[#1a1f2b] border-l border-black/5 dark:border-white/5 flex flex-col shrink-0 z-[150] shadow-2xl transition-colors"
+      className="w-[400px] h-full bg-white dark:bg-[var(--atlas-bg-panel)] border-l border-black/5 dark:border-white/5 flex flex-col shrink-0 z-[150] shadow-2xl transition-colors"
     >
       <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-black/20">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-500">
             <LayoutGrid size={18} />
           </div>
-          <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Task List</h3>
+          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900 dark:text-white">Task List</h3>
         </div>
         <button onClick={onClose} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
           <X size={20} />
@@ -88,21 +88,21 @@ export const TaskListSidebar: React.FC<{ isOpen: boolean; onClose: () => void }>
 
       <div className="flex-grow overflow-y-auto no-scrollbar p-5 space-y-6">
         {MOCK_TASKS.map((task) => (
-          <div key={task.id} className="p-5 bg-white dark:bg-[#0a0d14] border border-black/5 dark:border-white/10 rounded-2xl space-y-4 hover:border-indigo-500/30 transition-all shadow-sm">
+          <div key={task.id} className="p-5 bg-white dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/10 rounded-2xl space-y-4 hover:border-indigo-500/30 transition-all shadow-sm">
             <div className="flex justify-between items-start">
                <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-2 py-0.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 text-[8px] font-black uppercase rounded-sm flex items-center gap-1">
+                  <span className="px-2 py-0.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 text-[8px] font-bold uppercase rounded-sm flex items-center gap-1">
                     <Zap size={8} fill="currentColor" /> AI Standard
                   </span>
-                  <h4 className="text-[11px] font-black text-slate-800 dark:text-zinc-100 uppercase italic truncate max-w-[180px]">{task.title}</h4>
+                  <h4 className="text-[11px] font-bold text-slate-800 dark:text-zinc-100 uppercase italic truncate max-w-[180px]">{task.title}</h4>
                </div>
                {task.status !== 'generating' && (
-                 <button className="text-[9px] font-black text-red-500 uppercase hover:underline">Delete</button>
+                 <button className="text-[9px] font-bold text-red-500 uppercase hover:underline">Delete</button>
                )}
             </div>
 
             <div className="space-y-1">
-               <p className={`text-[10px] font-black uppercase ${task.status === 'generating' ? 'text-emerald-500 animate-pulse' : 'text-gray-400'}`}>
+               <p className={`text-[10px] font-bold uppercase ${task.status === 'generating' ? 'text-emerald-500 animate-pulse' : 'text-gray-400'}`}>
                  {task.status === 'generating' ? `Generating ${task.time}` : task.time}
                </p>
                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[9px] font-bold text-gray-500 dark:text-zinc-600 uppercase tracking-widest">
@@ -138,10 +138,10 @@ export const TaskListSidebar: React.FC<{ isOpen: boolean; onClose: () => void }>
 
             <div className="flex items-center justify-between pt-2 border-t border-black/5 dark:border-white/5">
                <div className="flex gap-4">
-                  <button className="flex items-center gap-1.5 text-[9px] font-black text-gray-500 hover:text-indigo-500 uppercase transition-all">
+                  <button className="flex items-center gap-1.5 text-[9px] font-bold text-gray-500 hover:text-indigo-500 uppercase transition-all">
                     <Share2 size={12} /> Share
                   </button>
-                  <button className="flex items-center gap-1.5 text-[9px] font-black text-gray-500 hover:text-indigo-500 uppercase transition-all">
+                  <button className="flex items-center gap-1.5 text-[9px] font-bold text-gray-500 hover:text-indigo-500 uppercase transition-all">
                     <RefreshCw size={12} /> Regenerate
                   </button>
                </div>

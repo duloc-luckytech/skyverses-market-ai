@@ -141,7 +141,7 @@ const UseCasesPage = () => {
   const statsInView = useInView(statsRef, { once: true, margin: "-100px" });
 
   return (
-    <div className="bg-[#050507] min-h-screen text-white font-sans overflow-x-hidden pt-16">
+    <div className="bg-atlas-navy min-h-screen text-white font-sans overflow-x-hidden pt-16">
 
       {/* ── HERO ── */}
       <section ref={heroRef} className="relative py-32 px-6 overflow-hidden">
@@ -154,20 +154,18 @@ const UseCasesPage = () => {
           initial="hidden" animate={heroInView ? "visible" : "hidden"} variants={staggerContainer}
           className="max-w-4xl mx-auto text-center relative z-10"
         >
-          <motion.div variants={fadeUp} custom={0}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-8"
+          <motion.p variants={fadeUp} custom={0}
+            className="text-sm font-bold uppercase tracking-[0.18em] text-atlas-orangeBright mb-4"
           >
-            <TrendingUp size={14} /> Industry Solutions
-          </motion.div>
+            USE CASES
+          </motion.p>
 
-          <motion.h1 variants={fadeUp} custom={1} className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.95] mb-6">
+          <motion.h1 variants={fadeUp} custom={1} className="text-[2rem] md:text-[3.5rem] lg:text-[4.5rem] font-bold tracking-[-0.02em] leading-[1.05] mb-6">
             AI That Works for{' '}
-            <span className="bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              Your Industry
-            </span>
+            <span className="atlas-text-gradient">Your Industry</span>
           </motion.h1>
 
-          <motion.p variants={fadeUp} custom={2} className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          <motion.p variants={fadeUp} custom={2} className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
             See how creators, businesses, and enterprises use Skyverses to transform their workflows
             and produce professional content 10x faster.
           </motion.p>
@@ -184,7 +182,7 @@ const UseCasesPage = () => {
             <motion.div key={i} variants={fadeUp} custom={i}
               className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 text-center"
             >
-              <div className="text-3xl font-black bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
+              <div className="text-3xl font-bold bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
               <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">{s.label}</div>
             </motion.div>
           ))}
@@ -216,7 +214,7 @@ const UseCasesPage = () => {
                       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.gradient} flex items-center justify-center text-white mb-5 shadow-lg`}>
                         {cat.icon}
                       </div>
-                      <h3 className="text-2xl font-black mb-1">{cat.title}</h3>
+                      <h3 className="text-2xl font-bold mb-1">{cat.title}</h3>
                       <p className="text-sm text-gray-500 mb-6">{cat.subtitle}</p>
 
                       <div className="flex flex-wrap gap-2 mb-6">
@@ -262,7 +260,7 @@ const UseCasesPage = () => {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-gradient-to-b from-violet-500/20 to-transparent blur-3xl pointer-events-none" />
 
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-5xl font-black mb-6">
+              <h2 className="text-3xl md:text-5xl font-bold mb-6">
                 Don't See Your Industry?
               </h2>
               <p className="text-gray-400 max-w-xl mx-auto mb-10">

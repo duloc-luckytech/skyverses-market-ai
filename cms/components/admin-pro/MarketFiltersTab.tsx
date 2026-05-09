@@ -209,11 +209,11 @@ export const MarketFiltersTab: React.FC = () => {
     const colors: Record<string, string> = {
       'ALL': '#0090ff',
       'GAMES': '#10b981',
-      'ART_DESIGN': '#8b5cf6',
-      'AI_TOOLS': '#f59e0b',
+      'ART_DESIGN': '#D4B85A',
+      'AI_TOOLS': '#E5C767',
       'CASE_STUDIES': '#ef4444'
     };
-    return colors[code] || '#6366f1';
+    return colors[code] || '#D4B85A';
   };
 
   if (loading) {

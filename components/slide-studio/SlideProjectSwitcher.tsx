@@ -195,11 +195,11 @@ export const SlideProjectSwitcher: React.FC<Props> = ({
               exit={{ opacity: 0, y: -4, scale: 0.97 }}
               transition={{ duration: 0.15, ease: 'easeOut' }}
               style={{ position: 'fixed', top: dropPos.top, left: dropPos.left, zIndex: 99999 }}
-              className="w-[220px] rounded-xl bg-white dark:bg-[#13171f] border border-black/[0.08] dark:border-white/[0.08] shadow-2xl shadow-black/30 overflow-hidden"
+              className="w-[220px] rounded-xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] shadow-2xl shadow-black/30 overflow-hidden"
             >
               {/* Header */}
               <div className="px-3 py-2 border-b border-black/[0.05] dark:border-white/[0.06]">
-                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400">
+                <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400">
                   Projects
                 </span>
               </div>

@@ -344,7 +344,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
       
       <motion.div initial={{ scale: 0.96, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative w-full max-w-2xl bg-white dark:bg-[#13171f] border border-black/[0.06] dark:border-white/[0.06] rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-full md:h-auto md:max-h-[90vh]">
+        className="relative w-full max-w-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-full md:h-auto md:max-h-[90vh]">
         
         {/* Header */}
         <div className="px-5 md:px-6 py-4 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between shrink-0">
@@ -424,7 +424,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
                         </div>
                       </div>
                       <div className="text-right shrink-0 ml-3">
-                        <p className="text-lg font-black text-brand-blue tracking-tight">{(pack.totalCredits || pack.credits).toLocaleString()}</p>
+                        <p className="text-lg font-bold text-brand-blue tracking-tight">{(pack.totalCredits || pack.credits).toLocaleString()}</p>
                         <div className="flex flex-col">
                           <p className="text-xs font-bold text-slate-700 dark:text-gray-300">{formatVND(pack.price)}₫</p>
                           <p className="text-[9px] text-slate-400">${pack.price} USDT</p>
@@ -520,13 +520,13 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                           {paymentMethod === 'bank' ? 'Số tiền VND' : 'Số tiền USDT'}
                         </p>
-                        <p className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                        <p className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
                           {paymentMethod === 'bank' ? `${pendingTx.amount.toLocaleString('vi-VN')}₫` : `$${selectedPack?.price || 0}`}
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Nhận được</p>
-                        <p className="text-xl md:text-2xl font-black text-brand-blue">{pendingTx.credits.toLocaleString()} <span className="text-sm font-bold text-brand-blue/50">CR</span></p>
+                        <p className="text-xl md:text-2xl font-bold text-brand-blue">{pendingTx.credits.toLocaleString()} <span className="text-sm font-bold text-brand-blue/50">CR</span></p>
                       </div>
                     </div>
 
@@ -543,7 +543,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
                                 </div>
                                 <div>
                                   <div className="flex items-center justify-between">
-                                    <p className="text-base font-black text-slate-900 dark:text-white tracking-wider font-mono">{bankingConfig.accountNumber}</p>
+                                    <p className="text-base font-bold text-slate-900 dark:text-white tracking-wider font-mono">{bankingConfig.accountNumber}</p>
                                     <button onClick={() => copyText(bankingConfig.accountNumber, 'acc')} className="p-1.5 rounded-md hover:bg-black/[0.04] dark:hover:bg-white/[0.04] text-slate-400">
                                       {copied === 'acc' ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
                                     </button>
@@ -558,7 +558,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
                                 <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">Nội dung CK (bắt buộc)</span>
                               </div>
                               <div className="flex items-center justify-between bg-white dark:bg-black/30 px-3 py-2.5 rounded-lg border border-amber-200 dark:border-amber-500/10">
-                                <p className="text-sm font-black text-amber-700 dark:text-amber-300 tracking-wider select-all font-mono">{pendingTx.memo}</p>
+                                <p className="text-sm font-bold text-amber-700 dark:text-amber-300 tracking-wider select-all font-mono">{pendingTx.memo}</p>
                                 <button onClick={() => copyText(pendingTx.memo, 'memo')} className="p-1 text-amber-500">
                                   {copied === 'memo' ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
                                 </button>
@@ -622,7 +622,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
                                 {net === 'bsc' && <svg className="w-5 h-5" viewBox="0 0 32 32" fill="none"><path d="M16 2L9.5 8.5l2.4 2.4L16 6.8l4.1 4.1 2.4-2.4L16 2zm-8.5 8.5L5.1 13l2.4 2.4L10 13l-2.5-2.5zM16 12.8L11.9 17l2.4 2.4L16 17.6l1.7 1.8 2.4-2.4L16 12.8zm8.5 0L22 15.3l2.4 2.4 2.4-2.4-2.3-2.5zM16 19.2l-4.1 4.1 2.4 2.4L16 24l1.7 1.7 2.4-2.4L16 19.2z" fill="#F3BA2F"/><path d="M16 30l6.5-6.5-2.4-2.4L16 25.2l-4.1-4.1-2.4 2.4L16 30z" fill="#F3BA2F"/></svg>}
                                 {net === 'eth' && <svg className="w-5 h-5" viewBox="0 0 32 32" fill="none"><path d="M16 2v10.9l9.2 4.1L16 2z" fill="#627EEA" fillOpacity=".6"/><path d="M16 2L6.8 17l9.2-4.1V2z" fill="#627EEA"/><path d="M16 23.5v6.5l9.2-12.8L16 23.5z" fill="#627EEA" fillOpacity=".6"/><path d="M16 30v-6.5L6.8 17.2 16 30z" fill="#627EEA"/><path d="M16 21.8l9.2-4.8L16 12.9v8.9z" fill="#627EEA" fillOpacity=".2"/><path d="M6.8 17l9.2 4.8V12.9L6.8 17z" fill="#627EEA" fillOpacity=".6"/></svg>}
                                 <div className="text-left">
-                                  <p className="font-black">{net.toUpperCase()}</p>
+                                  <p className="font-bold">{net.toUpperCase()}</p>
                                   <p className="text-[8px] opacity-60">{net === 'bsc' ? 'BEP-20' : 'ERC-20'}</p>
                                 </div>
                               </button>
@@ -648,7 +648,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
                                 </div>
                                 <div className="flex items-center justify-between pt-2 border-t border-black/[0.04] dark:border-white/[0.08]">
                                   <span className="text-[10px] font-bold text-slate-400">Số USDT</span>
-                                  <span className="text-lg font-black text-amber-600 dark:text-amber-400">{selectedPack?.price || 0} USDT</span>
+                                  <span className="text-lg font-bold text-amber-600 dark:text-amber-400">{selectedPack?.price || 0} USDT</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                   <span className="text-[10px] font-bold text-slate-400">Mạng</span>

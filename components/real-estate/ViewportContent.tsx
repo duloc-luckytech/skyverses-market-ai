@@ -106,26 +106,26 @@ export const ViewportContent: React.FC<ViewportContentProps> = ({
                   >
                     {/* LEFT — Context chips */}
                     <div className="flex items-center gap-2 flex-wrap min-w-0">
-                      <span className="px-2 py-0.5 bg-purple-600/10 dark:bg-purple-600/20 border border-purple-500/20 text-purple-700 dark:text-purple-400 text-[8px] font-black uppercase tracking-widest rounded-md whitespace-nowrap">
+                      <span className="px-2 py-0.5 bg-purple-600/10 dark:bg-purple-600/20 border border-purple-500/20 text-purple-700 dark:text-purple-400 text-[8px] font-bold uppercase tracking-widest rounded-md whitespace-nowrap">
                         {contextInfo.mode}
                       </span>
 
                       <span className="w-px h-3 bg-slate-200 dark:bg-white/10 shrink-0" />
 
-                      <span className="px-2 py-0.5 bg-purple-600/10 dark:bg-purple-600/20 border border-purple-500/20 text-purple-700 dark:text-purple-400 text-[8px] font-black uppercase tracking-widest rounded-md whitespace-nowrap">
+                      <span className="px-2 py-0.5 bg-purple-600/10 dark:bg-purple-600/20 border border-purple-500/20 text-purple-700 dark:text-purple-400 text-[8px] font-bold uppercase tracking-widest rounded-md whitespace-nowrap">
                         {contextInfo.roomType}
                       </span>
 
                       <span className="w-px h-3 bg-slate-200 dark:bg-white/10 shrink-0" />
 
-                      <span className="px-2 py-0.5 bg-purple-600/10 dark:bg-purple-600/20 border border-purple-500/20 text-purple-700 dark:text-purple-400 text-[8px] font-black uppercase tracking-widest italic rounded-md whitespace-nowrap">
+                      <span className="px-2 py-0.5 bg-purple-600/10 dark:bg-purple-600/20 border border-purple-500/20 text-purple-700 dark:text-purple-400 text-[8px] font-bold uppercase tracking-widest italic rounded-md whitespace-nowrap">
                         {contextInfo.style}
                       </span>
 
                       {contextInfo.model && (
                         <>
                           <span className="w-px h-3 bg-slate-200 dark:bg-white/10 shrink-0" />
-                          <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 truncate max-w-[120px]">
+                          <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 truncate max-w-[120px]">
                             {contextInfo.model}
                           </span>
                         </>
@@ -134,7 +134,7 @@ export const ViewportContent: React.FC<ViewportContentProps> = ({
                       {contextInfo.cost > 0 && (
                         <>
                           <span className="w-px h-3 bg-slate-200 dark:bg-white/10 shrink-0" />
-                          <span className="text-[8px] font-black italic text-orange-500 whitespace-nowrap">
+                          <span className="text-[8px] font-bold italic text-orange-500 whitespace-nowrap">
                             {contextInfo.cost} CR
                           </span>
                         </>
@@ -145,7 +145,7 @@ export const ViewportContent: React.FC<ViewportContentProps> = ({
                     {onRegenerate && (
                       <button
                         onClick={onRegenerate}
-                        className="flex items-center gap-1.5 shrink-0 text-[9px] font-black uppercase tracking-[0.2em] text-purple-600 dark:text-purple-400 hover:brightness-125 transition-all"
+                        className="flex items-center gap-1.5 shrink-0 text-[9px] font-bold uppercase tracking-[0.2em] text-purple-600 dark:text-purple-400 hover:brightness-125 transition-all"
                       >
                         <RefreshCw size={11} />
                         Tái tạo
@@ -183,9 +183,9 @@ export const ViewportContent: React.FC<ViewportContentProps> = ({
                   <div className="space-y-4">
                      <div className="flex items-center gap-3 text-purple-500">
                         <Sparkles size={20} />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] italic leading-none">Showcase</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.4em] italic leading-none">Showcase</span>
                      </div>
-                     <h2 className="text-4xl lg:text-6xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Dự án <span className="text-purple-600">Tiêu biểu.</span></h2>
+                     <h2 className="text-4xl lg:text-6xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Dự án <span className="text-purple-600">Tiêu biểu.</span></h2>
                      <p className="text-sm text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest italic leading-relaxed max-w-2xl">Khám phá sức mạnh của trí tuệ nhân tạo trong việc tái thiết kế và dàn dựng không gian sống chuyên nghiệp.</p>
                   </div>
                 </div>
@@ -209,11 +209,11 @@ export const ViewportContent: React.FC<ViewportContentProps> = ({
                       <div className="absolute inset-0 flex flex-col justify-end p-8 z-20">
                         <div className="space-y-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                           <div className="flex items-center gap-2">
-                             <span className="px-2 py-0.5 bg-purple-600 text-white text-[8px] font-black uppercase tracking-widest rounded-sm">{ex.style}</span>
+                             <span className="px-2 py-0.5 bg-purple-600 text-white text-[8px] font-bold uppercase tracking-widest rounded-sm">{ex.style}</span>
                           </div>
-                          <h4 className="text-xl font-black uppercase italic tracking-tighter text-white leading-none">"{ex.title}"</h4>
+                          <h4 className="text-xl font-bold uppercase italic tracking-tighter text-white leading-none">"{ex.title}"</h4>
                           <div className="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                             <button className="flex items-center gap-2 text-purple-400 text-[9px] font-black uppercase tracking-[0.2em]">
+                             <button className="flex items-center gap-2 text-purple-400 text-[9px] font-bold uppercase tracking-[0.2em]">
                                Xem chi tiết <Eye size={14} />
                              </button>
                           </div>
@@ -224,7 +224,7 @@ export const ViewportContent: React.FC<ViewportContentProps> = ({
                 </div>
 
                 <div className="text-center pt-8 opacity-20 hover:opacity-100 transition-opacity pb-12">
-                   <p className="text-[10px] font-black uppercase tracking-[0.8em] italic text-slate-900 dark:text-white">SKYVERSES REAL ESTATE AI // READY TO SYNC</p>
+                   <p className="text-[10px] font-bold uppercase tracking-[0.8em] italic text-slate-900 dark:text-white">SKYVERSES REAL ESTATE AI // READY TO SYNC</p>
                 </div>
               </motion.div>
             )}

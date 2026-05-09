@@ -150,7 +150,7 @@ const AudioResult: React.FC<{
     >
       <div className="mb-2 flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-brand-blue">
+          <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-brand-blue">
             <CheckCircle2 size={12} />
             Audio ready
           </p>
@@ -382,7 +382,7 @@ const SpeakerCard: React.FC<{
         className="flex w-full items-center justify-between gap-2 px-3 py-2"
       >
         <div className="flex min-w-0 items-center gap-2">
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-blue text-[11px] font-black text-white">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-blue text-[11px] font-bold text-white">
             {index + 1}
           </span>
           <input
@@ -511,7 +511,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
   };
 
   return (
-    <div className="flex h-full w-full flex-col bg-slate-50 font-sans text-slate-900 dark:bg-[#0a0d14] dark:text-white">
+    <div className="flex h-full w-full flex-col bg-slate-50 font-sans text-slate-900 dark:bg-[var(--atlas-bg-page)] dark:text-white">
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-black/[0.06] bg-white px-3 dark:border-white/[0.08] dark:bg-[#111722] sm:px-5">
         <div className="flex min-w-0 items-center gap-2">
           <button
@@ -526,7 +526,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
             <Headphones size={16} />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-[13px] font-black">AI Podcast Voice</p>
+            <p className="truncate text-[13px] font-bold">AI Podcast Voice</p>
             <SaveBadge lastSavedAt={s.lastSavedAt} />
           </div>
         </div>
@@ -535,7 +535,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
           <button
             type="button"
             onClick={() => s.setMode('dialogue')}
-            className={`inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-1.5 text-[11px] font-black uppercase tracking-widest transition-all ${
+            className={`inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest transition-all ${
               s.mode === 'dialogue'
                 ? 'bg-white text-brand-blue shadow-sm dark:bg-white/[0.1] dark:text-white'
                 : 'text-slate-500 dark:text-gray-400'
@@ -547,7 +547,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
           <button
             type="button"
             onClick={() => s.setMode('tts')}
-            className={`inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-1.5 text-[11px] font-black uppercase tracking-widest transition-all ${
+            className={`inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest transition-all ${
               s.mode === 'tts'
                 ? 'bg-white text-brand-blue shadow-sm dark:bg-white/[0.1] dark:text-white'
                 : 'text-slate-500 dark:text-gray-400'
@@ -586,7 +586,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
             />
             {s.mode === 'dialogue' && (
               <span
-                className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-widest ${
+                className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${
                   usingNative
                     ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                     : 'bg-amber-500/10 text-amber-600 dark:text-amber-300'
@@ -599,7 +599,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
 
           <div className="flex flex-wrap items-center gap-2 border-b border-black/[0.06] bg-brand-blue/[0.04] px-4 py-3 dark:border-white/[0.08] sm:px-6">
             <FileText size={14} className="text-brand-blue" />
-            <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-gray-400">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400">
               Templates
             </span>
             {s.mode === 'dialogue'
@@ -629,7 +629,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
               <button
                 type="button"
                 onClick={s.autoDetectDialogue}
-                className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-brand-blue px-3 py-1.5 text-[11px] font-black text-white transition-all hover:brightness-110"
+                className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-brand-blue px-3 py-1.5 text-[11px] font-bold text-white transition-all hover:brightness-110"
               >
                 <Wand2 size={13} />
                 Auto detect
@@ -721,7 +721,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
                 type="button"
                 onClick={s.generateActive}
                 disabled={s.isGenerating || s.activeCharCount === 0}
-                className="inline-flex items-center gap-2 rounded-xl bg-brand-blue px-5 py-2.5 text-[12px] font-black uppercase tracking-widest text-white shadow-lg shadow-brand-blue/20 transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-blue px-5 py-2.5 text-[12px] font-bold uppercase tracking-widest text-white shadow-lg shadow-brand-blue/20 transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {s.isGenerating ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
                 Generate
@@ -737,7 +737,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
             <button
               type="button"
               onClick={() => setRightTab('settings')}
-              className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-widest ${
+              className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-bold uppercase tracking-widest ${
                 rightTab === 'settings'
                   ? 'bg-brand-blue text-white'
                   : 'bg-slate-100 text-slate-500 dark:bg-white/[0.04] dark:text-gray-400'
@@ -749,7 +749,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
             <button
               type="button"
               onClick={() => setRightTab('history')}
-              className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-widest ${
+              className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-bold uppercase tracking-widest ${
                 rightTab === 'history'
                   ? 'bg-brand-blue text-white'
                   : 'bg-slate-100 text-slate-500 dark:bg-white/[0.04] dark:text-gray-400'
@@ -765,7 +765,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
               {s.mode === 'dialogue' ? (
                 <>
                   <div className="rounded-xl border border-purple-500/20 bg-purple-500/[0.05] p-3">
-                    <p className="mb-2 flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-300">
+                    <p className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-300">
                       <Wand2 size={12} />
                       Script AI
                     </p>
@@ -780,7 +780,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
                       type="button"
                       onClick={() => s.enhanceDialogue(scriptIdea)}
                       disabled={s.isGenerating || !scriptIdea.trim()}
-                      className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-purple-500 px-3 py-2 text-[11px] font-black text-white transition-all hover:brightness-110 disabled:opacity-50"
+                      className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-purple-500 px-3 py-2 text-[11px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-50"
                     >
                       {s.isGenerating ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
                       Create script
@@ -789,7 +789,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
 
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">
                         Speakers
                       </p>
                       <button
@@ -835,14 +835,14 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
               ) : (
                 <>
                   <div className="space-y-2">
-                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">
                       Provider
                     </p>
                     <ProviderToggle value={s.ttsProvider} onChange={handleTtsProviderChange} />
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">
                       Voice
                     </p>
                     <VoiceSelect
@@ -855,7 +855,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">
                       Model
                     </p>
                     <select
@@ -872,7 +872,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">
                       Language
                     </p>
                     <select
@@ -940,7 +940,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
           <button
             type="button"
             onClick={() => s.setMode('dialogue')}
-            className={`flex-1 rounded-md px-3 py-1.5 text-[11px] font-black uppercase tracking-widest ${
+            className={`flex-1 rounded-md px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest ${
               s.mode === 'dialogue' ? 'bg-white text-brand-blue shadow-sm dark:bg-white/[0.1]' : 'text-slate-500'
             }`}
           >
@@ -949,7 +949,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
           <button
             type="button"
             onClick={() => s.setMode('tts')}
-            className={`flex-1 rounded-md px-3 py-1.5 text-[11px] font-black uppercase tracking-widest ${
+            className={`flex-1 rounded-md px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest ${
               s.mode === 'tts' ? 'bg-white text-brand-blue shadow-sm dark:bg-white/[0.1]' : 'text-slate-500'
             }`}
           >
@@ -972,7 +972,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
             type="button"
             onClick={s.generateActive}
             disabled={s.isGenerating || s.activeCharCount === 0}
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-brand-blue px-4 text-[11px] font-black uppercase tracking-widest text-white disabled:opacity-50"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-brand-blue px-4 text-[11px] font-bold uppercase tracking-widest text-white disabled:opacity-50"
           >
             {s.isGenerating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
             Generate

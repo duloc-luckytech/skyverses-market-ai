@@ -287,9 +287,9 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[#0a0d14] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
+    <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
       
-      <div className="h-14 bg-white dark:bg-[#0a0d14] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-6 shrink-0 z-[100] transition-colors">
+      <div className="h-14 bg-white dark:bg-[var(--atlas-bg-page)] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-6 shrink-0 z-[100] transition-colors">
         <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-full border border-slate-200 dark:border-white/10 transition-colors">
           <button 
             onClick={() => setViewMode('current')}
@@ -309,7 +309,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
         <div className="flex items-center gap-6">
            <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-blue/10 border border-brand-blue/20 rounded-full">
               <Coins size={12} className="text-brand-blue" />
-              <span className="text-[10px] font-black text-brand-blue">{credits.toLocaleString()} CR</span>
+              <span className="text-[10px] font-bold text-brand-blue">{credits.toLocaleString()} CR</span>
            </div>
            <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
               <X size={20} />
@@ -319,11 +319,11 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
       <div className="flex-grow flex overflow-hidden">
         
-        <aside className="w-[380px] border-r border-slate-200 dark:border-white/5 bg-white dark:bg-[#0a0d14] flex flex-col shrink-0 overflow-y-auto no-scrollbar pb-10 transition-colors duration-500">
+        <aside className="w-[380px] border-r border-slate-200 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-page)] flex flex-col shrink-0 overflow-y-auto no-scrollbar pb-10 transition-colors duration-500">
            <div className="p-5 space-y-8">
               
               <section className="space-y-4">
-                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 transition-colors">
+                 <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 transition-colors">
                     <Target size={14} className="text-brand-blue" /> DANH MỤC
                  </div>
                  <div className="grid grid-cols-4 gap-2">
@@ -350,7 +350,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                             className="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full shadow-lg hover:scale-102 active:scale-98 transition-all group"
                           >
                              <div className="scale-75 text-white/90">{selectedCategoryObj.icon}</div>
-                             <span className="text-[11px] font-black uppercase tracking-widest italic">{selectedCategoryObj.label}</span>
+                             <span className="text-[11px] font-bold uppercase tracking-widest italic">{selectedCategoryObj.label}</span>
                              <div 
                                onClick={(e) => { e.stopPropagation(); setActiveCategory('events'); }}
                                className="p-1 hover:bg-white/20 rounded-full transition-colors ml-1"
@@ -364,7 +364,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
                  <button 
                    onClick={() => setShowCategoryModal(true)}
-                   className="w-full py-4 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition-all rounded-full flex items-center justify-center gap-3 shadow-sm dark:shadow-none"
+                   className="w-full py-4 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition-all rounded-full flex items-center justify-center gap-3 shadow-sm dark:shadow-none"
                  >
                    <LayoutGrid size={14} /> Xem thêm (36+)
                  </button>
@@ -372,13 +372,13 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
               <section className="space-y-4">
                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-400 transition-colors">
+                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 transition-colors">
                        <Type size={14} /> MÔ TẢ POSTER
                     </div>
                     <button 
                       onClick={handleEnhance}
                       disabled={isEnhancing || !prompt.trim()}
-                      className="flex items-center gap-1.5 text-[9px] font-black text-orange-500 dark:text-orange-400 uppercase tracking-widest hover:brightness-125 transition-all disabled:opacity-30"
+                      className="flex items-center gap-1.5 text-[9px] font-bold text-orange-500 dark:text-orange-400 uppercase tracking-widest hover:brightness-125 transition-all disabled:opacity-30"
                     >
                        {isEnhancing ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
                        Tăng cường
@@ -394,7 +394,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
               <section className="space-y-5">
                  <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">TIÊU ĐỀ CHÍNH (TÙY CHỌN)</label>
+                    <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">TIÊU ĐỀ CHÍNH (TÙY CHỌN)</label>
                     <input 
                       value={title} onChange={e => setTitle(e.target.value)} 
                       className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-3 text-xs font-bold focus:border-brand-blue outline-none rounded-md text-slate-800 dark:text-white" 
@@ -402,7 +402,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     />
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">TIÊU ĐỀ PHỤ (TÙY CHỌN)</label>
+                    <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">TIÊU ĐỀ PHỤ (TÙY CHỌN)</label>
                     <input 
                       value={subtitle} onChange={e => setSubtitle(e.target.value)} 
                       className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-3 text-xs font-bold focus:border-brand-blue outline-none rounded-md text-slate-800 dark:text-white" 
@@ -412,7 +412,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               </section>
 
               <section className="space-y-4">
-                 <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 dark:text-gray-400 tracking-widest">
+                 <div className="flex justify-between items-center text-[10px] font-bold uppercase text-slate-400 dark:text-gray-400 tracking-widest">
                     <div className="flex items-center gap-2">
                        <LucideImage size={14} /> ẢNH THAM CHIẾU
                     </div>
@@ -433,7 +433,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                          className="aspect-square border-2 border-dashed border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 rounded-md flex flex-col items-center justify-center gap-2 hover:border-brand-blue group transition-all"
                        >
                           <Plus size={18} className="text-slate-300 dark:text-gray-400 group-hover:text-brand-blue" />
-                          <span className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase">Thêm ảnh</span>
+                          <span className="text-[8px] font-bold text-slate-400 dark:text-gray-500 uppercase">Thêm ảnh</span>
                        </button>
                     )}
                  </div>
@@ -442,46 +442,46 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
               <section className="grid grid-cols-2 gap-x-4 gap-y-5 pt-4 border-t border-slate-100 dark:border-white/5 transition-colors">
                  <div className="space-y-2">
-                    <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">MODEL AI</label>
+                    <label className="text-[8px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">MODEL AI</label>
                     <select value={selectedModel} onChange={e => setSelectedModel(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-2 rounded-md text-[10px] font-bold outline-none text-slate-800 dark:text-white">
-                       {MODELS.map(m => <option key={m} className="bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white">{m}</option>)}
+                       {MODELS.map(m => <option key={m} className="bg-white dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white">{m}</option>)}
                     </select>
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">PHONG CÁCH</label>
+                    <label className="text-[8px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">PHONG CÁCH</label>
                     <select value={selectedStyle} onChange={e => setSelectedStyle(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-2 rounded-md text-[10px] font-bold outline-none text-slate-800 dark:text-white">
-                       {STYLES.map(s => <option key={s} className="bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white">{s}</option>)}
+                       {STYLES.map(s => <option key={s} className="bg-white dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white">{s}</option>)}
                     </select>
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">KÍCH THƯỚC</label>
+                    <label className="text-[8px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">KÍCH THƯỚC</label>
                     <select value={selectedSize} onChange={e => setSelectedSize(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-2 rounded-md text-[10px] font-bold outline-none text-slate-800 dark:text-white">
-                       {SIZES.map(s => <option key={s} className="bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white">{s}</option>)}
+                       {SIZES.map(s => <option key={s} className="bg-white dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white">{s}</option>)}
                     </select>
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">MODE</label>
+                    <label className="text-[8px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">MODE</label>
                     <select value={selectedMode} onChange={e => setSelectedMode(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-2 rounded-md text-[10px] font-bold outline-none text-slate-800 dark:text-white">
-                       {MODES.map(m => <option key={m} className="bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white">{m}</option>)}
+                       {MODES.map(m => <option key={m} className="bg-white dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white">{m}</option>)}
                     </select>
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">RES</label>
+                    <label className="text-[8px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">RES</label>
                     <select value={selectedRes} onChange={e => setSelectedRes(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-2 rounded-md text-[10px] font-bold outline-none text-slate-800 dark:text-white">
-                       {RESOLUTIONS.map(r => <option key={r} className="bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-white">{r.toUpperCase()}</option>)}
+                       {RESOLUTIONS.map(r => <option key={r} className="bg-white dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white">{r.toUpperCase()}</option>)}
                     </select>
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">SỐ LƯỢNG</label>
+                    <label className="text-[8px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">SỐ LƯỢNG</label>
                     <input type="number" min="1" max="4" value={quantity} onChange={e => setQuantity(parseInt(e.target.value))} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-2 rounded-md text-[10px] font-bold outline-none text-slate-800 dark:text-white" />
                  </div>
               </section>
 
               <div className="flex justify-between items-center pt-4 text-orange-600 dark:text-orange-400 transition-colors">
-                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-tight">
+                 <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-tight">
                     <Zap size={14} fill="currentColor" /> Đơn giá: 150
                  </div>
-                 <div className="text-[12px] font-black uppercase italic">
+                 <div className="text-[12px] font-bold uppercase italic">
                     Tổng: {150 * quantity} credits
                  </div>
               </div>
@@ -489,7 +489,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               <section className="space-y-5">
                  <button
                    onClick={() => setShowAdvanced(!showAdvanced)}
-                   className="w-full flex items-center justify-between p-3 border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 rounded-md text-[10px] font-black uppercase tracking-widest hover:border-slate-300 dark:hover:border-white/20 transition-all text-slate-500 dark:text-white"
+                   className="w-full flex items-center justify-between p-3 border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 rounded-md text-[10px] font-bold uppercase tracking-widest hover:border-slate-300 dark:hover:border-white/20 transition-all text-slate-500 dark:text-white"
                  >
                     <div className="flex items-center gap-2">
                        <Sliders size={14} /> Tùy chọn nâng cao
@@ -501,12 +501,12 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     {showAdvanced && (
                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="space-y-6 overflow-hidden">
                           <div className="space-y-2">
-                             <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">TÊN THƯƠNG HIỆU</label>
+                             <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">TÊN THƯƠNG HIỆU</label>
                              <input value={brandName} onChange={e => setBrandName(e.target.value)} className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-3 text-xs font-bold outline-none rounded-md text-slate-800 dark:text-white" placeholder="Tên thương hiệu của bạn" />
                           </div>
 
                           <div className="space-y-3">
-                             <label className="text-[9px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">MÀU THƯƠNG HIỆU</label>
+                             <label className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">MÀU THƯƠNG HIỆU</label>
                              <div className="flex flex-wrap gap-2.5 items-center p-3 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-md transition-colors">
                                 {brandColors.map((color, i) => (
                                    <div key={i} className="relative group cursor-pointer">
@@ -530,10 +530,10 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                                 />
 
                                 <div className="flex-grow flex items-center gap-2 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-sm transition-colors">
-                                   <span className="text-[9px] text-slate-400 dark:text-gray-600 uppercase font-black">#HEX</span>
+                                   <span className="text-[9px] text-slate-400 dark:text-gray-600 uppercase font-bold">#HEX</span>
                                    <input 
                                      value={hexInput} onChange={e => setHexInput(e.target.value.toUpperCase())}
-                                     className="bg-transparent border-none outline-none text-[10px] font-black w-full text-brand-blue" 
+                                     className="bg-transparent border-none outline-none text-[10px] font-bold w-full text-brand-blue" 
                                      placeholder="#FFFFFF" 
                                    />
                                    <button 
@@ -572,14 +572,14 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
               <button
                 onClick={handleGenerate}
                 disabled={isGenerating || !prompt.trim()}
-                className="w-full py-5 bg-gradient-to-r from-orange-600 to-orange-400 text-white font-black uppercase text-xs tracking-[0.3em] shadow-[0_20px_80px_rgba(234,88,12,0.3)] hover:scale-102 active:scale-95 transition-all flex items-center justify-center gap-4 rounded-xl disabled:opacity-30"
+                className="w-full py-5 bg-gradient-to-r from-orange-600 to-orange-400 text-white font-bold uppercase text-xs tracking-[0.3em] shadow-[0_20px_80px_rgba(234,88,12,0.3)] hover:scale-102 active:scale-95 transition-all flex items-center justify-center gap-4 rounded-xl disabled:opacity-30"
               >
                  {isGenerating ? <Loader2 className="animate-spin" size={18}/> : <Wand2 size={18} />}
                  TẠO POSTER
               </button>
 
               <section className="pt-8 border-t border-slate-100 dark:border-white/5 space-y-4 transition-colors">
-                 <div className="flex items-center gap-3 text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">
+                 <div className="flex items-center gap-3 text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">
                     <HistoryIcon size={14} /> PHIÊN LÀM VIỆC
                  </div>
                  <div className="space-y-3">
@@ -590,7 +590,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                                 <img src={s.url} className="w-full h-full object-cover" />
                              </div>
                              <div className="flex-grow min-w-0">
-                                <p className="text-[9px] font-black text-slate-900 dark:text-white truncate uppercase">{s.prompt}</p>
+                                <p className="text-[9px] font-bold text-slate-900 dark:text-white truncate uppercase">{s.prompt}</p>
                                 <p className="text-[7px] text-slate-400 dark:text-gray-500 uppercase">{s.timestamp}</p>
                              </div>
                              <ChevronRight size={12} className="text-slate-300 dark:text-gray-600 group-hover:text-brand-blue" />
@@ -602,7 +602,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                     ))}
                     {sessions.length === 0 && (
                        <div className="py-12 text-center opacity-20">
-                          <p className="text-[10px] font-black uppercase tracking-widest italic text-slate-400 dark:text-white">Chưa có phiên nào</p>
+                          <p className="text-[10px] font-bold uppercase tracking-widest italic text-slate-400 dark:text-white">Chưa có phiên nào</p>
                        </div>
                     )}
                  </div>
@@ -610,7 +610,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
            </div>
         </aside>
 
-        <main className="flex-grow bg-[#f0f3f6] dark:bg-[#0a0d14] relative overflow-hidden flex flex-col items-center justify-center p-8 transition-colors duration-500">
+        <main className="flex-grow bg-[#f0f3f6] dark:bg-[var(--atlas-bg-page)] relative overflow-hidden flex flex-col items-center justify-center p-8 transition-colors duration-500">
            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
            <AnimatePresence mode="wait">
@@ -618,7 +618,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                  <motion.div key="library-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full h-full overflow-y-auto p-10 no-scrollbar">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                        {sessions.map(s => (
-                          <div key={s.id} className="relative group/lib aspect-[3/4] bg-white dark:bg-[#0a0d14] border border-slate-200 dark:border-white/5 rounded-lg overflow-hidden shadow-xl dark:shadow-2xl hover:border-brand-blue transition-all">
+                          <div key={s.id} className="relative group/lib aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-lg overflow-hidden shadow-xl dark:shadow-2xl hover:border-brand-blue transition-all">
                              <img src={s.url} className="w-full h-full object-cover" />
                              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover/lib:opacity-100 transition-opacity"></div>
                              <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover/lib:opacity-100 transition-all translate-x-4 group-hover/lib:translate-x-0">
@@ -626,15 +626,15 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                                 <a href={s.url} download className="p-2 bg-white text-black rounded-full shadow-lg"><Download size={14}/></a  >
                              </div>
                              <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover/lib:opacity-100 transition-all translate-y-4 group-hover/lib:translate-y-0">
-                                <p className="text-[8px] font-black uppercase text-brand-blue truncate mb-1">{s.prompt}</p>
-                                <button onClick={() => { setResult(s.url); setViewMode('current'); }} className="w-full py-2 bg-white text-black text-[8px] font-black uppercase tracking-widest rounded-sm shadow-xl">Mở chỉnh sửa</button>
+                                <p className="text-[8px] font-bold uppercase text-brand-blue truncate mb-1">{s.prompt}</p>
+                                <button onClick={() => { setResult(s.url); setViewMode('current'); }} className="w-full py-2 bg-white text-black text-[8px] font-bold uppercase tracking-widest rounded-sm shadow-xl">Mở chỉnh sửa</button>
                              </div>
                           </div>
                        ))}
                        {sessions.length === 0 && (
                           <div className="col-span-full h-[50vh] flex flex-col items-center justify-center opacity-10 space-y-6">
                              <LayoutGrid size={120} className="text-slate-400 dark:text-white" />
-                             <p className="text-xl font-black uppercase tracking-[0.5em] text-slate-800 dark:text-white">Thư viện trống</p>
+                             <p className="text-xl font-bold uppercase tracking-[0.5em] text-slate-800 dark:text-white">Thư viện trống</p>
                           </div>
                        )}
                     </div>
@@ -646,7 +646,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                        <Sparkles size={40} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-orange-400 animate-pulse" />
                     </div>
                     <div className="space-y-4">
-                       <p className="text-xl font-black uppercase tracking-[0.6em] animate-pulse italic text-slate-800 dark:text-white">ĐANG TỔNG HỢP PHÂN CẢNH...</p>
+                       <p className="text-xl font-bold uppercase tracking-[0.6em] animate-pulse italic text-slate-800 dark:text-white">ĐANG TỔNG HỢP PHÂN CẢNH...</p>
                        <p className="text-[10px] font-bold text-slate-400 dark:text-gray-600 uppercase tracking-widest">H100 Node #042 // Neural Lattice</p>
                     </div>
                  </motion.div>
@@ -659,7 +659,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                        <a href={result} download={`poster_${Date.now()}.png`} className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center shadow-xl"><Download size={18}/></a>
                     </div>
                     <div className="absolute bottom-6 left-6 space-y-1 opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0">
-                       <p className="text-[10px] font-black uppercase text-orange-500 tracking-widest">Synthesis Verified</p>
+                       <p className="text-[10px] font-bold uppercase text-orange-500 tracking-widest">Synthesis Verified</p>
                        <p className="text-[8px] text-white/50 uppercase">{selectedModel} // {selectedRes}</p>
                     </div>
                  </motion.div>
@@ -669,14 +669,14 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                        <LayoutGrid size={80} strokeWidth={1} className="text-slate-500 dark:text-white" />
                     </div>
                     <div className="space-y-3">
-                       <h3 className="text-2xl font-black uppercase tracking-[0.5em] text-slate-800 dark:text-white">Chưa có poster</h3>
+                       <h3 className="text-2xl font-bold uppercase tracking-[0.5em] text-slate-800 dark:text-white">Chưa có poster</h3>
                        <p className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-gray-500">Tạo poster marketing đầu tiên với AI</p>
                     </div>
                  </motion.div>
               )}
            </AnimatePresence>
 
-           <div className="absolute bottom-10 flex items-center gap-12 text-[10px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest transition-colors">
+           <div className="absolute bottom-10 flex items-center gap-12 text-[10px] font-bold uppercase text-slate-400 dark:text-gray-600 tracking-widest transition-colors">
               <div className="flex items-center gap-2"><Smartphone size={14}/> Mobile Optimised</div>
               <div className="flex items-center gap-2"><Maximize2 size={14}/> 4K Visual Depth</div>
               <div className="flex items-center gap-2"><ShieldCheck size={14}/> Enterprise Safe</div>
@@ -692,12 +692,12 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           >
              <motion.div 
                initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-               className="w-full max-w-5xl bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 rounded-2xl flex flex-col max-h-[90vh] shadow-[0_50px_100px_rgba(0,0,0,0.5)] transition-colors"
+               className="w-full max-w-5xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-2xl flex flex-col max-h-[90vh] shadow-[0_50px_100px_rgba(0,0,0,0.5)] transition-colors"
              >
                 <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-white/5 transition-colors">
                    <div className="flex items-center gap-3">
                       <LayoutGrid className="text-pink-500" size={24} />
-                      <h2 className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white">Tất cả danh mục</h2>
+                      <h2 className="text-xl font-bold uppercase tracking-tight text-slate-900 dark:text-white">Tất cả danh mục</h2>
                    </div>
                    <button onClick={() => setShowCategoryModal(false)} className="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
                       <X size={24} />
@@ -713,7 +713,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                           className={`flex flex-col items-center justify-center gap-4 aspect-square rounded-xl border transition-all group ${activeCategory === c.id ? 'border-pink-500 bg-pink-50 dark:bg-gradient-to-br dark:from-pink-500/20 dark:to-purple-600/20 text-pink-600 dark:text-white shadow-sm dark:shadow-[0_0_20px_rgba(236,72,153,0.2)]' : 'border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-gray-500 hover:border-slate-200 dark:hover:border-white/10'}`}
                         >
                            <div className={`transition-transform duration-300 ${activeCategory === c.id ? 'scale-110' : 'group-hover:scale-110'}`}>{c.icon}</div>
-                           <span className="text-[10px] font-black uppercase tracking-tighter text-center px-1">{c.label}</span>
+                           <span className="text-[10px] font-bold uppercase tracking-tighter text-center px-1">{c.label}</span>
                         </button>
                       ))}
                    </div>
@@ -722,7 +722,7 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                 <div className="p-6 border-t border-slate-100 dark:border-white/5 flex justify-end transition-colors">
                    <button 
                      onClick={() => setShowCategoryModal(false)}
-                     className="px-10 py-3 bg-pink-600 text-white font-black uppercase text-[12px] tracking-widest rounded-lg hover:bg-pink-500 active:scale-95 transition-all shadow-xl"
+                     className="px-10 py-3 bg-pink-600 text-white font-bold uppercase text-[12px] tracking-widest rounded-lg hover:bg-pink-500 active:scale-95 transition-all shadow-xl"
                    >
                      Đóng
                    </button>
@@ -735,15 +735,15 @@ const PosterStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
       <AnimatePresence>
         {showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-             <div className="max-w-md w-full bg-white dark:bg-[#0a0d14] p-10 border border-slate-200 dark:border-white/10 rounded-sm text-center space-y-8 shadow-3xl transition-colors">
+             <div className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-page)] p-10 border border-slate-200 dark:border-white/10 rounded-sm text-center space-y-8 shadow-3xl transition-colors">
                 <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500"><AlertTriangle size={40} /></div>
                 <div className="space-y-3">
-                   <h3 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3>
+                   <h3 className="text-3xl font-bold uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3>
                    <p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed">Việc khởi tạo yêu cầu **150 credits**. Vui lòng nạp thêm để tiếp tục.</p>
                 </div>
                 <div className="flex flex-col gap-4">
-                   <Link to="/credits" className="bg-orange-500 text-white py-5 rounded-sm text-xs font-black uppercase tracking-[0.4em] shadow-xl text-center hover:bg-orange-600 transition-colors">Nạp thêm Credits</Link>
-                   <button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-black uppercase text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">Để sau</button>
+                   <Link to="/credits" className="bg-orange-500 text-white py-5 rounded-sm text-xs font-bold uppercase tracking-[0.4em] shadow-xl text-center hover:bg-orange-600 transition-colors">Nạp thêm Credits</Link>
+                   <button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-bold uppercase text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">Để sau</button>
                 </div>
              </div>
           </motion.div>

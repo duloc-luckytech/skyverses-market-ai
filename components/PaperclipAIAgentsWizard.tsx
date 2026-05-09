@@ -12,7 +12,7 @@ const WIZARD_DEPTS = [
     id: 'marketing',
     label: 'Marketing AI',
     icon: Megaphone,
-    color: '#8b5cf6',
+    color: '#C4960C',
     agent: 'Marketing Agent',
     desc: 'Tạo content SEO, social media, email campaign',
     tasks: ['Viết content SEO', 'Social media posts', 'Email campaign', 'Competitor analysis'],
@@ -30,7 +30,7 @@ const WIZARD_DEPTS = [
     id: 'sales',
     label: 'Sales AI',
     icon: BarChart3,
-    color: '#f59e0b',
+    color: '#D4A017',
     agent: 'Sales Agent',
     desc: 'Lead outreach, CRM, proposal drafting',
     tasks: ['Lead outreach', 'CRM follow-up', 'Proposal drafting', 'Deal analysis'],
@@ -184,7 +184,7 @@ function StepBudget({ budget, onChange }: { budget: number; onChange: (v: number
         Budget Guard sẽ tự động dừng agent khi sắp vượt limit để bảo vệ chi phí.
       </p>
       <div className="text-center py-2">
-        <p className="text-[48px] font-black text-slate-800 dark:text-white leading-none">${budget}</p>
+        <p className="text-[48px] font-bold text-slate-800 dark:text-white leading-none">${budget}</p>
         <p className="text-[11px] text-slate-400 mt-1">spending limit</p>
       </div>
       <input
@@ -233,14 +233,14 @@ function StepReady({ selectedDept, budget }: { selectedDept: string; budget: num
             <Icon size={24} style={{ color: dept.color }} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[14px] font-black text-slate-800 dark:text-white">{dept.label}</p>
+            <p className="text-[14px] font-bold text-slate-800 dark:text-white">{dept.label}</p>
             <p className="text-[10px] text-slate-400">{dept.agent} · Sẵn sàng</p>
           </div>
           <div
             className="px-3 py-1.5 rounded-full border shrink-0"
             style={{ backgroundColor: `${dept.color}12`, borderColor: `${dept.color}35` }}
           >
-            <p className="text-[13px] font-black" style={{ color: dept.color }}>${budget}</p>
+            <p className="text-[13px] font-bold" style={{ color: dept.color }}>${budget}</p>
           </div>
         </div>
 
@@ -283,7 +283,7 @@ export default function OnboardingWizard({ onComplete, onSkip }: OnboardingWizar
       transition={{ duration: 0.2 }}
     >
       <motion.div
-        className="w-full max-w-[580px] bg-white dark:bg-[#1a1f2b] rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+        className="w-full max-w-[580px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-3xl shadow-2xl flex flex-col overflow-hidden"
         initial={{ scale: 0.92, opacity: 0, y: 24 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.92, opacity: 0, y: 24 }}
@@ -296,7 +296,7 @@ export default function OnboardingWizard({ onComplete, onSkip }: OnboardingWizar
               key={s.id}
               className="h-1.5 flex-1 rounded-full transition-all duration-400"
               style={{
-                backgroundColor: i <= step ? '#0090ff' : 'rgba(0,0,0,0.07)',
+                backgroundColor: i <= step ? '#D4A017' : 'rgba(0,0,0,0.07)',
               }}
             />
           ))}
@@ -314,7 +314,7 @@ export default function OnboardingWizard({ onComplete, onSkip }: OnboardingWizar
           <p className="text-[10px] font-bold text-slate-400 dark:text-gray-400 uppercase tracking-widest">
             Bước {step + 1} / {STEPS.length}
           </p>
-          <h2 className="text-[20px] font-black text-slate-800 dark:text-white mt-0.5 leading-tight">
+          <h2 className="text-[20px] font-bold text-slate-800 dark:text-white mt-0.5 leading-tight">
             {STEPS[step].title}
           </h2>
         </div>
@@ -360,7 +360,7 @@ export default function OnboardingWizard({ onComplete, onSkip }: OnboardingWizar
             <button
               onClick={handleStart}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-white text-[12px] font-bold uppercase tracking-wider shadow-lg shadow-brand-blue/25 hover:brightness-110 transition-all"
-              style={{ background: 'linear-gradient(135deg, #0090ff, #3b82f6)' }}
+              style={{ background: 'linear-gradient(135deg, #D4A017, #3b82f6)' }}
             >
               <Play size={14} /> Bắt đầu!
             </button>

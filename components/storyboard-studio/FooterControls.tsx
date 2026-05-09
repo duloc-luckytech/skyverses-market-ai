@@ -45,13 +45,13 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                    <Check size={10} strokeWidth={4} />
                 </div>
                 <div className="flex flex-col items-start min-w-[50px] lg:min-w-[60px]">
-                  <span className="text-[10px] lg:text-xs font-black text-white whitespace-nowrap leading-none">{selectedCount} / {scenesCount}</span>
+                  <span className="text-[10px] lg:text-xs font-bold text-white whitespace-nowrap leading-none">{selectedCount} / {scenesCount}</span>
                   <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest mt-1">Đã chọn</span>
                 </div>
                 {totalDuration !== undefined && totalDuration > 0 && (
                   <div className="hidden lg:flex items-center gap-1.5 ml-3 pl-3 border-l border-white/10 text-white/40">
                     <Clock size={11} />
-                    <span className="text-[10px] font-black tabular-nums">{formatDuration(totalDuration)}</span>
+                    <span className="text-[10px] font-bold tabular-nums">{formatDuration(totalDuration)}</span>
                   </div>
                 )}
              </div>
@@ -61,7 +61,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                   onClick={onGenerateImages}
                   disabled={!hasSelection || isProcessing}
                   aria-label={`Tạo hình ảnh cho ${selectedCount} cảnh đã chọn`}
-                  className="flex-1 lg:flex-none bg-[#0090ff] text-white px-3 lg:px-6 py-2.5 lg:py-3 text-[9px] lg:text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-1.5 lg:gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed"
+                  className="flex-1 lg:flex-none bg-[#D4A017] text-white px-3 lg:px-6 py-2.5 lg:py-3 text-[9px] lg:text-[10px] font-bold uppercase tracking-widest rounded-xl flex items-center justify-center gap-1.5 lg:gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed"
                 >
                    <ImageIcon size={12}/><span className="hidden xs:inline">Tạo hình</span><span className="xs:hidden">Hình</span>
                 </button>
@@ -70,7 +70,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                   onClick={onGenerateVideos}
                   disabled={!hasSelection || isProcessing}
                   aria-label={`Render video cho ${selectedCount} cảnh đã chọn`}
-                  className="flex-1 lg:flex-none bg-[#9333ea] text-white px-3 lg:px-6 py-2.5 lg:py-3 text-[9px] lg:text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-1.5 lg:gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed"
+                  className="flex-1 lg:flex-none bg-[#9333ea] text-white px-3 lg:px-6 py-2.5 lg:py-3 text-[9px] lg:text-[10px] font-bold uppercase tracking-widest rounded-xl flex items-center justify-center gap-1.5 lg:gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed"
                 >
                    <MonitorPlay size={12}/><span className="hidden xs:inline">Tạo video</span><span className="xs:hidden">Video</span>
                 </button>
@@ -82,7 +82,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                     disabled={!hasSelection || isZipping}
                     title={`Tải xuống ${selectedCount} cảnh đã chọn dưới dạng ZIP`}
                     aria-label="Tải xuống ZIP"
-                    className="flex-1 lg:flex-none bg-emerald-600/90 text-white px-3 lg:px-4 py-2.5 lg:py-3 text-[9px] lg:text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-1.5 lg:gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed"
+                    className="flex-1 lg:flex-none bg-emerald-600/90 text-white px-3 lg:px-4 py-2.5 lg:py-3 text-[9px] lg:text-[10px] font-bold uppercase tracking-widest rounded-xl flex items-center justify-center gap-1.5 lg:gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed"
                   >
                     {isZipping
                       ? <><Loader2 size={12} className="animate-spin" /><span className="hidden xs:inline">ZIP...</span></>
@@ -93,7 +93,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
 
                 {!hasSelection && (
                   <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 whitespace-nowrap pointer-events-none animate-bounce shadow-2xl">
-                     <p className="text-[8px] font-black text-white uppercase tracking-widest flex items-center gap-2">
+                     <p className="text-[8px] font-bold text-white uppercase tracking-widest flex items-center gap-2">
                        <AlertCircle size={10} className="text-brand-blue" /> Chọn cảnh để bắt đầu
                      </p>
                   </div>
@@ -108,14 +108,14 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                  <button
                    onClick={() => { onReset(); setConfirmReset(false); }}
                    title="Xác nhận xóa tất cả"
-                   className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 text-[9px] font-black uppercase tracking-widest transition-all"
+                   className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 text-[9px] font-bold uppercase tracking-widest transition-all"
                  >
                    <AlertTriangle size={10} /> Xóa hết
                  </button>
                  <button
                    onClick={() => setConfirmReset(false)}
                    title="Hủy"
-                   className="px-2.5 py-1.5 rounded-xl bg-white/5 text-gray-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all"
+                   className="px-2.5 py-1.5 rounded-xl bg-white/5 text-gray-400 hover:text-white text-[9px] font-bold uppercase tracking-widest transition-all"
                  >
                    Hủy
                  </button>

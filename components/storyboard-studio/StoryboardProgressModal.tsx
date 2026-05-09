@@ -155,11 +155,11 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
           <div className="h-12 md:h-14 bg-[#0d0d0f] border-b border-white/5 flex items-center justify-between px-5 md:px-6 shrink-0">
             <div className="flex items-center gap-3">
               <Terminal size={16} className="text-brand-blue" />
-              <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-widest text-white/90 italic">Luồng thời gian thực</h3>
+              <h3 className="text-[10px] md:text-[12px] font-bold uppercase tracking-widest text-white/90 italic">Luồng thời gian thực</h3>
             </div>
             <div className="flex items-center gap-3">
               <Loader2 size={14} className="text-brand-blue animate-spin" />
-              <span className="hidden xs:inline text-[9px] md:text-[10px] font-black uppercase tracking-widest text-brand-blue/60">Đang xử lý...</span>
+              <span className="hidden xs:inline text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-brand-blue/60">Đang xử lý...</span>
             </div>
           </div>
 
@@ -169,7 +169,7 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
               {STAGES.map((s, i) => (
                 <React.Fragment key={s.id}>
-                  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider whitespace-nowrap transition-all
+                  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider whitespace-nowrap transition-all
                     ${currentStage === s.id
                       ? 'bg-brand-blue/20 border border-brand-blue/40 text-brand-blue'
                       : currentStage > s.id
@@ -204,7 +204,7 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
 
             {/* Progress text + ETA */}
             <div className="flex items-center justify-between">
-              <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue">{progress}% hoàn thành</span>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-brand-blue">{progress}% hoàn thành</span>
               <span className="text-[9px] font-medium text-white/30">{etaLabel}</span>
             </div>
           </div>
@@ -241,7 +241,7 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
                 <Lightbulb size={18} />
               </div>
               <div className="space-y-0.5">
-                <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-widest text-white/90 italic leading-none">Mẹo sử dụng</h3>
+                <h3 className="text-[10px] md:text-[12px] font-bold uppercase tracking-widest text-white/90 italic leading-none">Mẹo sử dụng</h3>
                 <p className="text-[7px] md:text-[8px] font-bold text-gray-500 uppercase tracking-widest">Hệ thống gợi ý</p>
               </div>
             </div>
@@ -265,11 +265,11 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
               >
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 md:px-3 md:py-1 bg-white/10 border border-white/10 rounded text-[8px] md:text-[9px] font-black uppercase text-gray-400 tracking-widest">
+                    <span className="px-2 py-0.5 md:px-3 md:py-1 bg-white/10 border border-white/10 rounded text-[8px] md:text-[9px] font-bold uppercase text-gray-400 tracking-widest">
                       {TIPS[currentTip].category}
                     </span>
                     {TIPS[currentTip].pro && (
-                      <span className="px-2 py-0.5 bg-gradient-to-r from-brand-blue/20 to-purple-500/20 border border-brand-blue/30 rounded text-[8px] font-black uppercase tracking-widest text-brand-blue flex items-center gap-1">
+                      <span className="px-2 py-0.5 bg-gradient-to-r from-brand-blue/20 to-purple-500/20 border border-brand-blue/30 rounded text-[8px] font-bold uppercase tracking-widest text-brand-blue flex items-center gap-1">
                         <Zap size={9} /> PRO
                       </span>
                     )}
@@ -280,7 +280,7 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
                 </div>
 
                 <div className="space-y-3 md:space-y-4">
-                  <h4 className="text-lg md:text-xl font-black text-white italic tracking-tight leading-tight">{TIPS[currentTip].title}</h4>
+                  <h4 className="text-lg md:text-xl font-bold text-white italic tracking-tight leading-tight">{TIPS[currentTip].title}</h4>
                   <p className="text-[12px] md:text-[13px] leading-relaxed text-gray-400 font-medium whitespace-pre-line">
                     {TIPS[currentTip].desc}
                   </p>
@@ -293,7 +293,7 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
             <div className="flex items-center justify-between w-full">
               <button
                 onClick={handlePrev}
-                className="p-2 md:px-5 md:py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
+                className="p-2 md:px-5 md:py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
               >
                 <ChevronLeft size={16} /> <span className="hidden xs:inline">Trước</span>
               </button>
@@ -312,12 +312,12 @@ export const StoryboardProgressModal: React.FC<StoryboardProgressModalProps> = (
 
               <button
                 onClick={handleNext}
-                className="p-2 md:px-5 md:py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
+                className="p-2 md:px-5 md:py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center gap-2"
               >
                 <span className="hidden xs:inline">Tiếp</span> <ChevronRight size={16} />
               </button>
             </div>
-            <p className="text-[9px] md:text-[10px] font-black uppercase text-gray-700 tracking-widest">{currentTip + 1} / {TIPS.length} mẹo</p>
+            <p className="text-[9px] md:text-[10px] font-bold uppercase text-gray-700 tracking-widest">{currentTip + 1} / {TIPS.length} mẹo</p>
           </div>
         </div>
       </motion.div>

@@ -155,7 +155,7 @@ const ImagePlaceholder: React.FC = () => {
         <motion.div
           animate={{ scale: [1, 1.04, 1] }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          className="flex flex-col items-center gap-1.5 bg-white/90 dark:bg-black/70 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/50 dark:border-white/10 shadow-xl"
+          className="flex flex-col items-center gap-1.5 bg-white/90 dark:bg-black/70 backdrop-blur-md px-5 py-3 rounded-xl border border-white/50 dark:border-white/10"
         >
           <motion.div
             animate={{ rotate: [0, 10, -10, 0] }}
@@ -282,7 +282,7 @@ const InlineDemoWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStudio
     demoStatus === 'error'    ? 'Lỗi — thử lại nhé' : '';
 
   return (
-    <div className="rounded-2xl border border-black/[0.07] dark:border-white/[0.06] bg-white dark:bg-white/[0.02] overflow-hidden shadow-xl shadow-black/5">
+    <div className="rounded-xl border border-black/[0.07] dark:border-white/[0.06] bg-white dark:bg-white/[0.02] overflow-hidden">
       {/* Header bar */}
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/[0.05] dark:border-white/[0.04] bg-slate-50/60 dark:bg-white/[0.01]">
         <div className="flex items-center gap-1.5">

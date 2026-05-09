@@ -24,7 +24,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
       <div className="flex items-center gap-2">
         <button 
           onClick={() => setActiveTab('Generate')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-tight transition-all mr-6 active:scale-95 shadow-xl ${activeTab === 'Generate' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-slate-200'}`}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-tight transition-all mr-6 active:scale-95 shadow-xl ${activeTab === 'Generate' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-slate-200'}`}
         >
           <Sparkles size={16} />
           Generate Model
@@ -69,7 +69,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                        <div className="absolute inset-0 bg-gradient-to-t from-[#1c1c1f] via-transparent to-transparent"></div>
                     </div>
                     <div className="p-6 space-y-2">
-                       <h4 className="text-sm font-black uppercase tracking-widest text-white italic flex items-center gap-2">
+                       <h4 className="text-sm font-bold uppercase tracking-widest text-white italic flex items-center gap-2">
                           <Box size={14} className="text-brand-blue" />
                           Tổng quan (Overview)
                        </h4>
@@ -79,7 +79,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                     </div>
                     <div className="px-6 py-3 bg-black/20 border-t border-white/5 flex items-center gap-2">
                        <div className="w-1 h-1 rounded-full bg-brand-blue"></div>
-                       <span className="text-[8px] font-black uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
+                       <span className="text-[8px] font-bold uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
                     </div>
                   </motion.div>
                 )}
@@ -101,7 +101,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                        <div className="absolute inset-0 bg-gradient-to-t from-[#1c1c1f] via-transparent to-transparent"></div>
                     </div>
                     <div className="p-6 space-y-2">
-                       <h4 className="text-sm font-black uppercase tracking-widest text-white italic flex items-center gap-2">
+                       <h4 className="text-sm font-bold uppercase tracking-widest text-white italic flex items-center gap-2">
                           <Puzzle size={14} className="text-brand-blue" />
                           Phân tách (Segmentation)
                        </h4>
@@ -111,7 +111,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                     </div>
                     <div className="px-6 py-3 bg-black/20 border-t border-white/5 flex items-center gap-2">
                        <div className="w-1 h-1 rounded-full bg-brand-blue"></div>
-                       <span className="text-[8px] font-black uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
+                       <span className="text-[8px] font-bold uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
                     </div>
                   </motion.div>
                 )}
@@ -133,7 +133,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                        <div className="absolute inset-0 bg-gradient-to-t from-[#1c1c1f] via-transparent to-transparent"></div>
                     </div>
                     <div className="p-6 space-y-2">
-                       <h4 className="text-sm font-black uppercase tracking-widest text-white italic flex items-center gap-2">
+                       <h4 className="text-sm font-bold uppercase tracking-widest text-white italic flex items-center gap-2">
                           <Grid3X3 size={14} className="text-brand-blue" />
                           Lưới bề mặt (Retopology)
                        </h4>
@@ -143,7 +143,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                     </div>
                     <div className="px-6 py-3 bg-black/20 border-t border-white/5 flex items-center gap-2">
                        <div className="w-1 h-1 rounded-full bg-brand-blue"></div>
-                       <span className="text-[8px] font-black uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
+                       <span className="text-[8px] font-bold uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
                     </div>
                   </motion.div>
                 )}
@@ -165,7 +165,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                        <div className="absolute inset-0 bg-gradient-to-t from-[#1c1c1f] via-transparent to-transparent"></div>
                     </div>
                     <div className="p-6 space-y-2">
-                       <h4 className="text-sm font-black uppercase tracking-widest text-white italic flex items-center gap-2">
+                       <h4 className="text-sm font-bold uppercase tracking-widest text-white italic flex items-center gap-2">
                           <GanttChartSquare size={14} className="text-brand-blue" />
                           Vật liệu & Kết cấu (Texture)
                        </h4>
@@ -175,7 +175,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                     </div>
                     <div className="px-6 py-3 bg-black/20 border-t border-white/5 flex items-center gap-2">
                        <div className="w-1 h-1 rounded-full bg-brand-blue"></div>
-                       <span className="text-[8px] font-black uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
+                       <span className="text-[8px] font-bold uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
                     </div>
                   </motion.div>
                 )}
@@ -197,7 +197,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                        <div className="absolute inset-0 bg-gradient-to-t from-[#1c1c1f] via-transparent to-transparent"></div>
                     </div>
                     <div className="p-6 space-y-2">
-                       <h4 className="text-sm font-black uppercase tracking-widest text-white italic flex items-center gap-2">
+                       <h4 className="text-sm font-bold uppercase tracking-widest text-white italic flex items-center gap-2">
                           <Accessibility size={14} className="text-brand-blue" />
                           Khung xương (Rigging)
                        </h4>
@@ -207,7 +207,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                     </div>
                     <div className="px-6 py-3 bg-black/20 border-t border-white/5 flex items-center gap-2">
                        <div className="w-1 h-1 rounded-full bg-brand-blue"></div>
-                       <span className="text-[8px] font-black uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
+                       <span className="text-[8px] font-bold uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
                     </div>
                   </motion.div>
                 )}

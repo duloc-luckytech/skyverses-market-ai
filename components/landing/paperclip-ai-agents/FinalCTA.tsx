@@ -24,7 +24,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onStartStudio }) => (
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <motion.button
             onClick={onStartStudio}
-            whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(0,144,255,0.25)' }}
+            whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(201, 168, 76,0.25)' }}
             whileTap={{ scale: 0.97 }}
             className="px-10 py-4 bg-gradient-to-r from-brand-blue to-blue-500 text-white rounded-xl font-semibold text-sm shadow-lg shadow-brand-blue/20 hover:brightness-110 transition-all inline-flex items-center gap-3 group"
           >

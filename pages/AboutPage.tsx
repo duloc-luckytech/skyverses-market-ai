@@ -83,38 +83,36 @@ const HeroSection = () => {
         variants={staggerContainer}
         className="relative z-10 max-w-5xl mx-auto text-center px-6 py-32"
       >
-        <motion.div variants={fadeUp} custom={0}
-          className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-8"
+        <motion.p variants={fadeUp} custom={0}
+          className="text-sm font-bold uppercase tracking-[0.18em] text-atlas-orangeBright mb-4"
         >
-          <Sparkles size={14} /> AI Creative Platform
-        </motion.div>
+          NHÀ PHÁT TRIỂN
+        </motion.p>
 
         <motion.h1 variants={fadeUp} custom={1}
-          className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.9] mb-8"
+          className="text-[2.5rem] md:text-[4rem] lg:text-[5rem] font-bold tracking-[-0.02em] leading-[1.05] mb-6"
         >
           We Are{' '}
-          <span className="bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-            Skyverses
-          </span>
+          <span className="atlas-text-gradient">Skyverses</span>
         </motion.h1>
 
         <motion.p variants={fadeUp} custom={2}
-          className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-12"
+          className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed mb-10"
         >
           The all-in-one AI creative platform powering the next generation of content creators.
           Generate stunning videos, images, music, and voices — all from one unified workspace.
         </motion.p>
 
-        <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link to="/apps"
-            className="group bg-gradient-to-r from-violet-600 to-blue-600 text-white px-8 py-4 rounded-2xl font-bold text-sm flex items-center gap-3 shadow-lg shadow-violet-500/25 hover:shadow-xl hover:shadow-violet-500/30 hover:scale-105 transition-all"
+            className="group bg-atlas-cta text-white px-6 py-3 rounded text-sm font-semibold flex items-center gap-2 hover:shadow-atlas-glow hover:-translate-y-0.5 active:scale-[.98] transition-all duration-200"
           >
-            Explore Products <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            Explore Products <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
           </Link>
           <Link to="/credits"
-            className="px-8 py-4 rounded-2xl font-bold text-sm border border-white/10 bg-white/5 hover:bg-white/10 transition-all flex items-center gap-3"
+            className="px-6 py-3 rounded text-sm font-semibold border border-white/25 bg-white/10 backdrop-blur-md hover:bg-white/20 hover:border-white/40 transition-all flex items-center gap-2 text-white"
           >
-            <Zap size={16} /> Get Credits
+            <Zap size={15} /> Get Credits
           </Link>
         </motion.div>
       </motion.div>
@@ -140,7 +138,7 @@ const StatsSection = () => {
             className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center hover:border-violet-500/30 hover:bg-violet-500/5 transition-all duration-500"
           >
             <div className="text-violet-400 flex justify-center mb-3 opacity-60 group-hover:opacity-100 transition-opacity">{s.icon}</div>
-            <div className="text-3xl md:text-4xl font-black bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
+            <div className="text-3xl md:text-4xl font-bold bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
             <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-widest">{s.label}</div>
           </motion.div>
         ))}
@@ -160,7 +158,7 @@ const ProductsSection = () => {
     <section ref={ref} className="py-24 px-6 max-w-7xl mx-auto">
       <motion.div initial="hidden" animate={isInView ? "visible" : "hidden"} variants={staggerContainer}>
         <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-black mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">
             One Platform, <span className="text-violet-400">Every Medium</span>
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
@@ -207,7 +205,7 @@ const ValuesSection = () => {
       <div className="max-w-6xl mx-auto">
         <motion.div initial="hidden" animate={isInView ? "visible" : "hidden"} variants={staggerContainer}>
           <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
               What Drives <span className="text-blue-400">Us</span>
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">Our core principles shape every feature, every pixel, every model we deploy.</p>
@@ -247,7 +245,7 @@ const TechSection = () => {
       <div className="max-w-4xl mx-auto">
         <motion.div initial="hidden" animate={isInView ? "visible" : "hidden"} variants={staggerContainer}>
           <motion.div variants={fadeUp} custom={0} className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-black mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
               Built With <span className="text-cyan-400">Modern Tech</span>
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">Enterprise-grade infrastructure powering creative AI at scale.</p>
@@ -289,7 +287,7 @@ const CTASection = () => {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-gradient-to-b from-violet-500/20 to-transparent blur-3xl pointer-events-none" />
 
           <motion.div variants={fadeUp} custom={0} className="relative z-10">
-            <h2 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
+            <h2 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Ready to
               <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent"> Create?</span>
             </h2>
@@ -327,7 +325,7 @@ const AboutPage = () => {
   });
 
   return (
-    <div className="bg-[#050507] min-h-screen text-white font-sans overflow-x-hidden pt-16">
+    <div className="bg-atlas-navy min-h-screen text-white font-sans overflow-x-hidden pt-16">
       <HeroSection />
       <StatsSection />
       <ProductsSection />

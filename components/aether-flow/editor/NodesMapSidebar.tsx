@@ -113,7 +113,7 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
     <motion.aside 
       initial={false}
       animate={{ width: isOpen ? '25%' : 48 }}
-      className="relative border-r border-black/5 dark:border-white/5 bg-white dark:bg-[#13171f] flex flex-row shrink-0 z-50 transition-all duration-300 min-w-[48px] h-full"
+      className="relative border-r border-black/5 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)] flex flex-row shrink-0 z-50 transition-all duration-300 min-w-[48px] h-full"
     >
       <div className="w-12 border-r border-black/5 dark:border-white/5 flex flex-col items-center py-4 bg-slate-50 dark:bg-black/40 shrink-0 h-full">
         <NavItem id="LIBRARY" icon={Package} label="Thư viện khối" />
@@ -135,7 +135,7 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
             <div className="p-5 border-b border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/20 shrink-0 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-800 dark:text-white">
+                  <h3 className="text-[11px] font-bold uppercase tracking-widest text-slate-800 dark:text-white">
                     {activeMenu === 'LIBRARY' ? 'THƯ VIỆN KHỐI' : activeMenu === 'MAP' ? 'DANH SÁCH KHỐI' : 'TRỢ LÝ THÔNG MINH'}
                   </h3>
                 </div>
@@ -162,7 +162,7 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
                                 {folder.isOpen ? <FolderOpen size={14} className="text-indigo-600" /> : <Folder size={14} className="text-gray-400" />}
                                 <span className="text-[11px] font-bold text-slate-600 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white uppercase">{folder.name}</span>
                              </div>
-                             <span className="text-[9px] font-black bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-full">{folder.count}</span>
+                             <span className="text-[9px] font-bold bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-full">{folder.count}</span>
                           </button>
                           <AnimatePresence>
                              {folder.isOpen && folder.children && (
@@ -186,12 +186,12 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
                     {filteredNodes.length > 0 ? filteredNodes.map((node) => (
                         <div key={node.id} className={`group flex items-center justify-between p-3 rounded-xl transition-all hover:bg-black/5 dark:hover:bg-white/5 ${node.hidden ? 'opacity-40' : 'opacity-100'}`}>
                           <div className="flex items-center gap-4 min-w-0">
-                            <div className="w-6 h-6 bg-indigo-100 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center rounded text-[10px] font-black text-indigo-600 dark:text-indigo-400 shrink-0">{node.id}</div>
+                            <div className="w-6 h-6 bg-indigo-100 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center rounded text-[10px] font-bold text-indigo-600 dark:text-indigo-400 shrink-0">{node.id}</div>
                             <span className="text-[11px] font-bold text-slate-600 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white truncate uppercase tracking-tight">{node.data?.label as string}</span>
                           </div>
                           <button onClick={() => onToggleVisibility(node.id)} className="p-2 text-gray-400 hover:text-indigo-600 transition-colors"><Eye size={14} /></button>
                         </div>
-                    )) : <div className="py-20 text-center opacity-10"><p className="text-[8px] font-black uppercase">Không có dữ liệu</p></div>}
+                    )) : <div className="py-20 text-center opacity-10"><p className="text-[8px] font-bold uppercase">Không có dữ liệu</p></div>}
                  </div>
                )}
 
@@ -222,7 +222,7 @@ export const NodesMapSidebar: React.FC<NodesMapSidebarProps> = ({ nodes, onToggl
             </div>
 
             <div className="p-4 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/20 shrink-0">
-              <div className="flex items-center justify-between text-[8px] font-black uppercase text-slate-400 dark:text-gray-600 tracking-widest italic">
+              <div className="flex items-center justify-between text-[8px] font-bold uppercase text-slate-400 dark:text-gray-600 tracking-widest italic">
                 <span>{activeMenu === 'CHAT' ? 'Trợ lý ảo' : `Tổng: ${nodes.length} khối`}</span>
                 <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div><span>Hoạt động</span></div>
               </div>

@@ -25,7 +25,7 @@ export const SidebarAccordion: React.FC<SidebarAccordionProps> = ({
         <div className="flex items-center gap-3">
           <span className="text-slate-400 dark:text-gray-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{icon}</span>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-white/70 group-hover:text-slate-900 dark:group-hover:text-white">{title}</span>
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-600 dark:text-white/70 group-hover:text-slate-900 dark:group-hover:text-white">{title}</span>
             {hasActiveItems && <div className="w-1.5 h-1.5 rounded-full bg-[#dfff1a] shadow-[0_0_8px_#dfff1a]"></div>}
           </div>
         </div>

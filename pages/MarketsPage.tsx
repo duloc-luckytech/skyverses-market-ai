@@ -15,6 +15,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { marketApi } from '../apis/market';
+import { promoBannersPublicApi, PromoBanner as PromoBannerType } from '../apis/promo-banners';
 import { Solution, Language } from '../types';
 
 // ═══════ TYPES ═══════
@@ -78,6 +79,61 @@ const CAT_CONTENT_OPEN_KEY = 'skyverses_cat_content_open';
 const CAT_OTHER_OPEN_KEY = 'skyverses_cat_other_open';
 const GRID_ANCHOR_ID = 'markets-grid-anchor';
 const MAX_RECENT = 8;
+
+// ═══════ PROMO BANNERS — random mỗi lần load ═══════
+// heroTitle + heroHighlight = dòng h1, heroDesc = subtitle, title/desc = promo strip dưới
+const PROMO_BANNERS = [
+  {
+    tag: 'HOT DEAL',
+    heroTitle: 'Nâng cấp ',
+    heroHighlight: 'gói Pro giảm 30%',
+    heroDesc: 'Truy cập toàn bộ 50+ model AI hàng đầu với mức giá ưu đãi nhất. Một tài khoản, một số dư credits cho tất cả.',
+    title: 'Giảm 30% gói Pro',
+    desc: 'Nâng cấp hôm nay — truy cập toàn bộ 50+ model AI với giá ưu đãi nhất.',
+    cta: 'Nâng cấp ngay',
+    link: '/pricing',
+  },
+  {
+    tag: 'MỚI',
+    heroTitle: 'Veo 3 — Video AI ',
+    heroHighlight: 'chất lượng điện ảnh',
+    heroDesc: 'Model video mới nhất từ Google đã có mặt. Tạo video 8s cinematic chỉ với vài dòng prompt.',
+    title: 'Veo 3 đã có mặt',
+    desc: 'Model video mới nhất từ Google — tạo video 8s chất lượng điện ảnh.',
+    cta: 'Thử ngay',
+    link: '/app/veo-3',
+  },
+  {
+    tag: 'FLASH SALE',
+    heroTitle: 'Mua 500 credits ',
+    heroHighlight: 'tặng thêm 100',
+    heroDesc: 'Chương trình giới hạn — nạp credits hôm nay nhận thêm 20% bonus. Áp dụng cho mọi công cụ AI.',
+    title: 'Mua 500 credits tặng 100',
+    desc: 'Chương trình giới hạn — nạp credits hôm nay nhận thêm 20% bonus.',
+    cta: 'Nạp credits',
+    link: '/credits',
+  },
+  {
+    tag: 'ƯU ĐÃI',
+    heroTitle: 'Đăng ký nhận ',
+    heroHighlight: '50 credits miễn phí',
+    heroDesc: 'Tài khoản mới nhận ngay 50 credits trải nghiệm mọi công cụ AI — video, ảnh, nhạc, giọng nói.',
+    title: 'Miễn phí 50 credits',
+    desc: 'Đăng ký tài khoản mới và nhận ngay 50 credits trải nghiệm mọi công cụ AI.',
+    cta: 'Đăng ký miễn phí',
+    link: '/login',
+  },
+  {
+    tag: 'BUNDLE',
+    heroTitle: 'Combo ',
+    heroHighlight: 'Video + Nhạc AI',
+    heroDesc: 'Tạo video TikTok kèm nhạc nền AI chỉ trong vài phút — tiết kiệm 40% so với mua lẻ từng tool.',
+    title: 'Combo Video + Nhạc AI',
+    desc: 'Tạo video TikTok kèm nhạc nền AI — tiết kiệm 40% so với mua lẻ.',
+    cta: 'Xem combo',
+    link: '/pricing',
+  },
+];
 const TRENDING_LIMIT = 12;
 const SCROLL_POS_KEY = 'skyverses_markets_scroll';
 
@@ -134,24 +190,24 @@ const TrendingSlider: React.FC<{ items: Solution[]; lang: Language; onNavigate: 
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <TrendingUp size={15} className="text-brand-blue" />
-          <h3 className="text-[14px] font-bold text-slate-700 dark:text-white">Trending</h3>
+          <h3 className="text-[14px] font-bold text-neutral-800">Trending</h3>
         </div>
         <div className="flex gap-1">
-          <button onClick={() => scroll('left')} className="p-1 rounded-md bg-slate-100 dark:bg-white/[0.04] text-slate-400 hover:text-brand-blue transition-colors"><ChevronLeft size={14} /></button>
-          <button onClick={() => scroll('right')} className="p-1 rounded-md bg-slate-100 dark:bg-white/[0.04] text-slate-400 hover:text-brand-blue transition-colors"><ChevronRight size={14} /></button>
+          <button onClick={() => scroll('left')} className="p-1 rounded-md bg-neutral-800 text-neutral-400 hover:text-brand-blue transition-colors"><ChevronLeft size={14} /></button>
+          <button onClick={() => scroll('right')} className="p-1 rounded-md bg-neutral-800 text-neutral-400 hover:text-brand-blue transition-colors"><ChevronRight size={14} /></button>
         </div>
       </div>
-      <div ref={scrollRef} className="flex gap-2.5 overflow-x-auto no-scrollbar snap-x pb-1">
+      <div ref={scrollRef} className="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-1">
         {limitedItems.map((sol, i) => (
           <div key={sol.id} onClick={() => onNavigate(sol.slug)}
-            className="snap-start shrink-0 w-[200px] bg-white dark:bg-[#1a1f2b] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
-            <div className="relative h-[100px] overflow-hidden">
+            className="snap-start shrink-0 w-[220px] bg-neutral-900 border border-neutral-700/40 overflow-hidden cursor-pointer hover:border-brand-blue/30 transition-all group">
+            <div className="relative h-[120px] overflow-hidden">
               <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-              <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-black/50 backdrop-blur-sm text-white text-[8px] font-semibold rounded">#{i+1}</span>
+              <span className="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm text-white text-[9px] font-bold">#{i+1}</span>
             </div>
-            <div className="p-2.5">
-              <h4 className="text-[12px] font-bold text-slate-700 dark:text-white truncate group-hover:text-brand-blue transition-colors">{sol.name[lang]}</h4>
-              <p className="text-[10px] text-slate-400 mt-0.5">{sol.category[lang]}</p>
+            <div className="p-3">
+              <h4 className="text-[13px] font-bold text-neutral-200 truncate group-hover:text-brand-blue transition-colors">{sol.name[lang]}</h4>
+              <p className="text-[10px] text-neutral-500 mt-1">{sol.category[lang]}</p>
             </div>
           </div>
         ))}
@@ -168,17 +224,17 @@ const RecentlyViewed: React.FC<{ lang: Language; onNavigate: (slug: string) => v
   return (
     <div className="mb-6">
       <div className="flex items-center gap-2 mb-3">
-        <Clock size={14} className="text-slate-400" />
-        <h3 className="text-[13px] font-bold text-slate-600 dark:text-gray-300">Xem gần đây</h3>
+        <Clock size={14} className="text-neutral-500" />
+        <h3 className="text-[13px] font-bold text-neutral-300">Xem gần đây</h3>
       </div>
       <div className="flex gap-2 overflow-x-auto no-scrollbar">
         {items.map((item) => (
           <div key={item.id} onClick={() => onNavigate(item.slug)}
-            className="shrink-0 flex items-center gap-2.5 px-3 py-2 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-xl cursor-pointer hover:border-brand-blue/20 transition-all group">
+            className="shrink-0 flex items-center gap-2.5 px-3 py-2 bg-neutral-900 border border-neutral-700/40 cursor-pointer hover:border-brand-blue/20 transition-all group">
             <img src={item.imageUrl} className="w-8 h-8 rounded-lg object-cover" alt="" />
             <div className="min-w-0">
-              <p className="text-[12px] font-semibold text-slate-700 dark:text-white truncate max-w-[120px] group-hover:text-brand-blue transition-colors">{item.name?.[lang] || item.name?.en}</p>
-              <p className="text-[10px] text-slate-400">{item.category?.[lang] || item.category?.en}</p>
+              <p className="text-[12px] font-semibold text-neutral-200 truncate max-w-[120px] group-hover:text-brand-blue transition-colors">{item.name?.[lang] || item.name?.en}</p>
+              <p className="text-[10px] text-neutral-500">{item.category?.[lang] || item.category?.en}</p>
             </div>
           </div>
         ))}
@@ -193,15 +249,15 @@ const QuickPathHero: React.FC<{ onPick: (cat: string) => void; onDismiss: () => 
   <div className="mb-8">
     <div className="flex items-center justify-between mb-4">
       <div>
-        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-500/[0.08] border border-amber-500/15 rounded-full mb-1.5">
-          <Sparkles size={10} className="text-amber-500" />
-          <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Bắt đầu nhanh</span>
+        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-brand-blue/[0.08] border border-brand-blue/15 rounded-full mb-1.5">
+          <Sparkles size={10} className="text-brand-blue" />
+          <span className="text-[9px] font-bold text-brand-blue uppercase tracking-wider">Bắt đầu nhanh</span>
         </div>
-        <h2 className="text-[17px] md:text-[19px] font-bold text-slate-700 dark:text-white">Bạn muốn làm gì hôm nay?</h2>
-        <p className="text-[12px] text-slate-400 dark:text-gray-500 mt-0.5">Chọn một mục để xem ngay công cụ phù hợp</p>
+        <h2 className="text-[17px] md:text-[19px] font-bold text-white">Bạn muốn làm gì hôm nay?</h2>
+        <p className="text-[12px] text-neutral-400 mt-0.5">Chọn một mục để xem ngay công cụ phù hợp</p>
       </div>
       <button onClick={onDismiss}
-        className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-medium text-slate-400 dark:text-gray-500 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/[0.03] rounded-lg transition-colors">
+        className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-medium text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 rounded-lg transition-colors">
         Ẩn <X size={10} />
       </button>
     </div>
@@ -210,13 +266,13 @@ const QuickPathHero: React.FC<{ onPick: (cat: string) => void; onDismiss: () => 
         const Icon = p.icon;
         return (
           <button key={p.key} onClick={() => onPick(p.category)}
-            className={`group relative bg-gradient-to-br ${p.gradient} dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.06] rounded-2xl p-3.5 md:p-4 text-left hover:border-brand-blue/30 hover:shadow-sm hover:-translate-y-0.5 transition-all`}>
-            <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl bg-white dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.05] flex items-center justify-center mb-2.5 ${p.iconColor}`}>
+            className="group relative bg-neutral-900 border border-neutral-700/40 p-3.5 md:p-4 text-left hover:border-brand-blue/30 hover:-translate-y-0.5 transition-all">
+            <div className={`w-9 h-9 md:w-10 md:h-10 bg-neutral-800 border border-neutral-700/40 flex items-center justify-center mb-2.5 ${p.iconColor}`}>
               <Icon size={17} />
             </div>
-            <p className="text-[12.5px] md:text-[13.5px] font-bold text-slate-700 dark:text-white group-hover:text-brand-blue transition-colors">{p.label}</p>
-            <p className="text-[10px] md:text-[11px] text-slate-400 dark:text-gray-500 mt-0.5 truncate">{p.desc}</p>
-            <ArrowRight size={11} className="absolute top-3.5 right-3.5 text-slate-300 dark:text-gray-600 group-hover:text-brand-blue group-hover:translate-x-0.5 transition-all" />
+            <p className="text-[12.5px] md:text-[13.5px] font-bold text-neutral-200 group-hover:text-brand-blue transition-colors">{p.label}</p>
+            <p className="text-[10px] md:text-[11px] text-neutral-400 mt-0.5 truncate">{p.desc}</p>
+            <ArrowRight size={11} className="absolute top-3.5 right-3.5 text-neutral-300 group-hover:text-brand-blue group-hover:translate-x-0.5 transition-all" />
           </button>
         );
       })}
@@ -247,24 +303,24 @@ const SuggestedSection: React.FC<{ solutions: Solution[]; lang: Language; onNavi
   return (
     <div className="mb-6">
       <div className="flex items-center gap-2 mb-3">
-        <Lightbulb size={14} className="text-amber-500" />
-        <h3 className="text-[13px] font-bold text-slate-600 dark:text-gray-300">Gợi ý cho bạn</h3>
+        <Lightbulb size={14} className="text-brand-blue" />
+        <h3 className="text-[13px] font-bold text-neutral-300">Gợi ý cho bạn</h3>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {suggested.map(sol => (
           <div key={sol.id} onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}
-            className="bg-white dark:bg-[#1a1f2b] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden cursor-pointer hover:border-brand-blue/20 hover:shadow-sm transition-all group">
-            <div className="relative h-[80px] overflow-hidden">
+            className="bg-neutral-900 border border-neutral-700/40 overflow-hidden cursor-pointer hover:border-brand-blue/30 transition-all group">
+            <div className="relative h-[100px] overflow-hidden">
               <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-              {sol.isFree && <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-emerald-500 text-white text-[8px] font-bold rounded">FREE</span>}
+              {sol.isFree && <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-emerald-500 text-white text-[9px] font-bold rounded-md">FREE</span>}
               <button onClick={(e) => { e.stopPropagation(); onToggleFav(e, sol.id); }}
-                className="absolute top-1.5 right-1.5 p-1 rounded-lg bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                className="absolute top-2 right-2 p-1 rounded-lg bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
                 {favorites.includes(sol.id) ? <Bookmark size={10} className="text-brand-blue" fill="currentColor" /> : <BookmarkPlus size={10} className="text-white/70" />}
               </button>
             </div>
-            <div className="p-2">
-              <p className="text-[11px] font-bold text-slate-700 dark:text-white truncate group-hover:text-brand-blue transition-colors">{sol.name[lang]}</p>
-              <p className="text-[9px] text-slate-400 dark:text-gray-500 mt-0.5 truncate">{sol.category[lang]}</p>
+            <div className="p-2.5">
+              <p className="text-[12px] font-bold text-neutral-200 truncate group-hover:text-brand-blue transition-colors">{sol.name[lang]}</p>
+              <p className="text-[10px] text-neutral-500 mt-0.5 truncate">{sol.category[lang]}</p>
             </div>
           </div>
         ))}
@@ -282,17 +338,17 @@ const ProductCardGrid: React.FC<{
 }> = React.memo(({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
   const models = sol.models?.slice(0, 3) || [];
   return (
-    <motion.div whileHover={{ y: -2 }}
-      className={`bg-white dark:bg-[#1a1f2b] border rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition-all group flex flex-col ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
+    <motion.div whileHover={{ y: -1 }}
+      className={`bg-neutral-900 border overflow-hidden cursor-pointer transition-all group flex flex-col ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-neutral-700/40 hover:border-neutral-600'}`}
       onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}>
-      <div className="relative h-[160px] overflow-hidden">
+      <div className="relative h-[180px] overflow-hidden">
         <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="absolute top-2 left-2 flex gap-1">
-          {sol.isFree && <span className="px-1.5 py-0.5 bg-emerald-500 text-white text-[9px] font-bold rounded-md">FREE</span>}
-          {sol.featured && <span className="px-1.5 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[9px] font-bold rounded-md flex items-center gap-0.5"><Sparkles size={8} fill="currentColor" /> Hot</span>}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+        <div className="absolute top-2.5 left-2.5 flex gap-1">
+          {sol.isFree && <span className="px-2 py-0.5 bg-emerald-500 text-white text-[9px] font-bold rounded-md">FREE</span>}
+          {sol.featured && <span className="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[9px] font-bold rounded-md flex items-center gap-0.5"><Sparkles size={8} fill="currentColor" /> Hot</span>}
         </div>
-        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-2.5 right-2.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           {onPreview && <button onClick={onPreview} className="p-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/10 text-white/80 hover:text-white transition-colors" title="Xem nhanh"><Eye size={12} /></button>}
           {onToggleCompare && <button onClick={onToggleCompare} className={`p-1.5 rounded-lg backdrop-blur-md border transition-colors ${isCompare ? 'bg-brand-blue/80 border-brand-blue text-white' : 'bg-black/40 border-white/10 text-white/80 hover:text-white'}`} title="So sánh"><GitCompare size={12} /></button>}
           <button onClick={onToggleFav} className={`p-1.5 rounded-lg backdrop-blur-md border transition-all ${isFav ? 'bg-brand-blue/20 border-brand-blue/30 text-brand-blue' : 'bg-black/30 border-white/10 text-white/70'}`}>
@@ -302,22 +358,22 @@ const ProductCardGrid: React.FC<{
       </div>
       <div className="p-3.5 space-y-2 flex-1 flex flex-col">
         <div>
-          <h3 className="text-[14px] font-bold text-slate-800 dark:text-white group-hover:text-brand-blue transition-colors truncate">{sol.name[lang]}</h3>
-          <p className="text-[11px] text-slate-400 dark:text-gray-500 line-clamp-2 mt-0.5">{sol.description[lang]}</p>
+          <h3 className="text-[14px] font-bold text-neutral-200 group-hover:text-brand-blue transition-colors truncate">{sol.name[lang]}</h3>
+          <p className="text-[11px] text-neutral-500 line-clamp-2 mt-0.5">{sol.description[lang]}</p>
         </div>
         {/* Models badges */}
         {models.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {models.map(m => (
-              <span key={m} className="px-1.5 py-0.5 bg-slate-800/[0.06] dark:bg-white/[0.06] text-slate-500 dark:text-gray-400 rounded text-[8px] font-mono border border-black/[0.04] dark:border-white/[0.08]">{m}</span>
+              <span key={m} className="px-1.5 py-0.5 bg-neutral-800 text-neutral-400 rounded text-[8px] font-mono border border-neutral-700/40">{m}</span>
             ))}
           </div>
         )}
         <div className="flex flex-wrap gap-1 mt-auto pt-1">
-          <span className="px-1.5 py-0.5 bg-brand-blue/[0.06] text-brand-blue rounded text-[9px] font-medium border border-brand-blue/10">{sol.category[lang]}</span>
-          {sol.complexity && <span className="px-1.5 py-0.5 bg-slate-50 dark:bg-white/[0.03] text-slate-400 dark:text-gray-500 rounded text-[9px] font-medium border border-black/[0.04] dark:border-white/[0.08]">{sol.complexity}</span>}
+          <span className="px-1.5 py-0.5 bg-brand-blue/[0.1] text-brand-blue rounded text-[9px] font-medium border border-brand-blue/20">{sol.category[lang]}</span>
+          {sol.complexity && <span className="px-1.5 py-0.5 bg-neutral-800 text-neutral-400 rounded text-[9px] font-medium border border-neutral-700/40">{sol.complexity}</span>}
         </div>
-        <div className="pt-2 border-t border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between">
+        <div className="pt-2 border-t border-neutral-700/40 flex items-center justify-between">
           <div className="text-[10px] font-semibold">
             {sol.priceCredits ? (
               <span className="text-orange-500 flex items-center gap-0.5"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
@@ -341,7 +397,7 @@ const ProductCardList: React.FC<{
 }> = React.memo(({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
   const models = sol.models?.slice(0, 2) || [];
   return (
-    <div className={`bg-white dark:bg-[#1a1f2b] border rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-all group flex ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08]'}`}
+    <div className={`bg-neutral-900 border overflow-hidden cursor-pointer transition-all group flex ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-neutral-700/40 hover:border-neutral-600'}`}
       onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}>
       <div className="relative w-[180px] shrink-0 overflow-hidden">
         <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
@@ -353,29 +409,29 @@ const ProductCardList: React.FC<{
       <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
         <div>
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-[15px] font-bold text-slate-800 dark:text-white group-hover:text-brand-blue transition-colors truncate">{sol.name[lang]}</h3>
+            <h3 className="text-[15px] font-bold text-neutral-200 group-hover:text-brand-blue transition-colors truncate">{sol.name[lang]}</h3>
             <div className="flex items-center gap-1 shrink-0">
-              {onPreview && <button onClick={onPreview} className="p-1 rounded-md text-slate-300 hover:text-brand-blue transition-colors" title="Xem nhanh"><Eye size={14} /></button>}
-              {onToggleCompare && <button onClick={onToggleCompare} className={`p-1 rounded-md transition-colors ${isCompare ? 'text-brand-blue' : 'text-slate-300 hover:text-brand-blue'}`} title="So sánh"><GitCompare size={14} /></button>}
-              <button onClick={onToggleFav} className={`p-1 rounded-md transition-all ${isFav ? 'text-brand-blue' : 'text-slate-300 dark:text-gray-600 hover:text-brand-blue'}`}>
+              {onPreview && <button onClick={onPreview} className="p-1 rounded-md text-neutral-500 hover:text-brand-blue transition-colors" title="Xem nhanh"><Eye size={14} /></button>}
+              {onToggleCompare && <button onClick={onToggleCompare} className={`p-1 rounded-md transition-colors ${isCompare ? 'text-brand-blue' : 'text-neutral-500 hover:text-brand-blue'}`} title="So sánh"><GitCompare size={14} /></button>}
+              <button onClick={onToggleFav} className={`p-1 rounded-md transition-all ${isFav ? 'text-brand-blue' : 'text-neutral-500 hover:text-brand-blue'}`}>
                 {isFav ? <Bookmark size={14} fill="currentColor" /> : <BookmarkPlus size={14} />}
               </button>
             </div>
           </div>
-          <p className="text-[12px] text-slate-400 dark:text-gray-500 line-clamp-2 mt-1">{sol.description[lang]}</p>
+          <p className="text-[12px] text-neutral-500 line-clamp-2 mt-1">{sol.description[lang]}</p>
           {/* Models badges */}
           {models.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1.5">
               {models.map(m => (
-                <span key={m} className="px-1.5 py-0.5 bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-gray-400 rounded text-[8px] font-mono border border-black/[0.04] dark:border-white/[0.08]">{m}</span>
+                <span key={m} className="px-1.5 py-0.5 bg-neutral-800 text-neutral-400 rounded text-[8px] font-mono border border-neutral-700/40">{m}</span>
               ))}
             </div>
           )}
         </div>
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-2">
-            <span className="px-1.5 py-0.5 bg-brand-blue/[0.06] text-brand-blue rounded text-[9px] font-medium border border-brand-blue/10">{sol.category[lang]}</span>
-            {sol.complexity && <span className="px-1.5 py-0.5 bg-slate-50 dark:bg-white/[0.03] text-slate-400 rounded text-[9px] font-medium border border-black/[0.04] dark:border-white/[0.08]">{sol.complexity}</span>}
+            <span className="px-1.5 py-0.5 bg-brand-blue/[0.1] text-brand-blue rounded text-[9px] font-medium border border-brand-blue/20">{sol.category[lang]}</span>
+            {sol.complexity && <span className="px-1.5 py-0.5 bg-neutral-800 text-neutral-400 rounded text-[9px] font-medium border border-neutral-700/40">{sol.complexity}</span>}
             {sol.priceCredits ? (
               <span className="flex items-center gap-0.5 text-[10px] font-semibold text-orange-500"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
             ) : sol.isFree ? (
@@ -400,9 +456,9 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
 
   return (
     <>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/40 dark:bg-black/60 z-[600]" onClick={onClose} />
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/40 z-[600]" onClick={onClose} />
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[601] w-[90vw] max-w-[560px] bg-white dark:bg-[#1a1f2b] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[601] w-[90vw] max-w-[560px] bg-neutral-900 rounded-2xl border border-neutral-700/40 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
         <div className="relative h-[200px] overflow-hidden shrink-0">
           <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
@@ -415,24 +471,24 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
         </div>
         <div className="p-5 space-y-4 overflow-y-auto flex-1 no-scrollbar">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">{sol.name[lang]}</h2>
-            <p className="text-[12px] text-slate-400 mt-1">{sol.description[lang]}</p>
+            <h2 className="text-lg font-bold text-neutral-100">{sol.name[lang]}</h2>
+            <p className="text-[12px] text-neutral-400 mt-1">{sol.description[lang]}</p>
           </div>
-          <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-400">
+          <div className="flex items-center gap-2 flex-wrap text-[11px] text-neutral-400">
             <span className="px-2 py-0.5 bg-brand-blue/[0.06] text-brand-blue rounded text-[10px] font-medium border border-brand-blue/10">{sol.category[lang]}</span>
             {sol.priceCredits ? (
-              <span className="px-2 py-0.5 bg-orange-500/[0.08] text-orange-600 dark:text-orange-400 rounded text-[10px] font-semibold border border-orange-500/20 flex items-center gap-1"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
+              <span className="px-2 py-0.5 bg-orange-500/[0.08] text-orange-600 rounded text-[10px] font-semibold border border-orange-500/20 flex items-center gap-1"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
             ) : sol.isFree ? (
-              <span className="px-2 py-0.5 bg-emerald-500/[0.08] text-emerald-600 dark:text-emerald-400 rounded text-[10px] font-semibold border border-emerald-500/20">Miễn phí</span>
+              <span className="px-2 py-0.5 bg-emerald-500/[0.08] text-emerald-600 rounded text-[10px] font-semibold border border-emerald-500/20">Miễn phí</span>
             ) : null}
           </div>
           {/* Models */}
           {sol.models && sol.models.length > 0 && (
             <div>
-              <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">AI Models</h4>
+              <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2">AI Models</h4>
               <div className="flex flex-wrap gap-1.5">
                 {sol.models.map(m => (
-                  <span key={m} className="px-2 py-1 bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-gray-300 rounded-lg text-[10px] font-mono border border-black/[0.04] dark:border-white/[0.08]">{m}</span>
+                  <span key={m} className="px-2 py-1 bg-neutral-800 text-neutral-300 rounded-lg text-[10px] font-mono border border-neutral-700/40">{m}</span>
                 ))}
               </div>
             </div>
@@ -440,13 +496,13 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
           {/* Neural Stack */}
           {sol.neuralStack && sol.neuralStack.length > 0 && (
             <div>
-              <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Neural Stack</h4>
+              <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Neural Stack</h4>
               <div className="space-y-1.5">
                 {sol.neuralStack.map((ns, i) => (
                   <div key={i} className="flex items-center gap-2 text-[11px]">
                     <span className="px-1.5 py-0.5 bg-brand-blue/[0.08] text-brand-blue rounded font-mono text-[9px] border border-brand-blue/10">{ns.name}</span>
-                    <span className="text-slate-400">{ns.version}</span>
-                    <span className="text-slate-500 dark:text-gray-400">· {ns.capability[lang] || ns.capability.en}</span>
+                    <span className="text-neutral-400">{ns.version}</span>
+                    <span className="text-neutral-500">· {ns.capability[lang] || ns.capability.en}</span>
                   </div>
                 ))}
               </div>
@@ -454,10 +510,10 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
           )}
           {sol.features && sol.features.length > 0 && (
             <div>
-              <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tính năng</h4>
+              <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Tính năng</h4>
               <div className="space-y-1.5">
                 {sol.features.map((f, i) => (
-                  <div key={i} className="flex items-center gap-2 text-[12px] text-slate-600 dark:text-gray-300">
+                  <div key={i} className="flex items-center gap-2 text-[12px] text-neutral-300">
                     <Check size={12} className="text-emerald-500 shrink-0" />
                     {typeof f === 'string' ? f : (f as { [key in Language]: string })[lang] || (f as { en: string }).en}
                   </div>
@@ -467,14 +523,14 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
           )}
           {sol.tags && sol.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
-              {sol.tags.map(t => <span key={t} className="px-2 py-1 bg-slate-50 dark:bg-white/[0.03] text-slate-500 rounded-lg text-[10px] font-medium border border-black/[0.04] dark:border-white/[0.08]">{t}</span>)}
+              {sol.tags.map(t => <span key={t} className="px-2 py-1 bg-neutral-800 text-neutral-400 rounded-lg text-[10px] font-medium border border-neutral-700/40">{t}</span>)}
             </div>
           )}
-          {sol.priceCredits && <p className="text-[12px] text-slate-500"><Zap size={12} className="inline text-orange-500 mr-1" />{sol.priceCredits} Credits / lượt</p>}
+          {sol.priceCredits && <p className="text-[12px] text-neutral-500"><Zap size={12} className="inline text-orange-500 mr-1" />{sol.priceCredits} Credits / lượt</p>}
         </div>
-        <div className="p-4 border-t border-black/[0.04] dark:border-white/[0.08] shrink-0">
+        <div className="p-4 border-t border-neutral-700/40 shrink-0">
           <button onClick={() => { onClose(); onNavigate(sol.slug); }}
-            className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-brand-blue text-white text-[13px] font-semibold rounded-xl hover:brightness-110 active:scale-[0.98] transition-all">
+            className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-brand-blue text-white text-[13px] font-semibold hover:brightness-110 active:scale-[0.98] transition-all">
             Mở công cụ <ArrowRight size={14} />
           </button>
         </div>
@@ -488,26 +544,26 @@ const ComparePanel: React.FC<{ items: Solution[]; lang: Language; onRemove: (id:
   if (items.length === 0) return null;
   return (
     <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }}
-      className="fixed bottom-0 left-0 right-0 z-[500] bg-white dark:bg-[#1a1f2b] border-t border-black/[0.06] dark:border-white/[0.06] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.4)]">
+      className="fixed bottom-0 left-0 right-0 z-[500] bg-neutral-900 border-t border-neutral-700/40 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
       <div className="max-w-[1500px] mx-auto px-6 py-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <GitCompare size={14} className="text-brand-blue" />
-            <span className="text-[12px] font-bold text-slate-700 dark:text-white">So sánh ({items.length}/3)</span>
+            <span className="text-[12px] font-bold text-neutral-200">So sánh ({items.length}/3)</span>
           </div>
-          <button onClick={onClear} className="text-[11px] font-medium text-slate-400 hover:text-rose-500 transition-colors">Xoá tất cả</button>
+          <button onClick={onClear} className="text-[11px] font-medium text-neutral-400 hover:text-rose-500 transition-colors">Xoá tất cả</button>
         </div>
         <div className="grid grid-cols-3 gap-4">
           {[0, 1, 2].map(i => {
             const sol = items[i];
-            if (!sol) return <div key={i} className="h-[80px] border-2 border-dashed border-black/[0.06] dark:border-white/[0.06] rounded-xl flex items-center justify-center text-[11px] text-slate-300 dark:text-gray-600">Chọn để so sánh</div>;
+            if (!sol) return <div key={i} className="h-[80px] border-2 border-dashed border-neutral-700/40 flex items-center justify-center text-[11px] text-neutral-500">Chọn để so sánh</div>;
             return (
-              <div key={sol.id} className="relative p-3 bg-slate-50 dark:bg-white/[0.03] rounded-xl border border-black/[0.04] dark:border-white/[0.08] flex gap-3">
+              <div key={sol.id} className="relative p-3 bg-neutral-800 border border-neutral-700/40 flex gap-3">
                 <button onClick={() => onRemove(sol.id)} className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm"><X size={10} /></button>
                 <img src={sol.imageUrl} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[12px] font-bold text-slate-700 dark:text-white truncate">{sol.name[lang]}</p>
-                  <p className="text-[10px] text-slate-400 truncate">{sol.category[lang]}{sol.complexity ? ` · ${sol.complexity}` : ''}</p>
+                  <p className="text-[12px] font-bold text-neutral-200 truncate">{sol.name[lang]}</p>
+                  <p className="text-[10px] text-neutral-400 truncate">{sol.category[lang]}{sol.complexity ? ` · ${sol.complexity}` : ''}</p>
                   <div className="flex gap-2 mt-1 text-[10px]">
                     {sol.priceCredits ? (
                       <span className="text-orange-500 font-semibold"><Zap size={9} className="inline" fill="currentColor" /> {sol.priceCredits} CR</span>
@@ -540,6 +596,19 @@ const MarketsPage: React.FC = () => {
     keywords: 'AI marketplace, kho ứng dụng AI, 50+ model AI, AI giá rẻ, Skyverses, VEO3, Kling, Midjourney, Flux, video AI, image AI, AI automation, tiết kiệm chi phí AI',
     canonical: '/markets'
   });
+
+  // Random promo banner — fetch from API, fallback to hardcoded
+  const [promoBanners, setPromoBanners] = useState<PromoBannerType[]>([]);
+  const promoBanner = useMemo(() => {
+    const pool = promoBanners.length > 0 ? promoBanners : PROMO_BANNERS;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }, [promoBanners]);
+
+  useEffect(() => {
+    promoBannersPublicApi.getActive().then(data => {
+      if (data.length > 0) setPromoBanners(data);
+    });
+  }, []);
 
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [featuredSolutions, setFeaturedSolutions] = useState<Solution[]>([]);
@@ -890,19 +959,19 @@ const MarketsPage: React.FC = () => {
     <div className="space-y-5">
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 dark:text-gray-600" size={15} />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={15} />
         <input ref={searchInputRef} type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="Tìm công cụ AI... (⌘K)"
-          className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] pl-9 pr-8 py-2.5 rounded-xl text-[13px] focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-600" />
-        {inputValue && <button onClick={() => setInputValue('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"><X size={13} /></button>}
+          className="w-full bg-neutral-900 border border-neutral-700/60 pl-9 pr-8 py-2.5 text-[13px] text-neutral-200 focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 outline-none transition-all placeholder:text-neutral-500" />
+        {inputValue && <button onClick={() => setInputValue('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 transition-colors"><X size={13} /></button>}
       </div>
 
       {/* Categories Card — chia 2 group: "Tạo nội dung" (expand default) + "Khác" (collapse default) */}
-      <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center gap-2">
+      <div>
+        <div className="px-1 pb-2 flex items-center gap-2">
           <LayoutGrid size={13} className="text-brand-blue" />
-          <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Danh mục</span>
+          <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Danh mục</span>
         </div>
-        <div className="p-2 space-y-0.5">
+        <div className="space-y-0.5">
           {(() => {
             const allCat = CATEGORIES.find(c => c.key === 'ALL');
             const contentCats = CATEGORIES.filter(c => CONTENT_CATEGORY_KEYS.has(c.key));
@@ -916,17 +985,17 @@ const MarketsPage: React.FC = () => {
               const count = catCounts[cat.key] || 0;
               return (
                 <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all ${
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-[12px] font-medium transition-all ${
                     isActive
-                      ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
-                      : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.03]'
+                      ? 'bg-brand-blue text-white'
+                      : 'text-neutral-300 hover:bg-neutral-800'
                   }`}>
                   <Icon size={14} className={isActive ? 'text-white' : ''} />
                   <span className="flex-1 text-left">{cat.label}</span>
                   <span className={`text-[10px] font-semibold min-w-[20px] text-center py-0.5 rounded-full ${
                     isActive
                       ? 'bg-white/20 text-white'
-                      : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-500'
+                      : 'bg-neutral-800 text-neutral-500'
                   }`}>{count}</span>
                 </button>
               );
@@ -936,7 +1005,7 @@ const MarketsPage: React.FC = () => {
               icon: React.ReactNode, label: string, isOpen: boolean, onToggle: () => void, badgeDot: boolean
             ) => (
               <button onClick={onToggle}
-                className="w-full flex items-center gap-2 px-3 py-1.5 mt-1 rounded-lg text-[10px] font-bold text-slate-400 dark:text-gray-500 hover:text-slate-600 dark:hover:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/[0.02] uppercase tracking-wider transition-colors">
+                className="w-full flex items-center gap-2 px-3 py-1.5 mt-1 text-[10px] font-bold text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 uppercase tracking-wider transition-colors">
                 {icon}
                 <span className="flex-1 text-left">{label}</span>
                 {badgeDot && <span className="w-1.5 h-1.5 rounded-full bg-brand-blue" />}
@@ -975,7 +1044,7 @@ const MarketsPage: React.FC = () => {
                 {otherCats.length > 0 && (
                   <>
                     {renderGroupHeader(
-                      <Layers size={11} className="text-slate-400" />,
+                      <Layers size={11} className="text-neutral-400" />,
                       `Khác (${otherCats.length})`,
                       otherGroupOpen,
                       () => setOtherGroupOpen(v => !v),
@@ -999,27 +1068,27 @@ const MarketsPage: React.FC = () => {
       </div>
 
       {/* Toggles Card — basic, always visible (đưa lên trước advanced) */}
-      <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center gap-2">
+      <div className="border-t border-neutral-700/40 pt-4">
+        <div className="px-1 pb-2 flex items-center gap-2">
           <SlidersHorizontal size={13} className="text-emerald-500" />
-          <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Bộ lọc nhanh</span>
+          <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Bộ lọc nhanh</span>
         </div>
-        <div className="p-2 space-y-0.5">
-          <label className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors">
+        <div className="space-y-0.5">
+          <label className="flex items-center justify-between px-3 py-2.5 cursor-pointer hover:bg-neutral-800 transition-colors">
             <div className="flex items-center gap-2">
-              <Zap size={13} className={showFreeOnly ? 'text-emerald-500' : 'text-slate-400'} />
-              <span className="text-[12px] font-medium text-slate-600 dark:text-gray-300">Chỉ miễn phí</span>
+              <Zap size={13} className={showFreeOnly ? 'text-emerald-500' : 'text-neutral-500'} />
+              <span className="text-[12px] font-medium text-neutral-300">Chỉ miễn phí</span>
             </div>
-            <div className={`relative w-8 h-[18px] rounded-full transition-colors ${showFreeOnly ? 'bg-brand-blue' : 'bg-slate-200 dark:bg-white/10'}`} onClick={(e) => { e.preventDefault(); setShowFreeOnly(!showFreeOnly); }}>
+            <div className={`relative w-8 h-[18px] rounded-full transition-colors ${showFreeOnly ? 'bg-brand-blue' : 'bg-neutral-700'}`} onClick={(e) => { e.preventDefault(); setShowFreeOnly(!showFreeOnly); }}>
               <div className={`absolute top-[2px] w-[14px] h-[14px] bg-white rounded-full shadow-sm transition-all ${showFreeOnly ? 'left-[16px]' : 'left-[2px]'}`} />
             </div>
           </label>
-          <label className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors">
+          <label className="flex items-center justify-between px-3 py-2.5 cursor-pointer hover:bg-neutral-800 transition-colors">
             <div className="flex items-center gap-2">
-              <Sparkles size={13} className={showFeaturedOnly ? 'text-amber-500' : 'text-slate-400'} />
-              <span className="text-[12px] font-medium text-slate-600 dark:text-gray-300">Nổi bật</span>
+              <Sparkles size={13} className={showFeaturedOnly ? 'text-amber-500' : 'text-neutral-500'} />
+              <span className="text-[12px] font-medium text-neutral-300">Nổi bật</span>
             </div>
-            <div className={`relative w-8 h-[18px] rounded-full transition-colors ${showFeaturedOnly ? 'bg-brand-blue' : 'bg-slate-200 dark:bg-white/10'}`} onClick={(e) => { e.preventDefault(); setShowFeaturedOnly(!showFeaturedOnly); }}>
+            <div className={`relative w-8 h-[18px] rounded-full transition-colors ${showFeaturedOnly ? 'bg-brand-blue' : 'bg-neutral-700'}`} onClick={(e) => { e.preventDefault(); setShowFeaturedOnly(!showFeaturedOnly); }}>
               <div className={`absolute top-[2px] w-[14px] h-[14px] bg-white rounded-full shadow-sm transition-all ${showFeaturedOnly ? 'left-[16px]' : 'left-[2px]'}`} />
             </div>
           </label>
@@ -1030,19 +1099,19 @@ const MarketsPage: React.FC = () => {
       {(() => {
         const advCount = [!!activeComplexity, activeTags.length > 0, activePlatform !== 'ALL'].filter(Boolean).length;
         return (
-          <div className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-xl overflow-hidden">
+          <div className="border-t border-neutral-700/40 pt-4">
             <button
               onClick={() => setAdvancedOpen(v => !v)}
-              className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors"
+              className="w-full px-1 pb-2 flex items-center justify-between hover:opacity-70 transition-opacity"
             >
               <div className="flex items-center gap-2">
-                <SlidersHorizontal size={13} className="text-slate-400" />
-                <span className="text-[11px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Bộ lọc nâng cao</span>
+                <SlidersHorizontal size={13} className="text-neutral-500" />
+                <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Bộ lọc nâng cao</span>
                 {advCount > 0 && (
                   <span className="text-[9px] font-bold text-brand-blue bg-brand-blue/10 px-1.5 py-0.5 rounded-full">{advCount}</span>
                 )}
               </div>
-              {advancedOpen ? <ChevronUp size={13} className="text-slate-400" /> : <ChevronDown size={13} className="text-slate-400" />}
+              {advancedOpen ? <ChevronUp size={13} className="text-neutral-400" /> : <ChevronDown size={13} className="text-neutral-400" />}
             </button>
             <AnimatePresence initial={false}>
               {advancedOpen && (
@@ -1052,23 +1121,23 @@ const MarketsPage: React.FC = () => {
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="overflow-hidden border-t border-black/[0.04] dark:border-white/[0.08]"
+                  className="overflow-hidden"
                 >
                   <div className="p-3 space-y-3">
                     {/* Complexity */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <Layers size={12} className="text-purple-500" />
-                        <span className="text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Cấp độ</span>
+                        <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Cấp độ</span>
                       </div>
                       <div className="grid grid-cols-3 gap-1.5">
                         {COMPLEXITY_LEVELS.map(level => {
                           const isActive = activeComplexity === level.key;
                           return (
                             <button key={level.key} onClick={() => setActiveComplexity(isActive ? null : level.key)}
-                              className={`flex items-center justify-center py-2 rounded-lg text-[11px] font-semibold transition-all ${isActive
-                                ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
-                                : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/[0.05] border border-black/[0.04] dark:border-white/[0.08]'
+                              className={`flex items-center justify-center py-2 text-[11px] font-semibold transition-all ${isActive
+                                ? 'bg-brand-blue text-white'
+                                : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700 border border-neutral-700/40'
                               }`}>
                               {level.label}
                             </button>
@@ -1081,7 +1150,7 @@ const MarketsPage: React.FC = () => {
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <Globe size={12} className="text-cyan-500" />
-                        <span className="text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Nền tảng</span>
+                        <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Nền tảng</span>
                       </div>
                       <div className="space-y-0.5">
                         {PLATFORMS.map(plat => {
@@ -1089,9 +1158,9 @@ const MarketsPage: React.FC = () => {
                           const isActive = activePlatform === plat.key;
                           return (
                             <button key={plat.key} onClick={() => setActivePlatform(plat.key)}
-                              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all ${isActive
-                                ? 'bg-brand-blue text-white shadow-sm shadow-brand-blue/20'
-                                : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.03]'
+                              className={`w-full flex items-center gap-2.5 px-3 py-2 text-[12px] font-medium transition-all ${isActive
+                                ? 'bg-brand-blue text-white'
+                                : 'text-neutral-300 hover:bg-neutral-800'
                               }`}>
                               <Icon size={13} className={isActive ? 'text-white' : ''} />
                               <span className="flex-1 text-left">{plat.label}</span>
@@ -1107,7 +1176,7 @@ const MarketsPage: React.FC = () => {
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <Tag size={12} className="text-orange-500" />
-                            <span className="text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Tags</span>
+                            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Tags</span>
                           </div>
                           {activeTags.length > 0 && (
                             <span className="text-[9px] font-bold text-brand-blue bg-brand-blue/10 px-1.5 py-0.5 rounded">{activeTags.length} chọn</span>
@@ -1118,9 +1187,9 @@ const MarketsPage: React.FC = () => {
                             const isActive = activeTags.includes(tag);
                             return (
                               <button key={tag} onClick={() => toggleTag(tag)}
-                                className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${isActive
-                                  ? 'bg-brand-blue text-white shadow-sm'
-                                  : 'bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 border border-black/[0.04] dark:border-white/[0.08] hover:border-brand-blue/30 hover:text-brand-blue'
+                                className={`px-2.5 py-1.5 text-[10px] font-semibold transition-all ${isActive
+                                  ? 'bg-brand-blue text-white'
+                                  : 'bg-neutral-800 text-neutral-400 border border-neutral-700/40 hover:border-brand-blue/30 hover:text-brand-blue'
                                 }`}>
                                 {isActive && <Check size={9} className="inline mr-1 -mt-px" />}{tag}
                               </button>
@@ -1139,43 +1208,176 @@ const MarketsPage: React.FC = () => {
 
       {/* Reset */}
       {activeFilterCount > 0 && (
-        <button onClick={resetFilters} className="w-full flex items-center justify-center gap-2 py-2.5 text-[12px] font-semibold text-brand-blue bg-brand-blue/[0.06] hover:bg-brand-blue/[0.1] border border-brand-blue/10 rounded-xl transition-colors">
+        <button onClick={resetFilters} className="w-full flex items-center justify-center gap-2 py-2.5 text-[12px] font-semibold text-brand-blue bg-brand-blue/[0.06] hover:bg-brand-blue/[0.1] border border-brand-blue/10 transition-colors">
           <X size={12} /> Đặt lại bộ lọc ({activeFilterCount})
         </button>
       )}
 
       {/* Keyboard Shortcut Hint — chỉ giữ ⌘K (View toggle G ẩn ngầm cho power user) */}
-      <div className="flex flex-wrap gap-2 text-[9px] text-slate-400 dark:text-gray-600">
-        <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-slate-100 dark:bg-white/5 rounded text-[8px] font-mono">⌘K</kbd> Tìm</span>
+      <div className="flex flex-wrap gap-2 text-[9px] text-neutral-400">
+        <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-neutral-800 rounded text-[8px] font-mono text-neutral-400">⌘K</kbd> Tìm</span>
       </div>
     </div>
   );
 
   return (
-    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-white dark:bg-[#0a0d14] text-black dark:text-white transition-colors duration-300">
-      <div className="max-w-[1500px] mx-auto px-4 md:px-6 lg:px-10">
+    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-[#0A0A0A] text-neutral-100 transition-colors duration-300">
 
-        {/* ═══════ HEADER ═══════ */}
-        <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-3">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              Kho công cụ{' '}<span className="bg-gradient-to-r from-brand-blue to-blue-400 bg-clip-text text-transparent">AI sáng tạo</span>
-            </h1>
-            <p className="text-[12px] text-slate-400 dark:text-gray-500 mt-1">30+ ứng dụng &middot; 50+ model &middot; tiết kiệm ~70%</p>
+      <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-6 lg:px-10">
+
+        {/* ═══════ ATLAS HERO STRIP ═══════ */}
+        {/* ═══════ HERO BANNER — promo as background ═══════ */}
+        <motion.div
+          className="relative mb-8 md:mb-10 overflow-hidden bg-neutral-950 px-6 md:px-10 pt-8 md:pt-10 pb-6 md:pb-8 cursor-pointer group"
+          onClick={() => navigate(promoBanner.link)}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* ── Animated gradient background ── */}
+          <div className="absolute inset-0 bg-atlas-hero-dark opacity-100" />
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/[0.08] via-transparent to-brand-blue/[0.04] group-hover:from-brand-blue/[0.12] group-hover:to-brand-blue/[0.06] transition-all duration-700" />
+
+          {/* ── Shimmer sweep overlay ── */}
+          <div
+            className="absolute inset-0 opacity-[0.07] group-hover:opacity-[0.12] transition-opacity duration-500"
+            style={{
+              backgroundImage: 'linear-gradient(105deg, transparent 40%, rgba(201,168,76,0.4) 45%, rgba(201,168,76,0.6) 50%, rgba(201,168,76,0.4) 55%, transparent 60%)',
+              backgroundSize: '200% 100%',
+              animation: 'atlasShimmer 4s linear infinite',
+            }}
+          />
+
+          {/* ── Subtle grid pattern ── */}
+          <div
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(201,168,76,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.3) 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
+            }}
+          />
+
+          {/* ── Corner accent lines ── */}
+          <motion.div
+            className="absolute top-0 left-0 w-16 h-px bg-gradient-to-r from-brand-blue to-transparent"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformOrigin: 'left' }}
+          />
+          <motion.div
+            className="absolute top-0 left-0 w-px h-16 bg-gradient-to-b from-brand-blue to-transparent"
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 1 }}
+            transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformOrigin: 'top' }}
+          />
+
+          {/* ── Content (z-10 above overlays) ── */}
+          <div className="relative z-10">
+            {/* Promo tag — top right */}
+            <motion.div
+              className="absolute -top-2 right-0 md:-top-4 md:right-0 flex items-center gap-3"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+            >
+              <span className="relative px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] bg-brand-blue text-white shadow-atlas-glow-soft">
+                <span className="relative z-10">{promoBanner.tag}</span>
+                <span className="absolute inset-0 bg-brand-blue animate-atlas-pulse rounded-[1px]" />
+              </span>
+            </motion.div>
+
+            {/* Title + subtitle */}
+            <motion.p
+              className="text-[11px] font-bold uppercase tracking-[0.2em] text-brand-blue mb-3 flex items-center gap-2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.span
+                className="w-5 h-px bg-brand-blue/50"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                style={{ transformOrigin: 'left' }}
+              />
+              Marketplace
+            </motion.p>
+
+            <motion.h1
+              className="text-[1.75rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.1] text-white"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {promoBanner.heroTitle}
+              <span
+                className="bg-gradient-to-r from-brand-blue via-[#E5C767] to-brand-blue bg-[length:200%_auto] bg-clip-text text-transparent"
+                style={{ animation: 'atlasShimmer 3s linear infinite' }}
+              >
+                {promoBanner.heroHighlight}
+              </span>
+            </motion.h1>
+
+            <motion.p
+              className="mt-3 text-[13px] md:text-[15px] text-neutral-400 leading-relaxed max-w-xl"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {promoBanner.heroDesc}
+            </motion.p>
+
+            {/* Promo content — bottom */}
+            <motion.div
+              className="mt-6 md:mt-8 pt-5 border-t border-neutral-800/60 flex items-center justify-between"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.65, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="min-w-0">
+                <h3 className="text-[15px] md:text-[18px] font-bold text-white leading-snug">
+                  {promoBanner.title}
+                </h3>
+                <p className="text-[12px] md:text-[13px] text-neutral-500 leading-relaxed mt-1">
+                  {promoBanner.desc}
+                </p>
+              </div>
+              <motion.div
+                className="flex items-center gap-1.5 text-brand-blue text-[13px] md:text-[14px] font-semibold whitespace-nowrap shrink-0 group-hover:gap-2.5 transition-all ml-6"
+                whileHover={{ x: 4 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              >
+                {promoBanner.cta} <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+              </motion.div>
+            </motion.div>
+
+            {/* Mobile filter button */}
+            <button onClick={(e) => { e.stopPropagation(); setMobileSidebar(true); }}
+              className="lg:hidden mt-5 inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-800/80 border border-neutral-700/60 text-[13px] font-semibold text-neutral-200 w-fit hover:bg-neutral-700 hover:border-brand-blue/30 transition-all">
+              <SlidersHorizontal size={15} /> Bộ lọc
+              {activeFilterCount > 0 && <span className="w-5 h-5 bg-brand-blue text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-atlas-glow-soft">{activeFilterCount}</span>}
+            </button>
           </div>
-          <button onClick={() => setMobileSidebar(true)}
-            className="lg:hidden flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-[13px] font-medium text-slate-600 dark:text-gray-300 w-fit">
-            <SlidersHorizontal size={15} /> Bộ lọc
-            {activeFilterCount > 0 && <span className="w-5 h-5 bg-brand-blue text-white text-[10px] font-bold rounded-full flex items-center justify-center">{activeFilterCount}</span>}
-          </button>
-        </div>
+
+          {/* ── Bottom glow line ── */}
+          <motion.div
+            className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-blue/40 to-transparent"
+            initial={{ scaleX: 0, opacity: 0 }}
+            animate={{ scaleX: 1, opacity: 1 }}
+            transition={{ delay: 0.8, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          />
+        </motion.div>
 
         {/* ═══════ 2-COLUMN LAYOUT ═══════ */}
         <div className="flex gap-6 lg:gap-8">
 
           {/* LEFT SIDEBAR */}
           <aside className="hidden lg:block w-[260px] shrink-0">
-            <div className="sticky top-28 max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar pr-1">{sidebarContent}</div>
+            <div className="sticky top-28 max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar pr-1 space-y-1">
+              {sidebarContent}
+            </div>
           </aside>
 
           {/* RIGHT CONTENT */}
@@ -1208,20 +1410,20 @@ const MarketsPage: React.FC = () => {
 
             {/* Toolbar */}
             <div id={GRID_ANCHOR_ID} className="flex items-center justify-between mb-4 scroll-mt-28">
-              <p className="text-[13px] text-slate-400 dark:text-gray-500">
-                {loading ? 'Đang tải...' : <><strong className="text-slate-600 dark:text-gray-300">{filteredSolutions.length}</strong> kết quả</>}
+              <p className="text-[13px] text-neutral-400">
+                {loading ? 'Đang tải...' : <><strong className="text-neutral-200">{filteredSolutions.length}</strong> kết quả</>}
                 {deferredSearch && <span className="text-brand-blue ml-1">"{deferredSearch}"</span>}
-                {hasMore && <span className="text-slate-300 ml-1">· hiện {visibleCount}</span>}
+                {hasMore && <span className="text-neutral-300 ml-1">· hiện {visibleCount}</span>}
               </p>
               <div className="flex items-center gap-2">
                 {/* View mode toggle đã được rút khỏi UI để giảm noise — phím G và URL ?view=list vẫn hoạt động */}
                 {deferredSearch ? (
-                  <span className="text-[11px] px-2.5 py-1.5 bg-brand-blue/[0.06] text-brand-blue border border-brand-blue/15 rounded-lg flex items-center gap-1 font-medium">
+                  <span className="text-[11px] px-2.5 py-1.5 bg-brand-blue/[0.06] text-brand-blue border border-brand-blue/15 flex items-center gap-1 font-medium">
                     <Sparkles size={11} /> Theo độ liên quan
                   </span>
                 ) : (
                   <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-                    className="text-[12px] px-3 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-lg text-slate-600 dark:text-gray-300 outline-none cursor-pointer">
+                    className="text-[12px] px-3 py-1.5 bg-neutral-800 border border-neutral-700/40 text-neutral-300 outline-none cursor-pointer">
                     {SORT_OPTIONS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
                   </select>
                 )}
@@ -1231,10 +1433,10 @@ const MarketsPage: React.FC = () => {
             {/* Active tag pills */}
             {activeTags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-4">
-                <span className="text-[11px] text-slate-400 mr-1 py-1">Active:</span>
+                <span className="text-[11px] text-neutral-400 mr-1 py-1">Active:</span>
                 {activeTags.map(tag => (
                   <button key={tag} onClick={() => toggleTag(tag)}
-                    className="flex items-center gap-1 px-2 py-1 bg-brand-blue/[0.08] text-brand-blue text-[11px] font-medium rounded-lg">
+                    className="flex items-center gap-1 px-2 py-1 bg-brand-blue/[0.08] text-brand-blue text-[11px] font-medium">
                     {tag} <X size={10} />
                   </button>
                 ))}
@@ -1243,22 +1445,22 @@ const MarketsPage: React.FC = () => {
 
             {/* GRID / LIST */}
             {loading ? (
-              <div className={viewMode === 'grid' ? 'grid grid-cols-2 xl:grid-cols-3 gap-4' : 'space-y-3'}>
+              <div className={viewMode === 'grid' ? 'grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 'space-y-3'}>
                 {[1,2,3,4,5,6].map(i => (
                   viewMode === 'grid' ? (
-                    <div key={i} className="animate-pulse rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] overflow-hidden">
-                      <div className="h-[160px] bg-slate-100 dark:bg-white/[0.03]" />
+                    <div key={i} className="animate-pulse bg-neutral-900 border border-neutral-700/40 overflow-hidden">
+                      <div className="h-[180px] bg-neutral-800" />
                       <div className="p-3.5 space-y-2.5">
-                        <div className="h-4 bg-slate-100 dark:bg-white/[0.03] rounded w-3/4" />
-                        <div className="h-3 bg-slate-100 dark:bg-white/[0.03] rounded w-full" />
+                        <div className="h-4 bg-neutral-800 rounded w-3/4" />
+                        <div className="h-3 bg-neutral-800 rounded w-full" />
                       </div>
                     </div>
                   ) : (
-                    <div key={i} className="animate-pulse rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] h-[100px] flex">
-                      <div className="w-[180px] bg-slate-100 dark:bg-white/[0.03]" />
+                    <div key={i} className="animate-pulse bg-neutral-900 border border-neutral-700/40 h-[100px] flex">
+                      <div className="w-[180px] bg-neutral-800" />
                       <div className="flex-1 p-4 space-y-2">
-                        <div className="h-4 bg-slate-100 dark:bg-white/[0.03] rounded w-1/2" />
-                        <div className="h-3 bg-slate-100 dark:bg-white/[0.03] rounded w-3/4" />
+                        <div className="h-4 bg-neutral-800 rounded w-1/2" />
+                        <div className="h-3 bg-neutral-800 rounded w-3/4" />
                       </div>
                     </div>
                   )
@@ -1266,7 +1468,7 @@ const MarketsPage: React.FC = () => {
               </div>
             ) : paginatedSolutions.length > 0 ? (
               <>
-                <div className={viewMode === 'grid' ? 'grid grid-cols-2 xl:grid-cols-3 gap-4' : 'space-y-3'}>
+                <div className={viewMode === 'grid' ? 'grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 'space-y-3'}>
                   {paginatedSolutions.map((sol) => (
                     <React.Fragment key={sol.id}>
                       {viewMode === 'grid' ? (
@@ -1288,13 +1490,13 @@ const MarketsPage: React.FC = () => {
 
                 {/* Auto-load sentinel — IntersectionObserver tự load thêm khi scroll gần tới */}
                 {hasMore && (
-                  <div ref={loadMoreRef} className="mt-8 py-6 flex justify-center items-center gap-2.5 text-[12px] text-slate-400 dark:text-gray-500">
+                  <div ref={loadMoreRef} className="mt-8 py-6 flex justify-center items-center gap-2.5 text-[12px] text-neutral-400">
                     <div className="w-4 h-4 border-2 border-brand-blue/30 border-t-brand-blue rounded-full animate-spin" />
-                    <span>Đang tải thêm <span className="text-slate-500 dark:text-gray-400 font-medium">({filteredSolutions.length - visibleCount} còn lại)</span>…</span>
+                    <span>Đang tải thêm <span className="text-neutral-500 font-medium">({filteredSolutions.length - visibleCount} còn lại)</span>…</span>
                   </div>
                 )}
                 {!hasMore && filteredSolutions.length > ITEMS_PER_PAGE && (
-                  <div className="mt-8 py-4 flex justify-center text-[11px] text-slate-300 dark:text-gray-600">
+                  <div className="mt-8 py-4 flex justify-center text-[11px] text-neutral-300">
                     — Đã hiển thị toàn bộ {filteredSolutions.length} kết quả —
                   </div>
                 )}
@@ -1302,14 +1504,14 @@ const MarketsPage: React.FC = () => {
             ) : (
               /* ═══ CONTEXT-AWARE EMPTY STATE ═══ */
               <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
-                <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] flex items-center justify-center">
-                  <Search size={28} strokeWidth={1.5} className="text-slate-300 dark:text-gray-600" />
+                <div className="w-16 h-16 bg-neutral-800 border border-neutral-700/40 flex items-center justify-center">
+                  <Search size={28} strokeWidth={1.5} className="text-neutral-500" />
                 </div>
                 <div>
-                  <p className="text-[16px] font-bold text-slate-500 dark:text-gray-400">
+                  <p className="text-[16px] font-bold text-neutral-300">
                     {deferredSearch ? `Không tìm thấy "${deferredSearch}"` : 'Không có kết quả'}
                   </p>
-                  <p className="text-[12px] text-slate-400 dark:text-gray-600 mt-1">
+                  <p className="text-[12px] text-neutral-400 mt-1">
                     {deferredSearch
                       ? 'Thử từ khoá khác hoặc bỏ bộ lọc'
                       : activeCategory !== 'ALL'
@@ -1321,7 +1523,7 @@ const MarketsPage: React.FC = () => {
                 <div className="flex flex-wrap gap-2 justify-center">
                   {['Video', 'Image', 'Audio', 'Automation'].map(s => (
                     <button key={s} onClick={() => { setActiveCategory(s); setInputValue(''); }}
-                      className="px-3 py-1.5 bg-brand-blue/[0.06] text-brand-blue text-[11px] font-semibold rounded-lg border border-brand-blue/10 hover:bg-brand-blue/[0.12] transition-colors">
+                      className="px-3 py-1.5 bg-brand-blue/[0.06] text-brand-blue text-[11px] font-semibold border border-brand-blue/10 hover:bg-brand-blue/[0.12] transition-colors">
                       {s}
                     </button>
                   ))}
@@ -1338,13 +1540,13 @@ const MarketsPage: React.FC = () => {
         {mobileSidebar && (
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/30 dark:bg-black/60 z-[500]" onClick={() => setMobileSidebar(false)} />
+              className="fixed inset-0 bg-black/30 z-[500]" onClick={() => setMobileSidebar(false)} />
             <motion.div initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed top-0 left-0 w-[300px] h-full bg-white dark:bg-[#1a1f2b] z-[501] overflow-y-auto">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.08]">
-                <h3 className="text-[15px] font-bold">Bộ lọc</h3>
-                <button onClick={() => setMobileSidebar(false)} className="p-1 text-slate-400 hover:text-slate-600"><X size={18} /></button>
+              className="fixed top-0 left-0 w-[300px] h-full bg-[#0A0A0A] z-[501] overflow-y-auto">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-700/40">
+                <h3 className="text-[15px] font-bold text-neutral-100">Bộ lọc</h3>
+                <button onClick={() => setMobileSidebar(false)} className="p-1 text-neutral-500 hover:text-neutral-300"><X size={18} /></button>
               </div>
               <div className="p-5">{sidebarContent}</div>
             </motion.div>

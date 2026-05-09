@@ -10,7 +10,7 @@ const MODES = [
     badge: 'Text → Image',
     desc: 'Biến prompt thành ảnh đẹp — chọn trong 22+ AI models từ Midjourney, Imagen 4, Stable Diffusion đến FLUX và nhiều hơn nữa.',
     highlights: ['22+ AI Models', 'Tất cả tỷ lệ', 'Style tùy chọn'],
-    color: '#0090ff',
+    color: '#D4A017',
     thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/dbd0c88d-b47e-47d0-0309-d0fa43d7ee00/public',
   },
   {
@@ -19,7 +19,7 @@ const MODES = [
     badge: 'Upload → Chỉnh sửa',
     desc: 'Upload ảnh + mô tả chỉnh sửa bằng ngôn ngữ tự nhiên — xóa nền, thay phong cách, inpainting, style transfer chỉ trong giây lát.',
     highlights: ['Xóa nền AI', 'Style Transfer', 'Inpainting'],
-    color: '#8b5cf6',
+    color: '#C4960C',
     thumbnail: 'https://imagedelivery.net/eCWooK4EUyalJ6a-Nut5cw/a88c0836-3564-4c90-2b9e-83b5399f9800/public',
   },
   {

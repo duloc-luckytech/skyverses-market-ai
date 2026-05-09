@@ -29,7 +29,7 @@ const ProductAgentImage = () => {
           <div className="h-16 border-b border-black/10 dark:border-white/5 bg-white/80 dark:bg-black/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0">
              <div className="flex items-center gap-4">
                 <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>
-                <span className="text-[11px] font-black uppercase tracking-[0.4em] text-gray-600 dark:text-white/70">AVA-1_Agent // Neural_Logic_Terminal</span>
+                <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-gray-600 dark:text-white/70">AVA-1_Agent // Neural_Logic_Terminal</span>
              </div>
              <button onClick={() => setIsDemoOpen(false)} className="w-10 h-10 border border-black/10 dark:border-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-black dark:hover:text-white transition-all">
                 <X size={18} />
@@ -46,14 +46,14 @@ const ProductAgentImage = () => {
         {/* HEADER SECTION */}
         <div className="flex flex-col lg:flex-row justify-between items-start gap-8 mb-16">
           <div className="space-y-4">
-            <Link to="/market" className="inline-flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 dark:text-gray-600 hover:text-brand-blue transition-colors tracking-[0.2em]">
+            <Link to="/market" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase text-gray-400 dark:text-gray-600 hover:text-brand-blue transition-colors tracking-[0.2em]">
               <ChevronLeft size={14} /> Back to Repository
             </Link>
             <div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-2">
-                <h1 className="text-4xl lg:text-7xl font-black uppercase tracking-tighter italic leading-none">{solution.name[lang]}</h1>
+                <h1 className="text-4xl lg:text-7xl font-bold uppercase tracking-tighter italic leading-none">{solution.name[lang]}</h1>
                 <div className="px-3 py-1 bg-brand-blue/10 border border-brand-blue/30 rounded-sm w-fit">
-                   <span className="text-[9px] font-black text-brand-blue uppercase tracking-widest">Autonomous_Creative</span>
+                   <span className="text-[9px] font-bold text-brand-blue uppercase tracking-widest">Autonomous_Creative</span>
                 </div>
               </div>
               <p className="text-gray-500 dark:text-gray-400 text-xl font-medium max-w-2xl leading-relaxed italic">"Describe the intent. The agent architects the visual solution."</p>
@@ -63,7 +63,7 @@ const ProductAgentImage = () => {
                 <div className="flex text-yellow-500">
                   {[1,2,3,4,5].map(s => <Star key={s} size={14} fill={s <= 4 ? "currentColor" : "none"} />)}
                 </div>
-                <span className="text-[11px] font-black text-gray-400 dark:text-white/40 uppercase tracking-widest">5.0 (AGENT_NODES_STABLE)</span>
+                <span className="text-[11px] font-bold text-gray-400 dark:text-white/40 uppercase tracking-widest">5.0 (AGENT_NODES_STABLE)</span>
               </div>
               <div className="flex items-center gap-3">
                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
@@ -82,7 +82,7 @@ const ProductAgentImage = () => {
 
         {/* HERO WORKFLOW */}
         <section className="mb-24 relative group">
-           <div className="aspect-[21/9] w-full bg-gray-100 dark:bg-[#0a0d14] border border-black/5 dark:border-white/5 overflow-hidden relative shadow-2xl rounded-sm">
+           <div className="aspect-[21/9] w-full bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/5 overflow-hidden relative shadow-2xl rounded-sm">
               <img src={solution.imageUrl} className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-60 transition-all duration-1000 group-hover:scale-105" alt="AVA Hub" />
               <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent opacity-80"></div>
               
@@ -93,12 +93,12 @@ const ProductAgentImage = () => {
                        <BrainCircuit className="w-12 h-12 text-black/10 dark:text-white/10" />
                     </div>
                     <div className="space-y-4">
-                       <h2 className="text-4xl lg:text-5xl font-black uppercase tracking-tighter leading-none italic text-black dark:text-white">Unleash <br /> <span className="text-brand-blue">Neural Autonomy</span></h2>
-                       <p className="text-gray-600 dark:text-gray-500 text-sm uppercase font-black tracking-widest">Autonomous Visual Asset Production Engine</p>
+                       <h2 className="text-4xl lg:text-5xl font-bold uppercase tracking-tighter leading-none italic text-black dark:text-white">Unleash <br /> <span className="text-brand-blue">Neural Autonomy</span></h2>
+                       <p className="text-gray-600 dark:text-gray-500 text-sm uppercase font-bold tracking-widest">Autonomous Visual Asset Production Engine</p>
                     </div>
                     <button 
                       onClick={() => setIsDemoOpen(true)}
-                      className="bg-brand-blue text-white px-12 py-6 text-xs font-black uppercase tracking-[0.4em] hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-[0_0_50px_rgba(0,144,255,0.2)] active:scale-[0.98] flex items-center gap-4 mx-auto group/btn"
+                      className="bg-brand-blue text-white px-12 py-6 text-xs font-bold uppercase tracking-[0.4em] hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-[0_0_50px_rgba(201, 168, 76,0.2)] active:scale-[0.98] flex items-center gap-4 mx-auto group/btn"
                     >
                       Activate_AVA_Agent <Play size={16} className="fill-current group-hover/btn:translate-x-1 transition-transform" />
                     </button>
@@ -111,7 +111,7 @@ const ProductAgentImage = () => {
         <section className="mb-32 grid grid-cols-1 lg:grid-cols-12 gap-20">
           <div className="lg:col-span-8 space-y-12">
             <div className="space-y-6">
-              <h2 className="text-4xl font-black uppercase tracking-tighter italic flex items-center gap-4">
+              <h2 className="text-4xl font-bold uppercase tracking-tighter italic flex items-center gap-4">
                 <div className="w-12 h-[2px] bg-brand-blue"></div> Agent_Philosophy
               </h2>
               <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed font-medium">
@@ -122,7 +122,7 @@ const ProductAgentImage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="p-8 border border-black/5 dark:border-white/5 bg-gray-50 dark:bg-white/[0.01] space-y-4 rounded-sm">
                  <Target size={24} className="text-brand-blue" />
-                 <h3 className="text-xl font-black uppercase tracking-tighter">Autonomous_Tasks</h3>
+                 <h3 className="text-xl font-bold uppercase tracking-tighter">Autonomous_Tasks</h3>
                  <ul className="space-y-3">
                    {["Goal-to-Batch concept generation.", "Multi-stage visual asset production.", "Style consistency & review audits.", "Iterative auto-refinement cycles."].map(item => (
                      <li key={item} className="flex gap-4 items-start text-sm text-gray-500 dark:text-gray-600">
@@ -134,7 +134,7 @@ const ProductAgentImage = () => {
               </div>
               <div className="p-8 border border-black/5 dark:border-white/5 bg-gray-50 dark:bg-white/[0.01] space-y-4 flex flex-col justify-center rounded-sm">
                  <Lock size={24} className="text-brand-blue" />
-                 <h3 className="text-xl font-black uppercase tracking-tighter">Client_Isolation</h3>
+                 <h3 className="text-xl font-bold uppercase tracking-tighter">Client_Isolation</h3>
                  <p className="text-sm text-gray-500 dark:text-gray-600 leading-relaxed font-medium uppercase tracking-widest">
                    No Remote Storage · Private Memory Context · Local Asset Vaulting · Direct API Synthesis
                  </p>
@@ -143,7 +143,7 @@ const ProductAgentImage = () => {
           </div>
 
           <div className="lg:col-span-4 space-y-8">
-            <h3 className="text-[10px] font-black uppercase text-brand-blue tracking-[0.4em] mb-6">Agent_Manifest</h3>
+            <h3 className="text-[10px] font-bold uppercase text-brand-blue tracking-[0.4em] mb-6">Agent_Manifest</h3>
             <div className="space-y-4">
               {[
                 { title: "Cognitive Loop", desc: "Understand, Plan, Create, and Review phases." },
@@ -152,7 +152,7 @@ const ProductAgentImage = () => {
                 { title: "Quality Scoring", desc: "Internal logic nodes for visual fidelity audits." }
               ].map(f => (
                 <div key={f.title} className="p-5 border border-black/10 dark:border-white/10 hover:border-brand-blue/30 transition-all group rounded-sm">
-                   <h4 className="text-[12px] font-black uppercase text-black dark:text-white mb-1 group-hover:text-brand-blue">{f.title}</h4>
+                   <h4 className="text-[12px] font-bold uppercase text-black dark:text-white mb-1 group-hover:text-brand-blue">{f.title}</h4>
                    <p className="text-[11px] text-gray-500 dark:text-gray-600 font-medium leading-relaxed">{f.desc}</p>
                 </div>
               ))}
@@ -164,14 +164,14 @@ const ProductAgentImage = () => {
         <section className="mb-32 py-20 border-y border-black/10 dark:border-white/5">
           <div className="flex flex-col lg:flex-row justify-between items-center gap-12">
             <div className="max-w-xl space-y-6 text-center lg:text-left">
-              <h2 className="text-3xl font-black uppercase tracking-tighter">Cognitive_Stack</h2>
+              <h2 className="text-3xl font-bold uppercase tracking-tighter">Cognitive_Stack</h2>
               <p className="text-gray-500 dark:text-gray-600 text-sm font-medium leading-relaxed uppercase tracking-widest">Proprietary orchestration for autonomous creative intent.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
                {solution.neuralStack?.map(m => (
                  <div key={m.name} className="p-8 bg-gray-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 text-center group hover:bg-brand-blue/[0.02] transition-all rounded-sm">
                     <Layers size={20} className="mx-auto mb-4 text-gray-400 dark:text-gray-700 group-hover:text-brand-blue" />
-                    <h4 className="text-[12px] font-black uppercase text-black dark:text-white mb-2">{m.name}</h4>
+                    <h4 className="text-[12px] font-bold uppercase text-black dark:text-white mb-2">{m.name}</h4>
                     <p className="text-[9px] text-gray-400 dark:text-gray-600 uppercase font-bold tracking-widest">{m.capability[lang]}</p>
                  </div>
                ))}
@@ -185,7 +185,7 @@ const ProductAgentImage = () => {
               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/5 rounded-full blur-[120px] pointer-events-none group-hover:bg-brand-blue/10 transition-all duration-1000"></div>
               <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
                  <div className="space-y-8 max-w-2xl text-center lg:text-left">
-                    <h2 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter leading-[0.8] text-black dark:text-white">Deploy Your <br /> <span className="text-brand-blue italic">Creative Agent.</span></h2>
+                    <h2 className="text-5xl lg:text-7xl font-bold uppercase tracking-tighter leading-[0.8] text-black dark:text-white">Deploy Your <br /> <span className="text-brand-blue italic">Creative Agent.</span></h2>
                     <p className="text-gray-600 dark:text-gray-500 text-lg leading-relaxed font-medium">
                        Scale your visual production with a dedicated AVA-1 node. Autonomous asset generation with enterprise security and style consistency.
                     </p>

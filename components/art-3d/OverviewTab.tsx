@@ -18,7 +18,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ modelName, prompt, act
     {/* Model Info Header */}
     <div className="flex items-center gap-2.5 text-white/90">
       <BookOpen size={16} className="text-white" />
-      <span className="text-[12px] font-black uppercase tracking-widest">Model Info</span>
+      <span className="text-[12px] font-bold uppercase tracking-widest">Model Info</span>
     </div>
 
     {/* User Context */}
@@ -28,10 +28,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ modelName, prompt, act
           <img src="https://i.pravatar.cc/100?u=jeje" className="w-full h-full object-cover" alt="Author" />
         </div>
         <div className="flex flex-col">
-          <p className="text-[12px] font-black text-white italic tracking-tight">Jeje02_B7</p>
+          <p className="text-[12px] font-bold text-white italic tracking-tight">Jeje02_B7</p>
         </div>
       </div>
-      <span className="text-[10px] text-gray-500 font-black uppercase tracking-tighter">12-19 13:19</span>
+      <span className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">12-19 13:19</span>
     </div>
 
     {/* Identity Hash Row */}
@@ -58,8 +58,8 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ modelName, prompt, act
 
     {/* Reference Architecture Section */}
     <div className="space-y-3 pt-2">
-      <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 italic">Reference</h4>
-      <div className="aspect-[3/4] rounded-2xl overflow-hidden border border-white/5 bg-[#0a0a0c] shadow-3xl group">
+      <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 italic">Reference</h4>
+      <div className="aspect-[3/4] rounded-2xl overflow-hidden border border-white/5 bg-[var(--atlas-bg-page)] shadow-3xl group">
         <img 
           src={activeAsset.thumb} 
           className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" 
@@ -70,9 +70,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ modelName, prompt, act
 
     {/* Tags Section */}
     <div className="space-y-3">
-      <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 italic">Tags</h4>
+      <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 italic">Tags</h4>
       <div className="flex flex-wrap gap-2">
-         <span className="px-3 py-1.5 bg-white/5 border border-white/5 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest shadow-sm">
+         <span className="px-3 py-1.5 bg-white/5 border border-white/5 rounded-lg text-[9px] font-bold text-gray-400 uppercase tracking-widest shadow-sm">
            Featured
          </span>
       </div>
@@ -90,7 +90,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ modelName, prompt, act
       </div>
       <div className="flex justify-between items-center text-[11px] font-bold text-gray-300">
         <span className="uppercase tracking-widest opacity-60">Tripo Version</span>
-        <span className="text-[10px] font-mono text-gray-500 font-black tracking-tight">v3.0-20250812</span>
+        <span className="text-[10px] font-mono text-gray-500 font-bold tracking-tight">v3.0-20250812</span>
       </div>
     </div>
   </motion.div>

@@ -87,7 +87,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         ${props.isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
         w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
-        bg-white dark:bg-[#13171f] border-r border-black/[0.06] dark:border-white/[0.08]
+        bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-black/[0.06] dark:border-white/[0.08]
         flex flex-col transition-transform duration-300
       `}>
 
@@ -179,7 +179,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         </div>
 
         {/* ─── FOOTER ─── */}
-        <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#13171f]/80 backdrop-blur-lg">
+        <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-lg">
           {/* Credits / Free badge */}
           <div className="px-4 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-2">

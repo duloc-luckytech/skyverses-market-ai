@@ -486,7 +486,7 @@ export const SuccessOverlay: React.FC<{ onReset: () => void }> = ({ onReset }) =
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    className="absolute inset-0 z-50 bg-white/95 dark:bg-[#0a0d14]/95 backdrop-blur-sm flex flex-col items-center justify-center gap-5 rounded-2xl"
+    className="absolute inset-0 z-50 bg-white/95 dark:bg-[var(--atlas-bg-page)]/95 backdrop-blur-sm flex flex-col items-center justify-center gap-5 rounded-2xl"
   >
     <motion.div
       initial={{ scale: 0 }}

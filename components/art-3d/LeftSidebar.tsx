@@ -57,7 +57,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({ activeTab, modelName, 
           {activeTab === 'Retopology' && <Grid3X3 size={16} className="text-indigo-400" />}
           {activeTab === 'Texture' && <GanttChartSquare size={16} className="text-cyan-400" />}
           {activeTab === 'Rigging' && <Accessibility size={16} className="text-pink-400" />}
-          <h2 className="text-xs font-black uppercase tracking-widest text-white">{getHeaderTitle()}</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-white">{getHeaderTitle()}</h2>
         </div>
         <button className="p-2 text-gray-600 hover:text-white transition-colors"><MoreVertical size={16}/></button>
       </div>

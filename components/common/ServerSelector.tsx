@@ -95,7 +95,7 @@ export const ServerSelector: React.FC<ServerSelectorProps> = ({
     return (
       <div className="space-y-1.5">
         {showLabel && (
-          <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1 flex items-center gap-1.5">
+          <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1 flex items-center gap-1.5">
             <Cpu size={11} className="text-rose-400" /> {labelText}
           </label>
         )}
@@ -103,7 +103,7 @@ export const ServerSelector: React.FC<ServerSelectorProps> = ({
           value={selected}
           onChange={e => onChange(e.target.value)}
           disabled={disabled}
-          className="w-full bg-white dark:bg-[#1a1f2b] border border-slate-200 dark:border-white/10 p-3 rounded-lg text-[11px] font-black uppercase outline-none appearance-none focus:border-purple-500 text-slate-800 dark:text-white transition-colors cursor-pointer disabled:opacity-50"
+          className="w-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 p-3 rounded-lg text-[11px] font-bold uppercase outline-none appearance-none focus:border-purple-500 text-slate-800 dark:text-white transition-colors cursor-pointer disabled:opacity-50"
         >
           {SERVER_OPTIONS.map(s => {
             const isLive = statusMap[s.key] !== false;

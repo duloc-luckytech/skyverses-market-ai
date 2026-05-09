@@ -160,7 +160,7 @@ export const IntegrationWorkflow: React.FC = () => {
             <Network size={28} />
           </div>
           <div className="space-y-1">
-            <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Integration Demo</h3>
+            <h3 className="text-3xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Integration Demo</h3>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Xác thực API: Google JWT + Skyverses Captcha</p>
           </div>
         </div>
@@ -185,12 +185,12 @@ export const IntegrationWorkflow: React.FC = () => {
               <div className="grid grid-cols-1 gap-16">
                 <div className="space-y-10">
                   <div className="flex flex-col md:flex-row md:items-center gap-8">
-                    <div className="flex items-center bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20">
+                    <div className="flex items-center bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-indigo-600/20">
                        <Video size={14} className="mr-3" /> VEO3 Implementation
                     </div>
                     <div className="flex-grow h-px bg-gradient-to-r from-indigo-500/20 to-transparent hidden md:block"></div>
                     <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-black uppercase text-emerald-500 bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-500/20 shadow-sm italic">Direct_Uplink_Node</span>
+                      <span className="text-[10px] font-bold uppercase text-emerald-500 bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-500/20 shadow-sm italic">Direct_Uplink_Node</span>
                     </div>
                   </div>
 
@@ -205,12 +205,12 @@ export const IntegrationWorkflow: React.FC = () => {
                       <div className="space-y-8 relative z-10">
                         <div className="flex items-center gap-3 text-brand-blue mb-4">
                           <Sliders size={18} />
-                          <span className="text-[11px] font-black uppercase tracking-[0.4em] italic">Injection Parameters</span>
+                          <span className="text-[11px] font-bold uppercase tracking-[0.4em] italic">Injection Parameters</span>
                         </div>
 
                         <div className="space-y-6">
                           <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 italic">Google Access Token (JWT)</label>
+                            <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 italic">Google Access Token (JWT)</label>
                             <div className="relative group">
                                <input 
                                 value={jwtToken}
@@ -221,7 +221,7 @@ export const IntegrationWorkflow: React.FC = () => {
                           </div>
 
                           <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 italic">Skyverses Captcha Token</label>
+                            <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest ml-1 italic">Skyverses Captcha Token</label>
                             <input 
                               value={captchaToken}
                               onChange={(e) => setCaptchaToken(e.target.value)}
@@ -232,7 +232,7 @@ export const IntegrationWorkflow: React.FC = () => {
                           <button 
                             onClick={handleRunRequest}
                             disabled={isRunning}
-                            className="w-full py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.4em] shadow-xl shadow-indigo-600/20 hover:scale-102 active:scale-95 transition-all flex items-center justify-center gap-4 relative overflow-hidden group"
+                            className="w-full py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-bold uppercase tracking-[0.4em] shadow-xl shadow-indigo-600/20 hover:scale-102 active:scale-95 transition-all flex items-center justify-center gap-4 relative overflow-hidden group"
                           >
                             <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                             {isRunning ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} fill="currentColor" />}
@@ -244,7 +244,7 @@ export const IntegrationWorkflow: React.FC = () => {
                       <div className="pt-8 border-t border-black/5 dark:border-white/5 relative z-10">
                         <div className="flex items-center gap-3 text-brand-blue mb-3">
                           <ShieldCheck size={16} />
-                          <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">Security Protocol</span>
+                          <span className="text-[10px] font-bold uppercase tracking-[0.4em] italic">Security Protocol</span>
                         </div>
                         <p className="text-[11px] text-slate-500 dark:text-gray-400 italic leading-relaxed bg-black/5 dark:bg-white/5 p-4 rounded-xl border border-black/5 dark:border-white/5">
                           "Hệ thống thực hiện lệnh POST trực tiếp tới Endpoint của Google. Đảm bảo bạn đã whitelist IP hoặc cấu hình CORS nếu chạy từ trình duyệt."
@@ -256,8 +256,8 @@ export const IntegrationWorkflow: React.FC = () => {
                     <div className="space-y-6">
                       <div className="flex justify-between items-center px-2">
                         <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_#6366f1] animate-pulse"></div>
-                          <span className="text-[11px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest italic">
+                          <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_#D4B85A] animate-pulse"></div>
+                          <span className="text-[11px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest italic">
                             {showResponse ? 'UPLINK_RESPONSE_TRACE' : 'INTEGRATION_CURL_SCRIPT'}
                           </span>
                         </div>
@@ -265,14 +265,14 @@ export const IntegrationWorkflow: React.FC = () => {
                           {showResponse && (
                             <button 
                               onClick={() => setShowResponse(false)}
-                              className="px-4 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-full text-[9px] font-black uppercase tracking-widest transition-all border border-black/5 dark:border-white/10 flex items-center gap-2 shadow-sm"
+                              className="px-4 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-full text-[9px] font-bold uppercase tracking-widest transition-all border border-black/5 dark:border-white/10 flex items-center gap-2 shadow-sm"
                             >
                               <RefreshCw size={12} /> RESET
                             </button>
                           )}
                           <button 
                             onClick={handleCopy}
-                            className="px-4 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all border border-black/5 dark:border-white/10 shadow-sm"
+                            className="px-4 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all border border-black/5 dark:border-white/10 shadow-sm"
                           >
                             {isCopied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />} 
                             {isCopied ? 'COPIED' : 'COPY'}
@@ -282,7 +282,7 @@ export const IntegrationWorkflow: React.FC = () => {
                       
                       <div className="relative group shadow-2xl">
                         <div className="absolute inset-0 bg-brand-blue/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <pre className={`p-8 bg-[#0a0a0c] rounded-[2.5rem] border border-white/5 text-[12px] font-mono overflow-x-auto shadow-inner leading-relaxed no-scrollbar relative z-10 transition-all duration-700 ${showResponse ? 'text-emerald-400 border-emerald-500/30 ring-1 ring-emerald-500/10' : 'text-slate-300'}`}>
+                        <pre className={`p-8 bg-[var(--atlas-bg-page)] rounded-[2.5rem] border border-white/5 text-[12px] font-mono overflow-x-auto shadow-inner leading-relaxed no-scrollbar relative z-10 transition-all duration-700 ${showResponse ? 'text-emerald-400 border-emerald-500/30 ring-1 ring-emerald-500/10' : 'text-slate-300'}`}>
                           <code className="block whitespace-pre">
                             <AnimatePresence mode="wait">
                               {showResponse ? (
@@ -303,7 +303,7 @@ export const IntegrationWorkflow: React.FC = () => {
                                   {integrationCurlVideo.split('\n').map((line, i) => {
                                     if (line.includes(captchaToken) || line.includes(jwtToken)) {
                                       return (
-                                        <span key={i} className="text-indigo-400 font-black underline decoration-indigo-500/50 italic">
+                                        <span key={i} className="text-indigo-400 font-bold underline decoration-indigo-500/50 italic">
                                           {line}{'\n'}
                                         </span>
                                       );
@@ -340,7 +340,7 @@ export const IntegrationWorkflow: React.FC = () => {
       {/* CONTACT/SUPPORT CARD */}
       <div className="p-10 bg-slate-900 dark:bg-black rounded-[3rem] border border-white/10 flex flex-col items-center justify-center gap-6 shadow-3xl relative overflow-hidden group">
          <div className="absolute inset-0 bg-brand-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-         <button className="px-16 py-6 bg-white text-black rounded-xl text-[12px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-xl active:scale-95 whitespace-nowrap relative z-10 flex items-center gap-3">
+         <button className="px-16 py-6 bg-white text-black rounded-xl text-[12px] font-bold uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-xl active:scale-95 whitespace-nowrap relative z-10 flex items-center gap-3">
             LIÊN HỆ TƯ VẤN KỸ THUẬT <ExternalLink size={14} />
          </button>
          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic text-center relative z-10">

@@ -18,8 +18,8 @@ const EMOJI_PRESETS = [
 ];
 
 const COLOR_PRESETS = [
-  '#0090ff','#8b5cf6','#10b981','#f59e0b','#06b6d4',
-  '#f43f5e','#84cc16','#ec4899','#6366f1','#14b8a6',
+  '#D4A017','#C4960C','#10b981','#D4A017','#06b6d4',
+  '#f43f5e','#84cc16','#ec4899','#D4B85A','#14b8a6',
   '#fb923c','#a855f7','#22c55e','#eab308','#3b82f6',
 ];
 
@@ -30,8 +30,8 @@ const TIER_OPTIONS: { id: AgentTier; label: string; desc: string; icon: React.El
 ];
 
 const MODEL_OPTIONS = [
-  { id: 'claude-sonnet', label: 'Claude Sonnet 4', badge: 'Fast & Balanced', color: '#f97316' },
-  { id: 'claude-opus',   label: 'Claude Opus 4',   badge: 'Most Powerful',   color: '#8b5cf6' },
+  { id: 'claude-sonnet', label: 'Claude Sonnet 4', badge: 'Fast & Balanced', color: '#E5C767' },
+  { id: 'claude-opus',   label: 'Claude Opus 4',   badge: 'Most Powerful',   color: '#C4960C' },
 ];
 
 const LANGUAGE_OPTIONS = [
@@ -43,15 +43,15 @@ const LANGUAGE_OPTIONS = [
 
 // Personality archetypes — quick-start inject prefix
 const PERSONALITY_PRESETS = [
-  { id: 'analytical', emoji: '🧮', label: 'Analytical', desc: 'Data-focused, precise', color: '#0090ff',
+  { id: 'analytical', emoji: '🧮', label: 'Analytical', desc: 'Data-focused, precise', color: '#D4A017',
     inject: 'You communicate in a data-driven, precise manner. Always support claims with evidence and numbers. Structure responses with clear logical flow.' },
   { id: 'creative',   emoji: '🎨', label: 'Creative',   desc: 'Innovative, lateral', color: '#ec4899',
     inject: 'You think laterally and unconventionally. Propose bold, creative ideas. Challenge assumptions and explore unexpected angles.' },
-  { id: 'assertive',  emoji: '⚔️', label: 'Assertive',  desc: 'Direct, decisive',   color: '#f59e0b',
+  { id: 'assertive',  emoji: '⚔️', label: 'Assertive',  desc: 'Direct, decisive',   color: '#D4A017',
     inject: 'You are direct, confident, and decisive. Give clear recommendations without hedging. Lead with the conclusion first (BLUF: Bottom Line Up Front).' },
   { id: 'coaching',   emoji: '🤝', label: 'Coaching',   desc: 'Empathetic, guiding', color: '#10b981',
     inject: 'You guide with empathy and questions. Help users discover answers themselves using Socratic method. Acknowledge feelings before solutions.' },
-  { id: 'research',   emoji: '🔬', label: 'Research',   desc: 'Deep-dive, academic', color: '#6366f1',
+  { id: 'research',   emoji: '🔬', label: 'Research',   desc: 'Deep-dive, academic', color: '#D4B85A',
     inject: 'You research deeply before answering. Cite sources, acknowledge uncertainty, present multiple perspectives, and distinguish facts from opinions.' },
   { id: 'storyteller',emoji: '🎭', label: 'Storyteller', desc: 'Narrative, engaging', color: '#a855f7',
     inject: 'You communicate through stories and analogies. Make complex concepts accessible by wrapping them in relatable narratives and vivid examples.' },
@@ -102,7 +102,7 @@ const AgentBuilderModal: React.FC<Props> = ({ initial, onSave, onClose }) => {
   const [name,  setName]  = useState(initial?.name  ?? '');
   const [role,  setRole]  = useState(initial?.role  ?? '');
   const [emoji, setEmoji] = useState(initial?.emoji ?? '🤖');
-  const [color, setColor] = useState(initial?.color ?? '#0090ff');
+  const [color, setColor] = useState(initial?.color ?? '#D4A017');
   const [tier,  setTier]  = useState<AgentTier>(initial?.tier ?? 'department');
   const [personalityId, setPersonalityId] = useState<string | null>(null);
 
@@ -233,7 +233,7 @@ Return ONLY the system prompt text. No labels, no quotes, no preamble.`;
         exit={{ scale: 0.93, opacity: 0, y: 20 }}
         transition={{ type: 'spring', stiffness: 360, damping: 28 }}
         onClick={e => e.stopPropagation()}
-        className="w-full max-w-[580px] bg-white dark:bg-[#1a1f2b] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-black/[0.06] dark:border-white/[0.06]"
+        className="w-full max-w-[580px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-black/[0.06] dark:border-white/[0.06]"
       >
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-black/[0.05] dark:border-white/[0.05]">
@@ -245,7 +245,7 @@ Return ONLY the system prompt text. No labels, no quotes, no preamble.`;
               {emoji}
             </div>
             <div>
-              <p className="text-[13px] font-black text-slate-800 dark:text-white leading-tight">
+              <p className="text-[13px] font-bold text-slate-800 dark:text-white leading-tight">
                 {name || 'New Agent'}
               </p>
               <p className="text-[10px] text-slate-400 dark:text-white/30">

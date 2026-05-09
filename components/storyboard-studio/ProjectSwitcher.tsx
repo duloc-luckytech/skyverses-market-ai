@@ -180,11 +180,11 @@ export const ProjectSwitcher: React.FC<Props> = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.97 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute top-full left-0 right-0 mt-1 z-[200] rounded-xl bg-white dark:bg-[#13171f] border border-black/[0.08] dark:border-white/[0.08] shadow-2xl shadow-black/20 overflow-hidden"
+            className="absolute top-full left-0 right-0 mt-1 z-[200] rounded-xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] shadow-2xl shadow-black/20 overflow-hidden"
           >
             {/* Header */}
             <div className="px-3 py-2 border-b border-black/[0.05] dark:border-white/[0.06]">
-              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400">
+              <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-gray-400">
                 Kịch bản
               </span>
             </div>

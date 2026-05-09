@@ -95,7 +95,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   return (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[600] flex flex-col lg:flex-row bg-[#f4f7f9] dark:bg-[#0a0d14] overflow-hidden transition-colors duration-500"
+      className="fixed inset-0 z-[600] flex flex-col lg:flex-row bg-[#f4f7f9] dark:bg-[var(--atlas-bg-page)] overflow-hidden transition-colors duration-500"
     >
       {/* Mobile Backdrop */}
       <AnimatePresence>
@@ -132,17 +132,17 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         setIsMobileExpanded={setIsMobileExpanded}
       />
 
-      <main className="flex-grow flex flex-col bg-white dark:bg-[#0a0d14] relative transition-all min-w-0 border-l border-black/5 dark:border-white/5 h-full">
-        <header className="h-16 lg:h-20 flex items-center justify-between px-4 lg:px-8 border-b border-black/5 dark:border-white/5 shrink-0 z-50 bg-white/80 dark:bg-[#0a0d14]/80 backdrop-blur-xl">
+      <main className="flex-grow flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] relative transition-all min-w-0 border-l border-black/5 dark:border-white/5 h-full">
+        <header className="h-16 lg:h-20 flex items-center justify-between px-4 lg:px-8 border-b border-black/5 dark:border-white/5 shrink-0 z-50 bg-white/80 dark:bg-[var(--atlas-bg-page)]/80 backdrop-blur-xl">
           
           <div className="flex items-center gap-2">
             <Music size={18} className="text-brand-blue lg:hidden" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 lg:hidden">Studio Workspace</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 lg:hidden">Studio Workspace</span>
           </div>
           
           <div className="flex items-center gap-2 lg:gap-6">
             <div className="flex items-center gap-2 bg-slate-100 dark:bg-black/40 px-3 lg:px-4 py-2 rounded-full border border-black/5 dark:border-white/10">
-               <span className="text-[9px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-widest hidden sm:inline">Tự động tải</span>
+               <span className="text-[9px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-widest hidden sm:inline">Tự động tải</span>
                <button 
                  onClick={() => s.setAutoDownload(!s.autoDownload)}
                  className={`w-9 h-4 lg:w-10 lg:h-5 rounded-full relative transition-colors ${s.autoDownload ? 'bg-brand-blue' : 'bg-gray-300 dark:bg-gray-700'}`}
@@ -153,7 +153,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             
             <button 
               onClick={s.handleDownloadAll}
-              className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 px-3 lg:px-5 py-2 rounded-full border border-black/5 dark:border-white/5 text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all text-slate-600 dark:text-gray-300 shadow-sm"
+              className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 px-3 lg:px-5 py-2 rounded-full border border-black/5 dark:border-white/5 text-[9px] lg:text-[10px] font-bold uppercase tracking-widest transition-all text-slate-600 dark:text-gray-300 shadow-sm"
             >
               <Download size={14} /> <span className="hidden sm:inline">Tải tất cả</span>
             </button>
@@ -204,7 +204,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                 </div>
 
                 <div className="space-y-4 lg:space-y-6">
-                  <h3 className="text-2xl lg:text-3xl font-black uppercase tracking-tighter italic text-slate-800 dark:text-white leading-none">Studio Standby</h3>
+                  <h3 className="text-2xl lg:text-3xl font-bold uppercase tracking-tighter italic text-slate-800 dark:text-white leading-none">Studio Standby</h3>
                   <div className="space-y-3 lg:space-y-4">
                      {[
                        { icon: <Zap size={14} />, text: 'Nhập ý tưởng âm nhạc ở cột bên trái' },
@@ -221,7 +221,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                   <div className="pt-6">
                     <button 
                       onClick={() => setShowTemplates(true)}
-                      className="inline-flex items-center gap-3 px-10 py-5 bg-brand-blue text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-2xl shadow-brand-blue/20 hover:scale-105 active:scale-95 transition-all group"
+                      className="inline-flex items-center gap-3 px-10 py-5 bg-brand-blue text-white rounded-2xl text-xs font-bold uppercase tracking-[0.2em] shadow-2xl shadow-brand-blue/20 hover:scale-105 active:scale-95 transition-all group"
                     >
                       <LayoutTemplate size={20} className="group-hover:rotate-12 transition-transform" />
                       Mẫu kịch bản nhanh
@@ -242,12 +242,12 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             >
               <motion.div 
                 initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }}
-                className="bg-white dark:bg-[#13171f] border border-black/5 dark:border-white/10 w-full max-w-2xl rounded-3xl flex flex-col shadow-3xl overflow-hidden"
+                className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 w-full max-w-2xl rounded-3xl flex flex-col shadow-3xl overflow-hidden"
               >
                 <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-transparent">
                   <div className="flex items-center gap-3 text-brand-blue">
                     <LayoutTemplate size={20} />
-                    <h3 className="text-lg font-black uppercase tracking-tight italic">Mẫu kịch bản nhanh</h3>
+                    <h3 className="text-lg font-bold uppercase tracking-tight italic">Mẫu kịch bản nhanh</h3>
                   </div>
                   <button onClick={() => setShowTemplates(false)} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
                     <X size={24} />
@@ -265,10 +265,10 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                             <div className="w-10 h-10 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-all">
                                <Star size={18} fill="currentColor" />
                             </div>
-                            <span className="text-sm font-black uppercase italic text-slate-800 dark:text-white">{t.label}</span>
+                            <span className="text-sm font-bold uppercase italic text-slate-800 dark:text-white">{t.label}</span>
                          </div>
                          <div className="space-y-1">
-                            <p className="text-[11px] font-black text-slate-900 dark:text-white truncate uppercase">{t.name}</p>
+                            <p className="text-[11px] font-bold text-slate-900 dark:text-white truncate uppercase">{t.name}</p>
                             <p className="text-[10px] text-slate-500 dark:text-gray-400 line-clamp-2 italic leading-relaxed">"{t.desc}"</p>
                          </div>
                       </button>
@@ -285,15 +285,15 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
         <AnimatePresence>
           {s.isGenerating && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-white/90 dark:bg-[#0a0d14]/90 backdrop-blur-md flex flex-col items-center justify-center z-[200]">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-white/90 dark:bg-[var(--atlas-bg-page)]/90 backdrop-blur-md flex flex-col items-center justify-center z-[200]">
               <div className="relative mb-6 lg:mb-10 text-brand-blue">
                 <Loader2 strokeWidth={1} className="w-16 h-16 lg:w-24 lg:h-24 animate-spin" />
                 <Music className="w-5 h-5 lg:w-8 lg:h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/50 animate-pulse" />
               </div>
               <div className="text-center space-y-4 px-6">
-                <p className="text-lg lg:text-2xl font-black uppercase tracking-[0.4em] lg:tracking-[0.8em] text-brand-blue animate-pulse italic">MANIFESTING AUDIO...</p>
+                <p className="text-lg lg:text-2xl font-bold uppercase tracking-[0.4em] lg:tracking-[0.8em] text-brand-blue animate-pulse italic">MANIFESTING AUDIO...</p>
                 <div className="h-1 w-48 lg:w-64 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden mx-auto">
-                  <motion.div initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ repeat: Infinity, duration: 2 }} className="h-full bg-brand-blue shadow-[0_0_15px_#0090ff]" />
+                  <motion.div initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ repeat: Infinity, duration: 2 }} className="h-full bg-brand-blue shadow-[0_0_15px_#D4A017]" />
                 </div>
               </div>
             </motion.div>
@@ -336,7 +336,7 @@ const MusicGenerator: React.FC = () => {
   const [isStudioOpen, setIsStudioOpen] = React.useState(false);
 
   return (
-    <div className="pt-24 bg-white dark:bg-[#0a0d14] min-h-screen text-black dark:text-white font-sans transition-colors duration-500 pb-32">
+    <div className="pt-24 bg-white dark:bg-[var(--atlas-bg-page)] min-h-screen text-black dark:text-white font-sans transition-colors duration-500 pb-32">
       <div className="fixed inset-0 pointer-events-none z-0">
          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,_#ea580c08_0%,_transparent_50%)]"></div>
          <div className="absolute inset-0 opacity-[0.01] dark:opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)', backgroundSize: '120px 120px' }}></div>
@@ -349,15 +349,15 @@ const MusicGenerator: React.FC = () => {
               <div className="space-y-10">
                 <Link to="/market" className="inline-flex items-center gap-3 px-6 py-2 border border-black/10 dark:border-white/10 text-gray-500 hover:text-brand-blue transition-all group rounded-full bg-white/50 dark:bg-transparent backdrop-blur-md shadow-sm">
                   <ChevronLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em]">Audio_Infrastructure</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.4em]">Audio_Infrastructure</span>
                 </Link>
 
                 <div className="space-y-6">
                    <div className="flex items-center gap-4 text-orange-500">
                       <Music size={32} />
-                      <span className="text-[14px] font-black uppercase tracking-[0.8em] opacity-60 italic">ACOUSTIC_GEN_v3.2</span>
+                      <span className="text-[14px] font-bold uppercase tracking-[0.8em] opacity-60 italic">ACOUSTIC_GEN_v3.2</span>
                    </div>
-                   <h1 className="text-7xl lg:text-[140px] font-black uppercase tracking-tighter italic leading-[0.75]">
+                   <h1 className="text-7xl lg:text-[140px] font-bold uppercase tracking-tighter italic leading-[0.75]">
                      Music <br /> <span className="text-brand-blue">Mastery.</span>
                    </h1>
                 </div>
@@ -368,7 +368,7 @@ const MusicGenerator: React.FC = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-8 pt-4">
-                 <button onClick={() => setIsStudioOpen(true)} className="bg-orange-600 text-white px-16 py-8 text-[12px] font-black uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(234,88,12,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-6 rounded-sm group relative overflow-hidden">
+                 <button onClick={() => setIsStudioOpen(true)} className="bg-orange-600 text-white px-16 py-8 text-[12px] font-bold uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(234,88,12,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-6 rounded-sm group relative overflow-hidden">
                     <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                     Khởi chạy Studio <Play size={20} fill="currentColor" />
                  </button>
@@ -376,23 +376,23 @@ const MusicGenerator: React.FC = () => {
             </div>
 
             <div className="lg:col-span-5 w-full">
-               <div className="aspect-[4/5] bg-gray-100 dark:bg-[#0a0d14] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group p-12 flex flex-col justify-between">
+               <div className="aspect-[4/5] bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group p-12 flex flex-col justify-between">
                   <div className="space-y-6">
                     <div className="h-1 w-24 bg-orange-500/40"></div>
                     <div className="space-y-8">
                        <div className="flex justify-between items-end border-b border-black/10 dark:border-white/10 pb-4">
-                          <span className="text-[10px] font-black uppercase text-gray-400">Audio_Stability</span>
-                          <span className="text-2xl font-black text-brand-blue italic">99.8%</span>
+                          <span className="text-[10px] font-bold uppercase text-gray-400">Audio_Stability</span>
+                          <span className="text-2xl font-bold text-brand-blue italic">99.8%</span>
                        </div>
                        <div className="flex justify-between items-end border-b border-black/10 dark:border-white/10 pb-4">
-                          <span className="text-[10px] font-black uppercase text-gray-400">Mastering_Node</span>
-                          <span className="text-2xl font-black text-brand-blue italic">48KHZ</span>
+                          <span className="text-[10px] font-bold uppercase text-gray-400">Mastering_Node</span>
+                          <span className="text-2xl font-bold text-brand-blue italic">48KHZ</span>
                        </div>
                     </div>
                   </div>
                   <div className="space-y-2">
-                     <p className="text-[10px] font-black uppercase text-brand-blue tracking-[0.5em]">SYSTEM INTERFACE</p>
-                     <h3 className="text-3xl font-black italic text-black dark:text-white leading-tight uppercase tracking-tighter">Unified_Studio.</h3>
+                     <p className="text-[10px] font-bold uppercase text-brand-blue tracking-[0.5em]">SYSTEM INTERFACE</p>
+                     <h3 className="text-3xl font-bold italic text-black dark:text-white leading-tight uppercase tracking-tighter">Unified_Studio.</h3>
                   </div>
                </div>
             </div>
@@ -406,9 +406,9 @@ const MusicGenerator: React.FC = () => {
                 <div className="space-y-4">
                    <div className="flex items-center gap-3 text-brand-blue">
                       <Activity size={24} />
-                      <span className="text-[10px] font-black uppercase tracking-[0.6em]">Studio_Pipeline</span>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.6em]">Studio_Pipeline</span>
                    </div>
-                   <h2 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter italic leading-none text-black dark:text-white">Acoustic <br /> <span className="text-brand-blue">Lattice.</span></h2>
+                   <h2 className="text-5xl lg:text-7xl font-bold uppercase tracking-tighter italic leading-none text-black dark:text-white">Acoustic <br /> <span className="text-brand-blue">Lattice.</span></h2>
                 </div>
                 <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed font-medium uppercase tracking-widest">
                   Công cụ hỗ trợ nhà sáng tạo và doanh nghiệp sản xuất âm nhạc độc quyền, loại bỏ các vấn đề về bản quyền và tối ưu chi phí vận hành.
@@ -422,12 +422,12 @@ const MusicGenerator: React.FC = () => {
                   { title: 'Multi-genre Synth', icon: <Layers />, desc: 'Hỗ trợ hơn 20 thể loại âm nhạc từ Lo-fi, Cinematic đến Heavy Metal.' },
                   { title: 'HD Mastering', icon: <Sparkles />, desc: 'Tự động hậu kỳ và tối ưu chất lượng âm thanh 48kHz / 24-bit.' }
                 ].map((f, i) => (
-                  <div key={i} className="p-16 bg-white dark:bg-[#0a0d14] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-700 border-r border-black/5 dark:border-white/5 last:border-r-0">
+                  <div key={i} className="p-16 bg-white dark:bg-[var(--atlas-bg-page)] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-700 border-r border-black/5 dark:border-white/5 last:border-r-0">
                     <div className="w-14 h-14 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-400 group-hover:text-brand-blue group-hover:border-brand-blue transition-all rounded-sm shadow-xl">
                         {React.cloneElement(f.icon as React.ReactElement<any>, { size: 24 })}
                     </div>
                     <div className="space-y-3">
-                        <h4 className="text-2xl font-black uppercase tracking-tighter italic">{f.title}</h4>
+                        <h4 className="text-2xl font-bold uppercase tracking-tighter italic">{f.title}</h4>
                         <p className="text-sm text-gray-500 font-medium leading-relaxed uppercase tracking-widest leading-loose">"{f.desc}"</p>
                     </div>
                   </div>

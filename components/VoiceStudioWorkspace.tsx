@@ -75,7 +75,7 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               <button onClick={onClose} className="p-1 text-gray-500 hover:text-white transition-colors"><ChevronLeft size={20}/></button>
               <div className="flex items-center gap-2">
                  <Mic size={18} className="text-[#ff4b3a]" />
-                 <h2 className="text-sm font-black uppercase tracking-widest italic">AI Voice Studio</h2>
+                 <h2 className="text-sm font-bold uppercase tracking-widest italic">AI Voice Studio</h2>
               </div>
            </div>
            <button className="p-2 text-gray-500 hover:text-white transition-colors"><MoreVertical size={16}/></button>
@@ -86,10 +86,10 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
            {/* GIỌNG ĐỌC */}
            <section className="space-y-4">
               <div className="flex justify-between items-center">
-                 <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest">GIỌNG ĐỌC</label>
+                 <label className="text-[10px] font-bold uppercase text-gray-500 tracking-widest">GIỌNG ĐỌC</label>
                  <button 
                    onClick={() => setIsDesignModalOpen(true)}
-                   className="text-[9px] font-black text-[#ff4b3a] bg-[#ff4b3a]/10 border border-[#ff4b3a]/20 px-2 py-1 rounded-sm uppercase tracking-widest hover:bg-[#ff4b3a] hover:text-white transition-all"
+                   className="text-[9px] font-bold text-[#ff4b3a] bg-[#ff4b3a]/10 border border-[#ff4b3a]/20 px-2 py-1 rounded-sm uppercase tracking-widest hover:bg-[#ff4b3a] hover:text-white transition-all"
                  >
                    + Tạo giọng
                  </button>
@@ -99,11 +99,11 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                 className="w-full p-4 bg-black/40 border border-white/10 rounded-xl flex items-center justify-between group hover:border-[#ff4b3a]/40 transition-all"
               >
                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-[#ff4b3a] flex items-center justify-center text-white font-black text-xl shadow-xl overflow-hidden border-2 border-white/10">
+                    <div className="w-12 h-12 rounded-full bg-[#ff4b3a] flex items-center justify-center text-white font-bold text-xl shadow-xl overflow-hidden border-2 border-white/10">
                        <span className="opacity-80">?</span>
                     </div>
                     <div className="text-left">
-                       <p className="text-sm font-black uppercase tracking-tight">{selectedVoice.name}</p>
+                       <p className="text-sm font-bold uppercase tracking-tight">{selectedVoice.name}</p>
                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">{selectedVoice.type}</p>
                     </div>
                  </div>
@@ -114,7 +114,7 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
            {/* KỊCH BẢN */}
            <section className="space-y-4">
               <div className="flex justify-between items-center">
-                 <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest">KỊCH BẢN</label>
+                 <label className="text-[10px] font-bold uppercase text-gray-500 tracking-widest">KỊCH BẢN</label>
                  <span className="text-[9px] font-bold text-gray-600">{script.length}/20000</span>
               </div>
               <textarea 
@@ -127,7 +127,7 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
            {/* ENGINE */}
            <section className="space-y-4">
-              <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest">ENGINE</label>
+              <label className="text-[10px] font-bold uppercase text-gray-500 tracking-widest">ENGINE</label>
               <div className="relative">
                  <select 
                    value={selectedEngine} onChange={e => setSelectedEngine(e.target.value)}
@@ -145,7 +145,7 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
            <button className="w-full flex items-center justify-between p-4 border-y border-white/5 hover:bg-white/5 transition-all group">
               <div className="flex items-center gap-3 text-gray-400 group-hover:text-white">
                  <Sliders size={16} />
-                 <span className="text-[11px] font-black uppercase tracking-widest">Cài đặt giọng</span>
+                 <span className="text-[11px] font-bold uppercase tracking-widest">Cài đặt giọng</span>
               </div>
               <ChevronRight size={14} className="text-gray-700" />
            </button>
@@ -153,8 +153,8 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
         <div className="p-8 border-t border-white/5 bg-black/20 shrink-0 space-y-6">
            <div className="flex justify-between items-center px-1">
-              <span className="text-[9px] font-black uppercase text-gray-500 tracking-widest italic">Chi phí ước tính</span>
-              <div className="flex items-center gap-2 text-[#ff4b3a] font-black italic">
+              <span className="text-[9px] font-bold uppercase text-gray-500 tracking-widest italic">Chi phí ước tính</span>
+              <div className="flex items-center gap-2 text-[#ff4b3a] font-bold italic">
                  <Zap size={14} fill="currentColor" />
                  <span className="text-sm">0 credits</span>
               </div>
@@ -162,7 +162,7 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
            <button 
              onClick={handleGenerate}
              disabled={isGenerating || !script.trim()}
-             className="w-full py-5 bg-[#3a1a1a] border border-[#ff4b3a]/30 text-[#ff4b3a] rounded-xl text-xs font-black uppercase tracking-[0.4em] shadow-xl transition-all flex items-center justify-center gap-3 hover:bg-[#ff4b3a] hover:text-white active:scale-95 disabled:opacity-30 group overflow-hidden relative"
+             className="w-full py-5 bg-[#3a1a1a] border border-[#ff4b3a]/30 text-[#ff4b3a] rounded-xl text-xs font-bold uppercase tracking-[0.4em] shadow-xl transition-all flex items-center justify-center gap-3 hover:bg-[#ff4b3a] hover:text-white active:scale-95 disabled:opacity-30 group overflow-hidden relative"
            >
               <div className="absolute inset-0 bg-white/5 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
               {isGenerating ? <Loader2 size={18} className="animate-spin" /> : <Mic size={18} fill="currentColor" />}
@@ -178,19 +178,19 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
            <div className="flex bg-white/5 p-1 rounded-lg border border-white/5">
               <button 
                 onClick={() => setActiveTab('current')}
-                className={`px-8 py-2 text-[10px] font-black uppercase tracking-widest transition-all rounded-md ${activeTab === 'current' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}
+                className={`px-8 py-2 text-[10px] font-bold uppercase tracking-widest transition-all rounded-md ${activeTab === 'current' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}
               >
                 Phiên hiện tại
               </button>
               <button 
                 onClick={() => setActiveTab('albums')}
-                className={`px-8 py-2 text-[10px] font-black uppercase tracking-widest transition-all rounded-md ${activeTab === 'albums' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}
+                className={`px-8 py-2 text-[10px] font-bold uppercase tracking-widest transition-all rounded-md ${activeTab === 'albums' ? 'bg-[#2a2a2e] text-white shadow-xl' : 'text-gray-500 hover:text-white'}`}
               >
                 Albums
               </button>
            </div>
            <div className="ml-auto flex items-center gap-6">
-              <button className="text-[10px] font-black uppercase text-gray-500 hover:text-white transition-colors tracking-widest">Chọn tất cả</button>
+              <button className="text-[10px] font-bold uppercase text-gray-500 hover:text-white transition-colors tracking-widest">Chọn tất cả</button>
            </div>
         </div>
 
@@ -207,7 +207,7 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                   <div className="w-32 h-32 border-2 border-dashed border-white/20 rounded-full flex items-center justify-center">
                      <ListMusic size={60} strokeWidth={1} />
                   </div>
-                  <p className="text-2xl font-black uppercase tracking-[0.5em] italic">Không có audio</p>
+                  <p className="text-2xl font-bold uppercase tracking-[0.5em] italic">Không có audio</p>
                </motion.div>
              ) : (
                <motion.div 
@@ -224,7 +224,7 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                            </button>
                            <div className="space-y-2">
                               <p className="text-base font-bold uppercase italic tracking-tight line-clamp-1 max-w-xl text-white/90">"{res.text}"</p>
-                              <div className="flex items-center gap-4 text-[9px] font-black text-gray-500 uppercase tracking-widest">
+                              <div className="flex items-center gap-4 text-[9px] font-bold text-gray-500 uppercase tracking-widest">
                                  <span className="flex items-center gap-1.5"><User size={10}/> {res.voice}</span>
                                  <div className="w-1 h-1 rounded-full bg-white/10"></div>
                                  <span className="flex items-center gap-1.5"><BrainCircuit size={10}/> {res.engine}</span>
@@ -278,12 +278,12 @@ const VoiceStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md w-full bg-[#111] p-12 rounded-[2.5rem] border border-white/10 text-center space-y-8 shadow-3xl">
                 <div className="w-20 h-20 bg-[#ff4b3a]/10 border border-[#ff4b3a]/20 rounded-full flex items-center justify-center mx-auto text-[#ff4b3a] animate-bounce"><AlertTriangle size={40} /></div>
                 <div className="space-y-2">
-                   <h3 className="text-3xl font-black uppercase italic tracking-tighter text-white leading-none">Quota Depleted</h3>
+                   <h3 className="text-3xl font-bold uppercase italic tracking-tighter text-white leading-none">Quota Depleted</h3>
                    <p className="text-sm text-gray-500 font-medium leading-relaxed uppercase tracking-tight">Việc khởi tạo thiết kế giọng nói yêu cầu **100 credits** cho mỗi chu kỳ tổng hợp.</p>
                 </div>
                 <div className="flex flex-col gap-4 pt-4">
-                   <Link to="/credits" className="bg-[#ff4b3a] text-white py-5 rounded-2xl font-black uppercase text-[11px] tracking-[0.4em] shadow-xl hover:brightness-110 transition-all">Nạp thêm Credits</Link>
-                   <button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-black text-gray-500 uppercase tracking-widest underline underline-offset-8 decoration-gray-800 hover:text-white transition-colors">Để sau</button>
+                   <Link to="/credits" className="bg-[#ff4b3a] text-white py-5 rounded-2xl font-bold uppercase text-[11px] tracking-[0.4em] shadow-xl hover:brightness-110 transition-all">Nạp thêm Credits</Link>
+                   <button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-bold text-gray-500 uppercase tracking-widest underline underline-offset-8 decoration-gray-800 hover:text-white transition-colors">Để sau</button>
                 </div>
              </motion.div>
           </div>
