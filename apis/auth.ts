@@ -20,6 +20,8 @@ export interface AuthUser {
   createdAt?: string;
   googleEmail?: string;
   fxflowOwner?: string; // Assigned fxflow account name (e.g. "thanhdatduong713")
+  bio?: string;
+  socialLinks?: { website?: string; twitter?: string; github?: string };
 }
 
 export interface RegisterRequest {

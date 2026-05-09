@@ -230,6 +230,14 @@ export interface SellerProfile {
   badges: SellerBadge[];
   joinedAt: string;
   listings: PromptSet[];
+  stats?: {
+    totalSales: number;
+    totalEarned: number;
+    totalListings: number;
+    averageRating: number;
+    totalReviews: number;
+    followerCount: number;
+  };
 }
 
 export interface SellerBadge {
