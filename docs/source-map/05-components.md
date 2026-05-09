@@ -160,6 +160,14 @@
 ### `video-generator/` (8 file)
 `ConfigurationPanel.tsx`, `DurationSelector.tsx`, `JobLogsModal.tsx`, `ModelEngineSelector.tsx`, `ResultsMain.tsx`, `SidebarLeft.tsx`, `VideoCard.tsx`, `VideoModelEngineSettings.tsx`.
 
+### `prompt-market/` — Prompt marketplace (3 file)
+`PromptSetCard.tsx` — card for marketplace grid (cover, title, category, price, seller, rating, wishlist heart, model tags, view count, verified badge).
+`PromptPurchaseModal.tsx` — confirm purchase modal (balance check, insufficient SKT warning).
+`PromptReviewSection.tsx` — rating/review section: star rating, submit review form, review list with pagination; used in `PromptDetailPage`.
+
+### `skytoken/` — SkyToken (1 file)
+`SkyTokenPurchaseModal.tsx` — bank QR purchase modal for SKT top-up.
+
 ### `workspace/` (1 file)
 `AISuggestPanel.tsx`.
 
@@ -170,6 +178,7 @@ Pattern mỗi sub-folder: `HeroSection`, `FeaturesSection`, `ShowcaseSection`, `
 | Sub-folder | Files |
 |------------|-------|
 | `_shared/` | `ProHeroVisuals.tsx`, `SectionAnimations.tsx` |
+| _(root)_ | `LazySection.tsx` (IntersectionObserver viewport-defer wrapper), `LazyImage.tsx` (shimmer skeleton + fade-in image), `LandingSectionSkeletons.tsx` (skeleton placeholders for MarketPage sections), `LatestModelsSection.tsx` (full-width model slider carousel — 10 seeded models, hero + sub-model grid, used in MarketPage) |
 | `ai-slide-creator/` | FAQ, Features, FinalCTA, Hero, LiveStatsBar, Showcase, UseCases, Workflow, `index.ts` |
 | `image-generator/` | FinalCTA, Hero, Modes, UseCases, Workflow |
 | `image-restoration/` | Features, FinalCTA, Hero, Showcase, Workflow |

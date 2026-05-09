@@ -26,6 +26,19 @@ Provider order: `ErrorBoundary > Theme > Language > Auth > Toast > Router > Sear
 | `/booking` | `pages/BookingPage` | Deploy CTA |
 | `/about` | `pages/AboutPage` | |
 
+## Prompt Market
+
+| Path | Page | Notes |
+|------|------|-------|
+| `/prompt-market` | `pages/PromptMarketPage` | Browse marketplace, filter, search |
+| `/prompt-market/sell` | `pages/PromptSellPage` | Seller dashboard, listings + earnings |
+| `/prompt-market/sell/new` | `pages/PromptCreatePage` | Create new prompt set |
+| `/prompt-market/sell/edit/:id` | `pages/PromptEditPage` | Edit existing prompt set |
+| `/prompt-market/my-purchases` | `pages/MyPromptPurchasesPage` | Buyer's purchased prompts |
+| `/prompt-market/wishlist` | `pages/PromptWishlistPage` | User's saved prompts (auth) |
+| `/prompt-market/seller/:sellerId` | `pages/PromptSellerProfilePage` | Public seller profile |
+| `/prompt-market/:slug` | `pages/PromptDetailPage` | Prompt set detail + purchase |
+
 ## Product `/product/:slug`
 
 Static slugs trước, fallthrough → `pages/SolutionDetail`.

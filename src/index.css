@@ -11,34 +11,34 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Brand */
-  --atlas-purple: #7036F0;
-  --atlas-purple-hover: #5326B5;
-  --atlas-purple-soft: #7B5AF6;
-  --atlas-indigo: #615EFF;
-  --atlas-indigo-hover: #4744CC;
-  --atlas-deep: #2E1670;
+  /* Brand (gold + black) */
+  --atlas-purple: #C9A84C;
+  --atlas-purple-hover: #B8963F;
+  --atlas-purple-soft: #D4B85A;
+  --atlas-indigo: #D4B85A;
+  --atlas-indigo-hover: #B8963F;
+  --atlas-deep: #8B7635;
 
   /* Surfaces (light) */
   --atlas-bg-page: #FFFFFF;
   --atlas-bg-panel: #FFFFFF;
   --atlas-bg-panel-hover: #F5F5F7;
   --atlas-bg-card: #FAF7F8;
-  --atlas-bg-soft: #EBF4FB;
+  --atlas-bg-soft: #FBF8F0;
 
   /* Text (light) */
-  --atlas-text-primary: #1A2330;
-  --atlas-text-secondary: rgba(26, 35, 48, 0.6);
-  --atlas-text-muted: rgba(26, 35, 48, 0.45);
+  --atlas-text-primary: #0A0A0A;
+  --atlas-text-secondary: rgba(10, 10, 10, 0.6);
+  --atlas-text-muted: rgba(10, 10, 10, 0.45);
 
   /* Borders */
   --atlas-border: #E5E7EB;
-  --atlas-border-soft: #DAD0FF;
-  --atlas-border-strong: rgba(26, 35, 48, 0.12);
+  --atlas-border-soft: #E8DDB8;
+  --atlas-border-strong: rgba(10, 10, 10, 0.12);
 
   /* Accent */
-  --atlas-orange: #F38236;
-  --atlas-orange-bright: #FE6C11;
+  --atlas-orange: #C9A84C;
+  --atlas-orange-bright: #E5C767;
 
   /* Status */
   --atlas-success: #01CE0F;
@@ -57,18 +57,18 @@
 }
 
 html.dark {
-  --atlas-bg-page: #0D0D1A;
-  --atlas-bg-panel: #1A1A2E;
-  --atlas-bg-panel-hover: #2A2A3E;
-  --atlas-bg-card: #1A1A2E;
-  --atlas-bg-soft: rgba(112, 54, 240, 0.06);
+  --atlas-bg-page: #0A0A0A;
+  --atlas-bg-panel: #111111;
+  --atlas-bg-panel-hover: #1A1A1A;
+  --atlas-bg-card: #111111;
+  --atlas-bg-soft: rgba(201, 168, 76, 0.06);
 
   --atlas-text-primary: #FFFFFF;
   --atlas-text-secondary: rgba(255, 255, 255, 0.7);
   --atlas-text-muted: rgba(255, 255, 255, 0.5);
 
   --atlas-border: rgba(255, 255, 255, 0.10);
-  --atlas-border-soft: rgba(112, 54, 240, 0.30);
+  --atlas-border-soft: rgba(201, 168, 76, 0.30);
   --atlas-border-strong: rgba(255, 255, 255, 0.18);
 }
 
@@ -103,13 +103,13 @@ h3, .h3 { font-size: 1.25rem; line-height: 1.3; }
   /* Primary CTA button — Atlas purple gradient */
   .atlas-btn {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded font-semibold text-sm transition-all duration-200 ease-out;
-    background: linear-gradient(135deg, #7036F0 0%, #5326B5 100%);
+    background: linear-gradient(135deg, #C9A84C 0%, #B8963F 100%);
     color: #FFFFFF;
     line-height: 1;
   }
   .atlas-btn:hover {
-    background: linear-gradient(135deg, #5326B5 0%, #2E1670 100%);
-    box-shadow: 0 6px 16px rgba(123, 90, 246, .35), 0 4px 12px rgba(112, 54, 240, .40);
+    background: linear-gradient(135deg, #B8963F 0%, #8B7635 100%);
+    box-shadow: 0 6px 16px rgba(201, 168, 76, .35), 0 4px 12px rgba(201, 168, 76, .40);
     transform: translateY(-1px);
   }
   .atlas-btn:active { transform: scale(.98); }
@@ -128,7 +128,7 @@ h3, .h3 { font-size: 1.25rem; line-height: 1.3; }
   .atlas-btn-outline:hover {
     border-color: var(--atlas-purple);
     color: var(--atlas-purple);
-    background: rgba(112, 54, 240, .04);
+    background: rgba(201, 168, 76, .04);
   }
 
   /* Ghost / link-style button */
@@ -149,7 +149,7 @@ h3, .h3 { font-size: 1.25rem; line-height: 1.3; }
     transition: all 0.3s var(--atlas-ease);
   }
   .atlas-card-hover:hover {
-    box-shadow: 0 8px 24px rgba(95, 65, 207, .20);
+    box-shadow: 0 8px 24px rgba(201, 168, 76, .20);
     border-color: var(--atlas-border-soft);
     transform: translateY(-2px);
   }
@@ -162,7 +162,7 @@ h3, .h3 { font-size: 1.25rem; line-height: 1.3; }
     border: 1px solid var(--atlas-border);
   }
   html.dark .atlas-glass {
-    background: rgba(26, 26, 46, 0.7);
+    background: rgba(17, 17, 17, 0.7);
   }
 
   /* Section container */
@@ -183,25 +183,25 @@ h3, .h3 { font-size: 1.25rem; line-height: 1.3; }
   /* Pill / badge */
   .atlas-pill {
     @apply inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full;
-    background: rgba(112, 54, 240, .08);
+    background: rgba(201, 168, 76, .08);
     color: var(--atlas-purple);
-    border: 1px solid rgba(112, 54, 240, .20);
+    border: 1px solid rgba(201, 168, 76, .20);
   }
   html.dark .atlas-pill {
-    background: rgba(123, 90, 246, .12);
-    color: #B9A4FB;
+    background: rgba(201, 168, 76, .12);
+    color: #E5C767;
   }
 
   /* Gradient heading text */
   .atlas-text-gradient {
-    background: linear-gradient(135deg, #1A2330 0%, #7036F0 50%, #FE6C11 100%);
+    background: linear-gradient(135deg, #0A0A0A 0%, #C9A84C 50%, #E5C767 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     -webkit-text-fill-color: transparent;
   }
   html.dark .atlas-text-gradient {
-    background: linear-gradient(135deg, #FFFFFF 0%, #B9A4FB 50%, #FE6C11 100%);
+    background: linear-gradient(135deg, #FFFFFF 0%, #E5C767 50%, #C9A84C 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -216,7 +216,7 @@ h3, .h3 { font-size: 1.25rem; line-height: 1.3; }
     border-bottom: 1px solid var(--atlas-border);
   }
   html.dark .atlas-nav {
-    background: rgba(13, 13, 26, 0.72);
+    background: rgba(10, 10, 10, 0.72);
   }
 
   /* Soft surface (e.g. for muted cards) */
@@ -239,8 +239,8 @@ h3, .h3 { font-size: 1.25rem; line-height: 1.3; }
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(112, 54, 240, 0.04) 1px, transparent 0),
-    linear-gradient(90deg, rgba(112, 54, 240, 0.04) 1px, transparent 0);
+    linear-gradient(rgba(201, 168, 76, 0.04) 1px, transparent 0),
+    linear-gradient(90deg, rgba(201, 168, 76, 0.04) 1px, transparent 0);
   background-size: 50px 50px;
   z-index: 1;
   pointer-events: none;
@@ -286,10 +286,10 @@ h3, .h3 { font-size: 1.25rem; line-height: 1.3; }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(112, 54, 240, 0.2);
+  background: rgba(201, 168, 76, 0.2);
   border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb:hover { background: rgba(112, 54, 240, 0.4); }
+::-webkit-scrollbar-thumb:hover { background: rgba(201, 168, 76, 0.4); }
 .dark ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); }
 .dark ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
 
@@ -306,7 +306,7 @@ h3, .h3 { font-size: 1.25rem; line-height: 1.3; }
 
 /* ═══ Selection ═══ */
 ::selection {
-  background: rgba(112, 54, 240, 0.2);
+  background: rgba(201, 168, 76, 0.2);
   color: var(--atlas-text-primary);
 }
 

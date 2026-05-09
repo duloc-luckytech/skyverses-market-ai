@@ -19,56 +19,56 @@ export default {
          * automatically pick up the new accent without manual edits.
          */
         brand: {
-          blue: '#7036F0',          // legacy alias → Atlas primary
-          blueHover: '#5326B5',
-          dark: '#1A2330',           // near-black (Atlas headline color)
-          gray: '#1A1A2E',           // dark surface (used in dark mode hero)
+          blue: '#C9A84C',          // legacy alias → gold primary
+          blueHover: '#B8963F',
+          dark: '#0A0A0A',           // near-black
+          gray: '#111111',           // dark surface
           muted: '#6B7280',
         },
         atlas: {
-          // Primary purple (Atlas Cloud signature)
-          DEFAULT: '#7036F0',
-          purple: '#7036F0',
-          purpleHover: '#5326B5',
-          purpleSoft: '#7B5AF6',
-          purpleLight: '#7F72F7',
-          // Indigo / lavender accents
-          indigo: '#615EFF',
-          indigoHover: '#4744CC',
-          deep: '#2E1670',
+          // Primary gold (signature)
+          DEFAULT: '#C9A84C',
+          purple: '#C9A84C',        // kept key name for compat, now gold
+          purpleHover: '#B8963F',
+          purpleSoft: '#D4B85A',
+          purpleLight: '#E5C767',
+          // Secondary gold tones
+          indigo: '#D4B85A',
+          indigoHover: '#B8963F',
+          deep: '#8B7635',
           // Surfaces (light theme)
           page: '#FFFFFF',
           panel: '#FFFFFF',
           panelHover: '#F5F5F7',
           card: '#FAF7F8',
-          softBg: '#EBF4FB',
+          softBg: '#FBF8F0',
           // Borders & strokes
           border: '#E5E7EB',
-          borderSoft: '#DAD0FF',
+          borderSoft: '#E8DDB8',
           // Text
-          ink: '#1A2330',
-          inkSoft: 'rgba(26,35,48,0.6)',
-          inkMuted: 'rgba(26,35,48,0.45)',
-          // Accent orange (sale/promo)
-          orange: '#F38236',
-          orangeBright: '#FE6C11',
-          orangeSoft: '#FF8356',
+          ink: '#0A0A0A',
+          inkSoft: 'rgba(10,10,10,0.6)',
+          inkMuted: 'rgba(10,10,10,0.45)',
+          // Accent gold (sale/promo)
+          orange: '#C9A84C',
+          orangeBright: '#E5C767',
+          orangeSoft: '#D4B85A',
           // Status
           success: '#01CE0F',
           info: '#0186CE',
           warning: '#CE7C01',
           error: '#CE2301',
           // Code / mono
-          codeBg: '#1E1E1E',
-          codeHeader: '#2D2D2D',
-          codeText: '#00C2A5',
-          // Dark navy for CTA + footer (atlas signature)
-          navy: '#0D0D1A',
-          navyDeep: '#08080F',
-          navySoft: '#1A1A2E',
-          // Pale page bg (atlas left-side wash)
-          paleBlue: '#EBF4FB',
-          palePurple: '#F4F0FF',
+          codeBg: '#0A0A0A',
+          codeHeader: '#1A1A1A',
+          codeText: '#C9A84C',
+          // Dark surfaces (signature black)
+          navy: '#0A0A0A',
+          navyDeep: '#050505',
+          navySoft: '#111111',
+          // Pale backgrounds
+          paleBlue: '#FBF8F0',
+          palePurple: '#FDF9EE',
         },
       },
       fontFamily: {
@@ -109,17 +109,17 @@ export default {
         'atlas-md': '0 4px 12px rgba(0,0,0,.15)',
         'atlas-lg': '0 20px 25px -5px rgba(0,0,0,.10), 0 8px 10px -6px rgba(0,0,0,.10)',
         'atlas-xl': '0 24px 48px -12px rgba(0,0,0,.18), 0 12px 24px -8px rgba(0,0,0,.12)',
-        // Brand glow
-        'atlas-glow': '0 6px 16px rgba(123,90,246,.35), 0 4px 12px rgba(112,54,240,.40)',
-        'atlas-glow-soft': '0 8px 24px rgba(95,65,207,.20)',
+        // Brand glow (gold)
+        'atlas-glow': '0 6px 16px rgba(201,168,76,.35), 0 4px 12px rgba(201,168,76,.40)',
+        'atlas-glow-soft': '0 8px 24px rgba(201,168,76,.20)',
       },
       backgroundImage: {
-        'atlas-cta': 'linear-gradient(135deg, #7036F0 0%, #5326B5 100%)',
-        'atlas-cta-hover': 'linear-gradient(135deg, #5326B5 0%, #2E1670 100%)',
-        'atlas-banner': 'linear-gradient(135deg, #615EFF 0%, #4744CC 100%)',
-        'atlas-hero': 'linear-gradient(135deg, #FFFFFF 0%, #F5F0FF 50%, #EBF4FB 100%)',
-        'atlas-hero-dark': 'linear-gradient(135deg, #1A1A2E 0%, #0D0D1A 100%)',
-        'atlas-text': 'linear-gradient(135deg, #1A2330 0%, #7036F0 50%, #FE6C11 100%)',
+        'atlas-cta': 'linear-gradient(135deg, #C9A84C 0%, #B8963F 100%)',
+        'atlas-cta-hover': 'linear-gradient(135deg, #B8963F 0%, #8B7635 100%)',
+        'atlas-banner': 'linear-gradient(135deg, #D4B85A 0%, #B8963F 100%)',
+        'atlas-hero': 'linear-gradient(135deg, #FFFFFF 0%, #FDF9EE 50%, #FBF8F0 100%)',
+        'atlas-hero-dark': 'linear-gradient(135deg, #111111 0%, #0A0A0A 100%)',
+        'atlas-text': 'linear-gradient(135deg, #0A0A0A 0%, #C9A84C 50%, #E5C767 100%)',
       },
       transitionTimingFunction: {
         'atlas': 'cubic-bezier(.22,1,.36,1)',
@@ -144,12 +144,15 @@ export default {
           to: { opacity: '1' },
         },
         atlasPulse: {
-          '0%, 100%': { boxShadow: '0 0 0 0 rgba(112,54,240,.4)' },
-          '50%': { boxShadow: '0 0 0 18px rgba(112,54,240,0)' },
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(201,168,76,.4)' },
+          '50%': { boxShadow: '0 0 0 18px rgba(201,168,76,0)' },
         },
         atlasShimmer: {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
+        },
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
         },
       },
       animation: {

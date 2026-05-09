@@ -423,7 +423,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           animation: progress 2s infinite ease-in-out;
         }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(112,54,240,0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(201, 168, 76,0.2); border-radius: 10px; }
       `}</style>
     </div>
   );

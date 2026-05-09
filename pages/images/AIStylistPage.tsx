@@ -61,7 +61,7 @@ const AIStylistPage = () => {
             <div className="flex flex-col sm:flex-row gap-6 pt-4">
               <button 
                 onClick={() => setIsStudioOpen(true)}
-                className="bg-brand-blue text-white px-12 py-6 rounded-sm text-xs font-bold uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(112,54,240,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
+                className="bg-brand-blue text-white px-12 py-6 rounded-sm text-xs font-bold uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(201, 168, 76,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
               >
                 Launch Stylist Studio <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
@@ -125,7 +125,7 @@ const AIStylistPage = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-brand-blue/5 rounded-full blur-[250px] pointer-events-none"></div>
         <div className="max-w-4xl mx-auto space-y-16 relative z-10">
            <h2 className="text-7xl lg:text-[140px] font-bold uppercase tracking-tighter leading-[0.8] italic text-slate-900 dark:text-white">Design Your <br /> <span className="text-brand-blue">Presence.</span></h2>
-           <button onClick={() => setIsStudioOpen(true)} className="bg-slate-900 dark:bg-white text-white dark:text-black px-24 py-8 rounded-full text-sm font-bold uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(112,54,240,0.1)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group">
+           <button onClick={() => setIsStudioOpen(true)} className="bg-slate-900 dark:bg-white text-white dark:text-black px-24 py-8 rounded-full text-sm font-bold uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(201, 168, 76,0.1)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group">
               Launch AI Stylist Studio <Zap size={24} fill="currentColor" />
            </button>
         </div>

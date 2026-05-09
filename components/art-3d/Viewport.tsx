@@ -368,7 +368,7 @@ export const Viewport: React.FC<ViewportProps> = ({
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${loadProgress}%` }}
-                  className="h-full bg-brand-blue shadow-[0_0_15px_rgba(112,54,240,0.8)]"
+                  className="h-full bg-brand-blue shadow-[0_0_15px_rgba(201, 168, 76,0.8)]"
                 />
               </div>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{loadProgress}% Complete</p>

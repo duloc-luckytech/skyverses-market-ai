@@ -23,10 +23,10 @@ const SPECS = [
 ];
 
 const QUICK_STYLES = [
-  { key: 'luxury',     label: '✦ Luxury',      color: '#f59e0b' },
+  { key: 'luxury',     label: '✦ Luxury',      color: '#E5C767' },
   { key: 'modern',     label: '◼ Modern',      color: '#0ea5e9' },
   { key: 'tropical',   label: '🌿 Tropical',   color: '#10b981' },
-  { key: 'industrial', label: '⬡ Industrial',  color: '#8b5cf6' },
+  { key: 'industrial', label: '⬡ Industrial',  color: '#D4B85A' },
 ];
 
 const DEMO_PROMPTS = [
@@ -50,7 +50,7 @@ const BackgroundOrbs: React.FC = () => (
     {/* Amber orb bottom-left */}
     <motion.div
       className="absolute -bottom-20 -left-20 w-[400px] h-[400px] rounded-full opacity-[0.04] dark:opacity-[0.03]"
-      style={{ background: 'radial-gradient(circle, #f59e0b, transparent 70%)' }}
+      style={{ background: 'radial-gradient(circle, #E5C767, transparent 70%)' }}
       animate={{ scale: [1, 1.12, 1], x: [0, -10, 0], y: [0, 10, 0] }}
       transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
     />
@@ -148,7 +148,7 @@ const REQuickRenderWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStu
   const isRunning = state === 'submitting' || state === 'processing';
 
   return (
-    <div className="rounded-3xl overflow-hidden ring-1 ring-white/[0.07] shadow-2xl shadow-black/20"
+    <div className="rounded-xl overflow-hidden ring-1 ring-white/[0.07]"
       style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)', backdropFilter: 'blur(20px)' }}
     >
       {/* ── Window chrome ── */}
@@ -424,7 +424,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
                 onClick={onStartStudio}
                 whileHover={{ scale: 1.02, boxShadow: '0 12px 40px rgba(16,185,129,0.35)' }}
                 whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-white transition-all"
+                className="flex items-center gap-3 px-8 py-4 rounded-lg text-[11px] font-bold uppercase tracking-widest text-white transition-all"
                 style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
               >
                 <Sparkles size={14} />
@@ -461,11 +461,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
             delay={1.0}
           />
 
-          {/* Ambient glow behind widget */}
-          <div
-            className="absolute -inset-4 rounded-3xl opacity-20 blur-2xl pointer-events-none -z-10"
-            style={{ background: 'radial-gradient(circle at 50% 50%, #10b981, transparent 70%)' }}
-          />
         </div>
       </div>
     </div>

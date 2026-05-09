@@ -140,8 +140,8 @@ const SocialBannerWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
   const [quantity, setQuantity]           = useState(1);
 
   // Brand state
-  const [brandColors, setBrandColors]       = useState(['#7036F0', '#6366F1']);
-  const [hexInput, setHexInput]             = useState('#7036F0');
+  const [brandColors, setBrandColors]       = useState(['#D4A017', '#B8860B']);
+  const [hexInput, setHexInput]             = useState('#D4A017');
   const [useBrandColor, setUseBrandColor]   = useState(true);
   const [addTextToBanner, setAddTextToBanner] = useState(true);
 

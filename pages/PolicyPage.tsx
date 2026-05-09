@@ -59,7 +59,7 @@ const PolicyPage = () => {
         <section className="text-center space-y-8 max-w-4xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-            className="w-20 h-20 bg-brand-blue/10 border border-brand-blue/20 rounded-full flex items-center justify-center mx-auto text-brand-blue shadow-[0_0_50px_rgba(112,54,240,0.2)]"
+            className="w-20 h-20 bg-brand-blue/10 border border-brand-blue/20 rounded-full flex items-center justify-center mx-auto text-brand-blue shadow-[0_0_50px_rgba(201, 168, 76,0.2)]"
           >
             <Scale size={40} />
           </motion.div>

@@ -45,7 +45,7 @@ export const AtlasHero: React.FC<AtlasHeroProps> = ({
             className="pointer-events-none absolute -top-32 right-[-10%] w-[520px] h-[520px] rounded-full opacity-60 blur-3xl"
             style={{
               background:
-                'radial-gradient(circle at center, rgba(112,54,240,.35) 0%, rgba(112,54,240,0) 70%)',
+                'radial-gradient(circle at center, rgba(201, 168, 76,.35) 0%, rgba(201, 168, 76,0) 70%)',
             }}
           />
           <div
@@ -53,7 +53,7 @@ export const AtlasHero: React.FC<AtlasHeroProps> = ({
             className="pointer-events-none absolute -bottom-40 left-[-10%] w-[480px] h-[480px] rounded-full opacity-40 blur-3xl"
             style={{
               background:
-                'radial-gradient(circle at center, rgba(254,108,17,.25) 0%, rgba(254,108,17,0) 70%)',
+                'radial-gradient(circle at center, rgba(229, 199, 103,.25) 0%, rgba(229, 199, 103,0) 70%)',
             }}
           />
         </>

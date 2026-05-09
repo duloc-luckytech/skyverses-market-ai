@@ -61,7 +61,7 @@ const OrgNodeCard: React.FC<{
   const isRoot = !node.parentId;
 
   const statusColor = activationStatus === 'done'    ? '#10b981'
-                    : activationStatus === 'running'  ? '#f59e0b'
+                    : activationStatus === 'running'  ? '#D4A017'
                     : activationStatus === 'error'    ? '#ef4444'
                     : undefined;
 
@@ -209,7 +209,7 @@ const OrgConnections: React.FC<{
 
         const childStatus = getStatus(node.id);
         const strokeColor = childStatus === 'done'    ? '#10b981'
-                          : childStatus === 'running'  ? '#f59e0b'
+                          : childStatus === 'running'  ? '#D4A017'
                           : childStatus === 'error'    ? '#ef4444'
                           : 'rgba(100,116,139,0.35)';
 
@@ -676,7 +676,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
         nodeId: n.id,
         agentName: agent?.name ?? 'Agent',
         agentEmoji: agent?.emoji ?? '🤖',
-        agentColor: agent?.color ?? '#7036F0',
+        agentColor: agent?.color ?? '#D4A017',
         delegatedTask: '',
         output: '',
         status: 'pending',

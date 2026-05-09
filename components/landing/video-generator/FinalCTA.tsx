@@ -21,7 +21,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onStartStudio }) => (
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
         <button
           onClick={onStartStudio}
-          className="bg-white text-indigo-700 px-8 py-3.5 rounded-xl text-[10px] font-semibold uppercase tracking-widest hover:scale-105 transition-all shadow-xl flex items-center gap-2 group"
+          className="bg-white text-indigo-700 px-8 py-3.5 rounded-xl text-[10px] font-semibold uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-2 group"
         >
           <Zap size={14} fill="currentColor" /> Vào Studio <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
         </button>

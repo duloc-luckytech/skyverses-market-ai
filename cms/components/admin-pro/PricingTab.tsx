@@ -20,10 +20,10 @@ const TOOL_CONFIG: Record<string, { label: string; icon: React.ReactNode; color:
 };
 
 const ENGINE_COLORS: Record<string, string> = {
-  gommo: '#8b5cf6',
+  gommo: '#D4B85A',
   fxflow: '#06b6d4',
-  grok: '#f97316',
-  fxlab: '#f59e0b',
+  grok: '#E5C767',
+  fxlab: '#E5C767',
   wan: '#10b981',
   veo: '#3b82f6',
 };

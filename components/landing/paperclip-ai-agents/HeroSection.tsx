@@ -35,7 +35,7 @@ const SPECS = [
 ];
 
 const DashboardMockup: React.FC = () => (
-  <div className="rounded-2xl border border-black/[0.07] dark:border-white/[0.06] overflow-hidden shadow-xl shadow-black/5 relative">
+  <div className="rounded-xl border border-black/[0.07] dark:border-white/[0.06] overflow-hidden relative">
     <img
       src={PAPERCLIP_CDN.heroDashboard}
       alt="Paperclip AI Org Dashboard"

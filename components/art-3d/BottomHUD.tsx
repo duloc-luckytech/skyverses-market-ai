@@ -147,7 +147,7 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
                     <motion.div 
                       initial={{ width: 0 }}
                       animate={{ width: `${exportProgress}%` }}
-                      className="h-full bg-brand-blue shadow-[0_0_20px_rgba(112,54,240,1)]"
+                      className="h-full bg-brand-blue shadow-[0_0_20px_rgba(201, 168, 76,1)]"
                     />
                   </div>
                   <div className="flex justify-between items-center px-2 font-mono">

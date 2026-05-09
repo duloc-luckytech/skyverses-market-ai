@@ -65,6 +65,18 @@ export interface IUser extends Document {
   fxflowOwner?: string; // sticky owner cho FXFlow jobs
   grokOwner?: string; // sticky owner cho Grok jobs
 
+  // SkyToken
+  skyTokenBalance: number;
+  claimWelcomeSkyToken: boolean;
+
+  // Seller profile
+  bio?: string;
+  socialLinks?: { website?: string; twitter?: string; github?: string };
+  verified?: boolean;
+
+  // Seed marker
+  type?: "seed" | null;
+
   // API Token for external access
   apiToken?: string;
   apiTokenCreatedAt?: Date;
@@ -197,6 +209,22 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       type: String,
       default: null,
     },
+    // ----------- SKYTOKEN -----------
+    skyTokenBalance: { type: Number, default: 0 },
+    claimWelcomeSkyToken: { type: Boolean, default: false },
+
+    // ----------- SELLER PROFILE -----------
+    bio: { type: String, default: "" },
+    socialLinks: {
+      website: { type: String, default: "" },
+      twitter: { type: String, default: "" },
+      github: { type: String, default: "" },
+    },
+    verified: { type: Boolean, default: false },
+
+    // ----------- SEED MARKER -----------
+    type: { type: String, enum: ["seed"], default: null },
+
     apiToken: { type: String, default: null, index: true },
     apiTokenCreatedAt: { type: Date, default: null },
     apiTokenExpiresAt: { type: Date, default: null },

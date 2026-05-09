@@ -58,7 +58,7 @@ const NebulaVisionEngine = () => {
           
           {/* Visual Showcase (Left) */}
           <div className="lg:col-span-8 space-y-8">
-            <div className="relative aspect-[16/9] border border-white/10 bg-brand-gray/50 group overflow-hidden shadow-[0_0_80px_rgba(112,54,240,0.1)]">
+            <div className="relative aspect-[16/9] border border-white/10 bg-brand-gray/50 group overflow-hidden shadow-[0_0_80px_rgba(201, 168, 76,0.1)]">
               <img 
                 src={activeImage} 
                 alt="Main Visual" 
@@ -69,7 +69,7 @@ const NebulaVisionEngine = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
               
               <div className="absolute top-10 left-10 flex items-center gap-4">
-                 <div className="w-1 h-20 bg-brand-blue shadow-[0_0_20px_rgba(112,54,240,0.8)]"></div>
+                 <div className="w-1 h-20 bg-brand-blue shadow-[0_0_20px_rgba(201, 168, 76,0.8)]"></div>
                  <div className="space-y-1">
                     <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-brand-blue italic">System_Designation</p>
                     <h1 className="text-5xl font-bold uppercase text-white tracking-tighter leading-none">NEBULA-7</h1>
@@ -96,7 +96,7 @@ const NebulaVisionEngine = () => {
                 <button 
                   key={idx}
                   onClick={() => setActiveImage(img)}
-                  className={`relative aspect-video border overflow-hidden transition-all duration-500 group ${activeImage === img ? 'border-brand-blue scale-95 shadow-[0_0_20px_rgba(112,54,240,0.3)]' : 'border-white/10 opacity-40 hover:opacity-100'}`}
+                  className={`relative aspect-video border overflow-hidden transition-all duration-500 group ${activeImage === img ? 'border-brand-blue scale-95 shadow-[0_0_20px_rgba(201, 168, 76,0.3)]' : 'border-white/10 opacity-40 hover:opacity-100'}`}
                 >
                   <img src={img} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                   <div className={`absolute inset-0 bg-brand-blue/20 transition-opacity ${activeImage === img ? 'opacity-100' : 'opacity-0'}`}></div>

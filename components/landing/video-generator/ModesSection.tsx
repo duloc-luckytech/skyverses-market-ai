@@ -61,7 +61,7 @@ export const ModesSection: React.FC = () => (
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {MODES.map(m => (
-          <div key={m.sub} className={`p-5 bg-black/[0.01] dark:bg-white/[0.015] border rounded-2xl space-y-4 transition-all ${accentBorder[m.accent]}`}>
+          <div key={m.sub} className={`p-5 bg-black/[0.01] dark:bg-white/[0.015] border rounded-xl space-y-4 transition-all ${accentBorder[m.accent]}`}>
             <div className="flex justify-between items-start">
               <div className={`w-9 h-9 rounded-xl ${iconBg[m.accent]} flex items-center justify-center`}>{m.icon}</div>
               <span className="text-[7px] font-medium uppercase tracking-wider text-slate-400 dark:text-[#444]">{m.sub}</span>

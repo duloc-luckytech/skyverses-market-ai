@@ -18,9 +18,9 @@ const TIER_ICONS: Record<AgentTier, React.ElementType> = {
 };
 
 const TIER_COLORS: Record<AgentTier, string> = {
-  orchestrator: '#f59e0b',
-  department: '#7036F0',
-  specialist: '#8b5cf6',
+  orchestrator: '#E5C767',
+  department: '#D4A017',
+  specialist: '#D4B85A',
 };
 
 const LANGUAGE_LABELS: Record<string, string> = {
@@ -290,7 +290,7 @@ const MyAgentsTab: React.FC<Props> = ({
                 </AnimatePresence>
 
                 <motion.button
-                  whileHover={{ scale: 1.02, borderColor: 'rgba(112,54,240,0.5)' }}
+                  whileHover={{ scale: 1.02, borderColor: 'rgba(201, 168, 76,0.5)' }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => { setEditingAgent(null); setShowBuilder(true); }}
                   className="rounded-2xl border-2 border-dashed border-black/[0.08] dark:border-white/[0.08] p-4 flex flex-col items-center justify-center gap-2 text-slate-400 hover:text-brand-blue transition-all min-h-[140px] group"

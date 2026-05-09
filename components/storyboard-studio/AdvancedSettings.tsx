@@ -99,7 +99,7 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isProcessing
       <div className="flex flex-col sm:flex-row gap-4 pt-6">
         <button 
           onClick={onSaveAndGenerate}
-          className="flex-grow bg-brand-blue text-white py-6 rounded-[2rem] font-bold uppercase text-xs tracking-[0.4em] shadow-[0_20px_80px_rgba(112,54,240,0.3)] hover:scale-[1.02] active:scale-[0.95] transition-all flex items-center justify-center gap-4 group relative overflow-hidden"
+          className="flex-grow bg-brand-blue text-white py-6 rounded-[2rem] font-bold uppercase text-xs tracking-[0.4em] shadow-[0_20px_80px_rgba(201, 168, 76,0.3)] hover:scale-[1.02] active:scale-[0.95] transition-all flex items-center justify-center gap-4 group relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
           <ShieldCheck size={18} />

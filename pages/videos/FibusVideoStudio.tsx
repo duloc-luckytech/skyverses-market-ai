@@ -12,10 +12,10 @@ import { usePageMeta } from '../../hooks/usePageMeta';
 /*
  * BRAND COLORS — Matching https://ai.fibusvideo.com/
  * BG:          #050505 / #0a0a14
- * Video AI:    purple #A855F7 → blue #6366F1
- * Hình ảnh AI: amber #F59E0B → pink #EC4899
+ * Video AI:    purple #A855F7 → blue #D4B85A
+ * Hình ảnh AI: amber #E5C767 → pink #EC4899
  * Heading:     violet #8B5CF6 → fuchsia #D946EF
- * Button:      indigo #6366F1 → purple #A855F7
+ * Button:      indigo #D4B85A → purple #A855F7
  * Cards:       #0A0A0A border #1A1A1A
  */
 
@@ -130,7 +130,7 @@ const ShowcaseCard: React.FC<{ item: (typeof SHOWCASE)[0]; index: number }> = ({
     >
       <div className="relative bg-[#0a0a0a] border border-[#1a1a1a] rounded-2xl overflow-hidden
         shadow-[0_20px_60px_rgba(0,0,0,0.6)]
-        hover:shadow-[0_30px_80px_rgba(139,92,246,0.12)]
+        hover:shadow-[0_30px_80px_rgba(201, 168, 76,0.12)]
         hover:border-purple-500/20 transition-all duration-700">
 
         <div className="aspect-[16/10] relative overflow-hidden">
@@ -270,7 +270,7 @@ const FibusVideoStudio: React.FC = () => {
               onClick={handleOpen}
               id="fibus-cta-primary"
               className="group relative px-10 py-4 rounded-xl font-bold text-sm tracking-wide shadow-[0_0_40px_rgba(99,102,241,0.25)] hover:shadow-[0_0_70px_rgba(99,102,241,0.4)] hover:scale-[1.03] transition-all flex items-center gap-3 overflow-hidden"
-              style={{ background: 'linear-gradient(to right, #6366f1, #a855f7)' }}
+              style={{ background: 'linear-gradient(to right, #D4B85A, #a855f7)' }}
             >
               <Download size={17} />
               Tải miễn phí
@@ -476,7 +476,7 @@ const FibusVideoStudio: React.FC = () => {
               >
                 {plan.badge && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 text-white text-[10px] font-bold rounded-full uppercase tracking-wider"
-                    style={{ background: 'linear-gradient(to right, #6366f1, #a855f7)' }}>
+                    style={{ background: 'linear-gradient(to right, #D4B85A, #a855f7)' }}>
                     {plan.badge}
                   </div>
                 )}
@@ -497,7 +497,7 @@ const FibusVideoStudio: React.FC = () => {
                       ? 'text-white shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:shadow-[0_0_50px_rgba(99,102,241,0.5)] hover:scale-[1.02]'
                       : 'border border-[#2a2a2a] text-white/60 hover:text-white hover:border-indigo-500/30 hover:bg-indigo-500/[0.04]'
                   }`}
-                  style={plan.highlight ? { background: 'linear-gradient(to right, #6366f1, #a855f7)' } : {}}
+                  style={plan.highlight ? { background: 'linear-gradient(to right, #D4B85A, #a855f7)' } : {}}
                 >
                   Xem giá & Đăng ký →
                 </button>
@@ -540,7 +540,7 @@ const FibusVideoStudio: React.FC = () => {
               onClick={handleOpen}
               id="fibus-download-main"
               className="group relative px-14 py-5 rounded-xl text-sm font-bold tracking-wider shadow-[0_0_60px_rgba(99,102,241,0.25)] hover:shadow-[0_0_100px_rgba(99,102,241,0.4)] hover:scale-[1.05] transition-all inline-flex items-center gap-3"
-              style={{ background: 'linear-gradient(to right, #6366f1, #a855f7)' }}
+              style={{ background: 'linear-gradient(to right, #D4B85A, #a855f7)' }}
             >
               <Download size={18} />
               TẢI FIBUS VIDEO STUDIO

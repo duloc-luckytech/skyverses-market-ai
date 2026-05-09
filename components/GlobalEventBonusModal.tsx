@@ -104,7 +104,7 @@ const GlobalEventBonusModal: React.FC = () => {
       <style>{`
         @keyframes ev-float { 0%,100%{transform:translateY(0) scale(1);opacity:.45} 50%{transform:translateY(-10px) scale(1.3);opacity:.9} }
         @keyframes ev-shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
-        @keyframes ev-pulse { 0%{box-shadow:0 0 0 0 rgba(139,92,246,.45)} 70%{box-shadow:0 0 0 14px rgba(139,92,246,0)} 100%{box-shadow:0 0 0 0 rgba(139,92,246,0)} }
+        @keyframes ev-pulse { 0%{box-shadow:0 0 0 0 rgba(201, 168, 76,.45)} 70%{box-shadow:0 0 0 14px rgba(201, 168, 76,0)} 100%{box-shadow:0 0 0 0 rgba(201, 168, 76,0)} }
         @keyframes ev-spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
       `}</style>
 
@@ -163,7 +163,7 @@ const GlobalEventBonusModal: React.FC = () => {
                 borderRadius: '2rem',
                 border: '1px solid rgba(255,255,255,0.07)',
                 background: '#07050f',
-                boxShadow: '0 0 0 1px rgba(139,92,246,.12), 0 30px 100px rgba(0,0,0,.9), 0 0 140px rgba(139,92,246,.07)',
+                boxShadow: '0 0 0 1px rgba(201, 168, 76,.12), 0 30px 100px rgba(0,0,0,.9), 0 0 140px rgba(201, 168, 76,.07)',
               }}
             >
               {/* Particles */}
@@ -279,7 +279,7 @@ const GlobalEventBonusModal: React.FC = () => {
                       {/* Badge */}
                       <div className="absolute top-3 right-3 z-10">
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[8.5px] font-bold uppercase tracking-[.18em]"
-                          style={{ background: 'rgba(7,5,15,.7)', border: '1px solid rgba(139,92,246,.4)', color: '#c4b5fd', backdropFilter: 'blur(8px)' }}>
+                          style={{ background: 'rgba(7,5,15,.7)', border: '1px solid rgba(201, 168, 76,.4)', color: '#c4b5fd', backdropFilter: 'blur(8px)' }}>
                           <Sparkles size={8} fill="currentColor" /> AI Generated
                         </span>
                       </div>
@@ -328,7 +328,7 @@ const GlobalEventBonusModal: React.FC = () => {
                       {/* 4 AI category cards — clickable */}
                       <div className="grid grid-cols-4 gap-2 mb-5">
                         {[
-                          { type: 'image', icon: <ImageIcon size={15} />, label: 'Ảnh AI', color: '#a78bfa', bg: 'rgba(139,92,246,.12)', border: 'rgba(139,92,246,.22)', hoverBg: 'rgba(139,92,246,.22)' },
+                          { type: 'image', icon: <ImageIcon size={15} />, label: 'Ảnh AI', color: '#a78bfa', bg: 'rgba(201, 168, 76,.12)', border: 'rgba(201, 168, 76,.22)', hoverBg: 'rgba(201, 168, 76,.22)' },
                           { type: 'video', icon: <Video size={15} />, label: 'Video', color: '#f472b6', bg: 'rgba(244,114,182,.1)', border: 'rgba(244,114,182,.2)', hoverBg: 'rgba(244,114,182,.2)' },
                           { type: 'voice', icon: <Mic size={15} />, label: 'Voice', color: '#34d399', bg: 'rgba(52,211,153,.1)', border: 'rgba(52,211,153,.2)', hoverBg: 'rgba(52,211,153,.2)' },
                           { type: 'music', icon: <Music size={15} />, label: 'Music', color: '#fbbf24', bg: 'rgba(251,191,36,.1)', border: 'rgba(251,191,36,.2)', hoverBg: 'rgba(251,191,36,.2)' },
@@ -353,9 +353,9 @@ const GlobalEventBonusModal: React.FC = () => {
                       <motion.button whileHover={{ scale: 1.025, y: -1 }} whileTap={{ scale: .97 }}
                         onClick={() => setStep(1)}
                         className="group w-full relative inline-flex items-center justify-center gap-2 py-[14px] rounded-2xl text-[13px] font-bold text-white overflow-hidden"
-                        style={{ background: 'linear-gradient(135deg,#7c3aed,#9333ea,#a78bfa)', boxShadow: '0 8px 30px rgba(139,92,246,.5),0 0 0 1px rgba(255,255,255,.1)', animation: 'ev-pulse 2.5s ease-in-out infinite' }}>
+                        style={{ background: 'linear-gradient(135deg,#C9A84C,#9333ea,#a78bfa)', boxShadow: '0 8px 30px rgba(201, 168, 76,.5),0 0 0 1px rgba(255,255,255,.1)', animation: 'ev-pulse 2.5s ease-in-out infinite' }}>
                         <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                          style={{ background: 'linear-gradient(135deg,#8b5cf6,#a78bfa,#c4b5fd)' }} />
+                          style={{ background: 'linear-gradient(135deg,#D4B85A,#a78bfa,#c4b5fd)' }} />
                         <span className="relative z-10 flex items-center gap-2">
                           <Gift size={14} />
                           Xem ưu đãi dành riêng cho bạn
@@ -379,7 +379,7 @@ const GlobalEventBonusModal: React.FC = () => {
                   >
                     {/* Hero */}
                     <div className="relative px-6 pt-7 pb-5 text-center overflow-hidden"
-                      style={{ background: `radial-gradient(ellipse 130% 120% at 50% -10%,rgba(139,92,246,.22) 0%,transparent 60%),radial-gradient(ellipse 80% 70% at 85% 95%,rgba(251,191,36,.1) 0%,transparent 55%),linear-gradient(180deg,#0e0820 0%,#07050f 100%)` }}>
+                      style={{ background: `radial-gradient(ellipse 130% 120% at 50% -10%,rgba(201, 168, 76,.22) 0%,transparent 60%),radial-gradient(ellipse 80% 70% at 85% 95%,rgba(251,191,36,.1) 0%,transparent 55%),linear-gradient(180deg,#0e0820 0%,#07050f 100%)` }}>
 
                       {/* Step dots */}
                       <div className="flex items-center justify-center gap-1.5 mb-5">
@@ -394,7 +394,7 @@ const GlobalEventBonusModal: React.FC = () => {
                           <Flame size={9} fill="currentColor" /> Có hạn
                         </span>
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-[.2em]"
-                          style={{ background: 'rgba(139,92,246,.15)', border: '1px solid rgba(139,92,246,.3)', color: '#a78bfa' }}>
+                          style={{ background: 'rgba(201, 168, 76,.15)', border: '1px solid rgba(201, 168, 76,.3)', color: '#a78bfa' }}>
                           <Gift size={9} /> Welcome Bonus
                         </span>
                       </div>
@@ -429,7 +429,7 @@ const GlobalEventBonusModal: React.FC = () => {
                     <div className="px-6 py-4 space-y-2"
                       style={{ borderTop: '1px solid rgba(255,255,255,.04)' }}>
                       {[
-                        { icon: <ImageIcon size={14} />, title: '99 Ảnh miễn phí', sub: 'Flux · Imagen · SDXL · Seedance · mọi style', ic: '#a78bfa', ib: 'rgba(139,92,246,.12)', border: 'rgba(139,92,246,.22)' },
+                        { icon: <ImageIcon size={14} />, title: '99 Ảnh miễn phí', sub: 'Flux · Imagen · SDXL · Seedance · mọi style', ic: '#a78bfa', ib: 'rgba(201, 168, 76,.12)', border: 'rgba(201, 168, 76,.22)' },
                         { icon: <Zap size={14} />, title: '1,000 Credits đa năng', sub: 'Veo 3 · Grok · Kling · Voice · Music · 30+ tool', ic: '#fbbf24', ib: 'rgba(251,191,36,.1)', border: 'rgba(251,191,36,.2)' },
                         { icon: <Shield size={14} />, title: 'Không ràng buộc', sub: 'Miễn phí mãi mãi · Nâng cấp khi muốn', ic: '#34d399', ib: 'rgba(52,211,153,.1)', border: 'rgba(52,211,153,.2)' },
                       ].map((b, i) => (
@@ -468,9 +468,9 @@ const GlobalEventBonusModal: React.FC = () => {
                       <motion.button whileHover={{ scale: 1.025, y: -1 }} whileTap={{ scale: .97 }}
                         onClick={handleCTA}
                         className="group w-full relative inline-flex items-center justify-center gap-2 py-[14px] rounded-2xl text-[13px] font-bold text-white overflow-hidden"
-                        style={{ background: 'linear-gradient(135deg,#7c3aed,#9333ea,#a78bfa)', boxShadow: '0 8px 30px rgba(139,92,246,.45),0 0 0 1px rgba(255,255,255,.1)' }}>
+                        style={{ background: 'linear-gradient(135deg,#C9A84C,#9333ea,#a78bfa)', boxShadow: '0 8px 30px rgba(201, 168, 76,.45),0 0 0 1px rgba(255,255,255,.1)' }}>
                         <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                          style={{ background: 'linear-gradient(135deg,#8b5cf6,#fbbf24,#fb923c)' }} />
+                          style={{ background: 'linear-gradient(135deg,#D4B85A,#fbbf24,#fb923c)' }} />
                         <span className="relative z-10 flex items-center gap-2">
                           <Gift size={14} />
                           {isAuthenticated ? 'Bắt đầu tạo ảnh miễn phí' : `Đăng ký & nhận ngay miễn phí`}

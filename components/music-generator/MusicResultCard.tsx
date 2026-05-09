@@ -55,7 +55,7 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
                     key={i} 
                     animate={{ height: [10, 40, 10] }} 
                     transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }} 
-                    className="w-1 bg-brand-blue rounded-full shadow-[0_0_10px_#7036F0]" 
+                    className="w-1 bg-brand-blue rounded-full shadow-[0_0_10px_#D4A017]" 
                   />
                 ))}
               </div>
@@ -77,7 +77,7 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
                 onClick={onPlay}
                 className={`relative w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
                   isDone 
-                  ? 'bg-brand-blue text-white scale-100 shadow-[0_0_25px_rgba(112,54,240,0.6)] hover:scale-110' 
+                  ? 'bg-brand-blue text-white scale-100 shadow-[0_0_25px_rgba(212,160,23,0.6)] hover:scale-110' 
                   : 'bg-white/20 text-white scale-90'
                 }`}
               >

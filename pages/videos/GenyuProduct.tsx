@@ -68,7 +68,7 @@ const GenyuProduct = () => {
       
       {/* --- BACKGROUND AMBIENCE --- */}
       <div className="fixed inset-0 pointer-events-none z-0">
-         <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,_#7036F008_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_80%_20%,_#7036F012_0%,_transparent_50%)]"></div>
+         <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,_#D4A01708_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_80%_20%,_#D4A01712_0%,_transparent_50%)]"></div>
          <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)', backgroundSize: '80px 80px' }}></div>
       </div>
 
@@ -101,7 +101,7 @@ const GenyuProduct = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-6 pt-4">
-                 <button onClick={() => setIsStudioOpen(true)} className="bg-brand-blue text-white px-16 py-8 text-[12px] font-bold uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(112,54,240,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-6 rounded-sm group relative overflow-hidden">
+                 <button onClick={() => setIsStudioOpen(true)} className="bg-brand-blue text-white px-16 py-8 text-[12px] font-bold uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(212,160,23,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-6 rounded-sm group relative overflow-hidden">
                     <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                     {getTranslation(content.cta)} <Play size={20} fill="currentColor" />
                  </button>
@@ -223,7 +223,7 @@ const GenyuProduct = () => {
               <p className="text-gray-400 dark:text-gray-600 uppercase text-[16px] font-bold tracking-[1.5em] italic">INDUSTRIAL PRODUCTION INTERFACE</p>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-12 pt-16">
-                 <button onClick={() => setIsStudioOpen(true)} className="bg-brand-blue text-white px-24 py-8 text-sm font-bold uppercase tracking-[0.5em] shadow-[0_20px_60px_rgba(112,54,240,0.4)] hover:scale-105 active:scale-95 transition-all rounded-sm">
+                 <button onClick={() => setIsStudioOpen(true)} className="bg-brand-blue text-white px-24 py-8 text-sm font-bold uppercase tracking-[0.5em] shadow-[0_20px_60px_rgba(212,160,23,0.4)] hover:scale-105 active:scale-95 transition-all rounded-sm">
                     Open Station Alpha
                  </button>
                  <Link to="/booking" className="px-24 py-8 border-2 border-brand-blue text-brand-blue hover:bg-brand-blue hover:text-white text-sm font-bold uppercase tracking-[0.5em] transition-all rounded-sm italic">

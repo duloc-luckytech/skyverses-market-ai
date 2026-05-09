@@ -336,7 +336,7 @@ const PromptArchitectInterface = () => {
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .custom-scrollbar::-webkit-scrollbar { width: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #7036F0; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #D4A017; }
       `}</style>
     </div>
   );

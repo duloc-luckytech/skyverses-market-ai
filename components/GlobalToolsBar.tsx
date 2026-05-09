@@ -79,7 +79,7 @@ const GlobalToolsBar: React.FC = () => {
   const Switch = ({ active, onChange }: { active: boolean, onChange: () => void }) => (
     <button 
       onClick={onChange}
-      className={`w-8 h-4 rounded-full relative transition-all duration-300 ${active ? 'bg-[#7036F0] shadow-[0_0_8px_rgba(112,54,240,0.4)]' : 'bg-slate-200 dark:bg-zinc-800'}`}
+      className={`w-8 h-4 rounded-full relative transition-all duration-300 ${active ? 'bg-[#D4A017] shadow-[0_0_8px_rgba(212,160,23,0.4)]' : 'bg-slate-200 dark:bg-zinc-800'}`}
     >
       <motion.div 
         animate={{ x: active ? 18 : 2 }}

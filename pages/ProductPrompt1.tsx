@@ -99,7 +99,7 @@ const ProductPrompt1 = () => {
                     </div>
                     <button 
                       onClick={() => setIsDemoOpen(true)}
-                      className="bg-brand-blue text-white px-12 py-6 text-xs font-bold uppercase tracking-[0.4em] hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-[0_0_50px_rgba(112,54,240,0.2)] active:scale-[0.98] flex items-center gap-4 mx-auto group/btn"
+                      className="bg-brand-blue text-white px-12 py-6 text-xs font-bold uppercase tracking-[0.4em] hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-[0_0_50px_rgba(201, 168, 76,0.2)] active:scale-[0.98] flex items-center gap-4 mx-auto group/btn"
                     >
                       Initialize_Architect_Terminal <Play size={16} className="fill-current group-hover/btn:translate-x-1 transition-transform" />
                     </button>

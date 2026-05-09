@@ -593,7 +593,7 @@ const SlideSidebar: React.FC<Props> = ({
                 ))}
               </div>
               <button
-                onClick={() => setBrandColors(['#7036F0', '#6366F1', '#F59E0B', '#0F172A'])}
+                onClick={() => setBrandColors(['#D4A017', '#B8860B', '#D4A017', '#1A1A1A'])}
                 className="mt-2 text-[10px] font-semibold text-brand-blue hover:underline"
               >
                 ↻ Reset về mặc định
@@ -695,7 +695,7 @@ const SlideSidebar: React.FC<Props> = ({
               localStorage.setItem('slide_has_generated', '1');
               onOpenGenerateModal();
             }}
-            whileHover={{ scale: 1.02, boxShadow: imageDeckMode ? '0 8px 24px rgba(139,92,246,0.3)' : '0 8px 24px rgba(112,54,240,0.25)' }}
+            whileHover={{ scale: 1.02, boxShadow: imageDeckMode ? '0 8px 24px rgba(212,160,23,0.3)' : '0 8px 24px rgba(212,160,23,0.25)' }}
             whileTap={{ scale: 0.97 }}
             disabled={!deckTopic.trim()}
             className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white text-[12px] font-bold shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none relative overflow-hidden ${

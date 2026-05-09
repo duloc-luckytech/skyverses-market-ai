@@ -78,7 +78,7 @@ const AvatarLipsyncAI = () => {
             <div className="flex flex-col sm:flex-row gap-6 pt-4">
               <button 
                 onClick={() => setIsStudioOpen(true)}
-                className="bg-violet-600 text-white px-12 py-6 rounded-sm text-xs font-bold uppercase tracking-[0.4em] shadow-[0_20px_50px_rgba(139,92,246,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
+                className="bg-violet-600 text-white px-12 py-6 rounded-sm text-xs font-bold uppercase tracking-[0.4em] shadow-[0_20px_50px_rgba(201, 168, 76,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
               >
                 Create Avatar Video <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
@@ -243,7 +243,7 @@ const AvatarLipsyncAI = () => {
            <div className="space-y-10 pt-10">
             <button 
               onClick={() => setIsStudioOpen(true)}
-              className="bg-violet-600 text-white px-24 py-8 rounded-sm text-sm font-bold uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(139,92,246,0.3)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group"
+              className="bg-violet-600 text-white px-24 py-8 rounded-sm text-sm font-bold uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(201, 168, 76,0.3)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group"
             >
               Start Creating Now <Zap size={24} fill="currentColor" />
             </button>

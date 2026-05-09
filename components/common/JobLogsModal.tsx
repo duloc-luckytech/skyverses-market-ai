@@ -73,7 +73,7 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
     if (u.includes('[SUCCESS]') || u.includes('[DONE]') || u.includes('[COMPLETED]'))
       return { color: 'text-emerald-400', accent: '#10b981', tag: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' };
     if (u.includes('[STATUS]') || u.includes('[POLLING]') || u.includes('[AWAITING]'))
-      return { color: 'text-amber-400', accent: '#f59e0b', tag: 'bg-amber-500/15 text-amber-400 border-amber-500/20' };
+      return { color: 'text-amber-400', accent: '#E5C767', tag: 'bg-amber-500/15 text-amber-400 border-amber-500/20' };
     if (u.includes('[UPLINK]') || u.includes('[NODE]') || u.includes('[API]'))
       return { color: 'text-blue-400', accent: '#3b82f6', tag: 'bg-blue-500/15 text-blue-400 border-blue-500/20' };
     if (u.includes('[DIRECT]') || u.includes('[GPU]'))

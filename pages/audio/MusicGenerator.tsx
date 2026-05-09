@@ -293,7 +293,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               <div className="text-center space-y-4 px-6">
                 <p className="text-lg lg:text-2xl font-bold uppercase tracking-[0.4em] lg:tracking-[0.8em] text-brand-blue animate-pulse italic">MANIFESTING AUDIO...</p>
                 <div className="h-1 w-48 lg:w-64 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden mx-auto">
-                  <motion.div initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ repeat: Infinity, duration: 2 }} className="h-full bg-brand-blue shadow-[0_0_15px_#7036F0]" />
+                  <motion.div initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ repeat: Infinity, duration: 2 }} className="h-full bg-brand-blue shadow-[0_0_15px_#D4A017]" />
                 </div>
               </div>
             </motion.div>

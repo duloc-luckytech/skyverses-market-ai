@@ -35,7 +35,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
       className="space-y-10"
     >
       <div className="p-8 lg:p-12 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-10 relative overflow-hidden transition-colors">
-         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#6366f1 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#D4B85A 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
          
          <div className="space-y-3 relative z-10">
             <h3 className="text-3xl lg:text-4xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">Giao thức Captcha Veo3.</h3>

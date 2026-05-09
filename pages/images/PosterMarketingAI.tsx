@@ -64,7 +64,7 @@ const PosterMarketingAI = () => {
             <div className="flex flex-col sm:flex-row gap-6 pt-4">
               <button 
                 onClick={() => setIsStudioOpen(true)}
-                className="bg-brand-blue text-white px-12 py-6 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(112,54,240,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
+                className="bg-brand-blue text-white px-12 py-6 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(201, 168, 76,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
               >
                 Create Poster Now <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
@@ -228,7 +228,7 @@ const PosterMarketingAI = () => {
           <div className="space-y-10 pt-10">
             <button 
               onClick={() => setIsStudioOpen(true)}
-              className="bg-brand-blue text-white px-24 py-8 rounded-sm text-sm font-bold uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(112,54,240,0.4)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group"
+              className="bg-brand-blue text-white px-24 py-8 rounded-sm text-sm font-bold uppercase tracking-[0.6em] shadow-[0_40px_100px_rgba(201, 168, 76,0.4)] hover:scale-110 active:scale-95 transition-all flex items-center gap-6 mx-auto group"
             >
               Start Creating with AI <Zap size={24} fill="currentColor" />
             </button>

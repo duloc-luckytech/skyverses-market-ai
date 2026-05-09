@@ -2,12 +2,12 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Menu, X, Moon, Sun, ChevronRight, Languages, LogOut,
+  Menu, X, ChevronRight, Languages, LogOut,
   User, Settings,
   Zap, ArrowRight, BarChart3,
   ChevronDown, Bookmark, Loader2, Sparkles,
   Database, HelpCircle, Users, Gift, Plus, Crown,
-  Search, Command
+  Search, Coins
 } from 'lucide-react';
 
 import { AnimatePresence, motion } from 'framer-motion';
@@ -18,6 +18,7 @@ import { Language } from '../types';
 const CreditPurchaseModal = lazy(() => import('./CreditPurchaseModal'));
 const UpgradeModal = lazy(() => import('./UpgradeModal').then(m => ({ default: m.UpgradeModal })));
 import { creditsApi } from '../apis/credits';
+import { skytokenApi } from '../apis/skytoken';
 import { useSearch } from '../context/SearchContext';
 
 const DEFAULT_AVATAR = "https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png";
@@ -61,11 +62,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const [isClaimingDaily, setIsClaimingDaily] = useState(false);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [sktBalance, setSktBalance] = useState(0);
 
   const location = useLocation();
   const navigate = useNavigate();
   const { lang, setLang, t } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const { user, logout, isAuthenticated, credits, claimWelcomeCredits, refreshUserInfo, isPro } = useAuth();
   const search = useSearch();
 
@@ -110,6 +112,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
     return () => document.removeEventListener('keydown', handler);
   }, [search]);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      skytokenApi.getBalance().then(r => setSktBalance(r.skyTokenBalance || 0)).catch(() => {});
+    }
+  }, [isAuthenticated]);
+
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (resetSearch) resetSearch();
@@ -142,7 +150,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
     if (overHero) {
       return `uppercase text-[14px] font-normal tracking-wide transition-colors ${active ? 'text-white' : 'text-[#faf7f8] hover:text-white'}`;
     }
-    return `uppercase text-[14px] font-normal tracking-wide transition-colors ${active ? 'text-[#5f41cf]' : 'text-[#1a2330] dark:text-[#faf7f8] hover:text-[#5f41cf] dark:hover:text-[#8c6aec]'}`;
+    return `uppercase text-[14px] font-normal tracking-wide transition-colors ${active ? 'text-[#B8963F]' : 'text-[#1a2330] dark:text-[#faf7f8] hover:text-[#B8963F] dark:hover:text-[#C9A84C]'}`;
   };
 
   return (
@@ -153,20 +161,24 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
         className="fixed w-full z-[150] top-0 transition-all duration-300"
         style={{
           height: 48,
-          backgroundColor: overHero ? 'rgba(27,27,29,0.4)' : scrolled ? 'rgba(245,245,247,0.8)' : 'rgba(245,245,247,0.6)',
+          backgroundColor: overHero
+            ? 'rgba(27,27,29,0.4)'
+            : theme === 'dark'
+              ? scrolled ? 'rgba(15,20,30,0.85)' : 'rgba(15,20,30,0.6)'
+              : scrolled ? 'rgba(245,245,247,0.8)' : 'rgba(245,245,247,0.6)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: overHero ? 'none' : '1px solid rgba(0,0,0,0.04)',
+          borderBottom: overHero ? 'none' : theme === 'dark' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.04)',
         }}
       >
         <div className="h-full flex items-center" style={{ maxWidth: 1300, margin: '0 auto', padding: '0 40px' }}>
 
           {/* Logo */}
           <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2 shrink-0">
-            <img src={logoUrl} alt="Logo" className={`w-7 h-7 object-contain transition-all ${overHero ? 'brightness-0 invert' : ''}`} />
+            <img src={logoUrl} alt="Logo" className={`w-7 h-7 object-contain transition-all ${overHero || theme === 'dark' ? 'brightness-0 invert' : ''}`} style={!overHero && theme !== 'dark' ? { filter: 'brightness(0) saturate(100%) invert(63%) sepia(50%) saturate(500%) hue-rotate(10deg) brightness(90%)' } : undefined} />
             <span
               className="text-[15px] font-bold tracking-tight transition-colors"
-              style={{ color: overHero ? '#faf7f8' : '#1a2330' }}
+              style={{ color: overHero ? '#faf7f8' : theme === 'dark' ? '#faf7f8' : '#B8963F' }}
             >
               Skyverses
             </span>
@@ -174,9 +186,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
           {/* Nav Links — Desktop (Atlas: uppercase, 14px, weight 400, spaced 40px) */}
           <div className="hidden md:flex items-center" style={{ marginLeft: 40, gap: 32 }}>
-            {/* MODELS */}
+            {/* APPS */}
             <Link to="/markets" className={navLinkCls(location.pathname.startsWith('/markets') || location.pathname === '/models')}>
-              Models
+              Apps
             </Link>
 
             {/* EXPLORE — dropdown */}
@@ -200,10 +212,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                     className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-[200]"
                     style={{
                       width: 520,
-                      background: '#5f41cf',
-                      borderRadius: 8,
+                      background: '#0f141e',
+                      borderRadius: 12,
                       padding: '20px 24px',
-                      boxShadow: '0 20px 40px rgba(0,0,0,.25)',
+                      boxShadow: '0 20px 40px rgba(0,0,0,.4)',
+                      border: '1px solid rgba(201,168,76,0.15)',
                     }}
                     role="menu"
                   >
@@ -212,6 +225,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                       <DropdownNavLink to="/use-cases" label="Use Cases" desc="Real-world AI applications" onClick={() => setShowExploreMenu(false)} />
                       <DropdownNavLink to="/solutions" label="Solutions" desc="Industry-specific tools" onClick={() => setShowExploreMenu(false)} />
                       <DropdownNavLink to="/models" label="AI Models" desc="Explore all available models" onClick={() => setShowExploreMenu(false)} />
+                      <DropdownNavLink to="/booking" label="Enterprise" desc="Custom AI solutions for teams" onClick={() => setShowExploreMenu(false)} />
                       {isAuthenticated && (
                         <DropdownNavLink to="/apps" label="My Workspace" desc="Your creative dashboard" onClick={() => setShowExploreMenu(false)} />
                       )}
@@ -221,19 +235,14 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               </AnimatePresence>
             </div>
 
+            {/* PROMPTS */}
+            <Link to="/prompt-market" className={navLinkCls(location.pathname.startsWith('/prompt-market'))}>
+              Prompts
+            </Link>
+
             {/* PRICING */}
             <Link to="/credits" className={navLinkCls(isActive('/credits') || isActive('/pricing'))}>
               Pricing
-            </Link>
-
-            {/* DEVELOPER */}
-            <a href="https://insights.skyverses.com" target="_blank" rel="noopener noreferrer" className={navLinkCls(false)}>
-              Developer
-            </a>
-
-            {/* ENTERPRISE */}
-            <Link to="/booking" className={navLinkCls(isActive('/booking'))}>
-              Enterprise
             </Link>
           </div>
 
@@ -257,9 +266,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                       disabled={isClaimingDaily}
                       className="hidden lg:flex items-center gap-1.5 px-2.5 h-8 rounded text-xs font-medium transition-all"
                       style={{
-                        background: 'rgba(243,130,54,0.1)',
-                        border: '1px solid rgba(243,130,54,0.25)',
-                        color: '#f38236',
+                        background: 'rgba(201,168,76,0.1)',
+                        border: '1px solid rgba(201,168,76,0.25)',
+                        color: '#C9A84C',
                       }}
                     >
                       {isClaimingDaily ? <Loader2 size={13} className="animate-spin" /> : <Gift size={13} />}
@@ -275,9 +284,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                     disabled={isClaiming}
                     className="hidden sm:flex items-center gap-1.5 px-2.5 h-8 rounded text-[11px] font-medium transition-all"
                     style={{
-                      background: 'rgba(243,130,54,0.1)',
-                      border: '1px solid rgba(243,130,54,0.25)',
-                      color: '#f38236',
+                      background: 'rgba(201,168,76,0.1)',
+                      border: '1px solid rgba(201,168,76,0.25)',
+                      color: '#C9A84C',
                     }}
                   >
                     {isClaiming ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
@@ -290,37 +299,29 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   to="/credits"
                   className="hidden md:flex items-center gap-1.5 px-2.5 h-8 rounded transition-all"
                   style={{
-                    background: overHero ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)',
-                    border: overHero ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.06)',
+                    background: overHero ? 'rgba(255,255,255,0.1)' : theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                    border: overHero ? '1px solid rgba(255,255,255,0.15)' : theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.06)',
                   }}
                 >
-                  <Sparkles size={12} style={{ color: '#8c6aec' }} fill="currentColor" />
-                  <span className="text-[12px] font-bold" style={{ color: overHero ? '#faf7f8' : '#1a2330' }}>{(credits || 0).toLocaleString()}</span>
+                  <Sparkles size={12} style={{ color: '#C9A84C' }} fill="currentColor" />
+                  <span className="text-[12px] font-bold" style={{ color: overHero ? '#faf7f8' : theme === 'dark' ? '#faf7f8' : '#1a2330' }}>{(credits || 0).toLocaleString()}</span>
                 </Link>
 
-                {/* PRO Badge / Upgrade CTA */}
-                {isPro ? (
+                {/* PRO Badge */}
+                {isPro && (
                   <div
                     className="hidden md:flex items-center gap-1 px-2.5 h-7 rounded text-[10px] font-bold uppercase tracking-widest"
-                    style={{ background: 'rgba(95,65,207,0.1)', border: '1px solid rgba(95,65,207,0.25)', color: '#5f41cf' }}
+                    style={{ background: 'rgba(201, 168, 76,0.1)', border: '1px solid rgba(201, 168, 76,0.25)', color: '#B8963F' }}
                   >
                     <Crown size={11} /> PRO
                   </div>
-                ) : (
-                  <button
-                    onClick={() => setIsUpgradeModalOpen(true)}
-                    className="hidden md:flex items-center gap-1.5 px-2.5 h-7 rounded text-[10px] font-bold uppercase tracking-widest transition-all hover:opacity-80"
-                    style={{ background: 'rgba(243,130,54,0.1)', border: '1px solid rgba(243,130,54,0.2)', color: '#f38236' }}
-                  >
-                    <Zap size={11} /> Upgrade
-                  </button>
                 )}
 
                 {/* Credits — Mobile */}
                 <button
                   onClick={() => setIsPurchaseModalOpen(true)}
                   className="md:hidden flex items-center gap-1.5 px-3 h-8 rounded text-[11px] font-bold active:scale-95 transition-all"
-                  style={{ background: '#5f41cf', color: '#faf7f8' }}
+                  style={{ background: '#B8963F', color: '#faf7f8' }}
                 >
                   <Sparkles size={11} fill="currentColor" />
                   {(credits || 0).toLocaleString()}
@@ -329,30 +330,19 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               </>
             )}
 
-            {/* Search — Desktop (compact) */}
+            {/* Search — Desktop (icon only) */}
             <button
               onClick={() => search.open()}
               aria-label="Search (⌘K)"
-              className="hidden md:flex items-center gap-1.5 px-2.5 h-8 rounded transition-all"
+              className="hidden md:flex w-8 h-8 items-center justify-center rounded transition-all"
               style={{
-                background: overHero ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
-                border: overHero ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.06)',
+                color: overHero || theme === 'dark' ? 'rgba(250,247,248,0.7)' : 'rgba(26,35,48,0.5)',
               }}
             >
-              <Search size={13} style={{ color: overHero ? 'rgba(250,247,248,0.6)' : 'rgba(26,35,48,0.4)' }} />
-              <kbd
-                className="text-[9px] font-medium px-1 py-0.5 rounded flex items-center gap-0.5"
-                style={{
-                  color: overHero ? 'rgba(250,247,248,0.5)' : 'rgba(26,35,48,0.35)',
-                  background: overHero ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                  border: overHero ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.06)',
-                }}
-              >
-                <Command size={8} />K
-              </kbd>
+              <Search size={16} />
             </button>
 
-            {/* Language Switcher — Desktop */}
+            {/* Language Switcher — Desktop (icon only) */}
             <div className="hidden md:block relative" ref={langRef}>
               <button
                 onClick={() => setShowDesktopLang(!showDesktopLang)}
@@ -361,10 +351,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 aria-haspopup="true"
                 className="w-8 h-8 flex items-center justify-center rounded transition-all"
                 style={{
-                  color: overHero ? 'rgba(250,247,248,0.7)' : 'rgba(26,35,48,0.5)',
+                  color: overHero || theme === 'dark' ? 'rgba(250,247,248,0.7)' : 'rgba(26,35,48,0.5)',
                 }}
               >
-                <FlagIcon code={lang} className="w-5 h-3.5" />
+                <Languages size={16} />
               </button>
               <AnimatePresence>
                 {showDesktopLang && (
@@ -372,16 +362,16 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                     initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
                     className="absolute top-full mt-1 right-0 w-20 overflow-hidden z-[200]"
                     style={{
-                      background: '#fff',
-                      border: '1px solid rgba(0,0,0,0.06)',
+                      background: theme === 'dark' ? '#1a2330' : '#fff',
+                      border: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
                       borderRadius: 8,
                       boxShadow: '0 8px 24px rgba(0,0,0,.12)',
                     }}
                   >
                     {languages.map((l) => (
                       <button key={l.code} onClick={() => { setLang(l.code); setShowDesktopLang(false); localStorage.setItem('skyverses_lang_detected', '1'); }}
-                        className="w-full flex items-center justify-center py-2.5 transition-all hover:bg-[rgba(95,65,207,0.06)]"
-                        style={{ background: lang === l.code ? 'rgba(95,65,207,0.08)' : 'transparent' }}
+                        className="w-full flex items-center justify-center py-2.5 transition-all hover:bg-[rgba(201, 168, 76,0.06)]"
+                        style={{ background: lang === l.code ? 'rgba(201, 168, 76,0.08)' : 'transparent' }}
                       >
                         <FlagIcon code={l.code} />
                       </button>
@@ -391,15 +381,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               </AnimatePresence>
             </div>
 
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="hidden md:flex w-8 h-8 items-center justify-center rounded transition-all"
-              style={{ color: overHero ? 'rgba(250,247,248,0.7)' : 'rgba(26,35,48,0.5)' }}
-            >
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
+            {/* Theme Toggle — hidden */}
 
             {/* User Menu / Contact + Login */}
             {isAuthenticated ? (
@@ -422,8 +404,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                       transition={{ duration: 0.12 }}
                       className="absolute top-full mt-1 right-0 w-64 overflow-hidden z-[200]"
                       style={{
-                        background: '#fff',
-                        border: '1px solid rgba(0,0,0,0.06)',
+                        background: theme === 'dark' ? '#1a2330' : '#fff',
+                        border: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
                         borderRadius: 12,
                         boxShadow: '0 20px 40px rgba(0,0,0,.15)',
                       }}
@@ -439,23 +421,23 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                             alt="Avatar"
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold truncate" style={{ color: '#1a2330' }}>{user?.name || 'User'}</p>
-                            <p className="text-[11px] truncate" style={{ color: 'rgba(26,35,48,0.5)' }}>{user?.email}</p>
+                            <p className="text-sm font-bold truncate" style={{ color: theme === 'dark' ? '#faf7f8' : '#1a2330' }}>{user?.name || 'User'}</p>
+                            <p className="text-[11px] truncate" style={{ color: theme === 'dark' ? 'rgba(250,247,248,0.5)' : 'rgba(26,35,48,0.5)' }}>{user?.email}</p>
                           </div>
                         </div>
                         {/* Credits card */}
                         <div
                           className="flex items-center justify-between p-2 rounded"
-                          style={{ background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.04)' }}
+                          style={{ background: theme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', border: theme === 'dark' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.04)' }}
                         >
                           <div className="flex items-center gap-1.5">
-                            <Sparkles size={13} style={{ color: '#5f41cf' }} fill="currentColor" />
-                            <span className="text-xs font-bold" style={{ color: '#1a2330' }}>{(credits || 0).toLocaleString()}</span>
+                            <Sparkles size={13} style={{ color: '#B8963F' }} fill="currentColor" />
+                            <span className="text-xs font-bold" style={{ color: theme === 'dark' ? '#faf7f8' : '#1a2330' }}>{(credits || 0).toLocaleString()}</span>
                           </div>
                           <button
                             onClick={() => { setIsPurchaseModalOpen(true); setShowUserMenu(false); }}
                             className="text-[10px] font-bold hover:underline flex items-center gap-0.5"
-                            style={{ color: '#5f41cf' }}
+                            style={{ color: '#B8963F' }}
                           >
                             <Plus size={10} /> {t('header.topup')}
                           </button>
@@ -465,16 +447,16 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                         {isPro ? (
                           <div
                             className="mt-1.5 flex items-center gap-1.5 px-2 py-1.5 rounded"
-                            style={{ background: 'rgba(95,65,207,0.08)', border: '1px solid rgba(95,65,207,0.15)' }}
+                            style={{ background: 'rgba(201, 168, 76,0.08)', border: '1px solid rgba(201, 168, 76,0.15)' }}
                           >
-                            <Crown size={11} style={{ color: '#5f41cf' }} />
-                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#5f41cf' }}>Pro Member</span>
+                            <Crown size={11} style={{ color: '#B8963F' }} />
+                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#B8963F' }}>Pro Member</span>
                           </div>
                         ) : (
                           <button
                             onClick={() => { setIsUpgradeModalOpen(true); setShowUserMenu(false); }}
                             className="mt-1.5 w-full flex items-center justify-center gap-1.5 px-2 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest transition-all hover:opacity-80"
-                            style={{ background: 'rgba(243,130,54,0.08)', border: '1px solid rgba(243,130,54,0.15)', color: '#f38236' }}
+                            style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.15)', color: '#C9A84C' }}
                           >
                             <Zap size={11} /> Nâng cấp lên Pro
                           </button>
@@ -488,6 +470,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                         <UserMenuLink to="/settings" icon={<User size={15} />} label={t('user.menu.profile')} onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="/referral" icon={<Users size={15} />} label={t('user.menu.referral')} onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="/favorites" icon={<Bookmark size={15} />} label={t('user.menu.favorites')} onClick={() => setShowUserMenu(false)} />
+                        <UserMenuLink to="/prompt-market/my-purchases" icon={<Database size={15} />} label="My Prompts" onClick={() => setShowUserMenu(false)} />
+                        <UserMenuLink to="/prompt-market/sell" icon={<Coins size={15} />} label="Sell Prompts" onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="/usage" icon={<BarChart3 size={15} />} label={t('user.menu.usage')} onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="/settings" icon={<Settings size={15} />} label={t('user.menu.settings')} onClick={() => setShowUserMenu(false)} />
                         <div style={{ height: 1, background: 'rgba(0,0,0,0.04)', margin: '2px 8px' }} />
@@ -519,8 +503,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   style={{
                     height: 32,
                     padding: '0 18px',
-                    color: overHero ? '#dad0ff' : '#8c6aec',
-                    border: overHero ? '1px solid rgba(218,208,255,0.3)' : '1px solid rgba(140,106,236,0.3)',
+                    color: overHero ? '#E5C767' : '#B8963F',
+                    border: overHero ? '1px solid rgba(201,168,76,0.4)' : '1px solid rgba(184,150,63,0.3)',
                     background: 'transparent',
                   }}
                 >
@@ -534,7 +518,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   style={{
                     height: 32,
                     padding: '0 18px',
-                    background: '#5f41cf',
+                    background: '#B8963F',
                     color: '#faf7f8',
                   }}
                 >
@@ -548,7 +532,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               onClick={() => setIsOpen(true)}
               aria-label="Open menu"
               className="md:hidden w-8 h-8 flex items-center justify-center rounded transition-all ml-1"
-              style={{ color: overHero ? '#faf7f8' : '#1a2330' }}
+              style={{ color: overHero || theme === 'dark' ? '#faf7f8' : '#1a2330' }}
             >
               <Menu size={20} />
             </button>
@@ -583,14 +567,15 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   { label: 'Models', to: '/markets' },
                   { label: 'Explorer', to: '/explorer' },
                   { label: 'Use Cases', to: '/use-cases' },
+                  { label: 'Prompts', to: '/prompt-market' },
                   { label: 'Pricing', to: '/credits' },
                   { label: 'Enterprise', to: '/booking' },
                 ].map(link => (
                   <Link key={link.to} to={link.to} onClick={() => setIsOpen(false)}
                     className="flex items-center justify-between px-3 py-3 rounded-lg transition-all"
                     style={{
-                      color: isActive(link.to) ? '#5f41cf' : '#1a2330',
-                      background: isActive(link.to) ? 'rgba(95,65,207,0.06)' : 'transparent',
+                      color: isActive(link.to) ? '#B8963F' : '#1a2330',
+                      background: isActive(link.to) ? 'rgba(201, 168, 76,0.06)' : 'transparent',
                     }}
                   >
                     <span className="text-sm font-bold uppercase tracking-wide">{link.label}</span>
@@ -610,8 +595,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   <Link to="/apps" onClick={() => setIsOpen(false)}
                     className="flex items-center justify-between px-3 py-3 rounded-lg transition-all"
                     style={{
-                      color: isActive('/apps') ? '#5f41cf' : '#1a2330',
-                      background: isActive('/apps') ? 'rgba(95,65,207,0.06)' : 'transparent',
+                      color: isActive('/apps') ? '#B8963F' : '#1a2330',
+                      background: isActive('/apps') ? 'rgba(201, 168, 76,0.06)' : 'transparent',
                     }}
                   >
                     <span className="text-sm font-bold uppercase tracking-wide">Create</span>
@@ -630,8 +615,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                     <button key={l.code} onClick={() => { setLang(l.code); localStorage.setItem('skyverses_lang_detected', '1'); }}
                       className="py-2.5 flex items-center justify-center rounded transition-all"
                       style={{
-                        background: lang === l.code ? 'rgba(95,65,207,0.08)' : 'rgba(0,0,0,0.03)',
-                        border: lang === l.code ? '1px solid rgba(95,65,207,0.25)' : '1px solid transparent',
+                        background: lang === l.code ? 'rgba(201, 168, 76,0.08)' : 'rgba(0,0,0,0.03)',
+                        border: lang === l.code ? '1px solid rgba(201, 168, 76,0.25)' : '1px solid transparent',
                       }}
                     >
                       <FlagIcon code={l.code} />
@@ -645,7 +630,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   to="/login"
                   onClick={() => setIsOpen(false)}
                   className="block w-full py-3 text-center rounded text-sm font-bold uppercase tracking-wide transition-all"
-                  style={{ background: '#5f41cf', color: '#faf7f8' }}
+                  style={{ background: '#B8963F', color: '#faf7f8' }}
                 >
                   {t('nav.login')}
                 </Link>
@@ -655,18 +640,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
             {/* Drawer Footer */}
             <div className="px-5 py-4 space-y-3" style={{ borderTop: '1px solid rgba(0,0,0,0.06)' }}>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={toggleTheme}
-                  className="w-10 h-10 flex items-center justify-center rounded shrink-0"
-                  style={{ border: '1px solid rgba(0,0,0,0.06)', color: 'rgba(26,35,48,0.5)' }}
-                >
-                  {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-                </button>
                 <Link
                   to="/booking"
                   onClick={() => setIsOpen(false)}
                   className="flex-1 flex items-center justify-center py-2.5 rounded text-sm font-bold uppercase tracking-wide transition-all"
-                  style={{ background: '#5f41cf', color: '#faf7f8' }}
+                  style={{ background: '#B8963F', color: '#faf7f8' }}
                 >
                   Contact
                 </Link>
@@ -704,11 +682,11 @@ const DropdownNavLink: React.FC<{
     onClick={onClick}
     className="block px-3 py-2.5 rounded-lg transition-all"
     style={{ color: '#faf7f8' }}
-    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(201,168,76,0.1)'}
     onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
   >
     <span className="block text-[14px] font-medium" style={{ color: '#faf7f8' }}>{label}</span>
-    <span className="block text-[11px] mt-0.5" style={{ color: '#dad0ff' }}>{desc}</span>
+    <span className="block text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>{desc}</span>
   </Link>
 );
 

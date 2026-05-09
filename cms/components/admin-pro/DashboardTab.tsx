@@ -71,7 +71,7 @@ const SectionHeader: React.FC<{ icon: React.ReactNode; title: string; subtitle?:
 );
 
 // ─── PIE CHART COLORS ───
-const PIE_COLORS = ['#0090ff', '#f97316', '#a855f7', '#10b981', '#f43f5e', '#06b6d4', '#eab308'];
+const PIE_COLORS = ['#0090ff', '#E5C767', '#a855f7', '#10b981', '#f43f5e', '#06b6d4', '#eab308'];
 
 // ─── MOCK REVENUE DATA (7 ngày gần nhất) ───
 const generateRevenueData = () => {

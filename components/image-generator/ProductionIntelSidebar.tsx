@@ -64,7 +64,7 @@ export const ProductionIntelSidebar: React.FC = () => {
                     <span className="text-rose-500">98%</span>
                  </div>
                  <div className="h-1 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <motion.div initial={{ width: 0 }} animate={{ width: '98%' }} transition={{ duration: 1 }} className="h-full bg-rose-500 shadow-[0_0_10px_#7036F0]" />
+                    <motion.div initial={{ width: 0 }} animate={{ width: '98%' }} transition={{ duration: 1 }} className="h-full bg-rose-500 shadow-[0_0_10px_#D4A017]" />
                  </div>
               </div>
               <div className="space-y-3">
@@ -73,7 +73,7 @@ export const ProductionIntelSidebar: React.FC = () => {
                     <span className="text-rose-500">Optimal</span>
                  </div>
                  <div className="h-1 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <motion.div initial={{ width: 0 }} animate={{ width: '85%' }} transition={{ duration: 1.2 }} className="h-full bg-rose-500 shadow-[0_0_10px_#7036F0]" />
+                    <motion.div initial={{ width: 0 }} animate={{ width: '85%' }} transition={{ duration: 1.2 }} className="h-full bg-rose-500 shadow-[0_0_10px_#D4A017]" />
                  </div>
               </div>
            </div>

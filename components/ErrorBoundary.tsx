@@ -82,7 +82,7 @@ class ErrorBoundary extends React.Component<
               <AlertTriangle
                 size={28}
                 style={{
-                  color: this.state.isChunkError ? '#f59e0b' : '#ef4444',
+                  color: this.state.isChunkError ? '#E5C767' : '#ef4444',
                 }}
               />
             </div>

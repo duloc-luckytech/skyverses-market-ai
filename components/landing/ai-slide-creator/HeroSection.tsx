@@ -172,9 +172,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
             <div className="flex flex-col sm:flex-row gap-3">
               <motion.button
                 onClick={onStartStudio}
-                whileHover={{ scale: 1.03, boxShadow: '0 12px 32px rgba(112,54,240,0.3)' }}
+                whileHover={{ scale: 1.03, boxShadow: '0 12px 32px rgba(201, 168, 76,0.3)' }}
                 whileTap={{ scale: 0.97 }}
-                className="flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl bg-brand-blue text-white font-bold text-sm shadow-xl shadow-brand-blue/20 hover:bg-brand-blue/90 transition-all"
+                className="flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-lg bg-brand-blue text-white font-bold text-sm hover:bg-brand-blue/90 transition-all"
               >
                 <Sparkles size={15} />
                 Mở AI Slide Studio
@@ -182,7 +182,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl border border-black/[0.08] dark:border-white/[0.08] text-sm font-medium text-slate-600 dark:text-white/60 hover:border-brand-blue/40 hover:text-brand-blue transition-all"
+                className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-lg border border-black/[0.08] dark:border-white/[0.08] text-sm font-medium text-slate-600 dark:text-white/60 hover:border-brand-blue/40 hover:text-brand-blue transition-all"
               >
                 <Globe size={14} />
                 Xem ví dụ
@@ -198,7 +198,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
         <FadeInUp delay={0.18} className="lg:col-span-7 relative">
           <div className="relative">
             {/* App chrome */}
-            <div className="bg-white dark:bg-[#0f0f11] rounded-2xl border border-black/[0.06] dark:border-white/[0.04] shadow-2xl overflow-hidden">
+            <div className="bg-white dark:bg-[#0f0f11] rounded-xl border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
               {/* Fake titlebar */}
               <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/[0.05] dark:border-white/[0.05] bg-black/[0.01] dark:bg-white/[0.01]">
                 <div className="flex items-center gap-1.5">
@@ -270,7 +270,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.25 }}
-                        className={`w-full aspect-video relative rounded-xl overflow-hidden shadow-xl`}
+                        className={`w-full aspect-video relative rounded-xl overflow-hidden`}
                       >
                         {/* Real CDN background image (hero-main) */}
                         <img

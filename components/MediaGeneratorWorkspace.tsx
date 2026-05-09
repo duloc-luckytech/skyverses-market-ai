@@ -140,7 +140,7 @@ const MediaGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
             <button onClick={() => setResult(null)} className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors bg-white/10 rounded-full p-2">
               <X size={32}/>
             </button>
-            <div className="max-w-5xl w-full aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(112,54,240,0.3)] border border-white/10">
+            <div className="max-w-5xl w-full aspect-video bg-black rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(201, 168, 76,0.3)] border border-white/10">
                {result.type === 'video' ? (
                  <video src={result.url} controls autoPlay className="w-full h-full" />
                ) : (

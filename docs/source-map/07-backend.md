@@ -22,7 +22,7 @@ skyverses-backend/
         └── plans.ts
 ```
 
-## Routes — `src/routes/` (29 file)
+## Routes — `src/routes/` (31 file)
 
 | File | Purpose |
 |------|---------|
@@ -55,10 +55,12 @@ skyverses-backend/
 | `videoJobs.ts` | Video gen jobs |
 | `webhook.ts` | Provider webhooks |
 | `workerRouter.ts` | Worker control |
+| `skytoken.router.ts` | SKT balance, packages, purchase QR, history, claim welcome, admin add |
+| `prompt-market.router.ts` | Browse/search prompts, purchase, seller profile/follow, wishlist, view tracking, related, earnings, reviews, admin |
 
-## Models — `src/models/` (32 Mongoose schemas)
+## Models — `src/models/` (36 Mongoose schemas)
 
-`AIModel`, `AffiliateTransaction`, `AudioGeneration`, `AudioVoice`, `BankTransaction`, `BlogPost`, `Category`, `CreditPackage`, `CreditTransaction`, `DeployLog`, `EditImageJob`, `ExplorerMedia`, `FxflowOwner`, `GoogleToken`, `ImageBase64`, `ImageJob`, `ImageOwner`, `MarketItem`, `MetaPromptTemplate`, `ModelPricingMatrix`, `Plan`, `PlanPurchase`, `ProductSubmission`, `PromptGenerationJob`, `ProviderToken`, `RunningHubTemplate`, `ServerStatus`, `SystemSetting`, `User`, `VideoConcatJob`, `VideoJob`, `VideoJobV2`.
+`AIModel`, `AffiliateTransaction`, `AudioGeneration`, `AudioVoice`, `BankTransaction`, `BlogPost`, `Category`, `CreditPackage`, `CreditTransaction`, `DeployLog`, `EditImageJob`, `ExplorerMedia`, `FxflowOwner`, `GoogleToken`, `ImageBase64`, `ImageJob`, `ImageOwner`, `MarketItem`, `MetaPromptTemplate`, `ModelPricingMatrix`, `Plan`, `PlanPurchase`, `ProductSubmission`, `PromptGenerationJob`, `PromptPurchase`, `PromptReview`, `PromptSet`, `PromptWishlist`, `ProviderToken`, `RunningHubTemplate`, `SellerFollower`, `ServerStatus`, `SkyTokenPackage`, `SkyTokenTransaction`, `SystemSetting`, `User`, `VideoConcatJob`, `VideoJob`, `VideoJobV2`.
 
 Each is `<Name>.model.ts` (or `<Name>.ts` for older).
 
@@ -97,7 +99,7 @@ Worker pool cho image / video / music. Mỗi domain có:
 
 ## Scripts — `src/scripts/`
 
-`asynsDataMongo.ts`, `seed-ai-models.ts`, `seedAdmin.ts`, `seedCategories.ts`, `updatePricingX2.ts`.
+`asynsDataMongo.ts`, `seed-ai-models.ts`, `seed-prompt-market.ts`, `seedAdmin.ts`, `seedCategories.ts`, `updatePricingX2.ts`.
 
 ## Common patterns
 

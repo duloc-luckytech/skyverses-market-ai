@@ -46,7 +46,7 @@ export const WorkflowSection: React.FC = () => (
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ delay: i * 0.08 }}
-            className="p-5 bg-black/[0.01] dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-2xl flex gap-4 group hover:border-indigo-500/20 transition-all"
+            className="p-5 bg-black/[0.01] dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-xl flex gap-4 group hover:border-indigo-500/20 transition-all"
           >
             <div className="shrink-0">
               <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 dark:text-indigo-400 group-hover:scale-110 transition-transform">{s.icon}</div>

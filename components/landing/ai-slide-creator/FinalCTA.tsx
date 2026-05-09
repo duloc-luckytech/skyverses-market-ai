@@ -39,9 +39,9 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onStartStudio }) => (
         {/* CTA button */}
         <motion.button
           onClick={onStartStudio}
-          whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(112,54,240,0.35)' }}
+          whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(201, 168, 76,0.35)' }}
           whileTap={{ scale: 0.97 }}
-          className="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-gradient-to-r from-brand-blue to-blue-500 text-white font-bold text-base shadow-2xl shadow-brand-blue/25 hover:brightness-110 transition-all mb-4 group"
+          className="inline-flex items-center gap-3 px-9 py-4 rounded-xl bg-gradient-to-r from-brand-blue to-blue-500 text-white font-bold text-base hover:brightness-110 transition-all mb-4 group"
         >
           <Sparkles size={18} />
           ✨ Tạo Slide Ngay — Miễn phí

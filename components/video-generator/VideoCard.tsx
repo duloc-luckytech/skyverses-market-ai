@@ -105,10 +105,10 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         {res.status === 'processing' ? (
           <div className="w-full h-full flex flex-col items-center justify-center relative bg-slate-200 dark:bg-black/60">
             <div className="absolute inset-0 opacity-10 pointer-events-none">
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-[#7036F0] animate-[scan_2s_infinite_linear]"></div>
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-[#D4A017] animate-[scan_2s_infinite_linear]"></div>
             </div>
-            <Loader2 size={32} className="text-[#7036F0] animate-spin mb-4" />
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#7036F0] animate-pulse">Rendering...</p>
+            <Loader2 size={32} className="text-[#D4A017] animate-spin mb-4" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4A017] animate-pulse">Rendering...</p>
           </div>
         ) : (res.status === 'error' || (!res.url && res.status === 'done')) ? (
           <div className="w-full h-full flex flex-col items-center justify-center text-center p-4 gap-2 bg-red-50 dark:bg-red-950/20">

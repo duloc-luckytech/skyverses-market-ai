@@ -206,7 +206,7 @@ export const useSlideStudio = () => {
   const [brandSlogan, setBrandSlogan] = useState('');
   const [brandDescription, setBrandDescription] = useState('');
   // Brand colors — primary/secondary/accent/text. Inject vào AI prompt khi gen deck/BG.
-  const [brandColors, setBrandColors] = useState<string[]>(['#0090FF', '#6366F1', '#F59E0B', '#0F172A']);
+  const [brandColors, setBrandColors] = useState<string[]>(['#0090FF', '#D4B85A', '#E5C767', '#0F172A']);
 
   // Carousel mode — gen 5 slide đồng theme cho social post (Hook → Problem → Solution → Proof → CTA)
   const [carouselMode, setCarouselMode] = useState<boolean>(false);

@@ -38,7 +38,7 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
             className="max-w-xl w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-10 border border-slate-200 dark:border-white/10 rounded-[2rem] space-y-8 shadow-3xl transition-colors"
           >
             <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-brand-blue/10 rounded-full flex items-center justify-center mx-auto text-brand-blue shadow-[0_0_30px_rgba(112,54,240,0.2)]">
+              <div className="w-16 h-16 bg-brand-blue/10 rounded-full flex items-center justify-center mx-auto text-brand-blue shadow-[0_0_30px_rgba(201, 168, 76,0.2)]">
                 <ShieldCheck size={32} />
               </div>
               <h3 className="text-2xl font-bold uppercase tracking-tighter italic text-slate-900 dark:text-white">Xác thực tài nguyên</h3>

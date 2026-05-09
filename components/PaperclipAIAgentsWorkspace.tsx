@@ -91,7 +91,7 @@ const DEPARTMENTS = [
     id: 'ceo',
     label: 'CEO Agent',
     icon: Building2,
-    color: '#7036F0',
+    color: '#D4A017',
     agent: 'CEO Agent',
     tier: 'orchestrator',
     tasks: ['Delegate tasks to team', 'Strategic brief', 'Org-wide report', 'Budget review'],
@@ -101,7 +101,7 @@ const DEPARTMENTS = [
     id: 'marketing',
     label: 'Marketing AI',
     icon: Megaphone,
-    color: '#8b5cf6',
+    color: '#C4960C',
     agent: 'Marketing Agent',
     tier: 'department',
     tasks: ['Viết content SEO', 'Social media posts', 'Email campaign', 'Competitor analysis'],
@@ -121,7 +121,7 @@ const DEPARTMENTS = [
     id: 'sales',
     label: 'Sales AI',
     icon: BarChart3,
-    color: '#f59e0b',
+    color: '#D4A017',
     agent: 'Sales Agent',
     tier: 'department',
     tasks: ['Lead outreach', 'CRM follow-up', 'Proposal drafting', 'Deal analysis'],
@@ -140,8 +140,8 @@ const DEPARTMENTS = [
 ];
 
 const LLM_MODELS = [
-  { id: 'claude-sonnet', label: 'Claude Sonnet 4', provider: 'Anthropic', badge: 'Fast & Balanced', color: '#f97316', apiModel: AI_MODELS.SONNET },
-  { id: 'claude-opus',   label: 'Claude Opus 4',   provider: 'Anthropic', badge: 'Most Powerful',   color: '#8b5cf6', apiModel: AI_MODELS.OPUS   },
+  { id: 'claude-sonnet', label: 'Claude Sonnet 4', provider: 'Anthropic', badge: 'Fast & Balanced', color: '#E5C767', apiModel: AI_MODELS.SONNET },
+  { id: 'claude-opus',   label: 'Claude Opus 4',   provider: 'Anthropic', badge: 'Most Powerful',   color: '#C4960C', apiModel: AI_MODELS.OPUS   },
 ];
 
 // ─── Single Agent constants ───────────────────────────────────────────────────
@@ -472,7 +472,7 @@ const OrgChartMini: React.FC<{ activeDeptId: string; runningDepts: string[] }> =
 
 const BudgetMeter: React.FC<{ limit: number; spent: number }> = ({ limit, spent }) => {
   const pct = Math.min((spent / limit) * 100, 100);
-  const color = pct > 80 ? '#ef4444' : pct > 50 ? '#f59e0b' : '#10b981';
+  const color = pct > 80 ? '#ef4444' : pct > 50 ? '#D4A017' : '#10b981';
 
   return (
     <div className="space-y-1.5">
@@ -541,7 +541,7 @@ const MetricCard: React.FC<{
   sub?: string;
   color?: string;
   trend?: 'up' | 'down' | 'flat';
-}> = ({ icon: Icon, label, value, sub, color = '#7036F0', trend }) => (
+}> = ({ icon: Icon, label, value, sub, color = '#D4A017', trend }) => (
   <div className="flex-1 min-w-0 p-3 rounded-xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05]">
     <div className="flex items-start justify-between gap-1 mb-1.5">
       <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}15` }}>
@@ -1071,7 +1071,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
   }, []);
 
   // Add activity log entry
-  const addLog = useCallback((agent: string, action: string, status: ActivityLog['status'] = 'info', color: string = '#7036F0') => {
+  const addLog = useCallback((agent: string, action: string, status: ActivityLog['status'] = 'info', color: string = '#D4A017') => {
     const entry: ActivityLog = {
       id: Date.now().toString() + Math.random(),
       time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -1317,12 +1317,12 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
 
     // Simulate multi-step activity
     const agentLabel = isSingleMode ? `${singleAgentEmoji} ${singleAgentName}` : dept.agent;
-    const agentColor = isSingleMode ? '#8b5cf6' : dept.color;
-    if (!isSingleMode) addLog('CEO Agent', `Nhận task từ user → giao cho ${dept.agent}`, 'running', '#7036F0');
+    const agentColor = isSingleMode ? '#C4960C' : dept.color;
+    if (!isSingleMode) addLog('CEO Agent', `Nhận task từ user → giao cho ${dept.agent}`, 'running', '#D4A017');
     setTimeout(() => addLog(agentLabel, `Bắt đầu xử lý với ${effectiveModel.label}`, 'running', agentColor), 600);
     setTimeout(() => addLog('Budget Guard', `Theo dõi cost — limit $${budgetLimit.toFixed(2)}`, 'info', '#10b981'), 1200);
     if (overrideSystemPrompt) {
-      setTimeout(() => addLog('Prompt Inspector', 'Dùng system prompt đã chỉnh sửa', 'info', '#8b5cf6'), 900);
+      setTimeout(() => addLog('Prompt Inspector', 'Dùng system prompt đã chỉnh sửa', 'info', '#C4960C'), 900);
     }
 
     const pendingResult: TaskResult = {
@@ -1440,12 +1440,12 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         saveThread(effectiveDeptId, updatedThread);
 
         addLog(agentLabel, `✓ Task hoàn thành trong ${duration} — ~$${taskCost.toFixed(3)} est.`, 'success', agentColor);
-        if (!isSingleMode) addLog('CEO Agent', `Report nhận được từ ${dept.agent}`, 'success', '#7036F0');
+        if (!isSingleMode) addLog('CEO Agent', `Report nhận được từ ${dept.agent}`, 'success', '#D4A017');
         showToast(`${agentLabel} hoàn thành task!`, 'success');
 
         // Budget warning
         if (newSpent / budgetLimit > 0.8) {
-          addLog('Budget Guard', `⚠️ Đã dùng ${((newSpent / budgetLimit) * 100).toFixed(0)}% budget!`, 'warning', '#f59e0b');
+          addLog('Budget Guard', `⚠️ Đã dùng ${((newSpent / budgetLimit) * 100).toFixed(0)}% budget!`, 'warning', '#D4A017');
         }
       } else {
         const errResult: TaskResult = { ...pendingResult, output: 'Không thể kết nối tới AI service. Vui lòng thử lại.', status: 'error' };
@@ -1460,11 +1460,11 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         if (partialOutput.trim()) {
           const abortedResult: TaskResult = { ...pendingResult, output: partialOutput, status: 'done', duration: ((Date.now() - startTime) / 1000).toFixed(1) + 's', cost: '~est.' };
           setCurrentResult(abortedResult);
-          addLog(agentLabel, '⏹ Task dừng bởi user — kết quả một phần đã lưu', 'warning', '#f59e0b');
+          addLog(agentLabel, '⏹ Task dừng bởi user — kết quả một phần đã lưu', 'warning', '#D4A017');
           showToast('Đã dừng — kết quả một phần đã lưu', 'success');
         } else {
           setCurrentResult(prev => prev ? { ...prev, status: 'error', output: '⏹ Task bị dừng bởi user.' } : prev);
-          addLog(agentLabel, '⏹ Task bị dừng bởi user', 'warning', '#f59e0b');
+          addLog(agentLabel, '⏹ Task bị dừng bởi user', 'warning', '#D4A017');
         }
       } else {
         const errResult: TaskResult = { ...pendingResult, output: 'Đã xảy ra lỗi khi chạy agent. Vui lòng thử lại.', status: 'error' };
@@ -1500,7 +1500,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     if (requiresApproval(taskPrompt)) {
       pendingRunRef.current = executeRun;
       setShowApprovalDialog(true);
-      addLog('Human-in-Loop', 'Task cần phê duyệt của bạn', 'warning', '#f59e0b');
+      addLog('Human-in-Loop', 'Task cần phê duyệt của bạn', 'warning', '#D4A017');
       return;
     }
 
@@ -3826,9 +3826,9 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       <div className="flex items-center justify-center gap-2 mt-2">
                         {[
                           { icon: ShieldCheck, label: 'Budget Guard', color: '#10b981' },
-                          { icon: Network, label: 'Multi-Agent', color: '#7036F0' },
-                          { icon: GitBranch, label: 'Workflow', color: '#8b5cf6' },
-                          { icon: Eye, label: 'Audit Log', color: '#f59e0b' },
+                          { icon: Network, label: 'Multi-Agent', color: '#D4A017' },
+                          { icon: GitBranch, label: 'Workflow', color: '#C4960C' },
+                          { icon: Eye, label: 'Audit Log', color: '#D4A017' },
                         ].map(b => (
                           <div
                             key={b.label}
@@ -4124,7 +4124,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     label="Tasks đã chạy"
                     value={taskHistory.length}
                     sub={`${runCount} lần trong session`}
-                    color="#7036F0"
+                    color="#D4A017"
                     trend="up"
                   />
                   <MetricCard
@@ -4140,7 +4140,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                     label="Tokens dùng"
                     value={totalTokens > 0 ? `${(totalTokens / 1000).toFixed(1)}K` : '—'}
                     sub="Across all agents"
-                    color="#8b5cf6"
+                    color="#C4960C"
                     trend="flat"
                   />
                   <MetricCard
@@ -4153,7 +4153,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0]?.replace(' AI', '') ?? '—';
                     })()}
                     sub="Most used agent"
-                    color="#f59e0b"
+                    color="#D4A017"
                   />
                 </div>
 
@@ -4247,10 +4247,10 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     {[
-                      { icon: Network, label: 'Multi-Agent Orchestration', desc: 'CEO → Departments', color: '#7036F0' },
+                      { icon: Network, label: 'Multi-Agent Orchestration', desc: 'CEO → Departments', color: '#D4A017' },
                       { icon: ShieldCheck, label: 'Budget Guard', desc: 'Hard spend limits', color: '#10b981' },
-                      { icon: GitBranch, label: 'Workflow Builder', desc: 'Drag & drop flows', color: '#8b5cf6' },
-                      { icon: Eye, label: 'Full Audit Log', desc: 'Every action logged', color: '#f59e0b' },
+                      { icon: GitBranch, label: 'Workflow Builder', desc: 'Drag & drop flows', color: '#C4960C' },
+                      { icon: Eye, label: 'Full Audit Log', desc: 'Every action logged', color: '#D4A017' },
                       { icon: RefreshCw, label: 'Auto Failover', desc: 'Zero downtime', color: '#06b6d4' },
                       { icon: Terminal, label: 'Prompt Inspector', desc: 'Debug any node', color: '#ec4899' },
                     ].map(f => (
@@ -4286,7 +4286,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             const reportCenter = { x: (CANVAS_INITIAL_POSITIONS.report.x) + NODE_W / 2, y: CANVAS_INITIAL_POSITIONS.report.y + 56 };
 
             const statusColor = (s: CanvasNodeState['status']) => {
-              if (s === 'running') return '#7036F0';
+              if (s === 'running') return '#D4A017';
               if (s === 'done')    return '#10b981';
               if (s === 'error')   return '#ef4444';
               return '#334155';
@@ -4407,7 +4407,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       {/* Report summary */}
                       <div
                         className="rounded-xl border bg-white dark:bg-[var(--atlas-bg-panel)] shadow-sm overflow-hidden transition-all"
-                        style={{ borderColor: canvasReport.status === 'running' ? '#8b5cf6' : canvasReport.status === 'done' ? '#10b981' : 'rgba(0,0,0,0.06)' }}
+                        style={{ borderColor: canvasReport.status === 'running' ? '#C4960C' : canvasReport.status === 'done' ? '#10b981' : 'rgba(0,0,0,0.06)' }}
                       >
                         <div className="flex items-center gap-2 px-3 py-2 bg-purple-500/[0.06]">
                           <Network size={10} className="text-purple-500 shrink-0" />
@@ -4588,8 +4588,8 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       <div
                         className="rounded-2xl border bg-white dark:bg-[var(--atlas-bg-panel)] shadow-lg overflow-hidden transition-all"
                         style={{
-                          borderColor: canvasReport.status === 'running' ? '#8b5cf6' : canvasReport.status === 'done' ? '#10b981' : 'rgba(0,0,0,0.06)',
-                          boxShadow: canvasReport.status === 'running' ? '0 0 0 2px #8b5cf630' : undefined,
+                          borderColor: canvasReport.status === 'running' ? '#C4960C' : canvasReport.status === 'done' ? '#10b981' : 'rgba(0,0,0,0.06)',
+                          boxShadow: canvasReport.status === 'running' ? '0 0 0 2px #C4960C30' : undefined,
                         }}
                       >
                         <div className="flex items-center gap-2 px-3 py-2 border-b border-black/[0.04] dark:border-white/[0.08] bg-purple-500/[0.06]">
@@ -4741,7 +4741,7 @@ const PaperclipAIAgentsWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             {[...Array(12)].map((_, i) => {
               const angle = (i / 12) * 360;
               const distance = 80 + Math.random() * 60;
-              const color = [dept.color, '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#ef4444'][i % 6];
+              const color = [dept.color, '#10b981', '#D4A017', '#C4960C', '#06b6d4', '#ef4444'][i % 6];
               return (
                 <motion.div
                   key={i}

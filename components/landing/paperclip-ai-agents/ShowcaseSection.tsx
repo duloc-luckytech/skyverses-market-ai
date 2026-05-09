@@ -119,23 +119,23 @@ const AGENT_RUNS: AgentRunItem[] = [
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Marketing: '#8b5cf6',
+  Marketing: '#C4960C',
   DevOps: '#10b981',
-  Sales: '#f59e0b',
+  Sales: '#D4A017',
   Operations: '#ef4444',
 };
 
 const STATUS_CONFIG = {
-  running: { color: '#7036F0', label: 'Running', pulse: true },
+  running: { color: '#D4A017', label: 'Running', pulse: true },
   completed: { color: '#10b981', label: 'Done', pulse: false },
-  waiting: { color: '#f59e0b', label: 'Awaiting Approval', pulse: true },
+  waiting: { color: '#D4A017', label: 'Awaiting Approval', pulse: true },
 };
 
 const FILTERS = ['All', 'Marketing', 'DevOps', 'Sales', 'Operations'];
 
 // ─── Single Run Card ───────────────────────────────────────────
 const RunCard: React.FC<{ item: AgentRunItem; index: number }> = ({ item, index }) => {
-  const catColor = CATEGORY_COLORS[item.category] ?? '#7036F0';
+  const catColor = CATEGORY_COLORS[item.category] ?? '#D4A017';
   const statusCfg = STATUS_CONFIG[item.status];
 
   return (

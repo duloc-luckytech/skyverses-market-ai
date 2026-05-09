@@ -55,9 +55,9 @@ const sizeClasses: Record<Size, string> = {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    'text-white bg-[linear-gradient(135deg,#7036F0_0%,#5326B5_100%)] hover:bg-[linear-gradient(135deg,#5326B5_0%,#2E1670_100%)] hover:shadow-atlas-glow active:scale-[.98]',
+    'text-white bg-[linear-gradient(135deg,#D4A017_0%,#B8860B_100%)] hover:bg-[linear-gradient(135deg,#B8860B_0%,#8B6914_100%)] hover:shadow-atlas-glow active:scale-[.98]',
   secondary:
-    'text-white bg-[linear-gradient(135deg,#615EFF_0%,#4744CC_100%)] hover:shadow-atlas-glow active:scale-[.98]',
+    'text-white bg-[linear-gradient(135deg,#D4B85A_0%,#B8963F_100%)] hover:shadow-atlas-glow active:scale-[.98]',
   outline:
     'text-[var(--atlas-text-primary)] bg-transparent border border-[var(--atlas-border)] hover:border-atlas-purple hover:text-atlas-purple hover:bg-atlas-purple/5',
   ghost:

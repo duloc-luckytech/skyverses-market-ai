@@ -31,6 +31,9 @@ import apiClientRoutes from "./apiClient";
 import productSubmissionRoutes from "./productSubmission";
 import blogRoutes from "./blog";
 import adminTaskRoutes from "./adminTasks";
+import skytokenRoutes from "./skytoken.router";
+import promptMarketRoutes from "./prompt-market.router";
+import promoBannerRoutes from "./promoBanner";
 
 const router = Router();
 
@@ -58,7 +61,10 @@ router.use("/grok", grokRoutes);
 // ─── Content & Media ───
 router.use("/explorer", explorerMediaRoutes);
 router.use("/market", marketRoutes);
+router.use("/skytoken", skytokenRoutes);
+router.use("/prompt-market", promptMarketRoutes);
 router.use("/blog", blogRoutes);
+router.use("/promo-banners", promoBannerRoutes);
 router.use("/runninghub", runninghubRoutes);
 router.use("/category", categoryRoutes);
 router.use(uploadMediaRoute);

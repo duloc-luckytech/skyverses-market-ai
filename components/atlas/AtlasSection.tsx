@@ -28,7 +28,7 @@ const tones: Record<Tone, string> = {
   soft: 'bg-[var(--atlas-bg-panel-hover)]',
   panel: 'bg-[var(--atlas-bg-panel)]',
   gradient:
-    'bg-gradient-to-br from-white via-[#F5F0FF] to-[#EBF4FB] dark:from-[#0D0D1A] dark:via-[#1A1A2E] dark:to-[#0D0D1A]',
+    'bg-gradient-to-br from-white via-[#FDF9EE] to-[#FBF8F0] dark:from-[#0A0A0A] dark:via-[#111111] dark:to-[#0A0A0A]',
 };
 
 export const AtlasSection: React.FC<AtlasSectionProps> = ({

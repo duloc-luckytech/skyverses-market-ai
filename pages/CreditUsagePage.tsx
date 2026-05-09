@@ -113,9 +113,9 @@ const CreditUsagePage: React.FC = () => {
   const breakdowns = useMemo(() => {
     const total = Object.values(stats.sourceBreakdown).reduce((a, b) => a + b, 0) || 1;
     const colors: Record<string, { color: string; icon: React.ReactNode }> = {
-      'Video AI': { color: '#8b5cf6', icon: <Video size={14}/> },
-      'Image AI': { color: '#7036F0', icon: <ImageIcon size={14}/> },
-      'Voice AI': { color: '#f59e0b', icon: <Mic size={14}/> },
+      'Video AI': { color: '#C4960C', icon: <Video size={14}/> },
+      'Image AI': { color: '#D4A017', icon: <ImageIcon size={14}/> },
+      'Voice AI': { color: '#D4A017', icon: <Mic size={14}/> },
       'Music AI': { color: '#ec4899', icon: <Music size={14}/> },
       'Khác': { color: '#64748b', icon: <Wand2 size={14}/> },
     };
@@ -145,12 +145,12 @@ const CreditUsagePage: React.FC = () => {
   const typeConfig: Record<string, { label: string; color: string; bg: string }> = {
     'TOP_UP': { label: 'Nạp tiền', color: '#10b981', bg: '#10b98112' },
     'CONSUME': { label: 'Sử dụng', color: '#ef4444', bg: '#ef444412' },
-    'FREE_IMAGE': { label: 'Ảnh Free', color: '#8b5cf6', bg: '#8b5cf612' },
-    'REFUND': { label: 'Hoàn trả', color: '#f59e0b', bg: '#f59e0b12' },
-    'ADMIN_ADJUST': { label: 'Điều chỉnh', color: '#8b5cf6', bg: '#8b5cf612' },
-    'WELCOME': { label: 'Welcome', color: '#7036F0', bg: '#7036F012' },
+    'FREE_IMAGE': { label: 'Ảnh Free', color: '#C4960C', bg: '#C4960C12' },
+    'REFUND': { label: 'Hoàn trả', color: '#D4A017', bg: '#D4A01712' },
+    'ADMIN_ADJUST': { label: 'Điều chỉnh', color: '#C4960C', bg: '#C4960C12' },
+    'WELCOME': { label: 'Welcome', color: '#D4A017', bg: '#D4A01712' },
     'DAILY': { label: 'Daily', color: '#06b6d4', bg: '#06b6d412' },
-    'EVENT_BONUS': { label: 'Event Bonus', color: '#f59e0b', bg: '#f59e0b12' },
+    'EVENT_BONUS': { label: 'Event Bonus', color: '#D4A017', bg: '#D4A01712' },
     'REFERRAL': { label: 'Giới thiệu', color: '#ec4899', bg: '#ec489912' },
   };
 
@@ -234,14 +234,14 @@ const CreditUsagePage: React.FC = () => {
             value={credits.toLocaleString()}
             unit="CR"
             icon={<Sparkles size={18} fill="currentColor" />}
-            color="#7036F0"
+            color="#D4A017"
           />
           <StatCard
             label="Ảnh free còn lại"
             value={freeImageRemaining.toLocaleString()}
             unit="ảnh"
             icon={<ImageIcon size={18} />}
-            color="#8b5cf6"
+            color="#C4960C"
           />
           <StatCard
             label="Đã dùng hôm nay"
@@ -255,7 +255,7 @@ const CreditUsagePage: React.FC = () => {
             value={stats.monthSpent.toLocaleString()}
             unit="CR"
             icon={<TrendingUp size={18} />}
-            color="#f59e0b"
+            color="#D4A017"
           />
         </motion.section>
 

@@ -256,7 +256,7 @@ export const IntegrationWorkflow: React.FC = () => {
                     <div className="space-y-6">
                       <div className="flex justify-between items-center px-2">
                         <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_#6366f1] animate-pulse"></div>
+                          <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_#D4B85A] animate-pulse"></div>
                           <span className="text-[11px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest italic">
                             {showResponse ? 'UPLINK_RESPONSE_TRACE' : 'INTEGRATION_CURL_SCRIPT'}
                           </span>

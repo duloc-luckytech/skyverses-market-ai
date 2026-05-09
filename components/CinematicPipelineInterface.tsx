@@ -238,7 +238,7 @@ const CinematicPipelineInterface = () => {
       </div>
 
       <div className="flex-grow flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #7036F0 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #D4A017 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
         <div className="flex-grow overflow-y-auto p-8 lg:p-12 relative z-10 no-scrollbar">
            <div className="max-w-4xl mx-auto space-y-12 pb-40">

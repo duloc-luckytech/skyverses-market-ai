@@ -332,7 +332,7 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
                  </div>
                  <button 
                    onClick={() => setUseOriginalUV(!useOriginalUV)}
-                   className={`w-14 h-7 rounded-full relative transition-colors ${useOriginalUV ? 'bg-brand-blue shadow-[0_0_20px_rgba(112,54,240,0.4)]' : 'bg-white/10'}`}
+                   className={`w-14 h-7 rounded-full relative transition-colors ${useOriginalUV ? 'bg-brand-blue shadow-[0_0_20px_rgba(201, 168, 76,0.4)]' : 'bg-white/10'}`}
                  >
                     <motion.div animate={{ x: useOriginalUV ? 28 : 2 }} className="absolute top-1 w-5 h-5 bg-white rounded-full shadow-lg" />
                  </button>

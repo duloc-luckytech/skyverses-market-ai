@@ -30,12 +30,12 @@ const PROMPT_SUGGESTIONS = [
 const PARTICLES = [
   { x: '8%',  y: '12%', delay: 0,   dur: 3.2, color: '#a855f7', size: 3 },
   { x: '88%', y: '8%',  delay: 0.5, dur: 2.8, color: '#ec4899', size: 2 },
-  { x: '18%', y: '82%', delay: 1.0, dur: 3.6, color: '#f97316', size: 2.5 },
-  { x: '76%', y: '75%', delay: 1.4, dur: 2.6, color: '#6366f1', size: 2 },
+  { x: '18%', y: '82%', delay: 1.0, dur: 3.6, color: '#E5C767', size: 2.5 },
+  { x: '76%', y: '75%', delay: 1.4, dur: 2.6, color: '#D4B85A', size: 2 },
   { x: '48%', y: '6%',  delay: 1.8, dur: 3.0, color: '#a855f7', size: 1.5 },
   { x: '92%', y: '45%', delay: 0.3, dur: 3.8, color: '#ec4899', size: 2 },
-  { x: '5%',  y: '55%', delay: 2.2, dur: 2.4, color: '#f97316', size: 1.5 },
-  { x: '60%', y: '90%', delay: 0.8, dur: 3.4, color: '#8b5cf6', size: 2.5 },
+  { x: '5%',  y: '55%', delay: 2.2, dur: 2.4, color: '#E5C767', size: 1.5 },
+  { x: '60%', y: '90%', delay: 0.8, dur: 3.4, color: '#D4B85A', size: 2.5 },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -268,7 +268,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0"
               style={{
-                background: 'radial-gradient(ellipse at 40% 30%, rgba(139,92,246,0.18) 0%, rgba(0,0,0,0) 60%), radial-gradient(ellipse at 70% 80%, rgba(236,72,153,0.12) 0%, rgba(0,0,0,0) 55%), rgba(0,0,0,0.88)',
+                background: 'radial-gradient(ellipse at 40% 30%, rgba(201, 168, 76,0.18) 0%, rgba(0,0,0,0) 60%), radial-gradient(ellipse at 70% 80%, rgba(236,72,153,0.12) 0%, rgba(0,0,0,0) 55%), rgba(0,0,0,0.88)',
                 backdropFilter: 'blur(14px)',
               }}
               onClick={onClose}
@@ -284,15 +284,15 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
               style={{
                 borderRadius: '1.75rem',
                 background: 'linear-gradient(160deg, #12091f 0%, #0d0919 50%, #09060f 100%)',
-                border: '1px solid rgba(139,92,246,0.18)',
-                boxShadow: '0 40px 120px rgba(0,0,0,0.85), 0 0 80px rgba(139,92,246,0.12), inset 0 1px 0 rgba(255,255,255,0.06)',
+                border: '1px solid rgba(201, 168, 76,0.18)',
+                boxShadow: '0 40px 120px rgba(0,0,0,0.85), 0 0 80px rgba(201, 168, 76,0.12), inset 0 1px 0 rgba(255,255,255,0.06)',
                 maxHeight: '94vh',
               }}
             >
               {/* ── Ambient top glow ── */}
               <div className="absolute top-0 left-0 right-0 h-32 pointer-events-none"
                 style={{
-                  background: 'radial-gradient(ellipse at 50% 0%, rgba(139,92,246,0.22) 0%, transparent 70%)',
+                  background: 'radial-gradient(ellipse at 50% 0%, rgba(201, 168, 76,0.22) 0%, transparent 70%)',
                   borderRadius: '1.75rem 1.75rem 0 0',
                 }}
               />
@@ -333,16 +333,16 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                     {/* Decorative rings */}
                     <div className="relative mb-6">
                       <div className="absolute -inset-8 rounded-full"
-                        style={{ border: '1px solid rgba(139,92,246,0.1)', animation: 'qOrbit 8s linear infinite' }}
+                        style={{ border: '1px solid rgba(201, 168, 76,0.1)', animation: 'qOrbit 8s linear infinite' }}
                       />
                       <div className="absolute -inset-14 rounded-full"
                         style={{ border: '1px solid rgba(236,72,153,0.07)', animation: 'qOrbitRev 12s linear infinite' }}
                       />
                       <div className="w-20 h-20 rounded-2xl flex items-center justify-center relative"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(236,72,153,0.15))',
-                          border: '1px solid rgba(139,92,246,0.3)',
-                          boxShadow: '0 0 40px rgba(139,92,246,0.25), inset 0 1px 0 rgba(255,255,255,0.1)',
+                          background: 'linear-gradient(135deg, rgba(201, 168, 76,0.25), rgba(236,72,153,0.15))',
+                          border: '1px solid rgba(201, 168, 76,0.3)',
+                          boxShadow: '0 0 40px rgba(201, 168, 76,0.25), inset 0 1px 0 rgba(255,255,255,0.1)',
                           animation: 'qPulseGlow 3s ease-in-out infinite',
                         }}
                       >
@@ -374,9 +374,9 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                       onClick={login}
                       className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-[13px] font-bold text-white relative overflow-hidden"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(236,72,153,0.15))',
-                        border: '1px solid rgba(139,92,246,0.3)',
-                        boxShadow: '0 8px 32px rgba(139,92,246,0.2)',
+                        background: 'linear-gradient(135deg, rgba(201, 168, 76,0.25), rgba(236,72,153,0.15))',
+                        border: '1px solid rgba(201, 168, 76,0.3)',
+                        boxShadow: '0 8px 32px rgba(201, 168, 76,0.2)',
                       }}
                     >
                       <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" className="w-5 h-5" alt="Google" />
@@ -410,14 +410,14 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                     <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ borderRadius: '1.75rem' }}>
                       <div style={{
                         position: 'absolute', inset: 0,
-                        backgroundImage: `linear-gradient(rgba(139,92,246,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.05) 1px, transparent 1px)`,
+                        backgroundImage: `linear-gradient(rgba(201, 168, 76,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(201, 168, 76,0.05) 1px, transparent 1px)`,
                         backgroundSize: '36px 36px',
                         animation: 'qIdleShimmer 4s ease-in-out infinite',
                       }} />
                       {/* Scanline */}
                       <div style={{
                         position: 'absolute', left: 0, right: 0, height: '100px',
-                        background: 'linear-gradient(180deg, transparent, rgba(139,92,246,0.07), transparent)',
+                        background: 'linear-gradient(180deg, transparent, rgba(201, 168, 76,0.07), transparent)',
                         animation: 'qScanline 3.5s ease-in-out infinite',
                       }} />
                     </div>
@@ -448,19 +448,19 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                       </div>
                       <div className="absolute -inset-16" style={{ animation: 'qOrbit 7s linear infinite' }}>
                         <div className="absolute top-1/2 right-0 w-1.5 h-1.5 rounded-full"
-                          style={{ background: '#f97316', boxShadow: '0 0 6px rgba(249,115,22,0.6)' }} />
+                          style={{ background: '#E5C767', boxShadow: '0 0 6px rgba(249,115,22,0.6)' }} />
                       </div>
 
                       {/* Glow */}
                       <div className="absolute -inset-10 rounded-full"
-                        style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%)' }}
+                        style={{ background: 'radial-gradient(circle, rgba(201, 168, 76,0.2) 0%, transparent 70%)' }}
                       />
 
                       <div className="relative w-18 h-18 w-[72px] h-[72px] rounded-2xl flex items-center justify-center"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(139,92,246,0.3), rgba(236,72,153,0.2))',
-                          border: '1px solid rgba(139,92,246,0.35)',
-                          boxShadow: '0 0 40px rgba(139,92,246,0.3)',
+                          background: 'linear-gradient(135deg, rgba(201, 168, 76,0.3), rgba(236,72,153,0.2))',
+                          border: '1px solid rgba(201, 168, 76,0.35)',
+                          boxShadow: '0 0 40px rgba(201, 168, 76,0.3)',
                           animation: 'qPulseGlow 2s ease-in-out infinite',
                         }}
                       >
@@ -487,7 +487,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                     >
                       <div className="h-full rounded-full"
                         style={{
-                          background: 'linear-gradient(90deg, #7c3aed, #ec4899, #f97316)',
+                          background: 'linear-gradient(90deg, #C9A84C, #ec4899, #E5C767)',
                           backgroundSize: '200% 100%',
                           animation: 'qProgress 28s ease-out forwards, qShimmer 2s linear infinite',
                         }}
@@ -512,7 +512,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                               ? 'text-white'
                               : 'bg-white/5 text-white/20'
                           }`}
-                            style={step.done ? { background: 'linear-gradient(135deg, #7c3aed, #ec4899)', boxShadow: '0 0 8px rgba(139,92,246,0.5)' } : {}}
+                            style={step.done ? { background: 'linear-gradient(135deg, #C9A84C, #ec4899)', boxShadow: '0 0 8px rgba(201, 168, 76,0.5)' } : {}}
                           >
                             {step.done ? '✓' : (i + 1)}
                           </div>
@@ -534,9 +534,9 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-2xl flex items-center justify-center"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(236,72,153,0.15))',
-                      border: '1px solid rgba(139,92,246,0.25)',
-                      boxShadow: '0 4px 20px rgba(139,92,246,0.2)',
+                      background: 'linear-gradient(135deg, rgba(201, 168, 76,0.25), rgba(236,72,153,0.15))',
+                      border: '1px solid rgba(201, 168, 76,0.25)',
+                      boxShadow: '0 4px 20px rgba(201, 168, 76,0.2)',
                     }}
                   >
                     <Wand2 size={19} style={{ color: '#a855f7' }} />
@@ -562,7 +562,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
               </div>
 
               {/* Header divider */}
-              <div className="mx-5 shrink-0" style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(139,92,246,0.15), rgba(236,72,153,0.1), transparent)' }} />
+              <div className="mx-5 shrink-0" style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(201, 168, 76,0.15), rgba(236,72,153,0.1), transparent)' }} />
 
               {/* ════════════════════════════════════════════
                   BODY — 2 cột ngang (luôn luôn)
@@ -571,7 +571,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
 
                 {/* ── CỘT TRÁI: Preview ── */}
                 <div className="w-[260px] shrink-0 p-4 border-r flex flex-col gap-3"
-                  style={{ borderColor: 'rgba(139,92,246,0.08)' }}
+                  style={{ borderColor: 'rgba(201, 168, 76,0.08)' }}
                 >
                   <ImageJobCard
                     status={isGenerating ? 'processing' : generatedImage ? 'done' : 'idle'}
@@ -647,7 +647,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                         <span className="text-[9px] text-white/15">{prompt.length}/500</span>
                       </div>
                       <div className="relative rounded-xl overflow-hidden"
-                        style={{ background: 'rgba(139,92,246,0.04)', border: '1px solid rgba(139,92,246,0.12)' }}
+                        style={{ background: 'rgba(201, 168, 76,0.04)', border: '1px solid rgba(201, 168, 76,0.12)' }}
                       >
                         <textarea
                           value={prompt}
@@ -657,7 +657,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                           maxLength={500}
                         />
                         <div className="absolute bottom-2.5 right-3 pointer-events-none">
-                          <Sparkles size={12} style={{ color: 'rgba(139,92,246,0.3)' }} />
+                          <Sparkles size={12} style={{ color: 'rgba(201, 168, 76,0.3)' }} />
                         </div>
                       </div>
                     </div>
@@ -681,7 +681,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                                 whileTap={{ scale: 0.97 }}
                                 onClick={() => setPrompt(s.text)}
                                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-medium text-white/40 hover:text-white/75 transition-all"
-                                style={{ background: 'rgba(139,92,246,0.05)', border: '1px solid rgba(139,92,246,0.1)' }}
+                                style={{ background: 'rgba(201, 168, 76,0.05)', border: '1px solid rgba(201, 168, 76,0.1)' }}
                               >
                                 <span>{s.emoji}</span>
                                 <span className="truncate max-w-[130px]">{s.text.slice(0, 26)}…</span>
@@ -700,7 +700,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                       <div className="flex gap-2 items-center">
                         {references.map((ref, idx) => (
                           <div key={idx} className="relative w-12 h-12 rounded-xl overflow-hidden group"
-                            style={{ border: '1px solid rgba(139,92,246,0.15)' }}
+                            style={{ border: '1px solid rgba(201, 168, 76,0.15)' }}
                           >
                             <img src={ref} className="w-full h-full object-cover" />
                             <button
@@ -716,7 +716,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                           <button
                             onClick={() => fileInputRef.current?.click()}
                             className="w-12 h-12 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all"
-                            style={{ border: '2px dashed rgba(139,92,246,0.15)', color: 'rgba(255,255,255,0.2)' }}
+                            style={{ border: '2px dashed rgba(201, 168, 76,0.15)', color: 'rgba(255,255,255,0.2)' }}
                           >
                             {isUploading
                               ? <Loader2 size={13} className="animate-spin" style={{ color: '#a855f7' }} />
@@ -771,7 +771,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
 
                   {/* ── Footer (bên trong cột phải) ── */}
                   <div className="px-5 py-3.5 shrink-0"
-                    style={{ borderTop: '1px solid rgba(139,92,246,0.08)', background: 'rgba(0,0,0,0.2)' }}
+                    style={{ borderTop: '1px solid rgba(201, 168, 76,0.08)', background: 'rgba(0,0,0,0.2)' }}
                   >
                     <div className="flex items-center justify-between gap-3">
                       {/* Cost + status */}
@@ -804,11 +804,11 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                         className="q-gen-btn relative flex items-center gap-2 px-6 py-3 rounded-xl text-[12px] font-bold text-white overflow-hidden disabled:opacity-30 transition-all"
                         style={{
                           background: isGenerating || !prompt.trim()
-                            ? 'rgba(139,92,246,0.2)'
-                            : 'linear-gradient(135deg, #7c3aed 0%, #a855f7 40%, #ec4899 80%, #f97316 100%)',
+                            ? 'rgba(201, 168, 76,0.2)'
+                            : 'linear-gradient(135deg, #C9A84C 0%, #a855f7 40%, #ec4899 80%, #E5C767 100%)',
                           boxShadow: isGenerating || !prompt.trim()
                             ? 'none'
-                            : '0 6px 28px rgba(139,92,246,0.45), 0 2px 8px rgba(236,72,153,0.25)',
+                            : '0 6px 28px rgba(201, 168, 76,0.45), 0 2px 8px rgba(236,72,153,0.25)',
                         }}
                       >
                         <div className="q-btn-shine absolute inset-0 pointer-events-none"

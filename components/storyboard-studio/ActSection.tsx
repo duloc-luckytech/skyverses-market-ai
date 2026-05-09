@@ -52,7 +52,7 @@ export const ActSection: React.FC<ActSectionProps> = ({
     if (e.key === 'Escape') { setRenaming(false); }
   }, [commitRename]);
 
-  const dotColor = act.color ?? '#6366f1';
+  const dotColor = act.color ?? '#D4B85A';
 
   return (
     <div className="mb-3">

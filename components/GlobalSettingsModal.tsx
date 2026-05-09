@@ -48,7 +48,7 @@ const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({ isOpen, onClo
   const Switch = ({ active, onChange }: { active: boolean, onChange: () => void }) => (
     <button 
       onClick={onChange}
-      className={`w-10 h-5 md:w-12 md:h-6 rounded-full relative transition-all duration-300 ${active ? 'bg-[#7036F0] shadow-[0_0_10px_rgba(112,54,240,0.4)]' : 'bg-slate-200 dark:bg-zinc-800'}`}
+      className={`w-10 h-5 md:w-12 md:h-6 rounded-full relative transition-all duration-300 ${active ? 'bg-[#D4A017] shadow-[0_0_10px_rgba(212,160,23,0.4)]' : 'bg-slate-200 dark:bg-zinc-800'}`}
     >
       <motion.div 
         animate={{ x: active ? (window.innerWidth < 768 ? 20 : 26) : 2 }}

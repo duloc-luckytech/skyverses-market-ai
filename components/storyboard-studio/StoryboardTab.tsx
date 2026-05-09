@@ -119,7 +119,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
   const boxShadow = useTransform(
     y,
     [-5, 0, 5],
-    ['0 8px 30px rgba(112,54,240,0.18)', '0 2px 8px rgba(0,0,0,0.08)', '0 8px 30px rgba(112,54,240,0.18)']
+    ['0 8px 30px rgba(201, 168, 76,0.18)', '0 2px 8px rgba(0,0,0,0.08)', '0 8px 30px rgba(201, 168, 76,0.18)']
   );
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -350,7 +350,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
         className={`relative flex overflow-hidden transition-all duration-300 cursor-pointer ml-1 rounded-2xl
           ${isListView ? 'flex-row min-h-[120px]' : 'flex-col'}
           ${isSelected
-            ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(112,54,240,0.12)]'
+            ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(201, 168, 76,0.12)]'
             : 'ring-1 ring-slate-200 dark:ring-white/8 hover:ring-brand-blue/30 hover:shadow-xl dark:hover:shadow-brand-blue/5'
           }
           bg-white dark:bg-[var(--atlas-bg-page)]`}

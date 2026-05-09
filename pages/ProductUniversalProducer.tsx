@@ -101,7 +101,7 @@ const ProductUniversalProducer = () => {
                     </div>
                     <button 
                       onClick={() => setIsStudioOpen(true)}
-                      className="bg-brand-blue text-white px-16 py-8 text-sm font-bold uppercase tracking-[0.5em] hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-[0_0_80px_rgba(112,54,240,0.3)] active:scale-[0.98] flex items-center gap-6 mx-auto group/btn rounded-sm"
+                      className="bg-brand-blue text-white px-16 py-8 text-sm font-bold uppercase tracking-[0.5em] hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-[0_0_80px_rgba(201, 168, 76,0.3)] active:scale-[0.98] flex items-center gap-6 mx-auto group/btn rounded-sm"
                     >
                       ENTER_VIRTUAL_STUDIO <Play size={20} className="fill-current group-hover/btn:translate-x-1 transition-transform" />
                     </button>

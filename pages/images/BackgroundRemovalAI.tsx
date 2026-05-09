@@ -63,7 +63,7 @@ const BackgroundRemovalAI = () => {
             <div className="flex flex-col sm:flex-row gap-6 pt-4">
               <button 
                 onClick={() => setIsStudioOpen(true)}
-                className="bg-brand-blue text-white px-12 py-6 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(112,54,240,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
+                className="bg-brand-blue text-white px-12 py-6 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] shadow-[0_20px_80px_rgba(201, 168, 76,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
               >
                 Mở Studio Xóa Nền <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
@@ -90,7 +90,7 @@ const BackgroundRemovalAI = () => {
                          />
                       </div>
                    </div>
-                   <div className="absolute inset-y-0 left-1/2 w-1 bg-brand-blue shadow-[0_0_20px_rgba(112,54,240,0.8)] z-20"></div>
+                   <div className="absolute inset-y-0 left-1/2 w-1 bg-brand-blue shadow-[0_0_20px_rgba(201, 168, 76,0.8)] z-20"></div>
                    <div className="absolute bottom-8 left-8 space-y-2 z-30">
                       <h3 className="text-3xl font-bold italic uppercase tracking-tighter leading-none text-white drop-shadow-lg">Precision Cut</h3>
                       <p className="text-[10px] font-bold text-brand-blue uppercase tracking-[0.4em] italic">Segment_Core_v4.2_Active</p>

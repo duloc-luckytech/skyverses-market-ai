@@ -62,7 +62,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
         {/* Node Header */}
         <div className={`px-4 py-2.5 flex items-center justify-between border-b border-white/5 ${data.headerColor || 'bg-[#2a2b33]'}`}>
           <div className="flex items-center gap-2.5">
-            <div className="w-1.5 h-1.5 bg-indigo-500 shadow-[0_0_8px_#6366f1] animate-pulse"></div>
+            <div className="w-1.5 h-1.5 bg-indigo-500 shadow-[0_0_8px_#D4B85A] animate-pulse"></div>
             <div className="flex flex-col overflow-hidden">
               <span className="text-[10px] font-bold uppercase tracking-wider text-white italic leading-none truncate">{data.label}</span>
             </div>
@@ -80,7 +80,7 @@ export const EditorNode = ({ id, data, selected }: any) => {
                       type="target" 
                       position={Position.Left} 
                       id={input.name} 
-                      style={{ left: -14, top: '50%', background: '#6366f1', border: '3px solid #1a1b23', width: '10px', height: '10px' }} 
+                      style={{ left: -14, top: '50%', background: '#D4B85A', border: '3px solid #1a1b23', width: '10px', height: '10px' }} 
                     />
                     <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest pl-1 italic">{input.name}</span>
                  </div>

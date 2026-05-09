@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Maximize2, Loader2, SearchX, RefreshCw, 
-  ArrowRightLeft, Check, 
+import {
+  Maximize2, Loader2, SearchX, RefreshCw,
+  ArrowRightLeft, Check,
   Video, ImageIcon, X,
-  Eye, Heart
+  Eye, Heart, Sparkles, TrendingUp
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -28,19 +29,14 @@ const ASPECT_CLASSES = [
   'aspect-[4/5]', 'aspect-[3/4]', 'aspect-square', 'aspect-[3/4]', 'aspect-[4/5]',
 ];
 
-// --- Skeleton ---
-const CardSkeleton: React.FC<{ index: number }> = ({ index }) => {
-  const heights = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-[1/1]', 'aspect-[3/5]'];
-  return (
-    <div className={`break-inside-avoid mb-3 bg-slate-100 dark:bg-white/[0.03] rounded-xl overflow-hidden animate-pulse ${heights[index % heights.length]}`}>
-      <div className="w-full h-full relative">
-        <div className="absolute bottom-4 left-4 right-4 space-y-2">
-          <div className="h-4 bg-black/5 dark:bg-white/5 rounded w-2/3" />
-          <div className="h-3 bg-black/5 dark:bg-white/5 rounded w-1/3" />
-        </div>
-      </div>
-    </div>
-  );
+// Stagger animation for cards
+const cardVariants = {
+  hidden: { opacity: 0, y: 24, scale: 0.97 },
+  visible: (i: number) => ({
+    opacity: 1, y: 0, scale: 1,
+    transition: { delay: Math.min(i * 0.04, 0.6), duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const }
+  }),
+  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
 };
 
 // --- 3D Asset Card with Slider ---
@@ -125,11 +121,11 @@ const LazyImage: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
         <img
           src={src} alt={alt}
           onLoad={() => setLoaded(true)}
-          className={`w-full h-full object-cover transition-opacity duration-500 group-hover:scale-[1.03] group-hover:transition-transform group-hover:duration-700 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-[1.05] group-hover:duration-[1.2s] ${loaded ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.02]'}`}
         />
       )}
       {!loaded && (
-        <div className="absolute inset-0 bg-slate-100 dark:bg-white/[0.04] animate-pulse" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-50 dark:from-white/[0.04] dark:to-white/[0.02] animate-pulse" />
       )}
     </div>
   );
@@ -138,6 +134,8 @@ const LazyImage: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
 // --- Main Explorer Page ---
 const ExplorerPage = () => {
   const { t } = useLanguage();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
 
   usePageMeta({
     title: 'Explorer | Skyverses - Bộ sưu tập AI Gallery',
@@ -160,9 +158,10 @@ const ExplorerPage = () => {
     if (pageToFetch > 1) setIsFetchingMore(true);
     else setIsLoading(true);
     try {
-      const params: { type?: string, page: number, limit: number } = { page: pageToFetch, limit: 20 };
+      const params: Record<string, string | number> = { page: pageToFetch, limit: 20 };
       if (activeFilter !== 'all') params.type = activeFilter;
-      const res = await explorerApi.getItems(params);
+      if (searchQuery) params.search = searchQuery;
+      const res = await explorerApi.getItems(params as any);
       if (res.success && Array.isArray(res.data)) {
         if (reset) setItems(res.data); else setItems(prev => [...prev, ...res.data]);
         setHasMore(res.data.length >= 20);
@@ -183,7 +182,7 @@ const ExplorerPage = () => {
     setPage(1);
     fetchItems(1, true);
     setSelectedIds([]);
-  }, [activeFilter]);
+  }, [activeFilter, searchQuery]);
 
   const lastItemRef = useCallback((node: HTMLDivElement | null) => {
     if (isLoading || isFetchingMore) return;
@@ -207,70 +206,128 @@ const ExplorerPage = () => {
   return (
     <div className="pt-20 md:pt-28 pb-32 bg-[var(--atlas-bg-page)] min-h-screen text-[var(--atlas-text-primary)] transition-colors duration-300">
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12">
-        
-        {/* ═══════ HERO HEADER ═══════ */}
-        <header className="mb-8 md:mb-12">
+
+        {/* ═══════ LUXURY HERO HEADER ═══════ */}
+        <header className="mb-10 md:mb-14">
           {isLoading && page === 1 ? (
-            <div className="animate-pulse rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] p-8 md:p-12">
+            <div className="animate-pulse rounded-3xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.06] p-8 md:p-14">
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 <div className="lg:col-span-3 space-y-5">
-                  <div className="h-10 bg-slate-100 dark:bg-white/[0.04] rounded-xl w-3/5" />
+                  <div className="h-4 bg-slate-100 dark:bg-white/[0.04] rounded-full w-24" />
+                  <div className="h-12 bg-slate-100 dark:bg-white/[0.04] rounded-2xl w-3/5" />
                   <div className="h-5 bg-slate-100 dark:bg-white/[0.04] rounded-lg w-4/5" />
-                  <div className="flex gap-2 pt-2">{[1,2,3,4].map(i => <div key={i} className="h-9 w-20 bg-slate-100 dark:bg-white/[0.04] rounded-lg" />)}</div>
+                  <div className="flex gap-2 pt-2">{[1,2,3,4].map(i => <div key={i} className="h-10 w-24 bg-slate-100 dark:bg-white/[0.04] rounded-xl" />)}</div>
                 </div>
-                <div className="lg:col-span-2 hidden lg:flex gap-2">
-                  {[1,2,3].map(i => <div key={i} className="flex-1 aspect-[3/4] bg-slate-100 dark:bg-white/[0.04] rounded-xl" />)}
+                <div className="lg:col-span-2 hidden lg:flex gap-3">
+                  {[1,2,3].map(i => <div key={i} className="flex-1 aspect-[3/4] bg-slate-100 dark:bg-white/[0.04] rounded-2xl" />)}
                 </div>
               </div>
             </div>
           ) : (
-            <div className="relative rounded-2xl overflow-hidden border border-black/[0.04] dark:border-white/[0.08]">
-              {/* Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-sky-50/50 dark:from-[#1a1f2b] dark:via-[#0c0c0f] dark:to-[#0a1020]" />
-              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/[0.05] dark:bg-brand-blue/[0.08] rounded-full blur-[120px] -translate-y-1/3 translate-x-1/4 pointer-events-none" />
-              <div className="absolute bottom-0 left-1/4 w-[300px] h-[300px] bg-violet-500/[0.03] dark:bg-violet-500/[0.05] rounded-full blur-[80px] translate-y-1/3 pointer-events-none" />
-              
-              <div className="relative z-10 p-6 md:p-10 lg:p-12">
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="relative rounded-3xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06]"
+            >
+              {/* Luxury gradient background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-violet-50/30 dark:from-[#12141a] dark:via-[#0c0c0f] dark:to-[#0d0a1a]" />
+
+              {/* Ambient glow orbs */}
+              <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-atlas-purple/[0.06] dark:bg-atlas-purple/[0.10] rounded-full blur-[150px] pointer-events-none" />
+              <div className="absolute bottom-[-30%] left-[10%] w-[400px] h-[400px] bg-violet-400/[0.04] dark:bg-violet-500/[0.06] rounded-full blur-[100px] pointer-events-none" />
+              <div className="absolute top-[20%] left-[-5%] w-[250px] h-[250px] bg-amber-300/[0.04] dark:bg-amber-400/[0.03] rounded-full blur-[80px] pointer-events-none" />
+
+              {/* Subtle grid pattern overlay */}
+              <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+
+              <div className="relative z-10 p-7 md:p-12 lg:p-14">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
                   {/* Left — Text + Filters */}
-                  <div className="lg:col-span-3 space-y-5">
-                    <div className="space-y-3">
-                      <p className="text-sm font-bold uppercase tracking-[0.18em] text-atlas-orangeBright mb-1">
-                        EXPLORER
-                      </p>
-                      <h1 className="text-[2rem] md:text-[2.75rem] lg:text-[3.25rem] font-bold tracking-[-0.02em] leading-[1.05]">
-                        Khám phá{' '}<span className="atlas-text-gradient">thế giới AI</span>
+                  <div className="lg:col-span-3 space-y-6">
+                    <motion.div
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2, duration: 0.6 }}
+                      className="space-y-4"
+                    >
+                      {/* Premium badge */}
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-gradient-to-r from-atlas-purple/[0.10] to-violet-500/[0.06] border border-atlas-purple/15 rounded-full">
+                        <Sparkles size={12} className="text-atlas-purple" />
+                        <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-atlas-purple">Explorer</span>
+                      </div>
+
+                      <h1 className="text-[2.25rem] md:text-[3rem] lg:text-[3.5rem] font-bold tracking-[-0.03em] leading-[1.05]">
+                        Khám phá{' '}
+                        <span className="bg-gradient-to-r from-atlas-purple via-violet-500 to-purple-400 bg-clip-text text-transparent">
+                          thế giới AI
+                        </span>
                       </h1>
-                      <p className="text-base text-[var(--atlas-text-secondary)] leading-relaxed max-w-md">
+                      <p className="text-[15px] md:text-base text-[var(--atlas-text-secondary)] leading-relaxed max-w-lg">
                         {t('explorer.subtitle')}
                       </p>
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-atlas-purple/[0.08] border border-atlas-purple/20 rounded-full mt-3">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[11px] font-semibold text-atlas-purple">Live Gallery</span>
+
+                      {/* Live stats bar */}
+                      <div className="flex items-center gap-4 pt-1">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/[0.08] border border-emerald-500/15 rounded-full">
+                          <div className="relative w-2 h-2">
+                            <div className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-40" />
+                            <div className="relative w-2 h-2 rounded-full bg-emerald-500" />
+                          </div>
+                          <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">Live Gallery</span>
+                        </div>
                         {items.length > 0 && (
-                          <span className="text-[11px] text-atlas-purple/70 font-medium">· {items.length}+ tác phẩm</span>
+                          <div className="flex items-center gap-1.5 text-[12px] text-[var(--atlas-text-secondary)]">
+                            <TrendingUp size={12} className="text-atlas-purple" />
+                            <span className="font-semibold text-[var(--atlas-text-primary)]">{items.length}+</span>
+                            <span>tác phẩm</span>
+                          </div>
                         )}
                       </div>
-                    </div>
+                    </motion.div>
 
                     {/* Filter Pills */}
-                    <FilterHub activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.5 }}>
+                      <FilterHub activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
+                    </motion.div>
+
+                    {/* Active search query banner */}
+                    {searchQuery && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                        className="flex items-center gap-2"
+                      >
+                        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-atlas-purple/[0.08] to-violet-500/[0.04] border border-atlas-purple/15 backdrop-blur-sm">
+                          <Sparkles size={13} className="text-atlas-purple/60" />
+                          <span className="text-[12px] text-[var(--atlas-text-secondary)]">Collection:</span>
+                          <span className="text-[13px] font-bold text-atlas-purple">{searchQuery}</span>
+                          <button onClick={() => setSearchParams({})} className="ml-1 p-1 rounded-lg hover:bg-atlas-purple/10 transition-all text-atlas-purple/40 hover:text-atlas-purple">
+                            <X size={12} />
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
 
-                  {/* Right — Image Preview Collage */}
+                  {/* Right — Luxury Image Collage */}
                   <div className="lg:col-span-2 hidden lg:block">
-                    <div className="relative h-[220px]">
+                    <div className="relative h-[240px]">
                       {items.slice(0, 3).map((item, i) => {
-                        const transforms = [
-                          'rotate-[-3deg] translate-x-0 translate-y-0 z-10 hover:rotate-0 hover:scale-105',
-                          'rotate-[2deg] translate-x-6 translate-y-3 z-20 hover:rotate-0 hover:scale-105',
-                          'rotate-[-1deg] translate-x-12 translate-y-[-4px] z-30 hover:rotate-0 hover:scale-105',
+                        const configs = [
+                          { rotate: -4, x: 0, y: 0, z: 10, delay: 0.3 },
+                          { rotate: 2, x: 24, y: 12, z: 20, delay: 0.45 },
+                          { rotate: -1, x: 48, y: -6, z: 30, delay: 0.6 },
                         ];
+                        const cfg = configs[i];
                         return (
-                          <div
+                          <motion.div
                             key={item._id || item.id || i}
-                            className={`absolute top-0 w-[45%] h-full rounded-xl overflow-hidden shadow-xl border-2 border-white dark:border-[#1a1a1f] transition-all duration-500 cursor-pointer ${transforms[i]}`}
-                            style={{ left: `${i * 25}%` }}
+                            initial={{ opacity: 0, y: 30, rotate: 0 }}
+                            animate={{ opacity: 1, y: cfg.y, rotate: cfg.rotate }}
+                            transition={{ delay: cfg.delay, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+                            whileHover={{ rotate: 0, scale: 1.06, y: cfg.y - 8 }}
+                            className="absolute top-0 w-[45%] h-full rounded-2xl overflow-hidden shadow-2xl border-2 border-white/80 dark:border-white/[0.08] cursor-pointer"
+                            style={{ left: `${i * 25}%`, zIndex: cfg.z, transform: `translateX(${cfg.x}px)` }}
                             onClick={() => setSelectedItem(item)}
                           >
                             <img
@@ -278,13 +335,13 @@ const ExplorerPage = () => {
                               className="w-full h-full object-cover"
                               alt={item.title}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                            <div className="absolute bottom-2 left-2 right-2">
-                              <span className="px-2 py-0.5 bg-black/50 backdrop-blur-sm text-[9px] font-medium text-white rounded-md">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
+                            <div className="absolute bottom-3 left-3 right-3 flex items-center gap-1.5">
+                              <div className="px-2 py-1 bg-black/40 backdrop-blur-md text-[9px] font-semibold text-white rounded-lg border border-white/[0.08]">
                                 {(item.modelKey || item.model || 'AI').replace(/_/g, ' ')}
-                              </span>
+                              </div>
                             </div>
-                          </div>
+                          </motion.div>
                         );
                       })}
                       {items.length === 0 && (
@@ -296,16 +353,18 @@ const ExplorerPage = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
         </header>
 
-        {/* ═══════ CONTENT ═══════ */}
+        {/* ═══════ LUXURY CONTENT GRID ═══════ */}
         <div className="min-h-[400px]">
           {isLoading && page === 1 ? (
             <div className="explorer-grid">
               {[...Array(15)].map((_, i) => (
-                <div key={i} className={`rounded-xl bg-slate-100 dark:bg-white/[0.03] animate-pulse ${ASPECT_CLASSES[i % ASPECT_CLASSES.length]}`} />
+                <div key={i} className={`rounded-2xl bg-slate-100 dark:bg-white/[0.03] animate-pulse ${ASPECT_CLASSES[i % ASPECT_CLASSES.length]}`}>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-200/50 dark:from-white/[0.02] to-transparent" />
+                </div>
               ))}
             </div>
           ) : items.length > 0 ? (
@@ -330,105 +389,129 @@ const ExplorerPage = () => {
                     }
 
                     return (
-                      <div
+                      <motion.div
                         key={item._id || item.id}
                         ref={isLast ? lastItemRef : null}
-                        className={`relative overflow-hidden group cursor-pointer rounded-2xl transition-all duration-300 bg-white dark:bg-[var(--atlas-bg-panel)] border ${aspectClass} ${isSelected ? 'border-brand-blue shadow-lg shadow-brand-blue/10 scale-[0.98]' : 'border-black/[0.04] dark:border-white/[0.08] hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg'}`}
+                        custom={idx}
+                        variants={cardVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        whileHover={{ y: -4, transition: { duration: 0.3, ease: 'easeOut' } }}
+                        className={`relative overflow-hidden group cursor-pointer rounded-2xl transition-shadow duration-500 bg-white dark:bg-[var(--atlas-bg-panel)] ${aspectClass} ${isSelected ? 'ring-2 ring-atlas-purple shadow-lg shadow-atlas-purple/15 scale-[0.98]' : 'ring-1 ring-black/[0.06] dark:ring-white/[0.06] hover:ring-atlas-purple/30 hover:shadow-xl hover:shadow-black/[0.08] dark:hover:shadow-atlas-purple/[0.06]'}`}
                         onClick={() => setSelectedItem(item)}
                       >
                         {/* Select checkbox */}
-                        <div onClick={(e) => toggleSelection(e, item._id || item.id)} className={`absolute top-3 left-3 z-30 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-brand-blue border-brand-blue' : 'bg-black/30 border-white/20 opacity-0 group-hover:opacity-100'}`}>
+                        <div onClick={(e) => toggleSelection(e, item._id || item.id)} className={`absolute top-3 left-3 z-30 w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${isSelected ? 'bg-atlas-purple border-atlas-purple shadow-sm shadow-atlas-purple/30' : 'bg-black/20 backdrop-blur-sm border-white/20 opacity-0 group-hover:opacity-100'}`}>
                           {isSelected && <Check size={11} strokeWidth={3} className="text-white" />}
                         </div>
 
-                        {/* Type badge — always visible */}
-                        <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5">
-                          <span className="px-2 py-0.5 bg-black/50 backdrop-blur-sm text-[10px] font-medium text-white rounded-md">{modelKey}</span>
+                        {/* Model badge — premium glass style */}
+                        <div className="absolute top-3 right-3 z-30">
+                          <span className="px-2.5 py-1 bg-black/30 backdrop-blur-xl text-[10px] font-semibold text-white rounded-lg border border-white/[0.08] shadow-sm">{modelKey}</span>
                         </div>
 
-                        {/* Image container — fixed aspect, no reflow */}
+                        {/* Image container */}
                         <div className="absolute inset-0 overflow-hidden bg-slate-100 dark:bg-white/[0.03]">
                           <LazyImage src={item.thumbnailUrl || item.url || item.mediaUrl} alt={item.title} />
-                          
-                          {/* Gradient */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-                          {/* Hover overlay info */}
-                          <div className="absolute bottom-0 left-0 right-0 p-3 z-20 pointer-events-none opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                          {/* Premium gradient hover */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                          {/* Subtle shimmer on hover */}
+                          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none translate-x-[-100%] group-hover:translate-x-[100%]" style={{ transition: 'transform 0.8s ease-out, opacity 0.3s ease' }} />
+
+                          {/* Hover overlay info — luxury layout */}
+                          <div className="absolute bottom-0 left-0 right-0 p-4 z-20 pointer-events-none opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-400">
                             {item.prompt && (
-                              <p className="text-[10px] text-white/60 line-clamp-2 italic mb-1.5">"{item.prompt}"</p>
+                              <p className="text-[10px] text-white/50 line-clamp-2 italic mb-2 font-light">"{item.prompt}"</p>
                             )}
-                            <div className="flex items-center gap-3 text-[11px] text-white/50">
-                              <span className="flex items-center gap-1"><Eye size={11} /> {stats.views}</span>
-                              <span className="flex items-center gap-1"><Heart size={11} /> {stats.likes}</span>
+                            <div className="flex items-center gap-3 text-[11px]">
+                              <span className="flex items-center gap-1 text-white/40"><Eye size={11} /> {stats.views}</span>
+                              <span className="flex items-center gap-1 text-white/40"><Heart size={11} /> {stats.likes}</span>
                             </div>
                           </div>
                         </div>
 
-                        {/* Card footer overlay */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/30 to-transparent px-3 py-2.5 flex items-center justify-between z-20">
-                          <div className="flex items-center gap-1.5 min-w-0">
-                            <div className="w-1.5 h-1.5 rounded-full bg-brand-blue shrink-0" />
-                            <span className="text-[11px] font-medium text-white/70 truncate">{item.type?.replace(/_/g, ' ')}</span>
+                        {/* Card footer — refined */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/40 to-transparent px-3.5 py-3 flex items-center justify-between z-20">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className="w-1.5 h-1.5 rounded-full bg-atlas-purple shrink-0 shadow-sm shadow-atlas-purple/30" />
+                            <span className="text-[11px] font-medium text-white/60 truncate tracking-wide">{item.type?.replace(/_/g, ' ')}</span>
                           </div>
-                          <button onClick={(e) => { e.stopPropagation(); setSelectedItem(item); }} className="p-1 text-white/50 hover:text-white transition-colors">
+                          <button onClick={(e) => { e.stopPropagation(); setSelectedItem(item); }} className="p-1.5 text-white/30 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200">
                             <Maximize2 size={12} />
                           </button>
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })}
               </div>
-              
-              {/* Load more indicator */}
+
+              {/* Luxury load more indicator */}
               {isFetchingMore && (
-                <div className="flex justify-center py-10">
-                  <div className="flex items-center gap-2">
-                    <Loader2 size={18} className="animate-spin text-brand-blue" />
-                    <p className="text-[13px] text-slate-400">Đang tải thêm...</p>
+                <div className="flex justify-center py-12">
+                  <div className="flex items-center gap-3 px-6 py-3 bg-white/80 dark:bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-lg">
+                    <Loader2 size={16} className="animate-spin text-atlas-purple" />
+                    <p className="text-[13px] font-medium text-[var(--atlas-text-secondary)]">Đang tải thêm...</p>
                   </div>
                 </div>
               )}
 
               {!hasMore && items.length > 0 && (
                 <div className="flex justify-center py-16">
-                  <p className="text-[13px] text-slate-300 dark:text-gray-600">Đã hiển thị tất cả</p>
+                  <div className="flex items-center gap-2 text-[13px] text-slate-300 dark:text-gray-600">
+                    <div className="w-8 h-px bg-slate-200 dark:bg-gray-700" />
+                    <span>Đã hiển thị tất cả</span>
+                    <div className="w-8 h-px bg-slate-200 dark:bg-gray-700" />
+                  </div>
                 </div>
               )}
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
-              <SearchX size={40} strokeWidth={1.5} className="text-slate-200 dark:text-gray-700" />
-              <div className="space-y-1">
-                <p className="text-lg font-semibold text-slate-400">{t('explorer.empty')}</p>
-                <button onClick={() => fetchItems(1, true)} className="text-[13px] text-brand-blue hover:underline flex items-center gap-1.5 mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center justify-center py-28 gap-5 text-center"
+            >
+              <div className="p-6 rounded-3xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04]">
+                <SearchX size={44} strokeWidth={1.2} className="text-slate-300 dark:text-gray-600" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-lg font-semibold text-slate-500">{t('explorer.empty')}</p>
+                <button onClick={() => fetchItems(1, true)} className="text-[13px] text-atlas-purple hover:text-atlas-purple/80 font-medium flex items-center gap-1.5 mx-auto transition-colors">
                   <RefreshCw size={13} /> {t('explorer.retry')}
                 </button>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
 
-      {/* ═══════ SELECTION ACTION BAR ═══════ */}
+      {/* ═══════ LUXURY SELECTION ACTION BAR ═══════ */}
       <AnimatePresence>
         {selectedIds.length > 0 && (
-          <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }} className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[500] w-full max-w-xl px-4">
-            <div className="bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] px-5 py-3.5 rounded-2xl shadow-2xl flex items-center justify-between gap-4">
+          <motion.div
+            initial={{ y: 80, opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 80, opacity: 0, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[500] w-full max-w-xl px-4"
+          >
+            <div className="bg-white/90 dark:bg-[#1a1a22]/90 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.08] px-5 py-3.5 rounded-2xl shadow-2xl shadow-black/[0.12] dark:shadow-atlas-purple/[0.08] flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center">
-                  <span className="text-sm font-bold text-brand-blue">{selectedIds.length}</span>
+                <div className="w-8 h-8 rounded-xl bg-atlas-purple/10 flex items-center justify-center">
+                  <span className="text-sm font-bold text-atlas-purple">{selectedIds.length}</span>
                 </div>
-                <span className="text-[13px] font-medium text-slate-500">đã chọn</span>
+                <span className="text-[13px] font-medium text-[var(--atlas-text-secondary)]">đã chọn</span>
               </div>
               <div className="flex items-center gap-2">
-                <button disabled={!canGenerate} className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium transition-all ${canGenerate ? 'bg-brand-blue text-white hover:brightness-110' : 'bg-slate-100 dark:bg-white/5 text-slate-300 cursor-not-allowed'}`}>
+                <button disabled={!canGenerate} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${canGenerate ? 'bg-atlas-purple text-white hover:brightness-110 shadow-sm shadow-atlas-purple/20' : 'bg-slate-100 dark:bg-white/5 text-slate-300 cursor-not-allowed'}`}>
                   <ImageIcon size={14} /> Tạo ảnh
                 </button>
-                <button disabled={!canGenerate} className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium transition-all ${canGenerate ? 'bg-purple-600 text-white hover:brightness-110' : 'bg-slate-100 dark:bg-white/5 text-slate-300 cursor-not-allowed'}`}>
+                <button disabled={!canGenerate} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${canGenerate ? 'bg-gradient-to-r from-violet-600 to-purple-500 text-white hover:brightness-110 shadow-sm shadow-purple-500/20' : 'bg-slate-100 dark:bg-white/5 text-slate-300 cursor-not-allowed'}`}>
                   <Video size={14} /> Tạo video
                 </button>
-                <button onClick={() => setSelectedIds([])} className="p-2 text-slate-400 hover:text-red-500 transition-colors ml-1">
+                <button onClick={() => setSelectedIds([])} className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all ml-1">
                   <X size={16} />
                 </button>
               </div>
@@ -443,11 +526,11 @@ const ExplorerPage = () => {
         .explorer-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
+          gap: 12px;
         }
-        @media (min-width: 768px) { .explorer-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (min-width: 1024px) { .explorer-grid { grid-template-columns: repeat(4, 1fr); } }
-        @media (min-width: 1280px) { .explorer-grid { grid-template-columns: repeat(5, 1fr); } }
+        @media (min-width: 768px) { .explorer-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
+        @media (min-width: 1024px) { .explorer-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
+        @media (min-width: 1280px) { .explorer-grid { grid-template-columns: repeat(5, 1fr); gap: 16px; } }
         input[type=range]::-webkit-slider-thumb {
           -webkit-appearance: none;
           height: 100%;

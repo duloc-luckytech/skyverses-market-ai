@@ -143,7 +143,7 @@ const SlideThumbnailList: React.FC<Props> = ({
                 <div
                   className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all duration-200
                     ${isActive
-                      ? 'border-brand-blue shadow-[0_0_0_2px_rgba(112,54,240,0.25)] shadow-brand-blue/20'
+                      ? 'border-brand-blue shadow-[0_0_0_2px_rgba(201, 168, 76,0.25)] shadow-brand-blue/20'
                       : 'border-black/[0.08] dark:border-white/[0.06] hover:border-brand-blue/40'
                     }`}
                 >
@@ -176,7 +176,7 @@ const SlideThumbnailList: React.FC<Props> = ({
                           <motion.div
                             className="absolute inset-0"
                             style={{
-                              background: 'linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.15) 50%, transparent 100%)',
+                              background: 'linear-gradient(90deg, transparent 0%, rgba(201, 168, 76,0.15) 50%, transparent 100%)',
                             }}
                             animate={{ x: ['-100%', '200%'] }}
                             transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.2 }}

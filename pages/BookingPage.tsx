@@ -91,9 +91,9 @@ Submitted via Skyverses Booking Portal.
         <div className="absolute inset-0 dark:opacity-0 transition-opacity"
           style={{ background: 'linear-gradient(180deg, #EBF4FB 0%, #F4F0FF 60%, #FFFFFF 100%)' }} />
         <div className="absolute top-[-15%] left-[35%] w-[600px] h-[600px] rounded-full opacity-40 blur-3xl"
-          style={{ background: 'radial-gradient(circle at center, rgba(112,54,240,.30) 0%, rgba(112,54,240,0) 70%)' }} />
+          style={{ background: 'radial-gradient(circle at center, rgba(201, 168, 76,.30) 0%, rgba(201, 168, 76,0) 70%)' }} />
         <div className="absolute bottom-[15%] right-[5%] w-[400px] h-[400px] rounded-full opacity-25 blur-3xl"
-          style={{ background: 'radial-gradient(circle at center, rgba(254,108,17,.18) 0%, rgba(254,108,17,0) 70%)' }} />
+          style={{ background: 'radial-gradient(circle at center, rgba(229, 199, 103,.18) 0%, rgba(229, 199, 103,0) 70%)' }} />
       </div>
 
       <div className="max-w-[1300px] mx-auto px-4 md:px-8 relative z-10">

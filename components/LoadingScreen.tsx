@@ -71,8 +71,8 @@ const LoadingScreen: React.FC<{ onFinished: () => void }> = ({ onFinished }) => 
                     top: -2,
                     left: '50%',
                     marginLeft: -2,
-                    background: 'rgba(112,54,240,0.5)',
-                    boxShadow: '0 0 12px rgba(112,54,240,0.4)',
+                    background: 'rgba(201, 168, 76,0.5)',
+                    boxShadow: '0 0 12px rgba(201, 168, 76,0.4)',
                   }}
                 />
               </div>
@@ -128,7 +128,7 @@ const LoadingScreen: React.FC<{ onFinished: () => void }> = ({ onFinished }) => 
                 className="h-full rounded-full"
                 style={{
                   width: '40%',
-                  background: 'linear-gradient(90deg, transparent, rgba(112,54,240,0.5), transparent)',
+                  background: 'linear-gradient(90deg, transparent, rgba(201, 168, 76,0.5), transparent)',
                   animation: 'loadingShimmer 1.2s ease-in-out infinite',
                 }}
               />

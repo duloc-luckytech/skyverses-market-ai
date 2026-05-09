@@ -430,7 +430,7 @@ console.log(data);`;
                     <div className="flex gap-4">
                       {isRunning && (
                         <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/10 rounded-full border border-indigo-500/20">
-                           <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_8px_#6366f1]"></div>
+                           <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_8px_#D4B85A]"></div>
                            <span className="text-[8px] font-bold uppercase text-indigo-500 tracking-widest">Polling Node active (5s cycle)</span>
                         </div>
                       )}

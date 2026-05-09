@@ -31,7 +31,7 @@ const variants: Record<Variant, string> = {
   outlined:
     'bg-transparent border border-[var(--atlas-border)]',
   gradient:
-    'border border-[var(--atlas-border-soft)] bg-gradient-to-br from-white via-[#F5F0FF] to-[#EBF4FB] dark:from-[#1A1A2E] dark:via-[#22213A] dark:to-[#0D0D1A]',
+    'border border-[var(--atlas-border-soft)] bg-gradient-to-br from-white via-[#FDF9EE] to-[#FBF8F0] dark:from-[#111111] dark:via-[#1A1A1A] dark:to-[#0A0A0A]',
   glass:
     'atlas-glass',
 };

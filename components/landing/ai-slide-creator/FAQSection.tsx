@@ -86,7 +86,7 @@ export const FAQSection: React.FC = () => {
         </FadeInUp>
 
         <FadeInUp delay={0.08}>
-          <div className="bg-white dark:bg-[#111] rounded-2xl border border-black/[0.06] dark:border-white/[0.04] px-6 divide-y divide-black/[0.04] dark:divide-white/[0.03]">
+          <div className="bg-white dark:bg-[#111] rounded-xl border border-black/[0.06] dark:border-white/[0.04] px-6 divide-y divide-black/[0.04] dark:divide-white/[0.03]">
             {FAQS.map((faq, i) => (
               <FAQItem
                 key={i}

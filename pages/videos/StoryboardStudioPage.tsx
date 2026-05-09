@@ -188,7 +188,7 @@ const StoryboardStudioPage: React.FC = () => {
               <button
                 id="btn-launch-studio-hero"
                 onClick={() => setIsStudioOpen(true)}
-                className="group inline-flex items-center justify-center gap-3 bg-brand-blue text-white px-10 py-5 rounded-xl text-xs font-bold uppercase tracking-[0.3em] shadow-[0_20px_60px_rgba(112,54,240,0.35)] hover:scale-105 active:scale-95 transition-all"
+                className="group inline-flex items-center justify-center gap-3 bg-brand-blue text-white px-10 py-5 rounded-xl text-xs font-bold uppercase tracking-[0.3em] shadow-[0_20px_60px_rgba(201, 168, 76,0.35)] hover:scale-105 active:scale-95 transition-all"
               >
                 <Zap size={16} fill="currentColor" />
                 Khởi chạy Studio Pro

@@ -458,7 +458,7 @@ const SlideTextObject: React.FC<Props> = ({
         <div
           style={{ borderRadius: 'inherit' }}
           className={`absolute inset-0 pointer-events-none transition-all duration-100 ${
-            isEditing  ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(112,54,240,0.18)]' :
+            isEditing  ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(201, 168, 76,0.18)]' :
             isSelected ? 'ring-2 ring-brand-blue/90' :
                          'ring-1 ring-transparent group-hover/obj:ring-white/40 group-hover/obj:ring-dashed'
           }`}

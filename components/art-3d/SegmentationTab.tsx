@@ -25,7 +25,7 @@ export const SegmentationTab: React.FC<SegmentationTabProps> = ({ variants }) =>
               <div className="absolute inset-0 bg-gradient-to-b from-brand-blue/5 to-transparent rounded-full blur-3xl opacity-20"></div>
               <img 
                 src="https://ai-cdn.gommo.net/ai/images/c1df07a5156c5710/9eb466139cc29515.png" 
-                className="w-full h-full object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(112,54,240,0.1)]" 
+                className="w-full h-full object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(201, 168, 76,0.1)]" 
                 alt="Segmentation Preview" 
               />
             </div>

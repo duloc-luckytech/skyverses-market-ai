@@ -71,6 +71,15 @@ const pageImports = {
   qwenChat: () => import('./pages/QwenChatAIPage'),
   // Slides
   aiSlideCreator: () => import('./pages/slides/AISlideCreatorPage'),
+  // Prompt Market
+  promptMarket: () => import('./pages/PromptMarketPage'),
+  promptDetail: () => import('./pages/PromptDetailPage'),
+  promptSell: () => import('./pages/PromptSellPage'),
+  promptCreate: () => import('./pages/PromptCreatePage'),
+  promptEdit: () => import('./pages/PromptEditPage'),
+  myPromptPurchases: () => import('./pages/MyPromptPurchasesPage'),
+  promptSellerProfile: () => import('./pages/PromptSellerProfilePage'),
+  promptWishlist: () => import('./pages/PromptWishlistPage'),
 };
 
 // Core pages
@@ -134,6 +143,16 @@ const ProductCaptchaToken = React.lazy(pageImports.captcha);
 const NoCodeExportPage = React.lazy(pageImports.noCodeExport);
 const QwenChatAIPage = React.lazy(pageImports.qwenChat);
 const AISlideCreatorPage = React.lazy(pageImports.aiSlideCreator);
+
+// Prompt Market
+const PromptMarketPage = React.lazy(pageImports.promptMarket);
+const PromptDetailPage = React.lazy(pageImports.promptDetail);
+const PromptSellPage = React.lazy(pageImports.promptSell);
+const PromptCreatePage = React.lazy(pageImports.promptCreate);
+const PromptEditPage = React.lazy(pageImports.promptEdit);
+const MyPromptPurchasesPage = React.lazy(pageImports.myPromptPurchases);
+const PromptSellerProfilePage = React.lazy(pageImports.promptSellerProfile);
+const PromptWishlistPage = React.lazy(pageImports.promptWishlist);
 
 // ═══ Ultra-fast page transition bar (no blank page) ═══
 const PageLoader = () => (
@@ -221,7 +240,15 @@ const App: React.FC = () => {
                       <Route path="/referral" element={<ReferralPage />} />
                       <Route path="/policy" element={<PolicyPage />} />
 
-
+                      {/* Prompt Market */}
+                      <Route path="/prompt-market" element={<PromptMarketPage />} />
+                      <Route path="/prompt-market/sell" element={<PromptSellPage />} />
+                      <Route path="/prompt-market/sell/new" element={<PromptCreatePage />} />
+                      <Route path="/prompt-market/sell/edit/:id" element={<PromptEditPage />} />
+                      <Route path="/prompt-market/my-purchases" element={<MyPromptPurchasesPage />} />
+                      <Route path="/prompt-market/wishlist" element={<PromptWishlistPage />} />
+                      <Route path="/prompt-market/seller/:sellerId" element={<PromptSellerProfilePage />} />
+                      <Route path="/prompt-market/:slug" element={<PromptDetailPage />} />
 
                       <Route path="/product/background-removal-ai" element={<BackgroundRemovalAI />} />
                       <Route path="/product/social-banner-ai" element={<SocialBannerAI />} />

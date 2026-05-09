@@ -112,7 +112,7 @@ export const AIGeneratingScreen: React.FC<AIGeneratingScreenProps> = ({
         />
         <motion.div
           className="absolute top-1/2 left-1/3 w-[400px] h-[400px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, rgba(201, 168, 76,0.06) 0%, transparent 70%)' }}
           animate={{ scale: [1.1, 1, 1.1] }}
           transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
         />

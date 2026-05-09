@@ -28,7 +28,7 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, type, title }) =
       />
       
       {/* Modal Container */}
-      <div className="relative w-full max-w-6xl bg-brand-gray border border-white/10 shadow-[0_0_100px_rgba(112,54,240,0.2)] flex flex-col max-h-[90vh] animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
+      <div className="relative w-full max-w-6xl bg-brand-gray border border-white/10 shadow-[0_0_100px_rgba(201, 168, 76,0.2)] flex flex-col max-h-[90vh] animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
         
         {/* Header */}
         <div className="flex justify-between items-center px-8 py-6 border-b border-white/5 bg-black/40">

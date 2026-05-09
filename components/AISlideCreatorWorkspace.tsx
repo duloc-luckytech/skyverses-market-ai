@@ -712,7 +712,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                   <motion.button
                     onClick={() => s.setIsGenerateModalOpen(true)}
                     disabled={!s.deckTopic.trim()}
-                    whileHover={{ scale: 1.04, boxShadow: '0 12px 32px rgba(112,54,240,0.35)' }}
+                    whileHover={{ scale: 1.04, boxShadow: '0 12px 32px rgba(201, 168, 76,0.35)' }}
                     whileTap={{ scale: 0.97 }}
                     className="relative flex items-center gap-2 px-7 py-3 rounded-xl bg-brand-blue text-white font-bold text-sm shadow-lg shadow-brand-blue/20 hover:bg-brand-blue/90 transition-all disabled:opacity-40 disabled:shadow-none"
                   >

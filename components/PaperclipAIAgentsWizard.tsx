@@ -12,7 +12,7 @@ const WIZARD_DEPTS = [
     id: 'marketing',
     label: 'Marketing AI',
     icon: Megaphone,
-    color: '#8b5cf6',
+    color: '#C4960C',
     agent: 'Marketing Agent',
     desc: 'Tạo content SEO, social media, email campaign',
     tasks: ['Viết content SEO', 'Social media posts', 'Email campaign', 'Competitor analysis'],
@@ -30,7 +30,7 @@ const WIZARD_DEPTS = [
     id: 'sales',
     label: 'Sales AI',
     icon: BarChart3,
-    color: '#f59e0b',
+    color: '#D4A017',
     agent: 'Sales Agent',
     desc: 'Lead outreach, CRM, proposal drafting',
     tasks: ['Lead outreach', 'CRM follow-up', 'Proposal drafting', 'Deal analysis'],
@@ -296,7 +296,7 @@ export default function OnboardingWizard({ onComplete, onSkip }: OnboardingWizar
               key={s.id}
               className="h-1.5 flex-1 rounded-full transition-all duration-400"
               style={{
-                backgroundColor: i <= step ? '#7036F0' : 'rgba(0,0,0,0.07)',
+                backgroundColor: i <= step ? '#D4A017' : 'rgba(0,0,0,0.07)',
               }}
             />
           ))}
@@ -360,7 +360,7 @@ export default function OnboardingWizard({ onComplete, onSkip }: OnboardingWizar
             <button
               onClick={handleStart}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-white text-[12px] font-bold uppercase tracking-wider shadow-lg shadow-brand-blue/25 hover:brightness-110 transition-all"
-              style={{ background: 'linear-gradient(135deg, #7036F0, #3b82f6)' }}
+              style={{ background: 'linear-gradient(135deg, #D4A017, #3b82f6)' }}
             >
               <Play size={14} /> Bắt đầu!
             </button>

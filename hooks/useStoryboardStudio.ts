@@ -47,12 +47,12 @@ export interface Scene {
 
 // ─── Acts ─────────────────────────────────────────────────────────────────────
 export const ACT_COLORS = [
-  '#6366f1', // indigo
+  '#D4B85A', // indigo
   '#ec4899', // pink
-  '#f59e0b', // amber
+  '#E5C767', // amber
   '#10b981', // emerald
   '#3b82f6', // blue
-  '#8b5cf6', // violet
+  '#D4B85A', // violet
   '#ef4444', // red
   '#14b8a6', // teal
 ] as const;

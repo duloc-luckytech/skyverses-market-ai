@@ -61,7 +61,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                   onClick={onGenerateImages}
                   disabled={!hasSelection || isProcessing}
                   aria-label={`Tạo hình ảnh cho ${selectedCount} cảnh đã chọn`}
-                  className="flex-1 lg:flex-none bg-[#7036F0] text-white px-3 lg:px-6 py-2.5 lg:py-3 text-[9px] lg:text-[10px] font-bold uppercase tracking-widest rounded-xl flex items-center justify-center gap-1.5 lg:gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed"
+                  className="flex-1 lg:flex-none bg-[#D4A017] text-white px-3 lg:px-6 py-2.5 lg:py-3 text-[9px] lg:text-[10px] font-bold uppercase tracking-widest rounded-xl flex items-center justify-center gap-1.5 lg:gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed"
                 >
                    <ImageIcon size={12}/><span className="hidden xs:inline">Tạo hình</span><span className="xs:hidden">Hình</span>
                 </button>

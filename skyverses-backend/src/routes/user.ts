@@ -627,6 +627,8 @@ router.put("/update-profile", authenticate, async (req: any, res) => {
       "bankAccountName",
       "bankName",
       "bankNumber",
+      "bio",
+      "socialLinks",
     ];
 
     const updates: any = {};

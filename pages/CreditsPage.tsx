@@ -114,9 +114,9 @@ const CreditsPage = () => {
         <div className="absolute inset-0 dark:opacity-0 transition-opacity"
           style={{ background: 'linear-gradient(180deg, #EBF4FB 0%, #F4F0FF 60%, #FFFFFF 100%)' }} />
         <div className="absolute top-[-20%] left-[40%] w-[640px] h-[640px] rounded-full opacity-50 blur-3xl"
-          style={{ background: 'radial-gradient(circle at center, rgba(112,54,240,.30) 0%, rgba(112,54,240,0) 70%)' }} />
+          style={{ background: 'radial-gradient(circle at center, rgba(212,160,23,.30) 0%, rgba(212,160,23,0) 70%)' }} />
         <div className="absolute bottom-[10%] right-[-10%] w-[480px] h-[480px] rounded-full opacity-30 blur-3xl"
-          style={{ background: 'radial-gradient(circle at center, rgba(254,108,17,.20) 0%, rgba(254,108,17,0) 70%)' }} />
+          style={{ background: 'radial-gradient(circle at center, rgba(230,180,34,.20) 0%, rgba(230,180,34,0) 70%)' }} />
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
@@ -184,8 +184,8 @@ const CreditsPage = () => {
           className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-20 max-w-4xl mx-auto"
         >
           {[
-            { icon: <CreditCard size={20} />, num: '01', title: 'Chọn gói Credits', desc: 'Mua gói phù hợp nhu cầu. Gói lớn = giá tốt hơn.', color: '#7036F0' },
-            { icon: <Wand2 size={20} />, num: '02', title: 'Tạo nội dung AI', desc: 'Dùng Credits cho bất kỳ công cụ AI nào — không giới hạn.', color: '#8b5cf6' },
+            { icon: <CreditCard size={20} />, num: '01', title: 'Chọn gói Credits', desc: 'Mua gói phù hợp nhu cầu. Gói lớn = giá tốt hơn.', color: '#D4A017' },
+            { icon: <Wand2 size={20} />, num: '02', title: 'Tạo nội dung AI', desc: 'Dùng Credits cho bất kỳ công cụ AI nào — không giới hạn.', color: '#C4960C' },
             { icon: <Infinity size={20} />, num: '03', title: 'Không hết hạn', desc: 'Credits còn mãi mãi. Nạp thêm bất cứ lúc nào.', color: '#10b981' },
           ].map((step, idx) => (
             <motion.div 
@@ -227,7 +227,7 @@ const CreditsPage = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
               {packages.map((pack, packIdx) => {
-                const accent = pack.theme?.accentColor || '#7036F0';
+                const accent = pack.theme?.accentColor || '#D4A017';
                 const gradFrom = pack.theme?.gradientFrom || '#0f172a';
                 const gradTo = pack.theme?.gradientTo || '#020617';
                 const total = getTotal(pack);
@@ -458,10 +458,10 @@ const CreditsPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 max-w-5xl mx-auto mb-10">
             {[
               { icon: <Video size={22} />, name: 'Video AI', range: '600 – 2,000', avgCost: 1500, color: '#ef4444' },
-              { icon: <ImageIcon size={22} />, name: 'Image AI', range: '80 – 1,500', avgCost: 150, color: '#7036F0' },
-              { icon: <Mic size={22} />, name: 'Voice AI', range: '500 – 2,000', avgCost: 500, color: '#f59e0b' },
+              { icon: <ImageIcon size={22} />, name: 'Image AI', range: '80 – 1,500', avgCost: 150, color: '#D4A017' },
+              { icon: <Mic size={22} />, name: 'Voice AI', range: '500 – 2,000', avgCost: 500, color: '#D4A017' },
               { icon: <Music size={22} />, name: 'Music AI', range: '1,000 – 5,000', avgCost: 1000, color: '#ec4899' },
-              { icon: <Wand2 size={22} />, name: 'Upscale', range: '100 – 500', avgCost: 100, color: '#8b5cf6' },
+              { icon: <Wand2 size={22} />, name: 'Upscale', range: '100 – 500', avgCost: 100, color: '#C4960C' },
               { icon: <Cpu size={22} />, name: 'Workflow', range: '500 – 5,000', avgCost: 500, color: '#10b981' },
             ].map((tool, idx) => (
               <motion.div
@@ -517,7 +517,7 @@ const CreditsPage = () => {
                 <tbody>
                   {[
                     {
-                      icon: <ImageIcon size={13} />, name: 'Image AI', color: '#7036F0',
+                      icon: <ImageIcon size={13} />, name: 'Image AI', color: '#D4A017',
                       note: 'avg ~150 cr/ảnh',
                       avg: 150,
                     },
@@ -527,7 +527,7 @@ const CreditsPage = () => {
                       avg: 1500,
                     },
                     {
-                      icon: <Mic size={13} />, name: 'Voice AI', color: '#f59e0b',
+                      icon: <Mic size={13} />, name: 'Voice AI', color: '#D4A017',
                       note: 'avg ~500 cr/bản',
                       avg: 500,
                     },
@@ -537,13 +537,13 @@ const CreditsPage = () => {
                       avg: 1000,
                     },
                     {
-                      icon: <Wand2 size={13} />, name: 'Upscale', color: '#8b5cf6',
+                      icon: <Wand2 size={13} />, name: 'Upscale', color: '#C4960C',
                       note: 'avg ~100 cr/ảnh',
                       avg: 100,
                     },
                   ].map((row, i) => {
                     const counts = [75000, 258750, 625000, 1400000].map(cr => Math.floor(cr / row.avg));
-                    const colors = ['#7036F0', '#8b5cf6', '#ec4899', '#f59e0b'];
+                    const colors = ['#D4A017', '#C4960C', '#ec4899', '#D4A017'];
                     return (
                       <tr key={row.name} className={`border-b border-black/[0.03] dark:border-white/[0.03] last:border-0 ${i % 2 === 0 ? '' : 'bg-slate-50/50 dark:bg-white/[0.01]'}`}>
                         <td className="px-5 py-4">

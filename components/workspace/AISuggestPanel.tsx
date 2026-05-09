@@ -450,7 +450,7 @@ Return ONLY a JSON object with these exact keys (no markdown, no backticks):
                       </div>
                     ) : (
                       <motion.button
-                        whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(112,54,240,0.2)' }}
+                        whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(201, 168, 76,0.2)' }}
                         whileTap={{ scale: 0.97 }}
                         onClick={handleSmartFill}
                         disabled={filling}
