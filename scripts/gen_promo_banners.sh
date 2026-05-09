@@ -6,6 +6,7 @@
 
 API="https://api.skyverses.com/image-jobs"
 TOKEN="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWM4ZDhjYWQ4MWZhNWRlN2JkMTA2MTYiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQHNreXZlcnNlcy5jb20iLCJpYXQiOjE3Nzc5NjIyNTksImV4cCI6MTc3ODU2NzA1OX0.zaXcxMq8jNYmrrNRm-MiL6mla233xnn5N3ARokDr-nk"
+# Version: v3 — cinema / anime / time freestyle — 1:1 square
 
 # Cloudflare credentials
 CF_ACCOUNT_ID="${CF_ACCOUNT_ID:-cf3d665aec0eda633986d008ba66c967}"
@@ -18,25 +19,25 @@ mkdir -p "$OUT_DIR"
 declare -a NAMES
 declare -a PROMPTS
 
-# ── 1: HOT DEAL — Pro upgrade 30% off ──
-NAMES+=("promo-hot-deal")
-PROMPTS+=("A dramatic premium golden promotional banner, a glowing golden crown hovering above golden price tags with percentage discount symbols, luxurious gold coins and credit tokens scattered around, deep black background with radiant golden light rays bursting outward, bokeh golden particles floating, baroque ornamental frame corners, high-end luxury marketplace aesthetic, no text, 16:9")
+# ── 1: HOT DEAL — Pro upgrade — cinematic sci-fi portal ──
+NAMES+=("promo-hot-deal-v2")
+PROMPTS+=("A breathtaking sci-fi scene, a massive glowing neon portal opening in a dark cyberpunk cityscape, swirling energy vortex with electric blue and magenta light streaks, holographic UI panels floating around the portal showing upgrade symbols, tiny silhouettes of people looking up in awe, volumetric fog and lens flares, cinematic wide shot, moody atmospheric lighting, no text, square composition")
 
-# ── 2: MỚI — Veo 3 cinematic video AI ──
-NAMES+=("promo-veo3-new")
-PROMPTS+=("A cinematic golden film production scene, golden movie camera with glowing lens capturing a holographic AI-generated video sequence, golden film strips and reels floating in air, sparkles of golden light forming a video frame, dramatic dark background with warm amber volumetric lighting, baroque golden decorative borders, futuristic meets classic cinema aesthetic, no text, 16:9")
+# ── 2: MỚI — Veo 3 cinematic video AI — movie set ──
+NAMES+=("promo-veo3-new-v2")
+PROMPTS+=("A dramatic cinematic film set scene, a futuristic AI-powered movie camera on a crane shooting a fantasy landscape, the camera lens projects holographic film frames into the air showing different movie genres - action explosion, romantic sunset, sci-fi spaceship, film crew silhouettes in foreground, dramatic orange and teal color grading, volumetric light beams through haze, Spielberg-esque atmosphere, no text, square composition")
 
-# ── 3: FLASH SALE — Buy 500 credits get 100 bonus ──
-NAMES+=("promo-flash-sale")
-PROMPTS+=("An electrifying golden flash sale scene, golden lightning bolts striking a pile of shimmering golden AI credit coins, golden sparks and energy explosions, a glowing golden gift box bursting open with bonus coins flying out, dramatic dark background with intense golden electric atmosphere, luxury baroque frame elements, dynamic and energetic premium marketplace feel, no text, 16:9")
+# ── 3: FLASH SALE — credits bonus — anime energy burst ──
+NAMES+=("promo-flash-sale-v2")
+PROMPTS+=("An epic anime-style energy explosion scene, a character in dynamic pose releasing a massive burst of colorful energy crystals and glowing orbs into the sky, Dragon Ball inspired power-up aura with electric lightning arcs, vibrant purple blue and cyan color palette, speed lines radiating outward, floating geometric crystal shards catching light, dramatic low angle perspective, Japanese animation art style with cinematic quality, no text, square composition")
 
-# ── 4: ƯU ĐÃI — Free 50 credits for new accounts ──
-NAMES+=("promo-free-credits")
-PROMPTS+=("A welcoming golden treasure scene, an ornate golden treasure chest slowly opening revealing glowing golden AI credit tokens inside, golden sparkles and magical dust rising upward, warm inviting golden light emanating from the chest, soft dark background with ambient golden glow, baroque decorative elements and golden vine patterns, premium generous gift aesthetic, no text, 16:9")
+# ── 4: ƯU ĐÃI — Free credits welcome — time/space gateway ──
+NAMES+=("promo-free-credits-v2")
+PROMPTS+=("A mesmerizing time-space gateway scene, an enormous ornate clockwork mechanism floating in a cosmic nebula, giant clock gears and astronomical rings slowly rotating, stardust and galaxies visible through the central opening, bioluminescent particles drifting like fireflies, deep indigo and warm amber color palette, a small astronaut floating toward the gateway, sense of wonder and infinite possibility, Interstellar movie inspired, no text, square composition")
 
-# ── 5: BUNDLE — Video + Music AI combo ──
-NAMES+=("promo-bundle-combo")
-PROMPTS+=("A harmonious golden multimedia fusion scene, golden video play button merging with golden musical notes and sound waves, holographic golden screens showing video and music waveforms intertwined, golden ribbons wrapping around both elements symbolizing a bundle deal, deep dark background with rich golden ambient lighting, baroque ornamental corners, premium creative production aesthetic, no text, 16:9")
+# ── 5: BUNDLE — Video + Music combo — anime concert ──
+NAMES+=("promo-bundle-combo-v2")
+PROMPTS+=("A spectacular anime-style virtual concert scene, a holographic AI singer performing on a futuristic floating stage above a neon-lit cyberpunk city at night, massive holographic screens displaying music visualizers and video montages, crowd below with glowing lightsticks, cherry blossom petals mixed with digital particles floating upward, vibrant pink cyan and violet neon palette, Makoto Shinkai inspired lighting with lens flares, no text, square composition")
 
 JOBIDS=()
 
@@ -53,7 +54,7 @@ for i in "${!NAMES[@]}"; do
   R=$(curl -s -X POST "$API" \
     -H "Content-Type: application/json" \
     -H "Authorization: $TOKEN" \
-    -d "{\"type\":\"text_to_image\",\"input\":{\"prompt\":\"$P_ESC\"},\"config\":{\"width\":1024,\"height\":576,\"aspectRatio\":\"16:9\",\"seed\":0,\"style\":\"\"},\"engine\":{\"provider\":\"gommo\",\"model\":\"google_image_gen_4_5\"},\"enginePayload\":{\"prompt\":\"$P_ESC\",\"privacy\":\"PRIVATE\",\"projectId\":\"default\"}}")
+    -d "{\"type\":\"text_to_image\",\"input\":{\"prompt\":\"$P_ESC\"},\"config\":{\"width\":1024,\"height\":1024,\"aspectRatio\":\"1:1\",\"seed\":0,\"style\":\"\"},\"engine\":{\"provider\":\"gommo\",\"model\":\"google_image_gen_4_5\"},\"enginePayload\":{\"prompt\":\"$P_ESC\",\"privacy\":\"PRIVATE\",\"projectId\":\"default\"}}")
   JID=$(echo "$R" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['jobId'])" 2>/dev/null)
   JOBIDS+=("$JID")
   echo "  [$((i+1))/${#NAMES[@]}] ${NAMES[$i]} → $JID"

@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Sparkles, ArrowRight, ChevronLeft, ChevronRight,
-  Video, ImageIcon, Mic, Music, LayoutGrid, Zap,
+  Video, ImageIcon, Mic, Music, LayoutGrid, LayoutList, Zap,
   TrendingUp, Heart, BookmarkPlus, Bookmark,
   X, Layers, Box, Cpu, SlidersHorizontal,
   Check, ArrowUp, Clock, Tag, ChevronUp, ChevronDown,
@@ -82,7 +82,7 @@ const MAX_RECENT = 8;
 
 // ═══════ PROMO BANNERS — random mỗi lần load ═══════
 // heroTitle + heroHighlight = dòng h1, heroDesc = subtitle, title/desc = promo strip dưới
-const PROMO_BANNERS = [
+const PROMO_BANNERS: Array<{ tag: string; heroTitle: string; heroHighlight: string; heroDesc: string; title: string; desc: string; cta: string; link: string; imageUrl?: string }> = [
   {
     tag: 'HOT DEAL',
     heroTitle: 'Nâng cấp ',
@@ -597,18 +597,24 @@ const MarketsPage: React.FC = () => {
     canonical: '/markets'
   });
 
-  // Random promo banner — fetch from API, fallback to hardcoded
+  // Auto-sliding promo banners — fetch from API, fallback to hardcoded
   const [promoBanners, setPromoBanners] = useState<PromoBannerType[]>([]);
-  const promoBanner = useMemo(() => {
-    const pool = promoBanners.length > 0 ? promoBanners : PROMO_BANNERS;
-    return pool[Math.floor(Math.random() * pool.length)];
-  }, [promoBanners]);
+  const [promoIndex, setPromoIndex] = useState(0);
+  const bannerPool = useMemo(() => promoBanners.length > 0 ? promoBanners : PROMO_BANNERS, [promoBanners]);
+  const promoBanner = bannerPool[promoIndex % bannerPool.length];
 
   useEffect(() => {
     promoBannersPublicApi.getActive().then(data => {
       if (data.length > 0) setPromoBanners(data);
     });
   }, []);
+
+  // Auto-slide every 6s
+  useEffect(() => {
+    if (bannerPool.length <= 1) return;
+    const timer = setInterval(() => setPromoIndex(i => i + 1), 6000);
+    return () => clearInterval(timer);
+  }, [bannerPool.length]);
 
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [featuredSolutions, setFeaturedSolutions] = useState<Solution[]>([]);
@@ -1221,21 +1227,34 @@ const MarketsPage: React.FC = () => {
   );
 
   return (
-    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-[#0A0A0A] text-neutral-100 transition-colors duration-300">
+    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-[#141418] text-neutral-100 transition-colors duration-300">
 
       <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-6 lg:px-10">
 
         {/* ═══════ ATLAS HERO STRIP ═══════ */}
         {/* ═══════ HERO BANNER — promo as background ═══════ */}
         <motion.div
-          className="relative mb-8 md:mb-10 overflow-hidden bg-neutral-950 px-6 md:px-10 pt-8 md:pt-10 pb-6 md:pb-8 cursor-pointer group"
+          key={promoIndex % bannerPool.length}
+          className="relative mb-8 md:mb-10 overflow-hidden bg-neutral-900 px-6 md:px-10 pt-8 md:pt-10 pb-6 md:pb-8 min-h-[220px] md:min-h-[300px] cursor-pointer group"
           onClick={() => navigate(promoBanner.link)}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
+          {/* ── Promo banner background image — right 3/4 ── */}
+          {promoBanner.imageUrl && (
+            <>
+              <img
+                src={promoBanner.imageUrl}
+                alt=""
+                className="absolute top-0 right-0 w-3/4 h-full object-cover opacity-70 group-hover:opacity-85 transition-opacity duration-700"
+              />
+              <div className="absolute top-0 right-0 w-3/4 h-full bg-gradient-to-r from-neutral-950 via-neutral-950/40 to-transparent" />
+            </>
+          )}
           {/* ── Animated gradient background ── */}
-          <div className="absolute inset-0 bg-atlas-hero-dark opacity-100" />
+          <div className="absolute inset-0 bg-atlas-hero-dark" style={{ opacity: promoBanner.imageUrl ? 0.1 : 1 }} />
           <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/[0.08] via-transparent to-brand-blue/[0.04] group-hover:from-brand-blue/[0.12] group-hover:to-brand-blue/[0.06] transition-all duration-700" />
 
           {/* ── Shimmer sweep overlay ── */}
@@ -1361,6 +1380,23 @@ const MarketsPage: React.FC = () => {
             </button>
           </div>
 
+          {/* ── Slide indicators ── */}
+          {bannerPool.length > 1 && (
+            <div className="absolute bottom-3 right-4 z-20 flex items-center gap-1.5">
+              {bannerPool.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => { e.stopPropagation(); setPromoIndex(i); }}
+                  className={`h-1 rounded-full transition-all duration-300 ${
+                    i === promoIndex % bannerPool.length
+                      ? 'w-5 bg-brand-blue'
+                      : 'w-1.5 bg-neutral-600 hover:bg-neutral-400'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+
           {/* ── Bottom glow line ── */}
           <motion.div
             className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-blue/40 to-transparent"
@@ -1416,7 +1452,33 @@ const MarketsPage: React.FC = () => {
                 {hasMore && <span className="text-neutral-300 ml-1">· hiện {visibleCount}</span>}
               </p>
               <div className="flex items-center gap-2">
-                {/* View mode toggle đã được rút khỏi UI để giảm noise — phím G và URL ?view=list vẫn hoạt động */}
+                {/* View mode toggle */}
+                <div className="flex items-center bg-neutral-800 border border-neutral-700/40 p-0.5">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-1.5 transition-colors ${viewMode === 'grid' ? 'bg-brand-blue/20 text-brand-blue' : 'text-neutral-500 hover:text-neutral-300'}`}
+                    title="Xem dạng lưới (G)"
+                  >
+                    <LayoutGrid size={14} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-1.5 transition-colors ${viewMode === 'list' ? 'bg-brand-blue/20 text-brand-blue' : 'text-neutral-500 hover:text-neutral-300'}`}
+                    title="Xem dạng danh sách (G)"
+                  >
+                    <LayoutList size={14} />
+                  </button>
+                </div>
+                {/* Compare button */}
+                {compareIds.length > 0 && (
+                  <button
+                    onClick={() => setCompareIds([])}
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-medium bg-brand-blue/[0.08] text-brand-blue border border-brand-blue/20 hover:bg-brand-blue/15 transition-colors"
+                  >
+                    <GitCompare size={12} /> So sánh ({compareIds.length})
+                  </button>
+                )}
+                {/* Sort */}
                 {deferredSearch ? (
                   <span className="text-[11px] px-2.5 py-1.5 bg-brand-blue/[0.06] text-brand-blue border border-brand-blue/15 flex items-center gap-1 font-medium">
                     <Sparkles size={11} /> Theo độ liên quan
@@ -1543,7 +1605,7 @@ const MarketsPage: React.FC = () => {
               className="fixed inset-0 bg-black/30 z-[500]" onClick={() => setMobileSidebar(false)} />
             <motion.div initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed top-0 left-0 w-[300px] h-full bg-[#0A0A0A] z-[501] overflow-y-auto">
+              className="fixed top-0 left-0 w-[300px] h-full bg-[#141418] z-[501] overflow-y-auto">
               <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-700/40">
                 <h3 className="text-[15px] font-bold text-neutral-100">Bộ lọc</h3>
                 <button onClick={() => setMobileSidebar(false)} className="p-1 text-neutral-500 hover:text-neutral-300"><X size={18} /></button>

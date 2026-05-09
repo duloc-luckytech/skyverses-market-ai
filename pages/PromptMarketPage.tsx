@@ -83,16 +83,16 @@ function FilterSection({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b border-white/[0.04] last:border-b-0">
+    <div className="border-b border-white/[0.06] last:border-b-0">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-3.5 text-[13px] font-semibold text-white/60 hover:text-white/80 transition-colors"
+        className="w-full flex items-center justify-between py-3.5 text-[13px] font-semibold text-white/70 hover:text-white/90 transition-colors"
       >
         {title}
         {open ? (
-          <ChevronUp className="w-3.5 h-3.5 text-white/25" />
+          <ChevronUp className="w-3.5 h-3.5 text-white/40" />
         ) : (
-          <ChevronDown className="w-3.5 h-3.5 text-white/25" />
+          <ChevronDown className="w-3.5 h-3.5 text-white/40" />
         )}
       </button>
       <AnimatePresence>
@@ -137,7 +137,7 @@ function FeaturedBanner({
 
   if (loading) {
     return (
-      <div className="aspect-[16/9] md:aspect-[21/9] rounded-2xl bg-white/[0.02] backdrop-blur-sm border border-white/[0.06] flex items-center justify-center">
+      <div className="aspect-[16/9] md:aspect-[21/9] rounded-2xl bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-[#C9A84C] animate-spin" />
       </div>
     );
@@ -157,7 +157,7 @@ function FeaturedBanner({
       : undefined;
 
   return (
-    <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] group">
+    <div className="relative rounded-2xl overflow-hidden border border-white/[0.1] group">
       <div className="aspect-[16/9] md:aspect-[21/9] relative">
         <AnimatePresence mode="wait">
           <motion.div
@@ -215,7 +215,7 @@ function FeaturedBanner({
           </Link>
 
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-white/40 text-xs">By</span>
+            <span className="text-white/50 text-xs">By</span>
             <div className="flex items-center gap-1.5">
               {sellerAvatar ? (
                 <img src={sellerAvatar} alt="" className="w-5 h-5 rounded-full ring-1 ring-[#C9A84C]/30" />
@@ -224,30 +224,30 @@ function FeaturedBanner({
                   <User className="w-2.5 h-2.5 text-[#C9A84C]" />
                 </div>
               )}
-              <span className="text-white/60 text-xs font-medium">{sellerName}</span>
+              <span className="text-white/70 text-xs font-medium">{sellerName}</span>
             </div>
           </div>
 
           {/* Stats row */}
           <div className="flex items-center gap-4 text-xs">
-            <div className="px-3 py-1.5 rounded-lg bg-white/[0.06] backdrop-blur-md border border-white/[0.08]">
-              <span className="text-white/40">Price </span>
+            <div className="px-3 py-1.5 rounded-lg bg-white/[0.08] backdrop-blur-md border border-white/[0.1]">
+              <span className="text-white/50">Price </span>
               <span className="text-white font-bold">
                 {current.isFree ? 'Free' : `${current.priceSKT} SKT`}
               </span>
             </div>
-            <div className="px-3 py-1.5 rounded-lg bg-white/[0.06] backdrop-blur-md border border-white/[0.08]">
-              <span className="text-white/40">Prompts </span>
+            <div className="px-3 py-1.5 rounded-lg bg-white/[0.08] backdrop-blur-md border border-white/[0.1]">
+              <span className="text-white/50">Prompts </span>
               <span className="text-white font-bold">
                 {current.promptCount ?? current.prompts?.length ?? 0}
               </span>
             </div>
-            <div className="px-3 py-1.5 rounded-lg bg-white/[0.06] backdrop-blur-md border border-white/[0.08]">
-              <span className="text-white/40">Sales </span>
+            <div className="px-3 py-1.5 rounded-lg bg-white/[0.08] backdrop-blur-md border border-white/[0.1]">
+              <span className="text-white/50">Sales </span>
               <span className="text-white font-bold">{current.purchaseCount}</span>
             </div>
             {current.reviewCount > 0 && (
-              <div className="px-3 py-1.5 rounded-lg bg-white/[0.06] backdrop-blur-md border border-white/[0.08]">
+              <div className="px-3 py-1.5 rounded-lg bg-white/[0.08] backdrop-blur-md border border-white/[0.1]">
                 <Star className="w-3 h-3 fill-[#E5C767] text-[#E5C767] inline mr-1" />
                 <span className="text-[#E5C767] font-bold">{current.averageRating.toFixed(1)}</span>
               </div>
@@ -287,7 +287,7 @@ function TrendingPromptPill({ promptSet }: { promptSet: PromptSet }) {
   return (
     <Link
       to={`/prompt-market/${promptSet.slug}`}
-      className="flex items-center gap-3 bg-white/[0.02] backdrop-blur-sm border border-white/[0.06] hover:border-[#C9A84C]/20 rounded-2xl px-4 py-3 min-w-[240px] sm:min-w-[280px] flex-shrink-0 transition-all duration-200 group hover:bg-white/[0.04] hover:shadow-[0_4px_20px_rgba(201,168,76,0.06)]"
+      className="flex items-center gap-3 bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] hover:border-[#C9A84C]/25 rounded-2xl px-4 py-3 min-w-[240px] sm:min-w-[280px] flex-shrink-0 transition-all duration-200 group hover:bg-white/[0.06] hover:shadow-[0_4px_20px_rgba(201,168,76,0.08)]"
     >
       {/* Avatar */}
       <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-white/[0.08]">
@@ -305,7 +305,7 @@ function TrendingPromptPill({ promptSet }: { promptSet: PromptSet }) {
         <p className="text-sm font-semibold text-white truncate group-hover:text-[#E5C767] transition-colors">
           {title}
         </p>
-        <p className="text-xs text-white/25 truncate">{sellerName}</p>
+        <p className="text-xs text-white/40 truncate">{sellerName}</p>
       </div>
 
       {/* Price badge */}
@@ -492,30 +492,30 @@ const PromptMarketPage: React.FC = () => {
   // ── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#060608] text-white">
+    <div className="min-h-screen bg-[#0c1117] text-white font-[Manrope,sans-serif]">
       {/* ═══════════════════════════════════════════
        * TOP BAR — search + sell CTA
        * ═══════════════════════════════════════════ */}
-      <div className="sticky top-0 z-40 bg-[#060608]/80 backdrop-blur-2xl border-b border-white/[0.04]">
+      <div className="sticky top-0 z-40 bg-[#0c1117]/90 backdrop-blur-2xl border-b border-white/[0.06]">
         <div className="px-4 sm:px-5 lg:px-6">
           <div className="flex items-center gap-3 py-3">
             {/* Mobile filter toggle */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-white/40 hover:text-[#C9A84C] hover:border-[#C9A84C]/20 transition-all"
+              className="lg:hidden w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-white/50 hover:text-[#C9A84C] hover:border-[#C9A84C]/25 transition-all"
             >
               <Filter className="w-4 h-4" />
             </button>
 
             {/* Search */}
             <div className="relative flex-1 group">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-[#C9A84C]/70 transition-colors pointer-events-none" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 group-focus-within:text-[#C9A84C]/80 transition-colors pointer-events-none" />
               <input
                 type="text"
                 value={searchInput}
                 onChange={e => handleSearchChange(e.target.value)}
                 placeholder={t('prompt_market.search_placeholder')}
-                className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A84C]/30 focus:bg-white/[0.04] focus:ring-1 focus:ring-[#C9A84C]/10 transition-all duration-200"
+                className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#C9A84C]/40 focus:bg-white/[0.06] focus:ring-1 focus:ring-[#C9A84C]/15 transition-all duration-200"
               />
               {searchInput && (
                 <button
@@ -555,14 +555,14 @@ const PromptMarketPage: React.FC = () => {
         <section className="px-4 sm:px-5 lg:px-6 py-5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-[#C9A84C]/[0.08] border border-[#C9A84C]/[0.12] flex items-center justify-center">
+              <div className="w-7 h-7 rounded-lg bg-[#C9A84C]/[0.12] border border-[#C9A84C]/[0.18] flex items-center justify-center">
                 <Flame className="w-3.5 h-3.5 text-[#C9A84C]" />
               </div>
               <div>
                 <h2 className="text-sm font-bold text-white">
                   {t('prompt_market.trending_tokens')}
                 </h2>
-                <p className="text-[11px] text-white/20">
+                <p className="text-[11px] text-white/40">
                   {t('prompt_market.trending_tokens_desc')}
                 </p>
               </div>
@@ -570,13 +570,13 @@ const PromptMarketPage: React.FC = () => {
             <div className="hidden sm:flex items-center gap-1.5">
               <button
                 onClick={() => scrollTrending('left')}
-                className="w-7 h-7 rounded-lg border border-white/[0.06] bg-white/[0.02] flex items-center justify-center text-white/25 hover:border-[#C9A84C]/20 hover:text-[#C9A84C] transition"
+                className="w-7 h-7 rounded-lg border border-white/[0.08] bg-white/[0.04] flex items-center justify-center text-white/35 hover:border-[#C9A84C]/25 hover:text-[#C9A84C] transition"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => scrollTrending('right')}
-                className="w-7 h-7 rounded-lg border border-white/[0.06] bg-white/[0.02] flex items-center justify-center text-white/25 hover:border-[#C9A84C]/20 hover:text-[#C9A84C] transition"
+                className="w-7 h-7 rounded-lg border border-white/[0.08] bg-white/[0.04] flex items-center justify-center text-white/35 hover:border-[#C9A84C]/25 hover:text-[#C9A84C] transition"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
@@ -597,7 +597,7 @@ const PromptMarketPage: React.FC = () => {
 
       {/* Divider */}
       <div className="px-4 sm:px-5 lg:px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
       </div>
 
       {/* ═══════════════════════════════════════════
@@ -623,8 +623,8 @@ const PromptMarketPage: React.FC = () => {
             className={`
               fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
               w-[280px] lg:w-[240px] xl:w-[260px] flex-shrink-0
-              bg-[#0a0a0c]/95 lg:bg-transparent backdrop-blur-xl lg:backdrop-blur-none
-              border-r border-white/[0.04] lg:border-r-0
+              bg-[#0d1219]/95 lg:bg-transparent backdrop-blur-xl lg:backdrop-blur-none
+              border-r border-white/[0.06] lg:border-r-0
               transform transition-transform duration-300 lg:transform-none
               ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
               overflow-y-auto
@@ -639,7 +639,7 @@ const PromptMarketPage: React.FC = () => {
                 </h3>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="w-8 h-8 rounded-lg bg-white/[0.04] flex items-center justify-center text-white/40 hover:text-white transition"
+                  className="w-8 h-8 rounded-lg bg-white/[0.06] flex items-center justify-center text-white/50 hover:text-white transition"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -647,7 +647,7 @@ const PromptMarketPage: React.FC = () => {
 
               {/* Desktop header */}
               <div className="hidden lg:flex items-center justify-between mb-3">
-                <h3 className="text-xs font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5">
+                <h3 className="text-xs font-bold text-white/60 uppercase tracking-wider flex items-center gap-1.5">
                   <SlidersHorizontal className="w-3.5 h-3.5" />
                   {t('prompt_market.filters')}
                 </h3>
@@ -662,7 +662,7 @@ const PromptMarketPage: React.FC = () => {
               </div>
 
               {/* Glass container for filters */}
-              <div className="lg:bg-white/[0.02] lg:backdrop-blur-sm lg:border lg:border-white/[0.05] lg:rounded-2xl lg:p-4">
+              <div className="lg:bg-white/[0.03] lg:backdrop-blur-sm lg:border lg:border-white/[0.07] lg:rounded-2xl lg:p-4">
                 {/* ─ Search (sidebar) ─ */}
                 <FilterSection title={t('prompt_market.categories')} defaultOpen={true}>
                   <div className="space-y-0.5">
@@ -678,8 +678,8 @@ const PromptMarketPage: React.FC = () => {
                           }}
                           className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 ${
                             active
-                              ? 'bg-[#C9A84C]/[0.1] text-[#E5C767] border border-[#C9A84C]/[0.15]'
-                              : 'text-white/35 hover:text-white/60 hover:bg-white/[0.03] border border-transparent'
+                              ? 'bg-[#C9A84C]/[0.12] text-[#E5C767] border border-[#C9A84C]/[0.2]'
+                              : 'text-white/50 hover:text-white/70 hover:bg-white/[0.04] border border-transparent'
                           }`}
                         >
                           <Icon className="w-3.5 h-3.5 flex-shrink-0" />
@@ -784,7 +784,7 @@ const PromptMarketPage: React.FC = () => {
               {/* Left — results + active filter chips */}
               <div className="flex items-center gap-2 flex-wrap">
                 {!loading && (
-                  <span className="text-xs text-white/20 font-medium">
+                  <span className="text-xs text-white/40 font-medium">
                     {pagination.total > 0
                       ? `${pagination.total} ${t('prompt_market.results')}`
                       : ''}
@@ -800,7 +800,7 @@ const PromptMarketPage: React.FC = () => {
                   </span>
                 )}
                 {urlCategory !== 'all' && searchParams.get('category') && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-white/35">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/[0.08] text-xs text-white/50">
                     {urlCategory}
                     <button
                       onClick={() => handleCategoryChange('all')}
@@ -811,7 +811,7 @@ const PromptMarketPage: React.FC = () => {
                   </span>
                 )}
                 {urlPriceFilter !== 'all' && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-white/35">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/[0.08] text-xs text-white/50">
                     {urlPriceFilter === 'free' ? t('prompt_market.free_only') : t('prompt_market.paid_only')}
                     <button
                       onClick={() => handlePriceFilter('all')}
@@ -826,13 +826,13 @@ const PromptMarketPage: React.FC = () => {
               {/* Right — sort dropdown + view toggle */}
               <div className="flex items-center gap-2">
                 {/* View toggle */}
-                <div className="flex items-center border border-white/[0.05] rounded-lg overflow-hidden bg-white/[0.01]">
+                <div className="flex items-center border border-white/[0.08] rounded-lg overflow-hidden bg-white/[0.03]">
                   <button
                     onClick={() => setViewMode('grid')}
                     className={`p-2 transition-colors ${
                       viewMode === 'grid'
-                        ? 'bg-[#C9A84C]/[0.1] text-[#C9A84C]'
-                        : 'text-white/20 hover:text-white/40'
+                        ? 'bg-[#C9A84C]/[0.15] text-[#C9A84C]'
+                        : 'text-white/35 hover:text-white/55'
                     }`}
                   >
                     <LayoutGrid className="w-3.5 h-3.5" />
@@ -841,8 +841,8 @@ const PromptMarketPage: React.FC = () => {
                     onClick={() => setViewMode('list')}
                     className={`p-2 transition-colors ${
                       viewMode === 'list'
-                        ? 'bg-[#C9A84C]/[0.1] text-[#C9A84C]'
-                        : 'text-white/20 hover:text-white/40'
+                        ? 'bg-[#C9A84C]/[0.15] text-[#C9A84C]'
+                        : 'text-white/35 hover:text-white/55'
                     }`}
                   >
                     <List className="w-3.5 h-3.5" />
@@ -853,11 +853,11 @@ const PromptMarketPage: React.FC = () => {
                 <div className="relative flex-shrink-0 hidden lg:block" ref={sortRef}>
                   <button
                     onClick={() => setSortOpen(v => !v)}
-                    className="flex items-center gap-2 bg-white/[0.02] border border-white/[0.05] rounded-xl px-4 py-2 text-sm text-white/40 hover:border-[#C9A84C]/15 hover:text-white/60 transition whitespace-nowrap"
+                    className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-2 text-sm text-white/55 hover:border-[#C9A84C]/20 hover:text-white/70 transition whitespace-nowrap"
                   >
-                    <SlidersHorizontal className="w-3.5 h-3.5 text-white/20" />
+                    <SlidersHorizontal className="w-3.5 h-3.5 text-white/35" />
                     {currentSortLabel}
-                    <ChevronDown className={`w-3.5 h-3.5 text-white/20 transition-transform ${sortOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3.5 h-3.5 text-white/35 transition-transform ${sortOpen ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
                     {sortOpen && (
@@ -866,14 +866,14 @@ const PromptMarketPage: React.FC = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -6, scale: 0.97 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-1 z-50 bg-[#0c0c0e]/95 backdrop-blur-xl border border-white/[0.06] rounded-xl overflow-hidden shadow-2xl w-52"
+                        className="absolute right-0 top-full mt-1 z-50 bg-[#0f1520]/95 backdrop-blur-xl border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl w-52"
                       >
                         {(Object.keys(SORT_LABELS) as SortOption[]).map(opt => (
                           <button
                             key={opt}
                             onClick={() => handleSortChange(opt)}
-                            className={`w-full text-left px-4 py-2.5 text-sm transition hover:bg-white/[0.03] ${
-                              urlSort === opt ? 'text-[#C9A84C] font-medium bg-[#C9A84C]/[0.04]' : 'text-white/40'
+                            className={`w-full text-left px-4 py-2.5 text-sm transition hover:bg-white/[0.05] ${
+                              urlSort === opt ? 'text-[#C9A84C] font-medium bg-[#C9A84C]/[0.06]' : 'text-white/55'
                             }`}
                           >
                             {SORT_LABELS[opt][lang] ?? SORT_LABELS[opt].en}
@@ -897,7 +897,7 @@ const PromptMarketPage: React.FC = () => {
                   className="flex flex-col items-center justify-center py-32 gap-4"
                 >
                   <Loader2 className="w-7 h-7 text-[#C9A84C]/60 animate-spin" />
-                  <p className="text-white/15 text-sm">{t('common.loading') || 'Loading...'}</p>
+                  <p className="text-white/30 text-sm">{t('common.loading') || 'Loading...'}</p>
                 </motion.div>
               ) : filteredSets.length === 0 ? (
                 <motion.div
@@ -907,13 +907,13 @@ const PromptMarketPage: React.FC = () => {
                   exit={{ opacity: 0 }}
                   className="flex flex-col items-center justify-center py-32 gap-4"
                 >
-                  <div className="w-16 h-16 rounded-2xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-center">
-                    <Package className="w-8 h-8 text-white/[0.08]" />
+                  <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/[0.07] flex items-center justify-center">
+                    <Package className="w-8 h-8 text-white/[0.15]" />
                   </div>
-                  <p className="text-white/30 text-base font-medium">
+                  <p className="text-white/50 text-base font-medium">
                     {t('prompt_market.empty_title')}
                   </p>
-                  <p className="text-white/12 text-sm text-center max-w-xs">
+                  <p className="text-white/30 text-sm text-center max-w-xs">
                     {t('prompt_market.empty_desc')}
                   </p>
                   {hasActiveFilters && (
@@ -970,10 +970,10 @@ const PromptMarketPage: React.FC = () => {
                       >
                         <Link
                           to={`/prompt-market/${ps.slug}`}
-                          className="flex items-center gap-4 bg-white/[0.015] border border-white/[0.05] hover:border-[#C9A84C]/15 rounded-xl p-3 sm:p-4 transition-all duration-200 hover:bg-white/[0.025] hover:shadow-[0_4px_20px_rgba(201,168,76,0.04)] group"
+                          className="flex items-center gap-4 bg-white/[0.03] border border-white/[0.07] hover:border-[#C9A84C]/20 rounded-xl p-3 sm:p-4 transition-all duration-200 hover:bg-white/[0.05] hover:shadow-[0_4px_20px_rgba(201,168,76,0.06)] group"
                         >
                           {/* Cover */}
-                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden flex-shrink-0 border border-white/[0.06]">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden flex-shrink-0 border border-white/[0.08]">
                             {ps.coverImage ? (
                               <img src={ps.coverImage} alt="" className="w-full h-full object-cover" />
                             ) : (
@@ -989,9 +989,9 @@ const PromptMarketPage: React.FC = () => {
                               {pTitle}
                             </h3>
                             {desc && (
-                              <p className="text-xs text-white/20 truncate mt-0.5">{desc}</p>
+                              <p className="text-xs text-white/40 truncate mt-0.5">{desc}</p>
                             )}
-                            <div className="flex items-center gap-3 mt-2 text-[11px] text-white/20">
+                            <div className="flex items-center gap-3 mt-2 text-[11px] text-white/35">
                               <span className="flex items-center gap-1">
                                 <FileText className="w-3 h-3" />
                                 {promptCount}
@@ -1012,13 +1012,13 @@ const PromptMarketPage: React.FC = () => {
                           {/* Seller */}
                           <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
                             {sAvatar ? (
-                              <img src={sAvatar} alt="" className="w-6 h-6 rounded-full ring-1 ring-white/[0.08]" />
+                              <img src={sAvatar} alt="" className="w-6 h-6 rounded-full ring-1 ring-white/[0.1]" />
                             ) : (
-                              <div className="w-6 h-6 rounded-full bg-[#C9A84C]/[0.08] flex items-center justify-center">
-                                <User className="w-3 h-3 text-[#C9A84C]/30" />
+                              <div className="w-6 h-6 rounded-full bg-[#C9A84C]/[0.1] flex items-center justify-center">
+                                <User className="w-3 h-3 text-[#C9A84C]/40" />
                               </div>
                             )}
-                            <span className="text-xs text-white/20 max-w-[80px] truncate">{sName}</span>
+                            <span className="text-xs text-white/35 max-w-[80px] truncate">{sName}</span>
                           </div>
 
                           {/* Price */}
@@ -1046,7 +1046,7 @@ const PromptMarketPage: React.FC = () => {
                 <button
                   disabled={urlPage <= 1}
                   onClick={() => handlePageChange(urlPage - 1)}
-                  className="px-3 py-2 rounded-xl border border-white/[0.05] text-sm text-white/30 hover:border-[#C9A84C]/20 hover:text-[#C9A84C] disabled:opacity-15 disabled:cursor-not-allowed transition"
+                  className="px-3 py-2 rounded-xl border border-white/[0.08] text-sm text-white/40 hover:border-[#C9A84C]/25 hover:text-[#C9A84C] disabled:opacity-20 disabled:cursor-not-allowed transition"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -1061,7 +1061,7 @@ const PromptMarketPage: React.FC = () => {
                     }, [])
                     .map((item, idx) =>
                       item === '...' ? (
-                        <span key={`ellipsis-${idx}`} className="px-2 text-white/10 text-sm select-none">
+                        <span key={`ellipsis-${idx}`} className="px-2 text-white/20 text-sm select-none">
                           ...
                         </span>
                       ) : (
@@ -1070,8 +1070,8 @@ const PromptMarketPage: React.FC = () => {
                           onClick={() => handlePageChange(item as number)}
                           className={`w-9 h-9 rounded-xl text-sm font-medium transition-all duration-200 ${
                             urlPage === item
-                              ? 'bg-[#C9A84C] text-black shadow-[0_0_12px_rgba(201,168,76,0.2)]'
-                              : 'border border-white/[0.05] text-white/25 hover:border-[#C9A84C]/15 hover:text-[#C9A84C]'
+                              ? 'bg-[#C9A84C] text-black shadow-[0_0_12px_rgba(201,168,76,0.25)]'
+                              : 'border border-white/[0.08] text-white/40 hover:border-[#C9A84C]/20 hover:text-[#C9A84C]'
                           }`}
                         >
                           {item}
@@ -1083,7 +1083,7 @@ const PromptMarketPage: React.FC = () => {
                 <button
                   disabled={urlPage >= pagination.totalPages}
                   onClick={() => handlePageChange(urlPage + 1)}
-                  className="px-3 py-2 rounded-xl border border-white/[0.05] text-sm text-white/30 hover:border-[#C9A84C]/20 hover:text-[#C9A84C] disabled:opacity-15 disabled:cursor-not-allowed transition"
+                  className="px-3 py-2 rounded-xl border border-white/[0.08] text-sm text-white/40 hover:border-[#C9A84C]/25 hover:text-[#C9A84C] disabled:opacity-20 disabled:cursor-not-allowed transition"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -1095,22 +1095,22 @@ const PromptMarketPage: React.FC = () => {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="mt-14 relative overflow-hidden rounded-2xl border border-white/[0.06]"
+              className="mt-14 relative overflow-hidden rounded-2xl border border-[#C9A84C]/[0.15]"
             >
               {/* BG glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#C9A84C]/[0.04] via-[#8B7635]/[0.02] to-[#C9A84C]/[0.04]" />
-              <div className="absolute top-0 left-1/3 w-64 h-32 bg-[#C9A84C]/[0.06] rounded-full blur-[80px]" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#C9A84C]/[0.06] via-[#8B7635]/[0.03] to-[#C9A84C]/[0.06]" />
+              <div className="absolute top-0 left-1/3 w-64 h-32 bg-[#C9A84C]/[0.08] rounded-full blur-[80px]" />
 
               <div className="relative px-6 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-5">
                 <div className="flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-[#C9A84C]/[0.08] border border-[#C9A84C]/[0.1] flex items-center justify-center shrink-0">
+                  <div className="w-11 h-11 rounded-xl bg-[#C9A84C]/[0.12] border border-[#C9A84C]/[0.15] flex items-center justify-center shrink-0">
                     <Crown className="w-5 h-5 text-[#C9A84C]" />
                   </div>
                   <div>
                     <p className="text-white font-bold text-sm">
                       {t('prompt_market.cta_title')}
                     </p>
-                    <p className="text-white/25 text-xs mt-0.5">
+                    <p className="text-white/45 text-xs mt-0.5">
                       {t('prompt_market.cta_desc')}
                     </p>
                   </div>

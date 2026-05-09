@@ -130,7 +130,7 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
     >
       <Link
         to={`/prompt-market/${slug}`}
-        className="flex flex-col h-full bg-white/[0.02] backdrop-blur-sm border border-white/[0.06] hover:border-[#C9A84C]/30 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_40px_rgba(201,168,76,0.08)]"
+        className="flex flex-col h-full bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] hover:border-[#C9A84C]/30 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_40px_rgba(201,168,76,0.08)]"
       >
         {/* Cover */}
         <div className="relative aspect-[3/2] overflow-hidden">
@@ -204,7 +204,7 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
 
           {/* Description */}
           {localizedDesc && (
-            <p className="text-[13px] text-white/35 line-clamp-2 leading-relaxed">
+            <p className="text-[13px] text-white/50 line-clamp-2 leading-relaxed">
               {localizedDesc}
             </p>
           )}
@@ -215,13 +215,13 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
               {visibleTags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 rounded-md bg-[#C9A84C]/[0.06] border border-[#C9A84C]/10 text-[10px] text-[#C9A84C]/60 font-medium"
+                  className="px-2 py-0.5 rounded-md bg-[#C9A84C]/[0.08] border border-[#C9A84C]/15 text-[10px] text-[#C9A84C]/75 font-medium"
                 >
                   {tag}
                 </span>
               ))}
               {safeTags.length > 2 && (
-                <span className="px-1.5 py-0.5 text-[10px] text-white/20">
+                <span className="px-1.5 py-0.5 text-[10px] text-white/35">
                   +{safeTags.length - 2}
                 </span>
               )}
@@ -234,14 +234,14 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
               {visibleModels.map((m) => (
                 <span
                   key={m}
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.06] text-[10px] text-white/35 font-medium"
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/[0.05] border border-white/[0.08] text-[10px] text-white/50 font-medium"
                 >
                   <Cpu className="w-2.5 h-2.5" />
                   {MODEL_LABELS[m] ?? m}
                 </span>
               ))}
               {(models ?? []).length > 2 && (
-                <span className="px-1 py-0.5 text-[10px] text-white/20">
+                <span className="px-1 py-0.5 text-[10px] text-white/35">
                   +{(models ?? []).length - 2}
                 </span>
               )}
@@ -249,7 +249,7 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
           )}
 
           {/* Footer */}
-          <div className="mt-auto pt-3 border-t border-white/[0.05] flex items-center justify-between">
+          <div className="mt-auto pt-3 border-t border-white/[0.07] flex items-center justify-between">
             {/* Seller */}
             <div className="flex items-center gap-2 min-w-0">
               {sellerAvatar ? (
@@ -264,7 +264,7 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
                 </div>
               )}
               {sellerName && (
-                <span className="text-[11px] text-white/30 truncate max-w-[80px] flex items-center gap-1">
+                <span className="text-[11px] text-white/45 truncate max-w-[80px] flex items-center gap-1">
                   {sellerName}
                   <BadgeCheck className="w-3 h-3 text-[#C9A84C]/60 flex-shrink-0" />
                 </span>
@@ -272,7 +272,7 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
             </div>
 
             {/* Stats */}
-            <div className="flex items-center gap-2.5 text-[11px] text-white/25">
+            <div className="flex items-center gap-2.5 text-[11px] text-white/40">
               {reviewCount > 0 && (
                 <span className="flex items-center gap-1 text-[#E5C767]/80" title="Rating">
                   <Star className="w-3 h-3 fill-[#E5C767]/70" />

@@ -147,10 +147,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
   /* ═══ Atlas-style nav link classes ═══ */
   const navLinkCls = (active: boolean) => {
-    if (overHero) {
-      return `uppercase text-[14px] font-normal tracking-wide transition-colors ${active ? 'text-white' : 'text-[#faf7f8] hover:text-white'}`;
-    }
-    return `uppercase text-[14px] font-normal tracking-wide transition-colors ${active ? 'text-[#B8963F]' : 'text-[#1a2330] dark:text-[#faf7f8] hover:text-[#B8963F] dark:hover:text-[#C9A84C]'}`;
+    return `uppercase text-[14px] font-medium tracking-wide transition-colors ${active ? 'text-[#C9A84C]' : 'text-[#e0e0e4] hover:text-white'}`;
   };
 
   return (
@@ -162,23 +159,21 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
         style={{
           height: 48,
           backgroundColor: overHero
-            ? 'rgba(27,27,29,0.4)'
-            : theme === 'dark'
-              ? scrolled ? 'rgba(15,20,30,0.85)' : 'rgba(15,20,30,0.6)'
-              : scrolled ? 'rgba(245,245,247,0.8)' : 'rgba(245,245,247,0.6)',
+            ? 'rgba(15,15,20,0.4)'
+            : scrolled ? 'rgba(15,15,20,0.92)' : 'rgba(15,15,20,0.85)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: overHero ? 'none' : theme === 'dark' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.04)',
+          borderBottom: overHero ? 'none' : '1px solid rgba(255,255,255,0.08)',
         }}
       >
         <div className="h-full flex items-center" style={{ maxWidth: 1300, margin: '0 auto', padding: '0 40px' }}>
 
           {/* Logo */}
           <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2 shrink-0">
-            <img src={logoUrl} alt="Logo" className={`w-7 h-7 object-contain transition-all ${overHero || theme === 'dark' ? 'brightness-0 invert' : ''}`} style={!overHero && theme !== 'dark' ? { filter: 'brightness(0) saturate(100%) invert(63%) sepia(50%) saturate(500%) hue-rotate(10deg) brightness(90%)' } : undefined} />
+            <img src={logoUrl} alt="Logo" className="w-7 h-7 object-contain brightness-0 invert" />
             <span
               className="text-[15px] font-bold tracking-tight transition-colors"
-              style={{ color: overHero ? '#faf7f8' : theme === 'dark' ? '#faf7f8' : '#B8963F' }}
+              style={{ color: '#ffffff' }}
             >
               Skyverses
             </span>
@@ -299,12 +294,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   to="/credits"
                   className="hidden md:flex items-center gap-1.5 px-2.5 h-8 rounded transition-all"
                   style={{
-                    background: overHero ? 'rgba(255,255,255,0.1)' : theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
-                    border: overHero ? '1px solid rgba(255,255,255,0.15)' : theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.06)',
+                    background: 'rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(255,255,255,0.12)',
                   }}
                 >
                   <Sparkles size={12} style={{ color: '#C9A84C' }} fill="currentColor" />
-                  <span className="text-[12px] font-bold" style={{ color: overHero ? '#faf7f8' : theme === 'dark' ? '#faf7f8' : '#1a2330' }}>{(credits || 0).toLocaleString()}</span>
+                  <span className="text-[12px] font-bold" style={{ color: '#faf7f8' }}>{(credits || 0).toLocaleString()}</span>
                 </Link>
 
                 {/* PRO Badge */}
@@ -336,7 +331,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               aria-label="Search (⌘K)"
               className="hidden md:flex w-8 h-8 items-center justify-center rounded transition-all"
               style={{
-                color: overHero || theme === 'dark' ? 'rgba(250,247,248,0.7)' : 'rgba(26,35,48,0.5)',
+                color: 'rgba(250,247,248,0.85)',
               }}
             >
               <Search size={16} />
@@ -351,7 +346,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 aria-haspopup="true"
                 className="w-8 h-8 flex items-center justify-center rounded transition-all"
                 style={{
-                  color: overHero || theme === 'dark' ? 'rgba(250,247,248,0.7)' : 'rgba(26,35,48,0.5)',
+                  color: 'rgba(250,247,248,0.85)',
                 }}
               >
                 <Languages size={16} />
@@ -362,8 +357,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                     initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
                     className="absolute top-full mt-1 right-0 w-20 overflow-hidden z-[200]"
                     style={{
-                      background: theme === 'dark' ? '#1a2330' : '#fff',
-                      border: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
+                      background: '#1a2330',
+                      border: '1px solid rgba(255,255,255,0.08)',
                       borderRadius: 8,
                       boxShadow: '0 8px 24px rgba(0,0,0,.12)',
                     }}
