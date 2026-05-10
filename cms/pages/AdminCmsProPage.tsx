@@ -8,7 +8,7 @@ import {
   Compass, Bot, Key, Zap, Inbox, Sparkles,
   ShieldCheck, ChevronLeft, ChevronRight,
   Sun, Moon, LogOut, Plus, CreditCard, FileText, Webhook, Cpu,
-  Search, LayoutGrid, Settings2, RefreshCw, Megaphone
+  Search, LayoutGrid, Settings2, RefreshCw, Megaphone, ArrowDownToLine
 } from 'lucide-react';
 
 import { marketApi } from '../apis/market';
@@ -42,8 +42,9 @@ const AdminDepositTab = React.lazy(async () => ({ default: (await import('../com
 const BlogTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/BlogTab')).BlogTab }));
 const TasksPendingTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/TasksPendingTab')).TasksPendingTab }));
 const PromoBannersTab = React.lazy(async () => ({ default: (await import('../components/admin-pro/PromoBannersTab')).PromoBannersTab }));
+const SktWithdrawalTab = React.lazy(() => import('../components/admin-pro/SktWithdrawalTab'));
 
-type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'OLLAMA_SETTINGS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG' | 'TASKS_PENDING' | 'PROMO_BANNERS';
+type ProAdminTab = 'DASHBOARD' | 'CLOUD' | 'PRICING' | 'CREDIT_PACKS' | 'BANKING' | 'PAYMENT_HISTORY' | 'WEBHOOK_LOGS' | 'USERS' | 'LOGS' | 'EXPLORER' | 'AI_MODELS' | 'OLLAMA_SETTINGS' | 'MARKET_FILTERS' | 'CONFIG' | 'PROVIDER_TOKENS' | 'FXFLOW' | 'API_CLIENTS' | 'SUBMISSIONS' | 'ADMIN_DEPOSIT' | 'BLOG' | 'TASKS_PENDING' | 'PROMO_BANNERS' | 'SKT_WITHDRAWALS';
 type AdminGroup = 'MAIN' | 'MARKET' | 'CONTENT' | 'FINANCE' | 'OPERATIONS' | 'INFRA' | 'SYSTEM';
 
 interface SidebarItem {
@@ -71,6 +72,7 @@ const sidebarItems: SidebarItem[] = [
   { id: 'BANKING',         label: 'Banking & QR',    icon: <CreditCard size={16} />, group: 'FINANCE',   description: 'Tài khoản bank, VietQR' },
   { id: 'PAYMENT_HISTORY', label: 'Payments',        icon: <Banknote size={16} />,  group: 'FINANCE',    description: 'Lịch sử nạp tiền' },
   { id: 'ADMIN_DEPOSIT',   label: 'Manual Credits',  icon: <Sparkles size={16} />,  group: 'FINANCE',    description: 'Cộng/trừ credit thủ công' },
+  { id: 'SKT_WITHDRAWALS', label: 'SKT Withdrawals', icon: <ArrowDownToLine size={16} />, group: 'FINANCE', description: 'Duyệt yêu cầu rút SKT' },
 
   { id: 'USERS',           label: 'Users',           icon: <Users size={16} />,     group: 'OPERATIONS', description: 'Khách hàng và tài khoản' },
   { id: 'TASKS_PENDING',   label: 'Tasks',           icon: <Cpu size={16} />,       group: 'OPERATIONS', description: 'Image/video/edit job queue', badge: 'LIVE' },
@@ -467,6 +469,7 @@ const AdminCmsProPage = () => {
               {activeTab === 'BLOG' && <BlogTab key="blog" />}
               {activeTab === 'TASKS_PENDING' && <TasksPendingTab key="tasks_pending" />}
               {activeTab === 'PROMO_BANNERS' && <PromoBannersTab key="promo_banners" />}
+              {activeTab === 'SKT_WITHDRAWALS' && <SktWithdrawalTab key="skt_withdrawals" />}
               {activeTab === 'CLOUD' && (
                 <NodeRegistryTab
                   key={activeTab}

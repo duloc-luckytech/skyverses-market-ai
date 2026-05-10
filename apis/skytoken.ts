@@ -1,5 +1,5 @@
 import { API_BASE_URL, getHeaders } from './config';
-import type { SkyTokenPackage, SkyTokenTransaction } from '../types';
+import type { SkyTokenPackage, SkyTokenTransaction, SkyTokenWithdrawal } from '../types';
 
 export const skytokenApi = {
   getBalance: async (): Promise<{ skyTokenBalance: number }> => {
@@ -110,6 +110,63 @@ export const skytokenApi = {
     try {
       const response = await fetch(
         `${API_BASE_URL}/skytoken/purchase/cancel/${txId}`,
+        { method: 'POST', headers: getHeaders() }
+      );
+      return await response.json();
+    } catch {
+      return { success: false };
+    }
+  },
+
+  /* ─── Withdrawal ─── */
+
+  withdrawRequest: async (payload: {
+    amountSKT: number;
+    bankName: string;
+    bankAccountNumber: string;
+    bankAccountName: string;
+  }): Promise<{
+    success: boolean;
+    data?: SkyTokenWithdrawal;
+    skyTokenBalance?: number;
+    message?: string;
+  }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/skytoken/withdraw/request`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      return await response.json();
+    } catch {
+      return { success: false, message: 'Network failed' };
+    }
+  },
+
+  getMyWithdrawals: async (
+    page: number = 1,
+    limit: number = 20
+  ): Promise<{
+    data: SkyTokenWithdrawal[];
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  }> => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/skytoken/withdraw/my?page=${page}&limit=${limit}`,
+        { method: 'GET', headers: getHeaders() }
+      );
+      return await response.json();
+    } catch {
+      return { data: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
+    }
+  },
+
+  cancelWithdrawal: async (
+    id: string
+  ): Promise<{ success: boolean; skyTokenBalance?: number }> => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/skytoken/withdraw/cancel/${id}`,
         { method: 'POST', headers: getHeaders() }
       );
       return await response.json();

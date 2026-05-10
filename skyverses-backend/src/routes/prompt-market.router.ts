@@ -260,7 +260,7 @@ router.get("/my-purchases/:id", authenticate, async (req: any, res) => {
 router.post("/sell", authenticate, async (req: any, res) => {
   try {
     const sellerId = req.user.userId;
-    const { title, description, category, tags, coverImage, priceSKT, isFree, prompts, previewText } = req.body;
+    const { title, description, category, tags, coverImage, priceSKT, isFree, prompts, previewText, models, examples } = req.body;
 
     if (!prompts || !prompts.length) {
       return res.status(400).json({ message: "PROMPTS_REQUIRED" });
@@ -280,6 +280,8 @@ router.post("/sell", authenticate, async (req: any, res) => {
       isFree: !!isFree,
       prompts,
       previewText: previewText || "",
+      models: models || [],
+      examples: examples || [],
       status: "active",
     });
 
@@ -304,7 +306,7 @@ router.put("/sell/:id", authenticate, async (req: any, res) => {
 
     const allowed = [
       "title", "description", "category", "tags", "coverImage",
-      "priceSKT", "isFree", "prompts", "previewText",
+      "priceSKT", "isFree", "prompts", "previewText", "models", "examples",
     ];
     for (const key of allowed) {
       if (req.body[key] !== undefined) {

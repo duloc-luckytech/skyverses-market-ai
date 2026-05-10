@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { authApi, RegisterRequest, AuthUser } from '../apis/auth';
 import { creditsApi } from '../apis/credits';
+import { skytokenApi } from '../apis/skytoken';
 
 interface User extends AuthUser {
   picture: string; // Mapping avatar -> picture for legacy UI compatibility
@@ -24,6 +25,8 @@ interface AuthContextType {
   isPro: boolean;
   addCredits: (amount: number) => void;
   useCredits: (amount: number) => boolean;
+  skyTokenBalance: number;
+  refreshSkyTokenBalance: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -64,6 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isSandboxEnv, setIsSandboxEnv] = useState(false);
   const [credits, setCredits] = useState<number>(0);
   const [freeImageRemaining, setFreeImageRemaining] = useState<number>(0);
+  const [skyTokenBalance, setSkyTokenBalance] = useState<number>(0);
 
   // Hydrate user info on mount (F5)
   useEffect(() => {
@@ -158,6 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(userData);
       setCredits(res.user.creditBalance || 0);
       setFreeImageRemaining(res.user.freeImageRemaining || 0);
+      setSkyTokenBalance((res.user as Record<string, unknown>).skyTokenBalance as number || 0);
       localStorage.setItem('skyverses_auth', JSON.stringify(userData));
     } else if (res.message === 'Unauthorized' || !res.success) {
       logout();
@@ -306,6 +311,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     setCredits(0);
+    setSkyTokenBalance(0);
     localStorage.removeItem('skyverses_auth');
     localStorage.removeItem('skyverses_auth_token');
     const g = (window as any).google;
@@ -315,6 +321,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (e) {}
     }
   };
+
+  const refreshSkyTokenBalance = useCallback(async () => {
+    const res = await skytokenApi.getBalance();
+    setSkyTokenBalance(res.skyTokenBalance || 0);
+  }, []);
 
   const addCredits = (amount: number) => {
     setCredits(prev => prev + amount);
@@ -331,7 +342,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <AuthContext.Provider value={{
       user, login, mockLogin, loginWithEmail, refreshUserInfo, claimWelcomeCredits, logout, isAuthenticated: !!user, authError,
-      isSandboxEnv, credits, freeImageRemaining, isPro: !!(user?.isPro), addCredits, useCredits
+      isSandboxEnv, credits, freeImageRemaining, isPro: !!(user?.isPro), addCredits, useCredits,
+      skyTokenBalance, refreshSkyTokenBalance
     }}>
       {children}
     </AuthContext.Provider>

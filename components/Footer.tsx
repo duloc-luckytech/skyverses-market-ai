@@ -63,6 +63,7 @@ const Footer: React.FC = () => {
           {[
             { label: t('footer.ai_products') || 'AI Products', to: '/apps' },
             { label: 'Credits & Pricing', to: '/credits' },
+            { label: 'Prompt Market', to: '/prompt-market' },
             { label: 'Explorer', to: '/explorer' },
             { label: 'Referral', to: '/referral' },
             { label: 'Terms & Policy', to: '/policy' },
@@ -127,6 +128,7 @@ const Footer: React.FC = () => {
             {/* RESOURCES */}
             <FooterCol title="Resources">
               <FooterLink to="/credits">Pricing</FooterLink>
+              <FooterLink to="/prompt-market">Prompt Market</FooterLink>
               <FooterExt href="https://insights.skyverses.com">Docs</FooterExt>
               <FooterLink to="/explorer">Explorer Gallery</FooterLink>
               <FooterLink to="/use-cases">Use Cases</FooterLink>

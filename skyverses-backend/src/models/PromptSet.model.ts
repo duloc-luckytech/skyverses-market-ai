@@ -65,6 +65,7 @@ const PromptSetSchema = new Schema(
           input: { type: String, default: "" },
           output: { type: String, default: "" },
           image: { type: String, default: null },
+          video: { type: String, default: null },
         },
       ],
       default: [],

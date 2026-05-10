@@ -37,7 +37,7 @@
 | `MyPromptPurchasesPage.tsx` | Buyer's purchased prompts — `/prompt-market/my-purchases`; expandable cards, lazy detail load, copy-to-clipboard |
 | `PromptWishlistPage.tsx` | Wishlist — `/prompt-market/wishlist`; grid of saved prompts, remove, auth gate, pagination |
 | `PromptSellerProfilePage.tsx` | Seller profile — `/prompt-market/seller/:sellerId`; avatar, badges, stats, follow, listings tabs |
-| ~~`SkyTokenPage.tsx`~~ | Removed — merged into Settings > Wallet tab |
+| `SkyTokenPage.tsx` | SKT wallet — `/skytoken`; balance card, packages grid, withdrawal form, tx history |
 
 ## Product (top-level)
 

@@ -122,12 +122,29 @@ export interface SkyTokenPackage {
 export interface SkyTokenTransaction {
   _id: string;
   userId: string;
-  type: 'TOP_UP' | 'CONSUME' | 'EARN' | 'BONUS' | 'REFUND' | 'WELCOME';
+  type: 'TOP_UP' | 'CONSUME' | 'EARN' | 'BONUS' | 'REFUND' | 'WELCOME' | 'WITHDRAW';
   amount: number;
   balanceAfter: number;
   source: string;
   note?: string;
   createdAt: string;
+}
+
+export interface SkyTokenWithdrawal {
+  _id: string;
+  userId: string | { _id: string; name: string; email: string; avatar?: string };
+  amountSKT: number;
+  amountVND: number;
+  bankName: string;
+  bankAccountNumber: string;
+  bankAccountName: string;
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  adminNote?: string;
+  processedBy?: string | { _id: string; name: string; email: string };
+  processedAt?: string;
+  completedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 /* =====================================================
@@ -160,6 +177,7 @@ export interface PromptExample {
   input: string;
   output: string;
   image?: string;
+  video?: string;
 }
 
 export interface PromptSet {

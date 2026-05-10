@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Coins, User, FileText, AlertTriangle, CheckCircle, Loader2, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import { promptMarketApi } from '../../apis/prompt-market';
 import type { PromptSet } from '../../types';
 
@@ -20,6 +21,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
   onSuccess,
 }) => {
   const { t, lang } = useLanguage();
+  const { refreshSkyTokenBalance } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,6 +43,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
       const res = await promptMarketApi.purchase(promptSet._id);
       if (res.success) {
         const newBalance = res.skyTokenBalance ?? balanceAfter;
+        refreshSkyTokenBalance();
         onSuccess(newBalance);
       } else {
         setError(res.message ?? t('purchase_failed'));
@@ -183,7 +186,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
                   {t('insufficient_balance')}
                 </p>
                 <Link
-                  to="/settings"
+                  to="/skytoken"
                   onClick={onClose}
                   className="inline-flex items-center gap-1 text-xs text-red-300 hover:text-red-200 transition-colors mt-0.5 font-sans underline underline-offset-2"
                 >

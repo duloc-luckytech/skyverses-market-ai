@@ -11,12 +11,19 @@ import {
   Globe,
   Upload,
   Eye,
+  Cpu,
+  FileOutput,
+  Image as ImageIcon,
+  Video,
+  Wand2,
+  CheckCircle2,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { promptMarketApi } from '../apis/prompt-market';
 import { uploadToGCS } from '../services/storage';
-import type { PromptVariable, Language } from '../types';
+import type { PromptVariable, Language, AIModel, PromptExample } from '../types';
+import { PROMPT_TEMPLATES, type PromptTemplate } from '../constants/prompt-templates';
 
 /* ─── Constants ─── */
 
@@ -31,11 +38,37 @@ const LANGS: { code: Language; label: string; flag: string }[] = [
   { code: 'ja', label: '日本語', flag: 'JA' },
 ];
 
+const AI_MODELS: { value: AIModel; label: string }[] = [
+  { value: 'gpt-4', label: 'GPT-4' },
+  { value: 'gpt-4o', label: 'GPT-4o' },
+  { value: 'gpt-5', label: 'GPT-5' },
+  { value: 'claude-3', label: 'Claude 3' },
+  { value: 'claude-4', label: 'Claude 4' },
+  { value: 'gemini', label: 'Gemini' },
+  { value: 'gemini-2', label: 'Gemini 2' },
+  { value: 'midjourney', label: 'Midjourney' },
+  { value: 'dall-e-3', label: 'DALL-E 3' },
+  { value: 'stable-diffusion', label: 'Stable Diffusion' },
+  { value: 'flux', label: 'Flux' },
+  { value: 'llama', label: 'Llama' },
+  { value: 'mistral', label: 'Mistral' },
+  { value: 'other', label: 'Other' },
+];
+
+
 const INPUT_CLASS =
   'bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-[#7036F0]/50 focus:outline-none w-full transition-colors';
 const LABEL_CLASS = 'text-sm text-white/60 mb-1.5 block';
 
 /* ─── Types ─── */
+
+interface ExampleItemForm {
+  _id: string;
+  input: string;
+  output: string;
+  image: string;
+  video: string;
+}
 
 interface PromptItemForm {
   _id: string;
@@ -62,6 +95,8 @@ interface FormState {
   priceSKT: number;
   previewText: string;
   prompts: PromptItemForm[];
+  models: AIModel[];
+  examples: ExampleItemForm[];
 }
 
 /* ─── Helpers ─── */
@@ -76,6 +111,10 @@ function makeVariable(): PromptVariable & { _id: string } {
 
 function makePrompt(): PromptItemForm {
   return { _id: uid(), title: '', content: '', description: '', variables: [] };
+}
+
+function makeExample(): ExampleItemForm {
+  return { _id: uid(), input: '', output: '', image: '', video: '' };
 }
 
 function emptyLocalized(): LocalizedFields {
@@ -144,12 +183,16 @@ export default function PromptCreatePage() {
     priceSKT: 10,
     previewText: '',
     prompts: [makePrompt()],
+    models: [],
+    examples: [],
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeLang, setActiveLang] = useState<Language>('en');
   const [coverPreview, setCoverPreview] = useState('');
   const [coverUploading, setCoverUploading] = useState(false);
+  const [appliedTemplate, setAppliedTemplate] = useState<string | null>(null);
+  const [previewTemplate, setPreviewTemplate] = useState<PromptTemplate | null>(null);
   const bulkInputRef = useRef<HTMLInputElement>(null);
   const coverFileRef = useRef<HTMLInputElement>(null);
 
@@ -300,6 +343,54 @@ export default function PromptCreatePage() {
     }
   }
 
+  /* ─── Model helpers ─── */
+  function toggleModel(model: AIModel) {
+    setForm((prev) => ({
+      ...prev,
+      models: prev.models.includes(model)
+        ? prev.models.filter((m) => m !== model)
+        : [...prev.models, model],
+    }));
+  }
+
+  /* ─── Example helpers ─── */
+  function addExample() {
+    setForm((prev) => ({ ...prev, examples: [...prev.examples, makeExample()] }));
+  }
+
+  function removeExample(id: string) {
+    setForm((prev) => ({
+      ...prev,
+      examples: prev.examples.filter((ex) => ex._id !== id),
+    }));
+  }
+
+  function updateExample(id: string, key: keyof Omit<ExampleItemForm, '_id'>, value: string) {
+    setForm((prev) => ({
+      ...prev,
+      examples: prev.examples.map((ex) => (ex._id === id ? { ...ex, [key]: value } : ex)),
+    }));
+  }
+
+  /* ─── Template helpers ─── */
+  function applyTemplate(tpl: PromptTemplate) {
+    const newPrompts: PromptItemForm[] = tpl.prompts.map((p) => ({
+      _id: uid(),
+      title: p.title,
+      content: p.content,
+      description: p.description,
+      variables: p.variables.map((v) => ({ _id: uid(), ...v })),
+    }));
+
+    setForm((prev) => ({
+      ...prev,
+      category: tpl.category,
+      tags: tpl.tags.join(', '),
+      prompts: newPrompts,
+    }));
+    setAppliedTemplate(tpl.key);
+  }
+
   /* ─── Submit ─── */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -330,6 +421,15 @@ export default function PromptCreatePage() {
       return Object.keys(result).length > 0 ? result : undefined;
     };
 
+    const cleanedExamples = form.examples
+      .filter((ex) => ex.input.trim() || ex.output.trim())
+      .map(({ _id, ...rest }) => ({
+        input: rest.input.trim(),
+        output: rest.output.trim(),
+        ...(rest.image.trim() ? { image: rest.image.trim() } : {}),
+        ...(rest.video.trim() ? { video: rest.video.trim() } : {}),
+      }));
+
     const payload = {
       title: cleanLocalized(form.title) ?? { en: form.title.en.trim() },
       description: cleanLocalized(form.description),
@@ -343,6 +443,8 @@ export default function PromptCreatePage() {
         ...rest,
         variables: variables.map(({ _id: _vid, ...vr }) => vr),
       })),
+      models: form.models.length ? form.models : undefined,
+      examples: cleanedExamples.length ? cleanedExamples : undefined,
     };
 
     setLoading(true);
@@ -388,6 +490,138 @@ export default function PromptCreatePage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* ─── Start from Template ─── */}
+          <Section title="Start from Template">
+            <p className="text-xs text-white/30">
+              Pick a creative scenario template to auto-fill prompts with structured variables. You can customize everything after applying.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {PROMPT_TEMPLATES.map((tpl) => {
+                const isApplied = appliedTemplate === tpl.key;
+                return (
+                  <button
+                    key={tpl.key}
+                    type="button"
+                    onClick={() => setPreviewTemplate(tpl)}
+                    className={`relative text-left p-4 rounded-xl border transition-all group ${
+                      isApplied
+                        ? 'bg-[#7036F0]/10 border-[#7036F0]/40'
+                        : 'bg-white/[0.03] border-white/10 hover:border-[#7036F0]/30 hover:bg-white/[0.05]'
+                    }`}
+                  >
+                    {isApplied && (
+                      <div className="absolute top-3 right-3">
+                        <CheckCircle2 size={16} className="text-[#7036F0]" />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xl">{tpl.icon}</span>
+                      <span className="text-sm font-semibold text-white">{tpl.label}</span>
+                    </div>
+                    <p className="text-xs text-white/40 leading-relaxed line-clamp-2 mb-3">
+                      {tpl.description}
+                    </p>
+                    <div className="flex items-center gap-3 text-[10px] text-white/30">
+                      <span className="flex items-center gap-1">
+                        <Wand2 size={10} />
+                        {tpl.prompts.length} prompts
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded bg-white/[0.06] text-white/40">
+                        {tpl.category}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            {appliedTemplate && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-xs text-[#7036F0]/80 flex items-center gap-1.5"
+              >
+                <CheckCircle2 size={12} />
+                Template applied — category, tags, and prompts have been populated. Edit freely below.
+              </motion.p>
+            )}
+          </Section>
+
+          {/* ─── Template Preview Modal ─── */}
+          <AnimatePresence>
+            {previewTemplate && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+                onClick={() => setPreviewTemplate(null)}
+              >
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto"
+                >
+                  <div className="p-6 border-b border-white/10">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-2xl">{previewTemplate.icon}</span>
+                      <h3 className="text-lg font-bold text-white">{previewTemplate.label}</h3>
+                    </div>
+                    <p className="text-sm text-white/50">{previewTemplate.description}</p>
+                    <div className="flex items-center gap-2 mt-3">
+                      <span className="px-2 py-0.5 rounded bg-white/[0.06] text-xs text-white/50">{previewTemplate.category}</span>
+                      {previewTemplate.tags.map((tag) => (
+                        <span key={tag} className="px-2 py-0.5 rounded bg-[#7036F0]/10 text-xs text-[#7036F0]/70">{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    <h4 className="text-sm font-semibold text-white/70">Included Prompts ({previewTemplate.prompts.length})</h4>
+                    {previewTemplate.prompts.map((p, i) => (
+                      <div key={i} className="bg-white/[0.03] border border-white/10 rounded-xl p-4">
+                        <div className="text-sm font-medium text-white mb-1">{p.title}</div>
+                        <p className="text-xs text-white/40 mb-2">{p.description}</p>
+                        <pre className="text-xs text-white/60 bg-black/30 rounded-lg p-3 whitespace-pre-wrap overflow-x-auto max-h-32">
+                          {p.content}
+                        </pre>
+                        {p.variables.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {p.variables.map((v) => (
+                              <span key={v.name} className="px-2 py-0.5 rounded bg-[#7036F0]/10 text-[10px] text-[#7036F0]/70">
+                                {`{{${v.name}}}`}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="p-6 border-t border-white/10 flex items-center justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewTemplate(null)}
+                      className="px-4 py-2 rounded-xl text-sm text-white/50 hover:text-white transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        applyTemplate(previewTemplate);
+                        setPreviewTemplate(null);
+                      }}
+                      className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-[#7036F0] hover:bg-[#7036F0]/80 transition-colors flex items-center gap-2"
+                    >
+                      <Wand2 size={14} />
+                      Apply Template
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Basic Info — Multi-lang */}
           <Section title={t('promptCreate.sectionBasic') || 'Basic Info'}>
             {/* Language switcher */}
@@ -600,6 +834,141 @@ export default function PromptCreatePage() {
                 onChange={(e) => setField('previewText', e.target.value)}
               />
             </div>
+          </Section>
+
+          {/* AI Models */}
+          <Section title={t('promptCreate.sectionModels') || 'Compatible AI Models'}>
+            <p className="text-xs text-white/30">
+              {t('promptCreate.modelsHint') || 'Select the AI models these prompts are designed for.'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {AI_MODELS.map((m) => {
+                const selected = form.models.includes(m.value);
+                return (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => toggleModel(m.value)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                      selected
+                        ? 'bg-[#7036F0]/20 border-[#7036F0]/50 text-[#a87aff]'
+                        : 'bg-white/[0.03] border-white/10 text-white/40 hover:text-white/60 hover:border-white/20'
+                    }`}
+                  >
+                    <Cpu size={12} />
+                    {m.label}
+                  </button>
+                );
+              })}
+            </div>
+            {form.models.length > 0 && (
+              <p className="text-xs text-white/30">
+                {form.models.length} model{form.models.length > 1 ? 's' : ''} selected
+              </p>
+            )}
+          </Section>
+
+          {/* Examples */}
+          <Section title={t('promptCreate.sectionExamples') || 'Examples'}>
+            <p className="text-xs text-white/30">
+              {t('promptCreate.examplesHint') || 'Add input/output examples to show buyers how your prompts work.'}
+            </p>
+
+            <AnimatePresence initial={false}>
+              {form.examples.map((ex, idx) => (
+                <motion.div
+                  key={ex._id}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="overflow-hidden"
+                >
+                  <div className="bg-white/[0.03] border border-white/10 rounded-xl p-5 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-white/40">
+                        <FileOutput size={14} />
+                        <span className="text-xs font-mono">Example #{idx + 1}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeExample(ex._id)}
+                        className="text-red-400/70 hover:text-red-400 transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className={LABEL_CLASS}>Input</label>
+                        <textarea
+                          rows={3}
+                          className={INPUT_CLASS + ' text-sm'}
+                          placeholder="Example input / prompt used..."
+                          value={ex.input}
+                          onChange={(e) => updateExample(ex._id, 'input', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className={LABEL_CLASS}>Output</label>
+                        <textarea
+                          rows={3}
+                          className={INPUT_CLASS + ' text-sm'}
+                          placeholder="Expected output / result..."
+                          value={ex.output}
+                          onChange={(e) => updateExample(ex._id, 'output', e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className={LABEL_CLASS}>
+                          <div className="flex items-center gap-1.5">
+                            <ImageIcon size={12} />
+                            Image URL
+                            <span className="text-white/20 text-xs">(optional)</span>
+                          </div>
+                        </label>
+                        <input
+                          type="url"
+                          className={INPUT_CLASS + ' text-sm'}
+                          placeholder="https://..."
+                          value={ex.image}
+                          onChange={(e) => updateExample(ex._id, 'image', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className={LABEL_CLASS}>
+                          <div className="flex items-center gap-1.5">
+                            <Video size={12} />
+                            Video URL
+                            <span className="text-white/20 text-xs">(optional)</span>
+                          </div>
+                        </label>
+                        <input
+                          type="url"
+                          className={INPUT_CLASS + ' text-sm'}
+                          placeholder="https://..."
+                          value={ex.video}
+                          onChange={(e) => updateExample(ex._id, 'video', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            <button
+              type="button"
+              onClick={addExample}
+              className="w-full flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/20 text-white/50 hover:text-white hover:border-[#7036F0]/40 transition-colors justify-center text-sm"
+            >
+              <Plus size={16} />
+              {t('promptCreate.addExample') || 'Add Example'}
+            </button>
           </Section>
 
           {/* Prompts — Drag reorder */}

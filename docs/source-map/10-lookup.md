@@ -5,6 +5,7 @@
 | Add a new product route | `App.tsx` (thêm vào `pageImports` + `<Route>`) |
 | Add new API call | `apis/<domain>.ts` |
 | Edit homepage block ordering | `constants/market-config.tsx` + `pages/MarketPage.tsx` |
+| Add/edit prompt templates | `constants/prompt-templates.ts` (shared by PromptCreatePage + PromptEditPage) |
 | Tweak header / menu | `components/Header.tsx` |
 | Add language string | `context/LanguageContext.tsx` (translation map) |
 | Change brand color | `tailwind.config.ts` → `theme.extend.colors.brand` |

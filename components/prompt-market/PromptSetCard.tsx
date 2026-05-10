@@ -35,13 +35,13 @@ const CATEGORY_ICONS: Record<PromptSet['category'], React.ReactNode> = {
 };
 
 const CATEGORY_GRADIENTS: Record<PromptSet['category'], string> = {
-  coding: 'from-[#C9A84C]/30 via-[#8B7635]/20 to-black/40',
-  writing: 'from-[#D4B85A]/30 via-[#C9A84C]/15 to-black/40',
-  marketing: 'from-[#E5C767]/30 via-[#C9A84C]/15 to-black/40',
-  design: 'from-[#C9A84C]/35 via-[#B8963F]/20 to-black/40',
-  business: 'from-[#B8963F]/30 via-[#8B7635]/20 to-black/40',
-  education: 'from-[#D4B85A]/30 via-[#B8963F]/15 to-black/40',
-  other: 'from-[#C9A84C]/30 via-[#8B7635]/15 to-black/40',
+  coding: 'from-brand-blue/30 via-brand-blue/10 to-neutral-900',
+  writing: 'from-violet-500/30 via-violet-500/10 to-neutral-900',
+  marketing: 'from-pink-500/30 via-pink-500/10 to-neutral-900',
+  design: 'from-amber-500/30 via-amber-500/10 to-neutral-900',
+  business: 'from-emerald-500/30 via-emerald-500/10 to-neutral-900',
+  education: 'from-blue-500/30 via-blue-500/10 to-neutral-900',
+  other: 'from-brand-blue/25 via-brand-blue/10 to-neutral-900',
 };
 
 const MODEL_LABELS: Partial<Record<string, string>> = {
@@ -122,15 +122,16 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.04, ease: [0.25, 0.46, 0.45, 0.94] }}
-      whileHover={{ y: -4, transition: { duration: 0.25 } }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -3, transition: { duration: 0.2, ease: 'easeOut' } }}
       className="group h-full"
     >
       <Link
         to={`/prompt-market/${slug}`}
-        className="flex flex-col h-full bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] hover:border-[#C9A84C]/30 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_40px_rgba(201,168,76,0.08)]"
+        className="flex flex-col h-full bg-neutral-900 border border-neutral-700/40 overflow-hidden transition-all duration-300 hover:border-brand-blue/30 hover:shadow-[0_8px_32px_rgba(112,54,240,0.1)]"
       >
         {/* Cover */}
         <div className="relative aspect-[3/2] overflow-hidden">
@@ -138,31 +139,31 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
             <img
               src={coverImage}
               alt={localizedTitle}
-              className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-out"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             />
           ) : (
             <div
               className={`w-full h-full bg-gradient-to-br ${CATEGORY_GRADIENTS[category]} flex items-center justify-center`}
             >
-              <div className="text-[#C9A84C]/40 group-hover:text-[#C9A84C]/60 transition-colors duration-300">
+              <div className="text-neutral-500 group-hover:text-brand-blue/60 transition-colors duration-300">
                 {CATEGORY_ICONS[category]}
               </div>
             </div>
           )}
 
           {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           {/* Featured badge */}
           {(featured || variant === 'featured') && (
-            <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-[#C9A84C] to-[#E5C767] text-black text-[10px] font-bold tracking-wide flex items-center gap-1 shadow-[0_2px_12px_rgba(201,168,76,0.4)]">
+            <span className="absolute top-2.5 left-2.5 px-2 py-0.5 bg-gradient-to-r from-brand-blue to-violet-500 text-white text-[9px] font-bold tracking-wide flex items-center gap-1 shadow-lg">
               <TrendingUp className="w-2.5 h-2.5" />
               Featured
             </span>
           )}
 
           {/* Category badge */}
-          <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md border border-[#C9A84C]/15 text-[10px] font-medium text-[#C9A84C]/80 capitalize">
+          <span className="absolute top-2.5 right-2.5 px-2 py-0.5 bg-black/60 backdrop-blur-sm border border-neutral-700/50 text-[10px] font-medium text-neutral-300 capitalize">
             {category}
           </span>
 
@@ -171,10 +172,10 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
             <button
               onClick={handleWishlistToggle}
               disabled={wishLoading}
-              className={`absolute top-2.5 left-2.5 z-10 w-8 h-8 rounded-lg backdrop-blur-md border flex items-center justify-center transition-all duration-200 ${
+              className={`absolute top-2.5 left-2.5 z-10 w-8 h-8 backdrop-blur-sm border flex items-center justify-center transition-all duration-200 ${
                 wishlisted
                   ? 'bg-red-500/20 border-red-500/30 text-red-400'
-                  : 'bg-black/50 border-white/10 text-white/40 opacity-0 group-hover:opacity-100 hover:text-red-400 hover:border-red-500/30'
+                  : 'bg-black/50 border-neutral-700/50 text-white/40 opacity-0 group-hover:opacity-100 hover:text-red-400 hover:border-red-500/30'
               } ${wishlisted ? 'opacity-100' : ''}`}
             >
               <Heart className={`w-3.5 h-3.5 ${wishlisted ? 'fill-red-400' : ''}`} />
@@ -184,10 +185,10 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
           {/* Price pill */}
           <div className="absolute bottom-2.5 right-2.5">
             <span
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold backdrop-blur-md shadow-lg ${
+              className={`px-2.5 py-1 text-xs font-bold backdrop-blur-sm shadow-lg ${
                 isFree
-                  ? 'bg-[#C9A84C]/90 text-black'
-                  : 'bg-black/80 border border-[#C9A84C]/30 text-[#E5C767]'
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-black/70 border border-neutral-700/50 text-white'
               }`}
             >
               {isFree ? t('free') || 'Free' : `${priceSKT} SKT`}
@@ -198,13 +199,13 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
         {/* Body */}
         <div className="flex flex-col flex-1 p-4 gap-2.5">
           {/* Title */}
-          <h3 className="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-[#E5C767] transition-colors duration-200">
+          <h3 className="text-[13px] font-bold text-neutral-200 leading-snug line-clamp-2 group-hover:text-brand-blue transition-colors duration-200">
             {localizedTitle}
           </h3>
 
           {/* Description */}
           {localizedDesc && (
-            <p className="text-[13px] text-white/50 line-clamp-2 leading-relaxed">
+            <p className="text-[12px] text-neutral-500 line-clamp-2 leading-relaxed">
               {localizedDesc}
             </p>
           )}
@@ -215,13 +216,13 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
               {visibleTags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 rounded-md bg-[#C9A84C]/[0.08] border border-[#C9A84C]/15 text-[10px] text-[#C9A84C]/75 font-medium"
+                  className="px-2 py-0.5 bg-neutral-800 border border-neutral-700/40 text-[10px] text-neutral-400 font-medium"
                 >
                   {tag}
                 </span>
               ))}
               {safeTags.length > 2 && (
-                <span className="px-1.5 py-0.5 text-[10px] text-white/35">
+                <span className="px-1.5 py-0.5 text-[10px] text-neutral-600">
                   +{safeTags.length - 2}
                 </span>
               )}
@@ -234,14 +235,14 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
               {visibleModels.map((m) => (
                 <span
                   key={m}
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/[0.05] border border-white/[0.08] text-[10px] text-white/50 font-medium"
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-neutral-800 border border-neutral-700/40 text-[10px] text-neutral-400 font-medium"
                 >
                   <Cpu className="w-2.5 h-2.5" />
                   {MODEL_LABELS[m] ?? m}
                 </span>
               ))}
               {(models ?? []).length > 2 && (
-                <span className="px-1 py-0.5 text-[10px] text-white/35">
+                <span className="px-1 py-0.5 text-[10px] text-neutral-600">
                   +{(models ?? []).length - 2}
                 </span>
               )}
@@ -249,33 +250,33 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
           )}
 
           {/* Footer */}
-          <div className="mt-auto pt-3 border-t border-white/[0.07] flex items-center justify-between">
+          <div className="mt-auto pt-3 border-t border-neutral-700/40 flex items-center justify-between">
             {/* Seller */}
             <div className="flex items-center gap-2 min-w-0">
               {sellerAvatar ? (
                 <img
                   src={sellerAvatar}
                   alt={sellerName ?? ''}
-                  className="w-5 h-5 rounded-full object-cover ring-1 ring-[#C9A84C]/20"
+                  className="w-5 h-5 rounded-full object-cover ring-1 ring-neutral-700"
                 />
               ) : (
-                <div className="w-5 h-5 rounded-full bg-[#C9A84C]/10 flex items-center justify-center ring-1 ring-[#C9A84C]/15">
-                  <User className="w-2.5 h-2.5 text-[#C9A84C]/50" />
+                <div className="w-5 h-5 rounded-full bg-neutral-800 flex items-center justify-center ring-1 ring-neutral-700">
+                  <User className="w-2.5 h-2.5 text-neutral-500" />
                 </div>
               )}
               {sellerName && (
-                <span className="text-[11px] text-white/45 truncate max-w-[80px] flex items-center gap-1">
+                <span className="text-[11px] text-neutral-500 truncate max-w-[80px] flex items-center gap-1">
                   {sellerName}
-                  <BadgeCheck className="w-3 h-3 text-[#C9A84C]/60 flex-shrink-0" />
+                  <BadgeCheck className="w-3 h-3 text-brand-blue/60 flex-shrink-0" />
                 </span>
               )}
             </div>
 
             {/* Stats */}
-            <div className="flex items-center gap-2.5 text-[11px] text-white/40">
+            <div className="flex items-center gap-2.5 text-[11px] text-neutral-500">
               {reviewCount > 0 && (
-                <span className="flex items-center gap-1 text-[#E5C767]/80" title="Rating">
-                  <Star className="w-3 h-3 fill-[#E5C767]/70" />
+                <span className="flex items-center gap-1 text-amber-500/80" title="Rating">
+                  <Star className="w-3 h-3 fill-amber-500/70" />
                   {averageRating.toFixed(1)}
                 </span>
               )}

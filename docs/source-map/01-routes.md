@@ -38,6 +38,7 @@ Provider order: `ErrorBoundary > Theme > Language > Auth > Toast > Router > Sear
 | `/prompt-market/wishlist` | `pages/PromptWishlistPage` | User's saved prompts (auth) |
 | `/prompt-market/seller/:sellerId` | `pages/PromptSellerProfilePage` | Public seller profile |
 | `/prompt-market/:slug` | `pages/PromptDetailPage` | Prompt set detail + purchase |
+| `/skytoken` | `pages/SkyTokenPage` | SKT wallet, packages, withdrawal |
 
 ## Product `/product/:slug`
 

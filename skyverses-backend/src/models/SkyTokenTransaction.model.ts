@@ -12,6 +12,7 @@ const SkyTokenTransactionSchema = new Schema(
         "BONUS",
         "REFUND",
         "WELCOME",
+        "WITHDRAW",
       ],
       required: true,
     },

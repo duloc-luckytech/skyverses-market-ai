@@ -80,6 +80,7 @@ const pageImports = {
   myPromptPurchases: () => import('./pages/MyPromptPurchasesPage'),
   promptSellerProfile: () => import('./pages/PromptSellerProfilePage'),
   promptWishlist: () => import('./pages/PromptWishlistPage'),
+  skytoken: () => import('./pages/SkyTokenPage'),
 };
 
 // Core pages
@@ -153,6 +154,7 @@ const PromptEditPage = React.lazy(pageImports.promptEdit);
 const MyPromptPurchasesPage = React.lazy(pageImports.myPromptPurchases);
 const PromptSellerProfilePage = React.lazy(pageImports.promptSellerProfile);
 const PromptWishlistPage = React.lazy(pageImports.promptWishlist);
+const SkyTokenPage = React.lazy(pageImports.skytoken);
 
 // ═══ Ultra-fast page transition bar (no blank page) ═══
 const PageLoader = () => (
@@ -249,6 +251,7 @@ const App: React.FC = () => {
                       <Route path="/prompt-market/wishlist" element={<PromptWishlistPage />} />
                       <Route path="/prompt-market/seller/:sellerId" element={<PromptSellerProfilePage />} />
                       <Route path="/prompt-market/:slug" element={<PromptDetailPage />} />
+                      <Route path="/skytoken" element={<SkyTokenPage />} />
 
                       <Route path="/product/background-removal-ai" element={<BackgroundRemovalAI />} />
                       <Route path="/product/social-banner-ai" element={<SocialBannerAI />} />

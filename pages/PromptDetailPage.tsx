@@ -399,7 +399,17 @@ const PromptDetailPage: React.FC = () => {
                       key={i}
                       className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden"
                     >
-                      {ex.image && (
+                      {ex.video ? (
+                        <div className="relative w-full aspect-video bg-black/20">
+                          <video
+                            src={ex.video}
+                            poster={ex.image || undefined}
+                            controls
+                            preload="metadata"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : ex.image ? (
                         <div className="relative w-full aspect-video bg-black/20">
                           <img
                             src={ex.image}
@@ -408,7 +418,7 @@ const PromptDetailPage: React.FC = () => {
                             loading="lazy"
                           />
                         </div>
-                      )}
+                      ) : null}
                       {ex.input && (
                         <div className="px-4 py-3 border-b border-white/[0.04]">
                           <span className="text-[10px] font-semibold uppercase tracking-wider text-[#C9A84C]/60 mb-1.5 block">
@@ -498,7 +508,7 @@ const PromptDetailPage: React.FC = () => {
                     <p className="text-xs text-white/25 mt-1.5">
                       Your balance: <span className="text-white/60 font-medium">{balance.toLocaleString()} SKT</span>
                       {balance < promptSet.priceSKT && (
-                        <Link to="/settings" className="ml-2 text-[#C9A84C] hover:underline">
+                        <Link to="/skytoken" className="ml-2 text-[#C9A84C] hover:underline">
                           Top up
                         </Link>
                       )}
@@ -685,7 +695,9 @@ const PromptDetailPage: React.FC = () => {
           promptSet={promptSet}
           userBalance={balance}
           onClose={() => setShowPurchaseModal(false)}
-          onSuccess={() => {
+          onSuccess={(newBalance: number) => {
+            setBalance(newBalance);
+            setAlreadyPurchased(true);
             setShowPurchaseModal(false);
             navigate('/prompt-market/my-purchases');
           }}

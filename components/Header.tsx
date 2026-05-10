@@ -438,6 +438,22 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                           </button>
                         </div>
 
+                        {/* SKT balance card */}
+                        <Link
+                          to="/skytoken"
+                          onClick={() => setShowUserMenu(false)}
+                          className="flex items-center justify-between p-2 rounded mt-1.5 transition-all hover:opacity-80"
+                          style={{ background: theme === 'dark' ? 'rgba(112,54,240,0.06)' : 'rgba(112,54,240,0.04)', border: theme === 'dark' ? '1px solid rgba(112,54,240,0.15)' : '1px solid rgba(112,54,240,0.1)' }}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <Coins size={13} style={{ color: '#7036F0' }} />
+                            <span className="text-xs font-bold" style={{ color: theme === 'dark' ? '#faf7f8' : '#1a2330' }}>{(sktBalance || 0).toLocaleString()} SKT</span>
+                          </div>
+                          <span className="text-[10px] font-bold flex items-center gap-0.5" style={{ color: '#7036F0' }}>
+                            <Plus size={10} /> Nạp SKT
+                          </span>
+                        </Link>
+
                         {/* Plan badge */}
                         {isPro ? (
                           <div
@@ -467,6 +483,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                         <UserMenuLink to="/favorites" icon={<Bookmark size={15} />} label={t('user.menu.favorites')} onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="/prompt-market/my-purchases" icon={<Database size={15} />} label="My Prompts" onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="/prompt-market/sell" icon={<Coins size={15} />} label="Sell Prompts" onClick={() => setShowUserMenu(false)} />
+                        <UserMenuLink to="/skytoken" icon={<Database size={15} />} label="SKT Wallet" onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="/usage" icon={<BarChart3 size={15} />} label={t('user.menu.usage')} onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="/settings" icon={<Settings size={15} />} label={t('user.menu.settings')} onClick={() => setShowUserMenu(false)} />
                         <div style={{ height: 1, background: 'rgba(0,0,0,0.04)', margin: '2px 8px' }} />

@@ -1248,9 +1248,9 @@ const MarketsPage: React.FC = () => {
               <img
                 src={promoBanner.imageUrl}
                 alt=""
-                className="absolute top-0 right-0 w-3/4 h-full object-cover opacity-70 group-hover:opacity-85 transition-opacity duration-700"
+                className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-75 transition-opacity duration-700"
               />
-              <div className="absolute top-0 right-0 w-3/4 h-full bg-gradient-to-r from-neutral-950 via-neutral-950/40 to-transparent" />
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-neutral-950 via-neutral-950/80 via-[45%] to-transparent" />
             </>
           )}
           {/* ── Animated gradient background ── */}
@@ -1275,6 +1275,9 @@ const MarketsPage: React.FC = () => {
               backgroundSize: '40px 40px',
             }}
           />
+
+          {/* ── Bottom fade — smooth transition to page bg ── */}
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#141418] to-transparent z-[2]" />
 
           {/* ── Corner accent lines ── */}
           <motion.div

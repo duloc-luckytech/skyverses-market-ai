@@ -11,7 +11,7 @@ cms/
 ├── App.tsx, index.tsx, index.css, vite.config.ts, tailwind.config.js, postcss.config.js, data.ts, types.ts
 ├── apis/                  Mirror /apis (ai-models, api-client, auth, blog, config, credits,
 │                          deploy, explorer, images, market, media, pricing, product-submission,
-│                          provider-tokens, upscale, user, videos)
+│                          provider-tokens, skytoken, upscale, user, videos)
 ├── components/            Header.tsx, Footer.tsx, Layout.tsx, LoadingScreen.tsx,
 │                          ExplorerDetailModal.tsx
 ├── constants/             market-config.tsx, media-presets.ts
@@ -25,6 +25,8 @@ cms/
 **Lưu ý:** CMS có `services/gemini.ts` (main app không có) — gọi `@google/genai` trực tiếp cho admin AI helpers.
 
 **Dọn admin-pro:** bỏ các tab legacy/mồ côi `ProductsTab`, `SolutionManagerTab`, `ApiSandboxTab`; shell hiện dùng `NodeRegistryTab` cho Market Products.
+
+**admin-pro tabs mới:** `SktWithdrawalTab.tsx` — quản lý yêu cầu rút SKT (approve/reject/complete), dùng `cms/apis/skytoken.ts`.
 
 ## `blog/` — Blog frontend (21 file)
 

@@ -15,6 +15,9 @@ import {
   Eye,
   ChevronDown,
   X,
+  Coins,
+  TrendingUp,
+  Wallet,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -121,7 +124,7 @@ function FilterDropdown({
 
 export default function PromptSellPage() {
   const { t, lang } = useLanguage();
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, login, skyTokenBalance } = useAuth();
 
   const [activeTab, setActiveTab] = useState<TabKey>('listings');
   const [listings, setListings] = useState<PromptSet[]>([]);
@@ -260,6 +263,50 @@ export default function PromptSellPage() {
             <Plus size={16} />
             Create New
           </Link>
+        </div>
+
+        {/* Earnings summary cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          {/* Total Sales */}
+          <div className="bg-white/5 border border-white/8 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp size={15} className="text-white/40" />
+              <span className="text-xs text-white/40 uppercase tracking-wider font-mono">Total Sales</span>
+            </div>
+            <p className="text-xl font-bold text-white font-mono">
+              {loadingEarnings ? '...' : earnings.totalSales}
+            </p>
+          </div>
+
+          {/* Total Earned */}
+          <div className="bg-white/5 border border-white/8 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Coins size={15} className="text-yellow-400" />
+              <span className="text-xs text-white/40 uppercase tracking-wider font-mono">Total Earned</span>
+            </div>
+            <p className="text-xl font-bold text-white font-mono">
+              {loadingEarnings ? '...' : `${earnings.totalEarned.toLocaleString()} SKT`}
+            </p>
+          </div>
+
+          {/* SKT Balance + Withdraw */}
+          <div className="bg-white/5 border border-white/8 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Wallet size={15} className="text-[#7036F0]" />
+              <span className="text-xs text-white/40 uppercase tracking-wider font-mono">SKT Balance</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-xl font-bold text-white font-mono">
+                {(skyTokenBalance ?? 0).toLocaleString()} SKT
+              </p>
+              <Link
+                to="/skytoken"
+                className="text-xs text-[#7036F0] hover:text-[#5a2bc7] font-medium transition-colors"
+              >
+                Withdraw →
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Error banner */}

@@ -1,5 +1,5 @@
 import { API_BASE_URL, getHeaders } from './config';
-import type { PromptSet, PromptPurchase, PromptReview, LocalizedString, PromptItem, SellerProfile, PromptWishlistItem } from '../types';
+import type { PromptSet, PromptPurchase, PromptReview, LocalizedString, PromptItem, SellerProfile, PromptWishlistItem, AIModel, PromptExample } from '../types';
 
 export interface PromptMarketListParams {
   q?: string;
@@ -20,6 +20,8 @@ export interface PromptSetCreatePayload {
   isFree?: boolean;
   prompts: PromptItem[];
   previewText?: string;
+  models?: AIModel[];
+  examples?: PromptExample[];
 }
 
 export const promptMarketApi = {
@@ -386,6 +388,26 @@ export const promptMarketApi = {
       return await response.json();
     } catch {
       return { following: false };
+    }
+  },
+
+  /* ─── Market Stats ─── */
+  getStats: async (): Promise<{
+    totalPrompts: number;
+    totalSellers: number;
+    totalPurchases: number;
+    totalSKTVolume: number;
+    totalReviews: number;
+  }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/prompt-market/stats`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+      const res = await response.json();
+      return res.data ?? { totalPrompts: 0, totalSellers: 0, totalPurchases: 0, totalSKTVolume: 0, totalReviews: 0 };
+    } catch {
+      return { totalPrompts: 0, totalSellers: 0, totalPurchases: 0, totalSKTVolume: 0, totalReviews: 0 };
     }
   },
 
