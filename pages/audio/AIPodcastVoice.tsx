@@ -316,7 +316,7 @@ const FAQSection: React.FC = () => {
 
 const FinalCTA: React.FC<{ onStart: () => void }> = ({ onStart }) => (
   <section className="py-20 px-4">
-    <div className="max-w-4xl mx-auto rounded-[2rem] p-10 lg:p-14 text-center bg-gradient-to-br from-brand-blue via-purple-500 to-pink-500 relative overflow-hidden">
+    <div className="max-w-4xl mx-auto rounded-xl p-10 lg:p-14 text-center bg-gradient-to-br from-brand-blue via-purple-500 to-pink-500 relative overflow-hidden">
       <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
       <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
       <h2 className="relative text-2xl lg:text-4xl font-bold text-white">Sẵn sàng làm podcast đầu tiên?</h2>

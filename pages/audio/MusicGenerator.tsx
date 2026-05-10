@@ -198,7 +198,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-8 lg:gap-10 text-center max-w-2xl px-6 relative z-10">
                 <div className="relative group">
                   <div className="absolute inset-0 bg-brand-blue blur-[60px] opacity-10 rounded-full animate-pulse"></div>
-                  <div className="w-24 h-24 lg:w-40 lg:h-40 bg-slate-50 dark:bg-white/[0.03] rounded-[2rem] lg:rounded-[3rem] border border-black/5 dark:border-white/10 flex items-center justify-center relative z-10 shadow-2xl transition-transform group-hover:scale-110 duration-700">
+                  <div className="w-24 h-24 lg:w-40 lg:h-40 bg-slate-50 dark:bg-white/[0.03] rounded-xl lg:rounded-xl border border-black/5 dark:border-white/10 flex items-center justify-center relative z-10 shadow-2xl transition-transform group-hover:scale-110 duration-700">
                     <Music strokeWidth={1} className="w-10 h-10 lg:w-20 lg:h-20 text-brand-blue opacity-40 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>

@@ -125,7 +125,7 @@ const ProductAIAgentWorkflow = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className="group relative aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-xl hover:border-emerald-500/40 transition-all cursor-pointer"
+                className="group relative aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/10 rounded-xl overflow-hidden shadow-xl hover:border-emerald-500/40 transition-all cursor-pointer"
                 onClick={() => { flow.setWorkflowId(tmpl.templateId); setIsStudioOpen(true); }}
               >
                 <img 
@@ -219,7 +219,7 @@ const ProductAIAgentWorkflow = () => {
         </section>
 
         {/* --- FINAL CONVERSION --- */}
-        <section className="py-60 text-center relative overflow-hidden bg-emerald-500 rounded-[3rem] shadow-3xl mx-4 transition-all duration-700 group">
+        <section className="py-60 text-center relative overflow-hidden bg-emerald-500 rounded-xl shadow-3xl mx-4 transition-all duration-700 group">
            <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-bold text-white leading-none tracking-tighter select-none italic uppercase">
               CREATE CREATE CREATE CREATE
            </div>

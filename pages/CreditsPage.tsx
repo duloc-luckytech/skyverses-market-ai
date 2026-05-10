@@ -244,7 +244,7 @@ const CreditsPage = () => {
                     transition={{ delay: packIdx * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                     onMouseEnter={() => setHoveredPack(pack._id)}
                     onMouseLeave={() => setHoveredPack(null)}
-                    className={`relative flex flex-col rounded-[1.25rem] border overflow-hidden transition-all duration-500 ${
+                    className={`relative flex flex-col rounded-xl border overflow-hidden transition-all duration-500 ${
                       isHighlight 
                         ? 'shadow-xl z-10 lg:scale-[1.03]' 
                         : 'shadow-sm hover:shadow-lg'

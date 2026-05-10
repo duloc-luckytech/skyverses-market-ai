@@ -754,7 +754,7 @@ const LoginPage = () => {
                     animation: 'pulseRing 2s ease-in-out infinite',
                   }}
                 />
-                <div className="absolute -inset-8 rounded-[2rem] opacity-20"
+                <div className="absolute -inset-8 rounded-xl opacity-20"
                   style={{ background: 'radial-gradient(circle, rgba(212,160,23,0.3) 0%, transparent 70%)' }} />
               </div>
               <div className="flex flex-col items-center gap-3">

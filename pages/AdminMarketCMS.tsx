@@ -171,7 +171,7 @@ const AdminMarketCMS = () => {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {comparison.missing.map((sol) => (
-                        <div key={sol.id} className="p-8 bg-amber-500/[0.03] border border-amber-500/20 rounded-[2rem] space-y-8">
+                        <div key={sol.id} className="p-8 bg-amber-500/[0.03] border border-amber-500/20 rounded-xl space-y-8">
                           <div className="flex justify-between items-start">
                               <h4 className="text-xl font-bold uppercase italic text-slate-900 dark:text-white truncate">{sol.name[lang as Language]}</h4>
                               <button onClick={() => handlePushToCloud(sol)} className="px-6 py-2.5 bg-amber-500 text-black rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-xl">PUSH</button>
@@ -189,7 +189,7 @@ const AdminMarketCMS = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {comparison.live.map((sol) => (
-                    <div key={sol.id} className={`p-8 bg-white dark:bg-[var(--atlas-bg-panel)] border rounded-[2rem] space-y-6 ${sol.isActive ? 'border-black/5 dark:border-white/5' : 'opacity-40 grayscale'}`}>
+                    <div key={sol.id} className={`p-8 bg-white dark:bg-[var(--atlas-bg-panel)] border rounded-xl space-y-6 ${sol.isActive ? 'border-black/5 dark:border-white/5' : 'opacity-40 grayscale'}`}>
                        <div className="flex justify-between items-start">
                           <h4 className="text-lg font-bold uppercase italic text-slate-900 dark:text-white truncate">{sol.name[lang as Language]}</h4>
                           <div className="flex gap-1.5">
@@ -211,7 +211,7 @@ const AdminMarketCMS = () => {
                     return (
                       <div 
                         key={event.id}
-                        className={`p-8 bg-white dark:bg-[var(--atlas-bg-panel)] border-2 rounded-[2.5rem] space-y-6 shadow-sm transition-all group hover:shadow-2xl ${editingEvent?.id === event.id ? `border-${event.accentColor}-500` : 'border-black/5 dark:border-white/5'}`}
+                        className={`p-8 bg-white dark:bg-[var(--atlas-bg-panel)] border-2 rounded-xl space-y-6 shadow-sm transition-all group hover:shadow-2xl ${editingEvent?.id === event.id ? `border-${event.accentColor}-500` : 'border-black/5 dark:border-white/5'}`}
                       >
                          <div className="flex justify-between items-start">
                             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border shadow-inner bg-${event.accentColor}-500/10 border-${event.accentColor}-500/20 text-${event.accentColor}-500 group-hover:scale-110 transition-transform`}>
@@ -249,7 +249,7 @@ const AdminMarketCMS = () => {
                    >
                      <motion.div 
                        initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }}
-                       className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/10 dark:border-white/10 rounded-[2.5rem] w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-3xl"
+                       className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/10 dark:border-white/10 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-3xl"
                      >
                         <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0">
                            <div className="flex items-center gap-4">

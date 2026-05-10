@@ -158,7 +158,7 @@ const VoiceStudio = () => {
            
            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {PRICING_TIERS.map((tier) => (
-                <div key={tier.name} className={`p-12 bg-[#08080a] border-2 rounded-[2.5rem] flex flex-col justify-between transition-all duration-500 group relative overflow-hidden ${tier.popular ? 'border-[#ff4b3a] shadow-[0_30px_100px_rgba(255,75,58,0.1)] scale-105 z-10' : 'border-white/5 opacity-80 hover:opacity-100 hover:border-white/10'}`}>
+                <div key={tier.name} className={`p-12 bg-[#08080a] border-2 rounded-xl flex flex-col justify-between transition-all duration-500 group relative overflow-hidden ${tier.popular ? 'border-[#ff4b3a] shadow-[0_30px_100px_rgba(255,75,58,0.1)] scale-105 z-10' : 'border-white/5 opacity-80 hover:opacity-100 hover:border-white/10'}`}>
                    {tier.popular && (
                       <div className="absolute top-0 right-0 bg-[#ff4b3a] text-white px-6 py-2 text-[8px] font-bold uppercase tracking-widest rounded-bl-2xl shadow-xl">MOST POPULAR</div>
                    )}

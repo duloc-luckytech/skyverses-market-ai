@@ -362,7 +362,7 @@ const NoCodeExportPage: React.FC = () => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#0c0e1a] via-[#0e1028] to-[#130a22]"
+            className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#0c0e1a] via-[#0e1028] to-[#130a22]"
           >
             {/* Background decor */}
             <div className="absolute top-0 right-0 w-[500px] h-[400px] bg-brand-blue/10 rounded-full blur-[120px] pointer-events-none" />

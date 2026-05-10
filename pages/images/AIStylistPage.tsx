@@ -72,7 +72,7 @@ const AIStylistPage = () => {
           </div>
 
           <div className="lg:col-span-6 relative order-1 lg:order-2">
-             <div className="aspect-[3/4] bg-slate-100 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-[3rem] p-12 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center">
+             <div className="aspect-[3/4] bg-slate-100 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-xl p-12 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center">
                 <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue/10 to-transparent"></div>
                 <div className="relative z-10 w-full max-w-sm aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-white/10 rotate-3">
                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover" alt="Stylist Mockup" />

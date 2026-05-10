@@ -226,7 +226,7 @@ const StoryboardStudioPage: React.FC = () => {
             initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.1 }}
             className="order-1 lg:order-2 relative"
           >
-            <div className="relative rounded-[2.5rem] overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.2)] border border-slate-200/60 dark:border-white/5 aspect-[16/10]">
+            <div className="relative rounded-xl overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.2)] border border-slate-200/60 dark:border-white/5 aspect-[16/10]">
               <img
                 src={CDN.hero_main}
                 alt="Storyboard Studio AI — Phân cảnh kịch bản điện ảnh với AI"
@@ -241,7 +241,7 @@ const StoryboardStudioPage: React.FC = () => {
               </div>
             </div>
             {/* Decorative glow ring */}
-            <div className="absolute -inset-4 -z-10 bg-brand-blue/10 rounded-[3rem] blur-2xl" />
+            <div className="absolute -inset-4 -z-10 bg-brand-blue/10 rounded-xl blur-2xl" />
           </motion.div>
         </div>
       </section>

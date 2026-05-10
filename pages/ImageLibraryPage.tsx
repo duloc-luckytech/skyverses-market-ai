@@ -293,7 +293,7 @@ const ImageLibraryPage: React.FC = () => {
                       key={item.id}
                       layout
                       initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                      className="break-inside-avoid relative rounded-[2.5rem] overflow-hidden border-2 border-transparent bg-white dark:bg-[var(--atlas-bg-panel)] shadow-sm hover:shadow-2xl transition-all duration-500 group cursor-pointer"
+                      className="break-inside-avoid relative rounded-xl overflow-hidden border-2 border-transparent bg-white dark:bg-[var(--atlas-bg-panel)] shadow-sm hover:shadow-2xl transition-all duration-500 group cursor-pointer"
                     >
                        <img src={item.url} className="w-full h-auto object-cover transition-all duration-[3s] group-hover:scale-110" alt="" />
 
@@ -357,7 +357,7 @@ const ImageLibraryPage: React.FC = () => {
       <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-4xl px-6 z-[200]">
         <motion.div
           initial={{ y: 100 }} animate={{ y: 0 }}
-          className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-[3rem] shadow-[0_40px_120px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] p-3 flex items-center gap-4 transition-all hover:scale-[1.01]"
+          className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-xl shadow-[0_40px_120px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] p-3 flex items-center gap-4 transition-all hover:scale-[1.01]"
         >
           <div className="flex-grow relative flex items-center">
             <input

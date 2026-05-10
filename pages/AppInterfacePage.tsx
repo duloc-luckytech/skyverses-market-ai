@@ -32,7 +32,7 @@ const AppInterfacePage = () => {
         {/* User Stats Card */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-[#161b22] border border-white/5 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-3xl"
+          className="bg-[#161b22] border border-white/5 rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-3xl"
         >
           <div className="flex items-center gap-6">
              <div className="w-16 h-16 rounded-full bg-brand-blue/20 border-2 border-brand-blue/30 flex items-center justify-center text-brand-blue shadow-lg">
@@ -72,7 +72,7 @@ const AppInterfacePage = () => {
         {/* Input Bar */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}
-          className="bg-[#161b22] border border-white/5 p-4 rounded-[2rem] flex flex-col md:flex-row gap-4 shadow-2xl"
+          className="bg-[#161b22] border border-white/5 p-4 rounded-xl flex flex-col md:flex-row gap-4 shadow-2xl"
         >
            <input 
              type="text" 
@@ -117,7 +117,7 @@ const AppInterfacePage = () => {
 };
 
 const InfoCard = ({ title, features, isEn = false }: any) => (
-  <div className="bg-[#161b22] border border-white/5 p-10 rounded-[2.5rem] space-y-8 shadow-xl">
+  <div className="bg-[#161b22] border border-white/5 p-10 rounded-xl space-y-8 shadow-xl">
      <div className="space-y-4">
         <h2 className="text-2xl font-bold italic tracking-tighter text-white">🌟 {title}</h2>
         <p className="text-gray-400 text-sm font-medium leading-relaxed italic">

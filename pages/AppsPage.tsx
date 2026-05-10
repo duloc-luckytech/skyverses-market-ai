@@ -228,7 +228,7 @@ const AppsPage: React.FC = () => {
       {/* ═══ DEVELOPER PORTAL SECTION ═══ */}
       <section className="py-20 md:py-28">
         <div className="max-w-[1300px] mx-auto px-4 md:px-8">
-          <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
+          <div className="relative overflow-hidden rounded-xl md:rounded-xl bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
             {/* Background glows */}
             <div className="absolute top-0 right-[20%] w-[400px] h-[400px] bg-brand-blue/10 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-0 left-[10%] w-[300px] h-[300px] bg-purple-500/8 rounded-full blur-[100px] pointer-events-none" />

@@ -71,7 +71,7 @@ const RealEstateAI: React.FC = () => {
           </div>
 
           <div className="lg:col-span-6 relative order-1 lg:order-2">
-             <div className="aspect-[4/3] bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-[2rem] p-4 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center group">
+             <div className="aspect-[4/3] bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-xl p-4 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent"></div>
                 <div className="relative z-10 w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-white dark:border-white/10">
                    <div className="absolute inset-0 grid grid-cols-2">
