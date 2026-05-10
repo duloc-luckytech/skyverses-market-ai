@@ -7,7 +7,7 @@ import {
   Zap, ArrowRight, BarChart3,
   ChevronDown, Bookmark, Loader2, Sparkles,
   Database, HelpCircle, Users, Gift, Plus, Crown,
-  Search, Coins
+  Search, Coins, Sun, Moon
 } from 'lucide-react';
 
 import { AnimatePresence, motion } from 'framer-motion';
@@ -67,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { lang, setLang, t } = useLanguage();
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const { user, logout, isAuthenticated, credits, claimWelcomeCredits, refreshUserInfo, isPro } = useAuth();
   const search = useSearch();
 
@@ -376,7 +376,15 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               </AnimatePresence>
             </div>
 
-            {/* Theme Toggle — hidden */}
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="hidden md:flex w-8 h-8 items-center justify-center rounded transition-all"
+              style={{ color: 'rgba(250,247,248,0.85)' }}
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
 
             {/* User Menu / Contact + Login */}
             {isAuthenticated ? (
@@ -443,13 +451,13 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                           to="/skytoken"
                           onClick={() => setShowUserMenu(false)}
                           className="flex items-center justify-between p-2 rounded mt-1.5 transition-all hover:opacity-80"
-                          style={{ background: theme === 'dark' ? 'rgba(112,54,240,0.06)' : 'rgba(112,54,240,0.04)', border: theme === 'dark' ? '1px solid rgba(112,54,240,0.15)' : '1px solid rgba(112,54,240,0.1)' }}
+                          style={{ background: theme === 'dark' ? 'rgba(201,168,76,0.06)' : 'rgba(201,168,76,0.04)', border: theme === 'dark' ? '1px solid rgba(201,168,76,0.15)' : '1px solid rgba(201,168,76,0.1)' }}
                         >
                           <div className="flex items-center gap-1.5">
-                            <Coins size={13} style={{ color: '#7036F0' }} />
+                            <Coins size={13} style={{ color: '#C9A84C' }} />
                             <span className="text-xs font-bold" style={{ color: theme === 'dark' ? '#faf7f8' : '#1a2330' }}>{(sktBalance || 0).toLocaleString()} SKT</span>
                           </div>
-                          <span className="text-[10px] font-bold flex items-center gap-0.5" style={{ color: '#7036F0' }}>
+                          <span className="text-[10px] font-bold flex items-center gap-0.5" style={{ color: '#C9A84C' }}>
                             <Plus size={10} /> Nạp SKT
                           </span>
                         </Link>
@@ -479,14 +487,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                       {/* Menu Items */}
                       <div className="p-1.5 space-y-0.5">
                         <UserMenuLink to="/settings" icon={<User size={15} />} label={t('user.menu.profile')} onClick={() => setShowUserMenu(false)} />
-                        <UserMenuLink to="/referral" icon={<Users size={15} />} label={t('user.menu.referral')} onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="/favorites" icon={<Bookmark size={15} />} label={t('user.menu.favorites')} onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="/prompt-market/my-purchases" icon={<Database size={15} />} label="My Prompts" onClick={() => setShowUserMenu(false)} />
-                        <UserMenuLink to="/prompt-market/sell" icon={<Coins size={15} />} label="Sell Prompts" onClick={() => setShowUserMenu(false)} />
-                        <UserMenuLink to="/skytoken" icon={<Database size={15} />} label="SKT Wallet" onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="/usage" icon={<BarChart3 size={15} />} label={t('user.menu.usage')} onClick={() => setShowUserMenu(false)} />
-                        <UserMenuLink to="/settings" icon={<Settings size={15} />} label={t('user.menu.settings')} onClick={() => setShowUserMenu(false)} />
                         <div style={{ height: 1, background: 'rgba(0,0,0,0.04)', margin: '2px 8px' }} />
+                        <UserMenuLink to="/referral" icon={<Gift size={15} />} label={t('user.menu.referral')} onClick={() => setShowUserMenu(false)} />
                         <UserMenuLink to="https://skyverses.com/support" external icon={<HelpCircle size={15} />} label={t('user.menu.support')} onClick={() => setShowUserMenu(false)} />
                       </div>
 
@@ -556,7 +561,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
       <div className={`fixed inset-0 z-[500] transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} role="dialog" aria-modal="true" aria-label="Navigation menu">
         <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} onClick={() => setIsOpen(false)} />
         <div
-          className={`absolute top-0 right-0 h-full w-[85%] max-w-sm shadow-2xl transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`absolute top-0 right-0 h-full w-[85%] max-w-sm shadow-atlas-lg transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
           style={{ background: '#fff' }}
         >
           <div className="flex flex-col h-full">
